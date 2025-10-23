@@ -1,0 +1,78 @@
+{% extends "setup/base.html" %}
+
+{% block title %}Setup Complete - Blik{% endblock %}
+
+{% block subtitle %}Your Blik instance is ready to use!{% endblock %}
+
+{% block content %}
+<div class="success-icon">✓</div>
+
+<h2 style="text-align: center; margin-bottom: 15px; color: #28a745;">Setup Complete!</h2>
+<p style="text-align: center; margin-bottom: 30px; color: #666;">
+    Congratulations! Your Blik 360-degree feedback system is now configured and ready to use.
+</p>
+
+<div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+    <h3 style="margin-bottom: 15px; color: #333;">Configuration Summary</h3>
+    <table style="width: 100%;">
+        <tr>
+            <td style="padding: 8px 0; color: #888;">Administrator:</td>
+            <td style="padding: 8px 0; font-weight: 600;">{{ user.username }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #888;">Email:</td>
+            <td style="padding: 8px 0; font-weight: 600;">{{ user.email }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #888;">Organization:</td>
+            <td style="padding: 8px 0; font-weight: 600;">{{ organization.name }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0; color: #888;">Email Configured:</td>
+            <td style="padding: 8px 0; font-weight: 600;">
+                {% if organization.smtp_host %}
+                Yes ({{ organization.smtp_host }})
+                {% else %}
+                Not yet configured
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="next-steps">
+    <h3>Next Steps</h3>
+    <ul>
+        <li>
+            <strong>Load the default questionnaire:</strong><br>
+            <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+                docker-compose exec web python manage.py loaddata default_questionnaire
+            </code>
+        </li>
+        <li>
+            <strong>Access Django admin:</strong><br>
+            <a href="/admin/" target="_blank">Go to Django Admin Panel</a>
+        </li>
+        <li>
+            <strong>Create your first reviewee:</strong><br>
+            Add people who will receive 360-degree feedback
+        </li>
+        <li>
+            <strong>Start a review cycle:</strong><br>
+            Create a new review cycle and send invitations to reviewers
+        </li>
+    </ul>
+</div>
+
+<div class="button-group" style="margin-top: 30px;">
+    <div></div>
+    <a href="/admin/" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
+        Go to Admin Dashboard →
+    </a>
+</div>
+
+<p style="text-align: center; margin-top: 30px; color: #888; font-size: 14px;">
+    Need help? Check out the <a href="https://github.com/yourusername/blik" style="color: #667eea;">documentation</a>
+    or <a href="https://github.com/yourusername/blik/issues" style="color: #667eea;">report an issue</a>.
+</p>
+{% endblock %}

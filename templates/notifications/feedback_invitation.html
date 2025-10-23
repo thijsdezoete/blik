@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360 Feedback Request</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background-color: #f3f4f6;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h1 style="margin: 0 0 24px; font-size: 24px; font-weight: 700; color: #111827;">360 Degree Feedback Request</h1>
+
+                            <p style="margin: 0 0 16px; font-size: 16px; color: #374151; line-height: 1.6;">
+                                Hello,
+                            </p>
+
+                            <p style="margin: 0 0 16px; font-size: 16px; color: #374151; line-height: 1.6;">
+                                You have been invited to provide <strong>{{ category }}</strong> feedback for <strong>{{ reviewee_name }}</strong>.
+                            </p>
+
+                            <p style="margin: 0 0 24px; font-size: 16px; color: #374151; line-height: 1.6;">
+                                Your feedback is completely anonymous and will be aggregated with other responses to help {{ reviewee_name }} with their professional development.
+                            </p>
+
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 24px 0;">
+                                        <a href="{{ feedback_url }}" style="display: inline-block; background-color: #667eea; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                                            Complete Feedback
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 0 0 16px; font-size: 14px; color: #6b7280; line-height: 1.6;">
+                                This is a secure, one-time link that only you can use.
+                            </p>
+
+                            <p style="margin: 0 0 16px; font-size: 14px; color: #6b7280; line-height: 1.6;">
+                                If the button above doesn't work, copy and paste this URL into your browser:
+                                <br>
+                                <a href="{{ feedback_url }}" style="color: #667eea; text-decoration: underline;">{{ feedback_url }}</a>
+                            </p>
+
+                            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+
+                            <p style="margin: 0; font-size: 14px; color: #9ca3af;">
+                                Thank you for taking the time to provide thoughtful feedback.
+                                <br><br>
+                                Best regards,<br>
+                                Blik Feedback System
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,304 @@
+[
+  {
+    "model": "questionnaires.questionnaire",
+    "pk": 1,
+    "fields": {
+      "name": "360 Degree Feedback",
+      "description": "Feedback questionnaire for professional development",
+      "is_default": true,
+      "is_active": true,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 1,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Technical Skills",
+      "description": "Problem solving and technical abilities",
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1,
+    "fields": {
+      "section": 1,
+      "question_text": "Problem solving ability",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Needs guidance",
+          "3": "Works independently",
+          "5": "Exceptional"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2,
+    "fields": {
+      "section": 1,
+      "question_text": "Code quality and clarity",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Needs improvement",
+          "3": "Good quality",
+          "5": "Excellent"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 3,
+    "fields": {
+      "section": 1,
+      "question_text": "Technical expertise level",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Beginner",
+          "2": "Learning",
+          "3": "Competent",
+          "4": "Proficient",
+          "5": "Expert"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 2,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Collaboration",
+      "description": "Teamwork and communication",
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 4,
+    "fields": {
+      "section": 2,
+      "question_text": "Teamwork and collaboration",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Prefers solo work",
+          "3": "Good team player",
+          "5": "Outstanding collaborator"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 5,
+    "fields": {
+      "section": 2,
+      "question_text": "Communication skills",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Unclear",
+          "3": "Clear",
+          "5": "Excellent communicator"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 6,
+    "fields": {
+      "section": 2,
+      "question_text": "Helps and mentors others",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Rarely helps",
+          "3": "Helpful",
+          "5": "Great mentor"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 3,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Work Approach",
+      "description": "Initiative and attitude",
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 7,
+    "fields": {
+      "section": 3,
+      "question_text": "Initiative and motivation",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Waits for tasks",
+          "3": "Self-motivated",
+          "5": "Highly proactive"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 8,
+    "fields": {
+      "section": 3,
+      "question_text": "Adapts to change",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Resists change",
+          "3": "Adaptable",
+          "5": "Embraces change"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 9,
+    "fields": {
+      "section": 3,
+      "question_text": "Delivers quality work on time",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Often delayed",
+          "3": "Reliable",
+          "5": "Consistently excellent"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 4,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Overall Feedback",
+      "description": "Summary and suggestions",
+      "order": 4,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 10,
+    "fields": {
+      "section": 4,
+      "question_text": "What are their main strengths?",
+      "question_type": "text",
+      "config": {},
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 11,
+    "fields": {
+      "section": 4,
+      "question_text": "What could they improve?",
+      "question_type": "text",
+      "config": {},
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 12,
+    "fields": {
+      "section": 4,
+      "question_text": "Any additional comments?",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  }
+]

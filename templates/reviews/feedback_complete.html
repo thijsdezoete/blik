@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Submitted</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/feedback.css' %}">
+</head>
+<body style="background: #f3f4f6;">
+    <div class="complete-container">
+        <div class="complete-icon">✓</div>
+        <h1 class="complete-title">Feedback Submitted</h1>
+        <p class="complete-message">
+            Thank you for completing the 360 degree feedback for {{ cycle.reviewee.name }}.
+            <br><br>
+            Your anonymous feedback has been recorded and will contribute to their performance review.
+            <br><br>
+            You may now close this window.
+        </p>
+    </div>
+</body>
+</html>

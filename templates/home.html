@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blik - 360 Feedback System</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Blik</h1>
+        <p class="subtitle">360 Feedback & Performance Review System</p>
+
+        <div class="status">System Running</div>
+
+        <div class="info">
+            <h2>Setup Complete</h2>
+            <ul>
+                <li>Django application is running</li>
+                <li>Database connected successfully</li>
+                <li>Static files configured</li>
+                <li>Ready for development</li>
+            </ul>
+        </div>
+
+        <div>
+            <a href="/admin/" class="button">Admin Interface</a>
+            <a href="/health/" class="button secondary">Health Check</a>
+        </div>
+
+        <div class="footer">
+            <p>Version 0.1.0 (Pre-Alpha)</p>
+            <p>Self-hosted | Open Source | Privacy-First</p>
+        </div>
+    </div>
+</body>
+</html>

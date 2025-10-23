@@ -1,0 +1,95 @@
+{% load static feedback_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Report - {{ cycle.reviewee.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/report.css' %}">
+</head>
+<body style="background: #f3f4f6;">
+    <div class="report-container">
+        <div class="report-header">
+            <h1 class="report-title">360 Feedback Report</h1>
+            <p class="report-subtitle">{{ cycle.reviewee.name }}</p>
+
+            <div class="report-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Review Date</span>
+                    <span class="meta-value">{{ cycle.created_at|date:"F d, Y" }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status</span>
+                    <span class="meta-value">{{ cycle.status|title }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Total Responses</span>
+                    <span class="meta-value">{{ summary.total_responses }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="{% url 'admin:reviews_reviewcycle_change' cycle.id %}" class="btn btn-secondary">Back to Admin</a>
+            <a href="{% url 'reports:regenerate_report' cycle.id %}" class="btn btn-primary">Regenerate Report</a>
+        </div>
+
+        <div class="summary-cards">
+            {% for category, count in summary.by_category.items %}
+            <div class="summary-card">
+                <div class="summary-card-title">{{ category|title }} Responses</div>
+                <div class="summary-card-value">{{ count }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% for section_id, section_data in report.report_data.by_section.items %}
+        <div class="section-report">
+            <h2 class="section-title">{{ section_data.title }}</h2>
+
+            {% for question_id, question_data in section_data.questions.items %}
+            <div class="question-report">
+                <h3 class="question-title">{{ question_data.question_text }}</h3>
+
+                <div class="category-results">
+                    {% for category, cat_data in question_data.by_category.items %}
+                    <div class="category-result">
+                        <div class="category-header">
+                            <span class="category-badge badge-{{ category }}">{{ category|title }}</span>
+                            <span class="response-count">{{ cat_data.count }} response{{ cat_data.count|pluralize }}</span>
+                        </div>
+
+                        {% if cat_data.insufficient %}
+                            <div class="insufficient-data">
+                                {{ cat_data.message }}
+                            </div>
+                        {% else %}
+                            {% if cat_data.avg %}
+                                <div class="rating-display">
+                                    <span class="rating-score">{{ cat_data.avg }}</span>
+                                    <div class="rating-bar-container">
+                                        <div class="rating-bar-fill" style="width: {{ cat_data.avg|floatformat:0|add:"0"|mul:"20" }}%"></div>
+                                    </div>
+                                    <span class="response-count">/ 5.0</span>
+                                </div>
+                            {% endif %}
+
+                            {% if question_data.question_type == 'text' %}
+                                <div class="text-responses">
+                                    {% for response in cat_data.responses %}
+                                        <div class="text-response">{{ response }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

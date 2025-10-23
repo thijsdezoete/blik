@@ -13,7 +13,19 @@ if [ -z "$SECRET_KEY" ] || [ "$SECRET_KEY" = "your-secret-key-here-change-in-pro
 fi
 
 echo "Waiting for PostgreSQL to be ready..."
-until pg_isready -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER"; do
+
+# Extract host and port from DATABASE_URL if set
+if [ -n "$DATABASE_URL" ]; then
+  DB_HOST=$(echo "$DATABASE_URL" | sed -n 's/.*@\(.*\):.*/\1/p')
+  DB_PORT=$(echo "$DATABASE_URL" | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
+  DB_USER=$(echo "$DATABASE_URL" | sed -n 's/.*:\/\/\(.*\):.*/\1/p')
+else
+  DB_HOST="${DATABASE_HOST:-db}"
+  DB_PORT="${DATABASE_PORT:-5432}"
+  DB_USER="${DATABASE_USER:-blik}"
+fi
+
+until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
   echo "PostgreSQL is unavailable - sleeping"
   sleep 1
 done

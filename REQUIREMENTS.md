@@ -183,19 +183,34 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 
 **Requirements:**
 - Django admin for system management
-- Custom admin views for:
-  - Creating review cycles
-  - Managing reviewees
-  - Generating reviewer tokens
-  - Viewing cycle completion status
-  - Sending email invitations
-- Simple, functional UI - leverage Django admin where possible
+- Custom admin dashboard with:
+  - Quick access to common tasks
+  - Overview of active review cycles
+  - Recent activity summary
+- User management interface:
+  - Add/edit reviewees
+  - Manage admin users
+  - Simple user listing and search
+- Questionnaire management:
+  - Select from existing questionnaires
+  - Preview questionnaire questions before use
+  - Create new custom questionnaires
+  - Edit existing questionnaires
+- Review cycle management:
+  - Create new review cycles
+  - View cycle status and progress
+  - Generate reviewer tokens
+  - Send email invitations
+  - Send reminders to pending reviewers (no individual tracking)
+- Report access:
+  - Reviewees can view their reports via email link
+  - Dedicated report viewing page (not just Django admin)
+  - Clean, professional report presentation
 
 **Out of scope:**
-- Custom admin dashboard
 - Analytics/reporting for admins
 - Bulk operations
-- Advanced user management
+- Advanced user permissions
 
 ## UI/UX Requirements
 
@@ -363,10 +378,25 @@ MVP is successful if:
 - Professional UI/UX
 
 ### Remaining Work
-- Create initial organization via management command
-- Add PDF export (optional)
+
+**High Priority:**
+- Admin dashboard homepage with quick actions
+- User management interface (add/edit reviewees and admins)
+- Questionnaire selection and preview interface
+- Questionnaire creation/editing interface
+- Send reminders functionality for pending reviews
+- Dedicated reviewee report viewing page (public-facing)
+
+**Medium Priority:**
+- PDF export for reports (optional)
+- Improved email templates
 - Final testing and bug fixes
-- Production deployment documentation
+
+**Completed Recently:**
+- First-run setup wizard ✓
+- Automated deployment system ✓
+- Management commands for org/user setup ✓
+- Production deployment documentation ✓
 
 ## Post-MVP Enhancements
 

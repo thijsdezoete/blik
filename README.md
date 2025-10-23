@@ -10,23 +10,26 @@ Blik is an open-source application for conducting anonymous 360-degree feedback 
 
 ## Status
 
-Blik is currently in early development (pre-alpha). The core functionality is being actively developed. Production use is not recommended at this time.
+Blik is production-ready with core 360-degree feedback functionality. The system includes a complete review cycle workflow, anonymous feedback collection, intelligent report generation, and an easy-to-use admin dashboard.
 
 ## Features
 
-### Current Implementation
-- Review cycle management and administration
-- Token-based anonymous access system
-- Customizable questionnaires with multiple question types
-- Multi-rater categories (self, peer, manager, direct report)
-- Response aggregation with configurable anonymity thresholds
-- Email notification system
-- Docker-based deployment
+### Core Features
+- **Admin Dashboard** - Complete review cycle management interface
+- **Anonymous Feedback** - Token-based access system with no reviewer tracking
+- **Dual Questionnaires** - Professional Skills & Software Engineering templates (Dreyfus model-based)
+- **Flexible Review Types** - Self, peer, manager, and direct report assessments
+- **Intelligent Reports** - AI-powered analysis detecting perception gaps, skill levels, and development areas
+- **Dynamic Invitations** - Shareable links that automatically assign available tokens
+- **Email Notifications** - SMTP integration for invites and reminders
+- **Privacy Controls** - Configurable anonymity thresholds per organization
+- **Setup Wizard** - Interactive first-run setup at `/setup/`
+- **Production-Ready** - Docker deployment with security defaults
 
 ### Planned Features
-- PDF report generation with visualizations
-- Historical review cycle tracking and comparison
-- Custom competency framework definitions
+- PDF export with visualizations
+- Historical trend analysis across review cycles
+- Custom questionnaire builder
 - REST API for external integrations
 - Multi-language interface support
 - LDAP/SSO authentication for administrators
@@ -34,13 +37,13 @@ Blik is currently in early development (pre-alpha). The core functionality is be
 ## Architecture
 
 ### Technology Stack
-- Backend: Django 5.x with Django REST Framework
-- Database: PostgreSQL 15
-- Task Queue: Celery with Redis broker
-- Frontend: Django templates with Alpine.js
-- Visualization: Chart.js
-- PDF Generation: WeasyPrint
-- Containerization: Docker and Docker Compose
+- **Backend:** Django 5.x
+- **Database:** PostgreSQL 15
+- **Frontend:** Django templates with modern CSS
+- **AI Analysis:** Claude API (Anthropic) for intelligent report generation
+- **Deployment:** Docker and Docker Compose with Gunicorn
+- **Static Files:** WhiteNoise for efficient static file serving
+- **Email:** SMTP integration (supports Gmail, SendGrid, AWS SES, Mailgun, etc.)
 
 ### Design Principles
 - Anonymity-first architecture with no reviewer identity tracking
@@ -48,18 +51,42 @@ Blik is currently in early development (pre-alpha). The core functionality is be
 - Minimal configuration required for basic operation
 - Modular Django application structure for extensibility
 
-## Installation
+## Quick Start
 
-Blik is not yet ready for installation. Installation documentation will be provided with the first alpha release.
-
-Planned installation method:
+### Development/Testing
 
 ```bash
 git clone https://github.com/yourusername/blik.git
 cd blik
 cp .env.example .env
-# Configure .env with your settings
-docker-compose up -d
+# The defaults work for local development
+docker compose up -d
+```
+
+Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
+
+### Production Deployment
+
+**Recommended: Dokploy (One-Click Deploy)**
+
+1. Install [Dokploy](https://dokploy.com/) on your server
+2. Create a new Docker Compose application
+3. Connect this repository
+4. Set environment variables from `.env.production` template
+5. Deploy and visit `https://yourdomain.com/setup/`
+
+**See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete deployment instructions** including:
+- Dokploy step-by-step guide
+- Manual Docker deployment
+- Nginx/Caddy reverse proxy setup
+- Email provider configuration (Gmail, SendGrid, AWS SES, Mailgun)
+- SSL/HTTPS configuration
+- Database backups and maintenance
+
+### Generate SECRET_KEY
+
+```bash
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
 
 ## How It Works

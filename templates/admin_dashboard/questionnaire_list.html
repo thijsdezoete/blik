@@ -1,0 +1,73 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Questionnaires{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Questionnaires</h1>
+        <p>Manage 360-degree feedback questionnaires</p>
+    </div>
+    <a href="/admin/questionnaires/questionnaire/add/" class="btn btn-primary">Create Questionnaire</a>
+</div>
+
+{% if questionnaires %}
+<div style="display: grid; gap: 1.5rem;">
+    {% for questionnaire in questionnaires %}
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                    {{ questionnaire.name }}
+                    {% if questionnaire.is_default %}
+                    <span class="badge badge-success">Default</span>
+                    {% endif %}
+                </h3>
+                {% if questionnaire.description %}
+                <p style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">{{ questionnaire.description }}</p>
+                {% endif %}
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'questionnaire_preview' questionnaire.id %}" class="btn btn-sm btn-primary">Preview</a>
+                <a href="/admin/questionnaires/questionnaire/{{ questionnaire.id }}/change/" class="btn btn-sm btn-secondary">Edit</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.25rem;">Questions</div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary);">
+                        {{ questionnaire.question_count }}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.25rem;">Used in Cycles</div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--secondary);">
+                        {{ questionnaire.cycle_count }}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.25rem;">Created</div>
+                    <div style="font-size: 1.125rem; font-weight: 500; color: #1e293b;">
+                        {{ questionnaire.created_at|date:"M d, Y" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <h3 style="margin-bottom: 0.5rem;">No questionnaires yet</h3>
+            <p style="margin-bottom: 1.5rem;">Load the default questionnaire or create a custom one</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/admin/questionnaires/questionnaire/add/" class="btn btn-primary">Create Questionnaire</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

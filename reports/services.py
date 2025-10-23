@@ -1,16 +1,162 @@
 from django.db.models import Avg, Count
 from collections import defaultdict
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.urls import reverse
+from core.email import send_email
 from .models import Report
 from reviews.models import Response, ReviewCycle
+from core.models import Organization
+from statistics import mean, stdev
 
 
-MINIMUM_RESPONSES_THRESHOLD = 3
+def _calculate_insights(report_data):
+    """Generate actionable insights from report data"""
+    insights = {
+        'perception_gaps': [],
+        'strengths': [],
+        'development_areas': [],
+        'skill_profile': None,
+        'overall_sentiment': None
+    }
+
+    # Collect all rating averages by section and category
+    section_averages = defaultdict(lambda: defaultdict(list))
+    all_self_ratings = []
+    all_peer_ratings = []
+    all_manager_ratings = []
+
+    for section_id, section_data in report_data.get('by_section', {}).items():
+        section_title = section_data.get('title', '')
+
+        for question_id, question_data in section_data.get('questions', {}).items():
+            if question_data.get('question_type') != 'rating':
+                continue
+
+            for category, cat_data in question_data.get('by_category', {}).items():
+                if cat_data.get('insufficient'):
+                    continue
+
+                avg = cat_data.get('avg')
+                if avg is not None:
+                    section_averages[section_title][category].append(avg)
+
+                    if category == 'self':
+                        all_self_ratings.append(avg)
+                    elif category == 'peer':
+                        all_peer_ratings.append(avg)
+                    elif category == 'manager':
+                        all_manager_ratings.append(avg)
+
+    # Calculate section-level averages
+    section_summary = {}
+    for section_title, categories in section_averages.items():
+        section_summary[section_title] = {}
+        for category, ratings in categories.items():
+            if ratings:
+                section_summary[section_title][category] = round(mean(ratings), 2)
+
+    # Identify perception gaps (self vs others)
+    if all_self_ratings and (all_peer_ratings or all_manager_ratings):
+        self_avg = mean(all_self_ratings)
+        others_ratings = all_peer_ratings + all_manager_ratings
+        others_avg = mean(others_ratings) if others_ratings else None
+
+        if others_avg is not None:
+            gap = self_avg - others_avg
+
+            if gap < -0.5:
+                insights['perception_gaps'].append({
+                    'type': 'imposter_syndrome',
+                    'severity': 'high' if gap < -1.0 else 'moderate',
+                    'message': f'Self-assessment ({self_avg:.1f}) significantly lower than others\' perception ({others_avg:.1f})',
+                    'interpretation': 'Strong performance but may undervalue own contributions'
+                })
+            elif gap > 0.5:
+                insights['perception_gaps'].append({
+                    'type': 'overconfidence',
+                    'severity': 'high' if gap > 1.0 else 'moderate',
+                    'message': f'Self-assessment ({self_avg:.1f}) higher than others\' perception ({others_avg:.1f})',
+                    'interpretation': 'Opportunity to align self-perception with team feedback'
+                })
+
+    # Identify strengths (avg >= 4.0) and development areas (avg < 3.0)
+    for section_title, categories in section_summary.items():
+        # Use non-self categories for strengths/weaknesses
+        relevant_scores = [v for k, v in categories.items() if k != 'self']
+        if relevant_scores:
+            avg_score = mean(relevant_scores)
+
+            if avg_score >= 4.0:
+                insights['strengths'].append({
+                    'area': section_title,
+                    'score': avg_score,
+                    'level': 'exceptional' if avg_score >= 4.5 else 'strong'
+                })
+            elif avg_score < 3.0:
+                insights['development_areas'].append({
+                    'area': section_title,
+                    'score': avg_score,
+                    'priority': 'high' if avg_score < 2.5 else 'medium'
+                })
+
+    # Detect Dreyfus skill level from technical expertise section
+    tech_section = section_summary.get('Technical Expertise & Skill Level', {})
+    if tech_section:
+        tech_scores = [v for v in tech_section.values() if v]
+        if tech_scores:
+            avg_tech = mean(tech_scores)
+
+            if avg_tech >= 4.5:
+                insights['skill_profile'] = {
+                    'level': 'Expert',
+                    'description': 'Works from intuition, creates new approaches, recognized authority'
+                }
+            elif avg_tech >= 3.5:
+                insights['skill_profile'] = {
+                    'level': 'Proficient',
+                    'description': 'Sees big picture, recognizes patterns, works independently'
+                }
+            elif avg_tech >= 2.5:
+                insights['skill_profile'] = {
+                    'level': 'Competent',
+                    'description': 'Plans deliberately, solves standard problems'
+                }
+            elif avg_tech >= 1.5:
+                insights['skill_profile'] = {
+                    'level': 'Advanced Beginner',
+                    'description': 'Handles simple tasks independently'
+                }
+            else:
+                insights['skill_profile'] = {
+                    'level': 'Novice',
+                    'description': 'Follows rules, needs detailed instructions'
+                }
+
+    # Overall sentiment
+    all_ratings = all_self_ratings + all_peer_ratings + all_manager_ratings
+    if all_ratings:
+        overall_avg = mean(all_ratings)
+        insights['overall_sentiment'] = {
+            'score': round(overall_avg, 2),
+            'rating': 'Outstanding' if overall_avg >= 4.5 else
+                     'Excellent' if overall_avg >= 4.0 else
+                     'Strong' if overall_avg >= 3.5 else
+                     'Developing' if overall_avg >= 3.0 else
+                     'Needs Support'
+        }
+
+    return insights, section_summary
 
 
 def generate_report(cycle):
     """Generate aggregated report for a review cycle"""
 
     questionnaire = cycle.questionnaire
+
+    # Get organization's anonymity threshold
+    organization = Organization.objects.first()
+    min_threshold = organization.min_responses_for_anonymity if organization else 3
 
     # Get all responses for this cycle
     responses = Response.objects.filter(cycle=cycle).select_related(
@@ -68,7 +214,7 @@ def generate_report(cycle):
                 count = category_data['count']
 
                 # Apply anonymity threshold (except for self-assessment)
-                if category == 'self' or count >= MINIMUM_RESPONSES_THRESHOLD:
+                if category == 'self' or count >= min_threshold:
                     result = {
                         'count': count,
                         'responses': category_data['responses']
@@ -86,12 +232,17 @@ def generate_report(cycle):
                     report_question['by_category'][category] = {
                         'count': count,
                         'insufficient': True,
-                        'message': f'Insufficient responses (minimum {MINIMUM_RESPONSES_THRESHOLD} required)'
+                        'message': f'Insufficient responses (minimum {min_threshold} required)'
                     }
 
             report_section['questions'][str(question_id)] = report_question
 
         report_data['by_section'][str(section_id)] = report_section
+
+    # Generate insights and analytics
+    insights, section_summary = _calculate_insights(report_data)
+    report_data['insights'] = insights
+    report_data['section_summary'] = section_summary
 
     # Create or update report
     report, created = Report.objects.update_or_create(
@@ -101,6 +252,12 @@ def generate_report(cycle):
             'available': True
         }
     )
+
+    # Ensure access token is set
+    if not report.access_token:
+        import uuid
+        report.access_token = uuid.uuid4()
+        report.save()
 
     return report
 
@@ -128,3 +285,68 @@ def get_report_summary(report):
     summary['total_responses'] = sum(category_counts.values())
 
     return summary
+
+
+def send_report_ready_notification(report, request=None):
+    """
+    Send email to reviewee when their report is ready
+
+    Args:
+        report: Report instance
+        request: Optional request object for building absolute URLs
+
+    Returns:
+        dict: Statistics about email sent
+    """
+    stats = {
+        'sent': 0,
+        'errors': []
+    }
+
+    cycle = report.cycle
+    reviewee = cycle.reviewee
+
+    if not reviewee.email:
+        stats['errors'].append(f"No email address for reviewee {reviewee.name}")
+        return stats
+
+    if not report.access_token:
+        stats['errors'].append("Report does not have an access token")
+        return stats
+
+    # Build absolute URL
+    if request:
+        base_url = f"{request.scheme}://{request.get_host()}"
+    else:
+        base_url = settings.SITE_URL
+
+    report_url = f"{base_url}{reverse('reports:reviewee_report', kwargs={'access_token': report.access_token})}"
+
+    # Get response count
+    summary = get_report_summary(report)
+    response_count = summary.get('total_responses', 0)
+
+    try:
+        context = {
+            'reviewee': reviewee,
+            'cycle': cycle,
+            'report_url': report_url,
+            'response_count': response_count,
+        }
+
+        html_message = render_to_string('emails/report_ready.html', context)
+        text_message = render_to_string('emails/report_ready.txt', context)
+
+        send_email(
+            subject=f'Your 360 Feedback Report is Ready!',
+            message=text_message,
+            recipient_list=[reviewee.email],
+            html_message=html_message,
+        )
+
+        stats['sent'] += 1
+
+    except Exception as e:
+        stats['errors'].append(f"Failed to send report ready email: {str(e)}")
+
+    return stats

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Report - {{ cycle.reviewee.name }}</title>
+    <title>360 Feedback Report - {{ cycle.reviewee.name }}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <style>
         .insight-card {
@@ -84,6 +84,55 @@
             letter-spacing: 0.05em;
         }
 
+        .radar-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .comparison-bar {
+            height: 24px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .comparison-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .comparison-bar-self { background: #8b5cf6; }
+        .comparison-bar-others { background: #3b82f6; }
+
+        .comparison-legend {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
         .strength-list, .development-list {
             list-style: none;
             padding: 0;
@@ -136,10 +185,6 @@
                     <span class="meta-value">{{ cycle.created_at|date:"F d, Y" }}</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">Status</span>
-                    <span class="meta-value">{{ cycle.status|title }}</span>
-                </div>
-                <div class="meta-item">
                     <span class="meta-label">Total Responses</span>
                     <span class="meta-value">{{ summary.total_responses }}</span>
                 </div>
@@ -150,11 +195,6 @@
                 </div>
                 {% endif %}
             </div>
-        </div>
-
-        <div class="actions">
-            <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-secondary">Back to Cycle</a>
-            <a href="{% url 'reports:regenerate_report' cycle.id %}" class="btn btn-primary">Regenerate Report</a>
         </div>
 
         {% if report.report_data.insights.overall_sentiment %}
@@ -242,6 +282,12 @@
             </div>
         </div>
 
+        <div class="notice" style="background: #dbeafe; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 6px; margin-bottom: 2rem;">
+            <p style="margin: 0; color: #1e40af;">
+                <strong>Privacy Notice:</strong> All responses are anonymous and aggregated. Individual reviewers cannot be identified. Results are only shown when there are at least 3 responses per category to protect anonymity.
+            </p>
+        </div>
+
         <h2 style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem;">Detailed Feedback</h2>
 
         {% for section_id, section_data in report.report_data.by_section.items %}
@@ -290,6 +336,12 @@
             {% endfor %}
         </div>
         {% endfor %}
+
+        <div style="margin-top: 3rem; padding: 2rem; background: white; border-radius: 8px; text-align: center;">
+            <p style="color: #64748b; margin: 0;">
+                If you have questions about this report, please contact your manager or HR department.
+            </p>
+        </div>
     </div>
 </body>
 </html>

@@ -1,0 +1,92 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Preview: {{ questionnaire.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+                {{ questionnaire.name }}
+                {% if questionnaire.is_default %}
+                <span class="badge badge-success">Default</span>
+                {% endif %}
+            </h1>
+            {% if questionnaire.description %}
+            <p style="color: #64748b;">{{ questionnaire.description }}</p>
+            {% endif %}
+        </div>
+        <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div style="max-width: 800px;">
+    {% for section in sections %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">{{ section.title }}</h2>
+        </div>
+        <div class="card-body">
+            {% if section.questions.all %}
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                {% for question in section.questions.all %}
+                <div style="padding: 1rem; background: var(--bg-light); border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                        <div style="font-weight: 500; color: #1e293b;">
+                            {{ forloop.counter }}. {{ question.question_text }}
+                            {% if question.required %}
+                            <span style="color: var(--danger);">*</span>
+                            {% endif %}
+                        </div>
+                        <span class="badge badge-info">{{ question.get_question_type_display }}</span>
+                    </div>
+
+                    {% if question.question_type == 'rating' %}
+                    <div style="font-size: 0.875rem; color: #64748b;">
+                        Rating scale:
+                        {% if question.config.scale_type == 'likert_5' %}
+                        1 (Strongly Disagree) to 5 (Strongly Agree)
+                        {% elif question.config.scale_type == 'performance_5' %}
+                        1 (Needs Improvement) to 5 (Exceptional)
+                        {% elif question.config.scale_type == 'frequency_5' %}
+                        1 (Never) to 5 (Always)
+                        {% else %}
+                        1 to {{ question.config.max_value|default:5 }}
+                        {% endif %}
+                    </div>
+                    {% elif question.question_type == 'multiple_choice' %}
+                    <div style="margin-top: 0.5rem;">
+                        <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Options:</div>
+                        <ul style="margin-left: 1.5rem;">
+                            {% for choice in question.config.choices %}
+                            <li>{{ choice }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% elif question.question_type == 'text' %}
+                    <div style="font-size: 0.875rem; color: #64748b;">
+                        Open-ended text response
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: #94a3b8; text-align: center; padding: 2rem 0;">No questions in this section</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if not sections %}
+    <div class="card">
+        <div class="card-body">
+            <div class="empty-state">
+                <h3 style="margin-bottom: 0.5rem;">No sections yet</h3>
+                <p>This questionnaire doesn't have any sections or questions yet.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,10 +1,70 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db import transaction
-from .models import ReviewerToken, Response
+from .models import ReviewerToken, Response, ReviewCycle
 from questionnaires.models import Question
+import random
+
+
+def claim_token(request, invitation_token):
+    """
+    Claim an available token using a secure invitation token.
+    First shows a page that checks localStorage, then randomly assigns if needed.
+    """
+    # Find the cycle and category by invitation token
+    cycle = None
+    category = None
+
+    # Try each category token field
+    for cat_code, cat_display in ReviewerToken.CATEGORY_CHOICES:
+        field_name = f'invitation_token_{cat_code}'
+        cycles = ReviewCycle.objects.filter(**{field_name: invitation_token, 'status': 'active'})
+        if cycles.exists():
+            cycle = cycles.first()
+            category = cat_code
+            break
+
+    if not cycle or not category:
+        return render(request, 'reviews/claim_error.html', {
+            'error': 'Invalid or expired invitation link.'
+        }, status=404)
+
+    # If coming from redirect page (has force_claim param), skip localStorage check
+    if request.GET.get('force_claim'):
+        # Get available tokens (not claimed and not completed)
+        available_tokens = list(
+            ReviewerToken.objects.filter(
+                cycle=cycle,
+                category=category,
+                claimed_at__isnull=True,
+                completed_at__isnull=True
+            )
+        )
+
+        if not available_tokens:
+            # No available tokens - create a new one dynamically
+            token = ReviewerToken.objects.create(
+                cycle=cycle,
+                category=category,
+                claimed_at=timezone.now()
+            )
+        else:
+            # Randomly select a token from available ones
+            token = random.choice(available_tokens)
+            # Mark as claimed immediately
+            token.claimed_at = timezone.now()
+            token.save()
+
+        # Redirect to feedback form
+        return redirect('reviews:feedback_form', token=token.token)
+
+    # Show redirect page that checks localStorage first
+    return render(request, 'reviews/claim_redirect.html', {
+        'invitation_token': str(invitation_token),
+        'category': category,
+    })
 
 
 def feedback_form(request, token):
@@ -30,6 +90,9 @@ def feedback_form(request, token):
         responses = Response.objects.filter(token=reviewer_token).select_related('question')
         existing_responses = {str(r.question.id): r.answer_data.get('value') for r in responses}
 
+    # Get invitation token for localStorage key
+    invitation_token = cycle.get_invitation_token(reviewer_token.category)
+
     context = {
         'token': reviewer_token,
         'cycle': cycle,
@@ -37,6 +100,7 @@ def feedback_form(request, token):
         'sections': sections,
         'reviewee': cycle.reviewee,
         'existing_responses': existing_responses,
+        'invitation_token': invitation_token,
     }
 
     return render(request, 'reviews/feedback_form.html', context)
@@ -115,6 +179,24 @@ def submit_feedback(request, token):
             # Mark token as completed
             reviewer_token.completed_at = timezone.now()
             reviewer_token.save()
+
+            # Check if all tokens are completed
+            all_tokens_completed = not cycle.tokens.filter(completed_at__isnull=True).exists()
+
+            if all_tokens_completed and cycle.status == 'active':
+                # Auto-close the cycle
+                cycle.status = 'completed'
+                cycle.save()
+
+                # Auto-generate report
+                from reports.services import generate_report, send_report_ready_notification
+                try:
+                    report = generate_report(cycle)
+                    # Send notification email to reviewee
+                    send_report_ready_notification(report)
+                except Exception as e:
+                    # Log error but don't fail the submission
+                    print(f"Error auto-generating report for cycle {cycle.id}: {e}")
 
         return JsonResponse({'success': True, 'redirect': f'/feedback/{token}/complete/'})
 

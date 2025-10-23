@@ -1,0 +1,76 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Review Cycles{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Review Cycles</h1>
+        <p>Manage 360-degree feedback review cycles</p>
+    </div>
+    <a href="{% url 'review_cycle_create' %}" class="btn btn-primary">Create Review Cycle</a>
+</div>
+
+{% if cycles %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Reviewee</th>
+                    <th>Questionnaire</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cycle in cycles %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">{{ cycle.reviewee.email }}</div>
+                    </td>
+                    <td style="font-size: 0.875rem;">{{ cycle.questionnaire.name }}</td>
+                    <td>
+                        {% if cycle.status == 'active' %}
+                        <span class="badge badge-warning">Active</span>
+                        {% else %}
+                        <span class="badge badge-success">Completed</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.25rem;">
+                            {{ cycle.completed_count }} / {{ cycle.token_count }} responses
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: {% widthratio cycle.completed_count cycle.token_count 100 %}%;"></div>
+                        </div>
+                    </td>
+                    <td style="color: #64748b; font-size: 0.875rem;">
+                        {{ cycle.created_at|date:"M d, Y" }}
+                    </td>
+                    <td>
+                        <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <h3 style="margin-bottom: 0.5rem;">No review cycles yet</h3>
+            <p style="margin-bottom: 1.5rem;">Create your first review cycle to start collecting feedback</p>
+            <a href="{% url 'review_cycle_create' %}" class="btn btn-primary">Create Review Cycle</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

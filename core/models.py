@@ -23,6 +23,12 @@ class Organization(TimeStampedModel):
     smtp_use_tls = models.BooleanField(default=True)
     from_email = models.EmailField(blank=True)
 
+    # Report settings
+    min_responses_for_anonymity = models.IntegerField(
+        default=3,
+        help_text='Minimum number of responses required to show results (for anonymity). Set to 1 for small teams.'
+    )
+
     is_active = models.BooleanField(default=True)
 
     class Meta:

@@ -5,7 +5,11 @@
 {% block subtitle %}Your Blik instance is ready to use!{% endblock %}
 
 {% block content %}
-<div class="success-icon">✓</div>
+<div style="width: 80px; height: 80px; border-radius: 50%; background: #28a745; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center;">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+</div>
 
 <h2 style="text-align: center; margin-bottom: 15px; color: #28a745;">Setup Complete!</h2>
 <p style="text-align: center; margin-bottom: 30px; color: #666;">
@@ -44,18 +48,12 @@
     <h3>Next Steps</h3>
     <ul>
         <li>
-            <strong>Load the default questionnaire:</strong><br>
-            <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
-                docker-compose exec web python manage.py loaddata default_questionnaire
-            </code>
-        </li>
-        <li>
-            <strong>Access Django admin:</strong><br>
-            <a href="/admin/" target="_blank">Go to Django Admin Panel</a>
+            <strong>Access admin dashboard:</strong><br>
+            <a href="/dashboard/" target="_blank">Go to Admin Dashboard</a> to manage reviewees, questionnaires, and review cycles
         </li>
         <li>
             <strong>Create your first reviewee:</strong><br>
-            Add people who will receive 360-degree feedback
+            Add people who will receive 360-degree feedback from the dashboard
         </li>
         <li>
             <strong>Start a review cycle:</strong><br>
@@ -64,10 +62,24 @@
     </ul>
 </div>
 
+<div style="background: #f0f4ff; border-radius: 8px; padding: 20px; margin-top: 25px; border-left: 4px solid #667eea;">
+    <h3 style="margin-bottom: 10px; color: #667eea; font-size: 16px;">Want to explore first?</h3>
+    <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+        Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens.
+    </p>
+    <form method="post" style="margin: 0;">
+        {% csrf_token %}
+        <input type="hidden" name="generate_test_data" value="1">
+        <button type="submit" class="setup-button" style="margin: 0;">
+            Generate Test Data
+        </button>
+    </form>
+</div>
+
 <div class="button-group" style="margin-top: 30px;">
     <div></div>
-    <a href="/admin/" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
-        Go to Admin Dashboard →
+    <a href="/dashboard/" class="setup-button" style="text-decoration: none; display: inline-block;">
+        Go to Admin Dashboard
     </a>
 </div>
 

@@ -1,0 +1,145 @@
+{% extends "admin_dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Manage Invitations - {{ cycle.reviewee.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Manage Reviewer Invitations</h1>
+    <p style="color: #64748b;">{{ cycle.reviewee.name }} - {{ cycle.questionnaire.name }}</p>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Invitation Status</h2>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div>
+                <div style="font-size: 0.875rem; color: #64748b;">Total Tokens</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #1f2937;">{{ total_tokens }}</div>
+            </div>
+            <div>
+                <div style="font-size: 0.875rem; color: #64748b;">Emails Assigned</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;">{{ assigned_tokens }}</div>
+            </div>
+            <div>
+                <div style="font-size: 0.875rem; color: #64748b;">Invitations Sent</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #10b981;">{{ sent_tokens }}</div>
+            </div>
+            <div>
+                <div style="font-size: 0.875rem; color: #64748b;">Completed</div>
+                <div style="font-size: 2rem; font-weight: 700; color: #8b5cf6;">{{ completed_tokens }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Assign Reviewer Emails</h2>
+    </div>
+    <div class="card-body">
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+            Enter email addresses for each reviewer category. Emails will be randomly assigned to tokens for anonymity.
+            Separate multiple emails with commas or newlines.
+        </p>
+
+        <form method="post" action="{% url 'assign_invitations' cycle.id %}">
+            {% csrf_token %}
+
+            {% for category, tokens in tokens_by_category.items %}
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">{{ category }} ({{ tokens|length }} token{{ tokens|length|pluralize }})</label>
+                <textarea
+                    name="{{ tokens.0.category }}_emails"
+                    class="form-control"
+                    rows="3"
+                    placeholder="email1@example.com, email2@example.com&#10;email3@example.com"
+                >{% for token in tokens %}{% if token.reviewer_email %}{{ token.reviewer_email }}{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}</textarea>
+                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                    Enter {{ tokens|length }} email address{{ tokens|length|pluralize:"es" }} for this category
+                </div>
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">Assign Emails to Tokens</button>
+        </form>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Send Invitations</h2>
+    </div>
+    <div class="card-body">
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+            Send email invitations to all assigned reviewers who haven't received one yet.
+        </p>
+
+        <form method="post" action="{% url 'send_invitations' cycle.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" {% if assigned_tokens == 0 %}disabled{% endif %}>
+                Send Pending Invitations
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Token Details</h2>
+    </div>
+    <div class="card-body">
+        {% for category, tokens in tokens_by_category.items %}
+        <div style="margin-bottom: 2rem;">
+            <h3 style="font-weight: 600; margin-bottom: 1rem;">{{ category }}</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e2e8f0;">
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Token ID</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Assigned Email</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Invitation Sent</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for token in tokens %}
+                        <tr style="border-bottom: 1px solid #f3f4f6;">
+                            <td style="padding: 0.75rem; font-family: monospace; font-size: 0.875rem;">{{ token.token|truncatechars:16 }}</td>
+                            <td style="padding: 0.75rem;">
+                                {% if token.reviewer_email %}
+                                    {{ token.reviewer_email }}
+                                {% else %}
+                                    <span style="color: #9ca3af;">Not assigned</span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                {% if token.invitation_sent_at %}
+                                    <span style="color: #10b981;">{{ token.invitation_sent_at|date:"M d, Y H:i" }}</span>
+                                {% else %}
+                                    <span style="color: #9ca3af;">Not sent</span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                {% if token.completed_at %}
+                                    <span style="color: #8b5cf6;">{{ token.completed_at|date:"M d, Y H:i" }}</span>
+                                {% else %}
+                                    <span style="color: #9ca3af;">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div style="margin-top: 2rem;">
+    <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-secondary">Back to Cycle Details</a>
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Create Review Cycle{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Create Review Cycle</h1>
+    <p style="color: #64748b;">Set up a new 360-degree feedback review cycle</p>
+</div>
+
+<div style="max-width: 700px;">
+    <form method="post" id="cycleForm">
+        {% csrf_token %}
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title">Creation Mode</h2>
+            </div>
+            <div class="card-body">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 8px; flex: 1;">
+                        <input type="radio" name="creation_mode" value="single" checked onchange="toggleRevieweeSelect()">
+                        <div>
+                            <div style="font-weight: 600;">Single Reviewee</div>
+                            <div style="font-size: 0.875rem; color: #64748b;">Create cycle for one person</div>
+                        </div>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 8px; flex: 1;">
+                        <input type="radio" name="creation_mode" value="bulk" onchange="toggleRevieweeSelect()">
+                        <div>
+                            <div style="font-weight: 600;">Bulk Create</div>
+                            <div style="font-size: 0.875rem; color: #64748b;">Create for all active reviewees</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title">Basic Information</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group" id="revieweeGroup">
+                    <label for="reviewee" class="form-label">Reviewee *</label>
+                    <select id="reviewee" name="reviewee" class="form-control">
+                        <option value="">Select a reviewee...</option>
+                        {% for reviewee in reviewees %}
+                        <option value="{{ reviewee.id }}">{{ reviewee.name }} ({{ reviewee.email }})</option>
+                        {% endfor %}
+                    </select>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        Person who will receive 360-degree feedback
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="questionnaire" class="form-label">Questionnaire *</label>
+                    <select id="questionnaire" name="questionnaire" class="form-control" required>
+                        <option value="">Select a questionnaire...</option>
+                        {% for q in questionnaires %}
+                        <option value="{{ q.id }}" {% if q.is_default %}selected{% endif %}>
+                            {{ q.name }}{% if q.is_default %} (Default){% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        Questions that reviewers will answer
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title">Number of Reviewers</h2>
+            </div>
+            <div class="card-body">
+                <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem;">
+                    Specify how many reviewer tokens to generate for each category. You'll send these anonymous tokens to reviewers via email.
+                </p>
+
+                <div style="display: grid; gap: 1rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="self_count" class="form-label">Self Assessment</label>
+                        <input
+                            type="number"
+                            id="self_count"
+                            name="self_count"
+                            class="form-control"
+                            value="1"
+                            min="0"
+                            max="1"
+                        >
+                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                            Reviewee's self-assessment (0 or 1)
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="peer_count" class="form-label">Peer Reviews</label>
+                        <input
+                            type="number"
+                            id="peer_count"
+                            name="peer_count"
+                            class="form-control"
+                            value="3"
+                            min="0"
+                            max="20"
+                        >
+                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                            Colleagues at the same level
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="manager_count" class="form-label">Manager Reviews</label>
+                        <input
+                            type="number"
+                            id="manager_count"
+                            name="manager_count"
+                            class="form-control"
+                            value="1"
+                            min="0"
+                            max="10"
+                        >
+                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                            Direct managers or supervisors
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="direct_report_count" class="form-label">Direct Report Reviews</label>
+                        <input
+                            type="number"
+                            id="direct_report_count"
+                            name="direct_report_count"
+                            class="form-control"
+                            value="0"
+                            min="0"
+                            max="20"
+                        >
+                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                            People who report to this reviewee
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary" id="submitBtn">Create Review Cycle</button>
+            <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleRevieweeSelect() {
+    const mode = document.querySelector('input[name="creation_mode"]:checked').value;
+    const revieweeGroup = document.getElementById('revieweeGroup');
+    const revieweeSelect = document.getElementById('reviewee');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (mode === 'bulk') {
+        revieweeGroup.style.display = 'none';
+        revieweeSelect.removeAttribute('required');
+        submitBtn.textContent = 'Create Cycles for All Reviewees';
+    } else {
+        revieweeGroup.style.display = 'block';
+        revieweeSelect.setAttribute('required', 'required');
+        submitBtn.textContent = 'Create Review Cycle';
+    }
+}
+
+// Initialize on page load
+toggleRevieweeSelect();
+</script>
+
+{% if not reviewees %}
+<script>
+    window.location.href = "{% url 'reviewee_create' %}";
+</script>
+{% endif %}
+
+{% if not questionnaires %}
+<script>
+    window.location.href = "{% url 'questionnaire_list' %}";
+</script>
+{% endif %}
+{% endblock %}

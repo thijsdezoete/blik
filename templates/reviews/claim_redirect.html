@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Review...</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 3rem; max-width: 500px; text-align: center;">
+        <div style="width: 64px; height: 64px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; animation: pulse 2s ease-in-out infinite;">
+            <svg style="width: 32px; height: 32px; color: #3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+
+        <h1 style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin-bottom: 1rem;">
+            Checking for existing review...
+        </h1>
+
+        <p style="color: #64748b; margin-bottom: 2rem;">
+            Please wait while we locate your feedback session.
+        </p>
+
+        <div style="width: 100%; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+            <div style="width: 30%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); animation: loading 1.5s ease-in-out infinite;"></div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+    </style>
+
+    <script>
+        (function() {
+            const invitationToken = '{{ invitation_token }}';
+            const category = '{{ category }}';
+            const claimUrl = '{% url "reviews:claim_token" invitation_token=invitation_token %}?force_claim=1';
+
+            // Check localStorage for existing token (use invitation token as key for security)
+            const storageKey = `feedback_token_${invitationToken}`;
+            const savedToken = localStorage.getItem(storageKey);
+
+            if (savedToken) {
+                console.log('Found existing token in localStorage, redirecting...');
+                // Redirect to existing token
+                window.location.href = `/feedback/${savedToken}/`;
+            } else {
+                console.log('No existing token found, claiming new one...');
+                // No saved token, proceed to claim a new one
+                window.location.href = claimUrl;
+            }
+        })();
+    </script>
+</body>
+</html>

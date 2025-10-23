@@ -1,0 +1,213 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Manage 360-degree feedback and review cycles</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number primary">{{ total_reviewees }}</div>
+            <div class="stat-label">Active Reviewees</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number warning">{{ active_cycles }}</div>
+            <div class="stat-label">Active Cycles</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number success">{{ completed_cycles }}</div>
+            <div class="stat-label">Completed Cycles</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number secondary">{{ pending_tokens }}</div>
+            <div class="stat-label">Pending Reviews</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h2 class="card-title">Quick Actions</h2>
+    </div>
+    <div class="card-body">
+        <div class="action-grid">
+            <a href="{% url 'review_cycle_create' %}" class="btn btn-primary text-center">
+                New Review Cycle
+            </a>
+            <a href="{% url 'reviewee_create' %}" class="btn btn-secondary text-center">
+                Add Reviewee
+            </a>
+            <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary text-center">
+                Questionnaires
+            </a>
+            <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary text-center">
+                All Cycles
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Active and Completed Cycles in Two Columns on Wide Screens -->
+<div class="dashboard-grid">
+    <!-- Active Cycles Progress -->
+    {% if active_cycles_data %}
+    <div class="card mb-2">
+        <div class="card-header">
+            <h2 class="card-title">Active Cycles</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reviewee</th>
+                        <th>Progress</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in active_cycles_data %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
+                            <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
+                        </td>
+                        <td style="width: 200px;">
+                            <div style="margin-bottom: 0.25rem; font-size: 0.75rem; color: #64748b;">
+                                {{ item.completed_tokens }} / {{ item.total_tokens }} ({{ item.completion_rate|floatformat:0 }}%)
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: {{ item.completion_rate }}%;"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Completed Cycles -->
+    {% if completed_cycles_data %}
+    <div class="card mb-2">
+        <div class="card-header">
+            <h2 class="card-title">Completed Cycles</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reviewee</th>
+                        <th>Completed</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in completed_cycles_data %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
+                            <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
+                        </td>
+                        <td style="color: #64748b; font-size: 0.875rem;">
+                            {{ item.cycle.created_at|date:"M d, Y" }}
+                        </td>
+                        <td>
+                            {% if item.report_exists %}
+                            <a href="{% url 'reports:view_report' item.cycle.id %}" class="btn btn-sm btn-primary">View Report</a>
+                            {% else %}
+                            <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Recent Activity -->
+{% if recent_cycles %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Recent Review Cycles</h2>
+        <a href="{% url 'review_cycle_list' %}" class="btn btn-sm btn-secondary">View All</a>
+    </div>
+    <div class="card-body">
+        <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Reviewee</th>
+                    <th>Questionnaire</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cycle in recent_cycles %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">{{ cycle.reviewee.email }}</div>
+                    </td>
+                    <td>{{ cycle.questionnaire.name }}</td>
+                    <td style="color: #64748b; font-size: 0.875rem;">
+                        {{ cycle.created_at|date:"M d, Y" }}
+                    </td>
+                    <td>
+                        {% if cycle.status == 'active' %}
+                        <span class="badge badge-warning">Active</span>
+                        {% else %}
+                        <span class="badge badge-success">Completed</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <h3 style="margin-bottom: 0.5rem;">No review cycles yet</h3>
+            <p style="margin-bottom: 1.5rem;">Create your first review cycle to get started</p>
+            <a href="{% url 'review_cycle_create' %}" class="btn btn-primary">Create Review Cycle</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

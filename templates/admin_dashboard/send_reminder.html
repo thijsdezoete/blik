@@ -1,0 +1,152 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Send Reminders - {{ cycle.reviewee.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Send Reminders</h1>
+    <p style="color: #64748b;">Send reminder emails for pending reviews in this cycle</p>
+</div>
+
+<div style="max-width: 800px;">
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">Review Cycle Details</h2>
+        </div>
+        <div class="card-body">
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 1rem;">
+                <div style="font-weight: 500;">Reviewee:</div>
+                <div>{{ cycle.reviewee.name }} ({{ cycle.reviewee.email }})</div>
+
+                <div style="font-weight: 500;">Questionnaire:</div>
+                <div>{{ cycle.questionnaire.name }}</div>
+
+                <div style="font-weight: 500;">Pending Reviews:</div>
+                <div>{{ pending_tokens.count }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% if pending_tokens %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">Pending Reviewer Tokens</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-wrapper">
+            <table class="table" style="margin-bottom: 1.5rem;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Category</th>
+                        <th>Token</th>
+                        <th>Review Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for token in pending_tokens %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <span class="badge badge-warning">{{ token.get_category_display }}</span>
+                        </td>
+                        <td style="font-family: monospace; font-size: 0.875rem;">
+                            {{ token.token }}
+                        </td>
+                        <td>
+                            <button onclick="copyToken('{{ token.token }}')" class="btn btn-sm btn-secondary">
+                                Copy Link
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Send Reminder Emails</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'send_reminder' cycle.id %}">
+                {% csrf_token %}
+
+                <div style="padding: 1rem; background: #dbeafe; border-radius: 6px; margin-bottom: 1.5rem;">
+                    <p style="margin: 0 0 0.5rem 0; color: #1e40af; font-weight: 500;">Instructions:</p>
+                    <ul style="margin: 0; padding-left: 1.5rem; color: #1e40af;">
+                        <li>Enter one email address per line (or comma-separated)</li>
+                        <li>The number of emails must match the number of pending tokens ({{ pending_tokens.count }})</li>
+                        <li>Emails will be sent in the order shown in the table above</li>
+                        <li>Each email will contain a unique anonymous review link</li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="emails" class="form-label">
+                        Reviewer Email Addresses ({{ pending_tokens.count }} required)
+                    </label>
+                    <textarea
+                        id="emails"
+                        name="emails"
+                        class="form-control"
+                        rows="10"
+                        required
+                        placeholder="reviewer1@company.com&#10;reviewer2@company.com&#10;reviewer3@company.com"
+                        style="font-family: monospace;"
+                    ></textarea>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        Enter {{ pending_tokens.count }} email address(es), one per line
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary">Send {{ pending_tokens.count }} Reminder(s)</button>
+                    <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body">
+            <div class="empty-state">
+                <h3 style="margin-bottom: 0.5rem;">All reviews completed</h3>
+                <p style="margin-bottom: 1.5rem;">There are no pending reviews for this cycle.</p>
+                <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-primary">Back to Cycle</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyToken(token) {
+    const url = `${window.location.origin}/feedback/${token}/`;
+    navigator.clipboard.writeText(url).then(() => {
+        showCopyFeedback('Link copied to clipboard');
+    }).catch(() => {
+        showCopyFeedback('Failed to copy. URL: ' + url);
+    });
+}
+
+function showCopyFeedback(message) {
+    const existing = document.getElementById('copy-feedback');
+    if (existing) existing.remove();
+
+    const feedback = document.createElement('div');
+    feedback.id = 'copy-feedback';
+    feedback.className = 'copy-feedback';
+    feedback.textContent = message;
+    document.body.appendChild(feedback);
+
+    setTimeout(() => feedback.classList.add('show'), 10);
+    setTimeout(() => {
+        feedback.classList.remove('show');
+        setTimeout(() => feedback.remove(), 300);
+    }, 2000);
+}
+</script>
+{% endblock %}

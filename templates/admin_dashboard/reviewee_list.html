@@ -1,0 +1,71 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Reviewees{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Reviewees</h1>
+        <p>Manage people who receive 360-degree feedback</p>
+    </div>
+    <a href="{% url 'reviewee_create' %}" class="btn btn-primary">Add Reviewee</a>
+</div>
+
+{% if reviewees %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Review Cycles</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reviewee in reviewees %}
+                <tr>
+                    <td style="font-weight: 500;">{{ reviewee.name }}</td>
+                    <td style="color: #64748b;">{{ reviewee.email }}</td>
+                    <td>
+                        {% if reviewee.department %}
+                        <span class="badge badge-secondary">{{ reviewee.department }}</span>
+                        {% else %}
+                        <span style="color: #cbd5e1;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if reviewee.cycle_count > 0 %}
+                        <span class="badge badge-info">{{ reviewee.cycle_count }}</span>
+                        {% else %}
+                        <span style="color: #cbd5e1;">None</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="{% url 'reviewee_edit' reviewee.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                            <a href="{% url 'reviewee_delete' reviewee.id %}" class="btn btn-sm btn-danger">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <h3 style="margin-bottom: 0.5rem;">No reviewees yet</h3>
+            <p style="margin-bottom: 1.5rem;">Add your first reviewee to start creating review cycles</p>
+            <a href="{% url 'reviewee_create' %}" class="btn btn-primary">Add Reviewee</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

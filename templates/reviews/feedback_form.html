@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback - {{ reviewee.name }}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/multistep-feedback.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body style="background: #f3f4f6;">
     <div class="feedback-container">
@@ -108,5 +107,21 @@
     </div>
 
     <script src="{% static 'js/multistep-feedback.js' %}"></script>
+    <script>
+        // Store token in localStorage for easy return
+        (function() {
+            const token = '{{ token.token }}';
+            const invitationToken = '{{ invitation_token }}';
+
+            // Save token to localStorage (use invitation token as key for security)
+            const storageKey = `feedback_token_${invitationToken}`;
+            localStorage.setItem(storageKey, token);
+
+            // Save timestamp of last access
+            localStorage.setItem(`${storageKey}_last_access`, new Date().toISOString());
+
+            console.log('Token saved to localStorage for easy return');
+        })();
+    </script>
 </body>
 </html>

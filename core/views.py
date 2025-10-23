@@ -135,12 +135,154 @@ def setup_email(request):
 
 
 @login_required
+@require_http_methods(['GET', 'POST'])
 def setup_complete(request):
     """Final step: Setup completion and next steps."""
     if not is_setup_complete():
         return redirect('setup_welcome')
 
     organization = Organization.objects.first()
+
+    # Load default questionnaire on first visit
+    from questionnaires.models import Questionnaire
+    from django.core.management import call_command
+
+    if not Questionnaire.objects.exists():
+        try:
+            call_command('loaddata', 'default_questionnaire')
+            messages.success(request, 'Default 360 questionnaire loaded successfully!')
+        except Exception as e:
+            messages.warning(request, f'Could not load default questionnaire: {e}')
+
+    # Handle test data generation
+    if request.method == 'POST' and request.POST.get('generate_test_data'):
+        try:
+            from accounts.models import Reviewee
+            from reviews.models import ReviewCycle, ReviewerToken, Response
+            from questionnaires.models import Questionnaire, Question
+            from reports.services import generate_report
+            from django.utils import timezone
+            import uuid
+            import random
+
+            # Get default questionnaire
+            questionnaire = Questionnaire.objects.filter(is_default=True).first()
+            if not questionnaire:
+                questionnaire = Questionnaire.objects.first()
+
+            if not questionnaire:
+                messages.error(request, 'No questionnaire available. Please create one first.')
+            else:
+                # Create test reviewees
+                reviewee1 = Reviewee.objects.create(
+                    name='Jane Smith',
+                    email='jane.smith@example.com',
+                    department='Engineering',
+                    organization=organization
+                )
+                reviewee2 = Reviewee.objects.create(
+                    name='John Doe',
+                    email='john.doe@example.com',
+                    department='Product',
+                    organization=organization
+                )
+                reviewee3 = Reviewee.objects.create(
+                    name='Sarah Johnson',
+                    email='sarah.johnson@example.com',
+                    department='Engineering',
+                    organization=organization
+                )
+
+                # Cycle 1: Active cycle with partial completion (Jane Smith)
+                cycle1 = ReviewCycle.objects.create(
+                    reviewee=reviewee1,
+                    questionnaire=questionnaire,
+                    created_by=request.user,
+                    status='active'
+                )
+                ReviewerToken.objects.create(cycle=cycle1, category='self', token=uuid.uuid4())
+                ReviewerToken.objects.create(cycle=cycle1, category='peer', token=uuid.uuid4())
+                token_completed = ReviewerToken.objects.create(cycle=cycle1, category='manager', token=uuid.uuid4())
+                token_completed.completed_at = timezone.now()
+                token_completed.save()
+
+                # Cycle 2: Active cycle with no completion (John Doe)
+                cycle2 = ReviewCycle.objects.create(
+                    reviewee=reviewee2,
+                    questionnaire=questionnaire,
+                    created_by=request.user,
+                    status='active'
+                )
+                ReviewerToken.objects.create(cycle=cycle2, category='self', token=uuid.uuid4())
+                ReviewerToken.objects.create(cycle=cycle2, category='peer', token=uuid.uuid4())
+                ReviewerToken.objects.create(cycle=cycle2, category='peer', token=uuid.uuid4())
+                ReviewerToken.objects.create(cycle=cycle2, category='direct_report', token=uuid.uuid4())
+
+                # Cycle 3: Completed cycle with full responses and report (Sarah Johnson)
+                cycle3 = ReviewCycle.objects.create(
+                    reviewee=reviewee3,
+                    questionnaire=questionnaire,
+                    created_by=request.user,
+                    status='completed'
+                )
+
+                # Create tokens and complete them
+                categories = ['self', 'peer', 'peer', 'peer', 'manager', 'direct_report', 'direct_report']
+                tokens = []
+                for category in categories:
+                    token = ReviewerToken.objects.create(
+                        cycle=cycle3,
+                        category=category,
+                        token=uuid.uuid4(),
+                        completed_at=timezone.now()
+                    )
+                    tokens.append(token)
+
+                # Create responses for all questions in all tokens
+                questions = Question.objects.filter(section__questionnaire=questionnaire)
+                for token in tokens:
+                    for question in questions:
+                        if question.question_type == 'rating':
+                            # Vary ratings by category for interesting perception gaps
+                            if token.category == 'self':
+                                # Self-ratings slightly lower (imposter syndrome pattern)
+                                rating = random.randint(3, 4)
+                            elif token.category == 'manager':
+                                # Manager ratings higher
+                                rating = random.randint(4, 5)
+                            else:
+                                # Peer/direct report ratings in middle
+                                rating = random.randint(3, 5)
+                            answer_data = {'value': rating}
+                        elif question.question_type == 'text':
+                            # Sample text responses
+                            sample_responses = [
+                                'Excellent communication and leadership skills.',
+                                'Strong technical expertise and always willing to help team members.',
+                                'Great at problem solving and thinking outside the box.',
+                                'Demonstrates consistent professionalism and dedication.',
+                                'Would benefit from more delegation to develop team members.',
+                            ]
+                            answer_data = {'value': random.choice(sample_responses)}
+                        else:
+                            answer_data = {}
+
+                        Response.objects.create(
+                            cycle=cycle3,
+                            question=question,
+                            token=token,
+                            category=token.category,
+                            answer_data=answer_data
+                        )
+
+                # Generate report for completed cycle
+                generate_report(cycle3)
+
+                messages.success(request, 'Test data generated successfully! Check the dashboard to explore the system with various cycle states.')
+        except Exception as e:
+            messages.error(request, f'Failed to generate test data: {e}')
+
+        return redirect('admin_dashboard')
 
     return render(request, 'setup/complete.html', {
         'organization': organization,

@@ -71,13 +71,21 @@ h1 {
 .info li {
     padding: 8px 0;
     color: #6b7280;
+    padding-left: 24px;
+    position: relative;
 }
 
 .info li::before {
-    content: "✓ ";
-    color: #10b981;
-    font-weight: bold;
-    margin-right: 8px;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2px solid #10b981;
 }
 
 .button {

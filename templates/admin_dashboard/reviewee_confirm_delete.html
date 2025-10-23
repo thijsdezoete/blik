@@ -1,0 +1,38 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Delete Reviewee{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Delete Reviewee</h1>
+    <p style="color: #64748b;">Are you sure you want to deactivate this reviewee?</p>
+</div>
+
+<div style="max-width: 600px;">
+    <div class="card">
+        <div class="card-body">
+            <div style="padding: 1rem; background: #fef3c7; border-radius: 6px; margin-bottom: 1.5rem;">
+                <p style="margin: 0; color: #92400e;">
+                    <strong>Warning:</strong> This will deactivate the reviewee. Their past review cycles will remain accessible, but they will not appear in active lists.
+                </p>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <p><strong>Name:</strong> {{ reviewee.name }}</p>
+                <p><strong>Email:</strong> {{ reviewee.email }}</p>
+                {% if reviewee.department %}
+                <p><strong>Department:</strong> {{ reviewee.department }}</p>
+                {% endif %}
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-danger">Deactivate Reviewee</button>
+                    <a href="{% url 'reviewee_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

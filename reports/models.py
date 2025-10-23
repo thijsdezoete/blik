@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from core.models import TimeStampedModel
 from reviews.models import ReviewCycle
@@ -10,6 +11,16 @@ class Report(TimeStampedModel):
         ReviewCycle,
         on_delete=models.CASCADE,
         related_name='report'
+    )
+
+    # Secure access token for reviewee to access their report
+    access_token = models.UUIDField(
+        unique=True,
+        editable=False,
+        db_index=True,
+        null=True,
+        blank=True,
+        help_text="Secure token for reviewee access to their report"
     )
 
     # JSON field for storing aggregated results

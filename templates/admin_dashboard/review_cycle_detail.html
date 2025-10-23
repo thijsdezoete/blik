@@ -1,0 +1,275 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Review Cycle: {{ cycle.reviewee.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+                {{ cycle.reviewee.name }}
+                {% if cycle.status == 'active' %}
+                <span class="badge badge-warning">Active</span>
+                {% else %}
+                <span class="badge badge-success">Completed</span>
+                {% endif %}
+            </h1>
+            <p style="color: #64748b;">Created on {{ cycle.created_at|date:"F d, Y" }}</p>
+        </div>
+        <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number primary">{{ total_tokens }}</div>
+            <div class="stat-label">Total Reviewers</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number success">{{ completed_tokens }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number warning">{{ total_tokens|add:"-"|add:completed_tokens }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number secondary">{{ completion_rate|floatformat:0 }}%</div>
+            <div class="stat-label">Completion Rate</div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Bar -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-body">
+        <div style="margin-bottom: 0.5rem; font-weight: 500;">Overall Progress</div>
+        <div class="progress" style="height: 24px; border-radius: 12px;">
+            <div class="progress-bar" style="width: {{ completion_rate }}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                {{ completed_tokens }} / {{ total_tokens }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invitation Links -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Invitation Links</h2>
+    </div>
+    <div class="card-body">
+        <p style="color: #64748b; margin-bottom: 1.5rem;">
+            Share these links with reviewers. Each link will randomly assign an available token from the category.
+            Reviewers can bookmark their feedback link or return later - progress is saved automatically.
+        </p>
+
+        <div style="display: grid; gap: 1rem;">
+            {% if cycle.invitation_token_self %}
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Self Assessment</div>
+                    <code id="invite-self" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}</code>
+                </div>
+                <button onclick="copyInvitationLink('self')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+                    Copy Link
+                </button>
+            </div>
+            {% endif %}
+
+            {% if cycle.invitation_token_peer %}
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Peer Review</div>
+                    <code id="invite-peer" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_peer %}</code>
+                </div>
+                <button onclick="copyInvitationLink('peer')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+                    Copy Link
+                </button>
+            </div>
+            {% endif %}
+
+            {% if cycle.invitation_token_manager %}
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Manager Review</div>
+                    <code id="invite-manager" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_manager %}</code>
+                </div>
+                <button onclick="copyInvitationLink('manager')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+                    Copy Link
+                </button>
+            </div>
+            {% endif %}
+
+            {% if cycle.invitation_token_direct_report %}
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Direct Report Review</div>
+                    <code id="invite-direct_report" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_direct_report %}</code>
+                </div>
+                <button onclick="copyInvitationLink('direct_report')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
+                    Copy Link
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Reviewer Tokens by Category -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Reviewer Tokens</h2>
+    </div>
+    <div class="card-body">
+        {% if tokens_by_category %}
+        <div style="display: grid; gap: 2rem;">
+            {% for category, tokens in tokens_by_category.items %}
+            <div>
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    {{ category }}
+                    <span class="badge badge-secondary">{{ tokens|length }}</span>
+                </h3>
+
+                <div style="background: var(--bg-light); border-radius: 8px; padding: 1rem;">
+                    <div class="table-wrapper">
+                    <table class="table" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th style="border: none;">Token</th>
+                                <th style="border: none;">Status</th>
+                                <th style="border: none;">Completed</th>
+                                <th style="border: none;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for token in tokens %}
+                            <tr>
+                                <td style="font-family: monospace; font-size: 0.875rem; border-bottom: 1px solid var(--border);">
+                                    {{ token.token }}
+                                </td>
+                                <td style="border-bottom: 1px solid var(--border);">
+                                    {% if token.is_completed %}
+                                    <span class="badge badge-success">Completed</span>
+                                    {% else %}
+                                    <span class="badge badge-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td style="color: #64748b; font-size: 0.875rem; border-bottom: 1px solid var(--border);">
+                                    {% if token.completed_at %}
+                                    {{ token.completed_at|date:"M d, Y H:i" }}
+                                    {% else %}
+                                    —
+                                    {% endif %}
+                                </td>
+                                <td style="border-bottom: 1px solid var(--border);">
+                                    {% if not token.is_completed %}
+                                    <button onclick="copyToken('{{ token.token }}')" class="btn btn-sm btn-secondary">
+                                        Copy Link
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: #94a3b8; text-align: center; padding: 2rem 0;">No reviewer tokens created yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Actions</h2>
+    </div>
+    <div class="card-body">
+        <div class="action-grid">
+            <a href="{% url 'manage_invitations' cycle.id %}" class="btn btn-primary">Manage Invitations</a>
+
+            {% if report_exists %}
+            <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-primary">View Report (Staff)</a>
+            {% if report.access_token %}
+            <a href="{% url 'reports:reviewee_report' report.access_token %}" class="btn btn-primary">View Report (Reviewee)</a>
+            {% endif %}
+            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary">Regenerate Report</a>
+            {% else %}
+            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-primary">Generate Report</a>
+            {% endif %}
+
+            {% if cycle.status == 'active' and total_tokens|add:"-"|add:completed_tokens > 0 %}
+            <a href="{% url 'send_reminder_form' cycle.id %}" class="btn btn-warning" style="color: white;">
+                Send Reminders ({{ total_tokens|add:"-"|add:completed_tokens }})
+            </a>
+            {% endif %}
+
+            <a href="/admin/reviews/reviewcycle/{{ cycle.id }}/change/" class="btn btn-secondary">
+                Edit in Django Admin
+            </a>
+
+            {% if cycle.status == 'active' %}
+            <form method="post" action="{% url 'close_cycle' cycle.id %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary" style="width: 100%;">
+                    Close Cycle & Generate Report
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function copyInvitationLink(category) {
+    const codeElement = document.getElementById(`invite-${category}`);
+    const url = codeElement.textContent.trim();
+    navigator.clipboard.writeText(url).then(() => {
+        showCopyFeedback('Invitation link copied to clipboard');
+    }).catch(() => {
+        showCopyFeedback('Failed to copy. URL: ' + url);
+    });
+}
+
+function copyToken(token) {
+    const url = `${window.location.origin}/feedback/${token}/`;
+    navigator.clipboard.writeText(url).then(() => {
+        showCopyFeedback('Link copied to clipboard');
+    }).catch(() => {
+        showCopyFeedback('Failed to copy. URL: ' + url);
+    });
+}
+
+function showCopyFeedback(message) {
+    const existing = document.getElementById('copy-feedback');
+    if (existing) existing.remove();
+
+    const feedback = document.createElement('div');
+    feedback.id = 'copy-feedback';
+    feedback.className = 'copy-feedback';
+    feedback.textContent = message;
+    document.body.appendChild(feedback);
+
+    setTimeout(() => feedback.classList.add('show'), 10);
+    setTimeout(() => {
+        feedback.classList.remove('show');
+        setTimeout(() => feedback.remove(), 300);
+    }, 2000);
+}
+</script>
+{% endblock %}

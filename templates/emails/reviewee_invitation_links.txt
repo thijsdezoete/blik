@@ -1,0 +1,34 @@
+Hi {{ reviewee.name }},
+
+Your 360-degree feedback cycle has been created. Please share the following invitation links with your reviewers:
+
+{% if peer_url %}
+PEER REVIEWS:
+{{ peer_url }}
+
+Share this link with your colleagues/peers. Each person who clicks will get their own unique review link.
+{% endif %}
+
+{% if manager_url %}
+MANAGER REVIEW:
+{{ manager_url }}
+
+Share this link with your manager.
+{% endif %}
+
+{% if direct_report_url %}
+DIRECT REPORT REVIEWS:
+{{ direct_report_url }}
+
+Share this link with your direct reports. Each person who clicks will get their own unique review link.
+{% endif %}
+
+Important:
+- Each link can be shared with multiple people
+- Reviewers remain anonymous
+- They can save their progress and return later
+
+Questionnaire: {{ cycle.questionnaire.name }}
+
+Best regards,
+Your Feedback Team

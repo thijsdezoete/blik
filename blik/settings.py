@@ -77,15 +77,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'blik.wsgi.application'
 
 # Database
+# Support DATABASE_URL for platforms like Dokploy, Railway, Heroku
+# Format: postgres://user:password@host:port/dbname
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DATABASE_NAME', default='blik'),
-        'USER': env('DATABASE_USER', default='blik'),
-        'PASSWORD': env('DATABASE_PASSWORD', default='changeme'),
-        'HOST': env('DATABASE_HOST', default='localhost'),
-        'PORT': env('DATABASE_PORT', default='5432'),
-    }
+    'default': dj_database_url.config(
+        default=f"postgres://{env('DATABASE_USER', default='blik')}:{env('DATABASE_PASSWORD', default='changeme')}@{env('DATABASE_HOST', default='localhost')}:{env('DATABASE_PORT', default='5432')}/{env('DATABASE_NAME', default='blik')}",
+        conn_max_age=600
+    )
 }
 
 # Password validation

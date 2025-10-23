@@ -93,23 +93,7 @@
                             max="1"
                         >
                         <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            Reviewee's self-assessment (0 or 1)
-                        </div>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="peer_count" class="form-label">Peer Reviews</label>
-                        <input
-                            type="number"
-                            id="peer_count"
-                            name="peer_count"
-                            class="form-control"
-                            value="3"
-                            min="0"
-                            max="20"
-                        >
-                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            Colleagues at the same level
+                            Reviewee's self-assessment (usually 1)
                         </div>
                     </div>
 
@@ -125,12 +109,28 @@
                             max="10"
                         >
                         <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            Direct managers or supervisors
+                            Direct managers or supervisors (usually 1)
                         </div>
                     </div>
 
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label for="direct_report_count" class="form-label">Direct Report Reviews</label>
+                        <label for="peer_count" class="form-label">Peer Reviews (Optional)</label>
+                        <input
+                            type="number"
+                            id="peer_count"
+                            name="peer_count"
+                            class="form-control"
+                            value="0"
+                            min="0"
+                            max="20"
+                        >
+                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                            Colleagues at the same level (set to 0 to use dynamic invitation links)
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="direct_report_count" class="form-label">Direct Report Reviews (Optional)</label>
                         <input
                             type="number"
                             id="direct_report_count"
@@ -141,7 +141,7 @@
                             max="20"
                         >
                         <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            People who report to this reviewee
+                            People who report to this reviewee (set to 0 to use dynamic invitation links)
                         </div>
                     </div>
                 </div>

@@ -149,10 +149,11 @@ def setup_complete(request):
 
     if not Questionnaire.objects.exists():
         try:
-            call_command('loaddata', 'default_questionnaire')
-            messages.success(request, 'Default 360 questionnaire loaded successfully!')
+            call_command('loaddata', 'professional_skills_questionnaire')
+            call_command('loaddata', 'software_engineering_questionnaire')
+            messages.success(request, 'Default questionnaires loaded successfully!')
         except Exception as e:
-            messages.warning(request, f'Could not load default questionnaire: {e}')
+            messages.warning(request, f'Could not load default questionnaires: {e}')
 
     # Handle test data generation
     if request.method == 'POST' and request.POST.get('generate_test_data'):
@@ -165,120 +166,186 @@ def setup_complete(request):
             import uuid
             import random
 
-            # Get default questionnaire
-            questionnaire = Questionnaire.objects.filter(is_default=True).first()
-            if not questionnaire:
-                questionnaire = Questionnaire.objects.first()
+            # Get both questionnaires
+            professional_q = Questionnaire.objects.filter(name__icontains='Professional Skills').first()
+            software_q = Questionnaire.objects.filter(name__icontains='Software Engineering').first()
 
-            if not questionnaire:
+            if not professional_q and not software_q:
+                professional_q = Questionnaire.objects.first()
+
+            if not professional_q and not software_q:
                 messages.error(request, 'No questionnaire available. Please create one first.')
             else:
-                # Create test reviewees
+                # Create test reviewees with diverse roles
                 reviewee1 = Reviewee.objects.create(
-                    name='Jane Smith',
-                    email='jane.smith@example.com',
-                    department='Engineering',
-                    organization=organization
-                )
-                reviewee2 = Reviewee.objects.create(
-                    name='John Doe',
-                    email='john.doe@example.com',
-                    department='Product',
-                    organization=organization
-                )
-                reviewee3 = Reviewee.objects.create(
                     name='Sarah Johnson',
                     email='sarah.johnson@example.com',
                     department='Engineering',
                     organization=organization
                 )
-
-                # Cycle 1: Active cycle with partial completion (Jane Smith)
-                cycle1 = ReviewCycle.objects.create(
-                    reviewee=reviewee1,
-                    questionnaire=questionnaire,
-                    created_by=request.user,
-                    status='active'
+                reviewee2 = Reviewee.objects.create(
+                    name='Michael Chen',
+                    email='michael.chen@example.com',
+                    department='Product',
+                    organization=organization
                 )
-                ReviewerToken.objects.create(cycle=cycle1, category='self', token=uuid.uuid4())
-                ReviewerToken.objects.create(cycle=cycle1, category='peer', token=uuid.uuid4())
-                token_completed = ReviewerToken.objects.create(cycle=cycle1, category='manager', token=uuid.uuid4())
-                token_completed.completed_at = timezone.now()
-                token_completed.save()
-
-                # Cycle 2: Active cycle with no completion (John Doe)
-                cycle2 = ReviewCycle.objects.create(
-                    reviewee=reviewee2,
-                    questionnaire=questionnaire,
-                    created_by=request.user,
-                    status='active'
+                reviewee3 = Reviewee.objects.create(
+                    name='Emily Rodriguez',
+                    email='emily.rodriguez@example.com',
+                    department='Engineering',
+                    organization=organization
                 )
-                ReviewerToken.objects.create(cycle=cycle2, category='self', token=uuid.uuid4())
-                ReviewerToken.objects.create(cycle=cycle2, category='peer', token=uuid.uuid4())
-                ReviewerToken.objects.create(cycle=cycle2, category='peer', token=uuid.uuid4())
-                ReviewerToken.objects.create(cycle=cycle2, category='direct_report', token=uuid.uuid4())
-
-                # Cycle 3: Completed cycle with full responses and report (Sarah Johnson)
-                cycle3 = ReviewCycle.objects.create(
-                    reviewee=reviewee3,
-                    questionnaire=questionnaire,
-                    created_by=request.user,
-                    status='completed'
+                reviewee4 = Reviewee.objects.create(
+                    name='David Park',
+                    email='david.park@example.com',
+                    department='Sales',
+                    organization=organization
+                )
+                reviewee5 = Reviewee.objects.create(
+                    name='Lisa Anderson',
+                    email='lisa.anderson@example.com',
+                    department='Engineering',
+                    organization=organization
                 )
 
-                # Create tokens and complete them
-                categories = ['self', 'peer', 'peer', 'peer', 'manager', 'direct_report', 'direct_report']
-                tokens = []
-                for category in categories:
-                    token = ReviewerToken.objects.create(
-                        cycle=cycle3,
-                        category=category,
-                        token=uuid.uuid4(),
-                        completed_at=timezone.now()
+                def create_completed_cycle(reviewee, questionnaire_to_use, pattern='balanced'):
+                    """Helper to create a completed cycle with responses"""
+                    cycle = ReviewCycle.objects.create(
+                        reviewee=reviewee,
+                        questionnaire=questionnaire_to_use,
+                        created_by=request.user,
+                        status='completed'
                     )
-                    tokens.append(token)
 
-                # Create responses for all questions in all tokens
-                questions = Question.objects.filter(section__questionnaire=questionnaire)
-                for token in tokens:
-                    for question in questions:
-                        if question.question_type == 'rating':
-                            # Vary ratings by category for interesting perception gaps
-                            if token.category == 'self':
-                                # Self-ratings slightly lower (imposter syndrome pattern)
-                                rating = random.randint(3, 4)
-                            elif token.category == 'manager':
-                                # Manager ratings higher
-                                rating = random.randint(4, 5)
-                            else:
-                                # Peer/direct report ratings in middle
-                                rating = random.randint(3, 5)
-                            answer_data = {'value': rating}
-                        elif question.question_type == 'text':
-                            # Sample text responses
-                            sample_responses = [
-                                'Excellent communication and leadership skills.',
-                                'Strong technical expertise and always willing to help team members.',
-                                'Great at problem solving and thinking outside the box.',
-                                'Demonstrates consistent professionalism and dedication.',
-                                'Would benefit from more delegation to develop team members.',
-                            ]
-                            answer_data = {'value': random.choice(sample_responses)}
-                        else:
-                            answer_data = {}
-
-                        Response.objects.create(
-                            cycle=cycle3,
-                            question=question,
-                            token=token,
-                            category=token.category,
-                            answer_data=answer_data
+                    # Create tokens and complete them
+                    categories = ['self', 'peer', 'peer', 'peer', 'manager', 'direct_report', 'direct_report']
+                    tokens = []
+                    for category in categories:
+                        token = ReviewerToken.objects.create(
+                            cycle=cycle,
+                            category=category,
+                            token=uuid.uuid4(),
+                            completed_at=timezone.now(),
+                            claimed_at=timezone.now()
                         )
+                        tokens.append(token)
 
-                # Generate report for completed cycle
-                generate_report(cycle3)
+                    # Create responses for all questions
+                    questions = Question.objects.filter(section__questionnaire=questionnaire_to_use)
+                    for token in tokens:
+                        for question in questions:
+                            if question.question_type == 'rating':
+                                # Different patterns for different reviewees
+                                if pattern == 'imposter_syndrome':
+                                    # Self-ratings much lower than others
+                                    if token.category == 'self':
+                                        rating = random.randint(2, 3)
+                                    else:
+                                        rating = random.randint(4, 5)
+                                elif pattern == 'overconfident':
+                                    # Self-ratings higher than others
+                                    if token.category == 'self':
+                                        rating = random.randint(4, 5)
+                                    else:
+                                        rating = random.randint(2, 3)
+                                elif pattern == 'high_performer':
+                                    # High across the board
+                                    rating = random.randint(4, 5)
+                                elif pattern == 'needs_development':
+                                    # Lower ratings, opportunity for growth
+                                    rating = random.randint(2, 3)
+                                else:  # balanced
+                                    # Varied ratings showing strengths and areas to develop
+                                    if token.category == 'self':
+                                        rating = random.randint(3, 4)
+                                    elif token.category == 'manager':
+                                        rating = random.randint(4, 5)
+                                    else:
+                                        rating = random.randint(3, 5)
+                                answer_data = {'value': rating}
+                            elif question.question_type == 'text':
+                                # Choose responses based on questionnaire type
+                                if 'Software Engineering' in questionnaire_to_use.name:
+                                    sample_responses = [
+                                        'Strong technical expertise and deep understanding of software architecture.',
+                                        'Writes clean, maintainable code and follows best practices consistently.',
+                                        'Excellent at debugging complex issues and finding root causes.',
+                                        'Demonstrates solid grasp of algorithms and data structures.',
+                                        'Could improve on code documentation and knowledge sharing.',
+                                        'Always stays current with new technologies and frameworks.',
+                                        'Great at technical mentoring and explaining complex concepts.',
+                                        'Would benefit from more focus on testing and quality assurance.',
+                                        'Strong problem-solving skills and creative technical solutions.',
+                                    ]
+                                else:  # Professional Skills
+                                    sample_responses = [
+                                        'Excellent communication and consistently clear in explanations.',
+                                        'Strong collaborative skills and always willing to help the team.',
+                                        'Great at problem solving and thinking strategically.',
+                                        'Demonstrates professionalism and dedication to quality work.',
+                                        'Would benefit from taking more initiative on complex projects.',
+                                        'Shows strong leadership potential and influences others positively.',
+                                        'Builds positive relationships across teams effectively.',
+                                        'Adapts well to change and handles uncertainty with grace.',
+                                        'Could improve on delegation and trusting team members more.',
+                                        'Consistently delivers high-quality results on time.',
+                                    ]
+                                answer_data = {'value': random.choice(sample_responses)}
+                            else:
+                                answer_data = {}
 
-                messages.success(request, 'Test data generated successfully! Check the dashboard to explore the system with various cycle states.')
+                            Response.objects.create(
+                                cycle=cycle,
+                                question=question,
+                                token=token,
+                                category=token.category,
+                                answer_data=answer_data
+                            )
+
+                    # Generate report
+                    generate_report(cycle)
+                    return cycle
+
+                # Cycle 1: Software Engineer - Completed (imposter syndrome pattern)
+                if software_q:
+                    create_completed_cycle(reviewee1, software_q, 'imposter_syndrome')
+
+                # Cycle 2: Product Manager - Active with partial completion
+                if professional_q:
+                    cycle2 = ReviewCycle.objects.create(
+                        reviewee=reviewee2,
+                        questionnaire=professional_q,
+                        created_by=request.user,
+                        status='active'
+                    )
+                    ReviewerToken.objects.create(cycle=cycle2, category='self', token=uuid.uuid4(), claimed_at=timezone.now())
+                    ReviewerToken.objects.create(cycle=cycle2, category='peer', token=uuid.uuid4())
+                    token_completed = ReviewerToken.objects.create(cycle=cycle2, category='manager', token=uuid.uuid4(), claimed_at=timezone.now())
+                    token_completed.completed_at = timezone.now()
+                    token_completed.save()
+
+                # Cycle 3: Engineering Manager - Completed (high performer)
+                if software_q:
+                    create_completed_cycle(reviewee3, software_q, 'high_performer')
+
+                # Cycle 4: Sales Director - Completed (balanced professional skills)
+                if professional_q:
+                    create_completed_cycle(reviewee4, professional_q, 'balanced')
+
+                # Cycle 5: Junior Developer - Active, no completion yet
+                if software_q:
+                    cycle5 = ReviewCycle.objects.create(
+                        reviewee=reviewee5,
+                        questionnaire=software_q,
+                        created_by=request.user,
+                        status='active'
+                    )
+                    ReviewerToken.objects.create(cycle=cycle5, category='self', token=uuid.uuid4())
+                    ReviewerToken.objects.create(cycle=cycle5, category='peer', token=uuid.uuid4())
+                    ReviewerToken.objects.create(cycle=cycle5, category='peer', token=uuid.uuid4())
+                    ReviewerToken.objects.create(cycle=cycle5, category='manager', token=uuid.uuid4())
+
+                messages.success(request, 'Test data generated successfully! 5 reviewees with diverse roles and both questionnaires. Check the dashboard to explore completed reports and active cycles.')
         except Exception as e:
             messages.error(request, f'Failed to generate test data: {e}')
 

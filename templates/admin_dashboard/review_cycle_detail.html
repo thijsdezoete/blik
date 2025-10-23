@@ -14,6 +14,9 @@
                 <span class="badge badge-success">Completed</span>
                 {% endif %}
             </h1>
+            <p style="color: #64748b; margin-bottom: 0.25rem;">
+                <strong>Questionnaire:</strong> {{ cycle.questionnaire.name }}
+            </p>
             <p style="color: #64748b;">Created on {{ cycle.created_at|date:"F d, Y" }}</p>
         </div>
         <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">Back to List</a>

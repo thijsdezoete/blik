@@ -1,0 +1,658 @@
+[
+  {
+    "model": "questionnaires.questionnaire",
+    "pk": 1,
+    "fields": {
+      "name": "Professional Skills 360 Review",
+      "description": "Universal 360-degree feedback questionnaire for all professional roles. Assesses core competencies including communication, problem-solving, collaboration, and leadership based on the Dreyfus model of skill acquisition.",
+      "is_default": true,
+      "is_active": true,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 101,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Problem Solving & Decision Making",
+      "description": "Ability to analyze situations, make decisions, and solve problems effectively",
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1001,
+    "fields": {
+      "section": 101,
+      "question_text": "How effectively does this person analyze and solve problems?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Needs clear direction",
+          "2": "Handles routine problems",
+          "3": "Solves problems independently",
+          "4": "Handles complex situations",
+          "5": "Expert problem solver"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1002,
+    "fields": {
+      "section": 101,
+      "question_text": "How well does this person make decisions under pressure or with incomplete information?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Struggles with uncertainty",
+          "2": "Needs support for tough calls",
+          "3": "Makes sound decisions",
+          "4": "Confident under pressure",
+          "5": "Exceptional judgment"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1003,
+    "fields": {
+      "section": 101,
+      "question_text": "Additional comments on their problem-solving and decision-making abilities",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 102,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Communication & Collaboration",
+      "description": "Effectiveness in communicating ideas and working with others",
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1004,
+    "fields": {
+      "section": 102,
+      "question_text": "How clearly and effectively does this person communicate?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Often unclear",
+          "2": "Basic communication",
+          "3": "Communicates clearly",
+          "4": "Very articulate",
+          "5": "Exceptional communicator"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1005,
+    "fields": {
+      "section": 102,
+      "question_text": "How well does this person collaborate and work with others?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Prefers working alone",
+          "2": "Collaborates when needed",
+          "3": "Good team player",
+          "4": "Builds strong partnerships",
+          "5": "Exceptional collaborator"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1006,
+    "fields": {
+      "section": 102,
+      "question_text": "How well does this person listen to and consider others' perspectives?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Rarely listens",
+          "2": "Sometimes receptive",
+          "3": "Listens well",
+          "4": "Highly receptive",
+          "5": "Exemplary listener"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1007,
+    "fields": {
+      "section": 102,
+      "question_text": "Additional comments on their communication and collaboration",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 4,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 103,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Initiative & Ownership",
+      "description": "Drive to take action and accountability for outcomes",
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1008,
+    "fields": {
+      "section": 103,
+      "question_text": "How proactively does this person identify and address opportunities or challenges?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Waits for direction",
+          "2": "Acts when prompted",
+          "3": "Takes initiative",
+          "4": "Highly proactive",
+          "5": "Drives change"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1009,
+    "fields": {
+      "section": 103,
+      "question_text": "How well does this person take ownership and follow through on commitments?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Needs close oversight",
+          "2": "Follows through with reminders",
+          "3": "Reliable and accountable",
+          "4": "Fully owns their work",
+          "5": "Exceptional ownership"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1010,
+    "fields": {
+      "section": 103,
+      "question_text": "Additional comments on their initiative and ownership",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 104,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Adaptability & Learning",
+      "description": "Capacity to learn, grow, and adapt to change",
+      "order": 4,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1011,
+    "fields": {
+      "section": 104,
+      "question_text": "How quickly does this person learn new skills and concepts?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Slow to adapt",
+          "2": "Learns with support",
+          "3": "Learns independently",
+          "4": "Quick learner",
+          "5": "Exceptionally adaptive"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1012,
+    "fields": {
+      "section": 104,
+      "question_text": "How well does this person adapt to change and handle ambiguity?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Resists change",
+          "2": "Adapts reluctantly",
+          "3": "Handles change well",
+          "4": "Thrives in change",
+          "5": "Champions change"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1013,
+    "fields": {
+      "section": 104,
+      "question_text": "Additional comments on their adaptability and learning capacity",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 105,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Quality & Excellence",
+      "description": "Commitment to delivering high-quality work and continuous improvement",
+      "order": 5,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1014,
+    "fields": {
+      "section": 105,
+      "question_text": "What is the quality of work this person delivers?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Often needs rework",
+          "2": "Meets basic standards",
+          "3": "Consistently good quality",
+          "4": "High quality work",
+          "5": "Exceptional quality"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1015,
+    "fields": {
+      "section": 105,
+      "question_text": "How well does this person balance quality with practical deadlines and constraints?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Struggles with balance",
+          "2": "Sometimes over/under delivers",
+          "3": "Good balance",
+          "4": "Excellent pragmatism",
+          "5": "Masters the balance"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1016,
+    "fields": {
+      "section": 105,
+      "question_text": "Additional comments on their work quality and standards",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 106,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Leadership & Influence",
+      "description": "Ability to guide, influence, and develop others",
+      "order": 6,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1017,
+    "fields": {
+      "section": 106,
+      "question_text": "How effectively does this person influence and guide others?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Limited influence",
+          "2": "Influences peers occasionally",
+          "3": "Influences effectively",
+          "4": "Strong influencer",
+          "5": "Natural leader"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1018,
+    "fields": {
+      "section": 106,
+      "question_text": "How well does this person develop and support the growth of others?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Rarely helps others",
+          "2": "Helps when asked",
+          "3": "Supportive colleague",
+          "4": "Active mentor",
+          "5": "Exceptional developer of talent"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1019,
+    "fields": {
+      "section": 106,
+      "question_text": "How well does this person understand and contribute to broader organizational goals?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Narrow focus",
+          "2": "Aware of goals",
+          "3": "Aligns with strategy",
+          "4": "Strategic thinker",
+          "5": "Shapes strategy"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1020,
+    "fields": {
+      "section": 106,
+      "question_text": "Additional comments on their leadership and influence",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 4,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 107,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Professionalism & Attitude",
+      "description": "Professional conduct, reliability, and work ethic",
+      "order": 7,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1021,
+    "fields": {
+      "section": 107,
+      "question_text": "How would you describe this person's professionalism and work ethic?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Needs improvement",
+          "2": "Generally professional",
+          "3": "Consistently professional",
+          "4": "Highly professional",
+          "5": "Exemplary professional"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1022,
+    "fields": {
+      "section": 107,
+      "question_text": "How well does this person handle feedback and demonstrate self-awareness?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Defensive",
+          "2": "Sometimes receptive",
+          "3": "Accepts feedback well",
+          "4": "Actively seeks feedback",
+          "5": "Exceptional self-awareness"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1023,
+    "fields": {
+      "section": 107,
+      "question_text": "How positive and constructive is this person's attitude?",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Often negative",
+          "2": "Neutral attitude",
+          "3": "Generally positive",
+          "4": "Very positive",
+          "5": "Inspires positivity"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1024,
+    "fields": {
+      "section": 107,
+      "question_text": "Additional comments on their professionalism and attitude",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 4,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 108,
+    "fields": {
+      "questionnaire": 1,
+      "title": "Overall Assessment",
+      "description": "Summary feedback and development priorities",
+      "order": 8,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1025,
+    "fields": {
+      "section": 108,
+      "question_text": "What are this person's greatest strengths?",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1026,
+    "fields": {
+      "section": 108,
+      "question_text": "What areas would benefit most from development or improvement?",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 1027,
+    "fields": {
+      "section": 108,
+      "question_text": "Any additional feedback or observations?",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  }
+]

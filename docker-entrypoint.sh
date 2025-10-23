@@ -14,12 +14,29 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
-echo "Creating superuser if it doesn't exist..."
-python manage.py shell << END
-from django.contrib.auth import get_user_model
-User = get_user_model()
-if not User.objects.filter(username='admin').exists():
-    print("No admin user found. Please create one using 'docker-compose exec web python manage.py createsuperuser'")
-END
+echo "Setting up organization..."
+python manage.py setup_organization
+
+echo "Setting up superuser..."
+python manage.py setup_superuser
+
+echo ""
+echo "========================================="
+echo "Blik is ready!"
+echo "========================================="
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ]; then
+  echo "Admin username: $DJANGO_SUPERUSER_USERNAME"
+  if [ -z "$DJANGO_SUPERUSER_PASSWORD" ]; then
+    echo "WARNING: No superuser password set!"
+    echo "Please create a superuser manually:"
+    echo "  docker-compose exec web python manage.py createsuperuser"
+  fi
+else
+  echo "No auto-setup configured."
+  echo "Create a superuser with:"
+  echo "  docker-compose exec web python manage.py createsuperuser"
+fi
+echo "========================================="
+echo ""
 
 exec "$@"

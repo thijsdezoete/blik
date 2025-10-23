@@ -16,17 +16,18 @@ services:
 
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 blik.wsgi:application
+    command: gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 --timeout 120 blik.wsgi:application
     volumes:
       - ./:/app
       - static_volume:/app/staticfiles
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:${PORT:-8000}"
     env_file:
       - .env
     environment:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
+      - PORT=${PORT:-8000}
     depends_on:
       db:
         condition: service_healthy

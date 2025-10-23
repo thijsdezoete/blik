@@ -26,7 +26,7 @@ services:
       - .env
     environment:
       - DATABASE_HOST=${DATABASE_HOST:-db}
-      - DATABASE_PORT=${DATABASE_PORT:5432}
+      - DATABASE_PORT=${DATABASE_PORT:-5432}
       - PORT=${PORT:-8000}
     depends_on:
       db:

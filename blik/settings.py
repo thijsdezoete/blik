@@ -81,12 +81,21 @@ WSGI_APPLICATION = 'blik.wsgi.application'
 # Format: postgres://user:password@host:port/dbname
 import dj_database_url
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"postgres://{env('DATABASE_USER', default='blik')}:{env('DATABASE_PASSWORD', default='changeme')}@{env('DATABASE_HOST', default='localhost')}:{env('DATABASE_PORT', default='5432')}/{env('DATABASE_NAME', default='blik')}",
-        conn_max_age=600
-    )
-}
+# Use DATABASE_URL if set, otherwise build from individual vars
+if env('DATABASE_URL', default=None):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=env('DATABASE_URL'),
+            conn_max_age=600
+        )
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=f"postgres://{env('DATABASE_USER', default='blik')}:{env('DATABASE_PASSWORD', default='changeme')}@{env('DATABASE_HOST', default='localhost')}:{env('DATABASE_PORT', default='5432')}/{env('DATABASE_NAME', default='blik')}",
+            conn_max_age=600
+        )
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

@@ -25,14 +25,20 @@ In Dokploy's environment variables section, set the following (use `.env.product
 
 #### Required Security Settings
 ```env
-SECRET_KEY=<generate-with-python-command-below>
+# SECRET_KEY is auto-generated if not set (recommended to set for production persistence)
+SECRET_KEY=<your-secret-key-here>
 DEBUG=False
 ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SECURE=True
 ```
 
-**Generate SECRET_KEY:**
+**Note on SECRET_KEY:**
+- If not set, a secure random key is **auto-generated on first startup**
+- For production, it's recommended to set a persistent value so sessions remain valid across restarts
+- The auto-generated key will be displayed in the logs on first startup
+
+**Generate SECRET_KEY manually (optional):**
 ```bash
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```

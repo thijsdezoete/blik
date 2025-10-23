@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+# Generate a secure SECRET_KEY if not set
+if [ -z "$SECRET_KEY" ] || [ "$SECRET_KEY" = "your-secret-key-here-change-in-production" ] || [ "$SECRET_KEY" = "django-insecure-)32-g7%2_@jy@ycdh1lh2*)2pg8y$ftwd88j*vuc%ev%%t(@-f" ]; then
+  echo "Generating secure SECRET_KEY..."
+  export SECRET_KEY=$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')
+  echo "✓ SECRET_KEY generated"
+  echo ""
+  echo "IMPORTANT: For production deployments, save this SECRET_KEY to your environment:"
+  echo "SECRET_KEY=$SECRET_KEY"
+  echo ""
+fi
+
 echo "Waiting for PostgreSQL to be ready..."
 until pg_isready -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER"; do
   echo "PostgreSQL is unavailable - sleeping"

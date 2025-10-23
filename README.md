@@ -83,11 +83,7 @@ Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
 - SSL/HTTPS configuration
 - Database backups and maintenance
 
-### Generate SECRET_KEY
-
-```bash
-python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-```
+**Note:** SECRET_KEY is auto-generated securely on first startup if not provided. For production, it's recommended to set a persistent value in your environment variables.
 
 ## How It Works
 

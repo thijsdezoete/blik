@@ -7,6 +7,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views, admin_views, seo_views
 
+# Error handlers
+handler404 = 'blik.views.handler404'
+handler500 = 'blik.views.handler500'
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('health/', views.health_check, name='health_check'),

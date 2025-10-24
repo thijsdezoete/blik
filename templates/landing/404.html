@@ -14,9 +14,9 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="logo"><a href="/" style="text-decoration: none; color: inherit;">Blik</a></h1>
+                <h1 class="logo"><a href="{% url 'index' %}" style="text-decoration: none; color: inherit;">Blik</a></h1>
                 <nav class="nav">
-                    <a href="/">Home</a>
+                    <a href="{% url 'index' %}">Home</a>
                     <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
                 </nav>
             </div>
@@ -33,8 +33,8 @@
                     The page you're looking for doesn't exist or has been moved.
                 </p>
                 <div class="error-actions">
-                    <a href="/" class="btn btn-primary">Back to Home</a>
-                    <a href="/dashboard/" class="btn btn-outline">Go to Dashboard</a>
+                    <a href="{% url 'index' %}" class="btn btn-primary">Back to Home</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-outline" target="_blank" rel="noopener">View on GitHub</a>
                 </div>
             </div>
         </div>

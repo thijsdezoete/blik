@@ -75,8 +75,8 @@
             <div class="header-content">
                 <h1 class="logo">Blik</h1>
                 <nav class="nav">
-                    <a href="/">Home</a>
-                    <a href="/open-source/">Open Source</a>
+                    <a href="{% url 'index' %}">Home</a>
+                    <a href="{% url 'open_source' %}">Open Source</a>
                     <a href="#dreyfus">Dreyfus Model</a>
                     <a href="#sunday-test">Sunday Test</a>
                     <a href="#framework">Framework</a>
@@ -93,7 +93,7 @@
                 <p class="hero-subtitle">Research-based skill models. No corporate jargon. No arbitrary matrices. Just practical frameworks for measuring technical growth.</p>
                 <div class="hero-cta">
                     <a href="#dreyfus" class="btn btn-primary">Learn the Model</a>
-                    <a href="/open-source/" class="btn btn-secondary">See the Code</a>
+                    <a href="{% url 'open_source' %}" class="btn btn-secondary">See the Code</a>
                 </div>
             </div>
         </div>
@@ -402,7 +402,7 @@
             <p>Deploy Blik with Dreyfus-based questionnaires included. Customize to your team's needs.</p>
             <div class="hero-cta">
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Get Blik on GitHub</a>
-                <a href="/" class="btn btn-secondary">Learn More</a>
+                <a href="{% url 'index' %}" class="btn btn-secondary">Learn More</a>
             </div>
         </div>
     </section>

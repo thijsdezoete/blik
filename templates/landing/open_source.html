@@ -80,7 +80,7 @@
             <div class="header-content">
                 <h1 class="logo">Blik</h1>
                 <nav class="nav">
-                    <a href="/">Home</a>
+                    <a href="{% url 'index' %}">Home</a>
                     <a href="#architecture">Architecture</a>
                     <a href="#contribute">Contribute</a>
                     <a href="#faq">FAQ</a>
@@ -269,13 +269,13 @@
                 <div class="feature-card">
                     <h3>Why Dreyfus for Developers</h3>
                     <p>Five-stage model from Novice to Expert aligns with how engineers actually develop skills. No corporate HR jargon. Maps to technical career ladders naturally. Based on research, not management fads.</p>
-                    <p style="margin-top: 1rem;"><a href="/dreyfus-model/" style="color: var(--primary); text-decoration: none; font-weight: 500;">Learn about the Dreyfus Model →</a></p>
+                    <p style="margin-top: 1rem;"><a href="{% url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Learn about the Dreyfus Model →</a></p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Default Questionnaires</h3>
                     <p>Professional Skills: leadership, communication, collaboration, problem-solving. Software Engineering: code quality, architecture, debugging, mentoring. Both use Dreyfus model ratings.</p>
-                    <p style="margin-top: 1rem;"><a href="/dreyfus-model/#framework" style="color: var(--primary); text-decoration: none; font-weight: 500;">See the full framework →</a></p>
+                    <p style="margin-top: 1rem;"><a href="{% url 'dreyfus_model' %}#framework" style="color: var(--primary); text-decoration: none; font-weight: 500;">See the full framework →</a></p>
                 </div>
 
                 <div class="feature-card">
@@ -493,7 +493,7 @@
             <p>Clone, deploy, customize, contribute. Built by developers, for developers.</p>
             <div class="hero-cta">
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Star on GitHub</a>
-                <a href="/" class="btn btn-secondary">Back to Home</a>
+                <a href="{% url 'index' %}" class="btn btn-secondary">Back to Home</a>
             </div>
             <div style="background: var(--text-primary); color: #e2e8f0; padding: 1.5rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; margin-top: 2rem; text-align: center;">
                 git clone https://github.com/thijsdezoete/blik.git && cd blik && docker compose up -d

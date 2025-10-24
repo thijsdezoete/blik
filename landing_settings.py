@@ -1,0 +1,92 @@
+"""
+Minimal Django settings for landing/marketing site container.
+
+This configuration only includes what's needed to serve static landing pages.
+No database, no authentication, no sessions - just templates and static files.
+"""
+from pathlib import Path
+import environ
+
+# Build paths
+BASE_DIR = Path(__file__).resolve().parent
+
+# Initialize environment variables
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+)
+
+# Read .env file if it exists
+environ.Env.read_env(BASE_DIR / '.env')
+
+# Security
+SECRET_KEY = env('SECRET_KEY', default='landing-minimal-key-not-used-for-auth')
+DEBUG = env('DEBUG')
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+
+# Minimal application definition - only landing app
+INSTALLED_APPS = [
+    'django.contrib.staticfiles',  # For static file serving
+    'django.contrib.contenttypes',  # Required by Django
+    'landing',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'landing_urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.template.context_processors.static',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'landing_wsgi.application'
+
+# No database needed for static landing pages
+DATABASES = {}
+
+# Internationalization
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = False
+USE_TZ = True
+
+# Static files
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Whitenoise for efficient static file serving
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Security settings
+SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', default=True)
+CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE', default=True)
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# SEO settings
+SITE_NAME = 'Blik360'
+SITE_DOMAIN = env('SITE_DOMAIN', default='blik360.com')
+SITE_PROTOCOL = env('SITE_PROTOCOL', default='https')
+SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
+SITE_KEYWORDS = '360 feedback, performance review, open source, self-hosted, anonymous feedback, employee feedback'
+
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

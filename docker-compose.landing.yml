@@ -1,0 +1,62 @@
+# Landing/Marketing Site with Nginx Reverse Proxy
+#
+# Deploy this alongside docker-compose.yml to add:
+# - Lightweight landing container serving marketing pages at root
+# - Nginx reverse proxy routing traffic appropriately
+#
+# Usage on Dokploy or similar platforms:
+# 1. Deploy docker-compose.yml first (main app)
+# 2. Deploy this file separately (landing + nginx)
+# 3. Point your domain to nginx port (80)
+
+services:
+  landing:
+    build:
+      context: .
+      dockerfile: Dockerfile.landing
+    command: gunicorn --bind 0.0.0.0:${LANDING_PORT:-8001} --workers 2 --timeout 60 landing_wsgi:application
+    volumes:
+      - ./:/app
+      - static_volume:/app/staticfiles
+    expose:
+      - "${LANDING_PORT:-8001}"
+    env_file:
+      - .env
+    environment:
+      - LANDING_PORT=${LANDING_PORT:-8001}
+    restart: unless-stopped
+    networks:
+      - blik_default  # Connect to main app network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "${NGINX_PORT:-80}:80"
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/nginx.conf.template:ro
+      - ./docker-entrypoint-nginx.sh:/docker-entrypoint-nginx.sh:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/mediafiles:ro
+    environment:
+      - PORT=${PORT:-8000}
+      - LANDING_PORT=${LANDING_PORT:-8001}
+    depends_on:
+      - landing
+    entrypoint: ["/docker-entrypoint-nginx.sh"]
+    restart: unless-stopped
+    networks:
+      - blik_default  # Connect to main app network
+
+# Use external volumes and network created by main docker-compose.yml
+volumes:
+  static_volume:
+    external: true
+    name: blik_static_volume
+  media_volume:
+    external: true
+    name: blik_media_volume
+
+networks:
+  blik_default:
+    external: true
+    name: blik_default

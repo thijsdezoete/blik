@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'reports',
     'notifications',
     'landing',
+    'subscriptions',
 ]
 
 MIDDLEWARE = [
@@ -168,3 +169,10 @@ SITE_DOMAIN = env('SITE_DOMAIN', default='blik360.com')
 SITE_PROTOCOL = env('SITE_PROTOCOL', default='https')
 SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
 SITE_KEYWORDS = '360 feedback, performance review, peer review, employee feedback, open source, self-hosted'
+
+# Stripe settings
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default='')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY', default='')
+STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='')
+STRIPE_PRICE_ID_SAAS = env('STRIPE_PRICE_ID_SAAS', default='')
+STRIPE_PRICE_ID_ENTERPRISE = env('STRIPE_PRICE_ID_ENTERPRISE', default='')

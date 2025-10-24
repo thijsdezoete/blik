@@ -254,7 +254,7 @@
                         <li>Custom domain</li>
                         <li>SSL included</li>
                     </ul>
-                    <a href="mailto:info@blik360.com?subject=SaaS Inquiry" class="btn btn-primary">Contact Sales</a>
+                    <button class="btn btn-primary" onclick="startCheckout('saas')">Start Free Trial</button>
                 </div>
                 <div class="pricing-card">
                     <h3>Enterprise</h3>
@@ -270,7 +270,7 @@
                         <li>SSL included</li>
                         <li>SLA guarantees</li>
                     </ul>
-                    <a href="mailto:info@blik360.com?subject=Enterprise Inquiry" class="btn btn-secondary">Contact Sales</a>
+                    <button class="btn btn-secondary" onclick="startCheckout('enterprise')">Start Free Trial</button>
                 </div>
             </div>
         </div>
@@ -605,6 +605,67 @@
             }
         ]
     }
+    </script>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('{{ stripe_publishable_key }}');
+
+        async function startCheckout(planType) {
+            const priceId = planType === 'saas' ? '{{ stripe_price_id_saas }}' : '{{ stripe_price_id_enterprise }}';
+
+            if (!priceId) {
+                alert('Payment system not configured. Please contact support.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/stripe/create-checkout-session/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        price_id: priceId,
+                        plan_type: planType
+                    })
+                });
+
+                const session = await response.json();
+
+                if (session.error) {
+                    alert(session.error);
+                    return;
+                }
+
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.session_id
+                });
+
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            } catch (error) {
+                console.error('Checkout error:', error);
+                alert('Failed to start checkout. Please try again.');
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 </body>
 </html>

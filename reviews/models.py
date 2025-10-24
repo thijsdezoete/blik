@@ -32,6 +32,11 @@ class ReviewCycle(TimeStampedModel):
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
 
+    @property
+    def organization(self):
+        """Get organization through reviewee relationship"""
+        return self.reviewee.organization
+
     # Secure invitation tokens per category (non-enumerable)
     invitation_token_self = models.UUIDField(unique=True, db_index=True, null=True, blank=True)
     invitation_token_peer = models.UUIDField(unique=True, db_index=True, null=True, blank=True)

@@ -1,9 +1,16 @@
 from django.db import models
-from core.models import TimeStampedModel
+from core.models import TimeStampedModel, Organization
 
 
 class Questionnaire(TimeStampedModel):
     """Feedback questionnaire"""
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='questionnaires',
+        null=True,  # Allow null for existing records and default questionnaires
+        blank=True
+    )
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     is_default = models.BooleanField(default=False)

@@ -13,6 +13,9 @@ def index(request):
         'site_protocol': settings.SITE_PROTOCOL,
         'site_description': settings.SITE_DESCRIPTION,
         'site_keywords': settings.SITE_KEYWORDS,
+        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
+        'stripe_price_id_saas': settings.STRIPE_PRICE_ID_SAAS,
+        'stripe_price_id_enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
     }
     return render(request, 'landing/index.html', context)
 

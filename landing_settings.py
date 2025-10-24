@@ -81,6 +81,10 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
+# Trust proxy headers (Cloudflare/Traefik)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 # SEO settings
 SITE_NAME = 'Blik360'
 SITE_DOMAIN = env('SITE_DOMAIN', default='blik360.com')

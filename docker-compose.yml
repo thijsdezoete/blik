@@ -4,6 +4,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
+      # PostgreSQL expects POSTGRES_* variables
       - POSTGRES_DB=${DATABASE_NAME:-blik}
       - POSTGRES_USER=${DATABASE_USER:-blik}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:-changeme}

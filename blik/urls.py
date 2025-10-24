@@ -5,11 +5,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views, admin_views
+from . import views, admin_views, seo_views
 
 urlpatterns = [
     path('', views.home, name='home'),
     path('health/', views.health_check, name='health_check'),
+    path('sitemap.xml', seo_views.sitemap, name='sitemap'),
+    path('robots.txt', seo_views.robots, name='robots'),
     path('admin/', admin.site.urls),
 
     # Admin dashboard
@@ -36,6 +38,7 @@ urlpatterns = [
     path('setup/', include('core.urls')),
     path('', include('reviews.urls')),
     path('', include('reports.urls')),
+    path('landing/', include('landing.urls')),
 ]
 
 # Serve media files in development

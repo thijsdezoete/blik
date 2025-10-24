@@ -1,0 +1,412 @@
+/* Landing Page Specific Styles */
+
+/* Override feedback form section hiding */
+.landing-page .section {
+    display: block !important;
+}
+
+/* Header */
+.landing-page .header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.landing-page .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.landing-page .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.landing-page .nav {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.landing-page .nav a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.landing-page .nav a:hover {
+    color: var(--primary);
+}
+
+/* Hero */
+.landing-page .hero {
+    background: var(--gradient-purple);
+    color: white;
+    padding: 6rem 0;
+    text-align: center;
+}
+
+.landing-page .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.landing-page .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.landing-page .hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.landing-page .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Sections */
+.landing-page .section {
+    padding: 5rem 0;
+}
+
+.landing-page .section-alt {
+    background: white;
+}
+
+.landing-page .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: var(--text-primary);
+}
+
+/* Features Grid */
+.landing-page .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.landing-page .feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.landing-page .section-alt .feature-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.landing-page .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.landing-page .feature-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.landing-page .feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Use Cases Grid */
+.landing-page .use-cases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.landing-page .use-case-card {
+    background: var(--bg-light);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.landing-page .use-case-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.landing-page .use-case-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Pricing Grid */
+.landing-page .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.landing-page .pricing-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--border);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.landing-page .pricing-featured {
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.15);
+}
+
+.landing-page .featured-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.landing-page .pricing-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.landing-page .price {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1;
+}
+
+.landing-page .price-desc {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.landing-page .pricing-features {
+    list-style: none;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+}
+
+.landing-page .pricing-features li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.landing-page .pricing-features li:last-child {
+    border-bottom: none;
+}
+
+.landing-page .pricing-features li:before {
+    content: "✓";
+    color: var(--success);
+    font-weight: 700;
+    margin-right: 0.5rem;
+}
+
+/* FAQ Grid */
+.landing-page .faq-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
+}
+
+.landing-page .faq-item {
+    background: white;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+}
+
+.landing-page .section-alt .faq-item {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.landing-page .faq-item summary {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 1.5rem;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.landing-page .faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.landing-page .faq-item summary::after {
+    content: '+';
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--primary);
+    transition: transform 0.2s;
+}
+
+.landing-page .faq-item[open] summary::after {
+    content: '−';
+    transform: rotate(0deg);
+}
+
+.landing-page .faq-item summary:hover {
+    background: var(--bg-light);
+}
+
+.landing-page .faq-item p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    margin: 0;
+}
+
+/* CTA Section */
+.landing-page .cta-section {
+    background: var(--gradient-purple);
+    color: white;
+}
+
+.landing-page .cta-content {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.landing-page .cta-content h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.landing-page .cta-content p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.landing-page .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Footer */
+.landing-page .footer {
+    background: var(--text-primary);
+    color: white;
+    padding: 3rem 0 1.5rem;
+}
+
+.landing-page .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.landing-page .footer-section h4 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.landing-page .footer-section p {
+    color: var(--text-tertiary);
+}
+
+.landing-page .footer-section ul {
+    list-style: none;
+}
+
+.landing-page .footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.landing-page .footer-section a {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.landing-page .footer-section a:hover {
+    color: white;
+}
+
+.landing-page .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1.5rem;
+    text-align: center;
+    color: var(--text-tertiary);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .landing-page .nav {
+        display: none;
+    }
+
+    .landing-page .hero-title {
+        font-size: 2rem;
+    }
+
+    .landing-page .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .landing-page .section-title {
+        font-size: 2rem;
+    }
+
+    .landing-page .hero {
+        padding: 4rem 0;
+    }
+
+    .landing-page .section {
+        padding: 3rem 0;
+    }
+
+    .landing-page .features-grid,
+    .landing-page .use-cases-grid,
+    .landing-page .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+}

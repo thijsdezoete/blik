@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'reviews',
     'reports',
     'notifications',
+    'landing',
 ]
 
 MIDDLEWARE = [
@@ -159,3 +160,10 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Organization settings
 ORGANIZATION_NAME = env('ORGANIZATION_NAME', default='Blik')
+
+# SEO settings
+SITE_NAME = 'Blik360'
+SITE_DOMAIN = env('SITE_DOMAIN', default='blik360.com')
+SITE_PROTOCOL = env('SITE_PROTOCOL', default='https')
+SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
+SITE_KEYWORDS = '360 feedback, performance review, peer review, employee feedback, open source, self-hosted'

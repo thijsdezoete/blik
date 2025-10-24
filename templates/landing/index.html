@@ -1,0 +1,452 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} - Open Source 360-Degree Feedback Platform</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{{ site_description }}">
+    <meta name="keywords" content="{{ site_keywords }}">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/">
+    <meta property="og:title" content="{{ site_name }} - Open Source 360-Degree Feedback Platform">
+    <meta property="og:description" content="{{ site_description }}">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/">
+    <meta name="twitter:title" content="{{ site_name }} - Open Source 360-Degree Feedback Platform">
+    <meta name="twitter:description" content="{{ site_description }}">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "{{ site_name }}",
+        "description": "{{ site_description }}",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Any (Web-based)",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5.0",
+            "ratingCount": "1"
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "{{ site_name }}",
+        "url": "{{ site_protocol }}://{{ site_domain }}",
+        "description": "{{ site_description }}",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Support",
+            "availableLanguage": ["English"]
+        }
+    }
+    </script>
+</head>
+<body class="landing-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">{{ site_name }}</h1>
+                <nav class="nav">
+                    <a href="#features">Features</a>
+                    <a href="#use-cases">Use Cases</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Open Source 360-Degree Feedback Platform</h1>
+                <p class="hero-subtitle">Self-hosted, anonymous, and secure performance reviews. Deploy in minutes, own your data forever.</p>
+                <div class="hero-cta">
+                    <a href="#pricing" class="btn btn-primary">Get Started</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Blik</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>True Anonymity</h3>
+                    <p>Anonymous token-based system ensures reviewer identities are never stored or tracked. Complete privacy guaranteed.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Self-Hosted</h3>
+                    <p>Deploy on your infrastructure. Full data ownership and control. No third-party access to sensitive feedback.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Open Source</h3>
+                    <p>MIT licensed. Review the code, customize to your needs, contribute improvements back to the community.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Easy Deployment</h3>
+                    <p>Single Docker Compose command to launch. Web-based setup wizard. No complex configuration required.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Customizable Questionnaires</h3>
+                    <p>Pre-configured 360 templates included. Create custom questionnaires with rating scales, multiple choice, and text responses.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Rich Reporting</h3>
+                    <p>Aggregated insights by reviewer category. Visual charts. Automatic anonymity threshold protection.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>EU Data Residency</h3>
+                    <p>Host in EU regions for GDPR compliance. Complete control over data location and retention.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>No Vendor Lock-in</h3>
+                    <p>PostgreSQL database. Standard Django framework. Export and migrate data anytime without restrictions.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Professional UI</h3>
+                    <p>Clean, accessible interface. Mobile-responsive design. Built with modern web standards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="use-cases" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Use Cases</h2>
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <h3>Startups and SMEs</h3>
+                    <p>Cost-effective performance review solution without SaaS subscriptions. Self-host on existing infrastructure for zero ongoing costs.</p>
+                </div>
+                <div class="use-case-card">
+                    <h3>Remote Teams</h3>
+                    <p>Facilitate structured feedback across distributed teams. Anonymous reviews encourage honest, constructive input.</p>
+                </div>
+                <div class="use-case-card">
+                    <h3>Regulated Industries</h3>
+                    <p>Healthcare, finance, government sectors requiring on-premise data storage. Full audit trail and compliance controls.</p>
+                </div>
+                <div class="use-case-card">
+                    <h3>Educational Institutions</h3>
+                    <p>Faculty peer reviews and student feedback collection. Academic settings with strict data privacy requirements.</p>
+                </div>
+                <div class="use-case-card">
+                    <h3>Non-Profits</h3>
+                    <p>Budget-conscious organizations needing professional feedback tools. Open source means no licensing fees ever.</p>
+                </div>
+                <div class="use-case-card">
+                    <h3>Consulting Firms</h3>
+                    <p>Deploy for multiple clients on isolated instances. White-label capability for professional services.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section">
+        <div class="container">
+            <h2 class="section-title">Pricing</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Self-Hosted</h3>
+                    <div class="price">Free</div>
+                    <p class="price-desc">Forever</p>
+                    <ul class="pricing-features">
+                        <li>Unlimited users</li>
+                        <li>Unlimited review cycles</li>
+                        <li>All features included</li>
+                        <li>MIT license</li>
+                        <li>Community support</li>
+                        <li>Host anywhere</li>
+                    </ul>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Download</a>
+                </div>
+                <div class="pricing-card pricing-featured">
+                    <div class="featured-badge">Managed Service</div>
+                    <h3>EU Hosted SaaS</h3>
+                    <div class="price">€99</div>
+                    <p class="price-desc">per month</p>
+                    <ul class="pricing-features">
+                        <li>Hosted in EU (GDPR compliant)</li>
+                        <li>Up to 100 employees</li>
+                        <li>Automatic updates</li>
+                        <li>Daily backups</li>
+                        <li>99.9% uptime SLA</li>
+                        <li>Email support</li>
+                        <li>Custom domain</li>
+                        <li>SSL included</li>
+                    </ul>
+                    <a href="mailto:info@blik360.com?subject=SaaS Inquiry" class="btn btn-primary">Contact Sales</a>
+                </div>
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">Custom</div>
+                    <p class="price-desc">Contact us</p>
+                    <ul class="pricing-features">
+                        <li>Dedicated instance</li>
+                        <li>Unlimited employees</li>
+                        <li>SSO integration</li>
+                        <li>Priority support</li>
+                        <li>Custom development</li>
+                        <li>SLA guarantees</li>
+                        <li>Training sessions</li>
+                        <li>Data migration assistance</li>
+                    </ul>
+                    <a href="mailto:info@blik360.com?subject=Enterprise Inquiry" class="btn btn-secondary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>What is 360-degree feedback?</summary>
+                    <p>360-degree feedback is a performance review method where employees receive anonymous feedback from multiple sources including peers, managers, direct reports, and self-assessment. This multi-perspective approach provides comprehensive insights into performance and behavior.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How does Blik ensure reviewer anonymity?</summary>
+                    <p>Blik uses cryptographically secure UUID-based tokens. Reviewer identities are never stored in the database. The system cannot link responses to specific individuals, ensuring true anonymity. Even administrators cannot trace feedback to reviewers.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What are the system requirements for self-hosting?</summary>
+                    <p>Blik requires Docker and Docker Compose. Minimum recommended: 2GB RAM, 2 CPU cores, 10GB storage. Runs on Linux, macOS, or Windows with Docker Desktop. PostgreSQL 15 database included in Docker setup.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I customize the questionnaires?</summary>
+                    <p>Yes. Blik includes default 360 templates and supports creating custom questionnaires. Question types include Likert scales, multiple choice, and free text. Organize questions into sections and mark as required or optional.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is Blik GDPR compliant?</summary>
+                    <p>Self-hosted Blik gives you full control over data residency and processing, enabling GDPR compliance. Host in EU regions, implement data retention policies, and exercise right to deletion. Our EU SaaS offering is hosted in GDPR-compliant data centers.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How is Blik different from commercial 360 tools?</summary>
+                    <p>Blik is open source and self-hosted. No per-user fees, no data lock-in, no third-party access to sensitive feedback. You own your data completely. Customize the codebase to your exact requirements without vendor restrictions.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What email providers are supported?</summary>
+                    <p>Blik supports any SMTP email service including Gmail, Office 365, SendGrid, Amazon SES, Mailgun, and custom SMTP servers. Configure during initial setup wizard or update later in settings.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can reviewers save progress and return later?</summary>
+                    <p>Yes. Reviewers can partially complete forms and return using the same token link. Progress is automatically saved. Once submitted, tokens are locked to prevent duplicate responses.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens if there are too few responses?</summary>
+                    <p>Blik enforces minimum response thresholds (default: 3 per category) to protect anonymity. If thresholds are not met, category results show "Insufficient responses" instead of data that could identify individuals. Self-assessments always display separately.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How are reports generated and shared?</summary>
+                    <p>Administrators manually trigger report generation after closing a review cycle. Reports aggregate responses by category with charts and visualizations. Reviewees access reports via secure token links sent by email.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I migrate from another 360 tool to Blik?</summary>
+                    <p>Yes. Blik uses standard PostgreSQL database. Import historical data via Django management commands or database tools. Enterprise customers receive migration assistance. Contact us for migration planning support.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is there a mobile app?</summary>
+                    <p>Blik is mobile-responsive and works in any browser. No separate app installation required. Reviewers and reviewees access everything via mobile web browsers with optimized layouts.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What license is Blik released under?</summary>
+                    <p>MIT License. Use commercially, modify, distribute, and sublicense freely. No copyleft restrictions. Ideal for businesses wanting to customize or white-label the solution.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I get support for self-hosted installations?</summary>
+                    <p>Community support via GitHub issues and discussions. Documentation includes deployment guides and troubleshooting. Enterprise customers receive priority email and video call support with SLA guarantees.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I white-label Blik for clients?</summary>
+                    <p>Yes. MIT license permits white-labeling. Customize branding, domain, email templates, and UI. Consulting firms can deploy isolated instances per client with custom branding for each.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What databases are supported?</summary>
+                    <p>PostgreSQL 15+ is the primary supported database. Docker Compose setup includes PostgreSQL automatically. Other Django-compatible databases may work but are not officially tested or supported.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How often is Blik updated?</summary>
+                    <p>Regular updates with bug fixes, security patches, and feature additions. Release notes published on GitHub. Self-hosted users control update timing. SaaS customers receive automatic updates with zero downtime.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I run multiple review cycles simultaneously?</summary>
+                    <p>Yes. Create unlimited concurrent review cycles for different reviewees. Each cycle is independent with its own questionnaire, reviewers, and timeline. No restrictions on active cycles.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What analytics and insights does Blik provide?</summary>
+                    <p>Reports include aggregated scores by competency area, category breakdowns (peer/manager/direct report), self vs others comparisons, distribution charts, strength and development area identification, and anonymous text comment grouping.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is there an API for integrations?</summary>
+                    <p>Not in the current version. Blik focuses on web interface usability for MVP. API access is on the roadmap for future releases. Contribute API development via GitHub pull requests if needed sooner.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to transform your feedback process?</h2>
+                <p>Deploy Blik in minutes and start collecting meaningful 360-degree feedback.</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Get Started Free</a>
+                    <a href="mailto:info@blik360.com" class="btn btn-secondary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>{{ site_name }}</h4>
+                    <p>Open source 360-degree feedback platform</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">Documentation</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="mailto:info@blik360.com">Contact</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a></li>
+                        <li><a href="https://github.com/thijsdezoete/blik/issues" target="_blank" rel="noopener">Issues</a></li>
+                        <li><a href="https://github.com/thijsdezoete/blik/discussions" target="_blank" rel="noopener">Discussions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 {{ site_name }}. Released under MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FAQ Schema JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is 360-degree feedback?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "360-degree feedback is a performance review method where employees receive anonymous feedback from multiple sources including peers, managers, direct reports, and self-assessment. This multi-perspective approach provides comprehensive insights into performance and behavior."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How does Blik ensure reviewer anonymity?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik uses cryptographically secure UUID-based tokens. Reviewer identities are never stored in the database. The system cannot link responses to specific individuals, ensuring true anonymity. Even administrators cannot trace feedback to reviewers."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What are the system requirements for self-hosting?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik requires Docker and Docker Compose. Minimum recommended: 2GB RAM, 2 CPU cores, 10GB storage. Runs on Linux, macOS, or Windows with Docker Desktop. PostgreSQL 15 database included in Docker setup."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is Blik GDPR compliant?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Self-hosted Blik gives you full control over data residency and processing, enabling GDPR compliance. Host in EU regions, implement data retention policies, and exercise right to deletion. Our EU SaaS offering is hosted in GDPR-compliant data centers."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How is Blik different from commercial 360 tools?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik is open source and self-hosted. No per-user fees, no data lock-in, no third-party access to sensitive feedback. You own your data completely. Customize the codebase to your exact requirements without vendor restrictions."
+                }
+            }
+        ]
+    }
+    </script>
+</body>
+</html>

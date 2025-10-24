@@ -88,7 +88,7 @@ USE_X_FORWARDED_HOST = True
 # SEO settings
 SITE_NAME = 'Blik360'
 SITE_DOMAIN = env('SITE_DOMAIN', default='blik360.com')
-SITE_PROTOCOL = env('SITE_PROTOCOL', default='https')
+SITE_PROTOCOL = env('SITE_PROTOCOL', default='http')
 SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
 SITE_KEYWORDS = '360 feedback, performance review, open source, self-hosted, anonymous feedback, employee feedback'
 

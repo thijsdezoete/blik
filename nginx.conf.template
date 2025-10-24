@@ -23,6 +23,7 @@ http {
     keepalive_timeout 65;
     types_hash_max_size 2048;
     client_max_body_size 20M;
+    underscores_in_headers on;
 
     gzip on;
     gzip_vary on;
@@ -35,7 +36,7 @@ http {
     }
 
     server {
-        listen ${NGINX_PORT};
+        listen ${NGINX_PORT} default_server;
         server_name _;
 
         # Security headers

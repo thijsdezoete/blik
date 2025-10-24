@@ -1,0 +1,416 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreyfus Model for Software Engineers | Blik</title>
+    <meta name="description" content="How Blik uses the Dreyfus Model of skill acquisition for developer performance reviews. Research-based competency framework from Novice to Expert, integrated with the Sunday Test for engineering culture.">
+    <meta name="keywords" content="Dreyfus model software engineering, developer skill levels, engineering competency framework, Sunday Test, 360 feedback developers, technical career ladder, skill acquisition model">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/dreyfus-model/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/dreyfus-model/">
+    <meta property="og:title" content="Dreyfus Model for Software Engineers">
+    <meta property="og:description" content="Research-based competency framework for developer performance reviews. From Novice to Expert.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/dreyfus-model/">
+    <meta name="twitter:title" content="Dreyfus Model for Software Engineers">
+    <meta name="twitter:description" content="Research-based competency framework for developer performance reviews. From Novice to Expert.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Dreyfus Model for Software Engineers",
+      "description": "How Blik uses the Dreyfus Model of skill acquisition for developer performance reviews",
+      "author": {
+        "@type": "Organization",
+        "name": "{{ site_name }}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ site_name }}"
+      },
+      "datePublished": "2025-01-01",
+      "dateModified": "2025-01-01"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "{{ site_name }}",
+        "url": "{{ site_protocol }}://{{ site_domain }}",
+        "description": "Open source 360-degree feedback platform",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Support",
+            "availableLanguage": ["English"]
+        }
+    }
+    </script>
+</head>
+<body class="landing-page">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">Blik</h1>
+                <nav class="nav">
+                    <a href="/landing/">Home</a>
+                    <a href="/landing/open-source/">Open Source</a>
+                    <a href="#dreyfus">Dreyfus Model</a>
+                    <a href="#sunday-test">Sunday Test</a>
+                    <a href="#framework">Framework</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Competency Frameworks That Engineers Actually Respect</h1>
+                <p class="hero-subtitle">Research-based skill models. No corporate jargon. No arbitrary matrices. Just practical frameworks for measuring technical growth.</p>
+                <div class="hero-cta">
+                    <a href="#dreyfus" class="btn btn-primary">Learn the Model</a>
+                    <a href="/landing/open-source/" class="btn btn-secondary">See the Code</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="dreyfus" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Dreyfus Model of Skill Acquisition</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Five stages backed by cognitive science research, not HR buzzwords</p>
+
+            <div class="feature-card" style="margin-bottom: 3rem; background: #f0fdf4; border-left: 4px solid #16a34a;">
+                <h3 style="color: #16a34a;">Why Dreyfus for Developers?</h3>
+                <p style="margin-bottom: 1rem;">The Dreyfus model was developed by brothers Stuart and Hubert Dreyfus at UC Berkeley in the 1980s through research on how people acquire skills. Unlike arbitrary corporate competency matrices, Dreyfus describes actual cognitive patterns in skill development.</p>
+                <p>Engineers recognize themselves in these stages. The model maps naturally to technical career ladders: Junior → Mid-Level → Senior → Staff → Principal. It acknowledges that experts think differently than beginners, not just "better."</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>1. Novice</h3>
+                    <p><strong>Characteristics:</strong> Follows rules rigidly. Needs step-by-step instructions. Cannot handle deviations from procedure.</p>
+                    <p style="margin-top: 1rem;"><strong>Engineering Example:</strong> Writes code strictly from tickets. Struggles when requirements are ambiguous. Needs detailed technical specifications to proceed.</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);"><strong>Career Level:</strong> Intern, Junior Developer</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>2. Advanced Beginner</h3>
+                    <p><strong>Characteristics:</strong> Starts recognizing recurring patterns. Can handle some situational judgment. Still relies heavily on guidelines.</p>
+                    <p style="margin-top: 1rem;"><strong>Engineering Example:</strong> Recognizes common code patterns. Can debug familiar problems. Applies learned solutions to similar situations but struggles with novel challenges.</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);"><strong>Career Level:</strong> Junior to Mid-Level Developer</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>3. Competent</h3>
+                    <p><strong>Characteristics:</strong> Develops mental models of problem domains. Can prioritize and plan. Takes responsibility for outcomes.</p>
+                    <p style="margin-top: 1rem;"><strong>Engineering Example:</strong> Designs features independently. Makes architectural decisions for bounded contexts. Troubleshoots complex issues. Considers trade-offs.</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);"><strong>Career Level:</strong> Mid-Level to Senior Developer</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>4. Proficient</h3>
+                    <p><strong>Characteristics:</strong> Sees situations holistically. Recognizes when rules don't apply. Learns from experience of others. Intuition guides decisions.</p>
+                    <p style="margin-top: 1rem;"><strong>Engineering Example:</strong> Anticipates problems before they occur. Knows when to break conventions. Mentors effectively. Sees system-level implications of local changes.</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);"><strong>Career Level:</strong> Senior to Staff Engineer</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>5. Expert</h3>
+                    <p><strong>Characteristics:</strong> Operates on intuition developed from extensive experience. Creates new approaches. Transcends reliance on rules and guidelines.</p>
+                    <p style="margin-top: 1rem;"><strong>Engineering Example:</strong> Designs novel architectures. Identifies elegant solutions to complex problems. Influences industry practices. Deep expertise allows rapid diagnosis of subtle issues.</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);"><strong>Career Level:</strong> Staff, Principal, Distinguished Engineer</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; background: #fef3c7; border-left: 4px solid #f59e0b;">
+                <h3 style="color: #92400e;">Critical Insight: Domain-Specific Expertise</h3>
+                <p>An engineer can be an Expert in one domain (e.g., distributed systems) while being Competent or Advanced Beginner in another (e.g., frontend frameworks). The Dreyfus model applies per skill area, not to "the whole person."</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="sunday-test" class="section">
+        <div class="container">
+            <h2 class="section-title">The Sunday Test</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Cultural fit evaluation from Stripe's engineering playbook</p>
+
+            <div class="feature-card" style="background: var(--gradient-purple); color: white; padding: 3rem; text-align: center; margin-bottom: 3rem;">
+                <h3 style="color: white; font-size: 1.5rem; margin-bottom: 1.5rem;">If this person were alone in the office on a Sunday, would that make you more likely to come in and want to work with them?</h3>
+                <p style="color: rgba(255,255,255,0.9); font-size: 1.125rem;">The question Stripe asks about every engineering hire</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <div class="feature-card">
+                    <h3>What It Measures</h3>
+                    <p>The Sunday Test evaluates cultural alignment beyond technical skills. Would this person enhance the team environment? Do they make collaboration energizing rather than draining?</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Why It Matters</h3>
+                    <p>Stripe rejects technically strong candidates who fail this test. One toxic hire damages the team's ability to attract future talent. Protecting culture is more valuable than filling headcount.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Long-Term Thinking</h3>
+                    <p>Rather than compromise on culture for immediate needs, Stripe waits for candidates who pass both technical and Sunday Test criteria. Organizational health compounds over time.</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="background: #dbeafe; border-left: 4px solid #3b82f6;">
+                <h3 style="color: #1e40af;">Blik Integration</h3>
+                <p style="color: var(--text-primary);">Our default Software Engineering questionnaire includes a "Personality" dimension inspired by the Sunday Test: evaluating teamwork, interpersonal skills, and whether colleagues genuinely want to collaborate with this person.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="framework" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Blik's Software Engineering Competency Framework</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">10 dimensions adapted from research and industry best practices</p>
+
+            <div class="feature-card" style="margin-bottom: 3rem;">
+                <h3>Framework Inspiration</h3>
+                <p style="margin-bottom: 1rem;">Our default questionnaire synthesizes insights from:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">Dreyfus Model of skill acquisition</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">Stripe's Sunday Test for cultural fit</li>
+                    <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--border);">Open-source 360-degree engineering self-review frameworks</li>
+                    <li style="padding: 0.5rem 0;">Industry-standard competency models from high-performing engineering teams</li>
+                </ul>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>1. Technical Proficiency</h3>
+                    <p><strong>What it measures:</strong> Code quality, problem-solving ability, and technical depth.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Novice creates code from well-defined requests. Expert conquers complex problems with elegant solutions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>2. Personality & Collaboration</h3>
+                    <p><strong>What it measures:</strong> Teamwork, interpersonal skills, the Sunday Test.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Would colleagues actively choose to work with this person?</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>3. Technical Breadth</h3>
+                    <p><strong>What it measures:</strong> Technology awareness, cross-platform capability, learning agility.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">From narrow specialization to broad experience across stacks and paradigms.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>4. Intrinsic Motivation</h3>
+                    <p><strong>What it measures:</strong> Genuine passion for programming beyond work requirements.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Does this person code for the love of it, or just for paychecks?</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>5. Engineering Maturity</h3>
+                    <p><strong>What it measures:</strong> Application of best practices: testing, design patterns, agile methodologies.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">From ad-hoc coding to systematic engineering discipline.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>6. Pragmatism</h3>
+                    <p><strong>What it measures:</strong> Balancing technical ideals with business realities and constraints.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Shipping practical solutions vs. pursuing theoretical perfection.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>7. Team Cooperation</h3>
+                    <p><strong>What it measures:</strong> Mentoring, code review quality, supporting team objectives.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Individual contributor vs. force multiplier for the team.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>8. Communication</h3>
+                    <p><strong>What it measures:</strong> Explaining technical concepts, justifying design decisions, documentation.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Can they make complex ideas understandable to varied audiences?</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>9. Growth Potential</h3>
+                    <p><strong>What it measures:</strong> Learning capacity, adaptability, receptiveness to feedback.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Trajectory matters as much as current state.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>10. Strategic Vision</h3>
+                    <p><strong>What it measures:</strong> Product thinking, architectural foresight, anticipating future challenges.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">Tactical execution vs. strategic thinking about system evolution.</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; background: #f0fdf4; border-left: 4px solid #16a34a;">
+                <h3 style="color: #16a34a;">Customizable for Your Context</h3>
+                <p style="color: var(--text-primary); margin-bottom: 1rem;">This is the default framework. Blik is open source—modify dimensions, adjust weighting, add domain-specific competencies. The framework serves your needs, not the other way around.</p>
+                <p style="color: var(--text-primary);">Examples: Add "Security Awareness" for fintech teams. Include "Research Ability" for ML teams. Remove dimensions that don't apply to your context.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Why This Approach Works for Engineering Teams</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Research-Based</h3>
+                    <p>Dreyfus model has 40+ years of cognitive science research. Not invented by consultants, but by academics studying actual skill acquisition.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Engineers Recognize Themselves</h3>
+                    <p>The stages map to lived experience. Developers understand where they are and what growth looks like without translation from HR jargon.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Domain-Specific Application</h3>
+                    <p>Acknowledges that someone can be Expert in databases but Novice in machine learning. Avoids oversimplified "levels."</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Culture and Skills</h3>
+                    <p>Combines technical evaluation (Dreyfus) with cultural fit (Sunday Test). Both matter for high-performing teams.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Actionable Feedback</h3>
+                    <p>Clear progression from one stage to the next. Reviewees understand what capabilities to develop for advancement.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Open and Adaptable</h3>
+                    <p>Framework is a starting point, not dogma. Fork it, customize it, improve it. Share improvements with the community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Example: Evaluating "Code Quality"</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">How Dreyfus stages apply to a specific competency</p>
+
+            <div class="feature-card" style="max-width: 900px; margin: 0 auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Code Quality Characteristics</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Novice</strong></td>
+                            <td>Code works for the happy path. Inconsistent formatting. Hard-coded values. Minimal error handling.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Advanced Beginner</strong></td>
+                            <td>Follows style guide. Extracts some magic numbers to constants. Adds basic error handling. Code is readable.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Competent</strong></td>
+                            <td>Well-structured modules. Appropriate abstractions. Comprehensive error handling. Tests cover main scenarios. Considers edge cases.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Proficient</strong></td>
+                            <td>Clear separation of concerns. Anticipates future changes. Excellent test coverage. Code is self-documenting. Patterns applied appropriately, not dogmatically.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Expert</strong></td>
+                            <td>Elegant solutions to complex problems. Code that other experts reference. Creates reusable components. Deep understanding of performance and maintainability trade-offs.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Further Reading</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="feature-card">
+                    <h3>Research Papers</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.75rem;">
+                            <a href="https://en.wikipedia.org/wiki/Dreyfus_model_of_skill_acquisition" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Dreyfus Model of Skill Acquisition - Wikipedia</a>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <a href="https://www.bumc.bu.edu/facdev-medicine/files/2012/03/Dreyfus-skill-level.pdf" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Original Dreyfus & Dreyfus paper (PDF)</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Engineering Culture</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.75rem;">
+                            <a href="https://review.firstround.com/how-stripe-built-one-of-silicon-valleys-best-engineering-teams/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">How Stripe Built One of Silicon Valley's Best Engineering Teams</a>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <span style="color: var(--text-secondary);">Includes the Sunday Test explanation</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Open Source Frameworks</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.75rem;">
+                            <a href="https://gist.github.com/bwnodak/64b1ec7f2323091ed837" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">360-Degree Software Engineering Self-Review</a>
+                        </li>
+                        <li style="margin-bottom: 0.75rem;">
+                            <span style="color: var(--text-secondary);">10-dimension competency framework (inspiration for Blik defaults)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Use These Frameworks in Your Reviews</h2>
+            <p>Deploy Blik with Dreyfus-based questionnaires included. Customize to your team's needs.</p>
+            <div class="hero-cta">
+                <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Get Blik on GitHub</a>
+                <a href="/landing/" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Blik. Open source under AGPL license.</p>
+        </div>
+    </footer>
+</body>
+</html>

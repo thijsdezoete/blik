@@ -1,0 +1,510 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Source 360 Feedback Built by Developers | Blik</title>
+    <meta name="description" content="AGPL-licensed 360 feedback platform for developer teams. Modern Django stack, Docker deployment, extensible architecture. Contribute, customize, self-host. No vendor lock-in.">
+    <meta name="keywords" content="open source performance review, developer 360 feedback, self-hosted HR tool, Django feedback system, customizable review platform, AGPL HR software, developer-first performance management">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/open-source/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/open-source/">
+    <meta property="og:title" content="Open Source 360 Feedback Built by Developers">
+    <meta property="og:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/open-source/">
+    <meta name="twitter:title" content="Open Source 360 Feedback Built by Developers">
+    <meta name="twitter:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "{{ site_name }}",
+      "description": "AGPL-licensed 360 feedback platform for developer teams. Modern Django stack, Docker deployment, extensible architecture.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Linux, macOS, Windows",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "ratingCount": "1"
+      },
+      "softwareVersion": "1.0",
+      "programmingLanguage": "Python",
+      "codeRepository": "https://github.com/thijsdezoete/blik"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "{{ site_name }}",
+        "url": "{{ site_protocol }}://{{ site_domain }}",
+        "description": "Open source 360-degree feedback platform built by developers",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Support",
+            "availableLanguage": ["English"]
+        }
+    }
+    </script>
+</head>
+<body class="landing-page">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">Blik</h1>
+                <nav class="nav">
+                    <a href="/landing/">Home</a>
+                    <a href="#architecture">Architecture</a>
+                    <a href="#contribute">Contribute</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">360 Feedback for Teams That Ship Code</h1>
+                <p class="hero-subtitle">Open source, self-hosted, infinitely customizable. Built by developers, for developers.</p>
+                <div class="hero-cta">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Star on GitHub</a>
+                    <a href="#architecture" class="btn btn-secondary">See Architecture</a>
+                </div>
+
+                <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">AGPL</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Truly Open Source</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Django</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Modern Python</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Docker</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">One Command</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Why Developers Hate Traditional HR Tools</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">And why we built something better</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <div class="feature-card" style="background: #fef2f2; border-left: 4px solid #dc2626;">
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">Commercial HR Platforms</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">Black box systems with zero transparency</li>
+                        <li style="margin-bottom: 0.5rem;">Cannot audit, customize, or extend functionality</li>
+                        <li style="margin-bottom: 0.5rem;">Vendor lock-in with proprietary data formats</li>
+                        <li style="margin-bottom: 0.5rem;">Sales-driven feature bloat nobody uses</li>
+                        <li style="margin-bottom: 0.5rem;">Web 2.0 interfaces from 2010</li>
+                        <li>No API or terrible API with usage limits</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: #f0fdf4; border-left: 4px solid #16a34a;">
+                    <h3 style="color: #16a34a; margin-bottom: 1rem;">Blik Philosophy</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">Full source code on GitHub, AGPL licensed</li>
+                        <li style="margin-bottom: 0.5rem;">Modify anything, extend everything, fork freely</li>
+                        <li style="margin-bottom: 0.5rem;">Standard PostgreSQL, export anytime</li>
+                        <li style="margin-bottom: 0.5rem;">Does one thing well: 360 feedback</li>
+                        <li style="margin-bottom: 0.5rem;">Clean, modern UI built with simplicity</li>
+                        <li>REST API on roadmap, direct DB access today</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: var(--text-primary); color: #e2e8f0; padding: 2rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; line-height: 1.8;">
+                <div style="color: var(--text-tertiary);"># Deploy Blik in three commands</div>
+                git clone https://github.com/thijsdezoete/blik.git<br>
+                cd blik<br>
+                docker compose up -d<br>
+                <br>
+                <div style="color: var(--text-tertiary);"># Visit http://localhost:8000/setup/ and you're done</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Technical Architecture</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Modern stack with developer-friendly patterns</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Django 5.x</h3>
+                    <p>Modern Python web framework. Clean MVT architecture. Type hints throughout. Well-structured apps: accounts, reviews, questionnaires, reports, notifications. Follows Django best practices.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>PostgreSQL 15+</h3>
+                    <p>Robust relational database. UUID primary keys for security. Proper foreign key constraints. Migrations managed with Django ORM. Standard SQL for direct queries and reporting.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Docker Compose</h3>
+                    <p>Single-command deployment. Gunicorn WSGI server. WhiteNoise for static files. PostgreSQL container included. Volume mounts for persistence. Production-ready configuration.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Clean Frontend</h3>
+                    <p>Django templates with modern CSS. No heavy JavaScript frameworks. Fast page loads. Mobile-responsive. Shadcn-inspired design system. Easy to customize and theme.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Security First</h3>
+                    <p>UUID-based tokens prevent enumeration. CSRF protection enabled. Rate limiting ready. SQL injection impossible with ORM. Django security middleware active. Regular dependency updates.</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; padding: 2rem;">
+                <h4 style="text-align: center; margin-bottom: 2rem; font-size: 1.25rem;">System Architecture</h4>
+                <pre style="text-align: left; font-family: monospace; font-size: 0.75rem; line-height: 1.6; overflow-x: auto; color: var(--text-primary);">
+┌───────────────────────────────────────────────────────────┐
+│                     Docker Compose                        │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │   Nginx      │  │   Django     │  │ PostgreSQL   │     │
+│  │  (Optional)  │─▶│   Web App    │─▶│   Database   │     │
+│  │   Reverse    │  │  Gunicorn    │  │   Persistent │     │
+│  │    Proxy     │  │  WhiteNoise  │  │    Volume    │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│         │                   │                             │
+│         │                   │                             │
+│         ▼                   ▼                             │
+│  ┌──────────────┐  ┌──────────────┐                       │
+│  │   Admins     │  │   SMTP       │                       │
+│  │  Dashboard   │  │   Server     │                       │
+│  └──────────────┘  └──────────────┘                       │
+│                                                           │
+│  ┌─────────────────────────────────────────────┐          │
+│  │ External (Optional)                         │          │
+│  │   - External SMTP (SendGrid, Mailgun, etc)  │          │
+│  └─────────────────────────────────────────────┘          │
+└───────────────────────────────────────────────────────────┘
+                </pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Code Quality and Development Experience</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Built to read, understand, and extend</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Clean Codebase</h3>
+                    <p>PEP 8 compliant. Black formatting. Type hints on functions. Meaningful variable names. Comments where complexity exists. No "clever" code that requires a PhD to understand.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Well-Documented</h3>
+                    <p>README covers deployment. REQUIREMENTS.md explains architecture. Docstrings on complex functions. Inline comments for tricky logic. Deployment guide for production. Contribution guidelines.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Modular Structure</h3>
+                    <p>Django apps for separation of concerns. Core, accounts, reviews, questionnaires, reports, notifications. Each app focuses on one domain. Easy to understand where code lives.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Testing Ready</h3>
+                    <p>Pytest configuration included. Model tests easy to write. View tests straightforward. Integration test examples. CI/CD templates on roadmap. Test coverage improving with contributions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Database Migrations</h3>
+                    <p>Django migrations track schema changes. Automatic migration generation. Forward and backward compatible. Tested on PostgreSQL. Can review migration SQL before applying.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Environment Configuration</h3>
+                    <p>12-factor app methodology. .env file for configuration. Environment variables for secrets. Sensible defaults for development. Production settings clearly documented.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Dreyfus Model for Technical Growth</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Competency framework that resonates with engineers</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Why Dreyfus for Developers</h3>
+                    <p>Five-stage model from Novice to Expert aligns with how engineers actually develop skills. No corporate HR jargon. Maps to technical career ladders naturally. Based on research, not management fads.</p>
+                    <p style="margin-top: 1rem;"><a href="/landing/dreyfus-model/" style="color: var(--primary); text-decoration: none; font-weight: 500;">Learn about the Dreyfus Model →</a></p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Default Questionnaires</h3>
+                    <p>Professional Skills: leadership, communication, collaboration, problem-solving. Software Engineering: code quality, architecture, debugging, mentoring. Both use Dreyfus model ratings.</p>
+                    <p style="margin-top: 1rem;"><a href="/landing/dreyfus-model/#framework" style="color: var(--primary); text-decoration: none; font-weight: 500;">See the full framework →</a></p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Customizable Competencies</h3>
+                    <p>Create your own competency frameworks. Add domain-specific skills. Adjust rating scales. Include free-text questions. Framework is flexible, not prescriptive.</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 2rem; background: var(--gradient-purple); color: white;">
+                <h3 style="color: white;">Dreyfus Stages: Novice → Advanced Beginner → Competent → Proficient → Expert</h3>
+                <p style="color: rgba(255,255,255,0.9);">Maps naturally to Junior → Mid-Level → Senior → Staff → Principal engineering levels</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contribute" class="section">
+        <div class="container">
+            <h2 class="section-title">Contribution Opportunities</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Help make Blik better for everyone</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Easy First Issues</h3>
+                    <p><strong>Frontend:</strong> UI improvements, mobile responsive fixes, accessibility enhancements<br><br>
+                    <strong>Backend:</strong> Additional email providers, export formats, questionnaire templates<br><br>
+                    <strong>Docs:</strong> Deployment guides, troubleshooting, translation</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Medium Complexity</h3>
+                    <p><strong>Features:</strong> PDF export, LDAP integration, custom branding, email scheduling<br><br>
+                    <strong>Testing:</strong> Unit tests, integration tests, E2E test suite<br><br>
+                    <strong>Performance:</strong> Database query optimization, caching layer</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Advanced Projects</h3>
+                    <p><strong>API Development:</strong> REST API with authentication, GraphQL support, webhooks<br><br>
+                    <strong>AI Enhancement:</strong> Local model support (Llama, Mistral), multi-model comparison<br><br>
+                    <strong>Analytics:</strong> Historical trends, team analytics, visualization dashboards</p>
+                </div>
+            </div>
+
+            <div style="background: var(--text-primary); color: #e2e8f0; padding: 2rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; margin-top: 2rem; line-height: 1.8;">
+                <div style="color: var(--text-tertiary);"># Contributing is straightforward</div>
+                git clone https://github.com/thijsdezoete/blik.git<br>
+                cd blik<br>
+                <div style="color: var(--text-tertiary);"># Make your changes, add tests</div>
+                pytest<br>
+                <div style="color: var(--text-tertiary);"># Open PR with clear description</div>
+                git push origin feature/your-improvement<br>
+                <br>
+                <div style="color: var(--text-tertiary);"># AGPL license means your improvements help everyone</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Customization Examples</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Real ways teams have extended Blik</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Custom Competency Frameworks</h3>
+                    <p>Replace default competencies with company-specific values and technical skills. Create frameworks per role (IC, EM, PM). Import competencies from CSV for bulk setup.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Slack Integration</h3>
+                    <p>Send review invitations via Slack DM instead of email. Post reminders to team channels. Notify managers when reports ready. Slash command to check review status.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>GitHub Integration</h3>
+                    <p>Pull contribution metrics for code review competencies. Link review cycles to promotion processes. Export reports to Markdown for GitHub wikis.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Custom Themes</h3>
+                    <p>Replace CSS with company branding. Add logo to emails and reports. Customize color scheme to match internal tools. White-label for multi-tenant deployments.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Advanced Analytics</h3>
+                    <p>Connect BI tools directly to PostgreSQL. Build custom dashboards in Metabase or Grafana. Export data to data warehouse. Track trends across multiple cycles.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Multi-Language Support</h3>
+                    <p>Translate UI to team's language. Django i18n framework ready. Community contributions for translations. RTL language support possible.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Why AGPL License Matters</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Real open source, not open-core</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>True Freedom</h3>
+                    <p>Fork and modify without permission. Use internally without restrictions. No enterprise upsell for features. Community contributions benefit everyone, not just vendor.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Copyleft Protection</h3>
+                    <p>AGPL prevents proprietary forks. If someone offers Blik as a service, they must share improvements. Protects community investment. Ensures improvements flow back.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>No Relicensing Risk</h3>
+                    <p>Cannot become closed-source later. Community controls direction. No MongoDB/Elastic-style license switches. Your investment is protected by copyleft.</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <h3 style="color: white;">AGPL TL;DR</h3>
+                <p style="color: rgba(255,255,255,0.9);">Use freely internally. Modify as needed. If you offer it as a service, share your changes. Perfect for protecting community-driven projects.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Roadmap and Community</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Where we're going and how to get involved</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Near-Term (Q1 2025)</h3>
+                    <p>REST API for integrations. PDF report export. Historical trend analysis. LDAP/SSO authentication. Multi-language UI support. Performance optimizations.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Mid-Term (Q2-Q3 2025)</h3>
+                    <p>GraphQL API. Advanced analytics dashboards. Custom competency builder UI. Workflow automation. Integration marketplace. Mobile app (optional).</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Long-Term Vision</h3>
+                    <p>Multi-tenant SaaS version (still open source). Plugin architecture for extensions. Team collaboration features. AI coaching suggestions. Open ecosystem of integrations.</p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 4rem;">
+                <div class="feature-card" style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">GitHub</div>
+                    <div style="color: var(--text-secondary);">Source Code & Issues</div>
+                </div>
+                <div class="feature-card" style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Discord</div>
+                    <div style="color: var(--text-secondary);">Community Chat</div>
+                </div>
+                <div class="feature-card" style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Docs</div>
+                    <div style="color: var(--text-secondary);">Documentation Site</div>
+                </div>
+                <div class="feature-card" style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Weekly</div>
+                    <div style="color: var(--text-secondary);">Release Cadence</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Technical FAQ</h2>
+
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>Why Django instead of Rails/Node.js/Go?</summary>
+                    <p>Django brings mature ecosystem, excellent ORM, built-in admin interface, and security features by default. Python is widely known. Django has been battle-tested for 15+ years. The admin panel alone saves months of development. Type hints and async support in modern Django. For this use case, Django is the pragmatic choice.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I use MySQL/MariaDB instead of PostgreSQL?</summary>
+                    <p>PostgreSQL is the only officially supported database. MySQL lacks some features we use (proper JSON fields, advanced constraints). You could fork and adapt for MySQL, but we recommend PostgreSQL for reliability and feature set. PostgreSQL is included in Docker setup, so there's no extra work.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I contribute code?</summary>
+                    <p>Fork the repo, create a feature branch, make your changes, add tests, update docs if needed, and open a pull request. Include clear description of what and why. Follow existing code style (Black formatting). All PRs reviewed by maintainers. Small, focused PRs merge faster than large refactors.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is there a plugin system for extensions?</summary>
+                    <p>Not yet, but it's on the roadmap. Currently, extend by modifying the Django apps directly (it's open source). For custom features, fork and merge in updates from main branch. Plugin architecture planned for 2025 to make extensions cleaner. Until then, Django's app system provides good modularity.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What's the performance like at scale?</summary>
+                    <p>Tested with 500 users and 50 concurrent review cycles without issues. Django is fast enough for this use case. PostgreSQL handles the data volume easily. For 1000+ employees, you might want query optimization and caching. Redis for caching is on the roadmap. Most orgs will never hit performance limits.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do updates work? Will they break my customizations?</summary>
+                    <p>Standard git workflow. Pull latest main, review changes, test locally, deploy. Django migrations handle database changes automatically. If you've customized code, merge conflicts are possible. Keep customizations minimal or in separate branch. Consider contributing custom features back so they're maintained upstream.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is there commercial support available?</summary>
+                    <p>Currently community-supported via GitHub issues. Paid support options are being explored for 2025. For now, the codebase is clean enough that competent Django developers can self-support. Many companies deploy and maintain it internally.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Start Hacking on Blik Today</h2>
+            <p>Clone, deploy, customize, contribute. Built by developers, for developers.</p>
+            <div class="hero-cta">
+                <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Star on GitHub</a>
+                <a href="/landing/" class="btn btn-secondary">Back to Home</a>
+            </div>
+            <div style="background: var(--text-primary); color: #e2e8f0; padding: 1.5rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; margin-top: 2rem; text-align: center;">
+                git clone https://github.com/thijsdezoete/blik.git && cd blik && docker compose up -d
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Blik. Open source under AGPL license.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,477 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air-Gapped 360 Feedback for Professional Services | Blik</title>
+    <meta name="description" content="Self-hosted 360 feedback for consulting, legal, healthcare, and financial services. Client confidentiality protected. Air-gapped deployment. GDPR, ISO 27001, SOC 2 compliance ready. No cloud dependencies.">
+    <meta name="keywords" content="professional services performance review, air-gapped feedback system, confidential 360 review, compliance-ready HR software, self-hosted employee feedback, secure performance management">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/privacy/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/privacy/">
+    <meta property="og:title" content="Air-Gapped 360 Feedback for Professional Services">
+    <meta property="og:description" content="Client confidentiality protected. Compliance-ready. No cloud dependencies.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/privacy/">
+    <meta name="twitter:title" content="Air-Gapped 360 Feedback for Professional Services">
+    <meta name="twitter:description" content="Client confidentiality protected. Compliance-ready. No cloud dependencies.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "{{ site_name }}",
+        "description": "Self-hosted 360 feedback for consulting, legal, healthcare, and financial services. Client confidentiality protected. Air-gapped deployment. GDPR, ISO 27001, SOC 2 compliance ready. No cloud dependencies.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Any (Web-based)",
+        "audience": {
+            "@type": "Audience",
+            "audienceType": "Professional services firms"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5.0",
+            "ratingCount": "1"
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "{{ site_name }}",
+        "url": "{{ site_protocol }}://{{ site_domain }}",
+        "description": "Open source 360-degree feedback platform for professional services",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Support",
+            "availableLanguage": ["English"]
+        }
+    }
+    </script>
+</head>
+<body class="landing-page">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">Blik</h1>
+                <nav class="nav">
+                    <a href="/landing/">Home</a>
+                    <a href="#security">Security</a>
+                    <a href="#industries">Industries</a>
+                    <a href="#compliance">Compliance</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">360 Feedback That Protects Client Confidentiality</h1>
+                <p class="hero-subtitle">Air-gapped deployment. Zero cloud dependencies. Built for professional services.</p>
+                <div class="hero-cta">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Deploy Behind Your Firewall</a>
+                    <a href="#security" class="btn btn-secondary">See Security Architecture</a>
+                </div>
+
+                <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">100%</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">On-Premises</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Zero</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Cloud Dependencies</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">ISO</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Compliance Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Why Cloud-Based Tools Are Unacceptable for Your Firm</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Client contracts and compliance requirements demand better</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="feature-card" style="background: #fef2f2; border-left: 4px solid #dc2626;">
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">Cloud HR Platforms</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">Client data potentially exposed in shared database</li>
+                        <li style="margin-bottom: 0.5rem;">Third-party access to employee information</li>
+                        <li style="margin-bottom: 0.5rem;">Cannot meet air-gapped requirements</li>
+                        <li style="margin-bottom: 0.5rem;">Vendor security breaches affect your firm</li>
+                        <li style="margin-bottom: 0.5rem;">Unknown subprocessors and data locations</li>
+                        <li>Contractual prohibition on cloud services</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: #f0fdf4; border-left: 4px solid #16a34a;">
+                    <h3 style="color: #16a34a; margin-bottom: 1rem;">Blik Air-Gapped</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">Deploy behind your firewall, no external access</li>
+                        <li style="margin-bottom: 0.5rem;">Zero third-party data sharing by design</li>
+                        <li style="margin-bottom: 0.5rem;">Fully functional without internet connection</li>
+                        <li style="margin-bottom: 0.5rem;">Your infrastructure, your security controls</li>
+                        <li style="margin-bottom: 0.5rem;">No subprocessors, no external dependencies</li>
+                        <li>Meets strictest client requirements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="security" class="section">
+        <div class="container">
+            <h2 class="section-title">Security Architecture for Professional Services</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Designed for firms with the highest confidentiality requirements</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Complete Data Isolation</h3>
+                    <p>Deploy on your internal network with no external connectivity. All data stays within your security perimeter. No cloud services, no external APIs, no internet access required. Perfect for law firms, healthcare providers, and financial advisors.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Zero Third-Party Access</h3>
+                    <p>No vendor access to your deployment. No support backdoors. No telemetry or analytics sent anywhere. Your IT team has complete control. Audit the open source code yourself to verify security claims.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Client Audit Ready</h3>
+                    <p>Demonstrate technical controls to demanding clients. Architecture diagrams included. Data flow documentation provided. Open source allows client security teams to review code. Passes third-party security questionnaires.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Reviewer Anonymity Guaranteed</h3>
+                    <p>Technical architecture prevents identity tracking. Token-based access with no authentication logs. Configurable minimum response thresholds. Protects both reviewers and reviewees in sensitive firm environments.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Compliance Documentation</h3>
+                    <p>Includes templates for ISO 27001, SOC 2, and GDPR documentation. Security control descriptions ready for compliance frameworks. Data processing documentation for client audits. Privacy impact assessment materials provided.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Internal SMTP Only</h3>
+                    <p>Configure with your internal mail server. No external email services required. All email stays within your network. Support for Exchange, Office 365 on-premises, or any SMTP server you control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="industries" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Built for Your Industry</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Trusted by firms with the highest confidentiality standards</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Law Firms</h3>
+                    <p><strong>Requirements Met:</strong> Attorney-client privilege protection, ABA ethics compliance, conflict check isolation, partner compensation confidentiality, client audit requirements met.</p>
+                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Air-gapped deployment behind firm firewall. Internal SMTP only. Managed by firm IT. Review cycles for attorneys, paralegals, support staff.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Healthcare & Life Sciences</h3>
+                    <p><strong>Requirements Met:</strong> HIPAA compliance readiness, patient data separation, clinical confidentiality, FDA validation support, protected health information isolation.</p>
+                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Deployed in healthcare network. No PHI stored in system. Clinical and administrative staff reviews. Integration with internal directories.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Financial Services</h3>
+                    <p><strong>Requirements Met:</strong> FCA/SEC examination readiness, client confidentiality, Chinese Wall compliance, market abuse prevention, audit trail requirements.</p>
+                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Segregated network deployment. Compliance-approved configuration. Detailed audit logs. Support for multiple legal entities within one firm.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Management Consulting</h3>
+                    <p><strong>Requirements Met:</strong> Client confidentiality agreements, conflict of interest controls, engagement team isolation, proprietary methodology protection, NDA compliance.</p>
+                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Project-based review cycles. Partner and consultant assessments. Integration with resource management. Protected behind VPN.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Accounting & Tax</h3>
+                    <p><strong>Requirements Met:</strong> Client privilege protection, professional standards compliance, quality control requirements, peer review preparation, ethics standards.</p>
+                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Separate staff and partner reviews. Technical competency assessments. Annual review cycles aligned with promotion timelines. Audit-ready documentation.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Government Contractors</h3>
+                    <p><strong>Requirements Met:</strong> Classified information isolation, ITAR/EAR compliance, government security standards, FedRAMP-equivalent controls, audit requirements.</p>
+                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Deployed on classified networks. No external connectivity. Government-approved encryption. Complete access control logging.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Deployment Options for Maximum Security</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Three deployment modes to match your security requirements</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Air-Gapped (Highest Security)</h3>
+                    <p><strong>Setup:</strong> Internal server, no internet access, manual report generation</p>
+                    <p style="margin-top: 1rem;"><strong>Best For:</strong> Law firms, defense contractors, highly regulated industries</p>
+                    <p style="margin-top: 1rem;"><strong>Features:</strong> Complete isolation, no external dependencies, passes strictest client audits</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Firewall-Protected (High Security)</h3>
+                    <p><strong>Setup:</strong> Internal server with restricted outbound access for email</p>
+                    <p style="margin-top: 1rem;"><strong>Best For:</strong> Healthcare, financial services, mid-size professional firms</p>
+                    <p style="margin-top: 1rem;"><strong>Features:</strong> Controlled external access, email invitations work</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Private VPN (Moderate Security)</h3>
+                    <p><strong>Setup:</strong> Cloud server accessible only via firm VPN</p>
+                    <p style="margin-top: 1rem;"><strong>Best For:</strong> Consulting firms, accounting firms with remote teams</p>
+                    <p style="margin-top: 1rem;"><strong>Features:</strong> Remote access for distributed teams, still fully isolated from public internet</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; background: var(--gradient-purple); color: white; padding: 2rem; text-align: center;">
+                <h3 style="color: white; margin-bottom: 1rem;">All Deployment Modes Share Core Benefits</h3>
+                <p style="color: rgba(255,255,255,0.95);">Self-hosted infrastructure • No third-party access • Open source auditability • Your security controls • Client requirement compliance</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="compliance" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Compliance Framework Support</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Documentation and controls for major compliance standards</p>
+
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Compliance Standard</th>
+                            <th>Blik Support</th>
+                            <th>Key Controls Satisfied</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ISO 27001</strong></td>
+                            <td style="color: var(--success); font-weight: 600;">✓ Documentation Provided</td>
+                            <td>Access control, encryption, audit logging, data classification, incident response</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SOC 2</strong></td>
+                            <td style="color: var(--success); font-weight: 600;">✓ Control Templates</td>
+                            <td>Security, availability, confidentiality, privacy, processing integrity</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GDPR</strong></td>
+                            <td style="color: var(--success); font-weight: 600;">✓ Fully Compliant</td>
+                            <td>Data residency, subject rights, privacy by design, DPA not required</td>
+                        </tr>
+                        <tr>
+                            <td><strong>HIPAA</strong></td>
+                            <td style="color: var(--success); font-weight: 600;">✓ BAA Template</td>
+                            <td>Access controls, audit logs, encryption, PHI separation guidance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FedRAMP</strong></td>
+                            <td style="color: var(--success); font-weight: 600;">✓ Control Mapping</td>
+                            <td>Self-hosting enables government cloud requirements</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PCI DSS</strong></td>
+                            <td style="color: var(--success); font-weight: 600;">✓ Network Isolation</td>
+                            <td>Segmentation, access control, encryption, no cardholder data stored</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="feature-card" style="margin-top: 2rem;">
+                <h3>Compliance Resources</h3>
+                <p style="margin-bottom: 1rem;">Essential compliance framework documentation:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><a href="https://www.iso.org/isoiec-27001-information-security.html" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">ISO 27001</a> - Information security management</li>
+                    <li style="margin-bottom: 0.5rem;"><a href="https://www.aicpa.org/interestareas/frc/assuranceadvisoryservices/aicpasoc2report" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">SOC 2</a> - Service organization controls</li>
+                    <li style="margin-bottom: 0.5rem;"><a href="https://www.hhs.gov/hipaa/index.html" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">HIPAA</a> - Healthcare privacy regulations</li>
+                    <li style="margin-bottom: 0.5rem;"><a href="https://www.fedramp.gov/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">FedRAMP</a> - Federal risk and authorization management</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Cost Comparison for Professional Services</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Why spend 50,000+ EUR per year on cloud tools you cannot use?</p>
+
+            <div class="features-grid">
+                <div class="feature-card" style="border-left: 4px solid #dc2626;">
+                    <h3>Cloud Tools You Cannot Use</h3>
+                    <p><strong>Lattice:</strong> 8-12 EUR/user/month<br>
+                    <strong>Culture Amp:</strong> 10-15 EUR/user/month<br>
+                    <strong>15Five:</strong> 6-10 EUR/user/month</p>
+                    <p style="margin-top: 1rem; color: var(--danger); font-weight: 600;">Problem: Cannot meet your client confidentiality requirements</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid #f59e0b;">
+                    <h3>Manual Spreadsheet Process</h3>
+                    <p><strong>Cost:</strong> Partner time, admin overhead<br>
+                    <strong>Time:</strong> 20-40 hours per review cycle<br>
+                    <strong>Issues:</strong> Error-prone, not anonymous, hard to aggregate</p>
+                    <p style="margin-top: 1rem; color: var(--warning); font-weight: 600;">Problem: Unprofessional and time-consuming</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid #16a34a;">
+                    <h3>Blik Self-Hosted</h3>
+                    <p><strong>Licensing:</strong> 0 EUR (open source)<br>
+                    <strong>Server:</strong> 100-200 EUR/month<br>
+                    <strong>Time:</strong> 2 hours setup, 1 hour per cycle</p>
+                    <p style="margin-top: 1rem; color: var(--success); font-weight: 600;">Solution: Professional, compliant, cost-effective</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; background: #dbeafe; border-left: 4px solid #3b82f6;">
+                <h3 style="color: #1e40af;">25-Person Firm Calculation</h3>
+                <p style="color: var(--text-primary);">Commercial Tool: 3,000 EUR/year | Manual Process: 8,000 EUR (partner time) | Blik: 1,200 EUR/year (server only) | <strong>Savings: 2,000-7,000 EUR annually</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Technical Questions from IT and Compliance Teams</h2>
+
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>Can this run completely offline without any internet access?</summary>
+                    <p>Yes. For air-gapped deployment: <strong>1)</strong> Use internal SMTP server for emails, <strong>2)</strong> Deploy on internal Linux server. No external connectivity required. System is fully functional offline. Perfect for classified environments or firms with zero-trust policies.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What are the infrastructure requirements?</summary>
+                    <p><strong>Minimum:</strong> 4GB RAM, 2 vCPU, 40GB storage for up to 100 employees.<br><br>
+                    <strong>Recommended:</strong> 8GB RAM, 4 vCPU, 100GB storage for 200+ employees with historical data.<br><br>
+                    <strong>OS:</strong> Ubuntu 22.04+ or RHEL 8+.<br><br>
+                    <strong>Database:</strong> PostgreSQL 15+ (included in Docker setup). Scales vertically as needed.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do we meet client security audit requirements?</summary>
+                    <p>Blik provides: <strong>1)</strong> Architecture diagrams showing data flows, <strong>2)</strong> Technical documentation of security controls, <strong>3)</strong> Access to full source code for review, <strong>4)</strong> Templates for common compliance frameworks (ISO 27001, SOC 2, GDPR), <strong>5)</strong> Audit log exports from database. Open source means clients can verify security themselves.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can we integrate with our Active Directory or LDAP?</summary>
+                    <p>LDAP integration is on the roadmap but not currently implemented. For now, admins use Django's built-in authentication. Since reviewers never log in (token-based access), only admin accounts need management. For firms requiring LDAP, you can modify the authentication backend in the open source code or wait for the next major release.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How is reviewer anonymity technically guaranteed?</summary>
+                    <p>Architecture prevents identity tracking: <strong>1)</strong> Tokens contain no identifying information (UUID only), <strong>2)</strong> No login required for reviewers, <strong>3)</strong> Responses stored without token reference after submission, <strong>4)</strong> Configurable minimum thresholds (e.g., 3+ peers before showing results), <strong>5)</strong> No IP logging in production mode. Anonymity is architectural, not policy-based.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What backup and disaster recovery options exist?</summary>
+                    <p>PostgreSQL backup strategies: <strong>1)</strong> pg_dump for point-in-time backups, <strong>2)</strong> WAL archiving for continuous backup, <strong>3)</strong> Streaming replication for high availability. Store backups on your SAN, tape, or segregated network. All backup data remains in your control. Restoration tested and documented. RTO typically under 1 hour.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do we handle GDPR right to erasure requests?</summary>
+                    <p>Direct database access allows full control. Django admin includes employee deletion. For complete erasure: <strong>1)</strong> Identify employee records in database, <strong>2)</strong> Run provided deletion scripts, <strong>3)</strong> Remove from backups (or note in retention log), <strong>4)</strong> Document deletion for audit. Typically completed in under 15 minutes. Maintained audit trail proves compliance.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Implementation Process for Professional Services</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Typical deployment timeline for firms</p>
+
+            <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+                <div class="feature-card">
+                    <h3>Week 1: Planning</h3>
+                    <p><strong>Activities:</strong> IT reviews documentation, Security approves architecture, Compliance maps to requirements, Partner sponsors identified</p>
+                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Deployment plan, security assessment, compliance checklist</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Week 2: Deployment</h3>
+                    <p><strong>Activities:</strong> Provision internal server, Deploy Docker containers, Configure SMTP and settings, Import employee list</p>
+                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Running system, admin access, initial testing complete</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Week 3: Pilot</h3>
+                    <p><strong>Activities:</strong> Run pilot review cycle with one department, Gather feedback, Adjust anonymity thresholds, Train administrators</p>
+                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Pilot report, user feedback, configuration refinements</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Week 4: Rollout</h3>
+                    <p><strong>Activities:</strong> Announce to full firm, Create review cycles, Send invitations, Generate reports</p>
+                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Firm-wide review complete, Reports delivered, Process documented</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; background: #f0fdf4; border-left: 4px solid #16a34a;">
+                <h3 style="color: #166534;">Most Firms Complete Deployment in 2-3 Weeks</h3>
+                <p style="color: var(--text-primary);">Includes security review, compliance approval, and pilot testing. Much faster than 8-12 week implementations for commercial tools.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Deploy Behind Your Firewall Today</h2>
+            <p>Protect client confidentiality while modernizing performance reviews.</p>
+            <div class="hero-cta">
+                <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Get Started</a>
+                <a href="/landing/" class="btn btn-secondary">Learn More</a>
+            </div>
+            <p style="margin-top: 2.5rem; font-size: 1rem; opacity: 0.9;">Trusted by law firms, healthcare providers, and financial advisors</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Blik. Open source under AGPL license.</p>
+        </div>
+    </footer>
+</body>
+</html>

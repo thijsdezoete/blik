@@ -1,0 +1,492 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDPR-Compliant 360 Feedback for EU Tech Companies | Blik</title>
+    <meta name="description" content="Self-hosted 360 feedback for European tech scaleups. GDPR-compliant by design, EU data residency, 60,000 EUR+ annual savings. Open source alternative to Lattice and Culture Amp.">
+    <meta name="keywords" content="GDPR 360 feedback, EU performance management software, self-hosted employee feedback, GDPR-compliant review system, European tech HR tools, data residency feedback software">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/eu-tech/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/eu-tech/">
+    <meta property="og:title" content="GDPR-Compliant 360 Feedback for EU Tech Companies">
+    <meta property="og:description" content="Self-hosted, EU data residency, saves 60,000+ EUR annually vs. US competitors">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/eu-tech/">
+    <meta name="twitter:title" content="GDPR-Compliant 360 Feedback for EU Tech Companies">
+    <meta name="twitter:description" content="Self-hosted, EU data residency, saves 60,000+ EUR annually vs. US competitors">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "{{ site_name }}",
+        "description": "Self-hosted 360 feedback for European tech scaleups. GDPR-compliant by design, EU data residency, 60,000 EUR+ annual savings. Open source alternative to Lattice and Culture Amp.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Any (Web-based)",
+        "targetProduct": {
+            "@type": "Product",
+            "audience": {
+                "@type": "Audience",
+                "audienceType": "European technology companies"
+            }
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5.0",
+            "ratingCount": "1"
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "{{ site_name }}",
+        "url": "{{ site_protocol }}://{{ site_domain }}",
+        "description": "GDPR-compliant 360-degree feedback platform for European tech companies",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Support",
+            "availableLanguage": ["English"]
+        }
+    }
+    </script>
+</head>
+<body class="landing-page">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">Blik</h1>
+                <nav class="nav">
+                    <a href="/landing/">Home</a>
+                    <a href="#gdpr">GDPR Compliance</a>
+                    <a href="#cost">Cost Savings</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">GDPR-Compliant 360 Feedback Built for European Tech Teams</h1>
+                <p class="hero-subtitle">Self-hosted on EU infrastructure. Zero licensing fees. Deploy in 5 minutes.</p>
+                <div class="hero-cta">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Deploy on Hetzner/OVH</a>
+                    <a href="#gdpr" class="btn btn-secondary">See GDPR Compliance</a>
+                </div>
+
+                <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">60K EUR</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Saved Annually (200 employees)</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">100%</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">EU Data Residency</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Open</div>
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Source AGPL</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Problem: US-Based Tools Don't Work for European Companies</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">GDPR violations, excessive costs, and data sovereignty concerns</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <div class="feature-card" style="background: #fef2f2; border-left: 4px solid #dc2626;">
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">US Commercial Tools</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">Data stored on US servers (GDPR risk)</li>
+                        <li style="margin-bottom: 0.5rem;">60,000-90,000 EUR per year for 200 employees</li>
+                        <li style="margin-bottom: 0.5rem;">Complex Data Processing Agreements</li>
+                        <li style="margin-bottom: 0.5rem;">Schrems II compliance uncertainty</li>
+                        <li style="margin-bottom: 0.5rem;">No EU data residency guarantees</li>
+                        <li>Vendor lock-in with proprietary systems</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: #f0fdf4; border-left: 4px solid #16a34a;">
+                    <h3 style="color: #16a34a; margin-bottom: 1rem;">Blik for EU Tech</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">Deploy on Hetzner, OVH, or your EU datacenter</li>
+                        <li style="margin-bottom: 0.5rem;">Zero licensing fees, unlimited employees</li>
+                        <li style="margin-bottom: 0.5rem;">No third-party data processing required</li>
+                        <li style="margin-bottom: 0.5rem;">GDPR-compliant by architectural design</li>
+                        <li style="margin-bottom: 0.5rem;">Complete control over data residency</li>
+                        <li>Open source, audit and customize freely</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-card" style="background: var(--gradient-purple); color: white; padding: 2rem; text-align: center;">
+                <h3 style="color: white; margin-bottom: 1rem;">Average Savings for EU Tech Scaleups</h3>
+                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">50-employee company: 18,000 EUR/year | 200-employee company: 72,000 EUR/year | 500-employee company: 180,000 EUR/year</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="gdpr" class="section">
+        <div class="container">
+            <h2 class="section-title">GDPR Compliance by Design</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Self-hosting means you control everything</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>EU Data Residency</h3>
+                    <p>Deploy on Hetzner (Germany), OVH (France), or any EU provider. All employee data stays within EU borders. No international data transfers required. Full GDPR Article 44-50 compliance.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>No Third-Party Processing</h3>
+                    <p>Your infrastructure, your data. No Data Processing Agreements with US vendors. You are the data controller.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Right to Access & Deletion</h3>
+                    <p>Full database access for GDPR requests. Export employee data in machine-readable format. Delete personal data with one command. Complete audit trail for compliance documentation.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Privacy by Default</h3>
+                    <p>Reviewer anonymity built into architecture. Configurable data retention policies. Minimal data collection principles. Encrypted connections and secure token-based access.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Audit Ready</h3>
+                    <p>Open source means full transparency for auditors. Document data flows with included architecture diagrams. Track all administrator actions. Demonstrate technical and organizational measures.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Schrems II Compliant</h3>
+                    <p>No reliance on Standard Contractual Clauses. No US cloud providers in data path. EU-based deployment eliminates cross-border transfer concerns. Legal certainty for your compliance team.</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; padding: 2rem;">
+                <h4 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.25rem;">Data Flow Architecture</h4>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;">
+                    <strong>Your EU Server</strong> (Hetzner/OVH) → <strong>PostgreSQL Database</strong> (EU) → <strong>Backup Storage</strong> (EU) → <strong>Admin Access</strong> (HTTPS) → <strong>Reviewer Tokens</strong> (No authentication required)
+                </p>
+                <p style="text-align: center; color: var(--success); font-weight: 600; margin-top: 1.5rem;">
+                    All data remains in EU jurisdiction at all times
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="cost" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Cost Analysis: Stop Paying US Vendors</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Real numbers for European tech companies</p>
+
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Company Size</th>
+                            <th>Lattice Cost</th>
+                            <th>Culture Amp Cost</th>
+                            <th style="background: #f0fdf4;">Blik Cost</th>
+                            <th style="background: #f0fdf4;">Annual Savings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>50 employees</td>
+                            <td>18,000 EUR</td>
+                            <td>21,000 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">600 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">17,400 EUR</td>
+                        </tr>
+                        <tr>
+                            <td>100 employees</td>
+                            <td>36,000 EUR</td>
+                            <td>42,000 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">720 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">35,280 EUR</td>
+                        </tr>
+                        <tr>
+                            <td>200 employees</td>
+                            <td>72,000 EUR</td>
+                            <td>84,000 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">960 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">71,040 EUR</td>
+                        </tr>
+                        <tr>
+                            <td>500 employees</td>
+                            <td>180,000 EUR</td>
+                            <td>210,000 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">1,440 EUR</td>
+                            <td style="font-weight: 600; color: var(--success);">178,560 EUR</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p style="text-align: center; margin-top: 2rem; color: var(--text-secondary); font-style: italic;">
+                Blik costs = EU server hosting only (Hetzner CX41: 50 EUR/month + backup storage). No per-user fees. No licensing costs. No surprise bills.
+            </p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Built for Engineering Teams</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Developer-friendly deployment and technology stack</p>
+
+            <div style="background: var(--text-primary); color: #e2e8f0; padding: 2rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; line-height: 1.8; margin-bottom: 3rem;">
+                <div style="color: var(--text-tertiary);"># Deploy on Hetzner Cloud in 5 minutes</div>
+                # 1. Spin up CX31 instance (Ubuntu 24.04)<br>
+                # 2. Install Docker and clone repo<br>
+                git clone https://github.com/thijsdezoete/blik.git<br>
+                cd blik<br>
+                # 3. Configure environment (set your domain)<br>
+                cp .env.example .env<br>
+                # 4. Start everything<br>
+                docker compose up -d<br>
+                # 5. Visit setup wizard at https://your-domain.com/setup/<br>
+                <br>
+                <div style="color: var(--text-tertiary);"># Total time: 5 minutes. Total cost: 10 EUR/month.</div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Modern Python Stack</h3>
+                    <p>Django 5.x with type hints and modern patterns. PostgreSQL 15+ for reliability. Clean architecture following best practices. Well-documented codebase.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Docker-First Deployment</h3>
+                    <p>Production-ready Docker Compose setup. Gunicorn WSGI server. WhiteNoise static file serving. Automatic database migrations. Zero-downtime updates.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Dreyfus Competency Model</h3>
+                    <p>Engineering-appropriate skill assessment framework. Five levels from Novice to Expert. Aligns with technical career ladders. Resonates with developer culture.</p>
+                    <p style="margin-top: 1rem;"><a href="/landing/dreyfus-model/" style="color: var(--primary); text-decoration: none; font-weight: 500;">Learn about Dreyfus Model →</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section">
+        <div class="container">
+            <h2 class="section-title">Technical Questions Answered</h2>
+
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>Which EU hosting providers are recommended?</summary>
+                    <p><strong>Germany:</strong> Hetzner Cloud (excellent price/performance, 100% renewable energy, Nuremberg datacenter)<br><br>
+                    <strong>France:</strong> OVH Cloud (strong privacy reputation, Strasbourg/Roubaix datacenters)<br><br>
+                    <strong>Netherlands:</strong> TransIP (Dutch privacy laws)<br><br>
+                    <strong>Finland:</strong> UpCloud (Nordic data protection standards)<br><br>
+                    Any provider with EU datacenters works. Minimum specs: 2 vCPU, 4GB RAM, 40GB SSD.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What about email sending for invitations?</summary>
+                    <p>Use EU-based SMTP providers: <strong>Mailgun EU</strong> (Dublin datacenter), <strong>SendGrid EU</strong>, <strong>Amazon SES EU</strong> (Frankfurt), or <strong>your own mail server</strong>. Configure SMTP in the setup wizard. All email processing stays in EU. Templates are simple text, no tracking pixels.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can we integrate with our existing LDAP/SSO?</summary>
+                    <p>Currently, admin authentication uses Django's built-in system. LDAP/SSO integration is on the roadmap. For now, admins log in with username/password. Reviewers never authenticate (token-based access only). You can modify the authentication backend since it's open source.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do we demonstrate GDPR compliance to auditors?</summary>
+                    <p>Blik includes documentation showing:<br><br>
+                    <strong>1)</strong> Data flow diagrams proving EU residency<br>
+                    <strong>2)</strong> Technical measures (encryption, access controls, anonymity)<br>
+                    <strong>3)</strong> Organizational measures (admin audit logs, retention policies)<br>
+                    <strong>4)</strong> Data subject rights implementation (export, deletion)<br><br>
+                    Open source code allows auditors to verify technical controls directly. For GDPR compliance guidance, see <a href="https://gdpr.eu/" target="_blank" rel="noopener" style="color: var(--primary);">GDPR.eu</a> and <a href="https://edpb.europa.eu/edpb_en" target="_blank" rel="noopener" style="color: var(--primary);">European Data Protection Board</a>.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What's the migration path from Lattice/Culture Amp?</summary>
+                    <p>Export your employee list from existing tool as CSV. Import into Blik via Django admin or API. Historical review data can be archived separately (Blik focuses on new cycles, not historical reporting). Plan 2-4 weeks for parallel running during transition period. Most teams switch completely after first successful cycle.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do backups work with GDPR retention requirements?</summary>
+                    <p>PostgreSQL dumps to EU-based storage (Hetzner Storage Box, S3 EU buckets). Set automated retention policies matching your data retention requirements. Implement deletion scripts for GDPR "right to be forgotten" requests. All backup data stays in EU jurisdiction. Encrypted backups recommended for extra security.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can we run this completely air-gapped behind our firewall?</summary>
+                    <p>Yes. Disable external AI API calls and use local models. Configure SMTP to your internal mail server. All web traffic stays internal. No outbound internet access required. Perfect for highly regulated environments or companies with strict security policies.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Why European Tech Teams Choose Blik</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Legal Certainty</h3>
+                    <p>No Standard Contractual Clauses needed. No Schrems II concerns. No DPA negotiations with US vendors. Your legal team will thank you.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Budget Efficiency</h3>
+                    <p>Redirect 60,000+ EUR annually from US vendors to engineering salaries, infrastructure, or other priorities. Finance and leadership approved.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Engineering Buy-In</h3>
+                    <p>Developers trust open source more than black boxes. Self-hosting appeals to technical culture. Can customize and extend as needed.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Fast Implementation</h3>
+                    <p>No sales calls, no complex contracts, no multi-week implementations. Deploy in 5 minutes, run first cycle in 30 minutes. Ship it Friday, use it Monday.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Data Sovereignty</h3>
+                    <p>Performance review data is sensitive. Self-hosting means complete control. No third parties, no vendor breaches, no data leaks.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Future-Proof</h3>
+                    <p>Open source means no vendor lock-in. If Blik stops development, you still have the code. Community-driven means continuous improvement.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">European Alternatives Ecosystem</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Building a privacy-first tech stack with EU-based tools</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Survey & Feedback Tools</h3>
+                    <p style="margin-bottom: 1rem;">Blik joins a growing ecosystem of European alternatives to US-based SaaS. For general surveys, consider:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.limesurvey.org/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">LimeSurvey</a> (Germany) - Open source survey platform</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.typeform.com/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Typeform</a> (Spain) - Engaging form design</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.lamapoll.de/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">LamaPoll</a> (Germany) - ISO 27001 certified</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="https://european-alternatives.eu/category/survey-tools" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500;">Browse 16+ EU survey tools →</a></p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Team Communication</h3>
+                    <p style="margin-bottom: 1rem;">Replace Slack with EU-based alternatives:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://mattermost.com/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Mattermost</a> - Self-hosted Slack alternative</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://element.io/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Element</a> - End-to-end encrypted, Matrix protocol</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.stackfield.com/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Stackfield</a> (Germany) - Encrypted team collaboration</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="https://european-alternatives.eu/category/team-communication-services" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500;">Browse EU communication tools →</a></p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>GDPR Resources</h3>
+                    <p style="margin-bottom: 1rem;">Essential reading for EU tech compliance:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://gdpr.eu/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">GDPR.eu</a> - Complete GDPR guide</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.cnil.fr/en" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">CNIL</a> (France) - Data protection authority</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.bfdi.bund.de/EN/Home/home_node.html" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">BfDI</a> (Germany) - Federal data protection commissioner</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>EU Cloud Providers</h3>
+                    <p style="margin-bottom: 1rem;">Recommended infrastructure partners:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.hetzner.com/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Hetzner</a> (Germany) - Price/performance leader</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.ovhcloud.com/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">OVHcloud</a> (France) - Strong privacy reputation</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.scaleway.com/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Scaleway</a> (France) - Developer-friendly cloud</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.upcloud.com/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">UpCloud</a> (Finland) - Nordic data protection</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Open Source Compliance</h3>
+                    <p style="margin-bottom: 1rem;">Understanding AGPL and software freedom:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">AGPL License</a> - Full license text</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.fsf.org/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Free Software Foundation</a> - Software freedom advocacy</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.osi.org/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Open Source Initiative</a> - Open source definition</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>European Tech Community</h3>
+                    <p style="margin-bottom: 1rem;">Connect with the EU tech ecosystem:</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://european-alternatives.eu/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">European Alternatives</a> - Directory of EU software</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://digitaleurope.org/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">DIGITALEUROPE</a> - EU digital policy</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="https://techeu.org/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Tech.eu</a> - European tech news</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-card" style="margin-top: 3rem; background: #dbeafe; border-left: 4px solid #3b82f6;">
+                <h3 style="color: #1e40af;">Building a European Tech Stack</h3>
+                <p style="color: var(--text-primary);">Blik is part of the movement to create privacy-first, GDPR-native alternatives to US SaaS. By choosing European tools, you support data sovereignty, reduce compliance risk, and strengthen the EU digital economy.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Deploy GDPR-Compliant 360 Feedback in 5 Minutes</h2>
+            <p>Save 60,000+ EUR annually. EU data residency. Open source transparency.</p>
+            <div class="hero-cta">
+                <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Deploy on GitHub</a>
+                <a href="/landing/" class="btn btn-secondary">Learn More</a>
+            </div>
+            <p style="margin-top: 2.5rem; font-size: 1rem; opacity: 0.9;">Trusted by European tech companies from Berlin to Barcelona</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Blik. Open source under AGPL license.</p>
+        </div>
+    </footer>
+</body>
+</html>

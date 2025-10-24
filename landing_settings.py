@@ -50,6 +50,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.template.context_processors.static',
+                'landing.context_processors.url_namespace',
             ],
         },
     },

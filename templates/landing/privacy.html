@@ -1,4 +1,4 @@
-{% load static %}
+{% load static landing_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,7 +81,7 @@
             <div class="header-content">
                 <h1 class="logo">Blik</h1>
                 <nav class="nav">
-                    <a href="{% url 'index' %}">Home</a>
+                    <a href="{% landing_url 'index' %}">Home</a>
                     <a href="#security">Security</a>
                     <a href="#industries">Industries</a>
                     <a href="#compliance">Compliance</a>
@@ -462,7 +462,7 @@
             <p>Protect client confidentiality while modernizing performance reviews.</p>
             <div class="hero-cta">
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Get Started</a>
-                <a href="{% url 'index' %}" class="btn btn-secondary">Learn More</a>
+                <a href="{% landing_url 'index' %}" class="btn btn-secondary">Learn More</a>
             </div>
             <p style="margin-top: 2.5rem; font-size: 1rem; opacity: 0.9;">Trusted by law firms, healthcare providers, and financial advisors</p>
         </div>

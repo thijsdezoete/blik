@@ -1,4 +1,4 @@
-{% load static %}
+{% load static landing_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,7 +84,7 @@
             <div class="header-content">
                 <h1 class="logo">Blik</h1>
                 <nav class="nav">
-                    <a href="{% url 'index' %}">Home</a>
+                    <a href="{% landing_url 'index' %}">Home</a>
                     <a href="#gdpr">GDPR Compliance</a>
                     <a href="#cost">Cost Savings</a>
                     <a href="#faq">FAQ</a>
@@ -303,7 +303,7 @@
                 <div class="feature-card">
                     <h3>Dreyfus Competency Model</h3>
                     <p>Engineering-appropriate skill assessment framework. Five levels from Novice to Expert. Aligns with technical career ladders. Resonates with developer culture.</p>
-                    <p style="margin-top: 1rem;"><a href="{% url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Learn about Dreyfus Model →</a></p>
+                    <p style="margin-top: 1rem;"><a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Learn about Dreyfus Model →</a></p>
                 </div>
             </div>
         </div>
@@ -482,7 +482,7 @@
             <p>Save 17,000-83,000 EUR annually. EU data residency. Open source transparency.</p>
             <div class="hero-cta">
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Deploy on GitHub</a>
-                <a href="{% url 'index' %}" class="btn btn-secondary">Learn More</a>
+                <a href="{% landing_url 'index' %}" class="btn btn-secondary">Learn More</a>
             </div>
             <p style="margin-top: 2.5rem; font-size: 1rem; opacity: 0.9;">Trusted by European tech companies from Berlin to Barcelona</p>
         </div>

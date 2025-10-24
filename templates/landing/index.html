@@ -1,4 +1,4 @@
-{% load static %}
+{% load static landing_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -392,7 +392,7 @@
                 <p>Deploy Blik in minutes and start collecting meaningful 360-degree feedback.</p>
                 <div class="cta-buttons">
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Get Started Free</a>
-                    <a href="mailto:info@blik360.com" class="btn btn-secondary">Contact Sales</a>
+                    <a href="mailto:info@mail.blik360.com" class="btn btn-secondary">Contact Sales</a>
                 </div>
             </div>
         </div>
@@ -418,7 +418,7 @@
                     <h4>Company</h4>
                     <ul>
                         <li><a href="mailto:info@blik360.com">Contact</a></li>
-                        <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                        <li><a href="{% landing_url 'privacy' %}">Privacy Policy</a></li>
                         <li><a href="https://github.com/thijsdezoete/blik">Terms of Service</a></li>
                     </ul>
                 </div>

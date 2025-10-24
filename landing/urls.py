@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from blik import seo_views
 
 app_name = 'landing'
 
@@ -10,4 +11,6 @@ urlpatterns = [
     path('eu-tech/', views.eu_tech, name='eu_tech'),
     path('privacy/', views.privacy, name='privacy'),
     path('og-image.png', views.og_image, name='og_image'),
+    path('robots.txt', seo_views.robots, name='robots'),
+    path('sitemap.xml', seo_views.sitemap, name='sitemap'),
 ]

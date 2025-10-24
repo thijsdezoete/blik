@@ -234,7 +234,7 @@ def setup_complete(request):
                     questions = Question.objects.filter(section__questionnaire=questionnaire_to_use)
                     for token in tokens:
                         for question in questions:
-                            if question.question_type == 'rating':
+                            if question.question_type == 'rating' or question.question_type == 'likert':
                                 # Different patterns for different reviewees
                                 if pattern == 'imposter_syndrome':
                                     # Self-ratings much lower than others
@@ -262,7 +262,18 @@ def setup_complete(request):
                                         rating = random.randint(4, 5)
                                     else:
                                         rating = random.randint(3, 5)
-                                answer_data = {'value': rating}
+
+                                # For likert questions, map rating to scale item
+                                if question.question_type == 'likert':
+                                    scale = question.config.get('scale', [])
+                                    if scale:
+                                        # Map rating (1-5) to scale index (0-based)
+                                        scale_index = min(rating - 1, len(scale) - 1)
+                                        answer_data = {'value': scale[scale_index]}
+                                    else:
+                                        answer_data = {'value': rating}
+                                else:
+                                    answer_data = {'value': rating}
                             elif question.question_type == 'text':
                                 # Choose responses based on questionnaire type
                                 if 'Software Engineering' in questionnaire_to_use.name:

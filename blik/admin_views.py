@@ -199,6 +199,157 @@ def questionnaire_preview(request, questionnaire_id):
 
 
 @staff_member_required
+def questionnaire_create(request):
+    """Create a new questionnaire"""
+    from questionnaires.models import QuestionSection, Question
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description', '')
+        is_default = request.POST.get('is_default') == 'on'
+
+        if not name:
+            messages.error(request, 'Questionnaire name is required.')
+            return render(request, 'admin_dashboard/questionnaire_form.html', {'action': 'Create'})
+
+        try:
+            questionnaire = Questionnaire.objects.create(
+                name=name,
+                description=description,
+                is_default=is_default
+            )
+            messages.success(request, f'Questionnaire "{questionnaire.name}" created successfully.')
+            return redirect('questionnaire_edit', questionnaire_id=questionnaire.id)
+        except Exception as e:
+            messages.error(request, f'Error creating questionnaire: {str(e)}')
+
+    context = {
+        'action': 'Create',
+    }
+
+    return render(request, 'admin_dashboard/questionnaire_form.html', context)
+
+
+@staff_member_required
+def questionnaire_edit(request, questionnaire_id):
+    """Edit an existing questionnaire"""
+    from questionnaires.models import QuestionSection, Question
+
+    questionnaire = get_object_or_404(Questionnaire, id=questionnaire_id)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'update_info':
+            questionnaire.name = request.POST.get('name', questionnaire.name)
+            questionnaire.description = request.POST.get('description', '')
+            questionnaire.is_default = request.POST.get('is_default') == 'on'
+
+            try:
+                questionnaire.save()
+                messages.success(request, f'Questionnaire "{questionnaire.name}" updated successfully.')
+            except Exception as e:
+                messages.error(request, f'Error updating questionnaire: {str(e)}')
+
+        elif action == 'add_section':
+            section_title = request.POST.get('section_title')
+            section_description = request.POST.get('section_description', '')
+
+            if section_title:
+                max_order = questionnaire.sections.aggregate(models.Max('order'))['order__max'] or -1
+                try:
+                    QuestionSection.objects.create(
+                        questionnaire=questionnaire,
+                        title=section_title,
+                        description=section_description,
+                        order=max_order + 1
+                    )
+                    messages.success(request, f'Section "{section_title}" added.')
+                except Exception as e:
+                    messages.error(request, f'Error adding section: {str(e)}')
+
+        elif action == 'add_question':
+            section_id = request.POST.get('section_id')
+            question_text = request.POST.get('question_text')
+            question_type = request.POST.get('question_type', 'rating')
+            required = request.POST.get('required') == 'on'
+
+            if section_id and question_text:
+                try:
+                    section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
+                    max_order = section.questions.aggregate(models.Max('order'))['order__max'] or -1
+
+                    # Build config based on question type
+                    config = {}
+                    if question_type == 'rating':
+                        config = {
+                            'min': 1,
+                            'max': 5,
+                            'labels': {
+                                '1': 'Strongly Disagree',
+                                '2': 'Disagree',
+                                '3': 'Neutral',
+                                '4': 'Agree',
+                                '5': 'Strongly Agree'
+                            }
+                        }
+                    elif question_type == 'likert':
+                        scale_raw = request.POST.get('likert_scale', '')
+                        if scale_raw:
+                            scale = [s.strip() for s in scale_raw.split('\n') if s.strip()]
+                        else:
+                            scale = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree']
+                        config = {'scale': scale}
+                    elif question_type == 'multiple_choice':
+                        choices_raw = request.POST.get('choices', '')
+                        choices = [c.strip() for c in choices_raw.split('\n') if c.strip()]
+                        config = {'choices': choices}
+
+                    Question.objects.create(
+                        section=section,
+                        question_text=question_text,
+                        question_type=question_type,
+                        config=config,
+                        required=required,
+                        order=max_order + 1
+                    )
+                    messages.success(request, 'Question added successfully.')
+                except Exception as e:
+                    messages.error(request, f'Error adding question: {str(e)}')
+
+        elif action == 'delete_section':
+            section_id = request.POST.get('section_id')
+            try:
+                section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
+                section_title = section.title
+                section.delete()
+                messages.success(request, f'Section "{section_title}" deleted.')
+            except Exception as e:
+                messages.error(request, f'Error deleting section: {str(e)}')
+
+        elif action == 'delete_question':
+            question_id = request.POST.get('question_id')
+            try:
+                question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
+                question.delete()
+                messages.success(request, 'Question deleted.')
+            except Exception as e:
+                messages.error(request, f'Error deleting question: {str(e)}')
+
+        return redirect('questionnaire_edit', questionnaire_id=questionnaire.id)
+
+    sections = questionnaire.sections.prefetch_related('questions').all()
+
+    context = {
+        'action': 'Edit',
+        'questionnaire': questionnaire,
+        'sections': sections,
+    }
+
+    return render(request, 'admin_dashboard/questionnaire_form.html', context)
+
+
+@staff_member_required
 def review_cycle_list(request):
     """List all review cycles"""
     cycles = ReviewCycle.objects.select_related(

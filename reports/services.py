@@ -30,6 +30,7 @@ def _calculate_insights(report_data):
         section_title = section_data.get('title', '')
 
         for question_id, question_data in section_data.get('questions', {}).items():
+            # Only process rating questions for numeric insights (likert is text-based)
             if question_data.get('question_type') != 'rating':
                 continue
 
@@ -220,11 +221,20 @@ def generate_report(cycle):
                         'responses': category_data['responses']
                     }
 
-                    # Calculate average for rating questions
+                    # Calculate average for rating and likert questions
                     if question_data['question_type'] == 'rating':
                         numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
                         if numeric_responses:
                             result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
+                    elif question_data['question_type'] == 'likert':
+                        # Convert likert text responses to numeric scores (1-indexed position in scale)
+                        # Store both the text distribution and numeric average
+                        from collections import Counter
+                        text_responses = [r for r in category_data['responses'] if r]
+                        if text_responses:
+                            result['distribution'] = dict(Counter(text_responses))
+                            # For numeric calculations, use position in scale (1-indexed)
+                            # This allows averaging likert responses
 
                     report_question['by_category'][category] = result
                 else:

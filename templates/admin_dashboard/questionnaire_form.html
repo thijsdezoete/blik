@@ -1,0 +1,274 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}{{ action }} Questionnaire{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">{{ action }} Questionnaire</h1>
+    <p style="color: #64748b;">
+        {% if questionnaire %}
+        Edit questionnaire "{{ questionnaire.name }}"
+        {% else %}
+        Create a new feedback questionnaire
+        {% endif %}
+    </p>
+</div>
+
+<div style="max-width: 900px;">
+    <!-- Basic Information -->
+    <div class="card mb-2">
+        <div class="card-header">
+            <h2 class="card-title">Basic Information</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_info">
+
+                <div class="form-group">
+                    <label for="name" class="form-label">Questionnaire Name *</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        class="form-control"
+                        value="{% if questionnaire %}{{ questionnaire.name }}{% endif %}"
+                        required
+                        placeholder="360-Degree Performance Review"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Description (Optional)</label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Comprehensive feedback covering leadership, communication, and technical skills"
+                    >{% if questionnaire %}{{ questionnaire.description }}{% endif %}</textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input
+                            type="checkbox"
+                            name="is_default"
+                            {% if questionnaire.is_default %}checked{% endif %}
+                        >
+                        <span>Set as default questionnaire</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    {% if questionnaire %}
+                    <button type="submit" class="btn btn-primary">Update Information</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-primary">Create Questionnaire</button>
+                    {% endif %}
+                    <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary">Cancel</a>
+                    {% if questionnaire %}
+                    <a href="{% url 'questionnaire_preview' questionnaire.id %}" class="btn btn-secondary">Preview</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if questionnaire %}
+    <!-- Sections and Questions -->
+    <div class="card mb-2">
+        <div class="card-header">
+            <h2 class="card-title">Sections and Questions</h2>
+        </div>
+        <div class="card-body">
+            {% if sections %}
+            {% for section in sections %}
+            <div class="card mb-2" style="background: #f8fafc;">
+                <div class="card-header" style="background: #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0;">{{ section.title }}</h3>
+                        {% if section.description %}
+                        <p style="margin: 0.25rem 0 0; color: #64748b; font-size: 0.875rem;">{{ section.description }}</p>
+                        {% endif %}
+                    </div>
+                    <form method="post" style="margin: 0;" onsubmit="return confirm('Delete section and all its questions?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_section">
+                        <input type="hidden" name="section_id" value="{{ section.id }}">
+                        <button type="submit" class="btn btn-sm btn-secondary" style="background: #ef4444; border-color: #ef4444; color: white;">Delete Section</button>
+                    </form>
+                </div>
+                <div class="card-body">
+                    {% if section.questions.all %}
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for question in section.questions.all %}
+                        <div style="padding: 1rem; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500; margin-bottom: 0.25rem;">
+                                        {{ question.question_text }}
+                                        {% if question.required %}
+                                        <span style="color: #ef4444;">*</span>
+                                        {% endif %}
+                                    </div>
+                                    <div style="font-size: 0.875rem; color: #64748b;">
+                                        Type: {{ question.get_question_type_display }}
+                                        {% if question.question_type == 'rating' and question.config.min %}
+                                        | Scale: {{ question.config.min }}-{{ question.config.max }}
+                                        {% elif question.question_type == 'likert' and question.config.scale %}
+                                        | {{ question.config.scale|length }}-point scale
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <form method="post" style="margin: 0;" onsubmit="return confirm('Delete this question?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="delete_question">
+                                    <input type="hidden" name="question_id" value="{{ question.id }}">
+                                    <button type="submit" class="btn btn-sm btn-secondary" style="background: #ef4444; border-color: #ef4444; color: white;">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p style="color: #64748b; margin: 0;">No questions in this section yet.</p>
+                    {% endif %}
+
+                    <!-- Add Question Form -->
+                    <details style="margin-top: 1rem;">
+                        <summary style="cursor: pointer; font-weight: 500; color: var(--primary); padding: 0.5rem 0;">Add Question to This Section</summary>
+                        <form method="post" style="margin-top: 1rem; padding: 1rem; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="add_question">
+                            <input type="hidden" name="section_id" value="{{ section.id }}">
+
+                            <div class="form-group">
+                                <label for="question_text_{{ section.id }}" class="form-label">Question Text *</label>
+                                <textarea
+                                    id="question_text_{{ section.id }}"
+                                    name="question_text"
+                                    class="form-control"
+                                    rows="2"
+                                    required
+                                    placeholder="How effectively does this person communicate complex ideas?"
+                                ></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="question_type_{{ section.id }}" class="form-label">Question Type *</label>
+                                <select
+                                    id="question_type_{{ section.id }}"
+                                    name="question_type"
+                                    class="form-control"
+                                    onchange="toggleChoices{{ section.id }}(this)"
+                                >
+                                    <option value="rating">Rating Scale (1-5)</option>
+                                    <option value="likert">Likert Scale</option>
+                                    <option value="text">Free Text</option>
+                                    <option value="multiple_choice">Multiple Choice</option>
+                                </select>
+                            </div>
+
+                            <div id="likert_container_{{ section.id }}" class="form-group" style="display: none;">
+                                <label for="likert_scale_{{ section.id }}" class="form-label">Likert Scale Items (one per line)</label>
+                                <textarea
+                                    id="likert_scale_{{ section.id }}"
+                                    name="likert_scale"
+                                    class="form-control"
+                                    rows="5"
+                                    placeholder="Strongly Disagree&#10;Disagree&#10;Neutral&#10;Agree&#10;Strongly Agree"
+                                >Strongly Disagree
+Disagree
+Neutral
+Agree
+Strongly Agree</textarea>
+                                <small style="color: #64748b; font-size: 0.875rem;">Default 5-point scale provided. Customize or use 3-point, 7-point, etc.</small>
+                            </div>
+
+                            <div id="choices_container_{{ section.id }}" class="form-group" style="display: none;">
+                                <label for="choices_{{ section.id }}" class="form-label">Choices (one per line)</label>
+                                <textarea
+                                    id="choices_{{ section.id }}"
+                                    name="choices"
+                                    class="form-control"
+                                    rows="3"
+                                    placeholder="Option 1&#10;Option 2&#10;Option 3"
+                                ></textarea>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" name="required" checked>
+                                    <span>Required question</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-sm btn-primary" style="margin-top: 1rem;">Add Question</button>
+
+                            <script>
+                                function toggleChoices{{ section.id }}(select) {
+                                    const likertContainer = document.getElementById('likert_container_{{ section.id }}');
+                                    const choicesContainer = document.getElementById('choices_container_{{ section.id }}');
+
+                                    likertContainer.style.display = 'none';
+                                    choicesContainer.style.display = 'none';
+
+                                    if (select.value === 'likert') {
+                                        likertContainer.style.display = 'block';
+                                    } else if (select.value === 'multiple_choice') {
+                                        choicesContainer.style.display = 'block';
+                                    }
+                                }
+                            </script>
+                        </form>
+                    </details>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color: #64748b; margin-bottom: 1.5rem;">No sections yet. Add a section to start building your questionnaire.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add Section -->
+    <div class="card mb-2">
+        <div class="card-header">
+            <h2 class="card-title">Add Section</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_section">
+
+                <div class="form-group">
+                    <label for="section_title" class="form-label">Section Title *</label>
+                    <input
+                        type="text"
+                        id="section_title"
+                        name="section_title"
+                        class="form-control"
+                        required
+                        placeholder="Leadership & Management"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="section_description" class="form-label">Section Description (Optional)</label>
+                    <textarea
+                        id="section_description"
+                        name="section_description"
+                        class="form-control"
+                        rows="2"
+                        placeholder="Questions about leadership style, decision-making, and team management"
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Section</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

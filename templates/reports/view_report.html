@@ -285,6 +285,22 @@
                                         <div class="text-response">{{ response }}</div>
                                     {% endfor %}
                                 </div>
+                            {% elif question_data.question_type == 'likert' %}
+                                <div class="likert-distribution">
+                                    {% if cat_data.distribution %}
+                                        {% for option, count in cat_data.distribution.items %}
+                                            <div style="margin-bottom: 0.5rem;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                    <span style="font-size: 0.875rem; color: #64748b;">{{ option }}</span>
+                                                    <span style="font-size: 0.875rem; font-weight: 600;">{{ count }}</span>
+                                                </div>
+                                                <div style="background: #e2e8f0; border-radius: 4px; height: 8px; overflow: hidden;">
+                                                    <div style="background: var(--primary); height: 100%; width: {% widthratio count cat_data.count 100 %}%;"></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
                             {% endif %}
                         {% endif %}
                     </div>

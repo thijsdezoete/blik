@@ -745,6 +745,60 @@ body.setup-page {
     background: #f9fafb;
 }
 
+/* Likert Scale Styling */
+.likert-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.likert-option {
+    position: relative;
+}
+
+.likert-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.likert-label {
+    display: block;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.likert-option input[type="radio"]:checked + .likert-label {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    box-shadow: 0 4px 6px rgba(102, 126, 234, 0.2);
+    font-weight: 500;
+}
+
+.likert-option input[type="radio"]:focus + .likert-label {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.likert-label:hover {
+    border-color: #667eea;
+    background: #f9fafb;
+}
+
+@media (min-width: 768px) {
+    .likert-group {
+        max-width: 700px;
+    }
+}
+
 .text-input {
     width: 100%;
     min-height: 120px;

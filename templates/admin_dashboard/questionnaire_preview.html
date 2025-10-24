@@ -54,6 +54,17 @@
                         1 to {{ question.config.max_value|default:5 }}
                         {% endif %}
                     </div>
+                    {% elif question.question_type == 'likert' %}
+                    <div style="margin-top: 0.5rem;">
+                        <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Likert scale options:</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            {% for item in question.config.scale %}
+                            <div style="padding: 0.5rem 0.75rem; background: white; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.875rem;">
+                                {{ item }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                     {% elif question.question_type == 'multiple_choice' %}
                     <div style="margin-top: 0.5rem;">
                         <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">Options:</div>

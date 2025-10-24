@@ -42,6 +42,7 @@ class Question(TimeStampedModel):
 
     QUESTION_TYPES = [
         ('rating', 'Rating Scale'),
+        ('likert', 'Likert Scale'),
         ('text', 'Free Text'),
         ('multiple_choice', 'Multiple Choice'),
     ]
@@ -56,6 +57,7 @@ class Question(TimeStampedModel):
 
     # JSON field for question configuration
     # For rating: {"min": 1, "max": 5, "labels": {"1": "Poor", "5": "Excellent"}}
+    # For likert: {"scale": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]}
     # For multiple_choice: {"choices": ["Option 1", "Option 2"]}
     config = models.JSONField(default=dict)
 

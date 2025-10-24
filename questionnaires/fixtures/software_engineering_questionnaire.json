@@ -126,18 +126,16 @@
     "pk": 5,
     "fields": {
       "section": 2,
-      "question_text": "Is this person friendly, approachable, and enjoyable to work with?",
-      "question_type": "rating",
+      "question_text": "This person is friendly, approachable, and creates a positive team environment",
+      "question_type": "likert",
       "config": {
-        "min": 1,
-        "max": 5,
-        "labels": {
-          "1": "Difficult to approach or work with",
-          "2": "Professional but distant",
-          "3": "Pleasant and approachable",
-          "4": "Consistently positive team presence",
-          "5": "Makes work enjoyable, passes the Sunday Test"
-        }
+        "scale": [
+          "Strongly Disagree",
+          "Disagree",
+          "Neutral",
+          "Agree",
+          "Strongly Agree"
+        ]
       },
       "required": true,
       "order": 2,

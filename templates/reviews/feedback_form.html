@@ -65,6 +65,25 @@
                         {% endfor %}
                     </div>
 
+                    {% elif question.question_type == 'likert' %}
+                    <div class="likert-group">
+                        {% for item in question.config.scale %}
+                        <div class="likert-option">
+                            <input
+                                type="radio"
+                                name="question_{{ question.id }}"
+                                value="{{ item }}"
+                                id="q{{ question.id }}_{{ forloop.counter }}"
+                                {% if existing_responses|get_item:question.id == item %}checked{% endif %}
+                                {% if question.required %}required{% endif %}
+                            >
+                            <label for="q{{ question.id }}_{{ forloop.counter }}" class="likert-label">
+                                {{ item }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
                     {% elif question.question_type == 'text' %}
                     <textarea
                         name="question_{{ question.id }}"

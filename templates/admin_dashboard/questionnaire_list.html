@@ -8,7 +8,7 @@
         <h1>Questionnaires</h1>
         <p>Manage 360-degree feedback questionnaires</p>
     </div>
-    <a href="/admin/questionnaires/questionnaire/add/" class="btn btn-primary">Create Questionnaire</a>
+    <a href="{% url 'questionnaire_create' %}" class="btn btn-primary">Create Questionnaire</a>
 </div>
 
 {% if questionnaires %}
@@ -29,7 +29,7 @@
             </div>
             <div style="display: flex; gap: 0.5rem;">
                 <a href="{% url 'questionnaire_preview' questionnaire.id %}" class="btn btn-sm btn-primary">Preview</a>
-                <a href="/admin/questionnaires/questionnaire/{{ questionnaire.id }}/change/" class="btn btn-sm btn-secondary">Edit</a>
+                <a href="{% url 'questionnaire_edit' questionnaire.id %}" class="btn btn-sm btn-secondary">Edit</a>
             </div>
         </div>
         <div class="card-body">
@@ -64,7 +64,7 @@
             <h3 style="margin-bottom: 0.5rem;">No questionnaires yet</h3>
             <p style="margin-bottom: 1.5rem;">Load the default questionnaire or create a custom one</p>
             <div style="display: flex; gap: 1rem; justify-content: center;">
-                <a href="/admin/questionnaires/questionnaire/add/" class="btn btn-primary">Create Questionnaire</a>
+                <a href="{% url 'questionnaire_create' %}" class="btn btn-primary">Create Questionnaire</a>
             </div>
         </div>
     </div>

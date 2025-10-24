@@ -431,6 +431,14 @@
             },
             {
                 "@type": "Question",
+                "name": "Can I customize the questionnaires?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Blik includes default 360 templates and supports creating custom questionnaires. Question types include Likert scales, multiple choice, and free text. Organize questions into sections and mark as required or optional."
+                }
+            },
+            {
+                "@type": "Question",
                 "name": "Is Blik GDPR compliant?",
                 "acceptedAnswer": {
                     "@type": "Answer",
@@ -443,6 +451,118 @@
                 "acceptedAnswer": {
                     "@type": "Answer",
                     "text": "Blik is open source and self-hosted. No per-user fees, no data lock-in, no third-party access to sensitive feedback. You own your data completely. Customize the codebase to your exact requirements without vendor restrictions."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What email providers are supported?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik supports any SMTP email service including Gmail, Office 365, SendGrid, Amazon SES, Mailgun, and custom SMTP servers. Configure during initial setup wizard or update later in settings."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can reviewers save progress and return later?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Reviewers can partially complete forms and return using the same token link. Progress is automatically saved. Once submitted, tokens are locked to prevent duplicate responses."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What happens if there are too few responses?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik enforces minimum response thresholds (default: 3 per category) to protect anonymity. If thresholds are not met, category results show 'Insufficient responses' instead of data that could identify individuals. Self-assessments always display separately."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How are reports generated and shared?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Administrators manually trigger report generation after closing a review cycle. Reports aggregate responses by category with charts and visualizations. Reviewees access reports via secure token links sent by email."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I migrate from another 360 tool to Blik?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Blik uses standard PostgreSQL database. Import historical data via Django management commands or database tools. Enterprise customers receive migration assistance. Contact us for migration planning support."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is there a mobile app?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik is mobile-responsive and works in any browser. No separate app installation required. Reviewers and reviewees access everything via mobile web browsers with optimized layouts."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What license is Blik released under?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "MIT License. Use commercially, modify, distribute, and sublicense freely. No copyleft restrictions. Ideal for businesses wanting to customize or white-label the solution."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I get support for self-hosted installations?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Community support via GitHub issues and discussions. Documentation includes deployment guides and troubleshooting. Enterprise customers receive priority email and video call support with SLA guarantees."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I white-label Blik for clients?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. MIT license permits white-labeling. Customize branding, domain, email templates, and UI. Consulting firms can deploy isolated instances per client with custom branding for each."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What databases are supported?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "PostgreSQL 15+ is the primary supported database. Docker Compose setup includes PostgreSQL automatically. Other Django-compatible databases may work but are not officially tested or supported."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How often is Blik updated?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Regular updates with bug fixes, security patches, and feature additions. Release notes published on GitHub. Self-hosted users control update timing. SaaS customers receive automatic updates with zero downtime."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I run multiple review cycles simultaneously?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Create unlimited concurrent review cycles for different reviewees. Each cycle is independent with its own questionnaire, reviewers, and timeline. No restrictions on active cycles."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What analytics and insights does Blik provide?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Reports include aggregated scores by competency area, category breakdowns (peer/manager/direct report), self vs others comparisons, distribution charts, strength and development area identification, and anonymous text comment grouping."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is there an API for integrations?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Not in the current version. Blik focuses on web interface usability for MVP. API access is on the roadmap for future releases. Contribute API development via GitHub pull requests if needed sooner."
                 }
             }
         ]

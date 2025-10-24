@@ -88,5 +88,10 @@ SITE_PROTOCOL = env('SITE_PROTOCOL', default='https')
 SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
 SITE_KEYWORDS = '360 feedback, performance review, open source, self-hosted, anonymous feedback, employee feedback'
 
+# Stripe settings (optional for landing page)
+STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default='')
+STRIPE_PRICE_ID_SAAS = env('STRIPE_PRICE_ID_SAAS', default='')
+STRIPE_PRICE_ID_ENTERPRISE = env('STRIPE_PRICE_ID_ENTERPRISE', default='')
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -47,16 +47,10 @@ services:
     networks:
       - blik_default  # Connect to main app network
 
-# Use external volumes and network created by main docker-compose.yml
+# Create volumes and network for standalone landing deployment
 volumes:
   static_volume:
-    external: true
-    name: blik_static_volume
   media_volume:
-    external: true
-    name: blik_media_volume
 
 networks:
   blik_default:
-    external: true
-    name: blik_default

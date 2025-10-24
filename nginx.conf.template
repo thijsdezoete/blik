@@ -34,10 +34,6 @@ http {
         server landing:${LANDING_PORT};
     }
 
-    upstream app_backend {
-        server web:${PORT};
-    }
-
     server {
         listen 80;
         server_name _;
@@ -48,45 +44,16 @@ http {
         add_header X-XSS-Protection "1; mode=block" always;
         add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
-        # Health check endpoint
-        location /health/ {
-            proxy_pass http://app_backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
-        # Application routes - proxy to main app
-        location ~ ^/(dashboard|admin|setup|feedback|reports|api)/ {
-            proxy_pass http://app_backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_redirect off;
-
-            # Increase timeouts for long-running requests
-            proxy_read_timeout 300s;
-            proxy_connect_timeout 75s;
-        }
-
-        # Static files for main app
+        # Static files served by landing container
         location /static/ {
-            alias /app/staticfiles/;
-            expires 30d;
-            add_header Cache-Control "public, immutable";
+            proxy_pass http://landing_backend;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # Media files for main app
-        location /media/ {
-            alias /app/mediafiles/;
-            expires 7d;
-            add_header Cache-Control "public";
-        }
-
-        # Landing/marketing pages - proxy to landing container
-        # This catches all other routes (root, /open-source/, etc.)
+        # All routes - proxy to landing container
         location / {
             proxy_pass http://landing_backend;
             proxy_set_header Host $host;

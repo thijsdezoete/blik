@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback Report - {{ cycle.reviewee.name }}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/reports.css' %}">
     <script>
         // Theme detection and initialization
         (function() {
@@ -30,125 +31,18 @@
             });
         })();
     </script>
-    <style>
-        .insight-card {
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid;
-        }
-        .insight-card.perception-gap { border-color: #8b5cf6; }
-        .insight-card.skill-profile { border-color: #3b82f6; }
-        .insight-card.strengths { border-color: #10b981; }
-        .insight-card.development { border-color: #f59e0b; }
-
-        .insight-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .insight-message {
-            color: #4b5563;
-            line-height: 1.6;
-        }
-
-        .severity-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        .severity-high { background: #fee2e2; color: #991b1b; }
-        .severity-moderate { background: #fef3c7; color: #92400e; }
-
-        .skill-badge {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 1.125rem;
-            font-weight: 600;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .section-scorecard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .scorecard-item {
-            background: white;
-            padding: 1rem;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .scorecard-label {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-        }
-
-        .scorecard-score {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .scorecard-category {
-            font-size: 0.75rem;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .strength-list, .development-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .strength-item, .development-item {
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border-radius: 6px;
-            background: #f9fafb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .strength-item { border-left: 3px solid #10b981; }
-        .development-item { border-left: 3px solid #f59e0b; }
-
-        .area-name {
-            font-weight: 500;
-            color: #1f2937;
-        }
-
-        .area-score {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #4b5563;
-        }
-
-        .priority-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .priority-high { background: #fee2e2; color: #991b1b; }
-        .priority-medium { background: #fef3c7; color: #92400e; }
-    </style>
 </head>
-<body style="background: #f3f4f6;">
+<body class="report-page">
+    <button class="report-theme-toggle" aria-label="Toggle theme">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+        <span>Toggle Theme</span>
+    </button>
+
     <div class="report-container">
         <div class="report-header">
             <h1 class="report-title">360 Feedback Report</h1>
@@ -188,8 +82,8 @@
         {% if report.report_data.insights.overall_sentiment %}
         <div class="insight-card skill-profile">
             <div class="insight-title">Overall Performance</div>
-            <div style="font-size: 3rem; font-weight: 700; color: #3b82f6; margin: 1rem 0;">
-                {{ report.report_data.insights.overall_sentiment.score }}<span style="font-size: 1.5rem; color: #9ca3af;">/5.0</span>
+            <div class="overall-score">
+                {{ report.report_data.insights.overall_sentiment.score }}<span>/5.0</span>
             </div>
             <div class="insight-message">
                 <strong>{{ report.report_data.insights.overall_sentiment.rating }}</strong> - Based on aggregated feedback across all dimensions
@@ -255,8 +149,8 @@
         </div>
         {% endif %}
 
-        <div style="background: white; padding: 2rem; border-radius: 8px; margin: 2rem 0;">
-            <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Section-Level Performance</h2>
+        <div class="report-section">
+            <h2>Section-Level Performance</h2>
             <div class="section-scorecard">
                 {% for section_name, categories in report.report_data.section_summary.items %}
                     {% for category, score in categories.items %}
@@ -270,7 +164,7 @@
             </div>
         </div>
 
-        <h2 style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem;">Detailed Feedback</h2>
+        <h2 style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-primary);">Detailed Feedback</h2>
 
         {% for section_id, section_data in report.report_data.by_section.items %}
         <div class="section-report">
@@ -315,10 +209,10 @@
                                         {% for option, count in cat_data.distribution.items %}
                                             <div style="margin-bottom: 0.5rem;">
                                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                                                    <span style="font-size: 0.875rem; color: #64748b;">{{ option }}</span>
-                                                    <span style="font-size: 0.875rem; font-weight: 600;">{{ count }}</span>
+                                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ option }}</span>
+                                                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ count }}</span>
                                                 </div>
-                                                <div style="background: #e2e8f0; border-radius: 4px; height: 8px; overflow: hidden;">
+                                                <div style="background: var(--bg-light); border-radius: 4px; height: 8px; overflow: hidden;">
                                                     <div style="background: var(--primary); height: 100%; width: {% widthratio count cat_data.count 100 %}%;"></div>
                                                 </div>
                                             </div>
@@ -335,5 +229,35 @@
         </div>
         {% endfor %}
     </div>
+
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.querySelector('.report-theme-toggle');
+            const sunIcon = themeToggle.querySelector('.sun-icon');
+            const moonIcon = themeToggle.querySelector('.moon-icon');
+
+            const updateThemeIcons = () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                } else {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                }
+            };
+
+            updateThemeIcons();
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcons();
+            });
+        });
+    </script>
 </body>
 </html>

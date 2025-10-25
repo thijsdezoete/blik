@@ -518,6 +518,157 @@
     height: 24px;
 }
 
+/* Signup Page Styles */
+.signup-container {
+    max-width: 800px;
+    margin: 80px auto;
+    padding: 40px 20px;
+}
+
+.signup-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.signup-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: var(--gradient-horizontal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.signup-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.plan-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.plan-card:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-lg);
+}
+
+.plan-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.plan-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.plan-price small {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+.plan-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+    text-align: left;
+}
+
+.plan-features li {
+    padding: 8px 0;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+}
+
+.plan-features li:before {
+    content: "✓";
+    color: var(--success);
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkout-btn.primary {
+    background: var(--gradient-horizontal);
+    color: white;
+}
+
+.checkout-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+}
+
+.checkout-btn.secondary {
+    background: var(--bg-card);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.checkout-btn.secondary:hover {
+    background: var(--bg-light);
+}
+
+.checkout-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: none;
+}
+
+.back-link {
+    display: inline-block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.back-link:hover {
+    color: var(--primary);
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .landing-page .header-content {

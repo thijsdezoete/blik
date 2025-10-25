@@ -1,0 +1,286 @@
+/* Report Page Styles */
+
+.report-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+body.report-page {
+    background: var(--bg-body);
+}
+
+/* Theme Toggle for Reports */
+.report-theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.report-theme-toggle:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.report-theme-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Print styles - always use light theme */
+@media print {
+    .report-theme-toggle {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .insight-card,
+    .scorecard-item,
+    .section-report,
+    .question-report {
+        background: white !important;
+        border-color: #e5e7eb !important;
+    }
+}
+
+/* Insight Cards */
+.insight-card {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid;
+}
+
+.insight-card.perception-gap { border-color: #8b5cf6; }
+.insight-card.skill-profile { border-color: #3b82f6; }
+.insight-card.strengths { border-color: #10b981; }
+.insight-card.development { border-color: #f59e0b; }
+
+.insight-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.insight-message {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Badges */
+.severity-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.severity-high { background: #fee2e2; color: #991b1b; }
+.severity-moderate { background: #fef3c7; color: #92400e; }
+
+.skill-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Scorecard */
+.section-scorecard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.scorecard-item {
+    background: var(--bg-card);
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.scorecard-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.scorecard-score {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.scorecard-category {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Radar Chart Placeholder */
+.radar-placeholder {
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-card) 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Comparison Bars */
+.comparison-bar {
+    height: 24px;
+    background: var(--bg-light);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    margin: 0.5rem 0;
+}
+
+.comparison-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.comparison-bar-self { background: #8b5cf6; }
+.comparison-bar-others { background: #3b82f6; }
+
+.comparison-legend {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* Strength and Development Lists */
+.strength-list, .development-list {
+    list-style: none;
+    padding: 0;
+}
+
+.strength-item, .development-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 6px;
+    background: var(--bg-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.strength-item { border-left: 3px solid #10b981; }
+.development-item { border-left: 3px solid #f59e0b; }
+
+.area-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.area-score {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.priority-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-high { background: #fee2e2; color: #991b1b; }
+.priority-medium { background: #fef3c7; color: #92400e; }
+
+/* Report Section Styles */
+.report-section {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.report-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+/* Notice Box */
+.notice {
+    background: #dbeafe;
+    border-left: 4px solid #3b82f6;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+}
+
+.notice p {
+    margin: 0;
+    color: #1e40af;
+}
+
+/* Dark mode adjustments for notice */
+[data-theme="dark"] .notice {
+    background: rgba(59, 130, 246, 0.1);
+    border-left-color: #3b82f6;
+}
+
+[data-theme="dark"] .notice p {
+    color: #60a5fa;
+}
+
+/* Overall Performance Score */
+.overall-score {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #3b82f6;
+    margin: 1rem 0;
+}
+
+.overall-score span {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}

@@ -7,12 +7,12 @@
 
 /* Header */
 .landing-page .header {
-    background: white;
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .landing-page .header-content {
@@ -85,7 +85,7 @@
 }
 
 .landing-page .section-alt {
-    background: white;
+    background: var(--bg-card);
 }
 
 .landing-page .section-title {
@@ -104,10 +104,10 @@
 }
 
 .landing-page .feature-card {
-    background: white;
+    background: var(--bg-card);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -168,10 +168,10 @@
 }
 
 .landing-page .pricing-card {
-    background: white;
+    background: var(--bg-card);
     padding: 2.5rem;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
     border: 2px solid var(--border);
     position: relative;
     display: flex;
@@ -247,10 +247,10 @@
 }
 
 .landing-page .faq-item {
-    background: white;
+    background: var(--bg-card);
     padding: 0;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
     border: 1px solid var(--border);
 }
 
@@ -378,10 +378,56 @@
     color: var(--text-tertiary);
 }
 
+/* Mobile Menu Toggle */
+.landing-page .mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--text-primary);
+}
+
+.landing-page .mobile-menu-toggle svg {
+    width: 24px;
+    height: 24px;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
+    .landing-page .header-content {
+        position: relative;
+    }
+
+    .landing-page .mobile-menu-toggle {
+        display: block;
+    }
+
     .landing-page .nav {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        border-top: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+    }
+
+    .landing-page .nav.active {
+        display: flex;
+    }
+
+    .landing-page .nav a {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .landing-page .nav a:last-child {
+        border-bottom: none;
     }
 
     .landing-page .hero-title {

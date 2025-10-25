@@ -144,7 +144,7 @@
             <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
                 <h3 style="margin-bottom: 1rem;">Don't want the hassle of self-hosting?</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.125rem;">We offer a fully managed EU-hosted version with close to unlimited functionality for just €49/month. No DevOps required.</p>
-                <a href="{% url 'landing:signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
             </div>
         </div>
     </section>
@@ -260,7 +260,7 @@
                         <li>Custom domain</li>
                         <li>SSL included</li>
                     </ul>
-                    <a href="{% url 'landing:signup' %}" class="btn btn-primary">Start Free Trial</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
                 </div>
                 <div class="pricing-card">
                     <h3>Enterprise</h3>
@@ -276,7 +276,7 @@
                         <li>SSL included</li>
                         <li>SLA guarantees</li>
                     </ul>
-                    <a href="{% url 'landing:signup' %}" class="btn btn-secondary">Start Free Trial</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Start Free Trial</a>
                 </div>
             </div>
         </div>
@@ -397,7 +397,7 @@
                 <h2>Ready to transform your feedback process?</h2>
                 <p>Self-host for free or let us handle the infrastructure with our affordable EU-hosted plans.</p>
                 <div class="cta-buttons">
-                    <a href="{% url 'landing:signup' %}" class="btn btn-primary">Start Free Trial</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
                 </div>
             </div>

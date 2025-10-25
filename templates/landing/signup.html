@@ -1,4 +1,4 @@
-{% load static %}
+{% load static landing_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -170,7 +170,7 @@
 </head>
 <body class="landing-page">
     <div class="signup-container">
-        <a href="{% url 'landing:index' %}" class="back-link">← Back to Home</a>
+        <a href="{% landing_url 'index' %}" class="back-link">← Back to Home</a>
 
         <div class="signup-header">
             <h1 class="signup-title">Start Your Free Trial</h1>

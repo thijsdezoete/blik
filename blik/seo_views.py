@@ -6,34 +6,44 @@ def sitemap(request):
     """Generate XML sitemap for search engines."""
     base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
 
+    # Detect if we're in standalone landing container or main app
+    is_standalone = getattr(settings, 'ROOT_URLCONF', '') == 'landing_urls'
+    prefix = '' if is_standalone else '/landing'
+
     sitemap_xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>{base_url}/landing/</loc>
+        <loc>{base_url}{prefix}/</loc>
         <lastmod>2025-10-24</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>{base_url}/landing/open-source/</loc>
+        <loc>{base_url}{prefix}/signup/</loc>
         <lastmod>2025-10-24</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>{base_url}/landing/dreyfus-model/</loc>
+        <loc>{base_url}{prefix}/open-source/</loc>
+        <lastmod>2025-10-24</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>{base_url}{prefix}/dreyfus-model/</loc>
         <lastmod>2025-10-24</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>{base_url}/landing/eu-tech/</loc>
+        <loc>{base_url}{prefix}/eu-tech/</loc>
         <lastmod>2025-10-24</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>{base_url}/landing/privacy/</loc>
+        <loc>{base_url}{prefix}/privacy/</loc>
         <lastmod>2025-10-24</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>

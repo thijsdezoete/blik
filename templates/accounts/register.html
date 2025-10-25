@@ -6,7 +6,11 @@
 <div class="register-container">
     <div class="register-header">
         <h1>Create Account</h1>
-        <p>Join your organization's feedback platform</p>
+        {% if organization %}
+            <p>Join {{ organization.name }}</p>
+        {% else %}
+            <p>Create your account</p>
+        {% endif %}
     </div>
 
     {% if messages %}
@@ -17,66 +21,20 @@
         {% endfor %}
     {% endif %}
 
-    <form method="post">
+    <form method="post" action="{% url 'account_signup' %}">
         {% csrf_token %}
 
         <div class="form-group">
-            <label for="{{ form.username.id_for_label }}">Username</label>
-            {{ form.username }}
-            {% if form.username.help_text %}
-                <span class="form-text">{{ form.username.help_text }}</span>
-            {% endif %}
-            {% if form.username.errors %}
-                <span class="form-text text-danger">{{ form.username.errors.0 }}</span>
-            {% endif %}
+            <label for="id_email">Email</label>
+            <input type="email" name="email" id="id_email" class="form-control" required autofocus>
+            <span class="form-text">Use your work email address</span>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.email.id_for_label }}">Email</label>
-            {{ form.email }}
-            {% if form.email.help_text %}
-                <span class="form-text">{{ form.email.help_text }}</span>
-            {% endif %}
-            {% if form.email.errors %}
-                <span class="form-text text-danger">{{ form.email.errors.0 }}</span>
-            {% endif %}
+            <label for="id_password1">Password</label>
+            <input type="password" name="password1" id="id_password1" class="form-control" required minlength="8">
+            <span class="form-text">At least 8 characters</span>
         </div>
-
-        <div class="form-group">
-            <label for="{{ form.password.id_for_label }}">Password</label>
-            {{ form.password }}
-            {% if form.password.help_text %}
-                <span class="form-text">{{ form.password.help_text }}</span>
-            {% endif %}
-            {% if form.password.errors %}
-                <span class="form-text text-danger">{{ form.password.errors.0 }}</span>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ form.password_confirm.id_for_label }}">Confirm Password</label>
-            {{ form.password_confirm }}
-            {% if form.password_confirm.errors %}
-                <span class="form-text text-danger">{{ form.password_confirm.errors.0 }}</span>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ form.organization_name.id_for_label }}">Organization</label>
-            {{ form.organization_name }}
-            {% if form.organization_name.help_text %}
-                <span class="form-text">{{ form.organization_name.help_text }}</span>
-            {% endif %}
-            {% if form.organization_name.errors %}
-                <span class="form-text text-danger">{{ form.organization_name.errors.0 }}</span>
-            {% endif %}
-        </div>
-
-        {% if form.non_field_errors %}
-            <div class="alert alert-error">
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
 
         <button type="submit" class="btn-primary">Create Account</button>
     </form>

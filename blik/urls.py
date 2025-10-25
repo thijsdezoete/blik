@@ -42,7 +42,8 @@ urlpatterns = [
 
     # Other apps
     path('setup/', include('core.urls')),
-    path('accounts/', include('accounts.urls')),
+    path('accounts/', include('allauth.urls')),  # Allauth URLs (must be before custom accounts URLs)
+    path('accounts/', include('accounts.urls')),  # Custom auth views
     path('', include('reviews.urls')),
     path('', include('reports.urls')),
     path('landing/', include('landing.urls')),

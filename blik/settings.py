@@ -171,7 +171,6 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Organization settings
 ORGANIZATION_NAME = env('ORGANIZATION_NAME', default='Blik')
-ENABLE_MULTITENANCY = env.bool('ENABLE_MULTITENANCY', default=False)
 
 # SEO settings
 SITE_NAME = 'Blik360'

@@ -880,8 +880,10 @@ def settings_view(request):
     try:
         from subscriptions.models import Subscription
         subscription = organization.subscription
-    except Subscription.DoesNotExist:
+    except (Subscription.DoesNotExist, AttributeError):
         pass
+    except Exception as e:
+        print(f"Error getting subscription: {e}")
 
     context = {
         'organization': organization,

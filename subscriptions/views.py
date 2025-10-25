@@ -8,9 +8,12 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
-from datetime import datetime
+from django.shortcuts import redirect
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from datetime import datetime, timezone as dt_timezone
 from core.models import Organization
-from .models import Plan, Subscription
+from .models import Plan, Subscription, OneTimeLoginToken
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -62,6 +65,13 @@ def create_checkout_session(request):
         if not price_id or not plan_type:
             return JsonResponse({'error': 'Missing required fields'}, status=400)
 
+        # Build base URL from request for local dev, or use configured domain
+        if settings.DEBUG:
+            scheme = 'https' if request.is_secure() else 'http'
+            base_url = f"{scheme}://{request.get_host()}"
+        else:
+            base_url = f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}'
+
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
@@ -69,8 +79,11 @@ def create_checkout_session(request):
                 'quantity': 1,
             }],
             mode='subscription',
-            success_url=f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/landing/?success=true',
-            cancel_url=f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/landing/?canceled=true',
+            success_url=f'{base_url}/api/stripe/checkout-success/?session_id={{CHECKOUT_SESSION_ID}}',
+            cancel_url=f'{base_url}/landing/signup/?canceled=true',
+            subscription_data={
+                'trial_period_days': 14,
+            },
             metadata={
                 'plan_type': plan_type,
             },
@@ -94,7 +107,7 @@ def stripe_webhook(request):
         )
     except ValueError:
         return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
+    except stripe._error.SignatureVerificationError:
         return HttpResponse(status=400)
 
     # Handle the event
@@ -150,10 +163,6 @@ def handle_checkout_session_completed(session):
     if existing_user:
         print(f"WARNING: User {customer_email} already exists. Linking to existing user.")
         user = existing_user
-        # Update to staff if not already
-        if not user.is_staff:
-            user.is_staff = True
-            user.save()
         password = None  # Don't generate new password for existing user
     else:
         # Create admin user
@@ -165,12 +174,18 @@ def handle_checkout_session_completed(session):
             username = f"{base_username}{counter}"
             counter += 1
 
-        password = User.objects.make_random_password(length=16)
+        from django.contrib.auth.hashers import make_password
+        import secrets
+        import string
+
+        # Generate random password
+        alphabet = string.ascii_letters + string.digits
+        password = ''.join(secrets.choice(alphabet) for _ in range(16))
+
         user = User.objects.create_user(
             username=username,
             email=customer_email,
-            password=password,
-            is_staff=True
+            password=password
         )
 
     # Create organization
@@ -188,21 +203,39 @@ def handle_checkout_session_completed(session):
     )
 
     # Create subscription
+    # For trial subscriptions, use trial dates as current period
+    # For active subscriptions, use billing period dates
+    sub_dict = dict(stripe_subscription)
+
+    current_start = sub_dict.get('current_period_start') or sub_dict.get('trial_start') or sub_dict.get('created')
+    current_end = sub_dict.get('current_period_end') or sub_dict.get('trial_end')
+
     Subscription.objects.create(
         organization=org,
         plan=plan,
         stripe_customer_id=stripe_customer_id,
         stripe_subscription_id=stripe_subscription_id,
-        status=stripe_subscription['status'],
-        current_period_start=datetime.fromtimestamp(stripe_subscription['current_period_start'], tz=timezone.utc),
-        current_period_end=datetime.fromtimestamp(stripe_subscription['current_period_end'], tz=timezone.utc),
-        trial_start=datetime.fromtimestamp(stripe_subscription['trial_start'], tz=timezone.utc) if stripe_subscription.get('trial_start') else None,
-        trial_end=datetime.fromtimestamp(stripe_subscription['trial_end'], tz=timezone.utc) if stripe_subscription.get('trial_end') else None,
+        status=sub_dict.get('status', 'trialing'),
+        current_period_start=datetime.fromtimestamp(current_start, tz=dt_timezone.utc),
+        current_period_end=datetime.fromtimestamp(current_end, tz=dt_timezone.utc),
+        trial_start=datetime.fromtimestamp(sub_dict['trial_start'], tz=dt_timezone.utc) if sub_dict.get('trial_start') else None,
+        trial_end=datetime.fromtimestamp(sub_dict['trial_end'], tz=dt_timezone.utc) if sub_dict.get('trial_end') else None,
+    )
+
+    # Create one-time login token for auto-login
+    from .models import OneTimeLoginToken
+    from datetime import timedelta
+
+    login_token = OneTimeLoginToken.objects.create(
+        user=user,
+        expires_at=timezone.now() + timedelta(hours=1)
     )
 
     # Send welcome email (only if new user with password)
     if password:
         send_welcome_email(org, user, password)
+
+    print(f"Created organization '{org.name}' with auto-login token: {login_token.token}")
 
 
 def handle_subscription_updated(stripe_subscription):
@@ -243,3 +276,95 @@ def handle_payment_failed(invoice):
         # TODO: Send payment failed email
     except Subscription.DoesNotExist:
         pass
+
+
+def checkout_success(request):
+    """
+    Handle Stripe checkout success redirect.
+    Wait for webhook to create account, then redirect to auto-login.
+    """
+    session_id = request.GET.get('session_id')
+    if not session_id:
+        return redirect('login')
+
+    try:
+        # Retrieve the session to get customer email
+        session = stripe.checkout.Session.retrieve(session_id)
+        customer_email = session['customer_details']['email']
+
+        # Poll for the user to be created (webhook might still be processing)
+        import time
+        max_attempts = 10
+        for attempt in range(max_attempts):
+            user = User.objects.filter(email=customer_email).first()
+            if user:
+                # Get the latest login token for this user
+                token = OneTimeLoginToken.objects.filter(
+                    user=user,
+                    used=False,
+                    expires_at__gt=timezone.now()
+                ).order_by('-created_at').first()
+
+                if token:
+                    return redirect('subscriptions:auto_login', token=token.token)
+
+            if attempt < max_attempts - 1:
+                time.sleep(1)  # Wait 1 second before retrying
+
+        # If we get here, something went wrong
+        return redirect('login')
+
+    except Exception as e:
+        print(f"Error in checkout success: {e}")
+        return redirect('login')
+
+
+def auto_login(request, token):
+    """Auto-login user with one-time token"""
+    try:
+        login_token = OneTimeLoginToken.objects.get(
+            token=token,
+            used=False,
+            expires_at__gt=timezone.now()
+        )
+
+        # Mark token as used
+        login_token.used = True
+        login_token.save()
+
+        # Log the user in
+        login(request, login_token.user, backend='django.contrib.auth.backends.ModelBackend')
+
+        # Redirect to setup wizard for onboarding
+        return redirect('setup_organization')
+
+    except OneTimeLoginToken.DoesNotExist:
+        return redirect('login')
+
+
+@login_required
+def billing_portal(request):
+    """Redirect to Stripe billing portal for subscription management"""
+    try:
+        # Get user's organization
+        if not hasattr(request.user, 'profile'):
+            return redirect('settings')
+
+        organization = request.user.profile.organization
+
+        # Get subscription
+        subscription = organization.subscription
+        if not subscription:
+            return redirect('settings')
+
+        # Create billing portal session
+        session = stripe.billing_portal.Session.create(
+            customer=subscription.stripe_customer_id,
+            return_url=f"{request.scheme}://{request.get_host()}/dashboard/settings/",
+        )
+
+        return redirect(session.url)
+
+    except Exception as e:
+        print(f"Error creating billing portal session: {e}")
+        return redirect('settings')

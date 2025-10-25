@@ -60,12 +60,12 @@ def setup_admin(request):
 @require_http_methods(['GET', 'POST'])
 def setup_organization(request):
     """Step 2: Configure organization details."""
+    # If organization already exists, skip to email setup
     if Organization.objects.exists():
         return redirect('setup_email')
 
-    if not request.user.is_superuser:
-        messages.error(request, 'You must be an administrator to complete setup.')
-        return redirect('/')
+    # For initial setup, allow any authenticated user
+    # (they're the first user, so they should be able to set up)
 
     if request.method == 'POST':
         form = SetupOrganizationForm(request.POST)
@@ -100,10 +100,6 @@ def setup_organization(request):
 @require_http_methods(['GET', 'POST'])
 def setup_email(request):
     """Step 3: Configure email settings."""
-    if not request.user.is_superuser:
-        messages.error(request, 'You must be an administrator to complete setup.')
-        return redirect('/')
-
     organization = Organization.objects.first()
     if not organization:
         return redirect('setup_organization')

@@ -45,43 +45,21 @@ class SetupMiddleware:
 
 class OrganizationMiddleware:
     """
-    Attach organization to request based on subdomain or user profile
+    Attach organization to request based on user profile
 
-    Priority (when ENABLE_MULTITENANCY=True):
-    1. Subdomain (e.g., acme.yourdomain.com -> org with slug 'acme')
-    2. User profile (for authenticated users)
-    3. None (for public pages)
+    For authenticated users:
+    - Uses their profile organization
+    - Falls back to first organization for staff/superuser without profiles
 
-    When ENABLE_MULTITENANCY=False:
-    - Subdomain detection is disabled
-    - All authenticated users use their profile organization
-    - Single-org mode (first organization)
+    For anonymous users:
+    - Organization context not available (public endpoints only)
     """
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        from django.conf import settings
-
         # Initialize organization as None
         request.organization = None
-
-        # Only check subdomain if multitenancy is enabled
-        if settings.ENABLE_MULTITENANCY:
-            # Try to get organization from subdomain first
-            host = request.get_host().split(':')[0]  # Remove port
-            parts = host.split('.')
-
-            # If subdomain exists (e.g., acme.yourdomain.com)
-            if len(parts) > 2:
-                subdomain = parts[0]
-                try:
-                    request.organization = Organization.objects.get(slug=subdomain, is_active=True)
-                    # Store in session for signup
-                    if hasattr(request, 'session'):
-                        request.session['current_organization_id'] = request.organization.id
-                except Organization.DoesNotExist:
-                    pass
 
         # Skip for anonymous users on public endpoints
         exempt_paths = [
@@ -97,8 +75,8 @@ class OrganizationMiddleware:
         if any(request.path.startswith(path) for path in exempt_paths):
             return self.get_response(request)
 
-        # For authenticated users without subdomain, use their profile
-        if not request.organization and request.user.is_authenticated:
+        # For authenticated users, use their profile organization
+        if request.user.is_authenticated:
             try:
                 if hasattr(request.user, 'profile'):
                     request.organization = request.user.profile.organization

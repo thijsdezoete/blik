@@ -5,35 +5,35 @@
 {% block subtitle %}Your Blik instance is ready to use!{% endblock %}
 
 {% block content %}
-<div style="width: 80px; height: 80px; border-radius: 50%; background: #28a745; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center;">
+<div style="width: 80px; height: 80px; border-radius: 50%; background: #059669; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center;">
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
 </div>
 
-<h2 style="text-align: center; margin-bottom: 15px; color: #28a745;">Setup Complete!</h2>
-<p style="text-align: center; margin-bottom: 30px; color: #666;">
+<h2 style="text-align: center; margin-bottom: 15px; color: #059669;">Setup Complete!</h2>
+<p style="text-align: center; margin-bottom: 30px; color: var(--text-secondary);">
     Congratulations! Your Blik 360-degree feedback system is now configured and ready to use.
 </p>
 
-<div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-    <h3 style="margin-bottom: 15px; color: #333;">Configuration Summary</h3>
+<div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+    <h3 style="margin-bottom: 15px; color: var(--text-primary);">Configuration Summary</h3>
     <table style="width: 100%;">
         <tr>
-            <td style="padding: 8px 0; color: #888;">Administrator:</td>
-            <td style="padding: 8px 0; font-weight: 600;">{{ user.username }}</td>
+            <td style="padding: 8px 0; color: var(--text-secondary);">Administrator:</td>
+            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">{{ user.username }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: #888;">Email:</td>
-            <td style="padding: 8px 0; font-weight: 600;">{{ user.email }}</td>
+            <td style="padding: 8px 0; color: var(--text-secondary);">Email:</td>
+            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">{{ user.email }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: #888;">Organization:</td>
-            <td style="padding: 8px 0; font-weight: 600;">{{ organization.name }}</td>
+            <td style="padding: 8px 0; color: var(--text-secondary);">Organization:</td>
+            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">{{ organization.name }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: #888;">Email Configured:</td>
-            <td style="padding: 8px 0; font-weight: 600;">
+            <td style="padding: 8px 0; color: var(--text-secondary);">Email Configured:</td>
+            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">
                 {% if organization.smtp_host %}
                 Yes ({{ organization.smtp_host }})
                 {% else %}
@@ -62,15 +62,15 @@
     </ul>
 </div>
 
-<div style="background: #f0f4ff; border-radius: 8px; padding: 20px; margin-top: 25px; border-left: 4px solid #667eea;">
-    <h3 style="margin-bottom: 10px; color: #667eea; font-size: 16px;">Want to explore first?</h3>
-    <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+<div style="background: var(--bg-info); border-radius: 8px; padding: 20px; margin-top: 25px; border-left: 4px solid var(--primary-color);">
+    <h3 style="margin-bottom: 10px; color: var(--primary-color); font-size: 16px;">Want to explore first?</h3>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
         Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens.
     </p>
     <form method="post" style="margin: 0;">
         {% csrf_token %}
         <input type="hidden" name="generate_test_data" value="1">
-        <button type="submit" class="setup-button" style="margin: 0;">
+        <button type="submit" class="btn btn-primary" style="margin: 0;">
             Generate Test Data
         </button>
     </form>
@@ -78,13 +78,13 @@
 
 <div class="button-group" style="margin-top: 30px;">
     <div></div>
-    <a href="/dashboard/" class="setup-button" style="text-decoration: none; display: inline-block;">
+    <a href="/dashboard/" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
         Go to Admin Dashboard
     </a>
 </div>
 
-<p style="text-align: center; margin-top: 30px; color: #888; font-size: 14px;">
-    Need help? Check out the <a href="https://github.com/yourusername/blik" style="color: #667eea;">documentation</a>
-    or <a href="https://github.com/yourusername/blik/issues" style="color: #667eea;">report an issue</a>.
+<p style="text-align: center; margin-top: 30px; color: var(--text-secondary); font-size: 14px;">
+    Need help? Check out the <a href="https://github.com/yourusername/blik" style="color: var(--primary-color);">documentation</a>
+    or <a href="https://github.com/yourusername/blik/issues" style="color: var(--primary-color);">report an issue</a>.
 </p>
 {% endblock %}

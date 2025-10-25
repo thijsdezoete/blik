@@ -1290,3 +1290,133 @@ body.setup-page {
     transform: translateY(0);
 }
 
+/* ============================================
+   Setup Wizard Styles
+   ============================================ */
+
+.setup-page .header {
+    background: var(--primary-color);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.setup-page .header h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.setup-page .header p {
+    font-size: 14px;
+    opacity: 0.9;
+    color: white;
+}
+
+.setup-page .progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+    height: 4px;
+    margin-top: 20px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.setup-page .progress-fill {
+    background: white;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.setup-page .content {
+    padding: 40px;
+    background: var(--bg-primary);
+}
+
+.setup-page .help-text {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+.setup-page .form-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.setup-page .form-check-input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.setup-page .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.setup-page .errorlist {
+    list-style: none;
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+[data-theme="dark"] .setup-page .errorlist {
+    color: #f87171;
+}
+
+.setup-page .errorlist li {
+    margin-bottom: 3px;
+}
+
+.setup-page .step-indicator {
+    text-align: center;
+    font-size: 14px;
+    color: white;
+    opacity: 0.9;
+    margin-top: 10px;
+}
+
+.setup-page .next-steps {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.setup-page .next-steps h3 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.setup-page .next-steps ul {
+    list-style: none;
+}
+
+.setup-page .next-steps li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.setup-page .next-steps li:last-child {
+    border-bottom: none;
+}
+
+.setup-page .next-steps a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.setup-page .next-steps a:hover {
+    text-decoration: underline;
+}
+
+.setup-page .setup-container {
+    background: var(--bg-primary);
+}
+

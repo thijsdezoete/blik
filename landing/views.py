@@ -68,11 +68,12 @@ def privacy(request):
 
 def signup(request):
     """Signup page with Stripe checkout integration."""
-    # Get main app URL from environment or build from SITE_DOMAIN
+    # Get main app URL from environment or use current host for local dev
     main_app_url = getattr(settings, 'MAIN_APP_URL', None)
-    if not main_app_url:
-        # Fallback: assume main app is at app.domain.com
-        main_app_url = f"{settings.SITE_PROTOCOL}://app.{settings.SITE_DOMAIN}"
+    if not main_app_url or settings.DEBUG:
+        # For local development, use the current request host
+        scheme = 'https' if request.is_secure() else 'http'
+        main_app_url = f"{scheme}://{request.get_host()}"
 
     context = {
         'site_name': settings.SITE_NAME,

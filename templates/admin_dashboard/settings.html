@@ -117,7 +117,7 @@
             </div>
             {% endif %}
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                <a href="https://billing.stripe.com/p/login/test_your_portal_link" class="btn btn-secondary" target="_blank" style="display: inline-flex; align-items: center; gap: 8px;">
+                <a href="{% url 'subscriptions:billing_portal' %}" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                     Manage Billing
                 </a>

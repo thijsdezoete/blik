@@ -43,35 +43,17 @@ def login_view(request):
 @require_http_methods(["GET"])
 def register_view(request):
     """
-    User registration view - only available in multitenancy mode.
-    In single-tenant mode, users must register via Stripe or invitation.
+    User registration view - disabled.
+    Users must register via signup page or invitation.
     """
-    from django.conf import settings
-
     if request.user.is_authenticated:
         return redirect('admin_dashboard')
 
-    # Disable direct registration in single-tenant mode
-    if not settings.ENABLE_MULTITENANCY:
-        messages.warning(
-            request,
-            'Direct registration is disabled. Please subscribe via our pricing page or use an invitation link.'
-        )
-        return redirect('login')
-
-    # Get organization with registration enabled
-    organization = Organization.objects.filter(
-        allow_registration=True,
-        is_active=True
-    ).first()
-
-    if not organization:
-        messages.warning(request, 'Registration is currently disabled.')
-        return redirect('login')
-
-    return render(request, 'accounts/register.html', {
-        'organization': organization
-    })
+    messages.warning(
+        request,
+        'Please use the signup page to create an account.'
+    )
+    return redirect('login')
 
 
 @require_http_methods(["GET", "POST"])

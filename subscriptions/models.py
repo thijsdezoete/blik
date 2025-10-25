@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from core.models import TimeStampedModel, Organization
+import secrets
 
 
 class Plan(models.Model):
@@ -75,3 +76,22 @@ class Subscription(TimeStampedModel):
     @property
     def is_past_due(self):
         return self.status == 'past_due'
+
+
+class OneTimeLoginToken(TimeStampedModel):
+    """One-time use login token for auto-login after Stripe checkout"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='login_tokens')
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    used = models.BooleanField(default=False)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        db_table = 'one_time_login_tokens'
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = secrets.token_urlsafe(48)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Login token for {self.user.email}"

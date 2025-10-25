@@ -7,6 +7,12 @@ def sitemap(request):
     # Detect actual protocol from request (handles Cloudflare/proxy SSL termination)
     # Django's request.is_secure() respects SECURE_PROXY_SSL_HEADER setting
     protocol = 'https' if request.is_secure() else 'http'
+
+    # Fallback: production is always HTTPS when accessed via proper domain
+    # (Development might be http://localhost)
+    if protocol == 'http' and not ('localhost' in request.get_host() or '127.0.0.1' in request.get_host()):
+        protocol = 'https'
+
     base_url = f"{protocol}://{settings.SITE_DOMAIN}"
 
     # Detect if we're in standalone landing container or main app
@@ -61,6 +67,12 @@ def robots(request):
     # Detect actual protocol from request (handles Cloudflare/proxy SSL termination)
     # Django's request.is_secure() respects SECURE_PROXY_SSL_HEADER setting
     protocol = 'https' if request.is_secure() else 'http'
+
+    # Fallback: production is always HTTPS when accessed via proper domain
+    # (Development might be http://localhost)
+    if protocol == 'http' and not ('localhost' in request.get_host() or '127.0.0.1' in request.get_host()):
+        protocol = 'https'
+
     base_url = f"{protocol}://{settings.SITE_DOMAIN}"
 
     robots_txt = f'''User-agent: *

@@ -211,7 +211,7 @@
 .complete-icon {
     width: 80px;
     height: 80px;
-    background: #10b981;
+    background: var(--success, #10b981);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -224,12 +224,12 @@
 .complete-title {
     font-size: 2rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary, #111827);
     margin-bottom: 16px;
 }
 
 .complete-message {
     font-size: 1.125rem;
-    color: #6b7280;
+    color: var(--text-secondary, #6b7280);
     line-height: 1.6;
 }

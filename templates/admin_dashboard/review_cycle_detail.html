@@ -57,12 +57,30 @@
 <!-- Progress Bar -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-body">
-        <div style="margin-bottom: 0.5rem; font-weight: 500;">Overall Progress</div>
-        <div class="progress" style="height: 24px; border-radius: 12px;">
-            <div class="progress-bar" style="width: {{ completion_rate }}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
-                {{ completed_tokens }} / {{ total_tokens }}
+        {% if claimed_tokens > 0 %}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <div style="font-weight: 500;">Progress</div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                {{ completed_tokens }} of {{ claimed_tokens }} in progress ({{ claimed_completion_rate|floatformat:1 }}%)
+                • {{ completed_tokens }} of {{ total_tokens }} total ({{ completion_rate|floatformat:1 }}%)
             </div>
         </div>
+        <div class="progress" style="height: 24px; border-radius: 12px;">
+            <div class="progress-bar" style="width: {% if claimed_completion_rate > 0 %}{{ claimed_completion_rate }}{% else %}2{% endif %}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                {% if claimed_completion_rate > 15 %}{{ completed_tokens }} / {{ claimed_tokens }}{% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <div style="font-weight: 500;">Progress</div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary);">{{ completed_tokens }} / {{ total_tokens }} ({{ completion_rate|floatformat:1 }}%)</div>
+        </div>
+        <div class="progress" style="height: 24px; border-radius: 12px;">
+            <div class="progress-bar" style="width: {% if completion_rate > 0 %}{{ completion_rate }}{% else %}2{% endif %}%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                {% if completion_rate > 15 %}{{ completed_tokens }} / {{ total_tokens }}{% endif %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -79,10 +97,10 @@
 
         <div style="display: grid; gap: 1rem;">
             {% if cycle.invitation_token_self %}
-            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Self Assessment</div>
-                    <code id="invite-self" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}</code>
+                    <code id="invite-self" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}</code>
                 </div>
                 <button onclick="copyInvitationLink('self')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link
@@ -91,10 +109,10 @@
             {% endif %}
 
             {% if cycle.invitation_token_peer %}
-            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Peer Review</div>
-                    <code id="invite-peer" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_peer %}</code>
+                    <code id="invite-peer" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_peer %}</code>
                 </div>
                 <button onclick="copyInvitationLink('peer')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link
@@ -103,10 +121,10 @@
             {% endif %}
 
             {% if cycle.invitation_token_manager %}
-            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Manager Review</div>
-                    <code id="invite-manager" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_manager %}</code>
+                    <code id="invite-manager" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_manager %}</code>
                 </div>
                 <button onclick="copyInvitationLink('manager')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link
@@ -115,10 +133,10 @@
             {% endif %}
 
             {% if cycle.invitation_token_direct_report %}
-            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+            <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Direct Report Review</div>
-                    <code id="invite-direct_report" style="font-size: 0.875rem; color: #6b7280; background: white; padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_direct_report %}</code>
+                    <code id="invite-direct_report" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_direct_report %}</code>
                 </div>
                 <button onclick="copyInvitationLink('direct_report')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link

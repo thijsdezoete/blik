@@ -42,7 +42,16 @@
                 <li><a href="{% url 'questionnaire_list' %}" {% if 'questionnaire' in request.resolver_match.url_name %}class="active"{% endif %}>Questionnaires</a></li>
                 <li><a href="{% url 'review_cycle_list' %}" {% if 'cycle' in request.resolver_match.url_name %}class="active"{% endif %}>Cycles</a></li>
                 <li><a href="{% url 'settings' %}" {% if request.resolver_match.url_name == 'settings' %}class="active"{% endif %}>Settings</a></li>
+                {% if user.is_superuser %}
                 <li><a href="/admin/">Admin</a></li>
+                {% endif %}
+                <li><a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %} title="{{ user.username }}">Profile</a></li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline; margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit; text-decoration: none;">Logout</button>
+                    </form>
+                </li>
                 <li><button id="theme-toggle" class="btn-secondary btn-sm" style="border: none; padding: 0.5rem 0.75rem;" aria-label="Toggle theme">
                     <svg id="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>

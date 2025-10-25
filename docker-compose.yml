@@ -29,6 +29,7 @@ services:
       - DATABASE_HOST=${DATABASE_HOST:-db}
       - DATABASE_PORT=${DATABASE_PORT:-5432}
       - PORT=${PORT:-8000}
+      - SECRET_KEY=_^%5)g9u-ruti=ukblm3osv=2v7d*iiqe0fn-f%5hdsfsldf
     depends_on:
       db:
         condition: service_healthy

@@ -11,7 +11,7 @@ class TimeStampedModel(models.Model):
 
 
 class Organization(TimeStampedModel):
-    """Organization model for multi-tenant support (future)"""
+    """Organization model for multi-tenant support"""
     name = models.CharField(max_length=255)
     email = models.EmailField()
 
@@ -27,6 +27,16 @@ class Organization(TimeStampedModel):
     min_responses_for_anonymity = models.IntegerField(
         default=3,
         help_text='Minimum number of responses required to show results (for anonymity). Set to 1 for small teams.'
+    )
+
+    # Registration settings
+    allow_registration = models.BooleanField(
+        default=False,
+        help_text='Allow new users to register for this organization'
+    )
+    default_users_can_create_cycles = models.BooleanField(
+        default=False,
+        help_text='By default, new users can create cycles for others (not just themselves)'
     )
 
     is_active = models.BooleanField(default=True)

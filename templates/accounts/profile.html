@@ -1,0 +1,83 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2>My Profile</h2>
+                </div>
+                <div class="card-body">
+                    <div class="profile-section mb-4">
+                        <h4>User Information</h4>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 30%;">Username</th>
+                                    <td>{{ user.username }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ user.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Staff Status</th>
+                                    <td>
+                                        {% if user.is_staff %}
+                                            <span class="badge bg-success">Staff Member</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Regular User</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Date Joined</th>
+                                    <td>{{ user.date_joined|date:"F d, Y" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="profile-section mb-4">
+                        <h4>Organization</h4>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 30%;">Organization Name</th>
+                                    <td>{{ organization.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Organization Email</th>
+                                    <td>{{ organization.email }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="profile-section">
+                        <h4>Permissions</h4>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 30%;">Create Cycles for Others</th>
+                                    <td>
+                                        {% if profile.can_create_cycles_for_others %}
+                                            <span class="badge bg-success">Enabled</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Disabled (Self only)</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

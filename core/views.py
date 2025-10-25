@@ -73,6 +73,16 @@ def setup_organization(request):
             organization = form.save(commit=False)
             organization.is_active = True
             organization.save()
+
+            # Create UserProfile for the setup admin
+            from accounts.models import UserProfile
+            if not hasattr(request.user, 'profile'):
+                UserProfile.objects.create(
+                    user=request.user,
+                    organization=organization,
+                    can_create_cycles_for_others=True
+                )
+
             messages.success(request, f'Organization "{organization.name}" created successfully!')
             return redirect('setup_email')
     else:

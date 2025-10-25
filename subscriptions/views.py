@@ -148,6 +148,14 @@ def handle_checkout_session_completed(session):
         is_staff=True
     )
 
+    # Create user profile
+    from accounts.models import UserProfile
+    UserProfile.objects.create(
+        user=user,
+        organization=org,
+        can_create_cycles_for_others=True
+    )
+
     # Create subscription
     Subscription.objects.create(
         organization=org,

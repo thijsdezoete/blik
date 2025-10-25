@@ -2,7 +2,7 @@
 Core views for Blik application
 """
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 def health_check(request):
@@ -15,8 +15,10 @@ def health_check(request):
 
 
 def home(request):
-    """Home page"""
-    return render(request, 'home.html')
+    """Home page - redirect authenticated users to dashboard, others to login"""
+    if request.user.is_authenticated:
+        return redirect('admin_dashboard')
+    return redirect('login')
 
 
 def handler404(request, exception):

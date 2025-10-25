@@ -64,15 +64,23 @@ class OrganizationMiddleware:
             '/static/',
             '/media/',
             '/landing/',
+            '/accounts/',  # Login/register pages
         ]
 
         if any(request.path.startswith(path) for path in exempt_paths):
             return self.get_response(request)
 
-        # Get user's organization
-        # For now, get the first organization (single-tenant or user's org)
-        # Future: add User.organization FK for proper multi-tenant support
-        if request.user.is_staff or request.user.is_superuser:
+        # Get user's organization from their profile
+        try:
+            # Try to get organization from user profile
+            if hasattr(request.user, 'profile'):
+                request.organization = request.user.profile.organization
+            # Fallback for legacy users without profiles (staff/superuser)
+            elif request.user.is_staff or request.user.is_superuser:
+                request.organization = Organization.objects.first()
+        except Exception as e:
+            print(f"Error getting organization for user {request.user}: {e}")
+            # Fallback to first organization
             request.organization = Organization.objects.first()
 
         return self.get_response(request)

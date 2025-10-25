@@ -561,7 +561,9 @@ def review_cycle_detail(request, cycle_id):
     # Calculate completion stats
     total_tokens = tokens.count()
     completed_tokens = tokens.filter(completed_at__isnull=False).count()
+    claimed_tokens = tokens.filter(claimed_at__isnull=False).count()
     completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
+    claimed_completion_rate = (completed_tokens / claimed_tokens * 100) if claimed_tokens > 0 else 0
 
     # Get report if exists
     try:
@@ -577,7 +579,9 @@ def review_cycle_detail(request, cycle_id):
         'tokens_by_category': tokens_by_category,
         'total_tokens': total_tokens,
         'completed_tokens': completed_tokens,
+        'claimed_tokens': claimed_tokens,
         'completion_rate': completion_rate,
+        'claimed_completion_rate': claimed_completion_rate,
         'report_exists': report_exists,
     }
 
@@ -628,6 +632,12 @@ def close_cycle(request, cycle_id):
     if completed_count == 0:
         messages.error(request, 'Cannot close cycle: No reviews have been completed yet.')
         return redirect('review_cycle_detail', cycle_id=cycle_id)
+
+    # Remove unclaimed tokens (tokens that are still active but not claimed)
+    # Keep claimed tokens as an indication that the report was closed while people were still working
+    unclaimed_tokens = cycle.tokens.filter(claimed_at__isnull=True, completed_at__isnull=True)
+    unclaimed_count = unclaimed_tokens.count()
+    unclaimed_tokens.delete()
 
     # Mark cycle as completed
     cycle.status = 'completed'
@@ -800,6 +810,10 @@ def settings_view(request):
             organization.min_responses_for_anonymity = int(min_responses)
         except (ValueError, TypeError):
             organization.min_responses_for_anonymity = 3
+
+        # Update registration settings
+        organization.allow_registration = request.POST.get('allow_registration') == 'on'
+        organization.default_users_can_create_cycles = request.POST.get('default_users_can_create_cycles') == 'on'
 
         # Update SMTP settings
         organization.smtp_host = request.POST.get('smtp_host', '')

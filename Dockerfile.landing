@@ -28,7 +28,7 @@ RUN uv pip install --system -e .
 RUN mkdir -p /app/staticfiles
 
 # Collect static files (landing pages only need static assets)
-RUN python manage.py collectstatic --noinput --clear
+RUN DJANGO_SETTINGS_MODULE=landing_settings python manage.py collectstatic --noinput --clear
 
 # Expose port (configurable via environment)
 EXPOSE 8001

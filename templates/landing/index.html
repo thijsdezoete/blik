@@ -141,8 +141,8 @@
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Commercial tools cost thousands per year. Self-hosting costs pennies.</p>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-                <div class="feature-card" style="background: #fef2f2; border-left: 4px solid #dc2626;">
-                    <h3 style="color: #dc2626; margin-bottom: 1rem;">Commercial SaaS Tools</h3>
+                <div class="feature-card feature-card-danger">
+                    <h3>Commercial SaaS Tools</h3>
                     <ul style="list-style: none; padding: 0; color: var(--text-primary);">
                         <li style="margin-bottom: 0.5rem;">3,000-18,000 EUR per year (50 employees)</li>
                         <li style="margin-bottom: 0.5rem;">Per-user pricing adds up quickly</li>
@@ -153,8 +153,8 @@
                     </ul>
                 </div>
 
-                <div class="feature-card" style="background: #f0fdf4; border-left: 4px solid #16a34a;">
-                    <h3 style="color: #16a34a; margin-bottom: 1rem;">Blik Self-Hosted</h3>
+                <div class="feature-card feature-card-success">
+                    <h3>Blik Self-Hosted</h3>
                     <ul style="list-style: none; padding: 0; color: var(--text-primary);">
                         <li style="margin-bottom: 0.5rem;">0 EUR licensing (open source)</li>
                         <li style="margin-bottom: 0.5rem;">50-200 EUR/year (small VPS hosting)</li>
@@ -171,9 +171,9 @@
                 <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">For a 50-person company. Savings scale with team size.</p>
             </div>
 
-            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
-                <h3 style="margin-bottom: 1rem;">Don't want the hassle of self-hosting?</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.125rem;">We offer a fully managed EU-hosted version with close to unlimited functionality for just €49/month. No DevOps required.</p>
+            <div class="cta-box">
+                <h3>Don't want the hassle of self-hosting?</h3>
+                <p style="font-size: 1.125rem;">We offer a fully managed EU-hosted version with close to unlimited functionality for just €49/month. No DevOps required.</p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
             </div>
         </div>

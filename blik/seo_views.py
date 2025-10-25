@@ -4,7 +4,10 @@ from django.conf import settings
 
 def sitemap(request):
     """Generate XML sitemap for search engines."""
-    base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
+    # Detect actual protocol from request (handles Cloudflare/proxy SSL termination)
+    # Django's request.is_secure() respects SECURE_PROXY_SSL_HEADER setting
+    protocol = 'https' if request.is_secure() else 'http'
+    base_url = f"{protocol}://{settings.SITE_DOMAIN}"
 
     # Detect if we're in standalone landing container or main app
     is_standalone = getattr(settings, 'ROOT_URLCONF', '') == 'landing_urls'
@@ -55,7 +58,10 @@ def sitemap(request):
 
 def robots(request):
     """Generate robots.txt for search engine crawlers."""
-    base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
+    # Detect actual protocol from request (handles Cloudflare/proxy SSL termination)
+    # Django's request.is_secure() respects SECURE_PROXY_SSL_HEADER setting
+    protocol = 'https' if request.is_secure() else 'http'
+    base_url = f"{protocol}://{settings.SITE_DOMAIN}"
 
     robots_txt = f'''User-agent: *
 Allow: /

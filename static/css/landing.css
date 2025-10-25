@@ -19,7 +19,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    padding: 0.75rem 0;
 }
 
 .landing-page .logo {
@@ -43,6 +43,27 @@
 
 .landing-page .nav a:hover {
     color: var(--primary);
+}
+
+.landing-page .theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.landing-page .theme-toggle:hover {
+    color: var(--primary);
+}
+
+.landing-page .theme-toggle svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* Hero */
@@ -112,12 +133,12 @@
 }
 
 .landing-page .section-alt .feature-card {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .landing-page .feature-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
 }
 
 .landing-page .feature-card h3 {
@@ -332,9 +353,10 @@
 
 /* Footer */
 .landing-page .footer {
-    background: var(--text-primary);
-    color: white;
+    background: var(--bg-card);
+    color: var(--text-primary);
     padding: 3rem 0 1.5rem;
+    border-top: 1px solid var(--border);
 }
 
 .landing-page .footer-content {
@@ -350,7 +372,7 @@
 }
 
 .landing-page .footer-section p {
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
 }
 
 .landing-page .footer-section ul {
@@ -362,20 +384,20 @@
 }
 
 .landing-page .footer-section a {
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .landing-page .footer-section a:hover {
-    color: white;
+    color: var(--primary);
 }
 
 .landing-page .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border);
     padding-top: 1.5rem;
     text-align: center;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
 }
 
 /* Special Feature Cards with Color Variants */
@@ -400,7 +422,12 @@
 }
 
 .landing-page .feature-card-warning {
+    background: var(--bg-card);
     border-left: 4px solid #f59e0b;
+}
+
+.landing-page .feature-card-warning h3 {
+    color: #d97706;
 }
 
 .landing-page .feature-card-info {
@@ -410,6 +437,29 @@
 
 .landing-page .feature-card-info h3 {
     color: #1e40af;
+}
+
+.landing-page .feature-card-gradient {
+    background: var(--gradient-purple);
+    color: white;
+}
+
+.landing-page .feature-card-gradient h3 {
+    color: white;
+}
+
+.landing-page .feature-card-gradient p {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.landing-page .comparison-list {
+    list-style: none;
+    padding: 0;
+    color: var(--text-primary);
+}
+
+.landing-page .comparison-list li {
+    margin-bottom: 0.5rem;
 }
 
 .landing-page .cta-box {
@@ -441,6 +491,16 @@
     line-height: 1.8;
     margin-bottom: 3rem;
     border: 1px solid var(--border);
+}
+
+.landing-page .table-header-primary {
+    background: var(--bg-light);
+    padding: 1rem;
+}
+
+.landing-page .table-header-success {
+    background: var(--bg-light);
+    padding: 1rem;
 }
 
 /* Mobile Menu Toggle */
@@ -487,11 +547,19 @@
     }
 
     .landing-page .nav a {
-        padding: 1rem;
+        padding: 0.75rem 1rem;
         border-bottom: 1px solid var(--border);
     }
 
-    .landing-page .nav a:last-child {
+    .landing-page .nav .theme-toggle {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .landing-page .nav a:last-child,
+    .landing-page .nav .theme-toggle:last-child {
         border-bottom: none;
     }
 

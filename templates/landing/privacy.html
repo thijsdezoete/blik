@@ -117,6 +117,14 @@
                     <a href="#compliance">Compliance</a>
                     <a href="#faq">FAQ</a>
                     <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
                 </nav>
             </div>
         </div>
@@ -395,8 +403,8 @@
                 </div>
             </div>
 
-            <div class="feature-card" style="margin-top: 3rem; background: #dbeafe; border-left: 4px solid #3b82f6;">
-                <h3 style="color: #1e40af;">25-Person Firm Calculation</h3>
+            <div class="feature-card feature-card-info" style="margin-top: 3rem;">
+                <h3>25-Person Firm Calculation</h3>
                 <p style="color: var(--text-primary);">Commercial Tool: 3,000 EUR/year | Manual Process: 8,000 EUR (partner time) | Blik: 1,200 EUR/year (server only) | <strong>Savings: 2,000-7,000 EUR annually</strong></p>
             </div>
         </div>
@@ -479,8 +487,8 @@
                 </div>
             </div>
 
-            <div class="feature-card" style="margin-top: 3rem; background: #f0fdf4; border-left: 4px solid #16a34a;">
-                <h3 style="color: #166534;">Most Firms Complete Deployment in 2-3 Weeks</h3>
+            <div class="feature-card feature-card-success" style="margin-top: 3rem;">
+                <h3>Most Firms Complete Deployment in 2-3 Weeks</h3>
                 <p style="color: var(--text-primary);">Includes security review, compliance approval, and pilot testing. Much faster than 8-12 week implementations for commercial tools.</p>
             </div>
         </div>
@@ -495,9 +503,9 @@
                 <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Or Try Hosted</a>
             </div>
 
-            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
-                <h3 style="margin-bottom: 1rem;">Need Maximum Privacy? Self-Host for Free</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">For air-gapped deployments and complete data control, our open-source version is perfect. Or if GDPR-compliant EU hosting meets your needs, try our managed option at €49/month.</p>
+            <div class="cta-box">
+                <h3>Need Maximum Privacy? Self-Host for Free</h3>
+                <p>For air-gapped deployments and complete data control, our open-source version is perfect. Or if GDPR-compliant EU hosting meets your needs, try our managed option at €49/month.</p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View All Options</a>
             </div>
 
@@ -541,6 +549,32 @@
                     }
                 });
             }
+
+            // Theme toggle functionality
+            const themeToggle = document.querySelector('.theme-toggle');
+            const sunIcon = themeToggle.querySelector('.sun-icon');
+            const moonIcon = themeToggle.querySelector('.moon-icon');
+
+            const updateThemeIcons = () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                } else {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                }
+            };
+
+            updateThemeIcons();
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcons();
+            });
         });
     </script>
 </body>

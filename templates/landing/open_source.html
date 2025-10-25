@@ -153,33 +153,33 @@
             <h2 class="section-title">Why Developers Hate Traditional HR Tools</h2>
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">And why we built something better</p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-                <div class="feature-card" style="background: #fef2f2; border-left: 4px solid #dc2626;">
-                    <h3 style="color: #dc2626; margin-bottom: 1rem;">Commercial HR Platforms</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">Black box systems with zero transparency</li>
-                        <li style="margin-bottom: 0.5rem;">Cannot audit, customize, or extend functionality</li>
-                        <li style="margin-bottom: 0.5rem;">Vendor lock-in with proprietary data formats</li>
-                        <li style="margin-bottom: 0.5rem;">Sales-driven feature bloat nobody uses</li>
-                        <li style="margin-bottom: 0.5rem;">Web 2.0 interfaces from 2010</li>
+            <div class="features-grid" style="margin-bottom: 3rem;">
+                <div class="feature-card feature-card-danger">
+                    <h3>Commercial HR Platforms</h3>
+                    <ul class="comparison-list">
+                        <li>Black box systems with zero transparency</li>
+                        <li>Cannot audit, customize, or extend functionality</li>
+                        <li>Vendor lock-in with proprietary data formats</li>
+                        <li>Sales-driven feature bloat nobody uses</li>
+                        <li>Web 2.0 interfaces from 2010</li>
                         <li>No API or terrible API with usage limits</li>
                     </ul>
                 </div>
 
-                <div class="feature-card" style="background: #f0fdf4; border-left: 4px solid #16a34a;">
-                    <h3 style="color: #16a34a; margin-bottom: 1rem;">Blik Philosophy</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">Full source code on GitHub, AGPL licensed</li>
-                        <li style="margin-bottom: 0.5rem;">Modify anything, extend everything, fork freely</li>
-                        <li style="margin-bottom: 0.5rem;">Standard PostgreSQL, export anytime</li>
-                        <li style="margin-bottom: 0.5rem;">Does one thing well: 360 feedback</li>
-                        <li style="margin-bottom: 0.5rem;">Clean, modern UI built with simplicity</li>
+                <div class="feature-card feature-card-success">
+                    <h3>Blik Philosophy</h3>
+                    <ul class="comparison-list">
+                        <li>Full source code on GitHub, AGPL licensed</li>
+                        <li>Modify anything, extend everything, fork freely</li>
+                        <li>Standard PostgreSQL, export anytime</li>
+                        <li>Does one thing well: 360 feedback</li>
+                        <li>Clean, modern UI built with simplicity</li>
                         <li>REST API on roadmap, direct DB access today</li>
                     </ul>
                 </div>
             </div>
 
-            <div style="background: var(--text-primary); color: #e2e8f0; padding: 2rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; line-height: 1.8;">
+            <div class="code-block">
                 <div style="color: var(--text-tertiary);"># Deploy Blik in three commands</div>
                 git clone https://github.com/thijsdezoete/blik.git<br>
                 cd blik<br>
@@ -349,7 +349,7 @@
                 </div>
             </div>
 
-            <div style="background: var(--text-primary); color: #e2e8f0; padding: 2rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; margin-top: 2rem; line-height: 1.8;">
+            <div class="code-block" style="margin-top: 2rem;">
                 <div style="color: var(--text-tertiary);"># Contributing is straightforward</div>
                 git clone https://github.com/thijsdezoete/blik.git<br>
                 cd blik<br>
@@ -424,7 +424,7 @@
                 </div>
             </div>
 
-            <div class="feature-card" style="margin-top: 2rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+            <div class="feature-card feature-card-gradient" style="margin-top: 2rem;">
                 <h3 style="color: white;">AGPL TL;DR</h3>
                 <p style="color: rgba(255,255,255,0.9);">Use freely internally. Modify as needed. If you offer it as a service, share your changes. Perfect for protecting community-driven projects.</p>
             </div>
@@ -525,14 +525,14 @@
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Star on GitHub</a>
                 <a href="{% landing_url 'index' %}" class="btn btn-secondary">Back to Home</a>
             </div>
-            <div style="background: var(--text-primary); color: #e2e8f0; padding: 1.5rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; margin-top: 2rem; text-align: center;">
+            <div class="code-block" style="margin-top: 2rem; padding: 1.5rem; text-align: center;">
                 git clone https://github.com/thijsdezoete/blik.git && cd blik && docker compose up -d
             </div>
 
-            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
-                <h3 style="margin-bottom: 1rem;">Skip the DevOps? We've Got You Covered</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Prefer to focus on code instead of server management? Our EU-hosted version gives you the same open-source codebase, fully managed, for just €49/month.</p>
-                <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
+            <div class="cta-box">
+                <h3>Skip the DevOps? We've Got You Covered</h3>
+                <p>Prefer to focus on code instead of server management? Our EU-hosted version gives you the same open-source codebase, fully managed, for just €49/month.</p>
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary">View Hosted Plans</a>
             </div>
         </div>
     </section>

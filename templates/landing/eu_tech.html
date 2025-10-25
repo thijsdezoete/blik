@@ -119,6 +119,14 @@
                     <a href="#cost">Cost Savings</a>
                     <a href="#faq">FAQ</a>
                     <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
                 </nav>
             </div>
         </div>
@@ -251,9 +259,9 @@
                             <th>Company Size</th>
                             <th>Lattice Cost</th>
                             <th>Culture Amp Cost</th>
-                            <th style="background: #e0f2fe;">Blik Hosted</th>
-                            <th style="background: #f0fdf4;">Blik Self-Host</th>
-                            <th style="background: #f0fdf4;">Max Savings</th>
+                            <th class="table-header-primary">Blik Hosted</th>
+                            <th class="table-header-success">Blik Self-Host</th>
+                            <th class="table-header-success">Max Savings</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -304,7 +312,7 @@
             <h2 class="section-title">Built for Engineering Teams</h2>
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Developer-friendly deployment and technology stack</p>
 
-            <div style="background: var(--text-primary); color: #e2e8f0; padding: 2rem; border-radius: 8px; font-family: monospace; font-size: 0.875rem; line-height: 1.8; margin-bottom: 3rem;">
+            <div class="code-block">
                 <div style="color: var(--text-tertiary);"># Deploy on Hetzner Cloud in 5 minutes</div>
                 # 1. Spin up CX31 instance (Ubuntu 24.04)<br>
                 # 2. Install Docker and clone repo<br>
@@ -499,7 +507,7 @@
                 </div>
             </div>
 
-            <div class="feature-card" style="margin-top: 3rem; background: #dbeafe; border-left: 4px solid #3b82f6;">
+            <div class="feature-card feature-card-info" style="margin-top: 3rem;">
                 <h3 style="color: #1e40af;">Building a European Tech Stack</h3>
                 <p style="color: var(--text-primary);">Blik is part of the movement to create privacy-first, GDPR-native alternatives to US SaaS. By choosing European tools, you support data sovereignty, reduce compliance risk, and strengthen the EU digital economy.</p>
             </div>
@@ -515,7 +523,7 @@
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
             </div>
 
-            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
+            <div class="cta-box" style="margin-top: 3rem;">
                 <h3 style="margin-bottom: 1rem;">EU-Hosted Option Available</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Don't want to manage infrastructure? We offer a fully managed, GDPR-compliant version hosted in EU data centers for just €49/month. No server management, automatic updates, daily backups.</p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
@@ -559,6 +567,32 @@
                     }
                 });
             }
+
+            // Theme toggle functionality
+            const themeToggle = document.querySelector('.theme-toggle');
+            const sunIcon = themeToggle.querySelector('.sun-icon');
+            const moonIcon = themeToggle.querySelector('.moon-icon');
+
+            const updateThemeIcons = () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                } else {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                }
+            };
+
+            updateThemeIcons();
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcons();
+            });
         });
     </script>
 </body>

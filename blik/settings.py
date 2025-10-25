@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     # Blik apps
     'core',
     'accounts',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -178,3 +180,16 @@ STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='')
 STRIPE_PRICE_ID_SAAS = env('STRIPE_PRICE_ID_SAAS', default='')
 STRIPE_PRICE_ID_ENTERPRISE = env('STRIPE_PRICE_ID_ENTERPRISE', default='')
+
+# CORS settings - allow landing page to call main app API
+# Default to deriving from ALLOWED_HOSTS with site protocol
+_cors_origins = env.list('CORS_ALLOWED_ORIGINS', default=None)
+if _cors_origins is None:
+    # Build from ALLOWED_HOSTS automatically
+    CORS_ALLOWED_ORIGINS = [f'{SITE_PROTOCOL}://{host}' for host in ALLOWED_HOSTS if host != '*']
+else:
+    CORS_ALLOWED_ORIGINS = _cors_origins
+CORS_ALLOW_CREDENTIALS = False
+
+# Main app URL - used by landing app to make API calls
+MAIN_APP_URL = env('MAIN_APP_URL', default=f'{SITE_PROTOCOL}://app.{SITE_DOMAIN}')

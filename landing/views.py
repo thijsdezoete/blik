@@ -13,9 +13,6 @@ def index(request):
         'site_protocol': settings.SITE_PROTOCOL,
         'site_description': settings.SITE_DESCRIPTION,
         'site_keywords': settings.SITE_KEYWORDS,
-        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
-        'stripe_price_id_saas': settings.STRIPE_PRICE_ID_SAAS,
-        'stripe_price_id_enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
     }
     return render(request, 'landing/index.html', context)
 
@@ -67,3 +64,23 @@ def privacy(request):
         'site_protocol': settings.SITE_PROTOCOL,
     }
     return render(request, 'landing/privacy.html', context)
+
+
+def signup(request):
+    """Signup page with Stripe checkout integration."""
+    # Get main app URL from environment or build from SITE_DOMAIN
+    main_app_url = getattr(settings, 'MAIN_APP_URL', None)
+    if not main_app_url:
+        # Fallback: assume main app is at app.domain.com
+        main_app_url = f"{settings.SITE_PROTOCOL}://app.{settings.SITE_DOMAIN}"
+
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
+        'stripe_price_id_saas': settings.STRIPE_PRICE_ID_SAAS,
+        'stripe_price_id_enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
+        'main_app_url': main_app_url,
+    }
+    return render(request, 'landing/signup.html', context)

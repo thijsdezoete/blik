@@ -6,6 +6,7 @@ app_name = 'landing'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('signup/', views.signup, name='signup'),
     path('open-source/', views.open_source, name='open_source'),
     path('dreyfus-model/', views.dreyfus_model, name='dreyfus_model'),
     path('eu-tech/', views.eu_tech, name='eu_tech'),

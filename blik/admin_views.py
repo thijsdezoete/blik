@@ -4,7 +4,7 @@ Admin dashboard views for Blik
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Max
 from django.utils import timezone
 from datetime import timedelta
 
@@ -294,7 +294,7 @@ def questionnaire_edit(request, questionnaire_id):
             section_description = request.POST.get('section_description', '')
 
             if section_title:
-                max_order = questionnaire.sections.aggregate(models.Max('order'))['order__max'] or -1
+                max_order = questionnaire.sections.aggregate(Max('order'))['order__max'] or -1
                 try:
                     QuestionSection.objects.create(
                         questionnaire=questionnaire,
@@ -315,7 +315,7 @@ def questionnaire_edit(request, questionnaire_id):
             if section_id and question_text:
                 try:
                     section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                    max_order = section.questions.aggregate(models.Max('order'))['order__max'] or -1
+                    max_order = section.questions.aggregate(Max('order'))['order__max'] or -1
 
                     # Build config based on question type
                     config = {}

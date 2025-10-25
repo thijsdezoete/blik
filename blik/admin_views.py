@@ -294,13 +294,14 @@ def questionnaire_edit(request, questionnaire_id):
             section_description = request.POST.get('section_description', '')
 
             if section_title:
-                max_order = questionnaire.sections.aggregate(Max('order'))['order__max'] or -1
+                max_order = questionnaire.sections.aggregate(Max('order'))['order__max']
+                next_order = (max_order + 1) if max_order is not None else 0
                 try:
                     QuestionSection.objects.create(
                         questionnaire=questionnaire,
                         title=section_title,
                         description=section_description,
-                        order=max_order + 1
+                        order=next_order
                     )
                     messages.success(request, f'Section "{section_title}" added.')
                 except Exception as e:
@@ -315,7 +316,8 @@ def questionnaire_edit(request, questionnaire_id):
             if section_id and question_text:
                 try:
                     section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                    max_order = section.questions.aggregate(Max('order'))['order__max'] or -1
+                    max_order = section.questions.aggregate(Max('order'))['order__max']
+                    next_order = (max_order + 1) if max_order is not None else 0
 
                     # Build config based on question type
                     config = {}
@@ -349,7 +351,7 @@ def questionnaire_edit(request, questionnaire_id):
                         question_type=question_type,
                         config=config,
                         required=required,
-                        order=max_order + 1
+                        order=next_order
                     )
                     messages.success(request, 'Question added successfully.')
                 except Exception as e:

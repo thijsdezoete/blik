@@ -105,6 +105,11 @@
         <div class="container">
             <div class="header-content">
                 <h1 class="logo">Blik</h1>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
                 <nav class="nav">
                     <a href="{% landing_url 'index' %}">Home</a>
                     <a href="#security">Security</a>
@@ -151,8 +156,8 @@
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Client contracts and compliance requirements demand better</p>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <div class="feature-card" style="background: #fef2f2; border-left: 4px solid #dc2626;">
-                    <h3 style="color: #dc2626; margin-bottom: 1rem;">Cloud HR Platforms</h3>
+                <div class="feature-card feature-card-danger">
+                    <h3>Cloud HR Platforms</h3>
                     <ul style="list-style: none; padding: 0; color: var(--text-primary);">
                         <li style="margin-bottom: 0.5rem;">Client data potentially exposed in shared database</li>
                         <li style="margin-bottom: 0.5rem;">Third-party access to employee information</li>
@@ -163,8 +168,8 @@
                     </ul>
                 </div>
 
-                <div class="feature-card" style="background: #f0fdf4; border-left: 4px solid #16a34a;">
-                    <h3 style="color: #16a34a; margin-bottom: 1rem;">Blik Air-Gapped</h3>
+                <div class="feature-card feature-card-success">
+                    <h3>Blik Air-Gapped</h3>
                     <ul style="list-style: none; padding: 0; color: var(--text-primary);">
                         <li style="margin-bottom: 0.5rem;">Deploy behind your firewall, no external access</li>
                         <li style="margin-bottom: 0.5rem;">Zero third-party data sharing by design</li>
@@ -505,5 +510,38 @@
             <p>&copy; 2025 Blik. Open source under AGPL license.</p>
         </div>
     </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const nav = document.querySelector('.nav');
+
+            if (menuToggle && nav) {
+                menuToggle.addEventListener('click', function() {
+                    const isExpanded = nav.classList.contains('active');
+                    nav.classList.toggle('active');
+                    menuToggle.setAttribute('aria-expanded', !isExpanded);
+                });
+
+                // Close menu when clicking on a link
+                const navLinks = nav.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        nav.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                    });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!nav.contains(event.target) && !menuToggle.contains(event.target)) {
+                        nav.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

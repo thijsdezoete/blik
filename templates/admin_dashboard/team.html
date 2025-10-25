@@ -1,0 +1,129 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Team Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Team Management</h1>
+        <p class="page-description">Manage users and send invitations</p>
+    </div>
+    {% if user.is_staff %}
+    <button type="button" class="btn btn-primary" onclick="document.getElementById('invite-modal').style.display='flex'">
+        Send Invitation
+    </button>
+    {% endif %}
+</div>
+
+<!-- Invite Modal -->
+<div id="invite-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+        <h2 style="margin-top: 0;">Send Invitation</h2>
+        <form method="post" action="{% url 'send_invitation' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" required autofocus>
+                <small class="help-text">The user will receive an email with instructions to join</small>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('invite-modal').style.display='none'">Cancel</button>
+                <button type="submit" class="btn btn-primary">Send Invitation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Active Users -->
+<div class="card mb-2">
+    <div class="card-header">
+        <h2 class="card-title">Active Users ({{ users.count }})</h2>
+    </div>
+    <div class="card-body">
+        {% if users %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th>Permissions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user_profile in users %}
+                <tr>
+                    <td>
+                        <strong>{{ user_profile.user.first_name|default:user_profile.user.username }}</strong>
+                        {% if user_profile.user.last_name %}{{ user_profile.user.last_name }}{% endif %}
+                    </td>
+                    <td>{{ user_profile.user.email }}</td>
+                    <td>
+                        {% if user_profile.user.is_superuser %}
+                            <span class="badge" style="background: #7c3aed; color: white;">Super Admin</span>
+                        {% elif user_profile.user.is_staff %}
+                            <span class="badge" style="background: #059669; color: white;">Staff</span>
+                        {% else %}
+                            <span class="badge" style="background: #6b7280; color: white;">User</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user_profile.user.date_joined|date:"M d, Y" }}</td>
+                    <td>
+                        {% if user_profile.can_create_cycles_for_others %}
+                            <span class="badge" style="background: #0ea5e9; color: white;">Can manage cycles</span>
+                        {% else %}
+                            <span class="badge" style="background: #f59e0b; color: white;">Self-only</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No users found</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Pending Invitations -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Pending Invitations ({{ invitations.count }})</h2>
+    </div>
+    <div class="card-body">
+        {% if invitations %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Invited By</th>
+                    <th>Sent</th>
+                    <th>Expires</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invitation in invitations %}
+                <tr>
+                    <td>{{ invitation.email }}</td>
+                    <td>{{ invitation.invited_by.username }}</td>
+                    <td>{{ invitation.created_at|date:"M d, Y" }}</td>
+                    <td>{{ invitation.expires_at|date:"M d, Y" }}</td>
+                    <td>
+                        {% if invitation.is_valid %}
+                            <span class="badge" style="background: #059669; color: white;">Active</span>
+                        {% else %}
+                            <span class="badge" style="background: #dc2626; color: white;">Expired</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No pending invitations</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

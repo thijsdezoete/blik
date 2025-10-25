@@ -44,43 +44,68 @@ class SetupMiddleware:
 
 
 class OrganizationMiddleware:
-    """Attach organization to request based on authenticated user"""
+    """
+    Attach organization to request based on subdomain or user profile
+
+    Priority (when ENABLE_MULTITENANCY=True):
+    1. Subdomain (e.g., acme.yourdomain.com -> org with slug 'acme')
+    2. User profile (for authenticated users)
+    3. None (for public pages)
+
+    When ENABLE_MULTITENANCY=False:
+    - Subdomain detection is disabled
+    - All authenticated users use their profile organization
+    - Single-org mode (first organization)
+    """
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        from django.conf import settings
+
         # Initialize organization as None
         request.organization = None
 
-        # Skip for anonymous users
-        if isinstance(request.user, AnonymousUser) or not request.user.is_authenticated:
-            return self.get_response(request)
+        # Only check subdomain if multitenancy is enabled
+        if settings.ENABLE_MULTITENANCY:
+            # Try to get organization from subdomain first
+            host = request.get_host().split(':')[0]  # Remove port
+            parts = host.split('.')
 
-        # Skip for public endpoints
+            # If subdomain exists (e.g., acme.yourdomain.com)
+            if len(parts) > 2:
+                subdomain = parts[0]
+                try:
+                    request.organization = Organization.objects.get(slug=subdomain, is_active=True)
+                    # Store in session for signup
+                    if hasattr(request, 'session'):
+                        request.session['current_organization_id'] = request.organization.id
+                except Organization.DoesNotExist:
+                    pass
+
+        # Skip for anonymous users on public endpoints
         exempt_paths = [
-            '/feedback/',  # Anonymous feedback submission
-            '/reports/view/',  # Public report viewing with token
-            '/api/stripe/webhook/',  # Stripe webhooks
+            '/feedback/',
+            '/reports/view/',
+            '/api/stripe/webhook/',
             '/static/',
             '/media/',
             '/landing/',
-            '/accounts/',  # Login/register pages
+            '/accounts/',
         ]
 
         if any(request.path.startswith(path) for path in exempt_paths):
             return self.get_response(request)
 
-        # Get user's organization from their profile
-        try:
-            # Try to get organization from user profile
-            if hasattr(request.user, 'profile'):
-                request.organization = request.user.profile.organization
-            # Fallback for legacy users without profiles (staff/superuser)
-            elif request.user.is_staff or request.user.is_superuser:
-                request.organization = Organization.objects.first()
-        except Exception as e:
-            print(f"Error getting organization for user {request.user}: {e}")
-            # Fallback to first organization
-            request.organization = Organization.objects.first()
+        # For authenticated users without subdomain, use their profile
+        if not request.organization and request.user.is_authenticated:
+            try:
+                if hasattr(request.user, 'profile'):
+                    request.organization = request.user.profile.organization
+                elif request.user.is_staff or request.user.is_superuser:
+                    # Fallback for admin users without profiles
+                    request.organization = Organization.objects.first()
+            except Exception as e:
+                print(f"Error getting organization for user {request.user}: {e}")
 
         return self.get_response(request)

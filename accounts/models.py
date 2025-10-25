@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.crypto import get_random_string
 from core.models import TimeStampedModel, Organization
 
 
@@ -26,6 +27,46 @@ class UserProfile(TimeStampedModel):
 
     def __str__(self):
         return f"{self.user.username} - {self.organization.name}"
+
+
+class OrganizationInvitation(TimeStampedModel):
+    """Invitation to join an organization"""
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='invitations'
+    )
+    email = models.EmailField()
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    invited_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='sent_invitations'
+    )
+    accepted_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        db_table = 'organization_invitations'
+        ordering = ['-created_at']
+        unique_together = ['organization', 'email']
+
+    def __str__(self):
+        return f"Invite {self.email} to {self.organization.name}"
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = get_random_string(64)
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        """Check if invitation is still valid"""
+        from django.utils import timezone
+        return (
+            self.accepted_at is None and
+            self.expires_at > timezone.now()
+        )
 
 
 class Reviewee(TimeStampedModel):

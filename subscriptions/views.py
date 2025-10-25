@@ -24,7 +24,7 @@ def send_welcome_email(organization, user, password):
         'organization': organization,
         'user': user,
         'password': password,
-        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/admin/login/',
+        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/accounts/login/',
         'site_name': settings.SITE_NAME,
     })
 
@@ -32,7 +32,7 @@ def send_welcome_email(organization, user, password):
         'organization': organization,
         'user': user,
         'password': password,
-        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/admin/login/',
+        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/accounts/login/',
         'site_name': settings.SITE_NAME,
     })
 
@@ -118,7 +118,10 @@ def stripe_webhook(request):
 
 
 def handle_checkout_session_completed(session):
-    """Handle successful checkout - create organization and user"""
+    """
+    Handle successful checkout - create organization and user
+    This is the PRIMARY registration path for new customers
+    """
     # Extract metadata from checkout session
     customer_email = session['customer_details']['email']
     customer_name = session['customer_details']['name']
@@ -127,25 +130,53 @@ def handle_checkout_session_completed(session):
     # Get Stripe subscription details
     stripe_customer_id = session['customer']
     stripe_subscription_id = session['subscription']
+
+    # Check if subscription already exists (idempotency)
+    if Subscription.objects.filter(stripe_subscription_id=stripe_subscription_id).exists():
+        print(f"Subscription {stripe_subscription_id} already exists, skipping creation")
+        return
+
     stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
 
     # Get or create plan
-    plan = Plan.objects.get(plan_type=plan_type)
+    try:
+        plan = Plan.objects.get(plan_type=plan_type)
+    except Plan.DoesNotExist:
+        print(f"ERROR: Plan type '{plan_type}' not found. Please create plans in admin.")
+        return
+
+    # Check if user already exists
+    existing_user = User.objects.filter(email=customer_email).first()
+    if existing_user:
+        print(f"WARNING: User {customer_email} already exists. Linking to existing user.")
+        user = existing_user
+        # Update to staff if not already
+        if not user.is_staff:
+            user.is_staff = True
+            user.save()
+        password = None  # Don't generate new password for existing user
+    else:
+        # Create admin user
+        username = customer_email.split('@')[0]
+        # Ensure username is unique
+        base_username = username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        password = User.objects.make_random_password(length=16)
+        user = User.objects.create_user(
+            username=username,
+            email=customer_email,
+            password=password,
+            is_staff=True
+        )
 
     # Create organization
     org = Organization.objects.create(
         name=customer_name,
         email=customer_email
-    )
-
-    # Create admin user
-    username = customer_email.split('@')[0]
-    password = User.objects.make_random_password(length=16)
-    user = User.objects.create_user(
-        username=username,
-        email=customer_email,
-        password=password,
-        is_staff=True
     )
 
     # Create user profile
@@ -169,8 +200,9 @@ def handle_checkout_session_completed(session):
         trial_end=datetime.fromtimestamp(stripe_subscription['trial_end'], tz=timezone.utc) if stripe_subscription.get('trial_end') else None,
     )
 
-    # Send welcome email
-    send_welcome_email(org, user, password)
+    # Send welcome email (only if new user with password)
+    if password:
+        send_welcome_email(org, user, password)
 
 
 def handle_subscription_updated(stripe_subscription):

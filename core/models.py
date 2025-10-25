@@ -13,6 +13,13 @@ class TimeStampedModel(models.Model):
 class Organization(TimeStampedModel):
     """Organization model for multi-tenant support"""
     name = models.CharField(max_length=255)
+    slug = models.SlugField(
+        max_length=100,
+        unique=True,
+        null=True,
+        blank=True,
+        help_text='Unique identifier for subdomain (e.g., acme for acme.yourdomain.com). Leave blank to disable subdomain access.'
+    )
     email = models.EmailField()
 
     # Email settings

@@ -38,6 +38,7 @@
             <a href="{% url 'admin_dashboard' %}" class="navbar-brand">Blik</a>
             <ul class="navbar-nav">
                 <li><a href="{% url 'admin_dashboard' %}" {% if request.resolver_match.url_name == 'admin_dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+                <li><a href="{% url 'team_list' %}" {% if 'team' in request.resolver_match.url_name %}class="active"{% endif %}>Team</a></li>
                 <li><a href="{% url 'reviewee_list' %}" {% if 'reviewee' in request.resolver_match.url_name %}class="active"{% endif %}>Reviewees</a></li>
                 <li><a href="{% url 'questionnaire_list' %}" {% if 'questionnaire' in request.resolver_match.url_name %}class="active"{% endif %}>Questionnaires</a></li>
                 <li><a href="{% url 'review_cycle_list' %}" {% if 'cycle' in request.resolver_match.url_name %}class="active"{% endif %}>Cycles</a></li>

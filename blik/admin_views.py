@@ -1,14 +1,14 @@
 """
 Admin dashboard views for Blik
 """
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Count, Q, Max
 from django.utils import timezone
 from datetime import timedelta
 
-from accounts.models import Reviewee
+from accounts.models import Reviewee, UserProfile, OrganizationInvitation
 from reviews.models import ReviewCycle, ReviewerToken
 from reviews.services import assign_tokens_to_emails, send_reviewer_invitations
 from questionnaires.models import Questionnaire
@@ -16,7 +16,7 @@ from reports.models import Report
 from core.models import Organization
 
 
-@staff_member_required
+@login_required
 def dashboard(request):
     """Admin dashboard homepage"""
     from subscriptions.utils import get_subscription_status
@@ -89,7 +89,35 @@ def dashboard(request):
     return render(request, 'admin_dashboard/dashboard.html', context)
 
 
-@staff_member_required
+@login_required
+def team_list(request):
+    """Team management - users and invitations"""
+    org = request.organization
+
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('admin_dashboard')
+
+    # Get all users in this organization
+    users = UserProfile.objects.filter(
+        organization=org
+    ).select_related('user').order_by('-user__date_joined')
+
+    # Get pending invitations
+    invitations = OrganizationInvitation.objects.filter(
+        organization=org,
+        accepted_at__isnull=True
+    ).order_by('-created_at')
+
+    context = {
+        'users': users,
+        'invitations': invitations,
+    }
+
+    return render(request, 'admin_dashboard/team.html', context)
+
+
+@login_required
 def reviewee_list(request):
     """List and manage reviewees"""
     org = request.organization
@@ -109,7 +137,7 @@ def reviewee_list(request):
     return render(request, 'admin_dashboard/reviewee_list.html', context)
 
 
-@staff_member_required
+@login_required
 def reviewee_create(request):
     """Create a new reviewee"""
     from subscriptions.utils import check_employee_limit
@@ -148,7 +176,7 @@ def reviewee_create(request):
     return render(request, 'admin_dashboard/reviewee_form.html', {'action': 'Create'})
 
 
-@staff_member_required
+@login_required
 def reviewee_edit(request, reviewee_id):
     """Edit an existing reviewee"""
     reviewee = get_object_or_404(Reviewee, id=reviewee_id)
@@ -173,7 +201,7 @@ def reviewee_edit(request, reviewee_id):
     return render(request, 'admin_dashboard/reviewee_form.html', context)
 
 
-@staff_member_required
+@login_required
 def reviewee_delete(request, reviewee_id):
     """Soft delete a reviewee"""
     reviewee = get_object_or_404(Reviewee, id=reviewee_id)
@@ -191,7 +219,7 @@ def reviewee_delete(request, reviewee_id):
     return render(request, 'admin_dashboard/reviewee_confirm_delete.html', context)
 
 
-@staff_member_required
+@login_required
 def questionnaire_list(request):
     """List available questionnaires"""
     from django.db.models import Subquery, OuterRef
@@ -222,7 +250,7 @@ def questionnaire_list(request):
     return render(request, 'admin_dashboard/questionnaire_list.html', context)
 
 
-@staff_member_required
+@login_required
 def questionnaire_preview(request, questionnaire_id):
     """Preview a questionnaire"""
     questionnaire = get_object_or_404(Questionnaire, id=questionnaire_id)
@@ -236,7 +264,7 @@ def questionnaire_preview(request, questionnaire_id):
     return render(request, 'admin_dashboard/questionnaire_preview.html', context)
 
 
-@staff_member_required
+@login_required
 def questionnaire_create(request):
     """Create a new questionnaire"""
     from questionnaires.models import QuestionSection, Question
@@ -268,7 +296,7 @@ def questionnaire_create(request):
     return render(request, 'admin_dashboard/questionnaire_form.html', context)
 
 
-@staff_member_required
+@login_required
 def questionnaire_edit(request, questionnaire_id):
     """Edit an existing questionnaire"""
     from questionnaires.models import QuestionSection, Question
@@ -389,7 +417,7 @@ def questionnaire_edit(request, questionnaire_id):
     return render(request, 'admin_dashboard/questionnaire_form.html', context)
 
 
-@staff_member_required
+@login_required
 def review_cycle_list(request):
     """List all review cycles"""
     org = request.organization
@@ -412,7 +440,7 @@ def review_cycle_list(request):
     return render(request, 'admin_dashboard/review_cycle_list.html', context)
 
 
-@staff_member_required
+@login_required
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
     if request.method == 'POST':
@@ -529,18 +557,30 @@ def review_cycle_create(request):
             return redirect('review_cycle_create')
 
     # GET request - show form
-    reviewees = Reviewee.objects.filter(is_active=True).order_by('name')
+    org = request.organization or (request.user.profile.organization if hasattr(request.user, 'profile') else None)
+
+    # Filter reviewees based on user permissions
+    if hasattr(request.user, 'profile') and not request.user.profile.can_create_cycles_for_others:
+        # User can only create cycles for themselves
+        reviewees = Reviewee.objects.filter(
+            is_active=True,
+            email=request.user.email
+        ).order_by('name')
+    else:
+        reviewees = Reviewee.objects.filter(is_active=True).order_by('name')
+
     questionnaires = Questionnaire.objects.all().order_by('-is_default', 'name')
 
     context = {
         'reviewees': reviewees,
         'questionnaires': questionnaires,
+        'can_create_for_others': request.user.is_staff or (hasattr(request.user, 'profile') and request.user.profile.can_create_cycles_for_others),
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)
 
 
-@staff_member_required
+@login_required
 def review_cycle_detail(request, cycle_id):
     """View details of a review cycle"""
     cycle = get_object_or_404(
@@ -588,7 +628,7 @@ def review_cycle_detail(request, cycle_id):
     return render(request, 'admin_dashboard/review_cycle_detail.html', context)
 
 
-@staff_member_required
+@login_required
 def generate_report_view(request, cycle_id):
     """Generate or regenerate report for a review cycle"""
     from reports.services import generate_report, send_report_ready_notification
@@ -614,7 +654,7 @@ def generate_report_view(request, cycle_id):
     return redirect('review_cycle_detail', cycle_id=cycle.id)
 
 
-@staff_member_required
+@login_required
 def close_cycle(request, cycle_id):
     """Close/complete a review cycle and generate report if possible"""
     if request.method != 'POST':
@@ -662,7 +702,7 @@ def close_cycle(request, cycle_id):
     return redirect('review_cycle_detail', cycle_id=cycle_id)
 
 
-@staff_member_required
+@login_required
 def send_reminder_form(request, cycle_id):
     """Show form to send reminders for pending reviews"""
     cycle = get_object_or_404(ReviewCycle, id=cycle_id)
@@ -678,7 +718,7 @@ def send_reminder_form(request, cycle_id):
     return render(request, 'admin_dashboard/send_reminder.html', context)
 
 
-@staff_member_required
+@login_required
 def manage_invitations(request, cycle_id):
     """Manage reviewer invitations for a cycle"""
     cycle = get_object_or_404(ReviewCycle, id=cycle_id)
@@ -709,7 +749,7 @@ def manage_invitations(request, cycle_id):
     return render(request, 'admin_dashboard/manage_invitations.html', context)
 
 
-@staff_member_required
+@login_required
 def assign_invitations(request, cycle_id):
     """Assign email addresses to reviewer tokens"""
     cycle = get_object_or_404(ReviewCycle, id=cycle_id)
@@ -742,7 +782,7 @@ def assign_invitations(request, cycle_id):
     return redirect('manage_invitations', cycle_id=cycle.id)
 
 
-@staff_member_required
+@login_required
 def send_invitations(request, cycle_id):
     """Send email invitations to assigned reviewers"""
     cycle = get_object_or_404(ReviewCycle, id=cycle_id)
@@ -765,7 +805,7 @@ def send_invitations(request, cycle_id):
     return redirect('manage_invitations', cycle_id=cycle.id)
 
 
-@staff_member_required
+@login_required
 def send_reminder(request, cycle_id):
     """Send reminder emails for pending reviews"""
     from reviews.services import send_reminder_emails
@@ -790,7 +830,7 @@ def send_reminder(request, cycle_id):
     return redirect('send_reminder_form', cycle_id=cycle.id)
 
 
-@staff_member_required
+@login_required
 def settings_view(request):
     """Organization and SMTP settings page"""
     organization = Organization.objects.first()
@@ -835,8 +875,17 @@ def settings_view(request):
         except Exception as e:
             messages.error(request, f'Error updating settings: {str(e)}')
 
+    # Get subscription information if exists
+    subscription = None
+    try:
+        from subscriptions.models import Subscription
+        subscription = organization.subscription
+    except Subscription.DoesNotExist:
+        pass
+
     context = {
         'organization': organization,
+        'subscription': subscription,
     }
 
     return render(request, 'admin_dashboard/settings.html', context)

@@ -66,6 +66,69 @@
         </div>
     </div>
 
+    {% if subscription %}
+    <div class="card mb-2">
+        <div class="card-header">
+            <h2 class="card-title">Subscription & Billing</h2>
+        </div>
+        <div class="card-body">
+            <div class="billing-info" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div>
+                    <label class="form-label">Plan</label>
+                    <p style="margin: 0; font-weight: 600;">
+                        {{ subscription.plan.name }}
+                        <span style="color: var(--text-secondary); font-weight: 400;">(€{{ subscription.plan.price_monthly }}/month)</span>
+                    </p>
+                </div>
+                <div>
+                    <label class="form-label">Status</label>
+                    <p style="margin: 0;">
+                        {% if subscription.status == 'active' %}
+                            <span class="badge" style="background: #059669; color: white;">Active</span>
+                        {% elif subscription.status == 'trialing' %}
+                            <span class="badge" style="background: #0ea5e9; color: white;">Trial</span>
+                        {% elif subscription.status == 'past_due' %}
+                            <span class="badge" style="background: #f59e0b; color: white;">Past Due</span>
+                        {% elif subscription.status == 'canceled' %}
+                            <span class="badge" style="background: #dc2626; color: white;">Canceled</span>
+                        {% else %}
+                            <span class="badge" style="background: #6b7280; color: white;">{{ subscription.status|title }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+                {% if subscription.trial_end %}
+                <div>
+                    <label class="form-label">Trial Ends</label>
+                    <p style="margin: 0;">{{ subscription.trial_end|date:"F d, Y" }}</p>
+                </div>
+                {% endif %}
+                <div>
+                    <label class="form-label">Current Period</label>
+                    <p style="margin: 0;">{{ subscription.current_period_start|date:"M d, Y" }} - {{ subscription.current_period_end|date:"M d, Y" }}</p>
+                </div>
+                <div>
+                    <label class="form-label">Max Employees</label>
+                    <p style="margin: 0;">{{ subscription.plan.max_employees }}</p>
+                </div>
+            </div>
+            {% if subscription.cancel_at_period_end %}
+            <div style="margin-top: 1rem; padding: 12px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; color: #991b1b;">
+                <strong>⚠️ Subscription Canceling:</strong> Your subscription will end on {{ subscription.current_period_end|date:"F d, Y" }}
+            </div>
+            {% endif %}
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <a href="https://billing.stripe.com/p/login/test_your_portal_link" class="btn btn-secondary" target="_blank" style="display: inline-flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    Manage Billing
+                </a>
+                <small style="display: block; margin-top: 8px; color: var(--text-secondary);">
+                    Manage your payment method, view invoices, and update billing details
+                </small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="card mb-2">
         <div class="card-header">
             <h2 class="card-title">User Registration Settings</h2>

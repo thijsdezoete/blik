@@ -225,12 +225,16 @@
             <a href="{% url 'manage_invitations' cycle.id %}" class="btn btn-primary">Manage Invitations</a>
 
             {% if report_exists %}
+            {% if user.is_staff %}
             <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-primary">View Report (Staff)</a>
+            {% endif %}
             {% if report.access_token %}
             <a href="{% url 'reports:reviewee_report' report.access_token %}" class="btn btn-primary">View Report (Reviewee)</a>
             {% endif %}
+            {% if user.is_staff %}
             <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary">Regenerate Report</a>
-            {% else %}
+            {% endif %}
+            {% elif user.is_staff %}
             <a href="{% url 'generate_report' cycle.id %}" class="btn btn-primary">Generate Report</a>
             {% endif %}
 
@@ -240,11 +244,13 @@
             </a>
             {% endif %}
 
+            {% if user.is_staff %}
             <a href="/admin/reviews/reviewcycle/{{ cycle.id }}/change/" class="btn btn-secondary">
                 Edit in Django Admin
             </a>
+            {% endif %}
 
-            {% if cycle.status == 'active' %}
+            {% if cycle.status == 'active' and user.is_staff %}
             <form method="post" action="{% url 'close_cycle' cycle.id %}" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-secondary" style="width: 100%;">

@@ -481,9 +481,16 @@
             <h2>Deploy GDPR-Compliant 360 Feedback in 5 Minutes</h2>
             <p>Save 17,000-83,000 EUR annually. EU data residency. Open source transparency.</p>
             <div class="hero-cta">
-                <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Deploy on GitHub</a>
-                <a href="{% landing_url 'index' %}" class="btn btn-secondary">Learn More</a>
+                <a href="{% url 'landing:signup' %}" class="btn btn-primary">Start Free Trial</a>
+                <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
             </div>
+
+            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
+                <h3 style="margin-bottom: 1rem;">EU-Hosted Option Available</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Don't want to manage infrastructure? We offer a fully managed, GDPR-compliant version hosted in EU data centers for just €49/month. No server management, automatic updates, daily backups.</p>
+                <a href="{% url 'landing:signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
+            </div>
+
             <p style="margin-top: 2.5rem; font-size: 1rem; opacity: 0.9;">Trusted by European tech companies from Berlin to Barcelona</p>
         </div>
     </section>

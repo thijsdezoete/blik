@@ -140,6 +140,12 @@
                 <h3 style="color: white; margin-bottom: 1rem;">Save 2,800-17,800 EUR Annually</h3>
                 <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">For a 50-person company. Savings scale with team size.</p>
             </div>
+
+            <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 2rem; text-align: center; margin-top: 3rem;">
+                <h3 style="margin-bottom: 1rem;">Don't want the hassle of self-hosting?</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.125rem;">We offer a fully managed EU-hosted version with close to unlimited functionality for just €49/month. No DevOps required.</p>
+                <a href="{% url 'landing:signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
+            </div>
         </div>
     </section>
 
@@ -389,10 +395,10 @@
         <div class="container">
             <div class="cta-content">
                 <h2>Ready to transform your feedback process?</h2>
-                <p>Deploy Blik in minutes and start collecting meaningful 360-degree feedback.</p>
+                <p>Self-host for free or let us handle the infrastructure with our affordable EU-hosted plans.</p>
                 <div class="cta-buttons">
-                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Get Started Free</a>
-                    <a href="mailto:info@mail.blik360.com" class="btn btn-secondary">Contact Sales</a>
+                    <a href="{% url 'landing:signup' %}" class="btn btn-primary">Start Free Trial</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
                 </div>
             </div>
         </div>

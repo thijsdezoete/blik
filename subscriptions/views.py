@@ -5,12 +5,49 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.utils import timezone
 from datetime import datetime
 from core.models import Organization
 from .models import Plan, Subscription
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def send_welcome_email(organization, user, password):
+    """Send welcome email with login credentials to new customer"""
+    subject = f'Welcome to {settings.SITE_NAME} - Your Account is Ready'
+
+    # Render email templates
+    html_message = render_to_string('emails/welcome.html', {
+        'organization': organization,
+        'user': user,
+        'password': password,
+        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/admin/login/',
+        'site_name': settings.SITE_NAME,
+    })
+
+    text_message = render_to_string('emails/welcome.txt', {
+        'organization': organization,
+        'user': user,
+        'password': password,
+        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/admin/login/',
+        'site_name': settings.SITE_NAME,
+    })
+
+    try:
+        send_mail(
+            subject=subject,
+            message=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+    except Exception as e:
+        # Log error but don't fail the signup
+        print(f"Failed to send welcome email to {user.email}: {e}")
 
 
 @require_POST
@@ -124,9 +161,8 @@ def handle_checkout_session_completed(session):
         trial_end=datetime.fromtimestamp(stripe_subscription['trial_end'], tz=timezone.utc) if stripe_subscription.get('trial_end') else None,
     )
 
-    # TODO: Send welcome email with login credentials
-    # For now, log the credentials (in production, send via email)
-    print(f"New signup: {customer_email} / {password}")
+    # Send welcome email
+    send_welcome_email(org, user, password)
 
 
 def handle_subscription_updated(stripe_subscription):

@@ -19,23 +19,40 @@ from core.models import Organization
 @staff_member_required
 def dashboard(request):
     """Admin dashboard homepage"""
-    # Get statistics
-    total_reviewees = Reviewee.objects.filter(is_active=True).count()
-    active_cycles = ReviewCycle.objects.filter(status='active').count()
-    completed_cycles = ReviewCycle.objects.filter(status='completed').count()
+    from subscriptions.utils import get_subscription_status
+
+    org = request.organization
+
+    # Get statistics filtered by organization
+    reviewees_qs = Reviewee.objects.filter(is_active=True)
+    cycles_qs = ReviewCycle.objects.select_related('reviewee', 'questionnaire')
+
+    if org:
+        reviewees_qs = reviewees_qs.filter(organization=org)
+        cycles_qs = cycles_qs.filter(reviewee__organization=org)
+
+    total_reviewees = reviewees_qs.count()
+    active_cycles = cycles_qs.filter(status='active').count()
+    completed_cycles = cycles_qs.filter(status='completed').count()
+
+    # Get subscription status
+    subscription_status = get_subscription_status(org) if org else None
 
     # Recent activity
-    recent_cycles = ReviewCycle.objects.select_related('reviewee', 'questionnaire').all()[:5]
+    recent_cycles = cycles_qs.all()[:5]
 
     # Pending reviews (tokens not completed)
-    pending_tokens = ReviewerToken.objects.filter(
+    pending_tokens_qs = ReviewerToken.objects.filter(
         completed_at__isnull=True,
         cycle__status='active'
-    ).count()
+    )
+    if org:
+        pending_tokens_qs = pending_tokens_qs.filter(cycle__reviewee__organization=org)
+    pending_tokens = pending_tokens_qs.count()
 
     # Completion stats for active cycles
     active_cycles_data = []
-    for cycle in ReviewCycle.objects.filter(status='active').select_related('reviewee'):
+    for cycle in cycles_qs.filter(status='active').select_related('reviewee'):
         total_tokens = cycle.tokens.count()
         completed_tokens = cycle.tokens.filter(completed_at__isnull=False).count()
         completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
@@ -66,6 +83,7 @@ def dashboard(request):
         'recent_cycles': recent_cycles,
         'active_cycles_data': active_cycles_data,
         'completed_cycles_data': completed_cycles_data,
+        'subscription_status': subscription_status,
     }
 
     return render(request, 'admin_dashboard/dashboard.html', context)
@@ -74,7 +92,13 @@ def dashboard(request):
 @staff_member_required
 def reviewee_list(request):
     """List and manage reviewees"""
-    reviewees = Reviewee.objects.filter(is_active=True).annotate(
+    org = request.organization
+    reviewees_qs = Reviewee.objects.filter(is_active=True)
+
+    if org:
+        reviewees_qs = reviewees_qs.filter(organization=org)
+
+    reviewees = reviewees_qs.annotate(
         cycle_count=Count('review_cycles')
     ).order_by('name')
 
@@ -88,16 +112,24 @@ def reviewee_list(request):
 @staff_member_required
 def reviewee_create(request):
     """Create a new reviewee"""
+    from subscriptions.utils import check_employee_limit
+
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
         department = request.POST.get('department', '')
 
         if name and email:
-            organization = Organization.objects.first()
+            organization = request.organization or Organization.objects.first()
             if not organization:
                 messages.error(request, 'No organization found. Please run setup first.')
                 return redirect('admin_dashboard')
+
+            # Check employee limit
+            allowed, error_message = check_employee_limit(request)
+            if not allowed:
+                messages.error(request, error_message)
+                return redirect('reviewee_list')
 
             try:
                 reviewee = Reviewee.objects.create(
@@ -165,6 +197,8 @@ def questionnaire_list(request):
     from django.db.models import Subquery, OuterRef
     from questionnaires.models import Question
 
+    org = request.organization
+
     # Subquery to count questions correctly
     question_count_subquery = Question.objects.filter(
         section__questionnaire=OuterRef('pk')
@@ -172,7 +206,11 @@ def questionnaire_list(request):
         count=Count('id')
     ).values('count')
 
-    questionnaires = Questionnaire.objects.annotate(
+    questionnaires_qs = Questionnaire.objects.filter(
+        Q(organization=org) | Q(organization__isnull=True)  # Org's questionnaires + default/shared ones
+    ) if org else Questionnaire.objects.all()
+
+    questionnaires = questionnaires_qs.annotate(
         question_count=Subquery(question_count_subquery),
         cycle_count=Count('review_cycles')
     ).order_by('-is_default', 'name')
@@ -352,9 +390,15 @@ def questionnaire_edit(request, questionnaire_id):
 @staff_member_required
 def review_cycle_list(request):
     """List all review cycles"""
-    cycles = ReviewCycle.objects.select_related(
+    org = request.organization
+    cycles_qs = ReviewCycle.objects.select_related(
         'reviewee', 'questionnaire', 'created_by'
-    ).annotate(
+    )
+
+    if org:
+        cycles_qs = cycles_qs.filter(reviewee__organization=org)
+
+    cycles = cycles_qs.annotate(
         token_count=Count('tokens'),
         completed_count=Count('tokens', filter=Q(tokens__completed_at__isnull=False))
     ).order_by('-created_at')

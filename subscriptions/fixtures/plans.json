@@ -1,0 +1,45 @@
+[
+  {
+    "model": "subscriptions.plan",
+    "pk": 1,
+    "fields": {
+      "name": "EU SaaS",
+      "plan_type": "saas",
+      "price_monthly": "49.00",
+      "max_employees": 50,
+      "stripe_price_id": "",
+      "features": {
+        "hosted_eu": true,
+        "gdpr_compliant": true,
+        "automatic_updates": true,
+        "daily_backups": true,
+        "email_support": true,
+        "custom_domain": true,
+        "ssl_included": true
+      },
+      "is_active": true
+    }
+  },
+  {
+    "model": "subscriptions.plan",
+    "pk": 2,
+    "fields": {
+      "name": "Enterprise",
+      "plan_type": "enterprise",
+      "price_monthly": "199.00",
+      "max_employees": 200,
+      "stripe_price_id": "",
+      "features": {
+        "hosted_eu": true,
+        "gdpr_compliant": true,
+        "automatic_updates": true,
+        "daily_backups": true,
+        "priority_support": true,
+        "custom_domain": true,
+        "ssl_included": true,
+        "sla_guarantees": true
+      },
+      "is_active": true
+    }
+  }
+]

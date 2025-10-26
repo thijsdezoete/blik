@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from core.models import TimeStampedModel
+from core.managers import ReportManager
 from reviews.models import ReviewCycle
 
 
@@ -45,6 +46,8 @@ class Report(TimeStampedModel):
 
     generated_at = models.DateTimeField(auto_now_add=True)
     available = models.BooleanField(default=True)
+
+    objects = ReportManager()
 
     class Meta:
         db_table = 'reports'

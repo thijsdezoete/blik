@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from core.models import TimeStampedModel
+from core.managers import ReviewCycleManager, ReviewerTokenManager, ResponseManager
 from accounts.models import Reviewee
 from questionnaires.models import Questionnaire, Question
 
@@ -42,6 +43,8 @@ class ReviewCycle(TimeStampedModel):
     invitation_token_peer = models.UUIDField(unique=True, db_index=True, null=True, blank=True)
     invitation_token_manager = models.UUIDField(unique=True, db_index=True, null=True, blank=True)
     invitation_token_direct_report = models.UUIDField(unique=True, db_index=True, null=True, blank=True)
+
+    objects = ReviewCycleManager()
 
     class Meta:
         db_table = 'review_cycles'
@@ -104,6 +107,8 @@ class ReviewerToken(TimeStampedModel):
     )
     completed_at = models.DateTimeField(null=True, blank=True)
 
+    objects = ReviewerTokenManager()
+
     class Meta:
         db_table = 'reviewer_tokens'
         ordering = ['cycle', 'category']
@@ -141,6 +146,8 @@ class Response(TimeStampedModel):
     # For text: {"value": "text response"}
     # For multiple_choice: {"value": "Option 1"}
     answer_data = models.JSONField()
+
+    objects = ResponseManager()
 
     class Meta:
         db_table = 'responses'

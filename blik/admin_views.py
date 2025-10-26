@@ -35,12 +35,8 @@ def dashboard(request):
     org = request.organization
 
     # Get statistics filtered by organization
-    reviewees_qs = Reviewee.objects.filter(is_active=True)
-    cycles_qs = ReviewCycle.objects.select_related('reviewee', 'questionnaire')
-
-    if org:
-        reviewees_qs = reviewees_qs.filter(organization=org)
-        cycles_qs = cycles_qs.filter(reviewee__organization=org)
+    reviewees_qs = Reviewee.objects.for_organization(org).filter(is_active=True)
+    cycles_qs = ReviewCycle.objects.for_organization(org).select_related('reviewee', 'questionnaire')
 
     total_reviewees = reviewees_qs.count()
     active_cycles = cycles_qs.filter(status='active').count()
@@ -53,13 +49,10 @@ def dashboard(request):
     recent_cycles = cycles_qs.all()[:5]
 
     # Pending reviews (tokens not completed)
-    pending_tokens_qs = ReviewerToken.objects.filter(
+    pending_tokens = ReviewerToken.objects.for_organization(org).filter(
         completed_at__isnull=True,
         cycle__status='active'
-    )
-    if org:
-        pending_tokens_qs = pending_tokens_qs.filter(cycle__reviewee__organization=org)
-    pending_tokens = pending_tokens_qs.count()
+    ).count()
 
     # Completion stats for active cycles
     active_cycles_data = []
@@ -132,12 +125,7 @@ def team_list(request):
 def reviewee_list(request):
     """List and manage reviewees"""
     org = request.organization
-    reviewees_qs = Reviewee.objects.filter(is_active=True)
-
-    if org:
-        reviewees_qs = reviewees_qs.filter(organization=org)
-
-    reviewees = reviewees_qs.annotate(
+    reviewees = Reviewee.objects.for_organization(org).filter(is_active=True).annotate(
         cycle_count=Count('review_cycles')
     ).order_by('name')
 
@@ -495,7 +483,7 @@ def review_cycle_create(request):
 
             if creation_mode == 'bulk':
                 # Create cycles for all active reviewees
-                reviewees = Reviewee.objects.filter(is_active=True)
+                reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
 
                 for reviewee in reviewees:
                     cycle = ReviewCycle.objects.create(
@@ -544,7 +532,7 @@ def review_cycle_create(request):
                     messages.error(request, 'Reviewee is required for single cycle creation.')
                     return redirect('review_cycle_create')
 
-                reviewee = Reviewee.objects.get(id=reviewee_id)
+                reviewee = Reviewee.objects.for_organization(org).get(id=reviewee_id)
 
                 # Create review cycle
                 cycle = ReviewCycle.objects.create(
@@ -594,20 +582,15 @@ def review_cycle_create(request):
     # Filter reviewees based on user permissions
     if hasattr(request.user, 'profile') and not request.user.profile.can_create_cycles_for_others:
         # User can only create cycles for themselves
-        reviewees = Reviewee.objects.filter(
+        reviewees = Reviewee.objects.for_organization(org).filter(
             is_active=True,
             email=request.user.email
         ).order_by('name')
     else:
-        reviewees = Reviewee.objects.filter(is_active=True).order_by('name')
-
-    # Get organization from request context
-    org = getattr(request, 'organization', None)
+        reviewees = Reviewee.objects.for_organization(org).filter(is_active=True).order_by('name')
 
     # Only show questionnaires from user's organization
-    questionnaires = Questionnaire.objects.filter(
-        organization=org
-    ).order_by('-is_default', 'name') if org else Questionnaire.objects.none()
+    questionnaires = Questionnaire.objects.for_organization(org).order_by('-is_default', 'name')
 
     context = {
         'reviewees': reviewees,

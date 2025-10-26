@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.crypto import get_random_string
 from core.models import TimeStampedModel, Organization
+from core.managers import OrganizationManager
 
 
 class UserProfile(TimeStampedModel):
@@ -20,6 +21,8 @@ class UserProfile(TimeStampedModel):
         default=False,
         help_text='If False, user can only create cycles for themselves'
     )
+
+    objects = OrganizationManager()
 
     class Meta:
         db_table = 'user_profiles'
@@ -46,6 +49,8 @@ class OrganizationInvitation(TimeStampedModel):
     )
     accepted_at = models.DateTimeField(null=True, blank=True)
     expires_at = models.DateTimeField()
+
+    objects = OrganizationManager()
 
     class Meta:
         db_table = 'organization_invitations'
@@ -80,6 +85,8 @@ class Reviewee(TimeStampedModel):
     email = models.EmailField()
     department = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
+
+    objects = OrganizationManager()
 
     class Meta:
         db_table = 'reviewees'

@@ -16,6 +16,17 @@ from reports.models import Report
 from core.models import Organization
 
 
+def get_cycle_or_404(cycle_id, organization):
+    """
+    Get a ReviewCycle by ID, filtered by organization to prevent cross-org access.
+    Returns 404 if cycle doesn't exist or belongs to a different organization.
+    """
+    cycles_qs = ReviewCycle.objects.select_related('reviewee', 'questionnaire', 'created_by')
+    if organization:
+        cycles_qs = cycles_qs.filter(reviewee__organization=organization)
+    return get_object_or_404(cycles_qs, id=cycle_id)
+
+
 @login_required
 def dashboard(request):
     """Admin dashboard homepage"""
@@ -66,7 +77,7 @@ def dashboard(request):
 
     # Completed cycles with report availability
     completed_cycles_data = []
-    for cycle in ReviewCycle.objects.filter(status='completed').select_related('reviewee').order_by('-created_at')[:10]:
+    for cycle in cycles_qs.filter(status='completed').select_related('reviewee').order_by('-created_at')[:10]:
         # Check if report exists
         report_exists = Report.objects.filter(cycle=cycle).exists()
 
@@ -610,10 +621,7 @@ def review_cycle_create(request):
 @login_required
 def review_cycle_detail(request, cycle_id):
     """View details of a review cycle"""
-    cycle = get_object_or_404(
-        ReviewCycle.objects.select_related('reviewee', 'questionnaire', 'created_by'),
-        id=cycle_id
-    )
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     tokens = cycle.tokens.all().order_by('category', 'created_at')
 
@@ -660,7 +668,7 @@ def generate_report_view(request, cycle_id):
     """Generate or regenerate report for a review cycle"""
     from reports.services import generate_report, send_report_ready_notification
 
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     try:
         report = generate_report(cycle)
@@ -687,7 +695,7 @@ def close_cycle(request, cycle_id):
     if request.method != 'POST':
         return redirect('review_cycle_detail', cycle_id=cycle_id)
 
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     if cycle.status != 'active':
         messages.warning(request, 'This cycle is already completed.')
@@ -732,7 +740,7 @@ def close_cycle(request, cycle_id):
 @login_required
 def send_reminder_form(request, cycle_id):
     """Show form to send reminders for pending reviews"""
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     # Get pending tokens
     pending_tokens = cycle.tokens.filter(completed_at__isnull=True).order_by('category')
@@ -748,7 +756,7 @@ def send_reminder_form(request, cycle_id):
 @login_required
 def manage_invitations(request, cycle_id):
     """Manage reviewer invitations for a cycle"""
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     # Group tokens by category
     tokens_by_category = {}
@@ -779,7 +787,7 @@ def manage_invitations(request, cycle_id):
 @login_required
 def assign_invitations(request, cycle_id):
     """Assign email addresses to reviewer tokens"""
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     if request.method == 'POST':
         # Parse email assignments by category
@@ -812,7 +820,7 @@ def assign_invitations(request, cycle_id):
 @login_required
 def send_invitations(request, cycle_id):
     """Send email invitations to assigned reviewers"""
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     if request.method == 'POST':
         # Send invitations
@@ -837,7 +845,7 @@ def send_reminder(request, cycle_id):
     """Send reminder emails for pending reviews"""
     from reviews.services import send_reminder_emails
 
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_cycle_or_404(cycle_id, request.organization)
 
     if request.method == 'POST':
         # Send reminders

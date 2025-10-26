@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from accounts.services import export_organization_data, delete_user_account, delete_organization
+from accounts.permissions import can_delete_organization_required
 from subscriptions.services import cancel_subscription, reactivate_subscription
 from subscriptions.models import Subscription
 
@@ -125,15 +126,16 @@ def delete_account(request):
 
 @login_required
 @require_POST
+@can_delete_organization_required
 def delete_organization(request):
-    """Delete organization and all data."""
+    """
+    Delete organization and all data.
+
+    Only organization administrators can delete the organization.
+    Requires password confirmation and organization name match.
+    """
     org = request.organization
     user = request.user
-
-    # Only allow staff users to delete organization
-    if not user.is_staff:
-        messages.error(request, 'Only administrators can delete the organization.')
-        return redirect('account_settings')
 
     # Confirm with password
     password = request.POST.get('password')

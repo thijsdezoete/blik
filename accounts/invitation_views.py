@@ -8,12 +8,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.urls import reverse
 from accounts.models import OrganizationInvitation
+from accounts.permissions import organization_admin_required
 from core.email import send_email
 
 
 @login_required
+@organization_admin_required
 def send_invitation(request):
-    """Send invitation to join organization"""
+    """
+    Send invitation to join organization.
+
+    Only organization administrators can invite new team members.
+    """
     if request.method == 'POST':
         email = request.POST.get('email', '').strip().lower()
 
@@ -112,6 +118,8 @@ def accept_invitation(request, token):
     if existing_user:
         # User exists - create profile and mark invitation accepted
         from accounts.models import UserProfile
+        from accounts.permissions import assign_organization_member
+
         profile, created = UserProfile.objects.get_or_create(
             user=existing_user,
             defaults={
@@ -127,6 +135,13 @@ def accept_invitation(request, token):
                 'Please contact support for multi-organization access.'
             )
             return redirect('login')
+
+        # Assign organization member permissions if profile was just created
+        if created:
+            assign_organization_member(
+                existing_user,
+                can_create_cycles_for_others=invitation.organization.default_users_can_create_cycles
+            )
 
         # Mark invitation accepted
         invitation.accepted_at = timezone.now()

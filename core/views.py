@@ -114,8 +114,21 @@ def setup_email(request):
         messages.error(request, 'No organization found. Please complete organization setup first.')
         return redirect('setup_organization')
 
+    # Check if user has a SaaS subscription
+    from subscriptions.models import Subscription
+    has_subscription = Subscription.objects.filter(organization=organization).exists()
+
     if request.method == 'POST':
         form = SetupEmailForm(request.POST)
+
+        # Auto-skip for SaaS customers if they choose to use Blik mailer
+        use_blik_mailer = request.POST.get('use_blik_mailer') == 'true'
+
+        if use_blik_mailer and has_subscription:
+            # Use default Blik email settings (already configured in Django settings)
+            messages.success(request, 'Using Blik\'s managed email service. All set!')
+            return redirect('setup_complete')
+
         if form.is_valid():
             if not form.cleaned_data.get('skip_email_setup'):
                 # Update organization with email settings
@@ -144,6 +157,7 @@ def setup_email(request):
 
     return render(request, 'setup/email.html', {
         'form': form,
+        'has_subscription': has_subscription,
         'step': 3,
         'total_steps': 3,
         'progress_percentage': 100,

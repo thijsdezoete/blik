@@ -8,11 +8,9 @@
         <h1>Team Management</h1>
         <p class="page-description">Manage users and send invitations</p>
     </div>
-    {% if user.is_staff %}
     <button type="button" class="btn btn-primary" onclick="document.getElementById('invite-modal').style.display='flex'">
         Send Invitation
     </button>
-    {% endif %}
 </div>
 
 <!-- Invite Modal -->

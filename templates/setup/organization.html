@@ -5,8 +5,8 @@
 {% block subtitle %}Configure your organization details{% endblock %}
 
 {% block content %}
-<h2 style="margin-bottom: 20px; color: #333;">Organization Details</h2>
-<p style="margin-bottom: 25px; color: #666;">
+<h2 class="page-title">Organization Details</h2>
+<p class="page-description">
     Tell us about your organization. This information will be used in emails and reports.
 </p>
 
@@ -23,7 +23,7 @@
             {% endfor %}
             </ul>
         {% endif %}
-        <small class="help-text">{{ form.name.help_text }}</small>
+        <small class="help-text">Your organization's name (e.g., "Acme Corporation")</small>
     </div>
 
     <div class="form-group">

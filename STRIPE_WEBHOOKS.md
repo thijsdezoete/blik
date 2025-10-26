@@ -11,20 +11,14 @@ For local development, you need to forward Stripe webhooks from Stripe to your l
    ./stripe-webhook-forward.sh
    ```
 
-2. **First time setup:**
-   - The script will prompt you to login to Stripe (opens browser)
-   - After login, it will display a webhook signing secret like `whsec_xxxxx`
-   - Copy this secret and add it to your `.env` file:
-     ```
-     STRIPE_WEBHOOK_SECRET=whsec_xxxxx
-     ```
+2. **That's it!** The script will automatically:
+   - Prompt you to login to Stripe (opens browser on first run)
+   - Extract the webhook signing secret
+   - Update `STRIPE_WEBHOOK_SECRET` in your `.env` file
+   - Restart the web container to apply the new secret
+   - Start forwarding webhooks to http://localhost:8000/api/stripe/webhook/
 
-3. **Restart your Docker container:**
-   ```bash
-   docker compose restart web
-   ```
-
-4. **Test the flow:**
+3. **Test the flow:**
    - Visit http://localhost:8000/landing/signup/
    - Complete a test checkout
    - Webhooks will be forwarded to your local server

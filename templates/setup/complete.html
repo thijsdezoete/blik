@@ -5,35 +5,35 @@
 {% block subtitle %}Your Blik instance is ready to use!{% endblock %}
 
 {% block content %}
-<div style="width: 80px; height: 80px; border-radius: 50%; background: #059669; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center;">
+<div class="success-icon">
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
 </div>
 
-<h2 style="text-align: center; margin-bottom: 15px; color: #059669;">Setup Complete!</h2>
-<p style="text-align: center; margin-bottom: 30px; color: var(--text-secondary);">
+<h2 class="page-title" style="text-align: center; color: var(--success);">Setup Complete!</h2>
+<p class="page-description" style="text-align: center;">
     Congratulations! Your Blik 360-degree feedback system is now configured and ready to use.
 </p>
 
-<div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-    <h3 style="margin-bottom: 15px; color: var(--text-primary);">Configuration Summary</h3>
-    <table style="width: 100%;">
+<div class="config-summary">
+    <h3>Configuration Summary</h3>
+    <table>
         <tr>
-            <td style="padding: 8px 0; color: var(--text-secondary);">Administrator:</td>
-            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">{{ user.username }}</td>
+            <td>Administrator:</td>
+            <td>{{ user.username }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: var(--text-secondary);">Email:</td>
-            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">{{ user.email }}</td>
+            <td>Email:</td>
+            <td>{{ user.email }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: var(--text-secondary);">Organization:</td>
-            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">{{ organization.name }}</td>
+            <td>Organization:</td>
+            <td>{{ organization.name }}</td>
         </tr>
         <tr>
-            <td style="padding: 8px 0; color: var(--text-secondary);">Email Configured:</td>
-            <td style="padding: 8px 0; font-weight: 600; color: var(--text-primary);">
+            <td>Email Configured:</td>
+            <td>
                 {% if organization.smtp_host %}
                 Yes ({{ organization.smtp_host }})
                 {% else %}
@@ -62,9 +62,9 @@
     </ul>
 </div>
 
-<div style="background: var(--bg-info); border-radius: 8px; padding: 20px; margin-top: 25px; border-left: 4px solid var(--primary-color);">
-    <h3 style="margin-bottom: 10px; color: var(--primary-color); font-size: 16px;">Want to explore first?</h3>
-    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">
+<div class="info-card" style="margin-top: 25px;">
+    <h3>Want to explore first?</h3>
+    <p>
         Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens.
     </p>
     <form method="post" style="margin: 0;">

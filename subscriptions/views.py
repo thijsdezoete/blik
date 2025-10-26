@@ -240,6 +240,10 @@ def handle_checkout_session_completed(session):
         can_create_cycles_for_others=True
     )
 
+    # Assign organization admin permissions (Django permission system)
+    from accounts.permissions import assign_organization_admin
+    assign_organization_admin(user)
+
     # Create subscription
     # For trial subscriptions, use trial dates as current period
     # For active subscriptions, use billing period dates
@@ -363,9 +367,34 @@ def checkout_success(request):
             if attempt < max_attempts - 1:
                 time.sleep(1)  # Wait 1 second before retrying
 
-        # If we get here, something went wrong
-        logger.error(f"[CHECKOUT SUCCESS] Timeout waiting for webhook - user not created for {customer_email}")
-        logger.error(f"[CHECKOUT SUCCESS] This means the webhook never processed or failed")
+        # If we get here, webhook didn't fire - create user manually as fallback
+        logger.warning(f"[CHECKOUT SUCCESS] Webhook timeout - creating user manually for {customer_email}")
+
+        try:
+            # Manually trigger the user creation (same as webhook would do)
+            handle_checkout_session_completed(session)
+            logger.info(f"[CHECKOUT SUCCESS] User created manually, retrying login token lookup")
+
+            # Try one more time to get the user and token
+            user = User.objects.filter(email=customer_email).first()
+            if user:
+                token = OneTimeLoginToken.objects.filter(
+                    user=user,
+                    used=False,
+                    expires_at__gt=timezone.now()
+                ).order_by('-created_at').first()
+
+                if token:
+                    logger.info(f"[CHECKOUT SUCCESS] Manual creation successful, redirecting to auto-login")
+                    return redirect('subscriptions:auto_login', token=token.token)
+
+        except Exception as e:
+            logger.error(f"[CHECKOUT SUCCESS] Failed to create user manually: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+
+        # If still no success, redirect to login
+        logger.error(f"[CHECKOUT SUCCESS] All attempts failed for {customer_email}")
         return redirect('login')
 
     except Exception as e:

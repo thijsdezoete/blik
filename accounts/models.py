@@ -27,6 +27,12 @@ class UserProfile(TimeStampedModel):
     class Meta:
         db_table = 'user_profiles'
         ordering = ['user__username']
+        permissions = [
+            ('can_invite_members', 'Can invite team members'),
+            ('can_manage_organization', 'Can manage organization settings'),
+            ('can_delete_organization', 'Can delete organization'),
+            ('can_view_all_reports', 'Can view all organization reports'),
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.organization.name}"

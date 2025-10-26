@@ -52,17 +52,27 @@ def clone_questionnaire_for_organization(questionnaire, organization):
 @receiver(post_save, sender=Organization)
 def create_default_questionnaires_for_organization(sender, instance, created, **kwargs):
     """
-    Automatically clone all default questionnaires when a new organization is created.
+    Automatically clone all template questionnaires when a new organization is created.
 
     This ensures every organization starts with a complete set of questionnaires.
     Template questionnaires are those with organization=None and is_default=True.
+
+    The "Professional Skills 360 Review" template (pk=1) will be marked as the
+    organization's default questionnaire. All other cloned questionnaires will
+    have is_default=False.
     """
     if not created:
         return
 
     # Get all template questionnaires using the templates() manager method
-    template_questionnaires = Questionnaire.objects.templates()
+    template_questionnaires = Questionnaire.objects.templates().order_by('pk')
 
     # Clone each template for the new organization
     for template in template_questionnaires:
-        clone_questionnaire_for_organization(template, instance)
+        cloned = clone_questionnaire_for_organization(template, instance)
+
+        # Mark "Professional Skills 360 Review" as the organization's default
+        # (it's the universal template that applies to all roles)
+        if 'Professional Skills' in template.name:
+            cloned.is_default = True
+            cloned.save()

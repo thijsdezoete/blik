@@ -6,75 +6,155 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
+        <div class="col-12">
+            <h2 class="mb-4">My Profile</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Information & Edit Form -->
+        <div class="col-md-4">
+            <div class="card mb-4">
                 <div class="card-header">
-                    <h2>My Profile</h2>
+                    <h4 class="mb-0">Personal Information</h4>
                 </div>
                 <div class="card-body">
-                    <div class="profile-section mb-4">
-                        <h4>User Information</h4>
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th style="width: 30%;">Username</th>
-                                    <td>{{ user.username }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Email</th>
-                                    <td>{{ user.email }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Staff Status</th>
-                                    <td>
-                                        {% if user.is_staff %}
-                                            <span class="badge bg-success">Staff Member</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Regular User</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Date Joined</th>
-                                    <td>{{ user.date_joined|date:"F d, Y" }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <form method="post" id="profile-edit-form">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                            <small class="text-muted">Username cannot be changed</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Organization</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>{{ organization.name }}</strong>
+                    </div>
+                    <div class="text-muted small mb-3">{{ organization.email }}</div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Permissions</span>
+                    </div>
+                    <div class="small">
+                        {% if profile.can_create_cycles_for_others %}
+                            <span class="badge bg-success">Can create cycles for others</span>
+                        {% else %}
+                            <span class="badge bg-warning">Self cycles only</span>
+                        {% endif %}
                     </div>
 
-                    <div class="profile-section mb-4">
-                        <h4>Organization</h4>
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th style="width: 30%;">Organization Name</th>
-                                    <td>{{ organization.name }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Organization Email</th>
-                                    <td>{{ organization.email }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <hr>
 
-                    <div class="profile-section">
-                        <h4>Permissions</h4>
-                        <table class="table">
-                            <tbody>
-                                <tr>
-                                    <th style="width: 30%;">Create Cycles for Others</th>
-                                    <td>
-                                        {% if profile.can_create_cycles_for_others %}
-                                            <span class="badge bg-success">Enabled</span>
-                                        {% else %}
-                                            <span class="badge bg-warning">Disabled (Self only)</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="text-muted small">
+                        Member since {{ user.date_joined|date:"F Y" }}
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Cycles & Reports -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">My Review Cycles</h4>
+                    <span class="badge bg-primary">{{ cycles_with_reports|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if cycles_with_reports %}
+                        <div class="list-group">
+                            {% for cycle_data in cycles_with_reports %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ cycle_data.cycle.questionnaire.name }}</h5>
+                                        <p class="mb-1 text-muted small">
+                                            Created {{ cycle_data.cycle.created_at|date:"F d, Y" }}
+                                            {% if cycle_data.cycle.created_by %}
+                                                by {{ cycle_data.cycle.created_by.get_full_name|default:cycle_data.cycle.created_by.username }}
+                                            {% endif %}
+                                        </p>
+
+                                        {% if cycle_data.has_report %}
+                                            <div class="mt-2">
+                                                {% if cycle_data.summary %}
+                                                    <div class="small mb-2">
+                                                        <strong>Responses:</strong>
+                                                        {% for category, count in cycle_data.summary.by_category.items %}
+                                                            <span class="badge bg-secondary me-1">{{ category|title }}: {{ count }}</span>
+                                                        {% endfor %}
+                                                        <span class="badge bg-info">Total: {{ cycle_data.summary.total_responses }}</span>
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if cycle_data.cycle.status == 'completed' %}
+                                                    <a href="{% url 'reports:reviewee_report' cycle_data.report.access_token %}"
+                                                       class="btn btn-sm btn-success" target="_blank">
+                                                        View Report
+                                                    </a>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Report available when cycle is completed</span>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <div class="mt-2">
+                                                <span class="badge bg-secondary">No report generated yet</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ms-3">
+                                        {% if cycle_data.cycle.status == 'active' %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% elif cycle_data.cycle.status == 'completed' %}
+                                            <span class="badge bg-info">Completed</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-5">
+                            <p class="mb-0">No review cycles found for your account.</p>
+                            <p class="small">Review cycles will appear here when they're created for your email address.</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

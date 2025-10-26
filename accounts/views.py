@@ -172,17 +172,64 @@ def signup_view(request):
 
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def profile_view(request):
-    """User profile view."""
+    """User profile view with editing capabilities and cycle reports."""
+    from accounts.forms import ProfileEditForm
+    from reviews.models import ReviewCycle
+    from reports.models import Report
+    from reports.services import get_report_summary
+
     try:
         profile = request.user.profile
     except UserProfile.DoesNotExist:
         messages.error(request, 'Profile not found. Please contact support.')
         return redirect('admin_dashboard')
 
+    # Handle profile edit form
+    if request.method == 'POST':
+        form = ProfileEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('profile')
+    else:
+        form = ProfileEditForm(instance=request.user)
+
+    # Get user's review cycles - both as reviewee and as creator
+    organization = profile.organization
+
+    # Get cycles for the current user as reviewee
+    user_cycles = ReviewCycle.objects.filter(
+        reviewee__email=request.user.email,
+        reviewee__organization=organization
+    ).select_related('reviewee', 'questionnaire', 'created_by').order_by('-created_at')
+
+    # Attach report data to each cycle
+    cycles_with_reports = []
+    for cycle in user_cycles:
+        cycle_data = {
+            'cycle': cycle,
+            'report': None,
+            'summary': None,
+            'has_report': False
+        }
+
+        try:
+            report = Report.objects.get(cycle=cycle)
+            cycle_data['report'] = report
+            cycle_data['summary'] = get_report_summary(report)
+            cycle_data['has_report'] = True
+        except Report.DoesNotExist:
+            pass
+
+        cycles_with_reports.append(cycle_data)
+
     context = {
         'user': request.user,
         'profile': profile,
-        'organization': profile.organization,
+        'organization': organization,
+        'form': form,
+        'cycles_with_reports': cycles_with_reports,
     }
     return render(request, 'accounts/profile.html', context)

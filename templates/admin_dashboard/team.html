@@ -41,62 +41,118 @@
     </div>
     <div class="card-body">
         {% if users %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Joined</th>
-                    <th>Permissions</th>
-                    {% if perms.accounts.can_manage_organization %}
-                    <th>Actions</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for user_profile in users %}
-                <tr>
-                    <td>
+        <!-- Desktop table -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Joined</th>
+                        <th>Permissions</th>
+                        {% if perms.accounts.can_manage_organization %}
+                        <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_profile in users %}
+                    <tr>
+                        <td>
+                            <strong>{{ user_profile.user.first_name|default:user_profile.user.username }}</strong>
+                            {% if user_profile.user.last_name %}{{ user_profile.user.last_name }}{% endif %}
+                            {% if user_profile.user.id == request.user.id %}
+                                <span class="badge" style="background: #6b7280; color: white; font-size: 11px; margin-left: 4px;">You</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user_profile.user.email }}</td>
+                        <td>
+                            {% if user_profile.user.is_superuser %}
+                                <span class="badge" style="background: #7c3aed; color: white;">Super Admin</span>
+                            {% elif user_profile.user.is_staff %}
+                                <span class="badge" style="background: #059669; color: white;">Organization Admin</span>
+                            {% else %}
+                                <span class="badge" style="background: #6b7280; color: white;">Member</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user_profile.user.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            {% if user_profile.can_create_cycles_for_others %}
+                                <span class="badge" style="background: #0ea5e9; color: white;">Can manage cycles</span>
+                            {% else %}
+                                <span class="badge" style="background: #f59e0b; color: white;">Self-only</span>
+                            {% endif %}
+                        </td>
+                        {% if perms.accounts.can_manage_organization %}
+                        <td>
+                            {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.user.is_staff|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
+                                Manage
+                            </button>
+                            {% else %}
+                            <span style="color: var(--text-tertiary); font-size: 12px;">—</span>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile card list -->
+        <div class="d-md-none">
+            {% for user_profile in users %}
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <div>
                         <strong>{{ user_profile.user.first_name|default:user_profile.user.username }}</strong>
                         {% if user_profile.user.last_name %}{{ user_profile.user.last_name }}{% endif %}
                         {% if user_profile.user.id == request.user.id %}
                             <span class="badge" style="background: #6b7280; color: white; font-size: 11px; margin-left: 4px;">You</span>
                         {% endif %}
-                    </td>
-                    <td>{{ user_profile.user.email }}</td>
-                    <td>
+                    </div>
+                    <div>
                         {% if user_profile.user.is_superuser %}
-                            <span class="badge" style="background: #7c3aed; color: white;">Super Admin</span>
+                            <span class="badge" style="background: #7c3aed; color: white; font-size: 11px;">Super Admin</span>
                         {% elif user_profile.user.is_staff %}
-                            <span class="badge" style="background: #059669; color: white;">Organization Admin</span>
+                            <span class="badge" style="background: #059669; color: white; font-size: 11px;">Admin</span>
                         {% else %}
-                            <span class="badge" style="background: #6b7280; color: white;">Member</span>
+                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">Member</span>
                         {% endif %}
-                    </td>
-                    <td>{{ user_profile.user.date_joined|date:"M d, Y" }}</td>
-                    <td>
-                        {% if user_profile.can_create_cycles_for_others %}
-                            <span class="badge" style="background: #0ea5e9; color: white;">Can manage cycles</span>
-                        {% else %}
-                            <span class="badge" style="background: #f59e0b; color: white;">Self-only</span>
-                        {% endif %}
-                    </td>
+                    </div>
+                </div>
+                <div class="mobile-card-body">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Email</span>
+                        <span>{{ user_profile.user.email }}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Joined</span>
+                        <span>{{ user_profile.user.date_joined|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Permissions</span>
+                        <span>
+                            {% if user_profile.can_create_cycles_for_others %}
+                                <span class="badge" style="background: #0ea5e9; color: white; font-size: 11px;">Can manage cycles</span>
+                            {% else %}
+                                <span class="badge" style="background: #f59e0b; color: white; font-size: 11px;">Self-only</span>
+                            {% endif %}
+                        </span>
+                    </div>
                     {% if perms.accounts.can_manage_organization %}
-                    <td>
                         {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
-                        <button type="button" class="btn btn-sm btn-secondary" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.user.is_staff|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
-                            Manage
+                        <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.user.is_staff|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
+                            Manage Permissions
                         </button>
-                        {% else %}
-                        <span style="color: var(--text-tertiary); font-size: 12px;">—</span>
                         {% endif %}
-                    </td>
                     {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         {% else %}
         <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No users found</p>
         {% endif %}
@@ -110,34 +166,69 @@
     </div>
     <div class="card-body">
         {% if invitations %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Invited By</th>
-                    <th>Sent</th>
-                    <th>Expires</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for invitation in invitations %}
-                <tr>
-                    <td>{{ invitation.email }}</td>
-                    <td>{{ invitation.invited_by.username }}</td>
-                    <td>{{ invitation.created_at|date:"M d, Y" }}</td>
-                    <td>{{ invitation.expires_at|date:"M d, Y" }}</td>
-                    <td>
+        <!-- Desktop table -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Invited By</th>
+                        <th>Sent</th>
+                        <th>Expires</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invitation in invitations %}
+                    <tr>
+                        <td>{{ invitation.email }}</td>
+                        <td>{{ invitation.invited_by.username }}</td>
+                        <td>{{ invitation.created_at|date:"M d, Y" }}</td>
+                        <td>{{ invitation.expires_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if invitation.is_valid %}
+                                <span class="badge" style="background: #059669; color: white;">Active</span>
+                            {% else %}
+                                <span class="badge" style="background: #dc2626; color: white;">Expired</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile card list -->
+        <div class="d-md-none">
+            {% for invitation in invitations %}
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <div><strong>{{ invitation.email }}</strong></div>
+                    <div>
                         {% if invitation.is_valid %}
-                            <span class="badge" style="background: #059669; color: white;">Active</span>
+                            <span class="badge" style="background: #059669; color: white; font-size: 11px;">Active</span>
                         {% else %}
-                            <span class="badge" style="background: #dc2626; color: white;">Expired</span>
+                            <span class="badge" style="background: #dc2626; color: white; font-size: 11px;">Expired</span>
                         {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </div>
+                </div>
+                <div class="mobile-card-body">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Invited By</span>
+                        <span>{{ invitation.invited_by.username }}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Sent</span>
+                        <span>{{ invitation.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Expires</span>
+                        <span>{{ invitation.expires_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         {% else %}
         <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No pending invitations</p>
         {% endif %}

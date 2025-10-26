@@ -70,7 +70,7 @@ def create_checkout_session(request):
             scheme = 'https' if request.is_secure() else 'http'
             base_url = f"{scheme}://{request.get_host()}"
         else:
-            base_url = f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}'
+            base_url = settings.MAIN_APP_URL
 
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],

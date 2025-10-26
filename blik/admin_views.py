@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Count, Q, Max
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from datetime import timedelta
 
 from accounts.models import Reviewee, UserProfile, OrganizationInvitation
@@ -119,6 +120,84 @@ def team_list(request):
     }
 
     return render(request, 'admin_dashboard/team.html', context)
+
+
+@login_required
+@require_POST
+def update_user_permissions(request):
+    """Update user permissions and role"""
+    from accounts.permissions import assign_organization_admin, assign_organization_member
+    from django.contrib.auth.models import Group
+
+    # Check if requester has permission to manage organization
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to manage user permissions.')
+        return redirect('team_list')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('admin_dashboard')
+
+    try:
+        user_profile_id = request.POST.get('user_profile_id')
+        role = request.POST.get('role')  # 'admin' or 'member'
+        can_create_cycles_for_others = request.POST.get('can_create_cycles_for_others') == 'on'
+
+        if not user_profile_id or not role:
+            messages.error(request, 'Invalid request: missing required fields.')
+            return redirect('team_list')
+
+        # Get the user profile being updated
+        user_profile = get_object_or_404(
+            UserProfile,
+            id=user_profile_id,
+            organization=org
+        )
+        target_user = user_profile.user
+
+        # Prevent self-demotion or demoting superusers
+        if target_user.id == request.user.id:
+            messages.error(request, 'You cannot modify your own permissions.')
+            return redirect('team_list')
+
+        if target_user.is_superuser:
+            messages.error(request, 'Cannot modify permissions for super admins.')
+            return redirect('team_list')
+
+        # Check if this would be the last admin
+        if target_user.is_staff and role == 'member':
+            admin_count = UserProfile.objects.filter(
+                organization=org,
+                user__is_staff=True
+            ).count()
+
+            if admin_count <= 1:
+                messages.error(request, 'Cannot demote the last organization administrator.')
+                return redirect('team_list')
+
+        # Update role and permissions
+        if role == 'admin':
+            assign_organization_admin(target_user)
+            messages.success(request, f'Successfully promoted {target_user.username} to Organization Admin.')
+        else:  # member
+            # Remove admin permissions
+            assign_organization_member(target_user, can_create_cycles_for_others=False)
+            messages.success(request, f'Successfully updated {target_user.username} to Member role.')
+
+        # Update can_create_cycles_for_others permission separately
+        # (this can be set independently of role)
+        user_profile.refresh_from_db()
+        user_profile.can_create_cycles_for_others = can_create_cycles_for_others
+        user_profile.save()
+
+        if can_create_cycles_for_others:
+            messages.success(request, f'{target_user.username} can now create review cycles for others.')
+
+    except Exception as e:
+        messages.error(request, f'Error updating permissions: {str(e)}')
+
+    return redirect('team_list')
 
 
 @login_required

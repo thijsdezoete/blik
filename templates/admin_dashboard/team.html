@@ -17,7 +17,7 @@
 
 <!-- Invite Modal -->
 <div id="invite-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
-    <div style="background: var(--card-bg); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
         <h2 style="margin-top: 0;">Send Invitation</h2>
         <form method="post" action="{% url 'send_invitation' %}">
             {% csrf_token %}
@@ -49,6 +49,9 @@
                     <th>Role</th>
                     <th>Joined</th>
                     <th>Permissions</th>
+                    {% if perms.accounts.can_manage_organization %}
+                    <th>Actions</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -57,6 +60,9 @@
                     <td>
                         <strong>{{ user_profile.user.first_name|default:user_profile.user.username }}</strong>
                         {% if user_profile.user.last_name %}{{ user_profile.user.last_name }}{% endif %}
+                        {% if user_profile.user.id == request.user.id %}
+                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px; margin-left: 4px;">You</span>
+                        {% endif %}
                     </td>
                     <td>{{ user_profile.user.email }}</td>
                     <td>
@@ -76,6 +82,17 @@
                             <span class="badge" style="background: #f59e0b; color: white;">Self-only</span>
                         {% endif %}
                     </td>
+                    {% if perms.accounts.can_manage_organization %}
+                    <td>
+                        {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.user.is_staff|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
+                            Manage
+                        </button>
+                        {% else %}
+                        <span style="color: var(--text-tertiary); font-size: 12px;">—</span>
+                        {% endif %}
+                    </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -126,4 +143,85 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Manage Permissions Modal -->
+{% if perms.accounts.can_manage_organization %}
+<div id="manage-permissions-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+        <h2 style="margin-top: 0;">Manage User Permissions</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Update permissions for <strong id="modal-username"></strong>
+        </p>
+        <form method="post" action="{% url 'update_user_permissions' %}">
+            {% csrf_token %}
+            <input type="hidden" id="modal-user-id" name="user_profile_id">
+
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="form-check">
+                        <input type="radio" id="role-admin" name="role" value="admin" class="form-check-input">
+                        <label for="role-admin" style="display: inline; font-weight: normal;">
+                            <strong>Organization Admin</strong>
+                            <small style="display: block; color: var(--text-secondary); margin-left: 24px;">
+                                Can invite members, manage organization settings, and delete organization
+                            </small>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="role-member" name="role" value="member" class="form-check-input">
+                        <label for="role-member" style="display: inline; font-weight: normal;">
+                            <strong>Member</strong>
+                            <small style="display: block; color: var(--text-secondary); margin-left: 24px;">
+                                Regular team member with limited permissions
+                            </small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Additional Permissions</label>
+                <div class="form-check">
+                    <input type="checkbox" id="can-manage-cycles" name="can_create_cycles_for_others" class="form-check-input">
+                    <label for="can-manage-cycles" style="display: inline; font-weight: normal;">
+                        Can create review cycles for others
+                        <small style="display: block; color: var(--text-secondary); margin-left: 24px;">
+                            Without this, user can only create cycles for themselves
+                        </small>
+                    </label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="hideManagePermissionsModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Permissions</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showManagePermissionsModal(userId, username, isStaff, canCreateCycles) {
+    document.getElementById('modal-user-id').value = userId;
+    document.getElementById('modal-username').textContent = username;
+
+    // Set role radio buttons
+    if (isStaff) {
+        document.getElementById('role-admin').checked = true;
+    } else {
+        document.getElementById('role-member').checked = true;
+    }
+
+    // Set can create cycles checkbox
+    document.getElementById('can-manage-cycles').checked = canCreateCycles;
+
+    document.getElementById('manage-permissions-modal').style.display = 'flex';
+}
+
+function hideManagePermissionsModal() {
+    document.getElementById('manage-permissions-modal').style.display = 'none';
+}
+</script>
+{% endif %}
 {% endblock %}

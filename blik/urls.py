@@ -22,6 +22,7 @@ urlpatterns = [
     path('dashboard/', admin_views.dashboard, name='admin_dashboard'),
     path('dashboard/settings/', admin_views.settings_view, name='settings'),
     path('dashboard/team/', admin_views.team_list, name='team_list'),
+    path('dashboard/team/update-permissions/', admin_views.update_user_permissions, name='update_user_permissions'),
     path('dashboard/reviewees/', admin_views.reviewee_list, name='reviewee_list'),
     path('dashboard/reviewees/create/', admin_views.reviewee_create, name='reviewee_create'),
     path('dashboard/reviewees/<int:reviewee_id>/edit/', admin_views.reviewee_edit, name='reviewee_edit'),

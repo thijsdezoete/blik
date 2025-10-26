@@ -217,10 +217,13 @@ def handle_checkout_session_completed(session):
         alphabet = string.ascii_letters + string.digits
         password = ''.join(secrets.choice(alphabet) for _ in range(16))
 
+        # Create user as staff (organization admin)
         user = User.objects.create_user(
             username=username,
             email=customer_email,
-            password=password
+            password=password,
+            is_staff=True,  # Organization admin can manage their org
+            is_active=True
         )
 
     # Create organization

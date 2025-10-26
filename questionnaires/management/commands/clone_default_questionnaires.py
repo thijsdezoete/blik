@@ -18,11 +18,7 @@ class Command(BaseCommand):
         force = options['force']
 
         # Get all template questionnaires
-        template_questionnaires = Questionnaire.objects.filter(
-            organization__isnull=True,
-            is_default=True,
-            is_active=True
-        )
+        template_questionnaires = Questionnaire.objects.templates()
 
         if not template_questionnaires.exists():
             self.stdout.write(self.style.WARNING('No default questionnaires found to clone.'))

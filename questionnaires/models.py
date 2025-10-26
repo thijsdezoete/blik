@@ -1,6 +1,6 @@
 from django.db import models
 from core.models import TimeStampedModel, Organization
-from core.managers import OrganizationManager
+from core.managers import QuestionnaireManager
 
 
 class Questionnaire(TimeStampedModel):
@@ -17,7 +17,7 @@ class Questionnaire(TimeStampedModel):
     is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-    objects = OrganizationManager()
+    objects = QuestionnaireManager()
 
     class Meta:
         db_table = 'questionnaires'

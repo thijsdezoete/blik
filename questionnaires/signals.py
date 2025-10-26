@@ -60,12 +60,8 @@ def create_default_questionnaires_for_organization(sender, instance, created, **
     if not created:
         return
 
-    # Get all template questionnaires (no organization, marked as default)
-    template_questionnaires = Questionnaire.objects.filter(
-        organization__isnull=True,
-        is_default=True,
-        is_active=True
-    )
+    # Get all template questionnaires using the templates() manager method
+    template_questionnaires = Questionnaire.objects.templates()
 
     # Clone each template for the new organization
     for template in template_questionnaires:

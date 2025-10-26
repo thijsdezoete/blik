@@ -8,9 +8,11 @@
         <h1>Team Management</h1>
         <p class="page-description">Manage users and send invitations</p>
     </div>
+    {% if perms.accounts.can_invite_members %}
     <button type="button" class="btn btn-primary" onclick="document.getElementById('invite-modal').style.display='flex'">
         Send Invitation
     </button>
+    {% endif %}
 </div>
 
 <!-- Invite Modal -->
@@ -61,9 +63,9 @@
                         {% if user_profile.user.is_superuser %}
                             <span class="badge" style="background: #7c3aed; color: white;">Super Admin</span>
                         {% elif user_profile.user.is_staff %}
-                            <span class="badge" style="background: #059669; color: white;">Staff</span>
+                            <span class="badge" style="background: #059669; color: white;">Organization Admin</span>
                         {% else %}
-                            <span class="badge" style="background: #6b7280; color: white;">User</span>
+                            <span class="badge" style="background: #6b7280; color: white;">Member</span>
                         {% endif %}
                     </td>
                     <td>{{ user_profile.user.date_joined|date:"M d, Y" }}</td>

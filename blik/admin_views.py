@@ -859,6 +859,10 @@ def settings_view(request):
         return redirect('admin_dashboard')
 
     if request.method == 'POST':
+        # Check permission to modify organization settings
+        if not request.user.has_perm('accounts.can_manage_organization'):
+            messages.error(request, 'You do not have permission to modify organization settings.')
+            return redirect('settings')
         # Update organization details
         organization.name = request.POST.get('name', organization.name)
         organization.email = request.POST.get('email', organization.email)

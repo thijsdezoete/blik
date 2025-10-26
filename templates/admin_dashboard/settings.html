@@ -18,6 +18,13 @@
             <h2 class="card-title">Organization Details</h2>
         </div>
         <div class="card-body">
+            {% if not perms.accounts.can_manage_organization %}
+            <div class="alert alert-info" style="margin-bottom: 1rem;">
+                <p style="margin: 0; font-size: 14px;">
+                    Only organization administrators can modify these settings.
+                </p>
+            </div>
+            {% endif %}
             <div class="form-group">
                 <label class="form-label" for="name">Organization Name</label>
                 <input
@@ -26,6 +33,7 @@
                     name="name"
                     class="form-control"
                     value="{{ organization.name }}"
+                    {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
                     required
                 >
             </div>
@@ -38,6 +46,7 @@
                     name="email"
                     class="form-control"
                     value="{{ organization.email }}"
+                    {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
                     required
                 >
             </div>
@@ -265,10 +274,12 @@
         </div>
     </div>
 
+    {% if perms.accounts.can_manage_organization %}
     <div style="display: flex; gap: 1rem; justify-content: flex-end;">
         <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary">Save Settings</button>
     </div>
+    {% endif %}
 </form>
 
 <!-- Account Management Section -->

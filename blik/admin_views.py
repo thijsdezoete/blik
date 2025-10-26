@@ -833,7 +833,8 @@ def send_reminder(request, cycle_id):
 @login_required
 def settings_view(request):
     """Organization and SMTP settings page"""
-    organization = Organization.objects.first()
+    # Use the organization from the middleware (set based on user's profile)
+    organization = request.organization
 
     if not organization:
         messages.error(request, 'No organization found. Please run setup first.')
@@ -880,10 +881,13 @@ def settings_view(request):
     try:
         from subscriptions.models import Subscription
         subscription = organization.subscription
-    except (Subscription.DoesNotExist, AttributeError):
-        pass
+        print(f"DEBUG: Found subscription for {organization.name}: {subscription.plan.name} - {subscription.status}")
+    except (Subscription.DoesNotExist, AttributeError) as e:
+        print(f"DEBUG: No subscription for {organization.name}: {type(e).__name__}")
     except Exception as e:
-        print(f"Error getting subscription: {e}")
+        print(f"DEBUG: Error getting subscription: {type(e).__name__}: {e}")
+
+    print(f"DEBUG: Passing subscription to template: {subscription}")
 
     context = {
         'organization': organization,

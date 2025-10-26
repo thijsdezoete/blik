@@ -11,10 +11,11 @@ User = get_user_model()
 
 def is_setup_complete():
     """Check if initial setup has been completed."""
-    # Setup is complete if there's at least one superuser and one organization
-    has_superuser = User.objects.filter(is_superuser=True).exists()
+    # Setup is complete if there's at least one user with a profile and one organization
+    from accounts.models import UserProfile
+    has_user_with_profile = UserProfile.objects.exists()
     has_organization = Organization.objects.exists()
-    return has_superuser and has_organization
+    return has_user_with_profile and has_organization
 
 
 def setup_welcome(request):
@@ -35,8 +36,8 @@ def setup_admin(request):
     if request.method == 'POST':
         form = SetupAdminForm(request.POST)
         if form.is_valid():
-            # Create the superuser
-            user = User.objects.create_superuser(
+            # Create regular user (not superuser)
+            user = User.objects.create_user(
                 username=form.cleaned_data['username'],
                 email=form.cleaned_data['email'],
                 password=form.cleaned_data['password']
@@ -60,21 +61,25 @@ def setup_admin(request):
 @require_http_methods(['GET', 'POST'])
 def setup_organization(request):
     """Step 2: Configure organization details."""
-    # If organization already exists, skip to email setup
-    if Organization.objects.exists():
-        return redirect('setup_email')
-
-    # For initial setup, allow any authenticated user
-    # (they're the first user, so they should be able to set up)
+    # Check if user already has an organization (e.g., from Stripe signup)
+    organization = None
+    if hasattr(request.user, 'profile') and request.user.profile.organization:
+        organization = request.user.profile.organization
 
     if request.method == 'POST':
-        form = SetupOrganizationForm(request.POST)
+        if organization:
+            # Update existing organization
+            form = SetupOrganizationForm(request.POST, instance=organization)
+        else:
+            # Create new organization
+            form = SetupOrganizationForm(request.POST)
+
         if form.is_valid():
             organization = form.save(commit=False)
             organization.is_active = True
             organization.save()
 
-            # Create UserProfile for the setup admin
+            # Create UserProfile for the setup admin if needed
             from accounts.models import UserProfile
             if not hasattr(request.user, 'profile'):
                 UserProfile.objects.create(
@@ -83,10 +88,14 @@ def setup_organization(request):
                     can_create_cycles_for_others=True
                 )
 
-            messages.success(request, f'Organization "{organization.name}" created successfully!')
+            messages.success(request, f'Organization "{organization.name}" configured successfully!')
             return redirect('setup_email')
     else:
-        form = SetupOrganizationForm()
+        # Pre-fill form with existing organization data if available
+        if organization:
+            form = SetupOrganizationForm(instance=organization)
+        else:
+            form = SetupOrganizationForm()
 
     return render(request, 'setup/organization.html', {
         'form': form,
@@ -100,8 +109,9 @@ def setup_organization(request):
 @require_http_methods(['GET', 'POST'])
 def setup_email(request):
     """Step 3: Configure email settings."""
-    organization = Organization.objects.first()
+    organization = request.organization
     if not organization:
+        messages.error(request, 'No organization found. Please complete organization setup first.')
         return redirect('setup_organization')
 
     if request.method == 'POST':
@@ -147,7 +157,11 @@ def setup_complete(request):
     if not is_setup_complete():
         return redirect('setup_welcome')
 
-    organization = Organization.objects.first()
+    # Use the organization from the user's profile
+    organization = request.organization
+    if not organization:
+        messages.error(request, 'No organization found. Please run setup first.')
+        return redirect('setup_welcome')
 
     # Load default questionnaire on first visit
     from questionnaires.models import Questionnaire
@@ -166,9 +180,14 @@ def setup_complete(request):
         try:
             from io import StringIO
 
-            # Call the management command to generate demo data
+            # Call the management command to generate demo data for this organization
             out = StringIO()
-            call_command('generate_demo_data', '--reviewees', '15', stdout=out)
+            call_command(
+                'generate_demo_data',
+                '--reviewees', '15',
+                '--organization', str(organization.id),
+                stdout=out
+            )
 
             # Show success message
             messages.success(request, 'Demo data generated successfully! Created 15 reviewees with diverse review cycles in various states. Check the dashboard to explore.')

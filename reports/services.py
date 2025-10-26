@@ -156,7 +156,7 @@ def generate_report(cycle):
     questionnaire = cycle.questionnaire
 
     # Get organization's anonymity threshold
-    organization = Organization.objects.first()
+    organization = cycle.organization
     min_threshold = organization.min_responses_for_anonymity if organization else 3
 
     # Get all responses for this cycle

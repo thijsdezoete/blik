@@ -15,9 +15,10 @@ class SetupMiddleware:
 
     def __call__(self, request):
         # Check if setup is complete
-        has_superuser = User.objects.filter(is_superuser=True).exists()
+        from accounts.models import UserProfile
+        has_user_with_profile = UserProfile.objects.exists()
         has_organization = Organization.objects.exists()
-        setup_complete = has_superuser and has_organization
+        setup_complete = has_user_with_profile and has_organization
 
         # Paths that should be accessible even without setup
         allowed_paths = [

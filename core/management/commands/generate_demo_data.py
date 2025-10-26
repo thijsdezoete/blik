@@ -32,10 +32,16 @@ class Command(BaseCommand):
             action='store_true',
             help='Clear existing demo data before generating new data'
         )
+        parser.add_argument(
+            '--organization',
+            type=int,
+            help='Organization ID to create demo data for (default: first org)'
+        )
 
     def handle(self, *args, **options):
         num_reviewees = options['reviewees']
         clear_existing = options['clear']
+        org_id = options.get('organization')
 
         if clear_existing:
             self.stdout.write('Clearing existing demo data...')
@@ -45,16 +51,31 @@ class Command(BaseCommand):
             Reviewee.objects.all().delete()
             self.stdout.write(self.style.SUCCESS('Cleared existing data'))
 
-        # Get organization and admin user
-        organization = Organization.objects.first()
-        if not organization:
-            self.stdout.write(self.style.ERROR('No organization found. Run setup first.'))
+        # Get organization
+        if org_id:
+            try:
+                organization = Organization.objects.get(id=org_id)
+            except Organization.DoesNotExist:
+                self.stdout.write(self.style.ERROR(f'Organization with ID {org_id} not found.'))
+                return
+        else:
+            organization = Organization.objects.first()
+            if not organization:
+                self.stdout.write(self.style.ERROR('No organization found. Run setup first.'))
+                return
+
+        # Get admin user from organization
+        from accounts.models import UserProfile
+        admin_profile = UserProfile.objects.filter(
+            organization=organization,
+            can_create_cycles_for_others=True
+        ).first()
+
+        if not admin_profile:
+            self.stdout.write(self.style.ERROR(f'No admin user found for organization {organization.name}.'))
             return
 
-        admin_user = User.objects.filter(is_superuser=True).first()
-        if not admin_user:
-            self.stdout.write(self.style.ERROR('No admin user found. Run setup first.'))
-            return
+        admin_user = admin_profile.user
 
         # Get questionnaires
         questionnaires = list(Questionnaire.objects.filter(is_active=True))

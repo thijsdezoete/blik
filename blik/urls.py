@@ -44,6 +44,7 @@ urlpatterns = [
     # Other apps
     path('setup/', include('core.urls')),
     path('accounts/', include('accounts.urls')),
+    path('account/', include('blik.account_urls')),
     path('', include('reviews.urls')),
     path('', include('reports.urls')),
     path('landing/', include('landing.urls')),

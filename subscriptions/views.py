@@ -318,21 +318,32 @@ def checkout_success(request):
     Handle Stripe checkout success redirect.
     Wait for webhook to create account, then redirect to auto-login.
     """
+    import logging
+    logger = logging.getLogger(__name__)
+
     session_id = request.GET.get('session_id')
+    logger.info(f"[CHECKOUT SUCCESS] Received session_id: {session_id}")
+
     if not session_id:
+        logger.warning("[CHECKOUT SUCCESS] No session_id provided, redirecting to login")
         return redirect('login')
 
     try:
         # Retrieve the session to get customer email
         session = stripe.checkout.Session.retrieve(session_id)
         customer_email = session['customer_details']['email']
+        logger.info(f"[CHECKOUT SUCCESS] Customer email: {customer_email}")
+        logger.info(f"[CHECKOUT SUCCESS] Session status: {session.get('status')}")
+        logger.info(f"[CHECKOUT SUCCESS] Payment status: {session.get('payment_status')}")
 
         # Poll for the user to be created (webhook might still be processing)
         import time
         max_attempts = 10
         for attempt in range(max_attempts):
+            logger.info(f"[CHECKOUT SUCCESS] Poll attempt {attempt + 1}/{max_attempts}")
             user = User.objects.filter(email=customer_email).first()
             if user:
+                logger.info(f"[CHECKOUT SUCCESS] User found: {user.username}")
                 # Get the latest login token for this user
                 token = OneTimeLoginToken.objects.filter(
                     user=user,
@@ -341,16 +352,22 @@ def checkout_success(request):
                 ).order_by('-created_at').first()
 
                 if token:
+                    logger.info(f"[CHECKOUT SUCCESS] Login token found, redirecting to auto-login")
                     return redirect('subscriptions:auto_login', token=token.token)
+                else:
+                    logger.warning(f"[CHECKOUT SUCCESS] User exists but no valid login token found")
 
             if attempt < max_attempts - 1:
                 time.sleep(1)  # Wait 1 second before retrying
 
         # If we get here, something went wrong
+        logger.error(f"[CHECKOUT SUCCESS] Timeout waiting for webhook - user not created for {customer_email}")
+        logger.error(f"[CHECKOUT SUCCESS] This means the webhook never processed or failed")
         return redirect('login')
 
     except Exception as e:
-        print(f"Error in checkout success: {e}")
+        logger.error(f"[CHECKOUT SUCCESS] Error: {e}")
+        logger.exception(e)
         return redirect('login')
 
 

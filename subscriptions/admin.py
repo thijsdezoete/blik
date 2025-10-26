@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Plan, Subscription
+from .models import Plan, Subscription, OneTimeLoginToken
 
 
 @admin.register(Plan)
@@ -16,3 +16,17 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ['organization__name', 'stripe_customer_id', 'stripe_subscription_id']
     readonly_fields = ['stripe_customer_id', 'stripe_subscription_id', 'created_at', 'updated_at']
     date_hierarchy = 'created_at'
+
+
+@admin.register(OneTimeLoginToken)
+class OneTimeLoginTokenAdmin(admin.ModelAdmin):
+    list_display = ['user', 'used', 'expires_at', 'created_at']
+    list_filter = ['used', 'expires_at', 'created_at']
+    search_fields = ['user__username', 'user__email', 'token']
+    list_select_related = ['user']
+    readonly_fields = ['token', 'used', 'created_at', 'updated_at']
+    date_hierarchy = 'created_at'
+
+    def has_add_permission(self, request):
+        # Tokens should be created through the application, not admin
+        return False

@@ -234,9 +234,11 @@ def questionnaire_list(request):
         count=Count('id')
     ).values('count')
 
+    # Only show questionnaires belonging to the user's organization
+    # Template questionnaires (organization=None) are not shown here as they're internal
     questionnaires_qs = Questionnaire.objects.filter(
-        Q(organization=org) | Q(organization__isnull=True)  # Org's questionnaires + default/shared ones
-    ) if org else Questionnaire.objects.all()
+        organization=org
+    ) if org else Questionnaire.objects.filter(organization__isnull=False)
 
     questionnaires = questionnaires_qs.annotate(
         question_count=Subquery(question_count_subquery),
@@ -279,10 +281,14 @@ def questionnaire_create(request):
             return render(request, 'admin_dashboard/questionnaire_form.html', {'action': 'Create'})
 
         try:
+            # Get organization from request context
+            org = getattr(request, 'organization', None)
+
             questionnaire = Questionnaire.objects.create(
                 name=name,
                 description=description,
-                is_default=is_default
+                is_default=is_default,
+                organization=org
             )
             messages.success(request, f'Questionnaire "{questionnaire.name}" created successfully.')
             return redirect('questionnaire_edit', questionnaire_id=questionnaire.id)
@@ -301,7 +307,15 @@ def questionnaire_edit(request, questionnaire_id):
     """Edit an existing questionnaire"""
     from questionnaires.models import QuestionSection, Question
 
-    questionnaire = get_object_or_404(Questionnaire, id=questionnaire_id)
+    # Get organization from request context
+    org = getattr(request, 'organization', None)
+
+    # Filter by organization to prevent cross-org access
+    questionnaire = get_object_or_404(
+        Questionnaire,
+        id=questionnaire_id,
+        organization=org
+    )
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -458,7 +472,14 @@ def review_cycle_create(request):
             return redirect('review_cycle_create')
 
         try:
-            questionnaire = Questionnaire.objects.get(id=questionnaire_id)
+            # Get organization from request context
+            org = getattr(request, 'organization', None)
+
+            # Filter by organization to prevent cross-org access
+            questionnaire = Questionnaire.objects.get(
+                id=questionnaire_id,
+                organization=org
+            )
             created_cycles = []
 
             if creation_mode == 'bulk':
@@ -569,7 +590,13 @@ def review_cycle_create(request):
     else:
         reviewees = Reviewee.objects.filter(is_active=True).order_by('name')
 
-    questionnaires = Questionnaire.objects.all().order_by('-is_default', 'name')
+    # Get organization from request context
+    org = getattr(request, 'organization', None)
+
+    # Only show questionnaires from user's organization
+    questionnaires = Questionnaire.objects.filter(
+        organization=org
+    ).order_by('-is_default', 'name') if org else Questionnaire.objects.none()
 
     context = {
         'reviewees': reviewees,

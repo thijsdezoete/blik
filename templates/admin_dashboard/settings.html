@@ -173,6 +173,17 @@
             <h2 class="card-title">Email (SMTP) Settings</h2>
         </div>
         <div class="card-body">
+            {% if subscription %}
+            <div class="alert alert-info" style="margin-bottom: 1.5rem;">
+                <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 16px; color: var(--text-primary);">✨ Using Blik's Email Service?</h3>
+                <p style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9;">
+                    As a SaaS customer, you can use Blik's managed email service instead of configuring your own SMTP.
+                    Simply leave all fields below empty to use our service.
+                </p>
+                <small style="opacity: 0.8;">To use your own SMTP server, fill in the fields below.</small>
+            </div>
+            {% endif %}
+
             <div class="form-group">
                 <label class="form-label" for="smtp_host">SMTP Host</label>
                 <input
@@ -181,9 +192,9 @@
                     name="smtp_host"
                     class="form-control"
                     value="{{ organization.smtp_host }}"
-                    placeholder="smtp.gmail.com"
+                    placeholder="{% if subscription %}Leave empty for Blik's email service{% else %}smtp.gmail.com{% endif %}"
                 >
-                <small class="help-text">Your SMTP server hostname</small>
+                <small class="help-text">{% if subscription %}Leave empty to use Blik's managed email service, or enter your SMTP server hostname{% else %}Your SMTP server hostname{% endif %}</small>
             </div>
 
             <div class="form-group">

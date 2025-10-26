@@ -907,9 +907,21 @@ def settings_view(request):
 
     print(f"DEBUG: Passing subscription to template: {subscription}")
 
+    # Check if current user is staff (can delete org)
+    is_org_admin = request.user.is_staff
+
+    # Count total admin users
+    from accounts.models import UserProfile
+    admin_count = UserProfile.objects.for_organization(organization).filter(
+        user__is_staff=True
+    ).count()
+
     context = {
         'organization': organization,
         'subscription': subscription,
+        'is_org_admin': is_org_admin,
+        'admin_count': admin_count,
+        'is_last_admin': is_org_admin and admin_count == 1,
     }
 
     return render(request, 'admin_dashboard/settings.html', context)

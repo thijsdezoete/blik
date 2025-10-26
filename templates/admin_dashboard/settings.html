@@ -259,4 +259,136 @@
         <button type="submit" class="btn btn-primary">Save Settings</button>
     </div>
 </form>
+
+<!-- Account Management Section -->
+<div class="card mb-2" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Account & Data Management</h2>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; gap: 1.5rem;">
+            <!-- Export Data -->
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px;">Export Organization Data</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
+                    Download all your organization's data in JSON format (GDPR compliant).
+                </p>
+                <a href="{% url 'account:export_data' %}" class="btn btn-secondary">
+                    Download Data Export
+                </a>
+            </div>
+
+            {% if subscription %}
+            <!-- Subscription Management -->
+            <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px;">Subscription Management</h3>
+                {% if subscription.cancel_at_period_end %}
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
+                        Your subscription is scheduled to cancel on {{ subscription.current_period_end|date:"F d, Y" }}.
+                    </p>
+                    <form method="post" action="{% url 'account:reactivate_subscription' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Reactivate Subscription</button>
+                    </form>
+                {% else %}
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
+                        Cancel your subscription. You'll retain access until {{ subscription.current_period_end|date:"F d, Y" }}.
+                    </p>
+                    <form method="post" action="{% url 'account:cancel_subscription' %}"
+                          onsubmit="return confirm('Are you sure you want to cancel your subscription? You will retain access until the end of your current billing period.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Cancel Subscription</button>
+                    </form>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Delete Account -->
+            <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: #dc2626;">Delete Account</h3>
+                {% if is_last_admin %}
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
+                        You are the last administrator. Please delete the organization instead, or add another admin first.
+                    </p>
+                    <button class="btn btn-danger" disabled>Delete My Account</button>
+                {% else %}
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
+                        Permanently delete your account. This action cannot be undone.
+                    </p>
+                    <button type="button" class="btn btn-danger" onclick="showDeleteAccountModal()">Delete My Account</button>
+                {% endif %}
+            </div>
+
+            {% if is_org_admin %}
+            <!-- Delete Organization -->
+            <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: #dc2626;">Delete Organization</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
+                    Permanently delete {{ organization.name }} and all associated data. This action cannot be undone.
+                </p>
+                <button type="button" class="btn btn-danger" onclick="showDeleteOrgModal()">Delete Organization</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div id="deleteAccountModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+        <h3 style="margin-top: 0; color: #dc2626;">Delete Account</h3>
+        <p>This will permanently delete your account. This action cannot be undone.</p>
+        <form method="post" action="{% url 'account:delete_account' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Confirm your password:</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="hideDeleteAccountModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Organization Modal -->
+{% if is_org_admin %}
+<div id="deleteOrgModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+        <h3 style="margin-top: 0; color: #dc2626;">Delete Organization</h3>
+        <p>This will permanently delete <strong>{{ organization.name }}</strong> and all data including users, reviewees, cycles, and reports. This action cannot be undone.</p>
+        <form method="post" action="{% url 'account:delete_organization' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Type the organization name to confirm:</label>
+                <input type="text" name="organization_name" class="form-control" placeholder="{{ organization.name }}" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm your password:</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="hideDeleteOrgModal()">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete Organization</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function showDeleteAccountModal() {
+    document.getElementById('deleteAccountModal').style.display = 'flex';
+}
+function hideDeleteAccountModal() {
+    document.getElementById('deleteAccountModal').style.display = 'none';
+}
+function showDeleteOrgModal() {
+    document.getElementById('deleteOrgModal').style.display = 'flex';
+}
+function hideDeleteOrgModal() {
+    document.getElementById('deleteOrgModal').style.display = 'none';
+}
+</script>
 {% endblock %}

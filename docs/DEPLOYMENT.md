@@ -27,10 +27,23 @@ In Dokploy's environment variables section, set the following (use `.env.product
 ```env
 # SECRET_KEY is auto-generated if not set (recommended to set for production persistence)
 SECRET_KEY=<your-secret-key-here>
+
+# CRITICAL: Disable debug mode in production
 DEBUG=False
+
+# REQUIRED: Add your domain(s) here, comma-separated
 ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+
+# REQUIRED: CSRF trusted origins (include protocol)
+CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+
+# CRITICAL: Set to True when using HTTPS (which you should be!)
 SESSION_COOKIE_SECURE=True
 CSRF_COOKIE_SECURE=True
+
+# REQUIRED: Encryption key for sensitive data (SMTP passwords in database)
+# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+ENCRYPTION_KEY=<your-encryption-key-here>
 ```
 
 **Note on SECRET_KEY:**
@@ -38,9 +51,13 @@ CSRF_COOKIE_SECURE=True
 - For production, it's recommended to set a persistent value so sessions remain valid across restarts
 - The auto-generated key will be displayed in the logs on first startup
 
-**Generate SECRET_KEY manually (optional):**
+**Generate keys manually:**
 ```bash
+# SECRET_KEY
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+
+# ENCRYPTION_KEY
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
 #### Database Settings
@@ -67,6 +84,40 @@ DEFAULT_FROM_EMAIL=noreply@yourdomain.com
 ```env
 ORGANIZATION_NAME=Your Company Name
 ```
+
+#### Port Configuration (Optional)
+```env
+# Internal port for main application container
+# Default: 8000 (usually no need to change)
+PORT=8000
+
+# Public nginx port (if using multi-container setup)
+# Default: 80
+NGINX_PORT=80
+```
+
+**Note:** Platforms like Dokploy/Railway handle port mapping automatically. Only change if you have port conflicts.
+
+#### Stripe Settings (Optional - For SaaS Billing)
+
+If you're running Blik as a SaaS product with Stripe billing, configure these:
+
+```env
+# Get from Stripe Dashboard > Developers > API keys
+STRIPE_PUBLISHABLE_KEY=pk_live_your_key_here
+STRIPE_SECRET_KEY=sk_live_your_key_here
+
+# Get from Stripe Dashboard > Developers > Webhooks
+# After creating webhook endpoint at: https://yourdomain.com/api/stripe/webhook
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+# Create products in Stripe Dashboard > Products
+# Copy the Price ID for each product (starts with price_...)
+STRIPE_PRICE_ID_SAAS=price_your_saas_price_id_here
+STRIPE_PRICE_ID_ENTERPRISE=price_your_enterprise_price_id_here
+```
+
+See [docs/STRIPE_WEBHOOKS.md](STRIPE_WEBHOOKS.md) for complete Stripe setup instructions.
 
 ### Step 3: Deploy
 
@@ -129,9 +180,11 @@ nano .env
 ```
 
 **Critical settings to change:**
-- `SECRET_KEY` - Generate a new one
+- `SECRET_KEY` - Generate a new one (or leave blank for auto-generation)
+- `ENCRYPTION_KEY` - Generate with cryptography.fernet (required!)
 - `DEBUG=False`
 - `ALLOWED_HOSTS` - Your domain(s)
+- `CSRF_TRUSTED_ORIGINS` - Your domain(s) with https:// protocol
 - `DATABASE_PASSWORD` - Secure password
 - `EMAIL_*` - Your SMTP settings
 - `SESSION_COOKIE_SECURE=True`
@@ -231,18 +284,26 @@ Use the Docker Compose configuration with your platform's container orchestratio
 
 ## Post-Deployment Checklist
 
+### Security
 - [ ] SSL/HTTPS is configured and working
 - [ ] `DEBUG=False` in production
-- [ ] Strong `SECRET_KEY` is set
+- [ ] Strong `SECRET_KEY` is set (or auto-generated)
+- [ ] `ENCRYPTION_KEY` is set and unique
 - [ ] Database password is secure
 - [ ] `ALLOWED_HOSTS` includes your domain(s)
+- [ ] `CSRF_TRUSTED_ORIGINS` includes your domain(s) with https://
+- [ ] Security cookies enabled (`SESSION_COOKIE_SECURE=True`, `CSRF_COOKIE_SECURE=True`)
+
+### Application
 - [ ] Email is configured and tested
-- [ ] Admin account created
+- [ ] Admin account created (via /setup/ or env vars)
 - [ ] Default questionnaires loaded
 - [ ] Static files are being served correctly
-- [ ] Security cookies enabled (`SESSION_COOKIE_SECURE=True`, `CSRF_COOKIE_SECURE=True`)
+
+### Operations
 - [ ] Database backups configured
 - [ ] Monitoring/logging set up (optional)
+- [ ] Port configuration correct (if customized)
 
 ---
 
@@ -396,34 +457,49 @@ docker compose exec web chown -R www-data:www-data /app/mediafiles
    - `.env` is in `.gitignore` by default
    - Use `.env.production` as a template only
 
-2. **Keep dependencies updated**
+2. **Generate unique keys for production**
+   ```bash
+   # SECRET_KEY (Django)
+   python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+
+   # ENCRYPTION_KEY (for SMTP passwords)
+   python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+   ```
+   **WARNING:** Never reuse the default `ENCRYPTION_KEY` from `.env.example` in production!
+
+3. **Keep dependencies updated**
    ```bash
    uv pip list --outdated
    uv pip install --upgrade <package>
    ```
 
-3. **Regular security audits**
+4. **Regular security audits**
    ```bash
    uv pip install safety
    safety check
    ```
 
-4. **Use strong passwords**
+5. **Use strong passwords**
    - Database password: 32+ characters
    - Admin password: 16+ characters
    - SECRET_KEY: Django's generated key (50+ characters)
+   - ENCRYPTION_KEY: Fernet-generated key
 
-5. **Enable fail2ban or similar**
+6. **Enable fail2ban or similar**
    - Protect against brute force login attempts
 
-6. **Regular backups**
+7. **Regular backups**
    - Database: Daily automated backups
    - Retention: Keep 7-30 days of backups
    - Test restore process quarterly
 
-7. **Monitor logs**
+8. **Monitor logs**
    - Set up centralized logging (e.g., Sentry, LogDNA)
    - Alert on errors and security events
+
+9. **Review docker-compose.yml**
+   - Remove the hardcoded `SECRET_KEY` line if present
+   - Ensure all secrets come from environment variables
 
 ---
 

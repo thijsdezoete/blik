@@ -130,7 +130,7 @@ docker run -d -p 8000:8000 \
 - `DATABASE_PASSWORD` - Database password
 - `SECRET_KEY` - Django secret key (auto-generated if not provided)
 - `ENCRYPTION_KEY` - Key for encrypting sensitive data like SMTP passwords (use `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`)
-- `ALLOWED_HOSTS` - Comma-separated list of allowed hostnames (default: `*` for standalone Docker, `localhost,127.0.0.1` for docker-compose). Set to specific domains in production.
+- `ALLOWED_HOSTS` - Comma-separated list of allowed hostnames (default: `*` for all). Set to specific domains in production for better security.
 - `DEBUG` - Debug mode: `True` or `False` (default: `False`)
 - `CSRF_TRUSTED_ORIGINS` - Comma-separated list of trusted origins for CSRF (e.g., `https://yourdomain.com`)
 

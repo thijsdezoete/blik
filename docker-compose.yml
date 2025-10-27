@@ -32,7 +32,7 @@ services:
       - DATABASE_NAME=${DATABASE_NAME:-blik}
       - DATABASE_USER=${DATABASE_USER:-blik}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD:-changeme}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - SECRET_KEY=_^%5)g9u-ruti=ukblm3osv=2v7d*iiqe0fn-f%5hdsfsldf
     depends_on:
       db:

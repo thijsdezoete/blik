@@ -261,10 +261,18 @@
 
 /* FAQ Grid */
 .landing-page .faq-grid {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     display: grid;
+    grid-template-columns: 1fr;
     gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .landing-page .faq-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
 }
 
 .landing-page .faq-item {

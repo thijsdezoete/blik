@@ -479,102 +479,127 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>What is 360-degree feedback?</summary>
-                    <p>360-degree feedback is a performance review method where employees receive anonymous feedback from multiple sources including peers, managers, direct reports, and self-assessment. This multi-perspective approach provides comprehensive insights into performance and behavior.</p>
+                    <p>A 360-degree feedback session is where an employee gets feedback from peers, managers, and if applicable, their direct reports. This gives you a better perspective on their performance and areas to develop. When you pair this with a self-assessment, it shows you where there might be gaps. Maybe you're being too hard on yourself in some areas, or too confident in others. Those mismatches are where the real growth opportunities are.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How does Blik ensure reviewer anonymity?</summary>
-                    <p>Blik uses cryptographically secure UUID-based tokens. Reviewer identities are never stored in the database. The system cannot link responses to specific individuals, ensuring true anonymity. Even administrators cannot trace feedback to reviewers.</p>
+                    <p>Blik is built with anonymity baked in from the start. We use hard-to-guess tokens in URLs, and make it impossible for employers or review administrators to see who answered what. I built this for myself and my team to give them the trust to answer as bluntly and honestly as possible without ever feeling like they're going to get fired for being honest. Even as an admin, you can't trace feedback back to specific people.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What are the system requirements for self-hosting?</summary>
-                    <p>Blik requires Docker and Docker Compose. Minimum recommended: 2GB RAM, 2 CPU cores, 10GB storage. Runs on Linux, macOS, or Windows with Docker Desktop. PostgreSQL 15 database included in Docker setup.</p>
+                    <p>Blik is a simple app that requires a little bit of compute and a database, which comes built in if you want. While I haven't had a chance to test it with many concurrent users, we expect a VPS with 512MB of RAM and a little bit of storage would suffice. It's built in Python so most operating systems will be able to host the application.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can I customize the questionnaires?</summary>
-                    <p>Yes. Blik includes default 360 templates and supports creating custom questionnaires. Question types include Likert scales, multiple choice, and free text. Organize questions into sections and mark as required or optional.</p>
+                    <p>Yes! The application comes with 2 default questionnaires, but we allow you to create your own with no restrictions. We have multiple types of answer modes like Likert scales, multiple choice, and free text. The questionnaires can contain multiple segments which work well on mobile devices too.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Is Blik GDPR compliant?</summary>
-                    <p>Self-hosted Blik gives you full control over data residency and processing, enabling GDPR compliance. Host in EU regions, implement data retention policies, and exercise right to deletion. Our EU SaaS offering is hosted in GDPR-compliant data centers.</p>
+                    <p>If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How is Blik different from commercial 360 tools?</summary>
-                    <p>Blik is open source and self-hosted. No per-user fees, no data lock-in, no third-party access to sensitive feedback. You own your data completely. Customize the codebase to your exact requirements without vendor restrictions.</p>
+                    <p>Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies. Simplicity.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What email providers are supported?</summary>
-                    <p>Blik supports any SMTP email service including Gmail, Office 365, SendGrid, Amazon SES, Mailgun, and custom SMTP servers. Configure during initial setup wizard or update later in settings.</p>
+                    <p>Blik supports almost all email providers. We allow you to use your own credentials or even your own Gmail address.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can reviewers save progress and return later?</summary>
-                    <p>Yes. Reviewers can partially complete forms and return using the same token link. Progress is automatically saved. Once submitted, tokens are locked to prevent duplicate responses.</p>
+                    <p>Yes, it's actually implicit. Your progress is saved on every step. Reviewers each have their own unique URL, and this allows them to come back later and continue where they left off safely and easily.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What happens if there are too few responses?</summary>
-                    <p>Blik enforces minimum response thresholds (default: 3 per category) to protect anonymity. If thresholds are not met, category results show "Insufficient responses" instead of data that could identify individuals. Self-assessments always display separately.</p>
+                    <p>We try to keep anonymity in mind here, so we have a default (changeable) threshold of required answers in order to not be able to take any one response from someone directly. For super small teams you can just set this value to 1 and you will see all answers always. This setting also doesn't apply to managers, who I believe usually provide feedback which you can (should?) act upon.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How are reports generated and shared?</summary>
-                    <p>Administrators manually trigger report generation after closing a review cycle. Reports aggregate responses by category with charts and visualizations. Reviewees access reports via secure token links sent by email.</p>
+                    <p>A report gets triggered either by all invited members finalizing the questionnaire, or by an application admin who closes the report manually. The report itself shows an executive overview plus a detailed in-depth view of all the questions and the aggregated answers per group (self, peers, managers). A report can be generated at will even if some reviewers haven't finished answering all their questions yet. It takes whatever they've filled out so far and leaves the rest of the questions blank.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can I migrate from another 360 tool to Blik?</summary>
-                    <p>Yes. Blik uses standard PostgreSQL database. Import historical data via Django management commands or database tools. Enterprise customers receive migration assistance. Contact us for migration planning support.</p>
+                    <p>Probably yes, but we don't have a good import and haven't tested this. We didn't end up using any other software, so if you can provide us with samples from other tools, we can try to make this work.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Is there a mobile app?</summary>
-                    <p>Blik is mobile-responsive and works in any browser. No separate app installation required. Reviewers and reviewees access everything via mobile web browsers with optimized layouts.</p>
+                    <p>No, you can't find Blik in the app stores, but our web based application works across all modern mobile devices. Benefit is that this also doesn't require installation or setups on user devices.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What license is Blik released under?</summary>
-                    <p>AGPL License. Use commercially, modify, and distribute freely. Source code modifications must be shared if you provide the service over a network. Ideal for businesses wanting to customize while contributing improvements back to the community.</p>
+                    <p>AGPL. I chose this license because I want others to be able to use, try, and modify Blik the same way I would have wanted to. You can use the app and make changes freely. The main thing is if you host a modified version, you need to make your changes available. This way, if someone adds something useful like LDAP integration, the community benefits too. I'll be honest, licenses can be confusing, but the spirit here is simple. Freedom to use and modify, with the requirement to share improvements back.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How do I get support for self-hosted installations?</summary>
-                    <p>Community support via GitHub issues and discussions. Documentation includes deployment guides and troubleshooting. Enterprise customers receive priority email and video call support with SLA guarantees.</p>
+                    <p>The repo's issues and discussion tabs are where the support will most likely be given and found. I try to keep things documented that are important too. Enterprise customers will receive priority updates and a more direct line if they prefer.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can I white-label Blik for clients?</summary>
-                    <p>Yes. AGPL license permits white-labeling. Customize branding, domain, email templates, and UI. Consulting firms can deploy isolated instances per client with custom branding for each. If you modify the code and offer it as a service, you must share your modifications.</p>
+                    <p>Yes, you can. The AGPL license allows you to white label this if you want to. Most things are pretty easy to modify or built in as variables already.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What databases are supported?</summary>
-                    <p>PostgreSQL 15+ is the primary supported database. Docker Compose setup includes PostgreSQL automatically. Other Django-compatible databases may work but are not officially tested or supported.</p>
+                    <p>Any Django-compatible database is supported. I recommend using Postgres 15 or higher. The built in standalone Dockerfile uses SQLite to make things easier for anyone to get started from the get go.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How often is Blik updated?</summary>
-                    <p>Regular updates with bug fixes, security patches, and feature additions. Release notes published on GitHub. Self-hosted users control update timing. SaaS customers receive automatic updates with zero downtime.</p>
+                    <p>This depends on my time and paid users as well as feedback from the community. I hope there will be many community updates, which eventually will lead to other maintainers as well. If you self-host you should probably check in every once in a while. There is no mechanism for this yet. For hosted customers, updates go live immediately after a few minutes when I push them.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can I run multiple review cycles simultaneously?</summary>
-                    <p>Yes. Create unlimited concurrent review cycles for different reviewees. Each cycle is independent with its own questionnaire, reviewers, and timeline. No restrictions on active cycles.</p>
+                    <p>Yes. Cycles are lightly implemented, meaning there is no enforcing of every reviewee having to be on the same cycle. There are no limits on active cycles and no problem having multiple people in different cycles simultaneously.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What analytics and insights does Blik provide?</summary>
-                    <p>Reports include aggregated scores by competency area, category breakdowns (peer/manager/direct report), self vs others comparisons, distribution charts, strength and development area identification, and anonymous text comment grouping.</p>
+                    <p>The report after the questionnaire is finished contains an executive overview that highlights gaps between how you see yourself and how others see you. It spots things like impostor syndrome or undervaluation of your own contributions. You'll see key strengths and weaknesses, plus a bar chart showing self vs others comparison. It also contains a radar chart with the different layers (self, peers, managers) averaged responses. The insights differ per person and questionnaire of course, but in general it should provide actionable insights.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Is there an API for integrations?</summary>
-                    <p>Not in the current version. Blik focuses on web interface usability for MVP. API access is on the roadmap for future releases. Contribute API development via GitHub pull requests if needed sooner.</p>
+                    <p>Not yet! But I would love to have it. So, soon! If you're looking for an API based 360 review tool, reach out. I'd be happy to take your requirements into consideration.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I invite reviewers?</summary>
+                    <p>There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is the recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I export my data?</summary>
+                    <p>Yes. You get a full account and organization JSON export. This makes it easy to back up your data or migrate to another system if you need to.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What's the difference between the €49 and €199 hosted plans?</summary>
+                    <p>Just the employee count. The €49 plan is for up to 50 employees, and the €199 plan is for up to 200 employees. Everything else is the same. Bigger company equals bigger bill, but it's still a negligible amount when you have 200+ employees.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens to my data if I cancel my hosted subscription?</summary>
+                    <p>All data will be removed after 30 days. No exceptions. Make sure you export your data before canceling if you want to keep it.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I try the hosted version before committing?</summary>
+                    <p>Yes, there is a 14 day trial. Credit card is required to activate the trial though.</p>
                 </details>
             </div>
         </div>
@@ -644,7 +669,7 @@
                 "name": "What is 360-degree feedback?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "360-degree feedback is a performance review method where employees receive anonymous feedback from multiple sources including peers, managers, direct reports, and self-assessment. This multi-perspective approach provides comprehensive insights into performance and behavior."
+                    "text": "A 360-degree feedback session is where an employee gets feedback from peers, managers, and if applicable, their direct reports. This gives you a better perspective on their performance and areas to develop. When you pair this with a self-assessment, it shows you where there might be gaps. Maybe you're being too hard on yourself in some areas, or too confident in others. Those mismatches are where the real growth opportunities are."
                 }
             },
             {
@@ -652,7 +677,7 @@
                 "name": "How does Blik ensure reviewer anonymity?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik uses cryptographically secure UUID-based tokens. Reviewer identities are never stored in the database. The system cannot link responses to specific individuals, ensuring true anonymity. Even administrators cannot trace feedback to reviewers."
+                    "text": "Blik is built with anonymity baked in from the start. We use hard-to-guess tokens in URLs, and make it impossible for employers or review administrators to see who answered what. I built this for myself and my team to give them the trust to answer as bluntly and honestly as possible without ever feeling like they're going to get fired for being honest. Even as an admin, you can't trace feedback back to specific people."
                 }
             },
             {
@@ -660,7 +685,7 @@
                 "name": "What are the system requirements for self-hosting?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik requires Docker and Docker Compose. Minimum recommended: 2GB RAM, 2 CPU cores, 10GB storage. Runs on Linux, macOS, or Windows with Docker Desktop. PostgreSQL 15 database included in Docker setup."
+                    "text": "Blik is a simple app that requires a little bit of compute and a database, which comes built in if you want. While I haven't had a chance to test it with many concurrent users, we expect a VPS with 512MB of RAM and a little bit of storage would suffice. It's built in Python so most operating systems will be able to host the application."
                 }
             },
             {
@@ -668,7 +693,7 @@
                 "name": "Can I customize the questionnaires?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. Blik includes default 360 templates and supports creating custom questionnaires. Question types include Likert scales, multiple choice, and free text. Organize questions into sections and mark as required or optional."
+                    "text": "Yes! The application comes with 2 default questionnaires, but we allow you to create your own with no restrictions. We have multiple types of answer modes like Likert scales, multiple choice, and free text. The questionnaires can contain multiple segments which work well on mobile devices too."
                 }
             },
             {
@@ -676,7 +701,7 @@
                 "name": "Is Blik GDPR compliant?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Self-hosted Blik gives you full control over data residency and processing, enabling GDPR compliance. Host in EU regions, implement data retention policies, and exercise right to deletion. Our EU SaaS offering is hosted in GDPR-compliant data centers."
+                    "text": "If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service."
                 }
             },
             {
@@ -684,7 +709,7 @@
                 "name": "How is Blik different from commercial 360 tools?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is open source and self-hosted. No per-user fees, no data lock-in, no third-party access to sensitive feedback. You own your data completely. Customize the codebase to your exact requirements without vendor restrictions."
+                    "text": "Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies. Simplicity."
                 }
             },
             {
@@ -692,7 +717,7 @@
                 "name": "What email providers are supported?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik supports any SMTP email service including Gmail, Office 365, SendGrid, Amazon SES, Mailgun, and custom SMTP servers. Configure during initial setup wizard or update later in settings."
+                    "text": "Blik supports almost all email providers. We allow you to use your own credentials or even your own Gmail address."
                 }
             },
             {
@@ -700,7 +725,7 @@
                 "name": "Can reviewers save progress and return later?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. Reviewers can partially complete forms and return using the same token link. Progress is automatically saved. Once submitted, tokens are locked to prevent duplicate responses."
+                    "text": "Yes, it's actually implicit. Your progress is saved on every step. Reviewers each have their own unique URL, and this allows them to come back later and continue where they left off safely and easily."
                 }
             },
             {
@@ -708,7 +733,7 @@
                 "name": "What happens if there are too few responses?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik enforces minimum response thresholds (default: 3 per category) to protect anonymity. If thresholds are not met, category results show 'Insufficient responses' instead of data that could identify individuals. Self-assessments always display separately."
+                    "text": "We try to keep anonymity in mind here, so we have a default (changeable) threshold of required answers in order to not be able to take any one response from someone directly. For super small teams you can just set this value to 1 and you will see all answers always. This setting also doesn't apply to managers, who I believe usually provide feedback which you can (should?) act upon."
                 }
             },
             {
@@ -716,7 +741,7 @@
                 "name": "How are reports generated and shared?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Administrators manually trigger report generation after closing a review cycle. Reports aggregate responses by category with charts and visualizations. Reviewees access reports via secure token links sent by email."
+                    "text": "A report gets triggered either by all invited members finalizing the questionnaire, or by an application admin who closes the report manually. The report itself shows an executive overview plus a detailed in-depth view of all the questions and the aggregated answers per group (self, peers, managers). A report can be generated at will even if some reviewers haven't finished answering all their questions yet. It takes whatever they've filled out so far and leaves the rest of the questions blank."
                 }
             },
             {
@@ -724,7 +749,7 @@
                 "name": "Can I migrate from another 360 tool to Blik?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. Blik uses standard PostgreSQL database. Import historical data via Django management commands or database tools. Enterprise customers receive migration assistance. Contact us for migration planning support."
+                    "text": "Probably yes, but we don't have a good import and haven't tested this. We didn't end up using any other software, so if you can provide us with samples from other tools, we can try to make this work."
                 }
             },
             {
@@ -732,7 +757,7 @@
                 "name": "Is there a mobile app?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is mobile-responsive and works in any browser. No separate app installation required. Reviewers and reviewees access everything via mobile web browsers with optimized layouts."
+                    "text": "No, you can't find Blik in the app stores, but our web based application works across all modern mobile devices. Benefit is that this also doesn't require installation or setups on user devices."
                 }
             },
             {
@@ -740,7 +765,7 @@
                 "name": "What license is Blik released under?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "AGPL License. Use commercially, modify, and distribute freely. Source code modifications must be shared if you provide the service over a network. Ideal for businesses wanting to customize while contributing improvements back to the community."
+                    "text": "AGPL. I chose this license because I want others to be able to use, try, and modify Blik the same way I would have wanted to. You can use the app and make changes freely. The main thing is if you host a modified version, you need to make your changes available. This way, if someone adds something useful like LDAP integration, the community benefits too. I'll be honest, licenses can be confusing, but the spirit here is simple. Freedom to use and modify, with the requirement to share improvements back."
                 }
             },
             {
@@ -748,7 +773,7 @@
                 "name": "How do I get support for self-hosted installations?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Community support via GitHub issues and discussions. Documentation includes deployment guides and troubleshooting. Enterprise customers receive priority email and video call support with SLA guarantees."
+                    "text": "The repo's issues and discussion tabs are where the support will most likely be given and found. I try to keep things documented that are important too. Enterprise customers will receive priority updates and a more direct line if they prefer."
                 }
             },
             {
@@ -756,7 +781,7 @@
                 "name": "Can I white-label Blik for clients?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. AGPL license permits white-labeling. Customize branding, domain, email templates, and UI. Consulting firms can deploy isolated instances per client with custom branding for each. If you modify the code and offer it as a service, you must share your modifications."
+                    "text": "Yes, you can. The AGPL license allows you to white label this if you want to. Most things are pretty easy to modify or built in as variables already."
                 }
             },
             {
@@ -764,7 +789,7 @@
                 "name": "What databases are supported?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "PostgreSQL 15+ is the primary supported database. Docker Compose setup includes PostgreSQL automatically. Other Django-compatible databases may work but are not officially tested or supported."
+                    "text": "Any Django-compatible database is supported. I recommend using Postgres 15 or higher. The built in standalone Dockerfile uses SQLite to make things easier for anyone to get started from the get go."
                 }
             },
             {
@@ -772,7 +797,7 @@
                 "name": "How often is Blik updated?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Regular updates with bug fixes, security patches, and feature additions. Release notes published on GitHub. Self-hosted users control update timing. SaaS customers receive automatic updates with zero downtime."
+                    "text": "This depends on my time and paid users as well as feedback from the community. I hope there will be many community updates, which eventually will lead to other maintainers as well. If you self-host you should probably check in every once in a while. There is no mechanism for this yet. For hosted customers, updates go live immediately after a few minutes when I push them."
                 }
             },
             {
@@ -780,7 +805,7 @@
                 "name": "Can I run multiple review cycles simultaneously?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. Create unlimited concurrent review cycles for different reviewees. Each cycle is independent with its own questionnaire, reviewers, and timeline. No restrictions on active cycles."
+                    "text": "Yes. Cycles are lightly implemented, meaning there is no enforcing of every reviewee having to be on the same cycle. There are no limits on active cycles and no problem having multiple people in different cycles simultaneously."
                 }
             },
             {
@@ -788,7 +813,7 @@
                 "name": "What analytics and insights does Blik provide?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Reports include aggregated scores by competency area, category breakdowns (peer/manager/direct report), self vs others comparisons, distribution charts, strength and development area identification, and anonymous text comment grouping."
+                    "text": "The report after the questionnaire is finished contains an executive overview that highlights gaps between how you see yourself and how others see you. It spots things like impostor syndrome or undervaluation of your own contributions. You'll see key strengths and weaknesses, plus a bar chart showing self vs others comparison. It also contains a radar chart with the different layers (self, peers, managers) averaged responses. The insights differ per person and questionnaire of course, but in general it should provide actionable insights."
                 }
             },
             {
@@ -796,7 +821,47 @@
                 "name": "Is there an API for integrations?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Not in the current version. Blik focuses on web interface usability for MVP. API access is on the roadmap for future releases. Contribute API development via GitHub pull requests if needed sooner."
+                    "text": "Not yet! But I would love to have it. So, soon! If you're looking for an API based 360 review tool, reach out. I'd be happy to take your requirements into consideration."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I invite reviewers?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is the recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I export my data?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. You get a full account and organization JSON export. This makes it easy to back up your data or migrate to another system if you need to."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What's the difference between the €49 and €199 hosted plans?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Just the employee count. The €49 plan is for up to 50 employees, and the €199 plan is for up to 200 employees. Everything else is the same. Bigger company equals bigger bill, but it's still a negligible amount when you have 200+ employees."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What happens to my data if I cancel my hosted subscription?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "All data will be removed after 30 days. No exceptions. Make sure you export your data before canceling if you want to keep it."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I try the hosted version before committing?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, there is a 14 day trial. Credit card is required to activate the trial though."
                 }
             }
         ]

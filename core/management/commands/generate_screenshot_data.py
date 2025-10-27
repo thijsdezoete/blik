@@ -218,10 +218,10 @@ class Command(BaseCommand):
             status='completed'
         )
 
-        # Create tokens: 1 self, 1 manager, 4 peers, 2 direct reports = 8 total
+        # Create tokens: 1 self, 3 managers, 4 peers, 2 direct reports = 10 total
         token_configs = [
             ('self', 1),
-            ('manager', 1),
+            ('manager', 3),
             ('peer', 4),
             ('direct_report', 2),
         ]
@@ -296,11 +296,11 @@ class Command(BaseCommand):
             status='active'
         )
 
-        total_tokens = 8
+        total_tokens = 10
         completed_tokens = int(total_tokens * completion_pct / 100)
 
         # Create tokens
-        categories = ['self', 'manager'] + ['peer'] * 4 + ['direct_report'] * 2
+        categories = ['self'] + ['manager'] * 3 + ['peer'] * 4 + ['direct_report'] * 2
 
         for i, category in enumerate(categories):
             if i < completed_tokens:
@@ -357,10 +357,10 @@ class Command(BaseCommand):
             status='active'
         )
 
-        total_tokens = 8
+        total_tokens = 10
         claimed_tokens = int(total_tokens * claim_pct / 100)
 
-        categories = ['self', 'manager'] + ['peer'] * 4 + ['direct_report'] * 2
+        categories = ['self'] + ['manager'] * 3 + ['peer'] * 4 + ['direct_report'] * 2
 
         for i, category in enumerate(categories):
             if i < claimed_tokens:

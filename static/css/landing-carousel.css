@@ -1,0 +1,297 @@
+/* Product Showcase Carousel & Effects */
+
+.product-showcase {
+    overflow: hidden;
+}
+
+/* Screenshot Carousel */
+.screenshot-carousel {
+    margin-bottom: 6rem;
+}
+
+.carousel-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.carousel-slides {
+    position: relative;
+    width: 100%;
+    /* Fixed aspect ratio to prevent layout shift - 16:10 ratio for desktop screenshots */
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+    background: var(--bg-card);
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Hover to toggle light/dark theme */
+.screenshot-hover-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.screenshot-layer {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.screenshot-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+.screenshot-dark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    transition: opacity 0.4s ease-in-out;
+    pointer-events: none;
+}
+
+.screenshot-hover-wrapper:hover .screenshot-dark {
+    opacity: 0;
+}
+
+/* Theme indicator badge */
+.theme-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+}
+
+.screenshot-hover-wrapper:hover .theme-indicator {
+    opacity: 1;
+}
+
+/* Carousel navigation */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="dark"] .carousel-nav {
+    background: rgba(30, 30, 30, 0.95);
+}
+
+.carousel-nav:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.carousel-prev {
+    left: -1.5rem;
+}
+
+.carousel-next {
+    right: -1.5rem;
+}
+
+/* Carousel dots */
+.carousel-dots {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.carousel-dot:hover {
+    border-color: var(--primary);
+    transform: scale(1.2);
+}
+
+.carousel-dot.active {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.carousel-caption {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 1.5rem;
+    font-size: 0.9375rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Phone Mockup */
+.mobile-showcase {
+    margin-top: 6rem;
+}
+
+.phone-mockup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.phone-frame {
+    position: relative;
+    width: 320px;
+    height: 650px;
+    background: #1a1a1a;
+    border-radius: 40px;
+    padding: 12px;
+    box-shadow:
+        0 0 0 2px #2a2a2a,
+        0 0 0 4px #1a1a1a,
+        0 30px 60px rgba(0, 0, 0, 0.4);
+    animation: floatPhone 6s ease-in-out infinite;
+}
+
+@keyframes floatPhone {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+.phone-notch {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 24px;
+    background: #1a1a1a;
+    border-radius: 0 0 16px 16px;
+    z-index: 2;
+}
+
+.phone-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-primary);
+    border-radius: 32px;
+    overflow: hidden;
+}
+
+.phone-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .carousel-prev {
+        left: 0.5rem;
+    }
+
+    .carousel-next {
+        right: 0.5rem;
+    }
+
+    .carousel-nav {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.5rem;
+    }
+
+    .phone-frame {
+        width: 280px;
+        height: 570px;
+        border-radius: 35px;
+    }
+
+    .mobile-showcase {
+        margin-top: 4rem;
+    }
+
+    .screenshot-carousel {
+        margin-bottom: 4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .phone-frame {
+        width: 240px;
+        height: 490px;
+        border-radius: 30px;
+    }
+
+    .phone-notch {
+        width: 100px;
+        height: 20px;
+    }
+}

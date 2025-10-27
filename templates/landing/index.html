@@ -143,6 +143,21 @@
         </div>
     </section>
 
+    <!-- Name Origin Section -->
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+                <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Why "Blik"?</h2>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem;">
+                    <strong>Blik</strong> is Dutch for <em>"view"</em> or <em>"perspective"</em>. Blik360 gives you a fresh view on performance—seeing yourself through the eyes of peers, managers, and direct reports.
+                </p>
+                <p style="color: var(--text-secondary); line-height: 1.8;">
+                    Fun fact: in Dutch, "blik" also means "can" (as in tin can). <strong>Yes, we can!</strong> Build better feedback systems without vendor lock-in.
+                </p>
+            </div>
+        </div>
+    </section>
+
     <!-- Comparison Section -->
     <section class="section section-alt">
         <div class="container">
@@ -201,22 +216,40 @@
                         <div class="carousel-slide active" data-slide="0">
                             <div class="screenshot-hover-wrapper">
                                 <picture class="screenshot-layer screenshot-light">
-                                    <source srcset="{% static 'img/screenshots/report_desktop_light.webp' %}" type="image/webp">
-                                    <img src="{% static 'img/screenshots/report_desktop_light.png' %}"
-                                         alt="360 Feedback Report with Charts - Light Theme"
+                                    <source srcset="{% static 'img/screenshots/report_header_desktop_light.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_header_desktop_light.png' %}"
+                                         alt="360 Feedback Report Header - Light Theme"
                                          loading="eager">
                                 </picture>
                                 <picture class="screenshot-layer screenshot-dark">
-                                    <source srcset="{% static 'img/screenshots/report_desktop_dark.webp' %}" type="image/webp">
-                                    <img src="{% static 'img/screenshots/report_desktop_dark.png' %}"
-                                         alt="360 Feedback Report with Charts - Dark Theme"
+                                    <source srcset="{% static 'img/screenshots/report_header_desktop_dark.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_header_desktop_dark.png' %}"
+                                         alt="360 Feedback Report Header - Dark Theme"
                                          loading="eager">
                                 </picture>
                                 <div class="theme-indicator">Hover to toggle theme</div>
                             </div>
-                            <p class="carousel-caption">Comprehensive reports with radar charts, performance breakdowns, and actionable insights</p>
+                            <p class="carousel-caption">Professional feedback reports with clear summaries and overview statistics</p>
                         </div>
                         <div class="carousel-slide" data-slide="1">
+                            <div class="screenshot-hover-wrapper">
+                                <picture class="screenshot-layer screenshot-light">
+                                    <source srcset="{% static 'img/screenshots/report_charts_desktop_light.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_charts_desktop_light.png' %}"
+                                         alt="360 Feedback Report Charts - Light Theme"
+                                         loading="lazy">
+                                </picture>
+                                <picture class="screenshot-layer screenshot-dark">
+                                    <source srcset="{% static 'img/screenshots/report_charts_desktop_dark.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_charts_desktop_dark.png' %}"
+                                         alt="360 Feedback Report Charts - Dark Theme"
+                                         loading="lazy">
+                                </picture>
+                                <div class="theme-indicator">Hover to toggle theme</div>
+                            </div>
+                            <p class="carousel-caption">Rich visualizations with radar charts, competency breakdowns, and detailed analytics</p>
+                        </div>
+                        <div class="carousel-slide" data-slide="2">
                             <div class="screenshot-hover-wrapper">
                                 <picture class="screenshot-layer screenshot-light">
                                     <source srcset="{% static 'img/screenshots/dashboard_desktop_light.webp' %}" type="image/webp">
@@ -234,7 +267,7 @@
                             </div>
                             <p class="carousel-caption">Track review cycles, monitor progress, and manage your team from an intuitive dashboard</p>
                         </div>
-                        <div class="carousel-slide" data-slide="2">
+                        <div class="carousel-slide" data-slide="3">
                             <div class="screenshot-hover-wrapper">
                                 <picture class="screenshot-layer screenshot-light">
                                     <source srcset="{% static 'img/screenshots/team_desktop_light.webp' %}" type="image/webp">
@@ -256,9 +289,10 @@
                     <button class="carousel-nav carousel-prev" aria-label="Previous screenshot">‹</button>
                     <button class="carousel-nav carousel-next" aria-label="Next screenshot">›</button>
                     <div class="carousel-dots">
-                        <button class="carousel-dot active" data-slide="0" aria-label="Show report screenshot"></button>
-                        <button class="carousel-dot" data-slide="1" aria-label="Show dashboard screenshot"></button>
-                        <button class="carousel-dot" data-slide="2" aria-label="Show team management screenshot"></button>
+                        <button class="carousel-dot active" data-slide="0" aria-label="Show report header"></button>
+                        <button class="carousel-dot" data-slide="1" aria-label="Show report charts"></button>
+                        <button class="carousel-dot" data-slide="2" aria-label="Show dashboard screenshot"></button>
+                        <button class="carousel-dot" data-slide="3" aria-label="Show team management screenshot"></button>
                     </div>
                 </div>
             </div>

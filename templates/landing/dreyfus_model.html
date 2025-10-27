@@ -301,8 +301,37 @@
                 <p style="margin-bottom: 1rem;">This is the default framework. Blik is open source—modify dimensions, adjust weighting, add domain-specific competencies. The framework serves your needs, not the other way around.</p>
                 <p>Examples: Add "Security Awareness" for fintech teams. Include "Research Ability" for ML teams. Remove dimensions that don't apply to your context.</p>
             </div>
+
+            <!-- Showcase Framework in Action -->
+            <div style="margin-top: 4rem;">
+                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">See the Framework in Action</h3>
+                <div style="max-width: 1000px; margin: 0 auto;">
+                    <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <picture class="screenshot-layer screenshot-light">
+                            <source srcset="{% static 'img/screenshots/report_charts_desktop_light.webp' %}" type="image/webp">
+                            <img src="{% static 'img/screenshots/report_charts_desktop_light.png' %}"
+                                 alt="360 Feedback Report with Dreyfus Framework - Light Theme"
+                                 loading="lazy"
+                                 style="width: 100%; height: auto; display: block;">
+                        </picture>
+                        <picture class="screenshot-layer screenshot-dark">
+                            <source srcset="{% static 'img/screenshots/report_charts_desktop_dark.webp' %}" type="image/webp">
+                            <img src="{% static 'img/screenshots/report_charts_desktop_dark.png' %}"
+                                 alt="360 Feedback Report with Dreyfus Framework - Dark Theme"
+                                 loading="lazy"
+                                 style="width: 100%; height: auto; display: block;">
+                        </picture>
+                        <div class="theme-indicator">Hover to toggle theme</div>
+                    </div>
+                    <p style="text-align: center; color: var(--text-secondary); margin-top: 1.5rem;">
+                        Radar charts visualize competency ratings across all 10 dimensions, with breakdowns by reviewer category
+                    </p>
+                </div>
+            </div>
         </div>
     </section>
+
+    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <section class="section">
         <div class="container">

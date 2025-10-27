@@ -227,8 +227,57 @@
                     <p>Configure with your internal mail server. No external email services required. All email stays within your network. Support for Exchange, Office 365 on-premises, or any SMTP server you control.</p>
                 </div>
             </div>
+
+            <!-- Security in Action Screenshots -->
+            <div style="margin-top: 4rem;">
+                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Secure, Professional Interface</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem;">
+                    <div>
+                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <picture class="screenshot-layer screenshot-light">
+                                <source srcset="{% static 'img/screenshots/cycle_detail_desktop_light.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/cycle_detail_desktop_light.png' %}"
+                                     alt="Review Cycle Tracking - Light Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <picture class="screenshot-layer screenshot-dark">
+                                <source srcset="{% static 'img/screenshots/cycle_detail_desktop_dark.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/cycle_detail_desktop_dark.png' %}"
+                                     alt="Review Cycle Tracking - Dark Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <div class="theme-indicator">Hover to toggle theme</div>
+                        </div>
+                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Anonymous invitation links ensure reviewer identities are never tracked or stored</p>
+                    </div>
+                    <div>
+                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <picture class="screenshot-layer screenshot-light">
+                                <source srcset="{% static 'img/screenshots/report_charts_desktop_light.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/report_charts_desktop_light.png' %}"
+                                     alt="Anonymous Feedback Reports - Light Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <picture class="screenshot-layer screenshot-dark">
+                                <source srcset="{% static 'img/screenshots/report_charts_desktop_dark.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/report_charts_desktop_dark.png' %}"
+                                     alt="Anonymous Feedback Reports - Dark Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <div class="theme-indicator">Hover to toggle theme</div>
+                        </div>
+                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Professional reports with anonymity protection built-in</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <section id="industries" class="section section-alt">
         <div class="container">

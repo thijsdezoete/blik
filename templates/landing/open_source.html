@@ -187,8 +187,57 @@
                 <br>
                 <div style="color: var(--text-tertiary);"># Visit http://localhost:8000/setup/ and you're done</div>
             </div>
+
+            <!-- Developer-focused Screenshots -->
+            <div style="margin-top: 4rem;">
+                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Clean, Customizable Interface</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem;">
+                    <div>
+                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <picture class="screenshot-layer screenshot-light">
+                                <source srcset="{% static 'img/screenshots/team_desktop_light.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/team_desktop_light.png' %}"
+                                     alt="Team Management Interface - Light Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <picture class="screenshot-layer screenshot-dark">
+                                <source srcset="{% static 'img/screenshots/team_desktop_dark.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/team_desktop_dark.png' %}"
+                                     alt="Team Management Interface - Dark Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <div class="theme-indicator">Hover to toggle theme</div>
+                        </div>
+                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Team management with granular permissions</p>
+                    </div>
+                    <div>
+                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <picture class="screenshot-layer screenshot-light">
+                                <source srcset="{% static 'img/screenshots/cycle_detail_desktop_light.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/cycle_detail_desktop_light.png' %}"
+                                     alt="Review Cycle Detail - Light Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <picture class="screenshot-layer screenshot-dark">
+                                <source srcset="{% static 'img/screenshots/cycle_detail_desktop_dark.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/cycle_detail_desktop_dark.png' %}"
+                                     alt="Review Cycle Detail - Dark Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <div class="theme-indicator">Hover to toggle theme</div>
+                        </div>
+                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Track invitations and completion status</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <section id="architecture" class="section section-alt">
         <div class="container">

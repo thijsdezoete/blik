@@ -327,6 +327,53 @@
                 <div style="color: var(--text-tertiary);"># Total time: 5 minutes. Total cost: 10 EUR/month.</div>
             </div>
 
+            <!-- EU-Compliant Interface Showcase -->
+            <div style="margin-top: 4rem;">
+                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Professional EU-Hosted Interface</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                    <div>
+                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <picture class="screenshot-layer screenshot-light">
+                                <source srcset="{% static 'img/screenshots/dashboard_desktop_light.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/dashboard_desktop_light.png' %}"
+                                     alt="GDPR-Compliant Dashboard - Light Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <picture class="screenshot-layer screenshot-dark">
+                                <source srcset="{% static 'img/screenshots/dashboard_desktop_dark.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/dashboard_desktop_dark.png' %}"
+                                     alt="GDPR-Compliant Dashboard - Dark Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <div class="theme-indicator">Hover to toggle theme</div>
+                        </div>
+                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Admin dashboard with audit trails and access controls</p>
+                    </div>
+                    <div>
+                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <picture class="screenshot-layer screenshot-light">
+                                <source srcset="{% static 'img/screenshots/report_tablet_light.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/report_tablet_light.png' %}"
+                                     alt="Anonymous Feedback Report - Light Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <picture class="screenshot-layer screenshot-dark">
+                                <source srcset="{% static 'img/screenshots/report_tablet_dark.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/report_tablet_dark.png' %}"
+                                     alt="Anonymous Feedback Report - Dark Theme"
+                                     loading="lazy"
+                                     style="width: 100%; height: auto; display: block;">
+                            </picture>
+                            <div class="theme-indicator">Hover to toggle theme</div>
+                        </div>
+                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Anonymized reports with privacy thresholds</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>Modern Python Stack</h3>
@@ -346,6 +393,8 @@
             </div>
         </div>
     </section>
+
+    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <section id="faq" class="section">
         <div class="container">

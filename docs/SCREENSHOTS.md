@@ -77,14 +77,18 @@ python manage.py generate_screenshot_data --clear
 Uses Playwright to capture screenshots of key pages.
 
 **What it captures:**
-- Report page with charts (desktop light/dark, tablet light/dark) - 4 screenshots
+- Report page - header/summary (desktop light/dark) - 2 screenshots
+- Report page - charts section (desktop light/dark) - 2 screenshots
+- Report page - tablet (tablet light/dark) - 2 screenshots
 - Admin dashboard (desktop light/dark, mobile light/dark) - 4 screenshots
 - Review cycle detail (desktop light/dark) - 2 screenshots
 - Team management (desktop light/dark) - 2 screenshots
 - Manage invitations (desktop light) - 1 screenshot
 - Feedback form (desktop light/dark, mobile light/dark) - 4 screenshots
 
-**Total: 17 screenshots**
+**Total: 19 screenshots**
+
+**Note:** Report desktop screenshots are split into two parts (header/summary and charts) to capture all key information while keeping standard viewport sizes (1920x1080, 1024x768).
 
 **Options:**
 - `--config PATH`: Path to config JSON (default: `/tmp/blik_screenshot_config.json`)
@@ -150,6 +154,10 @@ All screenshots are captured in both light and dark themes (where applicable) to
    - Primary visual showcase
    - Shows radar charts, bar charts, data visualization
    - Demonstrates rich reporting capabilities
+   - **Viewport strategy:** Two separate captures for desktop:
+     - Header/summary section (scroll_to: 0) - shows title, overview stats
+     - Charts section (scroll_to: 600) - shows radar chart and competency breakdowns
+   - **Tablet:** Single capture at 1024x768 scrolled to show key content
    - **Special data:** "Imposter syndrome" pattern creates visible perception gap
 
 2. **Admin Dashboard** (`/dashboard/`)

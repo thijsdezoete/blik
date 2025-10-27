@@ -54,11 +54,13 @@ A complete, automated screenshot generation system for the Blik landing page wit
 
 ## Screenshot Inventory
 
-### 17 Total Screenshots
+### 19 Total Screenshots
 
 **Report Page (6):**
-- `report_desktop_light.png/webp` - 1920x1080
-- `report_desktop_dark.png/webp` - 1920x1080
+- `report_header_desktop_light.png/webp` - 1920x1080 (header/summary section)
+- `report_header_desktop_dark.png/webp` - 1920x1080 (header/summary section)
+- `report_charts_desktop_light.png/webp` - 1920x1080 (charts section)
+- `report_charts_desktop_dark.png/webp` - 1920x1080 (charts section)
 - `report_tablet_light.png/webp` - 1024x768
 - `report_tablet_dark.png/webp` - 1024x768
 

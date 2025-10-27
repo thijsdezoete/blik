@@ -10,7 +10,7 @@ Blik is an open-source application for conducting anonymous 360-degree feedback 
 
 ## Status
 
-Blik is production-ready with core 360-degree feedback functionality. The system includes a complete review cycle workflow, anonymous feedback collection, intelligent report generation, and an easy-to-use admin dashboard.
+Blik is production-ready with core 360-degree feedback functionality. The system includes a complete review cycle workflow, anonymous feedback collection, report generation with statistical analysis, and an easy-to-use admin dashboard.
 
 ## Features
 
@@ -19,7 +19,7 @@ Blik is production-ready with core 360-degree feedback functionality. The system
 - **Anonymous Feedback** - Token-based access system with no reviewer tracking
 - **Dual Questionnaires** - Professional Skills & Software Engineering templates (Dreyfus model-based)
 - **Flexible Review Types** - Self, peer, manager, and direct report assessments
-- **Intelligent Reports** - AI-powered analysis detecting perception gaps, skill levels, and development areas
+- **Analytical Reports** - Statistical analysis of feedback data with aggregation by category
 - **Dynamic Invitations** - Shareable links that automatically assign available tokens
 - **Email Notifications** - SMTP integration for invites and reminders
 - **Privacy Controls** - Configurable anonymity thresholds per organization
@@ -37,10 +37,9 @@ Blik is production-ready with core 360-degree feedback functionality. The system
 ## Architecture
 
 ### Technology Stack
-- **Backend:** Django 5.x
+- **Backend:** Django 5.x with multi-organization support
 - **Database:** PostgreSQL 15
 - **Frontend:** Django templates with modern CSS
-- **AI Analysis:** Claude API (Anthropic) for intelligent report generation
 - **Deployment:** Docker and Docker Compose with Gunicorn
 - **Static Files:** WhiteNoise for efficient static file serving
 - **Email:** SMTP integration (supports Gmail, SendGrid, AWS SES, Mailgun, etc.)

@@ -70,7 +70,7 @@
                         <td>
                             {% if user_profile.user.is_superuser %}
                                 <span class="badge" style="background: #7c3aed; color: white;">Super Admin</span>
-                            {% elif user_profile.user.is_staff %}
+                            {% elif user_profile.is_org_admin %}
                                 <span class="badge" style="background: #059669; color: white;">Organization Admin</span>
                             {% else %}
                                 <span class="badge" style="background: #6b7280; color: white;">Member</span>
@@ -87,7 +87,7 @@
                         {% if perms.accounts.can_manage_organization %}
                         <td>
                             {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.user.is_staff|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.is_org_admin|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
                                 Manage
                             </button>
                             {% else %}
@@ -116,8 +116,8 @@
                     <div>
                         {% if user_profile.user.is_superuser %}
                             <span class="badge" style="background: #7c3aed; color: white; font-size: 11px;">Super Admin</span>
-                        {% elif user_profile.user.is_staff %}
-                            <span class="badge" style="background: #059669; color: white; font-size: 11px;">Admin</span>
+                        {% elif user_profile.is_org_admin %}
+                            <span class="badge" style="background: #059669; color: white; font-size: 11px;">Organization Admin</span>
                         {% else %}
                             <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">Member</span>
                         {% endif %}
@@ -144,7 +144,7 @@
                     </div>
                     {% if perms.accounts.can_manage_organization %}
                         {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
-                        <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.user.is_staff|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
+                        <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.is_org_admin|lower }}, {{ user_profile.can_create_cycles_for_others|lower }})">
                             Manage Permissions
                         </button>
                         {% endif %}

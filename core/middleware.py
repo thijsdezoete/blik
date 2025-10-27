@@ -81,8 +81,8 @@ class OrganizationMiddleware:
             try:
                 if hasattr(request.user, 'profile'):
                     request.organization = request.user.profile.organization
-                elif request.user.is_staff or request.user.is_superuser:
-                    # Fallback for admin users without profiles
+                elif request.user.is_superuser:
+                    # Fallback for superadmin users without profiles
                     request.organization = Organization.objects.first()
             except Exception as e:
                 print(f"Error getting organization for user {request.user}: {e}")

@@ -818,11 +818,13 @@ body.setup-page {
     gap: 8px;
     justify-content: center;
     flex-wrap: wrap;
+    align-items: stretch;
 }
 
 .rating-option {
     position: relative;
     flex: 0 0 auto;
+    display: flex;
 }
 
 .rating-option input[type="radio"] {
@@ -842,8 +844,8 @@ body.setup-page {
     transition: all 0.2s;
     background: var(--bg-card);
     min-width: 100px;
-    min-height: 100px;
     justify-content: center;
+    flex: 1;
 }
 
 .rating-value {

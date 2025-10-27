@@ -39,7 +39,7 @@ def export_organization_data(organization):
         data['users'].append({
             'username': profile.user.username,
             'email': profile.user.email,
-            'is_staff': profile.user.is_staff,
+            'is_org_admin': profile.user.has_perm('accounts.can_manage_organization'),
             'can_create_cycles_for_others': profile.can_create_cycles_for_others,
             'created_at': profile.created_at.isoformat(),
         })
@@ -135,11 +135,10 @@ def delete_user_account(user):
         org = user.profile.organization
 
         # Check if this is the last admin user in the organization
-        admin_count = UserProfile.objects.for_organization(org).filter(
-            user__is_staff=True
-        ).count()
+        admin_profiles = UserProfile.objects.for_organization(org).select_related('user')
+        admin_count = sum(1 for p in admin_profiles if p.user.has_perm('accounts.can_manage_organization'))
 
-        if admin_count == 1 and user.is_staff:
+        if admin_count == 1 and user.has_perm('accounts.can_manage_organization'):
             raise ValueError("Cannot delete the last admin user. Delete the organization instead.")
 
     # Delete user (cascades to profile, tokens, etc.)

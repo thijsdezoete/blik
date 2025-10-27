@@ -108,6 +108,10 @@ def team_list(request):
         organization=org
     ).select_related('user').order_by('-user__date_joined')
 
+    # Add permission data as dynamic attribute
+    for user_profile in users:
+        user_profile.is_org_admin = user_profile.user.has_perm('accounts.can_manage_organization')
+
     # Get pending invitations
     invitations = OrganizationInvitation.objects.filter(
         organization=org,
@@ -166,11 +170,10 @@ def update_user_permissions(request):
             return redirect('team_list')
 
         # Check if this would be the last admin
-        if target_user.is_staff and role == 'member':
-            admin_count = UserProfile.objects.filter(
-                organization=org,
-                user__is_staff=True
-            ).count()
+        if target_user.has_perm('accounts.can_manage_organization') and role == 'member':
+            # Count users with organization admin permission
+            admin_profiles = UserProfile.objects.filter(organization=org).select_related('user')
+            admin_count = sum(1 for p in admin_profiles if p.user.has_perm('accounts.can_manage_organization'))
 
             if admin_count <= 1:
                 messages.error(request, 'Cannot demote the last organization administrator.')
@@ -674,7 +677,7 @@ def review_cycle_create(request):
     context = {
         'reviewees': reviewees,
         'questionnaires': questionnaires,
-        'can_create_for_others': request.user.is_staff or (hasattr(request.user, 'profile') and request.user.profile.can_create_cycles_for_others),
+        'can_create_for_others': hasattr(request.user, 'profile') and request.user.profile.can_create_cycles_for_others,
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)
@@ -928,6 +931,36 @@ def send_reminder(request, cycle_id):
 
 
 @login_required
+@require_POST
+def send_report_email(request, cycle_id):
+    """Send report notification email to reviewee"""
+    from reports.services import send_report_ready_notification
+
+    cycle = get_cycle_or_404(cycle_id, request.organization)
+
+    # Check if report exists
+    try:
+        report = Report.objects.get(cycle=cycle)
+    except Report.DoesNotExist:
+        messages.error(request, 'No report found for this cycle. Please generate the report first.')
+        return redirect('review_cycle_detail', cycle_id=cycle.id)
+
+    # Send notification email
+    email_stats = send_report_ready_notification(report, request)
+
+    if email_stats['sent'] > 0:
+        messages.success(request, f'Report email sent to {cycle.reviewee.name} at {cycle.reviewee.email}.')
+    else:
+        if email_stats['errors']:
+            for error in email_stats['errors']:
+                messages.error(request, f'Failed to send email: {error}')
+        else:
+            messages.error(request, 'Failed to send email.')
+
+    return redirect('review_cycle_detail', cycle_id=cycle.id)
+
+
+@login_required
 def settings_view(request):
     """Organization and SMTP settings page"""
     # Use the organization from the middleware (set based on user's profile)
@@ -990,14 +1023,13 @@ def settings_view(request):
 
     print(f"DEBUG: Passing subscription to template: {subscription}")
 
-    # Check if current user is staff (can delete org)
-    is_org_admin = request.user.is_staff
+    # Check if current user has organization admin permission
+    is_org_admin = request.user.has_perm('accounts.can_manage_organization')
 
     # Count total admin users
     from accounts.models import UserProfile
-    admin_count = UserProfile.objects.for_organization(organization).filter(
-        user__is_staff=True
-    ).count()
+    admin_profiles = UserProfile.objects.for_organization(organization).select_related('user')
+    admin_count = sum(1 for p in admin_profiles if p.user.has_perm('accounts.can_manage_organization'))
 
     context = {
         'organization': organization,

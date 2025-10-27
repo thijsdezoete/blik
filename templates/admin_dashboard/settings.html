@@ -6,276 +6,308 @@
 <div class="page-header">
     <div>
         <h1>Settings</h1>
-        <p class="page-description">Configure organization and email settings</p>
+        <p class="page-description">Organization configuration and preferences</p>
     </div>
 </div>
+
+{% if not perms.accounts.can_manage_organization %}
+<div class="alert alert-info" style="margin-bottom: 2rem;">
+    <strong>View-only mode:</strong> Only organization administrators can modify these settings.
+</div>
+{% endif %}
 
 <form method="post" action="{% url 'settings' %}">
     {% csrf_token %}
 
-    <div class="card mb-2">
-        <div class="card-header">
-            <h2 class="card-title">Organization Details</h2>
-        </div>
-        <div class="card-body">
-            {% if not perms.accounts.can_manage_organization %}
-            <div class="alert alert-info" style="margin-bottom: 1rem;">
-                <p style="margin: 0; font-size: 14px;">
-                    Only organization administrators can modify these settings.
-                </p>
-            </div>
-            {% endif %}
-            <div class="form-group">
-                <label class="form-label" for="name">Organization Name</label>
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    class="form-control"
-                    value="{{ organization.name }}"
-                    {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
-                    required
-                >
+    <!-- Two Column Layout for Desktop -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+
+        <!-- Left Column -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+            <!-- Organization Details -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Organization</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-control"
+                            value="{{ organization.name }}"
+                            {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="email">Contact Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-control"
+                            value="{{ organization.email }}"
+                            {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                            required
+                        >
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="email">Contact Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    class="form-control"
-                    value="{{ organization.email }}"
-                    {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
-                    required
-                >
-            </div>
-        </div>
-    </div>
-
-    <div class="card mb-2">
-        <div class="card-header">
-            <h2 class="card-title">Report Settings</h2>
-        </div>
-        <div class="card-body">
-            <div class="form-group">
-                <label class="form-label" for="min_responses_for_anonymity">Minimum Responses for Anonymity</label>
-                <input
-                    type="number"
-                    id="min_responses_for_anonymity"
-                    name="min_responses_for_anonymity"
-                    class="form-control"
-                    value="{{ organization.min_responses_for_anonymity }}"
-                    min="1"
-                    max="10"
-                    required
-                >
-                <small class="help-text">Minimum number of responses required to display results (for anonymity protection). Set to 1 for small teams, 3+ for larger teams. Self-assessments are always shown.</small>
-            </div>
-        </div>
-    </div>
-
-    {% if subscription %}
-    <div class="card mb-2">
-        <div class="card-header">
-            <h2 class="card-title">Subscription & Billing</h2>
-        </div>
-        <div class="card-body">
-            <div class="billing-info" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                <div>
-                    <label class="form-label">Plan</label>
-                    <p style="margin: 0; font-weight: 600;">
-                        {{ subscription.plan.name }}
-                        <span style="color: var(--text-secondary); font-weight: 400;">(€{{ subscription.plan.price_monthly }}/month)</span>
-                    </p>
+            <!-- Report Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Report Settings</h2>
                 </div>
-                <div>
-                    <label class="form-label">Status</label>
-                    <p style="margin: 0;">
-                        {% if subscription.status == 'active' %}
-                            <span class="badge" style="background: #059669; color: white;">Active</span>
-                        {% elif subscription.status == 'trialing' %}
-                            <span class="badge" style="background: #0ea5e9; color: white;">Trial</span>
-                        {% elif subscription.status == 'past_due' %}
-                            <span class="badge" style="background: #f59e0b; color: white;">Past Due</span>
-                        {% elif subscription.status == 'canceled' %}
-                            <span class="badge" style="background: #dc2626; color: white;">Canceled</span>
-                        {% else %}
-                            <span class="badge" style="background: #6b7280; color: white;">{{ subscription.status|title }}</span>
-                        {% endif %}
-                    </p>
+                <div class="card-body">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="min_responses_for_anonymity">Minimum Responses for Anonymity</label>
+                        <input
+                            type="number"
+                            id="min_responses_for_anonymity"
+                            name="min_responses_for_anonymity"
+                            class="form-control"
+                            value="{{ organization.min_responses_for_anonymity }}"
+                            min="1"
+                            max="10"
+                            {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                            required
+                        >
+                        <small class="help-text">Minimum responses required to display results. Set to 1 for small teams, 3+ for larger teams. Self-assessments always shown.</small>
+                    </div>
                 </div>
-                {% if subscription.trial_end %}
-                <div>
-                    <label class="form-label">Trial Ends</label>
-                    <p style="margin: 0;">{{ subscription.trial_end|date:"F d, Y" }}</p>
-                </div>
-                {% endif %}
-                <div>
-                    <label class="form-label">Current Period</label>
-                    <p style="margin: 0;">{{ subscription.current_period_start|date:"M d, Y" }} - {{ subscription.current_period_end|date:"M d, Y" }}</p>
-                </div>
-                <div>
-                    <label class="form-label">Max Employees</label>
-                    <p style="margin: 0;">{{ subscription.plan.max_employees }}</p>
-                </div>
-            </div>
-            {% if subscription.cancel_at_period_end %}
-            <div style="margin-top: 1rem; padding: 12px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; color: #991b1b;">
-                <strong>⚠️ Subscription Canceling:</strong> Your subscription will end on {{ subscription.current_period_end|date:"F d, Y" }}
-            </div>
-            {% endif %}
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                <a href="{% url 'subscriptions:billing_portal' %}" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                    Manage Billing
-                </a>
-                <small style="display: block; margin-top: 8px; color: var(--text-secondary);">
-                    Manage your payment method, view invoices, and update billing details
-                </small>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="card mb-2">
-        <div class="card-header">
-            <h2 class="card-title">User Registration Settings</h2>
-        </div>
-        <div class="card-body">
-            <div class="form-group">
-                <div class="form-check">
-                    <input
-                        type="checkbox"
-                        id="allow_registration"
-                        name="allow_registration"
-                        class="form-check-input"
-                        {% if organization.allow_registration %}checked{% endif %}
-                    >
-                    <label class="form-label" for="allow_registration" style="display: inline; font-weight: normal;">
-                        Allow user registration
-                    </label>
-                </div>
-                <small class="help-text">When enabled, new users can register at /accounts/register/</small>
             </div>
 
-            <div class="form-group">
-                <div class="form-check">
-                    <input
-                        type="checkbox"
-                        id="default_users_can_create_cycles"
-                        name="default_users_can_create_cycles"
-                        class="form-check-input"
-                        {% if organization.default_users_can_create_cycles %}checked{% endif %}
-                    >
-                    <label class="form-label" for="default_users_can_create_cycles" style="display: inline; font-weight: normal;">
-                        New users can create cycles for others
-                    </label>
+            <!-- User Registration Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">User Registration</h2>
                 </div>
-                <small class="help-text">If disabled, new users can only create feedback cycles for themselves</small>
-            </div>
-        </div>
-    </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="allow_registration"
+                                name="allow_registration"
+                                class="form-check-input"
+                                {% if organization.allow_registration %}checked{% endif %}
+                                {% if not perms.accounts.can_manage_organization %}disabled{% endif %}
+                            >
+                            <label class="form-label" for="allow_registration" style="display: inline; font-weight: normal;">
+                                Allow user registration
+                            </label>
+                        </div>
+                        <small class="help-text">When enabled, new users can register at /accounts/register/</small>
+                    </div>
 
-    <div class="card mb-2">
-        <div class="card-header">
-            <h2 class="card-title">Email (SMTP) Settings</h2>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="default_users_can_create_cycles"
+                                name="default_users_can_create_cycles"
+                                class="form-check-input"
+                                {% if organization.default_users_can_create_cycles %}checked{% endif %}
+                                {% if not perms.accounts.can_manage_organization %}disabled{% endif %}
+                            >
+                            <label class="form-label" for="default_users_can_create_cycles" style="display: inline; font-weight: normal;">
+                                New users can create cycles for others
+                            </label>
+                        </div>
+                        <small class="help-text">If disabled, new users can only create cycles for themselves</small>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="card-body">
+
+        <!-- Right Column -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
             {% if subscription %}
-            <div class="alert alert-info" style="margin-bottom: 1.5rem;">
-                <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 16px; color: var(--text-primary);">✨ Using Blik's Email Service?</h3>
-                <p style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9;">
-                    As a SaaS customer, you can use Blik's managed email service instead of configuring your own SMTP.
-                    Simply leave all fields below empty to use our service.
-                </p>
-                <small style="opacity: 0.8;">To use your own SMTP server, fill in the fields below.</small>
+            <!-- Subscription & Billing -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Subscription & Billing</h2>
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <label class="form-label" style="margin-bottom: 0.25rem;">Plan</label>
+                                <p style="margin: 0; font-weight: 600; font-size: 1.125rem;">
+                                    {{ subscription.plan.name }}
+                                </p>
+                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                                    €{{ subscription.plan.price_monthly }}/month
+                                </p>
+                            </div>
+                            <div>
+                                {% if subscription.status == 'active' %}
+                                    <span class="badge" style="background: #059669; color: white;">Active</span>
+                                {% elif subscription.status == 'trialing' %}
+                                    <span class="badge" style="background: #0ea5e9; color: white;">Trial</span>
+                                {% elif subscription.status == 'past_due' %}
+                                    <span class="badge" style="background: #f59e0b; color: white;">Past Due</span>
+                                {% elif subscription.status == 'canceled' %}
+                                    <span class="badge" style="background: #dc2626; color: white;">Canceled</span>
+                                {% else %}
+                                    <span class="badge" style="background: #6b7280; color: white;">{{ subscription.status|title }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                            {% if subscription.trial_end %}
+                            <div>
+                                <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">Trial Ends</label>
+                                <p style="margin: 0; font-size: 0.875rem;">{{ subscription.trial_end|date:"M d, Y" }}</p>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">Max Employees</label>
+                                <p style="margin: 0; font-size: 0.875rem;">{{ subscription.plan.max_employees }}</p>
+                            </div>
+                        </div>
+
+                        <div style="padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                            <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">Current Period</label>
+                            <p style="margin: 0; font-size: 0.875rem;">{{ subscription.current_period_start|date:"M d, Y" }} - {{ subscription.current_period_end|date:"M d, Y" }}</p>
+                        </div>
+                    </div>
+
+                    {% if subscription.cancel_at_period_end %}
+                    <div style="padding: 12px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; color: #991b1b; font-size: 0.875rem; margin-bottom: 1rem;">
+                        <strong>⚠️ Subscription Canceling:</strong> Ends {{ subscription.current_period_end|date:"M d, Y" }}
+                    </div>
+                    {% endif %}
+
+                    <a href="{% url 'subscriptions:billing_portal' %}" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        Manage Billing
+                    </a>
+                </div>
             </div>
             {% endif %}
 
-            <div class="form-group">
-                <label class="form-label" for="smtp_host">SMTP Host</label>
-                <input
-                    type="text"
-                    id="smtp_host"
-                    name="smtp_host"
-                    class="form-control"
-                    value="{{ organization.smtp_host }}"
-                    placeholder="{% if subscription %}Leave empty for Blik's email service{% else %}smtp.gmail.com{% endif %}"
-                >
-                <small class="help-text">{% if subscription %}Leave empty to use Blik's managed email service, or enter your SMTP server hostname{% else %}Your SMTP server hostname{% endif %}</small>
-            </div>
+            <!-- Email Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Email (SMTP) Settings</h2>
+                </div>
+                <div class="card-body">
+                    {% if subscription %}
+                    <div class="alert alert-info" style="margin-bottom: 1rem; padding: 12px; font-size: 0.875rem;">
+                        <strong>✨ Using Blik's Email Service?</strong>
+                        <p style="margin: 8px 0 0 0;">
+                            Leave all fields empty to use our managed email service. Fill in to use your own SMTP.
+                        </p>
+                    </div>
+                    {% endif %}
 
-            <div class="form-group">
-                <label class="form-label" for="smtp_port">SMTP Port</label>
-                <input
-                    type="number"
-                    id="smtp_port"
-                    name="smtp_port"
-                    class="form-control"
-                    value="{{ organization.smtp_port|default:587 }}"
-                    placeholder="587"
-                >
-                <small class="help-text">Common ports: 587 (TLS), 465 (SSL), 25 (Plain)</small>
-            </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="smtp_host">Host</label>
+                            <input
+                                type="text"
+                                id="smtp_host"
+                                name="smtp_host"
+                                class="form-control"
+                                value="{{ organization.smtp_host }}"
+                                {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                                placeholder="{% if subscription %}Optional{% else %}smtp.gmail.com{% endif %}"
+                            >
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="smtp_port">Port</label>
+                            <input
+                                type="number"
+                                id="smtp_port"
+                                name="smtp_port"
+                                class="form-control"
+                                value="{{ organization.smtp_port|default:587 }}"
+                                {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                                placeholder="587"
+                            >
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label class="form-label" for="smtp_username">SMTP Username</label>
-                <input
-                    type="text"
-                    id="smtp_username"
-                    name="smtp_username"
-                    class="form-control"
-                    value="{{ organization.smtp_username }}"
-                    placeholder="your-email@gmail.com"
-                >
-                <small class="help-text">Username for SMTP authentication (usually your email)</small>
-            </div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label" for="smtp_username">Username</label>
+                        <input
+                            type="text"
+                            id="smtp_username"
+                            name="smtp_username"
+                            class="form-control"
+                            value="{{ organization.smtp_username }}"
+                            {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                            placeholder="your-email@gmail.com"
+                        >
+                    </div>
 
-            <div class="form-group">
-                <label class="form-label" for="smtp_password">SMTP Password</label>
-                <input
-                    type="password"
-                    id="smtp_password"
-                    name="smtp_password"
-                    class="form-control"
-                    placeholder="Leave blank to keep current password"
-                >
-                <small class="help-text">Password or app-specific password for SMTP (leave blank to keep current)</small>
-            </div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label" for="smtp_password">Password</label>
+                        <input
+                            type="password"
+                            id="smtp_password"
+                            name="smtp_password"
+                            class="form-control"
+                            {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                            placeholder="Leave blank to keep current"
+                        >
+                    </div>
 
-            <div class="form-group">
-                <div class="form-check">
-                    <input
-                        type="checkbox"
-                        id="smtp_use_tls"
-                        name="smtp_use_tls"
-                        class="form-check-input"
-                        {% if organization.smtp_use_tls %}checked{% endif %}
-                    >
-                    <label class="form-label" for="smtp_use_tls" style="display: inline; font-weight: normal;">
-                        Use TLS encryption (recommended for port 587)
-                    </label>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label class="form-label" for="from_email">From Address</label>
+                        <input
+                            type="email"
+                            id="from_email"
+                            name="from_email"
+                            class="form-control"
+                            value="{{ organization.from_email }}"
+                            {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                            placeholder="noreply@example.com"
+                        >
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="smtp_use_tls"
+                                name="smtp_use_tls"
+                                class="form-check-input"
+                                {% if organization.smtp_use_tls %}checked{% endif %}
+                                {% if not perms.accounts.can_manage_organization %}disabled{% endif %}
+                            >
+                            <label class="form-label" for="smtp_use_tls" style="display: inline; font-weight: normal; font-size: 0.875rem;">
+                                Use TLS encryption (port 587)
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="from_email">From Email Address</label>
-                <input
-                    type="email"
-                    id="from_email"
-                    name="from_email"
-                    class="form-control"
-                    value="{{ organization.from_email }}"
-                    placeholder="noreply@example.com"
-                >
-                <small class="help-text">Email address that appears as sender</small>
-            </div>
         </div>
     </div>
+
+    <!-- Mobile: Stack all cards -->
+    <style>
+        @media (max-width: 768px) {
+            form > div:first-of-type {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
 
     {% if perms.accounts.can_manage_organization %}
-    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+    <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color);">
         <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
         <button type="submit" class="btn btn-primary">Save Settings</button>
     </div>
@@ -283,72 +315,73 @@
 </form>
 
 <!-- Account Management Section -->
-<div class="card mb-2" style="margin-top: 2rem;">
+<div class="card" style="margin-top: 2rem;">
     <div class="card-header">
         <h2 class="card-title">Account & Data Management</h2>
     </div>
     <div class="card-body">
-        <div style="display: grid; gap: 1.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+
             <!-- Export Data -->
             <div>
-                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px;">Export Organization Data</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
-                    Download all your organization's data in JSON format (GDPR compliant).
+                <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px;">Export Organization Data</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                    Download all data in JSON format (GDPR compliant).
                 </p>
-                <a href="{% url 'account:export_data' %}" class="btn btn-secondary">
-                    Download Data Export
+                <a href="{% url 'account:export_data' %}" class="btn btn-secondary btn-sm">
+                    Download Export
                 </a>
             </div>
 
             {% if subscription %}
             <!-- Subscription Management -->
-            <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px;">Subscription Management</h3>
+            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+                <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px;">Subscription</h3>
                 {% if subscription.cancel_at_period_end %}
-                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
-                        Your subscription is scheduled to cancel on {{ subscription.current_period_end|date:"F d, Y" }}.
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                        Scheduled to cancel on {{ subscription.current_period_end|date:"M d, Y" }}.
                     </p>
                     <form method="post" action="{% url 'account:reactivate_subscription' %}" style="display: inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Reactivate Subscription</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Reactivate</button>
                     </form>
                 {% else %}
-                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
-                        Cancel your subscription. You'll retain access until {{ subscription.current_period_end|date:"F d, Y" }}.
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                        Cancel subscription. Access until {{ subscription.current_period_end|date:"M d, Y" }}.
                     </p>
                     <form method="post" action="{% url 'account:cancel_subscription' %}"
-                          onsubmit="return confirm('Are you sure you want to cancel your subscription? You will retain access until the end of your current billing period.');">
+                          onsubmit="return confirm('Cancel subscription? You\'ll retain access until end of billing period.');">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary">Cancel Subscription</button>
+                        <button type="submit" class="btn btn-secondary btn-sm">Cancel Subscription</button>
                     </form>
                 {% endif %}
             </div>
             {% endif %}
 
             <!-- Delete Account -->
-            <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: #dc2626;">Delete Account</h3>
+            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+                <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px; color: #dc2626;">Delete Account</h3>
                 {% if is_last_admin %}
-                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
-                        You are the last administrator. Please delete the organization instead, or add another admin first.
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                        Last admin. Delete organization or add another admin first.
                     </p>
-                    <button class="btn btn-danger" disabled>Delete My Account</button>
+                    <button class="btn btn-danger btn-sm" disabled>Delete Account</button>
                 {% else %}
-                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
-                        Permanently delete your account. This action cannot be undone.
+                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                        Permanently delete your account. Cannot be undone.
                     </p>
-                    <button type="button" class="btn btn-danger" onclick="showDeleteAccountModal()">Delete My Account</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="showDeleteAccountModal()">Delete Account</button>
                 {% endif %}
             </div>
 
             {% if is_org_admin %}
             <!-- Delete Organization -->
-            <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
-                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: #dc2626;">Delete Organization</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.875rem;">
-                    Permanently delete {{ organization.name }} and all associated data. This action cannot be undone.
+            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+                <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px; color: #dc2626;">Delete Organization</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                    Permanently delete {{ organization.name }} and all data. Cannot be undone.
                 </p>
-                <button type="button" class="btn btn-danger" onclick="showDeleteOrgModal()">Delete Organization</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="showDeleteOrgModal()">Delete Organization</button>
             </div>
             {% endif %}
         </div>
@@ -357,7 +390,7 @@
 
 <!-- Delete Account Modal -->
 <div id="deleteAccountModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
         <h3 style="margin-top: 0; color: #dc2626;">Delete Account</h3>
         <p>This will permanently delete your account. This action cannot be undone.</p>
         <form method="post" action="{% url 'account:delete_account' %}">
@@ -377,7 +410,7 @@
 <!-- Delete Organization Modal -->
 {% if is_org_admin %}
 <div id="deleteOrgModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
         <h3 style="margin-top: 0; color: #dc2626;">Delete Organization</h3>
         <p>This will permanently delete <strong>{{ organization.name }}</strong> and all data including users, reviewees, cycles, and reports. This action cannot be undone.</p>
         <form method="post" action="{% url 'account:delete_organization' %}">

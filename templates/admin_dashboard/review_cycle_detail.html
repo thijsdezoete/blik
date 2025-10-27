@@ -23,8 +23,81 @@
     </div>
 </div>
 
-<!-- Stats Cards -->
-<div class="stats-grid">
+{% if cycle.status == 'completed' %}
+<!-- Report Section (Prominent for completed cycles) -->
+{% if report_exists %}
+<div class="card" style="margin-bottom: 2rem; border: 2px solid var(--success);">
+    <div class="card-header" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white;">
+        <h2 class="card-title" style="color: white; display: flex; align-items: center; gap: 0.5rem;">
+            <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Report Available
+        </h2>
+    </div>
+    <div class="card-body">
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            The 360-degree feedback report for <strong>{{ cycle.reviewee.name }}</strong> has been generated and is ready to view.
+        </p>
+        <div style="display: grid; gap: 1rem;">
+            <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-primary" style="justify-content: center;">
+                <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                View Report (Admin)
+            </a>
+            {% if report.access_token %}
+            <a href="{% url 'reports:reviewee_report' report.access_token %}" class="btn btn-secondary" style="justify-content: center;">
+                <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                View Report (Reviewee View)
+            </a>
+            <form method="post" action="{% url 'send_report_email' cycle.id %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success" style="width: 100%; justify-content: center;">
+                    <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    Send Report to {{ cycle.reviewee.name }}
+                </button>
+            </form>
+            {% endif %}
+            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary" style="justify-content: center;">
+                <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Regenerate Report
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Stats Summary (Compact for completed cycles) -->
+<details style="margin-bottom: 2rem;">
+    <summary style="cursor: pointer; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 0.5rem;">
+        <svg style="width: 16px; height: 16px; transition: transform 0.2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Review Completion Details
+        <span style="color: var(--text-secondary); font-weight: normal; margin-left: auto;">{{ completed_tokens }} of {{ total_tokens }} completed ({{ completion_rate|floatformat:0 }}%)</span>
+    </summary>
+    <div style="padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px;">
+        <div class="stats-grid">
+            <div class="card">
+                <div class="card-body stat-card-content">
+                    <div class="stat-number primary">{{ total_tokens }}</div>
+                    <div class="stat-label">Total Reviewers</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body stat-card-content">
+                    <div class="stat-number success">{{ completed_tokens }}</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body stat-card-content">
+                    <div class="stat-number secondary">{{ completion_rate|floatformat:0 }}%</div>
+                    <div class="stat-label">Completion Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</details>
+
+{% else %}
+<!-- Stats Cards (Prominent for active cycles) -->
+<div class="stats-grid" style="margin-bottom: 2rem;">
     <div class="card">
         <div class="card-body stat-card-content">
             <div class="stat-number primary">{{ total_tokens }}</div>
@@ -53,8 +126,10 @@
         </div>
     </div>
 </div>
+{% endif %}
 
-<!-- Progress Bar -->
+{% if cycle.status == 'active' %}
+<!-- Progress Bar (Active cycles only) -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-body">
         {% if claimed_tokens > 0 %}
@@ -84,7 +159,7 @@
     </div>
 </div>
 
-<!-- Invitation Links -->
+<!-- Invitation Links (Active cycles only) -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <h2 class="card-title">Invitation Links</h2>
@@ -100,7 +175,10 @@
             <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Self Assessment</div>
-                    <code id="invite-self" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}</code>
+                    <a href="{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}" target="_blank" id="invite-self" style="font-size: 0.875rem; color: var(--primary); text-decoration: none; background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto; transition: background 0.2s;">
+                        {{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}
+                        <svg style="display: inline-block; width: 14px; height: 14px; margin-left: 4px; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
                 </div>
                 <button onclick="copyInvitationLink('self')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link
@@ -146,13 +224,24 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <!-- Reviewer Tokens by Category -->
+{% if cycle.status == 'completed' %}
+<details style="margin-bottom: 2rem;">
+    <summary style="cursor: pointer; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 0.5rem;">
+        <svg style="width: 16px; height: 16px; transition: transform 0.2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Reviewer Tokens
+        <span style="color: var(--text-secondary); font-weight: normal; margin-left: auto;">{{ total_tokens }} tokens</span>
+    </summary>
+    <div style="padding: 1.5rem; background: var(--bg-card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px;">
+{% else %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <h2 class="card-title">Reviewer Tokens</h2>
     </div>
     <div class="card-body">
+{% endif %}
         {% if tokens_by_category %}
         <div style="display: grid; gap: 2rem;">
             {% for category, tokens in tokens_by_category.items %}
@@ -212,10 +301,16 @@
         {% else %}
         <p style="color: #94a3b8; text-align: center; padding: 2rem 0;">No reviewer tokens created yet.</p>
         {% endif %}
+{% if cycle.status == 'completed' %}
+    </div>
+</details>
+{% else %}
     </div>
 </div>
+{% endif %}
 
 <!-- Actions -->
+{% if cycle.status == 'active' %}
 <div class="card">
     <div class="card-header">
         <h2 class="card-title">Actions</h2>
@@ -224,43 +319,57 @@
         <div class="action-grid">
             <a href="{% url 'manage_invitations' cycle.id %}" class="btn btn-primary">Manage Invitations</a>
 
-            {% if report_exists %}
-            {% if user.is_staff %}
-            <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-primary">View Report (Staff)</a>
-            {% endif %}
-            {% if report.access_token %}
-            <a href="{% url 'reports:reviewee_report' report.access_token %}" class="btn btn-primary">View Report (Reviewee)</a>
-            {% endif %}
-            {% if user.is_staff %}
-            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary">Regenerate Report</a>
-            {% endif %}
-            {% elif user.is_staff %}
-            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-primary">Generate Report</a>
-            {% endif %}
-
-            {% if cycle.status == 'active' and total_tokens|add:"-"|add:completed_tokens > 0 %}
+            {% if total_tokens|add:"-"|add:completed_tokens > 0 %}
             <a href="{% url 'send_reminder_form' cycle.id %}" class="btn btn-warning" style="color: white;">
                 Send Reminders ({{ total_tokens|add:"-"|add:completed_tokens }})
             </a>
             {% endif %}
 
-            {% if user.is_staff %}
+            {% if report_exists %}
+            <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-secondary">View Report (Admin)</a>
+            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary">Regenerate Report</a>
+            {% else %}
+            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary">Generate Report</a>
+            {% endif %}
+
+            {% if user.is_superuser %}
             <a href="/admin/reviews/reviewcycle/{{ cycle.id }}/change/" class="btn btn-secondary">
                 Edit in Django Admin
             </a>
             {% endif %}
 
-            {% if cycle.status == 'active' and user.is_staff %}
             <form method="post" action="{% url 'close_cycle' cycle.id %}" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-secondary" style="width: 100%;">
                     Close Cycle & Generate Report
                 </button>
             </form>
-            {% endif %}
         </div>
     </div>
 </div>
+{% else %}
+<!-- Additional Actions for Completed Cycles -->
+{% if user.is_superuser %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Additional Actions</h2>
+    </div>
+    <div class="card-body">
+        <div class="action-grid">
+            <a href="/admin/reviews/reviewcycle/{{ cycle.id }}/change/" class="btn btn-secondary">
+                Edit in Django Admin
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<style>
+details[open] > summary svg {
+    transform: rotate(90deg);
+}
+</style>
 
 <script>
 function copyInvitationLink(category) {

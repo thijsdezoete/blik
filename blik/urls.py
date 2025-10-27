@@ -41,6 +41,7 @@ urlpatterns = [
     path('dashboard/cycles/<int:cycle_id>/close/', admin_views.close_cycle, name='close_cycle'),
     path('dashboard/cycles/<int:cycle_id>/send-reminder/', admin_views.send_reminder_form, name='send_reminder_form'),
     path('dashboard/cycles/<int:cycle_id>/send-reminder/send/', admin_views.send_reminder, name='send_reminder'),
+    path('dashboard/cycles/<int:cycle_id>/send-report-email/', admin_views.send_report_email, name='send_report_email'),
 
     # Other apps
     path('setup/', include('core.urls')),

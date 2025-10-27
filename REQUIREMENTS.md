@@ -13,11 +13,10 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 
 ## Technical Stack
 
-- **Backend**: Django 5.x
+- **Backend**: Django 5.x with multi-organization support
 - **Database**: PostgreSQL 15
-- **Frontend**: Django templates + shadcn/ui components
+- **Frontend**: Django templates + modern CSS
 - **Deployment**: Docker + Docker Compose (single command installation)
-- **Task Queue**: Deferred - not needed for MVP
 
 ## MVP Feature Set
 
@@ -32,7 +31,6 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 - No manual database migrations or complex configuration files
 
 **Out of scope:**
-- Multi-tenant support
 - LDAP/SSO integration
 - Advanced configuration options
 
@@ -102,7 +100,6 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 - Manual review cycle management
 
 **Out of scope:**
-- Bulk operations
 - Template review cycles
 - Scheduled/recurring reviews
 - Advanced workflow states
@@ -115,7 +112,6 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 - Token provides access to feedback form only
 - No tracking of reviewer identity
 - Tokens do not expire (keep it simple for MVP)
-- Rate limiting on token validation (prevent brute force)
 
 **Security:**
 - Admin interface CANNOT see which token belongs to which reviewer
@@ -148,7 +144,6 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 - Overall summary scores by competency area
 - Breakdown by reviewer category (peer, manager, direct report)
 - Self-assessment vs others comparison
-- Distribution visualization (simple bar/radar charts)
 - Anonymous text comments grouped by category
 - Clear indication when data is suppressed due to low response count
 
@@ -158,10 +153,9 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 - PDF export (nice-to-have, can be post-MVP)
 
 **Out of scope for MVP:**
-- Advanced analytics
+- Charts and visualizations
 - Historical comparisons
 - Benchmarking against organization averages
-- Custom report templates
 
 ### 8. Email System
 
@@ -227,275 +221,64 @@ Build a minimal but functional 360-degree feedback system that can be deployed q
 4. Reviewer feedback form (token-based access)
 5. Reviewee report view
 
-## Data Models (High-Level)
+## Next Development Phase
 
-### Core Models
-
-```
-Organization
-├── name
-├── email settings
-└── created_at
-
-Reviewee
-├── name
-├── email
-├── department (optional)
-├── organization FK
-└── created_at
-
-Questionnaire
-├── name
-├── description
-├── is_default
-└── sections[]
-
-QuestionSection
-├── questionnaire FK
-├── title
-└── order
-
-Question
-├── section FK
-├── question_text
-├── question_type (rating, text, multiple_choice)
-├── config (JSON: scale, choices, etc.)
-├── required
-└── order
-
-ReviewCycle
-├── reviewee FK
-├── questionnaire FK
-├── created_by (admin)
-├── status (active, completed)
-└── created_at
-
-ReviewerToken
-├── cycle FK
-├── token (UUID)
-├── category (self, peer, manager, direct_report)
-├── completed_at
-└── created_at
-
-Response
-├── cycle FK
-├── question FK
-├── token FK
-├── category (denormalized for reporting)
-├── answer_data (JSON)
-└── created_at
-
-Report
-├── cycle FK
-├── generated_at
-├── report_data (JSON: aggregated results)
-└── available (boolean)
-```
-
-## Estimated Timeline (Solo Developer)
-
-**Week 1: Foundation**
-- Day 1-2: Django project setup, Docker configuration [COMPLETED]
-  - Django 5.2.7 initialized with uv package manager
-  - Docker and Docker Compose configured
-  - PostgreSQL 15 database setup
-  - Environment variable system
-  - Six Django apps created (core, accounts, questionnaires, reviews, reports, notifications)
-  - Static file serving with Whitenoise
-  - System running at http://localhost:8000
-- Day 3: Core models and migrations [COMPLETED]
-  - Organization model with email settings
-  - Reviewee model with organization FK
-  - Questionnaire, QuestionSection, Question models with JSON config
-  - ReviewCycle, ReviewerToken (UUID-based), Response models
-  - Report model with JSON aggregation storage
-  - All migrations created and applied
-- Day 4-5: Django admin configuration, basic views [COMPLETED]
-  - All models registered in Django admin
-  - Inline editing for related models
-  - List filters and search configured
-  - Default 360 questionnaire fixture created (35 questions, 10 sections)
-  - Dreyfus skill model integrated into technical expertise questions
-
-**Week 2: Core Features**
-- Day 6-7: Anonymous token system [COMPLETED]
-  - Token-based feedback form view with UUID validation
-  - Multi-section questionnaire rendering
-  - Rating and text question types
-  - AJAX form submission with validation
-  - Response persistence in transaction
-  - Token completion tracking
-  - Email invitation templates (text + HTML)
-  - Mailpit integration for development
-- Day 8-9: Questionnaire rendering and response collection [COMPLETED]
-- Day 10: Default questionnaire setup [COMPLETED]
-
-**Week 3: Integration & Polish**
-- Day 11-12: Report generation and aggregation logic [COMPLETED]
-  - Report generation service with anonymity thresholds (3+ responses)
-  - Aggregation by category (self, peer, manager, direct_report)
-  - Average calculation for rating questions
-  - Text response grouping
-  - Staff-only report viewing with visualizations
-  - Progress bars and category badges
-  - "View Report" link in Django admin
-- Day 13: Email system integration [COMPLETED]
-  - Email invitation templates (HTML + text)
-  - Mailpit integration for development
-  - Management command for sending invitations
-- Day 14-15: UI polish, styling, and admin dashboard [COMPLETED]
-  - Multi-step feedback form with progress indicator
-  - Simplified questionnaire (12 questions, 4 sections)
-  - Clean, professional styling with gradients
-  - Mobile-responsive design
-  - Smooth animations and transitions
-  - Admin dashboard with comprehensive features
-  - Reviewee management interface
-  - Review cycle creation and tracking
-  - Send reminders functionality
-  - Widescreen responsive layout (two-column grid)
-  - Active and completed cycles with report links
-
-**Total: 15 working days for functional MVP**
-
-## Success Criteria
-
-MVP is successful if:
-1. Deploys with `docker-compose up` in under 5 minutes ✓
-2. First-run setup takes under 10 minutes ✓
-3. Admin can create a review cycle in under 5 minutes ✓
-4. Reviewers can complete feedback form in 10-15 minutes ✓
-5. Reports display correctly with anonymity preserved ✓
-6. Zero manual database or configuration file editing required ✓
-7. Professional, responsive UI across all device sizes ✓
-8. Clean codebase following best practices ✓
-
-**All success criteria met. MVP is production-ready.**
-
-## Current Status (100% Complete - Day 15/15)
-
-### Completed Features
-- Docker single-command deployment ✓
-- All data models with migrations ✓
-- Django admin fully configured ✓
-- Anonymous token-based feedback system ✓
-- Multi-step feedback form (4 sections) ✓
-- Simplified questionnaire (12 questions) ✓
-- Email invitation system ✓
-- Report generation with anonymity thresholds ✓
-- Report viewing interface ✓
-- Professional UI/UX ✓
-- First-run setup wizard ✓
-- Admin dashboard with stats and quick actions ✓
-- Reviewee management (add/edit/list) ✓
-- Questionnaire preview interface ✓
-- Review cycle creation and management ✓
-- Send reminders functionality ✓
-- Dedicated reviewee report viewing page ✓
-- Responsive design (mobile/tablet/desktop) ✓
-- Two-column dashboard layout for widescreen ✓
-- Active and completed cycles tracking ✓
-- Direct report links from dashboard ✓
-- Centralized shadcn-based CSS system ✓
-- Auto-load default questionnaire in setup ✓
-- Optional test data generation ✓
-
-### Design System Compliance (All Fixed)
-- Absolute mode: zero noise, maximum signal ✓
-- No emojis or decorative elements ✓
-- Centralized CSS with utility classes in static/css/main.css ✓
-- All templates use main.css ✓
-- No JavaScript alerts (toast notifications) ✓
-- Verified URL patterns ✓
-- Mobile-first responsive design ✓
-
-### Enhanced Reporting (Completed)
-- Advanced analytics and insights generation ✓
-- Perception gap detection (self vs others) ✓
-- Dreyfus skill level profiling ✓
-- Strength/development area identification ✓
-- Section-level performance summaries ✓
-- Overall sentiment scoring ✓
-- Visual insight cards with priority indicators ✓
-
-### Security Hardening (Completed)
-- Secure UUID-based access tokens for reports ✓
-- Non-guessable report URLs (token-based instead of incremental IDs) ✓
-- Access token migration without data loss ✓
-- Staff-only admin report views with authentication ✓
-- Public reviewee views secured by unique UUID tokens ✓
-
-### Optional Post-MVP Enhancements
-- Questionnaire creation/editing interface (can use Django admin)
-- PDF export for reports
-- User management interface for admin users (can use Django admin)
-- Enhanced email templates
-- Additional testing and edge case handling
-
-## Post-MVP Feature Roadmap
-
-### Phase 1: Workflow Improvements (Completed)
+### 1. Enhanced Reporting & Visualization
 **Priority: High**
 
-1. **Bulk Review Cycle Creation** ✓
-   - Create review cycles for all reviewees at once ✓
-   - Select questionnaire template to use for all ✓
-   - Batch operations for efficiency ✓
-   - Radio button toggle between single/bulk mode ✓
-   - Success message shows count of created cycles ✓
+- **Charts and Graphs**
+  - Score visualization with bar charts, radar charts, or other meaningful visualizations
+  - Visual comparison of self vs others ratings
+  - Section-level performance summaries with graphics
 
-2. **Email-Based Reviewer Invitations** ✓
-   - Admin enters reviewer email addresses per category ✓
-   - System generates and assigns anonymous tokens ✓
-   - Random token assignment when multiple reviewers with same role ✓
-   - No reviewer identity linkage in database (email only for sending) ✓
-   - Invitation emails sent via dedicated management interface ✓
-   - Token URL included in invitation ✓
-   - reviewer_email and invitation_sent_at fields added to ReviewerToken ✓
+- **Better Data Presentation**
+  - Improve readability and usefulness of reports
+  - Clear visual hierarchy for feedback data
+  - Export-friendly formatting
 
-3. **Smart Token Assignment** ✓
-   - Random shuffle of tokens before email assignment ✓
-   - Maintain anonymity guarantees ✓
-   - Prevent token-to-identity mapping ✓
-   - Separate email assignment from response storage ✓
-   - Manage invitations interface at /dashboard/cycles/<id>/invitations/ ✓
+### 2. Historical Analysis & Trends
+**Priority: High**
 
-4. **Token Claiming System** ✓
-   - Public invitation links: /feedback/claim/<cycle_id>/<category>/ ✓
-   - Randomly assigns available token from pool ✓
-   - localStorage saves claimed token for return visits ✓
-   - Reviewers can bookmark/save their specific feedback URL ✓
-   - Progress automatically saved (existing Response records) ✓
-   - No email required - fully anonymous ✓
-   - Admin dashboard shows copyable invitation links per category ✓
+- **Multi-Cycle Reports**
+  - Show progress over time across multiple review cycles
+  - Compare current vs previous performance
+  - Trend visualization for each competency area
 
-### Phase 2: Historical Analytics (Future)
+- **Growth Tracking**
+  - Identify improvement areas and track progress
+  - Visualize skill development over time
+  - Year-over-year performance comparison
+
+### 3. Extended Question Types
 **Priority: Medium**
 
-4. **Review Cycle Comparisons**
-   - View performance trends over time
-   - Compare current vs previous cycles
-   - Growth/decline indicators by section
-   - Skill progression tracking (Dreyfus model)
-   - Visual trend charts and timelines
-   - Year-over-year comparisons
-   - Identify consistent strengths and improvement areas
+- **Additional Question Formats**
+  - Multi-select questions (choose multiple options)
+  - Matrix/grid questions (rate multiple items on same scale)
+  - Ranking questions
+  - Other specialized question types as needed
 
-5. **Advanced Analytics Dashboard**
-   - Aggregate organization-level insights
-   - Team performance trends
-   - Benchmarking capabilities
-   - Development area patterns
-   - ROI metrics for feedback programs
+### 4. API & Integration Layer
+**Priority: Medium**
 
-### Phase 3: Extended Functionality
-**Priority: Low**
+- **REST API**
+  - Programmatic cycle creation and management
+  - API-based workflow automation
+  - Token generation and invitation management
 
-After Phase 1 & 2 validation, consider:
-- Celery task queue for email sending
-- Automated reminder system with scheduling
-- PDF export functionality for reports
-- Custom competency frameworks
-- API for integrations
-- Multi-language support
-- Mobile app for feedback submission
+- **Webhooks**
+  - External system notifications for cycle events
+  - Integration with HR systems or other platforms
+
+### 5. Security Enhancements
+**Priority: High**
+
+- **Rate Limiting**
+  - Prevent token brute force attacks on feedback endpoints
+  - Rate limiting on public pages and API endpoints
+  - Configurable limits per organization
+
+- **Additional Security Controls**
+  - Enhanced access logging
+  - Security audit trail
+  - IP-based restrictions (optional)

@@ -51,7 +51,7 @@
             {% for category, tokens in tokens_by_category.items %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">{{ category }} ({{ tokens|length }} token{{ tokens|length|pluralize }})</label>
-                {% if category == "Self Assessment" and not user.is_staff %}
+                {% if category == "Self Assessment" and not user.profile.can_create_cycles_for_others %}
                 <input
                     type="text"
                     name="{{ tokens.0.category }}_emails"

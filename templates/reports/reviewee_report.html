@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/reports.css' %}">
 
+    <script src="{% static 'js/chart.min.js' %}"></script>
+    <script src="{% static 'js/report-charts.js' %}"></script>
+
     <script>
         // Theme detection and initialization
         (function() {
@@ -45,6 +48,8 @@
     </button>
 
     <div class="report-container">
+        {{ report.report_data.charts|json_script:"chart-data" }}
+
         <div class="report-header">
             <h1 class="report-title">360 Feedback Report</h1>
             <p class="report-subtitle">{{ cycle.reviewee.name }}</p>
@@ -134,6 +139,30 @@
                 </li>
                 {% endfor %}
             </ul>
+        </div>
+        {% endif %}
+
+        {% if report.report_data.charts.section_scores %}
+        <div class="report-section">
+            <h2>Performance Overview</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Visual comparison of your performance across all competency areas
+            </p>
+
+            <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
+                <canvas id="sectionRadarChart" style="max-height: 500px;"></canvas>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h2>Self vs Others Comparison</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                How your self-assessment compares to others' feedback (sorted by gap size)
+            </p>
+
+            <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
+                <canvas id="gapChart" style="max-height: 400px;"></canvas>
+            </div>
         </div>
         {% endif %}
 
@@ -257,6 +286,22 @@
                 localStorage.setItem('theme', newTheme);
                 updateThemeIcons();
             });
+
+            // Render charts
+            {% if report.report_data.charts.section_scores %}
+            const chartDataElement = document.getElementById('chart-data');
+            const chartData = JSON.parse(chartDataElement.textContent);
+
+            // Render section radar chart
+            if (document.getElementById('sectionRadarChart')) {
+                renderSectionRadarChart('sectionRadarChart', chartData);
+            }
+
+            // Render gap chart
+            if (document.getElementById('gapChart')) {
+                renderGapChart('gapChart', chartData);
+            }
+            {% endif %}
         });
     </script>
 </body>

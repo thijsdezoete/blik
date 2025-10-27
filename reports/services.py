@@ -150,6 +150,85 @@ def _calculate_insights(report_data):
     return insights, section_summary
 
 
+def _calculate_chart_data(report_data, cycle):
+    """
+    Calculate weighted section averages and prepare chart-ready data
+
+    Returns dict with chart data structure:
+    {
+        'section_scores': {section_title: {category: score}},
+        'overall': {category: score}
+    }
+    """
+    from questionnaires.models import Question
+
+    chart_data = {
+        'section_scores': {},
+        'overall': {}
+    }
+
+    # Collect all category scores
+    all_scores_by_category = defaultdict(list)
+
+    for section_id, section_data in report_data.get('by_section', {}).items():
+        section_title = section_data.get('title', '')
+        section_scores = defaultdict(lambda: {'total': 0, 'weight_sum': 0})
+
+        for question_id, question_data in section_data.get('questions', {}).items():
+            # Get question to check chart config
+            try:
+                question = Question.objects.get(id=question_id)
+                chart_weight = question.config.get('chart_weight', 1.0)
+                exclude_from_charts = question.config.get('exclude_from_charts', False)
+
+                # Skip if excluded
+                if exclude_from_charts:
+                    continue
+            except Question.DoesNotExist:
+                chart_weight = 1.0
+
+            # Only process rating questions for charts
+            if question_data.get('question_type') != 'rating':
+                continue
+
+            for category, cat_data in question_data.get('by_category', {}).items():
+                if cat_data.get('insufficient'):
+                    continue
+
+                avg = cat_data.get('avg')
+                if avg is not None:
+                    section_scores[category]['total'] += avg * chart_weight
+                    section_scores[category]['weight_sum'] += chart_weight
+
+        # Calculate weighted averages for this section
+        section_chart_data = {}
+        for category, scores in section_scores.items():
+            if scores['weight_sum'] > 0:
+                weighted_avg = round(scores['total'] / scores['weight_sum'], 2)
+                section_chart_data[category] = weighted_avg
+                all_scores_by_category[category].append(weighted_avg)
+
+        if section_chart_data:
+            chart_data['section_scores'][section_title] = section_chart_data
+
+    # Calculate overall scores
+    for category, scores in all_scores_by_category.items():
+        if scores:
+            chart_data['overall'][category] = round(mean(scores), 2)
+
+    # Calculate "others" average (non-self categories)
+    for section_title, section_scores in chart_data['section_scores'].items():
+        others_scores = [v for k, v in section_scores.items() if k != 'self']
+        if others_scores:
+            section_scores['others_avg'] = round(mean(others_scores), 2)
+
+    others_overall = [v for k, v in chart_data['overall'].items() if k != 'self']
+    if others_overall:
+        chart_data['overall']['others_avg'] = round(mean(others_overall), 2)
+
+    return chart_data
+
+
 def generate_report(cycle):
     """Generate aggregated report for a review cycle"""
 
@@ -253,6 +332,10 @@ def generate_report(cycle):
     insights, section_summary = _calculate_insights(report_data)
     report_data['insights'] = insights
     report_data['section_summary'] = section_summary
+
+    # Generate chart data
+    chart_data = _calculate_chart_data(report_data, cycle)
+    report_data['charts'] = chart_data
 
     # Create or update report
     report, created = Report.objects.update_or_create(

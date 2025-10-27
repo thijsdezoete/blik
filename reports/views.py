@@ -1,13 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from accounts.permissions import can_manage_organization_required
 from reviews.models import ReviewCycle
 from .models import Report
 from .services import generate_report, get_report_summary
 import uuid
 
 
-@staff_member_required
+@login_required
+@can_manage_organization_required
 def view_report(request, cycle_id):
     """View aggregated feedback report for a review cycle"""
     cycle = get_object_or_404(ReviewCycle, id=cycle_id)
@@ -30,7 +32,8 @@ def view_report(request, cycle_id):
     return render(request, 'reports/view_report.html', context)
 
 
-@staff_member_required
+@login_required
+@can_manage_organization_required
 def regenerate_report(request, cycle_id):
     """Regenerate report for a review cycle"""
     cycle = get_object_or_404(ReviewCycle, id=cycle_id)
@@ -54,8 +57,10 @@ def reviewee_report(request, access_token):
     cycle = report.cycle
 
     # Check if report is available (cycle should be completed)
-    # Staff can bypass this check
-    if cycle.status != 'completed' and not (request.user.is_authenticated and request.user.is_staff):
+    # Org admins can bypass this check
+    can_bypass = (request.user.is_authenticated and
+                  request.user.has_perm('accounts.can_manage_organization'))
+    if cycle.status != 'completed' and not can_bypass:
         return render(request, 'reports/report_not_ready.html', {
             'cycle': cycle,
         })

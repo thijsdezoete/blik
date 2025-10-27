@@ -69,6 +69,9 @@ class Question(TimeStampedModel):
     # For rating: {"min": 1, "max": 5, "labels": {"1": "Poor", "5": "Excellent"}}
     # For likert: {"scale": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]}
     # For multiple_choice: {"choices": ["Option 1", "Option 2"]}
+    # Optional chart configuration:
+    #   "chart_weight": 1.0 (default) - Weight in section average (0.5 = half weight, 2.0 = double weight)
+    #   "exclude_from_charts": false (default) - Set true to exclude from chart aggregations
     config = models.JSONField(default=dict)
 
     required = models.BooleanField(default=True)

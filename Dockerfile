@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1 \
     UV_SYSTEM_PYTHON=1 \
     DATABASE_TYPE=sqlite \
     DEBUG=False \
-    ALLOWED_HOSTS=localhost,127.0.0.1
+    ALLOWED_HOSTS=*
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

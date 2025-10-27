@@ -42,6 +42,17 @@ if not DEBUG and ENCRYPTION_KEY == DEFAULT_ENCRYPTION_KEY:
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
+# Warn if using wildcard ALLOWED_HOSTS in production
+if not DEBUG and '*' in ALLOWED_HOSTS:
+    import sys
+    print("\n" + "="*80, file=sys.stderr)
+    print("⚠️  SECURITY WARNING: ALLOWED_HOSTS is set to '*' (wildcard)!", file=sys.stderr)
+    print("="*80, file=sys.stderr)
+    print("This allows the application to be accessed from any domain.", file=sys.stderr)
+    print("For production, set ALLOWED_HOSTS to specific domains:", file=sys.stderr)
+    print("  ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com", file=sys.stderr)
+    print("="*80 + "\n", file=sys.stderr)
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

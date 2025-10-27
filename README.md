@@ -67,6 +67,7 @@ Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
 - Uses SQLite (no separate database needed)
 - Auto-generates SECRET_KEY on first run
 - Data persists in the `blik-data` volume
+- Accepts connections from any domain by default (configure ALLOWED_HOSTS for production)
 - Perfect for testing and small deployments
 
 **Connecting to an External Database:**
@@ -129,7 +130,7 @@ docker run -d -p 8000:8000 \
 - `DATABASE_PASSWORD` - Database password
 - `SECRET_KEY` - Django secret key (auto-generated if not provided)
 - `ENCRYPTION_KEY` - Key for encrypting sensitive data like SMTP passwords (use `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`)
-- `ALLOWED_HOSTS` - Comma-separated list of allowed hostnames (default: `localhost,127.0.0.1`)
+- `ALLOWED_HOSTS` - Comma-separated list of allowed hostnames (default: `*` for standalone Docker, `localhost,127.0.0.1` for docker-compose). Set to specific domains in production.
 - `DEBUG` - Debug mode: `True` or `False` (default: `False`)
 - `CSRF_TRUSTED_ORIGINS` - Comma-separated list of trusted origins for CSRF (e.g., `https://yourdomain.com`)
 

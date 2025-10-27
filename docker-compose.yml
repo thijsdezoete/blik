@@ -22,7 +22,7 @@ services:
       - ./:/app
       - static_volume:/app/staticfiles
     ports:
-      - "${HOST_PORT:-8000}:8000"
+      - "${PORT:-8000}:8000"
     env_file:
       - .env
     environment:

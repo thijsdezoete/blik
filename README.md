@@ -148,7 +148,7 @@ docker compose up -d
 
 Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
 
-**Port Conflicts:** If port 8000 is already in use, set `HOST_PORT=8001` (or any available port) in your `.env` file before running `docker compose up`. Platforms like Dokploy/Coolify can set this automatically.
+**Port Conflicts:** If port 8000 is already in use, set `PORT=8001` (or any available port) in your `.env` file before running `docker compose up`. Platforms like Dokploy/Coolify can set this automatically.
 
 ### Production Deployment
 

@@ -922,25 +922,43 @@
                 }
             });
 
-            // Autoplay
+            // Autoplay with hover tracking
+            let isHovering = false;
+
             function startAutoplay() {
-                autoplayInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+                // Only start if not hovering
+                if (!isHovering) {
+                    stopAutoplay(); // Clear any existing interval
+                    autoplayInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+                }
             }
 
             function stopAutoplay() {
-                clearInterval(autoplayInterval);
+                if (autoplayInterval) {
+                    clearInterval(autoplayInterval);
+                    autoplayInterval = null;
+                }
             }
 
             function resetAutoplay() {
                 stopAutoplay();
-                startAutoplay();
+                // Restart autoplay only if not hovering
+                if (!isHovering) {
+                    startAutoplay();
+                }
             }
 
             // Pause autoplay on hover
             const carouselContainer = document.querySelector('.carousel-container');
             if (carouselContainer) {
-                carouselContainer.addEventListener('mouseenter', stopAutoplay);
-                carouselContainer.addEventListener('mouseleave', startAutoplay);
+                carouselContainer.addEventListener('mouseenter', () => {
+                    isHovering = true;
+                    stopAutoplay();
+                });
+                carouselContainer.addEventListener('mouseleave', () => {
+                    isHovering = false;
+                    startAutoplay();
+                });
             }
 
             // Start autoplay

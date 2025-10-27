@@ -7,6 +7,12 @@
     <div>
         <h1>Reviewees</h1>
         <p>Manage people who receive 360-degree feedback</p>
+        {% if subscription_status.has_subscription %}
+        <p style="font-size: 0.875rem; color: {% if subscription_status.reviewees_remaining <= 5 %}#ef4444{% else %}#64748b{% endif %}; margin-top: 0.25rem;">
+            {{ subscription_status.current_reviewees }} / {{ subscription_status.max_employees }} reviewees
+            ({{ subscription_status.reviewees_remaining }} remaining)
+        </p>
+        {% endif %}
     </div>
     <a href="{% url 'reviewee_create' %}" class="btn btn-primary">Add Reviewee</a>
 </div>

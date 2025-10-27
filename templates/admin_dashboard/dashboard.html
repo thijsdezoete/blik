@@ -41,6 +41,55 @@
     </div>
 </div>
 
+<!-- Subscription Status -->
+{% if subscription_status.has_subscription %}
+<div class="card mb-2">
+    <div class="card-header">
+        <h2 class="card-title">Subscription & Limits</h2>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+            <div>
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Plan</div>
+                <div style="font-size: 1.25rem; color: #4f46e5;">{{ subscription_status.plan_name }}</div>
+                {% if subscription_status.current_period_end %}
+                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                    Renews {{ subscription_status.current_period_end|date:"M d, Y" }}
+                </div>
+                {% endif %}
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Reviewees</div>
+                <div style="font-size: 1.25rem;">
+                    <span {% if subscription_status.reviewees_remaining <= 5 %}style="color: #ef4444;"{% endif %}>
+                        {{ subscription_status.current_reviewees }}
+                    </span>
+                    <span style="color: #64748b;"> / {{ subscription_status.max_employees }}</span>
+                </div>
+                <div style="font-size: 0.875rem; color: {% if subscription_status.reviewees_remaining <= 5 %}#ef4444{% else %}#10b981{% endif %}; margin-top: 0.25rem;">
+                    {{ subscription_status.reviewees_remaining }} remaining
+                </div>
+            </div>
+            <div>
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Team Members</div>
+                <div style="font-size: 1.25rem; color: #10b981;">{{ subscription_status.current_users }}</div>
+                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+                    Unlimited
+                </div>
+            </div>
+        </div>
+        {% if subscription_status.reviewees_remaining <= 5 %}
+        <div style="margin-top: 1rem; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;">
+            <strong style="color: #dc2626;">Approaching Limit:</strong>
+            <span style="color: #991b1b;">
+                You're nearing your plan limit of {{ subscription_status.max_employees }} reviewees. Contact us to upgrade your plan.
+            </span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
 <!-- Quick Actions -->
 <div class="card mb-2">
     <div class="card-header">

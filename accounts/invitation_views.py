@@ -10,6 +10,7 @@ from django.urls import reverse
 from accounts.models import OrganizationInvitation
 from accounts.permissions import organization_admin_required
 from core.email import send_email
+from subscriptions.utils import check_user_limit
 
 
 @login_required
@@ -35,6 +36,12 @@ def send_invitation(request):
         if not email:
             messages.error(request, 'Email address is required.')
             return redirect('admin_dashboard')
+
+        # Check user limit
+        allowed, error_message = check_user_limit(request)
+        if not allowed:
+            messages.error(request, error_message)
+            return redirect('team_list')
 
         # Check if invitation already exists
         existing = OrganizationInvitation.objects.filter(

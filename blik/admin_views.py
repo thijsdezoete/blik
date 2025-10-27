@@ -97,6 +97,8 @@ def dashboard(request):
 @login_required
 def team_list(request):
     """Team management - users and invitations"""
+    from subscriptions.utils import get_subscription_status
+
     org = request.organization
 
     if not org:
@@ -118,9 +120,13 @@ def team_list(request):
         accepted_at__isnull=True
     ).order_by('-created_at')
 
+    # Get subscription status
+    subscription_status = get_subscription_status(org) if org else None
+
     context = {
         'users': users,
         'invitations': invitations,
+        'subscription_status': subscription_status,
     }
 
     return render(request, 'admin_dashboard/team.html', context)
@@ -206,13 +212,19 @@ def update_user_permissions(request):
 @login_required
 def reviewee_list(request):
     """List and manage reviewees"""
+    from subscriptions.utils import get_subscription_status
+
     org = request.organization
     reviewees = Reviewee.objects.for_organization(org).filter(is_active=True).annotate(
         cycle_count=Count('review_cycles')
     ).order_by('name')
 
+    # Get subscription status
+    subscription_status = get_subscription_status(org) if org else None
+
     context = {
         'reviewees': reviewees,
+        'subscription_status': subscription_status,
     }
 
     return render(request, 'admin_dashboard/reviewee_list.html', context)

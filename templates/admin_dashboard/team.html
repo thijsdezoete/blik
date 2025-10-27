@@ -7,6 +7,11 @@
     <div>
         <h1>Team Management</h1>
         <p class="page-description">Manage users and send invitations</p>
+        {% if subscription_status.has_subscription %}
+        <p style="font-size: 0.875rem; color: #10b981; margin-top: 0.25rem;">
+            {{ subscription_status.current_users }} team members (unlimited)
+        </p>
+        {% endif %}
     </div>
     {% if perms.accounts.can_invite_members %}
     <button type="button" class="btn btn-primary" onclick="document.getElementById('invite-modal').style.display='flex'">

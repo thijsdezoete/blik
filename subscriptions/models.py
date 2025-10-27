@@ -14,7 +14,7 @@ class Plan(models.Model):
     name = models.CharField(max_length=100)
     plan_type = models.CharField(max_length=20, choices=PLAN_TYPES, unique=True)
     price_monthly = models.DecimalField(max_digits=10, decimal_places=2)
-    max_employees = models.IntegerField()
+    max_employees = models.IntegerField(help_text="Maximum total: reviewees + team members combined")
     stripe_price_id = models.CharField(max_length=255, blank=True)
     features = models.JSONField(default=dict)
     is_active = models.BooleanField(default=True)

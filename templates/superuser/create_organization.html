@@ -1,0 +1,119 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Create Organization{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Create Organization</h1>
+        <p class="page-description">Create a new organization without a payment plan for testing</p>
+    </div>
+</div>
+
+<div style="max-width: 800px;">
+    <form method="post" action="{% url 'superuser_create_organization' %}">
+        {% csrf_token %}
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title">New Organization Details</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label" for="org_name">Organization Name</label>
+                    <input
+                        type="text"
+                        id="org_name"
+                        name="org_name"
+                        class="form-control"
+                        placeholder="e.g. Acme Corp"
+                        required
+                        autofocus
+                    >
+                    <small class="form-text">The name of the organization to create</small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="admin_email">Admin Email</label>
+                    <input
+                        type="email"
+                        id="admin_email"
+                        name="admin_email"
+                        class="form-control"
+                        placeholder="admin@example.com"
+                        required
+                    >
+                    <small class="form-text">An invitation will be sent to this email address. The user will be set up as the organization administrator.</small>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Create Organization & Send Invitation</button>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+
+    {% if recent_orgs %}
+    <div class="card" style="margin-top: 2rem;">
+        <div class="card-header">
+            <h2 class="card-title">Recent Organizations</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Active</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for org in recent_orgs %}
+                        <tr>
+                            <td>{{ org.name }}</td>
+                            <td>{{ org.email }}</td>
+                            <td>
+                                {% if org.is_active %}
+                                <span class="badge badge-success">Active</span>
+                                {% else %}
+                                <span class="badge badge-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ org.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+.badge-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.badge-danger {
+    background-color: #ef4444;
+    color: white;
+}
+</style>
+{% endblock %}

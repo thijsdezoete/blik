@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from . import views, admin_views, seo_views
+from . import views, admin_views, seo_views, superuser_views
 
 # Error handlers
 handler404 = 'blik.views.handler404'
@@ -17,6 +17,9 @@ urlpatterns = [
     path('sitemap.xml', seo_views.sitemap, name='sitemap'),
     path('robots.txt', seo_views.robots, name='robots'),
     path('admin/', admin.site.urls),
+
+    # Superuser tools
+    path('superuser/create-org/', superuser_views.create_organization, name='superuser_create_organization'),
 
     # Admin dashboard
     path('dashboard/', admin_views.dashboard, name='admin_dashboard'),

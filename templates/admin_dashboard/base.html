@@ -57,6 +57,7 @@
                 <li><a href="{% url 'review_cycle_list' %}" {% if 'cycle' in request.resolver_match.url_name %}class="active"{% endif %}>Cycles</a></li>
                 <li><a href="{% url 'settings' %}" {% if request.resolver_match.url_name == 'settings' %}class="active"{% endif %}>Settings</a></li>
                 {% if user.is_superuser %}
+                <li><a href="{% url 'superuser_create_organization' %}" {% if request.resolver_match.url_name == 'superuser_create_organization' %}class="active"{% endif %}>Create Org</a></li>
                 <li><a href="/admin/">Admin</a></li>
                 {% endif %}
                 <li><a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %} title="{{ user.username }}">Profile</a></li>

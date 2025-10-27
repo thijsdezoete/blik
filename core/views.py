@@ -36,14 +36,14 @@ def setup_admin(request):
     if request.method == 'POST':
         form = SetupAdminForm(request.POST)
         if form.is_valid():
-            # Create regular user (not superuser)
+            # Create regular user (organization admin via permissions)
             user = User.objects.create_user(
                 username=form.cleaned_data['username'],
                 email=form.cleaned_data['email'],
                 password=form.cleaned_data['password']
             )
-            # Log the user in
-            login(request, user)
+            # Log the user in with explicit backend
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, f'Admin account "{user.username}" created successfully!')
             return redirect('setup_organization')
     else:
@@ -81,12 +81,33 @@ def setup_organization(request):
 
             # Create UserProfile for the setup admin if needed
             from accounts.models import UserProfile
+            from django.contrib.auth.models import Permission
+            from django.contrib.contenttypes.models import ContentType
+
             if not hasattr(request.user, 'profile'):
-                UserProfile.objects.create(
+                profile = UserProfile.objects.create(
                     user=request.user,
                     organization=organization,
                     can_create_cycles_for_others=True
                 )
+
+                # Grant organization management permissions to setup admin
+                try:
+                    content_type = ContentType.objects.get_for_model(UserProfile)
+                    permissions = Permission.objects.filter(
+                        content_type=content_type,
+                        codename__in=[
+                            'can_invite_members',
+                            'can_manage_organization',
+                            'can_view_all_reports',
+                        ]
+                    )
+                    request.user.user_permissions.add(*permissions)
+                except Exception as e:
+                    # Log but don't fail setup if permissions aren't available yet
+                    import logging
+                    logger = logging.getLogger(__name__)
+                    logger.warning(f"Could not assign permissions during setup: {e}")
 
             messages.success(request, f'Organization "{organization.name}" configured successfully!')
             return redirect('setup_email')

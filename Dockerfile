@@ -4,11 +4,13 @@ FROM python:3.11-slim
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_SYSTEM_PYTHON=1
+    UV_SYSTEM_PYTHON=1 \
+    DATABASE_TYPE=sqlite \
+    DEBUG=False \
+    ALLOWED_HOSTS=localhost,127.0.0.1
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    postgresql-client \
     curl \
     && rm -rf /var/lib/apt/lists/*
 

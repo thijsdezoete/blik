@@ -103,18 +103,30 @@ WSGI_APPLICATION = 'blik.wsgi.application'
 
 # Database
 # Support DATABASE_URL for platforms like Dokploy, Railway, Heroku
-# Format: postgres://user:password@host:port/dbname
+# Format: postgres://user:password@host:port/dbname or sqlite:///path/to/db.sqlite3
 import dj_database_url
 
-# Use DATABASE_URL if set, otherwise build from individual vars
-if env('DATABASE_URL', default=None):
+# Use DATABASE_URL if set, otherwise fall back based on DATABASE_TYPE
+database_url = env('DATABASE_URL', default=None)
+database_type = env('DATABASE_TYPE', default='sqlite')
+
+if database_url:
     DATABASES = {
         'default': dj_database_url.config(
-            default=env('DATABASE_URL'),
+            default=database_url,
             conn_max_age=600
         )
     }
+elif database_type.lower() == 'sqlite':
+    # Default to SQLite for easy standalone deployment
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 else:
+    # PostgreSQL configuration
     DATABASES = {
         'default': dj_database_url.config(
             default=f"postgres://{env('DATABASE_USER', default='blik')}:{env('DATABASE_PASSWORD', default='changeme')}@{env('DATABASE_HOST', default='localhost')}:{env('DATABASE_PORT', default='5432')}/{env('DATABASE_NAME', default='blik')}",

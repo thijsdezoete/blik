@@ -91,6 +91,7 @@ class SetupEmailForm(forms.Form):
     smtp_host = forms.CharField(
         label='SMTP Host',
         max_length=255,
+        required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'smtp.gmail.com',
@@ -102,6 +103,7 @@ class SetupEmailForm(forms.Form):
     smtp_port = forms.IntegerField(
         label='SMTP Port',
         initial=587,
+        required=False,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'placeholder': '587'
@@ -142,6 +144,7 @@ class SetupEmailForm(forms.Form):
 
     from_email = forms.EmailField(
         label='From Email Address',
+        required=False,
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'noreply@example.com'
@@ -157,6 +160,31 @@ class SetupEmailForm(forms.Form):
         }),
         help_text='You can configure email settings later in the admin panel'
     )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        skip_email_setup = cleaned_data.get('skip_email_setup', False)
+
+        # If skipping email setup, don't validate email fields
+        if skip_email_setup:
+            # Remove errors for required fields
+            if 'smtp_host' in self.errors:
+                del self.errors['smtp_host']
+            if 'smtp_port' in self.errors:
+                del self.errors['smtp_port']
+            if 'from_email' in self.errors:
+                del self.errors['from_email']
+            return cleaned_data
+
+        # If not skipping, ensure required fields are present
+        if not cleaned_data.get('smtp_host'):
+            self.add_error('smtp_host', 'SMTP Host is required when not skipping email setup.')
+        if not cleaned_data.get('smtp_port'):
+            self.add_error('smtp_port', 'SMTP Port is required when not skipping email setup.')
+        if not cleaned_data.get('from_email'):
+            self.add_error('from_email', 'From Email is required when not skipping email setup.')
+
+        return cleaned_data
 
 
 # Login and registration now handled by django-allauth

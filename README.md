@@ -38,7 +38,7 @@ Blik is production-ready with core 360-degree feedback functionality. The system
 
 ### Technology Stack
 - **Backend:** Django 5.x with multi-organization support
-- **Database:** PostgreSQL 15
+- **Database:** SQLite (default) or PostgreSQL 15
 - **Frontend:** Django templates with modern CSS
 - **Deployment:** Docker and Docker Compose with Gunicorn
 - **Static Files:** WhiteNoise for efficient static file serving
@@ -52,7 +52,36 @@ Blik is production-ready with core 360-degree feedback functionality. The system
 
 ## Quick Start
 
-### Development/Testing
+### Standalone Docker (Simplest)
+
+Run Blik with a single Docker command using SQLite:
+
+```bash
+docker build -t blik .
+docker run -d -p 8000:8000 -v blik-data:/app blik
+```
+
+Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
+
+**Features:**
+- Uses SQLite (no separate database needed)
+- Auto-generates SECRET_KEY on first run
+- Data persists in the `blik-data` volume
+- Perfect for testing and small deployments
+
+**For PostgreSQL instead of SQLite:**
+
+```bash
+docker run -d -p 8000:8000 \
+  -e DATABASE_TYPE=postgres \
+  -e DATABASE_URL=postgres://user:password@host:5432/dbname \
+  -v blik-data:/app \
+  blik
+```
+
+### Development with Docker Compose
+
+For development with PostgreSQL:
 
 ```bash
 git clone https://github.com/yourusername/blik.git

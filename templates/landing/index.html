@@ -270,6 +270,24 @@
                         <div class="carousel-slide" data-slide="3">
                             <div class="screenshot-hover-wrapper">
                                 <picture class="screenshot-layer screenshot-light">
+                                    <source srcset="{% static 'img/screenshots/feedback_desktop_light.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/feedback_desktop_light.png' %}"
+                                         alt="Anonymous Feedback Form - Light Theme"
+                                         loading="lazy">
+                                </picture>
+                                <picture class="screenshot-layer screenshot-dark">
+                                    <source srcset="{% static 'img/screenshots/feedback_desktop_dark.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/feedback_desktop_dark.png' %}"
+                                         alt="Anonymous Feedback Form - Dark Theme"
+                                         loading="lazy">
+                                </picture>
+                                <div class="theme-indicator">Hover to toggle theme</div>
+                            </div>
+                            <p class="carousel-caption">Anonymous feedback collection with intuitive forms and progress tracking</p>
+                        </div>
+                        <div class="carousel-slide" data-slide="4">
+                            <div class="screenshot-hover-wrapper">
+                                <picture class="screenshot-layer screenshot-light">
                                     <source srcset="{% static 'img/screenshots/team_desktop_light.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/team_desktop_light.png' %}"
                                          alt="Team Management - Light Theme"
@@ -292,7 +310,8 @@
                         <button class="carousel-dot active" data-slide="0" aria-label="Show report header"></button>
                         <button class="carousel-dot" data-slide="1" aria-label="Show report charts"></button>
                         <button class="carousel-dot" data-slide="2" aria-label="Show dashboard screenshot"></button>
-                        <button class="carousel-dot" data-slide="3" aria-label="Show team management screenshot"></button>
+                        <button class="carousel-dot" data-slide="3" aria-label="Show feedback form"></button>
+                        <button class="carousel-dot" data-slide="4" aria-label="Show team management screenshot"></button>
                     </div>
                 </div>
             </div>

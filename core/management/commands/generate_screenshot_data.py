@@ -244,15 +244,32 @@ class Command(BaseCommand):
             section__questionnaire=questionnaire
         ).order_by('section__order', 'order'))
 
-        # Create responses with "imposter syndrome" pattern for visual gap in charts
+        # Create responses with differentiated patterns by category
         for token in tokens:
             for question in questions:
                 if question.question_type in ['rating', 'likert']:
-                    # Self rates lower (2-3), others rate higher (4-5)
+                    # Create realistic differentiation between categories
+                    question_seed = hash(question.id) % 10
+
                     if token.category == 'self':
-                        rating = 2 if hash(question.id) % 3 == 0 else 3
+                        # Self rates lower (imposter syndrome pattern: 2-3)
+                        rating = 2 if question_seed < 4 else 3
+                    elif token.category == 'manager':
+                        # Managers rate slightly lower but fair (3-4, occasional 5)
+                        if question_seed < 2:
+                            rating = 3
+                        elif question_seed < 8:
+                            rating = 4
+                        else:
+                            rating = 5
+                    elif token.category == 'peer':
+                        # Peers rate high (4-5, mostly 4s)
+                        rating = 4 if question_seed < 7 else 5
+                    elif token.category == 'direct_report':
+                        # Direct reports rate highest (4-5, mostly 5s)
+                        rating = 5 if question_seed < 7 else 4
                     else:
-                        rating = 4 if hash(question.id) % 2 == 0 else 5
+                        rating = 4
 
                     answer_data = {'value': rating}
                 elif question.question_type == 'text':

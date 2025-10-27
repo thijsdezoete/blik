@@ -293,8 +293,8 @@ def generate_report(cycle):
             for category, category_data in question_data['by_category'].items():
                 count = category_data['count']
 
-                # Apply anonymity threshold (except for self-assessment)
-                if category == 'self' or count >= min_threshold:
+                # Apply anonymity threshold (except for self-assessment and manager feedback)
+                if category in ['self', 'manager'] or count >= min_threshold:
                     result = {
                         'count': count,
                         'responses': category_data['responses']

@@ -16,6 +16,10 @@ urlpatterns = [
     path('eu-tech/', views.eu_tech, name='eu_tech'),
     path('privacy/', views.privacy, name='privacy'),
 
+    # Legal pages
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms/', views.terms, name='terms'),
+
     # SEO files
     path('og-image.png', views.og_image, name='og_image'),
     path('robots.txt', seo_views.robots, name='robots'),

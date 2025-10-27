@@ -57,13 +57,33 @@ def eu_tech(request):
 
 
 def privacy(request):
-    """Privacy/air-gapped landing page for professional services."""
+    """Air-gapped/privacy-focused landing page for professional services."""
     context = {
         'site_name': settings.SITE_NAME,
         'site_domain': settings.SITE_DOMAIN,
         'site_protocol': settings.SITE_PROTOCOL,
     }
     return render(request, 'landing/privacy.html', context)
+
+
+def privacy_policy(request):
+    """Privacy policy page."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/privacy_policy.html', context)
+
+
+def terms(request):
+    """Terms of service page."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/terms.html', context)
 
 
 def signup(request):

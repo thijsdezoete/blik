@@ -75,17 +75,21 @@
     display: block;
 }
 
-.screenshot-dark {
+/* Default: show dark theme in dark mode, light theme in light mode */
+[data-theme="light"] .screenshot-dark,
+[data-theme="dark"] .screenshot-light {
     position: absolute;
     top: 0;
     left: 0;
-    opacity: 1;
+    opacity: 0;
     transition: opacity 0.4s ease-in-out;
     pointer-events: none;
 }
 
-.screenshot-hover-wrapper:hover .screenshot-dark {
-    opacity: 0;
+/* Show opposite theme on hover */
+[data-theme="light"] .screenshot-hover-wrapper:hover .screenshot-dark,
+[data-theme="dark"] .screenshot-hover-wrapper:hover .screenshot-light {
+    opacity: 1;
 }
 
 /* Theme indicator badge */

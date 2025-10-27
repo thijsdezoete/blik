@@ -158,6 +158,36 @@ Dokploy handles SSL automatically:
 3. Add your domain name
 4. Dokploy will obtain and auto-renew the certificate
 
+**SSL Termination Architecture**
+
+Your load balancer or reverse proxy handles SSL termination:
+
+- **External traffic:** HTTPS (encrypted) from users to load balancer
+- **Internal traffic:** HTTP (unencrypted) from load balancer to your container
+
+The container listens on HTTP (port 8000). SSL is terminated upstream.
+
+**Security cookie settings:**
+```env
+SESSION_COOKIE_SECURE=True   # Safe: Django sees X-Forwarded-Proto: https
+CSRF_COOKIE_SECURE=True      # Safe: Django sees X-Forwarded-Proto: https
+```
+
+These work because the load balancer forwards the `X-Forwarded-Proto: https` header, telling Django the original request was HTTPS.
+
+**❌ Avoid infinite redirect loops:**
+
+Do NOT force HTTPS at the application level when SSL is terminated upstream:
+1. Load balancer terminates SSL, forwards HTTP to container
+2. If container redirects to HTTPS, load balancer forwards HTTP again
+3. Infinite loop
+
+**✅ Correct configuration:**
+- SSL termination at load balancer/proxy
+- Set `SESSION_COOKIE_SECURE=True` and `CSRF_COOKIE_SECURE=True`
+- Do NOT set `SECURE_SSL_REDIRECT=True` in Django
+- Do NOT add HTTPS redirects inside the container
+
 ---
 
 ## Manual Docker Compose Deployment
@@ -204,6 +234,10 @@ The entrypoint script will automatically:
 
 ### 4. Set Up Reverse Proxy (Nginx/Caddy)
 
+**SSL Termination**
+
+SSL should be terminated at the reverse proxy, not in the application container.
+
 **Example Nginx Configuration:**
 
 ```nginx
@@ -225,7 +259,7 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $scheme;  # CRITICAL: Tells Django request was HTTPS
     }
 
     location /static/ {
@@ -234,13 +268,27 @@ server {
 }
 ```
 
-**Example Caddy Configuration (Simpler):**
+**Example Caddy Configuration (Simpler - SSL automatic):**
 
 ```
 yourdomain.com {
     reverse_proxy localhost:8000
+    # Caddy automatically sets X-Forwarded-Proto
 }
 ```
+
+**Required Headers:**
+
+The `X-Forwarded-Proto` header tells Django the original request protocol, enabling secure cookies:
+
+```env
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+```
+
+Without this header, these settings will break (Django thinks all requests are HTTP).
+
+**Do NOT set `SECURE_SSL_REDIRECT=True`** - it causes infinite loops when SSL is terminated upstream.
 
 ### 5. Initial Setup
 
@@ -416,6 +464,44 @@ docker compose up -d --scale web=3
 ---
 
 ## Troubleshooting
+
+### Infinite Redirect Loop (HTTPS)
+
+**Symptom:** Browser shows "too many redirects" or "redirect loop" error.
+
+**Cause:** Application is redirecting to HTTPS, but load balancer already terminated SSL and forwards HTTP to the container.
+
+**Solution:**
+1. Verify `X-Forwarded-Proto` header is set by your load balancer/proxy
+2. Ensure Django settings do NOT include `SECURE_SSL_REDIRECT = True`
+3. Remove any HTTPS redirects in application-level nginx/code
+4. Keep only:
+   ```env
+   SESSION_COOKIE_SECURE=True
+   CSRF_COOKIE_SECURE=True
+   ```
+
+### CSRF Verification Failed
+
+**Symptom:** "CSRF verification failed" error on forms.
+
+**Causes and solutions:**
+
+1. **Missing CSRF_TRUSTED_ORIGINS:**
+   ```env
+   CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+   ```
+   Must include the full protocol (https://) and domain.
+
+2. **Load balancer not forwarding X-Forwarded-Proto:**
+   - Verify your proxy includes: `proxy_set_header X-Forwarded-Proto $scheme;`
+   - Most platforms/load balancers set this automatically
+
+3. **Wrong ALLOWED_HOSTS:**
+   ```env
+   ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+   ```
+   Must match the domain you're accessing.
 
 ### Static Files Not Loading
 

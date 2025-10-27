@@ -16,3 +16,8 @@ class OrganizationAdmin(admin.ModelAdmin):
             'classes': ['collapse']
         }),
     ]
+
+
+# Note: django-axes models (AccessAttempt, AccessLog, AccessFailureLog) are
+# automatically registered by the axes package and available in Django admin
+# under the "Axes" section for security monitoring

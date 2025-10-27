@@ -37,6 +37,29 @@
         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
             The 360-degree feedback report for <strong>{{ cycle.reviewee.name }}</strong> has been generated and is ready to view.
         </p>
+        {% if report.access_token_expires %}
+        <div style="padding: 0.75rem; background: {% if report.access_token_expires|timeuntil != '0 minutes' %}#FEF3C7{% else %}#FEE2E2{% endif %}; border-left: 4px solid {% if report.access_token_expires|timeuntil != '0 minutes' %}#F59E0B{% else %}#EF4444{% endif %}; border-radius: 6px; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: start; gap: 0.5rem;">
+                <svg style="width: 20px; height: 20px; margin-top: 2px; color: {% if report.access_token_expires|timeuntil != '0 minutes' %}#F59E0B{% else %}#EF4444{% endif %};" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div>
+                    <strong style="color: {% if report.access_token_expires|timeuntil != '0 minutes' %}#92400E{% else %}#991B1B{% endif %};">Report Access Token</strong>
+                    <div style="font-size: 0.875rem; color: {% if report.access_token_expires|timeuntil != '0 minutes' %}#92400E{% else %}#991B1B{% endif %}; margin-top: 0.25rem;">
+                        {% now "Y-m-d H:i:s" as now_time %}
+                        {% if report.access_token_expires|date:"Y-m-d H:i:s" < now_time %}
+                            Expired on {{ report.access_token_expires|date:"M d, Y" }} at {{ report.access_token_expires|time:"H:i" }}
+                        {% else %}
+                            Expires in {{ report.access_token_expires|timeuntil }} ({{ report.access_token_expires|date:"M d, Y" }} at {{ report.access_token_expires|time:"H:i" }})
+                        {% endif %}
+                    </div>
+                    {% if report.last_accessed %}
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+                        Last accessed {{ report.last_accessed|timesince }} ago • Viewed {{ report.access_count }} time{{ report.access_count|pluralize }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <div style="display: grid; gap: 1rem;">
             <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-primary" style="justify-content: center;">
                 <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>

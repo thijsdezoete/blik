@@ -852,6 +852,9 @@ def manage_invitations(request, cycle_id):
 @login_required
 def assign_invitations(request, cycle_id):
     """Assign email addresses to reviewer tokens"""
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
+
     cycle = get_cycle_or_404(cycle_id, request.organization)
 
     if request.method == 'POST':
@@ -863,7 +866,16 @@ def assign_invitations(request, cycle_id):
             emails_data = request.POST.get(f'{category_code}_emails', '').strip()
             if emails_data:
                 emails = re.split(r'[,\n]+', emails_data)
-                email_assignments[category_code] = [e.strip() for e in emails if e.strip()]
+                validated_emails = []
+                for e in emails:
+                    e = e.strip()
+                    if e:
+                        try:
+                            validate_email(e)
+                            validated_emails.append(e)
+                        except ValidationError:
+                            messages.warning(request, f'Invalid email skipped in {category_display}: {e}')
+                email_assignments[category_code] = validated_emails
             else:
                 email_assignments[category_code] = []
 

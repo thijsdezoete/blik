@@ -47,6 +47,11 @@ class Report(TimeStampedModel):
     generated_at = models.DateTimeField(auto_now_add=True)
     available = models.BooleanField(default=True)
 
+    # Security tracking for report access
+    access_token_expires = models.DateTimeField(null=True, blank=True, help_text="Expiration date for access token")
+    last_accessed = models.DateTimeField(null=True, blank=True, help_text="Last time report was accessed")
+    access_count = models.IntegerField(default=0, help_text="Number of times report has been accessed")
+
     objects = ReportManager()
 
     class Meta:

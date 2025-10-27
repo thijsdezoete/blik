@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django_ratelimit.decorators import ratelimit
 from datetime import datetime, timezone as dt_timezone
 from core.models import Organization
 from .models import Plan, Subscription, OneTimeLoginToken
@@ -54,9 +55,19 @@ def send_welcome_email(organization, user, password):
 
 
 @require_POST
-@csrf_exempt
+@csrf_exempt  # Required: Called from landing page (different domain)
+@ratelimit(key='ip', rate='10/m', method='POST', block=True)
 def create_checkout_session(request):
-    """Create Stripe Checkout session"""
+    """
+    Create Stripe Checkout session
+
+    Security: CSRF exemption is necessary because this endpoint is called
+    from the public landing page (different subdomain). Protected by:
+    - Rate limiting (10 requests/minute per IP)
+    - CORS restrictions (only allowed origins)
+    - Stripe API validation
+    - No sensitive data exposure (only creates a Stripe session)
+    """
     try:
         data = json.loads(request.body)
         price_id = data.get('price_id')

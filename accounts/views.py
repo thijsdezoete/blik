@@ -4,11 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
+from django_ratelimit.decorators import ratelimit
 from core.models import Organization
 from accounts.models import UserProfile, OrganizationInvitation
 
 
 @require_http_methods(["GET", "POST"])
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
 def login_view(request):
     """User login view."""
     if request.user.is_authenticated:
@@ -57,6 +59,7 @@ def register_view(request):
 
 
 @require_http_methods(["GET", "POST"])
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
 def signup_view(request):
     """
     Signup view for invited users.
@@ -95,15 +98,21 @@ def signup_view(request):
                 'invitation_email': invitation.email
             })
 
-        if not password1 or len(password1) < 8:
-            messages.error(request, 'Password must be at least 8 characters.')
+        if password1 != password2:
+            messages.error(request, 'Passwords do not match.')
             return render(request, 'accounts/register.html', {
                 'organization': invitation.organization,
                 'invitation_email': invitation.email
             })
 
-        if password1 != password2:
-            messages.error(request, 'Passwords do not match.')
+        # Use Django's built-in password validators
+        from django.contrib.auth.password_validation import validate_password
+        from django.core.exceptions import ValidationError
+        try:
+            validate_password(password1, user=None)
+        except ValidationError as e:
+            for error in e.messages:
+                messages.error(request, error)
             return render(request, 'accounts/register.html', {
                 'organization': invitation.organization,
                 'invitation_email': invitation.email

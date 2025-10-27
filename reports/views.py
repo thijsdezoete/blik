@@ -44,6 +44,7 @@ def regenerate_report(request, cycle_id):
 
 def reviewee_report(request, access_token):
     """Public-facing report view for reviewees - secured by UUID token"""
+    from django.utils import timezone
 
     # Get report by access token
     try:
@@ -53,6 +54,17 @@ def reviewee_report(request, access_token):
         ).get(access_token=access_token)
     except Report.DoesNotExist:
         return render(request, 'reports/access_denied.html', status=403)
+
+    # Check if access token has expired
+    if report.access_token_expires and report.access_token_expires < timezone.now():
+        return render(request, 'reports/access_denied.html', {
+            'error': 'This report link has expired. Please contact your administrator for a new link.'
+        }, status=403)
+
+    # Log access for security auditing
+    report.last_accessed = timezone.now()
+    report.access_count += 1
+    report.save(update_fields=['last_accessed', 'access_count'])
 
     cycle = report.cycle
 

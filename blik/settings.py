@@ -22,8 +22,23 @@ environ.Env.read_env(BASE_DIR / '.env')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-)32-g7%2_@jy@ycdh1lh2*)2pg8y$ftwd88j*vuc%ev%%t(@-f')
 
+# Encryption key for sensitive data (SMTP passwords, etc.)
+DEFAULT_ENCRYPTION_KEY = 'si1qWsaNKwavcargvESNiAZVdNmFt-ZieXiaziK-xnA='
+ENCRYPTION_KEY = env('ENCRYPTION_KEY', default=DEFAULT_ENCRYPTION_KEY)
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
+
+# Warn if using default encryption key in production
+if not DEBUG and ENCRYPTION_KEY == DEFAULT_ENCRYPTION_KEY:
+    import sys
+    print("\n" + "="*80, file=sys.stderr)
+    print("⚠️  SECURITY WARNING: Using default ENCRYPTION_KEY in production!", file=sys.stderr)
+    print("="*80, file=sys.stderr)
+    print("Generate a new key with:", file=sys.stderr)
+    print("  python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\"", file=sys.stderr)
+    print("Then set ENCRYPTION_KEY in your environment variables.", file=sys.stderr)
+    print("="*80 + "\n", file=sys.stderr)
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
@@ -36,6 +51,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'csp',
+    'axes',
     # Blik apps
     'core',
     'accounts',
@@ -55,8 +72,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'axes.middleware.AxesMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
     'core.middleware.SetupMiddleware',
     'core.middleware.OrganizationMiddleware',
 ]
@@ -168,6 +187,43 @@ CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# SSL is handled at the edge (reverse proxy/load balancer)
+# DO NOT redirect to HTTPS at Django level - it will create infinite loops
+SECURE_SSL_REDIRECT = False
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0  # 1 year in production
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Referrer policy
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Content Security Policy (django-csp 4.0+ format)
+CONTENT_SECURITY_POLICY = {
+    'DIRECTIVES': {
+        'default-src': ("'self'",),
+        'script-src': ("'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "js.stripe.com"),
+        'style-src': ("'self'", "'unsafe-inline'"),
+        'img-src': ("'self'", "data:", "https:"),
+        'font-src': ("'self'",),
+        'connect-src': ("'self'", "*.stripe.com"),
+        'frame-src': ("*.stripe.com",),
+        'frame-ancestors': ("'none'",),
+    }
+}
+
+# Django Axes - Account Lockout
+AXES_FAILURE_LIMIT = 5  # Lock after 5 failed attempts
+AXES_COOLOFF_TIME = 1  # Hours
+AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]  # Lock by combination
+AXES_RESET_ON_SUCCESS = True
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',  # AxesStandaloneBackend should be first
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Organization settings
 ORGANIZATION_NAME = env('ORGANIZATION_NAME', default='Blik')

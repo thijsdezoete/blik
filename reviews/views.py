@@ -3,9 +3,10 @@ from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.db import transaction
+from django_ratelimit.decorators import ratelimit
 from .models import ReviewerToken, Response, ReviewCycle
 from questionnaires.models import Question
-import random
+import secrets
 
 
 def claim_token(request, invitation_token):
@@ -51,8 +52,8 @@ def claim_token(request, invitation_token):
                 claimed_at=timezone.now()
             )
         else:
-            # Randomly select a token from available ones
-            token = random.choice(available_tokens)
+            # Cryptographically randomly select a token from available ones
+            token = secrets.choice(available_tokens)
             # Mark as claimed immediately
             token.claimed_at = timezone.now()
             token.save()
@@ -114,6 +115,7 @@ def feedback_form(request, token):
 
 
 @require_http_methods(["POST"])
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
 def submit_feedback(request, token):
     """Handle feedback form submission"""
     reviewer_token = get_object_or_404(ReviewerToken, token=token)

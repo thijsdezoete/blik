@@ -17,18 +17,21 @@ services:
 
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 3 --timeout 120 blik.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 120 blik.wsgi:application
     volumes:
       - ./:/app
       - static_volume:/app/staticfiles
     ports:
-      - "${PORT:-8000}:${PORT:-8000}"
+      - "${HOST_PORT:-8000}:8000"
     env_file:
       - .env
     environment:
+      - DATABASE_TYPE=postgres
       - DATABASE_HOST=${DATABASE_HOST:-db}
       - DATABASE_PORT=${DATABASE_PORT:-5432}
-      - PORT=${PORT:-8000}
+      - DATABASE_NAME=${DATABASE_NAME:-blik}
+      - DATABASE_USER=${DATABASE_USER:-blik}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:-changeme}
       - SECRET_KEY=_^%5)g9u-ruti=ukblm3osv=2v7d*iiqe0fn-f%5hdsfsldf
     depends_on:
       db:

@@ -69,15 +69,69 @@ Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
 - Data persists in the `blik-data` volume
 - Perfect for testing and small deployments
 
-**For PostgreSQL instead of SQLite:**
+**Connecting to an External Database:**
 
+The standalone Docker image can connect to any external PostgreSQL or MySQL database:
+
+**PostgreSQL:**
 ```bash
 docker run -d -p 8000:8000 \
   -e DATABASE_TYPE=postgres \
-  -e DATABASE_URL=postgres://user:password@host:5432/dbname \
+  -e DATABASE_URL=postgresql://user:password@host:5432/dbname \
   -v blik-data:/app \
   blik
 ```
+
+**Using separate environment variables:**
+```bash
+docker run -d -p 8000:8000 \
+  -e DATABASE_TYPE=postgres \
+  -e DATABASE_HOST=your-db-host.example.com \
+  -e DATABASE_PORT=5432 \
+  -e DATABASE_NAME=blik \
+  -e DATABASE_USER=blik_user \
+  -e DATABASE_PASSWORD=your_secure_password \
+  -v blik-data:/app \
+  blik
+```
+
+**Common database providers:**
+- **AWS RDS:** Use the RDS endpoint as `DATABASE_HOST`
+- **Google Cloud SQL:** Use the connection name or public IP as `DATABASE_HOST`
+- **Azure Database:** Use the server name as `DATABASE_HOST`
+- **DigitalOcean Managed Database:** Use the connection details from your database dashboard
+- **Local PostgreSQL:** Use `host.docker.internal` as `DATABASE_HOST` (on Mac/Windows) or the host IP address (on Linux)
+
+**Note:** The PostgreSQL psycopg adapter is already included in the Docker image, so no additional dependencies are needed.
+
+**Additional Configuration:**
+
+For production deployments, you may want to configure additional settings:
+
+```bash
+docker run -d -p 8000:8000 \
+  -e DATABASE_URL=postgresql://user:password@host:5432/dbname \
+  -e SECRET_KEY=your-long-random-secret-key \
+  -e ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com \
+  -e DEBUG=False \
+  -e ENCRYPTION_KEY=your-encryption-key-for-smtp-passwords \
+  -v blik-data:/app \
+  blik
+```
+
+**Environment Variables:**
+- `DATABASE_TYPE` - Database backend: `sqlite` (default), `postgres`, or `postgresql`
+- `DATABASE_URL` - Full database connection string (overrides individual settings)
+- `DATABASE_HOST` - Database server hostname
+- `DATABASE_PORT` - Database server port (default: 5432 for PostgreSQL)
+- `DATABASE_NAME` - Database name
+- `DATABASE_USER` - Database username
+- `DATABASE_PASSWORD` - Database password
+- `SECRET_KEY` - Django secret key (auto-generated if not provided)
+- `ENCRYPTION_KEY` - Key for encrypting sensitive data like SMTP passwords (use `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`)
+- `ALLOWED_HOSTS` - Comma-separated list of allowed hostnames (default: `localhost,127.0.0.1`)
+- `DEBUG` - Debug mode: `True` or `False` (default: `False`)
+- `CSRF_TRUSTED_ORIGINS` - Comma-separated list of trusted origins for CSRF (e.g., `https://yourdomain.com`)
 
 ### Development with Docker Compose
 

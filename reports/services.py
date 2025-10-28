@@ -314,6 +314,12 @@ def generate_report(cycle):
                             result['distribution'] = dict(Counter(text_responses))
                             # For numeric calculations, use position in scale (1-indexed)
                             # This allows averaging likert responses
+                    elif question_data['question_type'] == 'multiple_choice':
+                        # Store distribution of multiple choice responses
+                        from collections import Counter
+                        text_responses = [r for r in category_data['responses'] if r]
+                        if text_responses:
+                            result['distribution'] = dict(Counter(text_responses))
 
                     report_question['by_category'][category] = result
                 else:

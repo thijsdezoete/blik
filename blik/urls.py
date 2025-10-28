@@ -30,6 +30,7 @@ urlpatterns = [
     path('dashboard/reviewees/create/', admin_views.reviewee_create, name='reviewee_create'),
     path('dashboard/reviewees/<int:reviewee_id>/edit/', admin_views.reviewee_edit, name='reviewee_edit'),
     path('dashboard/reviewees/<int:reviewee_id>/delete/', admin_views.reviewee_delete, name='reviewee_delete'),
+    path('dashboard/reviewees/<int:reviewee_id>/quick-cycle/', admin_views.quick_cycle_create, name='quick_cycle_create'),
     path('dashboard/questionnaires/', admin_views.questionnaire_list, name='questionnaire_list'),
     path('dashboard/questionnaires/create/', admin_views.questionnaire_create, name='questionnaire_create'),
     path('dashboard/questionnaires/<int:questionnaire_id>/edit/', admin_views.questionnaire_edit, name='questionnaire_edit'),

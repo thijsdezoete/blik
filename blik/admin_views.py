@@ -213,6 +213,7 @@ def update_user_permissions(request):
 def reviewee_list(request):
     """List and manage reviewees"""
     from subscriptions.utils import get_subscription_status
+    from questionnaires.models import Questionnaire
 
     org = request.organization
     reviewees = Reviewee.objects.for_organization(org).filter(is_active=True).annotate(
@@ -222,8 +223,22 @@ def reviewee_list(request):
     # Get subscription status
     subscription_status = get_subscription_status(org) if org else None
 
+    # Get available questionnaires for quick cycle creation
+    questionnaires = Questionnaire.objects.for_organization(org).filter(is_active=True).order_by('-is_default', 'name')
+
+    # Annotate each reviewee with their latest cycle info
+    reviewees_with_latest = []
+    for reviewee in reviewees:
+        latest_cycle = reviewee.review_cycles.select_related('questionnaire').order_by('-created_at').first()
+        reviewees_with_latest.append({
+            'reviewee': reviewee,
+            'latest_questionnaire': latest_cycle.questionnaire if latest_cycle else None,
+        })
+
     context = {
-        'reviewees': reviewees,
+        'reviewees_with_latest': reviewees_with_latest,
+        'reviewees': reviewees,  # Keep for backward compatibility
+        'questionnaires': questionnaires,
         'subscription_status': subscription_status,
     }
 
@@ -337,6 +352,72 @@ def reviewee_delete(request, reviewee_id):
     }
 
     return render(request, 'admin_dashboard/reviewee_confirm_delete.html', context)
+
+
+@login_required
+@require_POST
+def quick_cycle_create(request, reviewee_id):
+    """
+    Quick cycle creation from reviewee list.
+    Creates a cycle with default token counts (1 self, 3 peers, 1 manager, 0 direct reports).
+    """
+    from accounts.permissions import organization_admin_required
+
+    # Check admin permission
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(
+            request,
+            'You do not have permission to create review cycles. Only organization administrators can access this feature.'
+        )
+        return redirect('reviewee_list')
+
+    org = request.organization
+    reviewee = get_object_or_404(Reviewee, id=reviewee_id, organization=org, is_active=True)
+    questionnaire_id = request.POST.get('questionnaire_id')
+
+    if not questionnaire_id:
+        messages.error(request, 'Questionnaire is required.')
+        return redirect('reviewee_list')
+
+    try:
+        questionnaire = Questionnaire.objects.get(id=questionnaire_id, organization=org)
+    except Questionnaire.DoesNotExist:
+        messages.error(request, 'Invalid questionnaire selected.')
+        return redirect('reviewee_list')
+
+    # Create the cycle with default token counts
+    cycle = ReviewCycle.objects.create(
+        reviewee=reviewee,
+        questionnaire=questionnaire,
+        created_by=request.user,
+        status='active'
+    )
+
+    # Default token distribution: 1 self, 3 peers, 1 manager, 0 direct reports
+    token_distribution = [
+        ('self', 1),
+        ('peer', 3),
+        ('manager', 1),
+        ('direct_report', 0),
+    ]
+
+    total_tokens = 0
+    for category, count in token_distribution:
+        for _ in range(count):
+            ReviewerToken.objects.create(
+                cycle=cycle,
+                category=category
+            )
+            total_tokens += count
+
+    messages.success(
+        request,
+        f'Review cycle created for "{reviewee.name}" using "{questionnaire.name}" with {total_tokens} reviewer tokens. '
+        f'Go to the cycle details to assign reviewers and send invitations.'
+    )
+
+    # Redirect to cycle detail page to manage tokens
+    return redirect('review_cycle_detail', cycle_id=cycle.id)
 
 
 @login_required
@@ -1036,6 +1117,8 @@ def settings_view(request):
             organization.min_responses_for_anonymity = int(min_responses)
         except (ValueError, TypeError):
             organization.min_responses_for_anonymity = 3
+
+        organization.auto_send_report_email = request.POST.get('auto_send_report_email') == 'on'
 
         # Update registration settings
         organization.allow_registration = request.POST.get('allow_registration') == 'on'

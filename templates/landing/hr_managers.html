@@ -1,0 +1,648 @@
+{% load static landing_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_name }} - 360° Feedback for Growing Teams | HR Managers</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Professional 360-degree feedback platform for HR managers of growing companies (30-50 employees). Anonymous reviews, GDPR compliant, easy deployment without IT burden.">
+    <meta name="keywords" content="360 feedback HR, performance review software, employee feedback, HR tools, anonymous feedback, GDPR compliant HR">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
+    <meta property="og:title" content="{{ site_name }} - Professional 360° Feedback for Growing Teams">
+    <meta property="og:description" content="Trusted by HR managers to deliver anonymous, professional performance reviews. GDPR compliant and deployment-ready.">
+    <meta property="og:site_name" content="{{ site_name }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
+
+    <script>
+        // Theme detection and initialization
+        (function() {
+            const getPreferredTheme = () => {
+                const stored = localStorage.getItem('theme');
+                if (stored) return stored;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+
+            const setTheme = (theme) => {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            };
+
+            setTheme(getPreferredTheme());
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        })();
+    </script>
+</head>
+<body class="landing-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">{{ site_name }}</h1>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <nav class="nav">
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#benefits">Benefits</a>
+                    <a href="#reporting">Reporting</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#faq">FAQ</a>
+                    <button class="theme-toggle" aria-label="Toggle theme">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Professional 360° Feedback for Growing Teams</h1>
+                <p class="hero-subtitle">Trusted by HR managers to deliver anonymous, insightful performance reviews. GDPR compliant, easy to deploy, and built for teams of 30-50 employees.</p>
+                <div class="hero-cta">
+                    <a href="#pricing" class="btn btn-primary">See Pricing Options</a>
+                    <a href="#how-it-works" class="btn btn-secondary">How It Works</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 2rem;">Built for HR Managers Who Value Employee Trust</h2>
+                <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.125rem;">
+                    360-degree feedback only works when employees feel safe being honest. Blik is designed from the ground up to guarantee <strong>true anonymity</strong>, giving your team the confidence to provide genuine, constructive feedback.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Simple, straightforward process from setup to insights</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="feature-card">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">1</div>
+                    <h3>Quick Setup</h3>
+                    <p>Choose between our hosted solution (€49/month) or share the open-source option with your IT team. Either way, you'll be ready in under an hour.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">2</div>
+                    <h3>Create Review Cycles</h3>
+                    <p>Select employees to review, choose peers/managers/reports as reviewers, and send anonymous invite links. Pre-built questionnaires included.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">3</div>
+                    <h3>Collect Feedback</h3>
+                    <p>Reviewers answer via anonymous links—no logins, no tracking. Progress is saved automatically so they can complete on their schedule.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">4</div>
+                    <h3>Professional Reports</h3>
+                    <p>Rich, visual reports show aggregated feedback by category (peers, managers, reports). Built-in privacy thresholds protect anonymity.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="section">
+        <div class="container">
+            <h2 class="section-title">Why HR Managers Choose Blik</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>True Employee Trust</h3>
+                    <p>Anonymous token system ensures reviewers can't be identified—even by admins. Honest feedback thrives when employees feel genuinely safe.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>No IT Burden</h3>
+                    <p>Our hosted solution means zero IT involvement. Or if you prefer self-hosting, share our GitHub link with your IT team for easy deployment.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>GDPR Compliant</h3>
+                    <p>Hosted in EU data centers (Hetzner) with full GDPR compliance. Perfect for European companies with strict data requirements.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Ready-to-Use Templates</h3>
+                    <p>Pre-configured 360° questionnaires covering leadership, communication, teamwork, and more. Customize as needed or use out-of-the-box.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Affordable & Transparent</h3>
+                    <p>€49/month for up to 50 employees. No per-user pricing, no surprise fees. Or self-host for free with unlimited usage.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Mobile-Friendly</h3>
+                    <p>Reviewers complete feedback on any device. Clean, accessible interface works perfectly on smartphones during commutes or breaks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Showcase Section -->
+    <section id="reporting" class="section section-alt product-showcase">
+        <div class="container">
+            <h2 class="section-title">Professional Reports That Drive Growth</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Rich visualizations and actionable insights from 360-degree feedback</p>
+
+            <!-- Carousel for desktop screenshots -->
+            <div class="screenshot-carousel">
+                <div class="carousel-container">
+                    <div class="carousel-slides">
+                        <div class="carousel-slide active" data-slide="0">
+                            <div class="screenshot-hover-wrapper">
+                                <picture class="screenshot-layer screenshot-light">
+                                    <source srcset="{% static 'img/screenshots/report_header_desktop_light.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_header_desktop_light.png' %}"
+                                         alt="360 Feedback Report Header - Light Theme"
+                                         loading="eager">
+                                </picture>
+                                <picture class="screenshot-layer screenshot-dark">
+                                    <source srcset="{% static 'img/screenshots/report_header_desktop_dark.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_header_desktop_dark.png' %}"
+                                         alt="360 Feedback Report Header - Dark Theme"
+                                         loading="eager">
+                                </picture>
+                                <div class="theme-indicator">Hover to toggle theme</div>
+                            </div>
+                            <p class="carousel-caption">Clear executive summaries highlight key strengths and development areas</p>
+                        </div>
+                        <div class="carousel-slide" data-slide="1">
+                            <div class="screenshot-hover-wrapper">
+                                <picture class="screenshot-layer screenshot-light">
+                                    <source srcset="{% static 'img/screenshots/report_charts_desktop_light.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_charts_desktop_light.png' %}"
+                                         alt="360 Feedback Report Charts - Light Theme"
+                                         loading="lazy">
+                                </picture>
+                                <picture class="screenshot-layer screenshot-dark">
+                                    <source srcset="{% static 'img/screenshots/report_charts_desktop_dark.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/report_charts_desktop_dark.png' %}"
+                                         alt="360 Feedback Report Charts - Dark Theme"
+                                         loading="lazy">
+                                </picture>
+                                <div class="theme-indicator">Hover to toggle theme</div>
+                            </div>
+                            <p class="carousel-caption">Visual radar charts compare self-assessment against peer and manager feedback</p>
+                        </div>
+                        <div class="carousel-slide" data-slide="2">
+                            <div class="screenshot-hover-wrapper">
+                                <picture class="screenshot-layer screenshot-light">
+                                    <source srcset="{% static 'img/screenshots/dashboard_desktop_light.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/dashboard_desktop_light.png' %}"
+                                         alt="Admin Dashboard - Light Theme"
+                                         loading="lazy">
+                                </picture>
+                                <picture class="screenshot-layer screenshot-dark">
+                                    <source srcset="{% static 'img/screenshots/dashboard_desktop_dark.webp' %}" type="image/webp">
+                                    <img src="{% static 'img/screenshots/dashboard_desktop_dark.png' %}"
+                                         alt="Admin Dashboard - Dark Theme"
+                                         loading="lazy">
+                                </picture>
+                                <div class="theme-indicator">Hover to toggle theme</div>
+                            </div>
+                            <p class="carousel-caption">Manage all review cycles and track progress from a clean, intuitive dashboard</p>
+                        </div>
+                    </div>
+                    <button class="carousel-nav carousel-prev" aria-label="Previous screenshot">‹</button>
+                    <button class="carousel-nav carousel-next" aria-label="Next screenshot">›</button>
+                    <div class="carousel-dots">
+                        <button class="carousel-dot active" data-slide="0" aria-label="Show report header"></button>
+                        <button class="carousel-dot" data-slide="1" aria-label="Show report charts"></button>
+                        <button class="carousel-dot" data-slide="2" aria-label="Show dashboard"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile showcase -->
+            <div class="mobile-showcase">
+                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Works Beautifully on Mobile</h3>
+                <div class="phone-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <picture>
+                                <source srcset="{% static 'img/screenshots/feedback_mobile_dark.webp' %}" type="image/webp">
+                                <img src="{% static 'img/screenshots/feedback_mobile_dark.png' %}"
+                                     alt="Anonymous Feedback Form on Mobile"
+                                     loading="lazy">
+                            </picture>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Reviewers complete feedback on any device—desktop, tablet, or phone
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cost Comparison Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Honest Pricing Without the SaaS Markup</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">For a team of 40 employees</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <div class="feature-card feature-card-danger">
+                    <h3>Typical SaaS Tools</h3>
+                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); margin: 1.5rem 0;">€5,000-12,000</div>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">per year</p>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.75rem;">Per-user pricing (€10-25/user/month)</li>
+                        <li style="margin-bottom: 0.75rem;">Your data on their servers</li>
+                        <li style="margin-bottom: 0.75rem;">Vendor lock-in</li>
+                        <li style="margin-bottom: 0.75rem;">Annual price increases</li>
+                        <li>Limited customization</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card feature-card-success">
+                    <h3>Blik Hosted</h3>
+                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); margin: 1.5rem 0;">€588</div>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">per year (€49/month)</p>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.75rem;">Flat monthly rate (up to 50 employees)</li>
+                        <li style="margin-bottom: 0.75rem;">EU-hosted, GDPR compliant</li>
+                        <li style="margin-bottom: 0.75rem;">Export data anytime</li>
+                        <li style="margin-bottom: 0.75rem;">Predictable pricing</li>
+                        <li>Full feature access</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-card" style="background: var(--gradient-purple); color: white; padding: 2rem; text-align: center;">
+                <h3 style="color: white; margin-bottom: 1rem;">Save €4,400-11,400 Annually</h3>
+                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">With pricing this clear, you can invest savings back into your team</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Choose What Works for Your Team</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card pricing-featured">
+                    <div class="featured-badge">Recommended for HR</div>
+                    <h3>EU Hosted</h3>
+                    <div class="price">€49</div>
+                    <p class="price-desc">per month</p>
+                    <ul class="pricing-features">
+                        <li>Perfect for 30-50 employees</li>
+                        <li>No IT setup required</li>
+                        <li>Hosted in EU (GDPR compliant)</li>
+                        <li>Automatic updates</li>
+                        <li>Daily backups</li>
+                        <li>Email support</li>
+                        <li>Custom domain included</li>
+                        <li>14-day free trial</li>
+                    </ul>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
+                </div>
+                <div class="pricing-card">
+                    <h3>Self-Hosted</h3>
+                    <div class="price">Free</div>
+                    <p class="price-desc">Forever</p>
+                    <ul class="pricing-features">
+                        <li>Unlimited employees</li>
+                        <li>All features included</li>
+                        <li>Open source (AGPL license)</li>
+                        <li>Deploy on your infrastructure</li>
+                        <li>Full data ownership</li>
+                        <li>Community support</li>
+                        <li>One-time IT setup needed</li>
+                    </ul>
+                    <a href="{% landing_url 'open_source' %}" class="btn btn-secondary">For Your IT Team</a>
+                </div>
+            </div>
+
+            <div class="cta-box" style="margin-top: 3rem;">
+                <h3>Working with your IT team?</h3>
+                <p style="font-size: 1.125rem;">Share our open-source page with them. It has all the technical details they need for self-hosted deployment.</p>
+                <a href="{% landing_url 'open_source' %}" class="btn btn-secondary" style="display: inline-block;">View Technical Docs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section">
+        <div class="container">
+            <h2 class="section-title">Common Questions from HR Managers</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>How is anonymity guaranteed?</summary>
+                    <p>Blik uses cryptographically secure anonymous tokens. When you send review invites, reviewers receive unique URLs with no identifying information. Even as an admin, you cannot trace feedback back to individuals. The system is architecturally designed to make de-anonymization impossible.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do I need IT support to get started?</summary>
+                    <p>Not for our hosted solution. You sign up, create your organization, and start sending review invites—no technical skills needed. If you prefer self-hosting, you'll need your IT team to handle deployment (it takes about 30 minutes with Docker).</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is it really GDPR compliant?</summary>
+                    <p>Yes. Our hosted version runs on EU servers (Hetzner in Germany). All data stays in the EU. For complete control, self-hosting on your own infrastructure gives you 100% GDPR compliance with zero third-party involvement.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I customize the questionnaires?</summary>
+                    <p>Absolutely. We include 2 pre-built 360° questionnaires that work great out-of-the-box. You can also create custom questionnaires with rating scales, multiple choice, and free text questions organized into sections.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens if too few people respond?</summary>
+                    <p>Blik has built-in privacy thresholds. By default, feedback from a category (e.g., peers) is only shown if at least 3 people responded. This prevents anyone from guessing who said what. You can adjust this threshold for smaller teams.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How long does setup take?</summary>
+                    <p>For hosted: 10-15 minutes to create your account and organization. For self-hosted: your IT team needs about 30 minutes to deploy with Docker. Either way, you'll be running your first review cycle the same day.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can reviewers complete feedback on mobile?</summary>
+                    <p>Yes. The feedback forms work beautifully on phones and tablets. Reviewers can complete reviews during their commute or whenever it's convenient for them. Progress is saved automatically so they can pause and continue later.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What if we outgrow the 50-employee limit?</summary>
+                    <p>Our €199/month Enterprise plan covers up to 200 employees. For larger teams, you can self-host for free with unlimited users, or contact us for custom hosted pricing.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do reports protect anonymity?</summary>
+                    <p>Reports aggregate feedback by category (peers, managers, direct reports). Data is only shown if the minimum response threshold is met. Self-assessments are shown separately since they're not anonymous. All text comments are grouped by category without attribution.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I export our data?</summary>
+                    <p>Yes. You can export your complete organization data as JSON at any time. No lock-in, no restrictions. This makes it easy to back up your data or migrate to another system if needed.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do you offer training or support?</summary>
+                    <p>The system is intuitive enough that most HR managers don't need training. We provide email support for hosted customers and comprehensive documentation. For self-hosted installations, your IT team can access community support on GitHub.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What's included in the free trial?</summary>
+                    <p>14 days of full access to the hosted version—all features, no limitations. You'll need a credit card to start, but you can cancel anytime during the trial without being charged.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Build Trust Through Better Feedback?</h2>
+                <p>Start your 14-day free trial or share the self-hosted option with your IT team.</p>
+                <div class="cta-buttons">
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
+                    <a href="{% landing_url 'open_source' %}" class="btn btn-secondary">View Self-Hosted Option</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>{{ site_name }}</h4>
+                    <p>Open source 360-degree feedback platform</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="{% landing_url 'index' %}">Overview</a></li>
+                        <li><a href="{% landing_url 'hr_managers' %}">For HR Managers</a></li>
+                        <li><a href="{% landing_url 'open_source' %}">For IT Teams</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="mailto:info@blik360.com">Contact</a></li>
+                        <li><a href="{% landing_url 'privacy_policy' %}">Privacy Policy</a></li>
+                        <li><a href="{% landing_url 'terms' %}">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a></li>
+                        <li><a href="https://github.com/thijsdezoete/blik/issues" target="_blank" rel="noopener">Issues</a></li>
+                        <li><a href="https://github.com/thijsdezoete/blik/discussions" target="_blank" rel="noopener">Discussions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 {{ site_name }}. Released under AGPL License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            const nav = document.querySelector('.nav');
+
+            if (menuToggle && nav) {
+                menuToggle.addEventListener('click', function() {
+                    const isExpanded = nav.classList.contains('active');
+                    nav.classList.toggle('active');
+                    menuToggle.setAttribute('aria-expanded', !isExpanded);
+                });
+
+                const navLinks = nav.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        nav.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                    });
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (!nav.contains(event.target) && !menuToggle.contains(event.target)) {
+                        nav.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+
+            // Theme toggle functionality
+            const themeToggle = document.querySelector('.theme-toggle');
+            const sunIcon = themeToggle.querySelector('.sun-icon');
+            const moonIcon = themeToggle.querySelector('.moon-icon');
+
+            const updateThemeIcons = () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                } else {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                }
+            };
+
+            updateThemeIcons();
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcons();
+            });
+
+            // Screenshot Carousel functionality
+            const slides = document.querySelectorAll('.carousel-slide');
+            const dots = document.querySelectorAll('.carousel-dot');
+            const prevBtn = document.querySelector('.carousel-prev');
+            const nextBtn = document.querySelector('.carousel-next');
+            let currentSlide = 0;
+            let autoplayInterval;
+
+            function showSlide(index) {
+                if (index >= slides.length) index = 0;
+                if (index < 0) index = slides.length - 1;
+
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+
+                dots.forEach(dot => dot.classList.remove('active'));
+                dots[index].classList.add('active');
+
+                currentSlide = index;
+            }
+
+            function nextSlide() {
+                showSlide(currentSlide + 1);
+            }
+
+            function prevSlide() {
+                showSlide(currentSlide - 1);
+            }
+
+            if (nextBtn) nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetAutoplay();
+            });
+
+            if (prevBtn) prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetAutoplay();
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    showSlide(index);
+                    resetAutoplay();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                    resetAutoplay();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                    resetAutoplay();
+                }
+            });
+
+            let isHovering = false;
+
+            function startAutoplay() {
+                if (!isHovering) {
+                    stopAutoplay();
+                    autoplayInterval = setInterval(nextSlide, 5000);
+                }
+            }
+
+            function stopAutoplay() {
+                if (autoplayInterval) {
+                    clearInterval(autoplayInterval);
+                    autoplayInterval = null;
+                }
+            }
+
+            function resetAutoplay() {
+                stopAutoplay();
+                if (!isHovering) {
+                    startAutoplay();
+                }
+            }
+
+            const carouselContainer = document.querySelector('.carousel-container');
+            if (carouselContainer) {
+                carouselContainer.addEventListener('mouseenter', () => {
+                    isHovering = true;
+                    stopAutoplay();
+                });
+                carouselContainer.addEventListener('mouseleave', () => {
+                    isHovering = false;
+                    startAutoplay();
+                });
+            }
+
+            startAutoplay();
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopAutoplay();
+                } else {
+                    startAutoplay();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

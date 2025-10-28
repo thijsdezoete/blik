@@ -86,6 +86,16 @@ def terms(request):
     return render(request, 'landing/terms.html', context)
 
 
+def hr_managers(request):
+    """HR manager focused landing page for growing teams (30-50 employees)."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/hr_managers.html', context)
+
+
 def signup(request):
     """Signup page with Stripe checkout integration."""
     # Get main app URL from environment or use current host for local dev

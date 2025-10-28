@@ -34,6 +34,12 @@ def sitemap(request):
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>{base_url}{prefix}/hr-managers/</loc>
+        <lastmod>2025-10-28</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>{base_url}{prefix}/open-source/</loc>
         <lastmod>2025-10-24</lastmod>
         <changefreq>weekly</changefreq>

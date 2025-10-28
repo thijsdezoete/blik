@@ -30,6 +30,10 @@ class Organization(TimeStampedModel):
         default=3,
         help_text='Minimum number of responses required to show results (for anonymity). Set to 1 for small teams.'
     )
+    auto_send_report_email = models.BooleanField(
+        default=True,
+        help_text='Automatically send email to reviewee when their report is generated'
+    )
 
     # Registration settings
     allow_registration = models.BooleanField(

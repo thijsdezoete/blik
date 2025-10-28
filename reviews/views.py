@@ -206,8 +206,13 @@ def submit_feedback(request, token):
                 from reports.services import generate_report, send_report_ready_notification
                 try:
                     report = generate_report(cycle)
-                    # Send notification email to reviewee
-                    send_report_ready_notification(report)
+
+                    # Send notification email if organization setting enabled
+                    organization = cycle.reviewee.organization
+                    if organization and organization.auto_send_report_email:
+                        email_stats = send_report_ready_notification(report)
+                        if email_stats.get('errors'):
+                            print(f"Errors sending report email for cycle {cycle.id}: {email_stats['errors']}")
                 except Exception as e:
                     # Log error but don't fail the submission
                     print(f"Error auto-generating report for cycle {cycle.id}: {e}")

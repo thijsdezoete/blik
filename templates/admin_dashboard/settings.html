@@ -80,6 +80,23 @@
                         >
                         <small class="help-text">Minimum responses required to display results. Set to 1 for small teams, 3+ for larger teams. Self-assessments always shown.</small>
                     </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="auto_send_report_email"
+                                name="auto_send_report_email"
+                                class="form-check-input"
+                                {% if organization.auto_send_report_email %}checked{% endif %}
+                                {% if not perms.accounts.can_manage_organization %}disabled{% endif %}
+                            >
+                            <label class="form-label" for="auto_send_report_email" style="display: inline; font-weight: normal;">
+                                Automatically send report email when generated
+                            </label>
+                        </div>
+                        <small class="help-text">When enabled, reviewees automatically receive an email with a link to their report when all feedback is collected.</small>
+                    </div>
                 </div>
             </div>
 

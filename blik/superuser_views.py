@@ -9,10 +9,13 @@ from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.template.loader import render_to_string
+from django.conf import settings
 
 from core.models import Organization
 from accounts.models import OrganizationInvitation, UserProfile
 from core.email import send_email
+from accounts.permissions import assign_organization_admin
 
 
 def superuser_required(user):
@@ -69,63 +72,97 @@ def create_organization(request):
                     default_users_can_create_cycles=False
                 )
 
-                # Create invitation
-                invitation = OrganizationInvitation.objects.create(
-                    organization=org,
+                # Generate username from email
+                username = admin_email.split('@')[0]
+                base_username = username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+
+                # Generate random password
+                password = User.objects.make_random_password(length=12)
+
+                # Create user account
+                user = User.objects.create_user(
+                    username=username,
                     email=admin_email,
-                    invited_by=request.user,
-                    expires_at=timezone.now() + timedelta(days=7)
+                    password=password
                 )
 
-                # Build invitation URL
-                invite_url = request.build_absolute_uri(
-                    reverse('accept_invitation', kwargs={'token': invitation.token})
+                # Create user profile with admin privileges
+                UserProfile.objects.create(
+                    user=user,
+                    organization=org,
+                    can_create_cycles_for_others=True  # Admins can create cycles for others
                 )
 
-                # Send invitation email
+                # Assign organization admin permissions
+                assign_organization_admin(user)
+
+                # Build login URL
+                login_url = request.build_absolute_uri(reverse('login'))
+
+                # Send welcome email with credentials
                 try:
-                    send_email(
-                        subject=f'Invitation to join {org.name} on Blik',
-                        message=f'''
+                    plain_message = f'''
 Hello,
 
-You've been invited to be the administrator of {org.name} on Blik 360 Feedback Platform.
+Your administrator account has been created for {org.name} on Blik 360 Feedback Platform.
 
-Click the link below to accept this invitation and create your account:
-{invite_url}
+Login Credentials:
+Email: {admin_email}
+Password: {password}
 
-This invitation will expire in 7 days.
+Login here: {login_url}
+
+For security, we recommend changing your password after your first login.
 
 Best regards,
 Blik Team
-                        '''.strip(),
-                        recipient_list=[admin_email],
-                        html_message=f'''
+                    '''.strip()
+
+                    html_message = f'''
 <!DOCTYPE html>
 <html>
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2>You're Invited!</h2>
-        <p>You've been invited to be the administrator of <strong>{org.name}</strong> on Blik 360 Feedback Platform.</p>
+        <h2>Welcome to Blik!</h2>
+        <p>Your administrator account has been created for <strong>{org.name}</strong> on Blik 360 Feedback Platform.</p>
+
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Login Credentials</h3>
+            <p><strong>Email:</strong> {admin_email}</p>
+            <p><strong>Password:</strong> <code style="background-color: #fff; padding: 4px 8px; border-radius: 4px;">{password}</code></p>
+        </div>
+
         <p style="margin: 30px 0;">
-            <a href="{invite_url}" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px;">Accept Invitation</a>
+            <a href="{login_url}" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px;">Log In Now</a>
         </p>
-        <p style="color: #666; font-size: 14px;">This invitation will expire in 7 days.</p>
+
+        <p style="color: #666; font-size: 14px;">For security, we recommend changing your password after your first login.</p>
+
         <p>Best regards,<br>Blik Team</p>
     </div>
 </body>
 </html>
-                        ''',
+                    '''
+
+                    send_email(
+                        subject=f'Welcome to {org.name} on Blik - Your Account is Ready',
+                        message=plain_message,
+                        recipient_list=[admin_email],
+                        html_message=html_message,
                         from_email=None  # Use default
                     )
                     messages.success(
                         request,
-                        f'Organization "{org_name}" created successfully. Invitation sent to {admin_email}.'
+                        f'Organization "{org_name}" created successfully. Login credentials sent to {admin_email}.'
                     )
                     return redirect('superuser_create_organization')
                 except Exception as e:
                     # Rollback will happen automatically due to transaction.atomic()
-                    raise Exception(f'Failed to send invitation email: {e}')
+                    raise Exception(f'Failed to send welcome email: {e}')
 
         except Exception as e:
             messages.error(request, f'Failed to create organization: {e}')

@@ -168,6 +168,8 @@ def signup_view(request):
 
         # Log the user in
         from django.contrib.auth import login
+        # Specify the backend explicitly since we have multiple auth backends
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, user)
 
         messages.success(request, f'Welcome to {invitation.organization.name}!')

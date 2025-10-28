@@ -95,3 +95,34 @@ class Organization(TimeStampedModel):
     def smtp_password(self, value):
         """Backward compatibility setter"""
         self.set_smtp_password(value)
+
+
+class WelcomeEmailFact(TimeStampedModel):
+    """
+    Educational facts about 360 feedback, psychology, and development.
+    These are randomly selected and shown in welcome emails.
+    """
+    title = models.CharField(
+        max_length=255,
+        help_text='Short title for the fact (e.g., "The Power of 360 Feedback")'
+    )
+    content = models.TextField(
+        help_text='The fact content. Can include HTML tags like <strong> for emphasis.'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text='Only active facts will be shown in emails'
+    )
+    display_order = models.IntegerField(
+        default=0,
+        help_text='Optional ordering (lower numbers shown first when not randomizing)'
+    )
+
+    class Meta:
+        db_table = 'welcome_email_facts'
+        ordering = ['display_order', 'created_at']
+        verbose_name = 'Welcome Email Fact'
+        verbose_name_plural = 'Welcome Email Facts'
+
+    def __str__(self):
+        return self.title

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from .models import Organization
+from .models import Organization, WelcomeEmailFact
 
 
 class OrganizationAdminForm(forms.ModelForm):
@@ -47,6 +47,15 @@ class OrganizationAdmin(admin.ModelAdmin):
             'classes': ['collapse']
         }),
     ]
+
+
+@admin.register(WelcomeEmailFact)
+class WelcomeEmailFactAdmin(admin.ModelAdmin):
+    list_display = ['title', 'is_active', 'display_order', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['title', 'content']
+    list_editable = ['is_active', 'display_order']
+    ordering = ['display_order', 'created_at']
 
 
 # Note: django-axes models (AccessAttempt, AccessLog, AccessFailureLog) are

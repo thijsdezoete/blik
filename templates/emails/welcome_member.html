@@ -9,43 +9,41 @@
 
         <p>Hi there,</p>
 
-        <p>Your account has been created and you're all set. You can now log in at <a href="{{ login_url }}" style="color: #4f46e5;">{{ login_url }}</a></p>
+        <p>Your account has been successfully created. You're all set to start your feedback journey.</p>
 
-        <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 16px; margin: 24px 0;">
-            <h3 style="margin-top: 0; color: #1e40af;">💡 {{ fact_title }}</h3>
-            <p style="margin-bottom: 0;">{{ fact_content|safe }}</p>
+        <div style="text-align: center; margin: 32px 0;">
+            <a href="{{ login_url }}" style="display: inline-block; padding: 14px 32px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;">Log In to Dashboard</a>
         </div>
 
-        <div style="background: #fefce8; border-left: 4px solid #eab308; padding: 16px; margin: 24px 0;">
-            <h3 style="margin-top: 0; color: #854d0e;">🎯 Understanding Your Growth: The Dreyfus Model</h3>
-            <p>At {{ organization.name }}, we use the <a href="{{ dreyfus_url }}" style="color: #854d0e; font-weight: 500;">Dreyfus Model of Skill Acquisition</a> to help you understand your development journey.</p>
-            <p style="margin-bottom: 8px;">The model identifies five stages of mastery:</p>
-            <ul style="margin-top: 8px;">
-                <li><strong>Novice:</strong> Following rules and procedures</li>
-                <li><strong>Advanced Beginner:</strong> Recognizing patterns</li>
-                <li><strong>Competent:</strong> Planning and prioritizing</li>
-                <li><strong>Proficient:</strong> Seeing the big picture</li>
-                <li><strong>Expert:</strong> Intuitive mastery</li>
-            </ul>
-            <p><a href="{{ dreyfus_url }}" style="color: #854d0e; font-weight: 500;">Learn more about how this applies to your growth →</a></p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 24px 0;">
+            <h3 style="margin-top: 0;">Getting Started</h3>
+            <ol style="margin: 16px 0; padding-left: 20px;">
+                <li style="margin-bottom: 8px;">Complete your profile</li>
+                <li style="margin-bottom: 8px;">Participate in feedback cycles as they're created</li>
+                <li style="margin-bottom: 0;">Track your development over time</li>
+            </ol>
         </div>
 
-        <h3>What's Next?</h3>
-        <ol>
-            <li>Log in to your dashboard</li>
-            <li>Complete your profile</li>
-            <li>Participate in feedback cycles as they're created</li>
-            <li>Track your development over time</li>
-        </ol>
+        <p>If you have any questions, your team admin is here to help.</p>
 
-        <p style="margin-top: 32px;">If you have questions, feel free to reach out to your team admin.</p>
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
+
+        <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;"><em>While you're here, here's something interesting about feedback and growth:</em></p>
+
+        <div style="background: #f0f9ff; border-left: 3px solid #3b82f6; padding: 16px; margin: 16px 0;">
+            <h4 style="margin-top: 0; color: #1e40af; font-size: 16px;">{{ fact_title }}</h4>
+            <p style="margin-bottom: 0; font-size: 14px;">{{ fact_content|safe }}</p>
+        </div>
+
+        <p style="font-size: 14px; color: #64748b;">Blik uses the <a href="{{ dreyfus_url }}" style="color: #4f46e5;">Dreyfus Model</a> as a framework for understanding skill development—from Novice to Expert. We believe it's a powerful tool for tracking your growth journey. <a href="{{ dreyfus_url }}" style="color: #4f46e5;">Learn more →</a></p>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 40px 0;">
 
         <p>Best regards,<br>
         The {{ organization.name }} Team</p>
 
-        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-        <p style="font-size: 12px; color: #666;">
-            This email was sent to {{ user.email }} because you were invited to join {{ organization.name }} on {{ site_name }}.
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 32px;">
+            This email was sent to {{ user.email }} because you were invited to join {{ organization.name }}.
         </p>
     </div>
 </body>

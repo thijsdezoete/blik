@@ -2,42 +2,31 @@ Welcome to {{ organization.name }}!
 
 Hi there,
 
-Your account has been created and you're all set. You can now log in at {{ login_url }}
+Your account has been successfully created. You're all set to start your feedback journey.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GETTING STARTED
+───────────────
 
-💡 {{ fact_title|upper }}
-
-{{ fact_content|striptags }}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 UNDERSTANDING YOUR GROWTH: THE DREYFUS MODEL
-
-At {{ organization.name }}, we use the Dreyfus Model of Skill Acquisition to help you understand your development journey.
-
-The model identifies five stages of mastery:
-  • Novice: Following rules and procedures
-  • Advanced Beginner: Recognizing patterns
-  • Competent: Planning and prioritizing
-  • Proficient: Seeing the big picture
-  • Expert: Intuitive mastery
-
-Learn more: {{ dreyfus_url }}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-WHAT'S NEXT?
-
-1. Log in to your dashboard
+1. Log in to your dashboard: {{ login_url }}
 2. Complete your profile
 3. Participate in feedback cycles as they're created
 4. Track your development over time
 
-If you have questions, feel free to reach out to your team admin.
+If you have any questions, your team admin is here to help.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+While you're here, here's something interesting about feedback and growth:
+
+{{ fact_title|upper }}
+
+{{ fact_content|striptags }}
+
+Blik uses the Dreyfus Model as a framework for understanding skill development—from Novice to Expert. We believe it's a powerful tool for tracking your growth journey. Learn more: {{ dreyfus_url }}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Best regards,
 The {{ organization.name }} Team
 
----
-This email was sent to {{ user.email }} because you were invited to join {{ organization.name }} on {{ site_name }}.
+This email was sent to {{ user.email }} because you were invited to join {{ organization.name }}.

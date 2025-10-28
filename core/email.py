@@ -84,80 +84,41 @@ def send_email(subject, message, recipient_list, html_message=None, from_email=N
     return email.send()
 
 
-def send_welcome_email(user, organization):
+def send_welcome_email(user, organization, password=None):
     """
     Send welcome email to newly registered user.
 
     Args:
         user: User object
         organization: Organization object
+        password: Optional password to include in email (for admin-created accounts)
+
+    Returns:
+        Number of emails sent (0 or 1)
     """
-    subject = f'Welcome to {organization.name} - 360 Feedback Platform'
+    from django.template.loader import render_to_string
+    from django.urls import reverse
 
-    plain_message = f"""
-Hello {user.username},
+    subject = f'Welcome to {settings.SITE_NAME} - Your Account is Ready'
 
-Welcome to {organization.name}'s 360 Feedback Platform!
+    # Build login URL
+    login_url = f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}{reverse("login")}'
 
-Your account has been successfully created. You can now log in and start using the platform.
+    # Render email templates
+    context = {
+        'organization': organization,
+        'user': user,
+        'password': password,
+        'login_url': login_url,
+        'site_name': settings.SITE_NAME,
+    }
 
-Getting Started:
-- You can create feedback cycles for yourself
-- Fill out questionnaires assigned to you
-- View your feedback reports
-
-If you have any questions or need assistance, please contact {organization.email}.
-
-Best regards,
-The {organization.name} Team
-    """.strip()
-
-    html_message = f"""
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ background-color: #4CAF50; color: white; padding: 20px; text-align: center; }}
-        .content {{ padding: 20px; background-color: #f9f9f9; }}
-        .footer {{ padding: 20px; text-align: center; color: #666; font-size: 0.9em; }}
-        .button {{ display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin: 10px 0; }}
-        ul {{ padding-left: 20px; }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Welcome to {organization.name}</h1>
-        </div>
-        <div class="content">
-            <p>Hello <strong>{user.username}</strong>,</p>
-
-            <p>Welcome to {organization.name}'s 360 Feedback Platform!</p>
-
-            <p>Your account has been successfully created. You can now log in and start using the platform.</p>
-
-            <h3>Getting Started:</h3>
-            <ul>
-                <li>You can create feedback cycles for yourself</li>
-                <li>Fill out questionnaires assigned to you</li>
-                <li>View your feedback reports</li>
-            </ul>
-
-            <p>If you have any questions or need assistance, please contact <a href="mailto:{organization.email}">{organization.email}</a>.</p>
-        </div>
-        <div class="footer">
-            <p>Best regards,<br>The {organization.name} Team</p>
-        </div>
-    </div>
-</body>
-</html>
-    """.strip()
+    html_message = render_to_string('emails/welcome.html', context)
+    text_message = render_to_string('emails/welcome.txt', context)
 
     return send_email(
         subject=subject,
-        message=plain_message,
+        message=text_message,
         recipient_list=[user.email],
         html_message=html_message,
         from_email=organization.from_email if organization.from_email else None

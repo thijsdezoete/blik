@@ -14,15 +14,15 @@
         <div style="background: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h2 style="margin-top: 0;">Your Login Credentials</h2>
             <p><strong>Username:</strong> {{ user.username }}<br>
-            <strong>Email:</strong> {{ user.email }}<br>
-            <strong>Password:</strong> {{ password }}</p>
+            <strong>Email:</strong> {{ user.email }}{% if password %}<br>
+            <strong>Password:</strong> {{ password }}{% endif %}</p>
 
             <p style="margin-top: 20px;">
                 <a href="{{ login_url }}" style="background: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Login to Dashboard</a>
             </p>
         </div>
 
-        <p><strong>Important:</strong> Please change your password after your first login for security.</p>
+        {% if password %}<p><strong>Important:</strong> Please change your password after your first login for security.</p>{% endif %}
 
         <h3>Getting Started</h3>
         <ol>

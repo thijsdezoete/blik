@@ -5,8 +5,6 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib.auth import login
@@ -19,39 +17,6 @@ from .models import Plan, Subscription, OneTimeLoginToken
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
-def send_welcome_email(organization, user, password):
-    """Send welcome email with login credentials to new customer"""
-    subject = f'Welcome to {settings.SITE_NAME} - Your Account is Ready'
-
-    # Render email templates
-    html_message = render_to_string('emails/welcome.html', {
-        'organization': organization,
-        'user': user,
-        'password': password,
-        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/accounts/login/',
-        'site_name': settings.SITE_NAME,
-    })
-
-    text_message = render_to_string('emails/welcome.txt', {
-        'organization': organization,
-        'user': user,
-        'password': password,
-        'login_url': f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/accounts/login/',
-        'site_name': settings.SITE_NAME,
-    })
-
-    try:
-        send_mail(
-            subject=subject,
-            message=text_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            html_message=html_message,
-            fail_silently=False,
-        )
-    except Exception as e:
-        # Log error but don't fail the signup
-        print(f"Failed to send welcome email to {user.email}: {e}")
 
 
 @require_POST
@@ -286,7 +251,12 @@ def handle_checkout_session_completed(session):
 
     # Send welcome email (only if new user with password)
     if password:
-        send_welcome_email(org, user, password)
+        from core.email import send_welcome_email
+        try:
+            send_welcome_email(user, org, password=password)
+        except Exception as e:
+            # Log error but don't fail the signup
+            print(f"Failed to send welcome email to {user.email}: {e}")
 
     print(f"Created organization '{org.name}' with auto-login token: {login_token.token}")
 

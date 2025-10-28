@@ -7,12 +7,12 @@ Your {{ site_name }} account has been created and is ready to use. You can now s
 YOUR LOGIN CREDENTIALS
 =======================
 Username: {{ user.username }}
-Email: {{ user.email }}
-Password: {{ password }}
+Email: {{ user.email }}{% if password %}
+Password: {{ password }}{% endif %}
 
 Login URL: {{ login_url }}
 
-IMPORTANT: Please change your password after your first login for security.
+{% if password %}IMPORTANT: Please change your password after your first login for security.{% endif %}
 
 GETTING STARTED
 ===============

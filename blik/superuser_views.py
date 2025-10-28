@@ -1,20 +1,18 @@
 """
 Superuser-only views for administrative tasks
 """
+import secrets
+import string
 from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
-from django.utils import timezone
-from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.template.loader import render_to_string
-from django.conf import settings
 
 from core.models import Organization
-from accounts.models import OrganizationInvitation, UserProfile
-from core.email import send_email
+from accounts.models import UserProfile
+from core.email import send_welcome_email
 from accounts.permissions import assign_organization_admin
 
 
@@ -81,7 +79,8 @@ def create_organization(request):
                     counter += 1
 
                 # Generate random password
-                password = User.objects.make_random_password(length=12)
+                alphabet = string.ascii_letters + string.digits
+                password = ''.join(secrets.choice(alphabet) for _ in range(16))
 
                 # Create user account
                 user = User.objects.create_user(
@@ -100,61 +99,9 @@ def create_organization(request):
                 # Assign organization admin permissions
                 assign_organization_admin(user)
 
-                # Build login URL
-                login_url = request.build_absolute_uri(reverse('login'))
-
                 # Send welcome email with credentials
                 try:
-                    plain_message = f'''
-Hello,
-
-Your administrator account has been created for {org.name} on Blik 360 Feedback Platform.
-
-Login Credentials:
-Email: {admin_email}
-Password: {password}
-
-Login here: {login_url}
-
-For security, we recommend changing your password after your first login.
-
-Best regards,
-Blik Team
-                    '''.strip()
-
-                    html_message = f'''
-<!DOCTYPE html>
-<html>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2>Welcome to Blik!</h2>
-        <p>Your administrator account has been created for <strong>{org.name}</strong> on Blik 360 Feedback Platform.</p>
-
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="margin-top: 0;">Login Credentials</h3>
-            <p><strong>Email:</strong> {admin_email}</p>
-            <p><strong>Password:</strong> <code style="background-color: #fff; padding: 4px 8px; border-radius: 4px;">{password}</code></p>
-        </div>
-
-        <p style="margin: 30px 0;">
-            <a href="{login_url}" style="display: inline-block; padding: 12px 24px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 8px;">Log In Now</a>
-        </p>
-
-        <p style="color: #666; font-size: 14px;">For security, we recommend changing your password after your first login.</p>
-
-        <p>Best regards,<br>Blik Team</p>
-    </div>
-</body>
-</html>
-                    '''
-
-                    send_email(
-                        subject=f'Welcome to {org.name} on Blik - Your Account is Ready',
-                        message=plain_message,
-                        recipient_list=[admin_email],
-                        html_message=html_message,
-                        from_email=None  # Use default
-                    )
+                    send_welcome_email(user, org, password=password)
                     messages.success(
                         request,
                         f'Organization "{org_name}" created successfully. Login credentials sent to {admin_email}.'

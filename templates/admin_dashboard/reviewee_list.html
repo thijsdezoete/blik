@@ -14,7 +14,11 @@
         </p>
         {% endif %}
     </div>
+    {% if perms.accounts.can_manage_organization %}
     <a href="{% url 'reviewee_create' %}" class="btn btn-primary">Add Reviewee</a>
+    {% else %}
+    <a href="{% url 'reviewee_create' %}" class="btn btn-primary">Add Myself</a>
+    {% endif %}
 </div>
 
 {% if reviewees %}
@@ -51,10 +55,14 @@
                         {% endif %}
                     </td>
                     <td>
+                        {% if perms.accounts.can_manage_organization %}
                         <div style="display: flex; gap: 0.5rem;">
                             <a href="{% url 'reviewee_edit' reviewee.id %}" class="btn btn-sm btn-secondary">Edit</a>
                             <a href="{% url 'reviewee_delete' reviewee.id %}" class="btn btn-sm btn-danger">Delete</a>
                         </div>
+                        {% else %}
+                        <span style="color: #cbd5e1;">—</span>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -68,8 +76,13 @@
     <div class="card-body">
         <div class="empty-state">
             <h3 style="margin-bottom: 0.5rem;">No reviewees yet</h3>
+            {% if perms.accounts.can_manage_organization %}
             <p style="margin-bottom: 1.5rem;">Add your first reviewee to start creating review cycles</p>
             <a href="{% url 'reviewee_create' %}" class="btn btn-primary">Add Reviewee</a>
+            {% else %}
+            <p style="margin-bottom: 1.5rem;">Add yourself as a reviewee to start receiving feedback</p>
+            <a href="{% url 'reviewee_create' %}" class="btn btn-primary">Add Myself</a>
+            {% endif %}
         </div>
     </div>
 </div>

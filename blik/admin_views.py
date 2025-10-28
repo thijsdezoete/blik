@@ -234,6 +234,7 @@ def reviewee_list(request):
 def reviewee_create(request):
     """Create a new reviewee"""
     from subscriptions.utils import check_employee_limit
+    from accounts.permissions import is_organization_admin
 
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -245,6 +246,12 @@ def reviewee_create(request):
             if not organization:
                 messages.error(request, 'No organization found. Please run setup first.')
                 return redirect('admin_dashboard')
+
+            # Non-admins can only create reviewees for themselves
+            if not is_organization_admin(request.user):
+                if email.lower() != request.user.email.lower():
+                    messages.error(request, 'You can only create a reviewee profile for yourself.')
+                    return redirect('reviewee_list')
 
             # Check employee limit
             allowed, error_message = check_employee_limit(request)
@@ -271,7 +278,17 @@ def reviewee_create(request):
 
 @login_required
 def reviewee_edit(request, reviewee_id):
-    """Edit an existing reviewee"""
+    """Edit an existing reviewee - admin only"""
+    from accounts.permissions import organization_admin_required
+
+    # Check admin permission
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(
+            request,
+            'You do not have permission to edit reviewees. Only organization administrators can access this feature.'
+        )
+        return redirect('reviewee_list')
+
     reviewee = get_object_or_404(Reviewee, id=reviewee_id)
 
     if request.method == 'POST':
@@ -296,7 +313,17 @@ def reviewee_edit(request, reviewee_id):
 
 @login_required
 def reviewee_delete(request, reviewee_id):
-    """Soft delete a reviewee"""
+    """Soft delete a reviewee - admin only"""
+    from accounts.permissions import organization_admin_required
+
+    # Check admin permission
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(
+            request,
+            'You do not have permission to delete reviewees. Only organization administrators can access this feature.'
+        )
+        return redirect('reviewee_list')
+
     reviewee = get_object_or_404(Reviewee, id=reviewee_id)
 
     if request.method == 'POST':

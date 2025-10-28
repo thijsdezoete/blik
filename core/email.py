@@ -96,13 +96,58 @@ def send_welcome_email(user, organization, password=None):
     Returns:
         Number of emails sent (0 or 1)
     """
+    import random
     from django.template.loader import render_to_string
     from django.urls import reverse
 
-    subject = f'Welcome to {settings.SITE_NAME} - Your Account is Ready'
-
     # Build login URL
     login_url = f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}{reverse("login")}'
+
+    # Build Dreyfus model URL
+    dreyfus_url = f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/landing/dreyfus-model/'
+
+    # Rotating facts about 360 feedback, psychology, and development
+    facts = [
+        {
+            'title': 'The Power of 360 Feedback',
+            'content': 'Research shows that <strong>360-degree feedback increases self-awareness by up to 30%</strong> and significantly improves leadership effectiveness. Unlike traditional top-down reviews, 360 feedback captures insights from peers, direct reports, and managers—giving you a complete picture of your impact.'
+        },
+        {
+            'title': 'Blind Spots Matter',
+            'content': 'Studies reveal that <strong>95% of people believe they are self-aware, but only 10-15% truly are</strong>. 360 feedback helps uncover blind spots—behaviors and impacts you might not see in yourself but are clear to others around you.'
+        },
+        {
+            'title': 'Feedback Frequency',
+            'content': '<strong>Organizations with regular feedback cycles see 14.9% lower turnover rates</strong> than those with annual reviews only. Continuous feedback creates a culture of growth and psychological safety, where people feel valued and heard.'
+        },
+        {
+            'title': 'The Neuroscience of Feedback',
+            'content': 'When we receive feedback, our brain activates the same regions involved in physical pain or reward. <strong>Framing feedback as growth opportunities rather than criticism activates reward pathways</strong>, making us more receptive and motivated to improve.'
+        },
+        {
+            'title': 'Peer Feedback Impact',
+            'content': '<strong>Peer feedback is often more accurate than manager feedback alone</strong> because peers see day-to-day behaviors and collaboration patterns. Combined perspectives create a more complete and actionable picture for development.'
+        },
+        {
+            'title': 'Growth Mindset Research',
+            'content': 'Carol Dweck\'s research shows that <strong>people with a growth mindset are 34% more likely to feel engaged at work</strong>. Regular 360 feedback reinforces growth mindset by showing that skills are developable, not fixed traits.'
+        },
+    ]
+
+    # Select a random fact
+    selected_fact = random.choice(facts)
+
+    # Use different templates based on whether password is provided
+    if password:
+        # Admin-created account with credentials
+        subject = f'Welcome to {settings.SITE_NAME} - Your Account is Ready'
+        html_template = 'emails/welcome.html'
+        text_template = 'emails/welcome.txt'
+    else:
+        # Invited member (already set their own password)
+        subject = f'Welcome to {organization.name}!'
+        html_template = 'emails/welcome_member.html'
+        text_template = 'emails/welcome_member.txt'
 
     # Render email templates
     context = {
@@ -110,11 +155,14 @@ def send_welcome_email(user, organization, password=None):
         'user': user,
         'password': password,
         'login_url': login_url,
+        'dreyfus_url': dreyfus_url,
         'site_name': settings.SITE_NAME,
+        'fact_title': selected_fact['title'],
+        'fact_content': selected_fact['content'],
     }
 
-    html_message = render_to_string('emails/welcome.html', context)
-    text_message = render_to_string('emails/welcome.txt', context)
+    html_message = render_to_string(html_template, context)
+    text_message = render_to_string(text_template, context)
 
     return send_email(
         subject=subject,

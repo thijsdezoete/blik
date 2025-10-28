@@ -648,8 +648,21 @@ def review_cycle_list(request):
         completed_count=Count('tokens', filter=Q(tokens__completed_at__isnull=False))
     ).order_by('-created_at')
 
+    # Get available questionnaires for quick cycle creation
+    questionnaires = Questionnaire.objects.for_organization(org).filter(is_active=True).order_by('-is_default', 'name')
+
+    # Enhance cycles with latest questionnaire info for each reviewee
+    cycles_with_latest = []
+    for cycle in cycles:
+        latest_cycle = cycle.reviewee.review_cycles.select_related('questionnaire').order_by('-created_at').first()
+        cycles_with_latest.append({
+            'cycle': cycle,
+            'latest_questionnaire': latest_cycle.questionnaire if latest_cycle else None,
+        })
+
     context = {
-        'cycles': cycles,
+        'cycles_with_latest': cycles_with_latest,
+        'questionnaires': questionnaires,
     }
 
     return render(request, 'admin_dashboard/review_cycle_list.html', context)

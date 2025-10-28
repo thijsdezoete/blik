@@ -11,7 +11,7 @@
     <a href="{% url 'review_cycle_create' %}" class="btn btn-primary">Create Review Cycle</a>
 </div>
 
-{% if cycles %}
+{% if cycles_with_latest %}
 <div class="card">
     <div class="card-body">
         <div class="table-wrapper">
@@ -27,15 +27,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for cycle in cycles %}
+                {% for item in cycles_with_latest %}
                 <tr>
                     <td>
-                        <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">{{ cycle.reviewee.email }}</div>
+                        <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
                     </td>
-                    <td style="font-size: 0.875rem;">{{ cycle.questionnaire.name }}</td>
+                    <td style="font-size: 0.875rem;">{{ item.cycle.questionnaire.name }}</td>
                     <td>
-                        {% if cycle.status == 'active' %}
+                        {% if item.cycle.status == 'active' %}
                         <span class="badge badge-warning">Active</span>
                         {% else %}
                         <span class="badge badge-success">Completed</span>
@@ -43,17 +43,95 @@
                     </td>
                     <td>
                         <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.25rem;">
-                            {{ cycle.completed_count }} / {{ cycle.token_count }} responses
+                            {{ item.cycle.completed_count }} / {{ item.cycle.token_count }} responses
                         </div>
                         <div class="progress">
-                            <div class="progress-bar" style="width: {% widthratio cycle.completed_count cycle.token_count 100 %}%;"></div>
+                            <div class="progress-bar" style="width: {% widthratio item.cycle.completed_count item.cycle.token_count 100 %}%;"></div>
                         </div>
                     </td>
                     <td style="color: #64748b; font-size: 0.875rem;">
-                        {{ cycle.created_at|date:"M d, Y" }}
+                        {{ item.cycle.created_at|date:"M d, Y" }}
                     </td>
                     <td>
-                        <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                        {% if perms.accounts.can_manage_organization %}
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <!-- Split button: New Cycle (main action) + dropdown for other questionnaires -->
+                            <div class="btn-group" style="position: relative; display: inline-flex;">
+                                <!-- Main action button: Create cycle with last-used or default questionnaire -->
+                                <form method="POST" action="{% url 'quick_cycle_create' item.cycle.reviewee.id %}" style="margin: 0; display: inline;">
+                                    {% csrf_token %}
+                                    {% if item.latest_questionnaire %}
+                                    <input type="hidden" name="questionnaire_id" value="{{ item.latest_questionnaire.id }}">
+                                    {% else %}
+                                    {% for q in questionnaires %}
+                                        {% if q.is_default %}
+                                        <input type="hidden" name="questionnaire_id" value="{{ q.id }}">
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    <button type="submit" class="btn btn-sm btn-primary" style="border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: 1px solid rgba(255,255,255,0.3);">
+                                        New Cycle
+                                    </button>
+                                </form>
+
+                                <!-- Dropdown toggle button -->
+                                <button
+                                    class="btn btn-sm btn-primary"
+                                    type="button"
+                                    data-toggle="cycle-{{ item.cycle.id }}"
+                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0; padding: 0.25rem 0.5rem; border-left: 1px solid rgba(255,255,255,0.3);"
+                                    title="Select different questionnaire"
+                                >
+                                    ▾
+                                </button>
+
+                                <!-- Dropdown menu with fixed positioning -->
+                                <div class="dropdown-menu" id="cycle-{{ item.cycle.id }}" style="display: none; position: fixed; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); min-width: 300px; z-index: 9999; margin-top: 0.25rem;">
+                                    <div style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); background: var(--bg-light);">
+                                        <div style="font-weight: 600; font-size: 0.875rem; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                            Select Questionnaire
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                                            <span style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                ✓ = Quick create (button action)
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% for q in questionnaires %}
+                                    {% if item.latest_questionnaire and item.latest_questionnaire.id == q.id or not item.latest_questionnaire and q.is_default %}
+                                        {# This is the questionnaire that will be used for quick create #}
+                                        <form method="POST" action="{% url 'quick_cycle_create' item.cycle.reviewee.id %}" style="margin: 0;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="questionnaire_id" value="{{ q.id }}">
+                                            <button type="submit" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.625rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; color: var(--text-primary); border-left: 3px solid var(--primary);">
+                                                <span style="flex: 1; padding-right: 0.5rem; font-weight: 500;">{{ q.name }}</span>
+                                                <span class="badge badge-primary" style="font-size: 0.75rem; background: var(--primary); color: white; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                    <span>✓</span>
+                                                    <span>Quick create</span>
+                                                </span>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="POST" action="{% url 'quick_cycle_create' item.cycle.reviewee.id %}" style="margin: 0;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="questionnaire_id" value="{{ q.id }}">
+                                            <button type="submit" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.625rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; color: var(--text-primary);">
+                                                <span style="flex: 1; padding-right: 0.5rem;">{{ q.name }}</span>
+                                                {% if q.is_default %}
+                                                <span class="badge badge-secondary" style="font-size: 0.75rem;">Default</span>
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                        </div>
+                        {% else %}
+                        <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -73,4 +151,71 @@
     </div>
 </div>
 {% endif %}
+
+<style>
+.dropdown-item:hover {
+    background-color: var(--bg-light);
+}
+.btn-group {
+    position: relative;
+    display: inline-flex;
+}
+</style>
+
+<script>
+// Handle dropdown toggle with proper positioning
+document.addEventListener('DOMContentLoaded', function() {
+    const dropdownToggles = document.querySelectorAll('[data-toggle^="cycle-"]');
+
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const dropdownId = this.getAttribute('data-toggle');
+            const menu = document.getElementById(dropdownId);
+
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(m => {
+                if (m.id !== dropdownId) {
+                    m.style.display = 'none';
+                }
+            });
+
+            // Toggle this dropdown
+            const isVisible = menu.style.display === 'block';
+
+            if (!isVisible) {
+                // Position the dropdown relative to the button
+                const rect = this.getBoundingClientRect();
+                menu.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+                menu.style.left = (rect.left + window.scrollX) + 'px';
+                menu.style.display = 'block';
+            } else {
+                menu.style.display = 'none';
+            }
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.btn-group')) {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        }
+    });
+
+    // Prevent dropdown from closing when clicking inside it
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.addEventListener('click', function(e) {
+            // Let form submissions go through (they'll navigate away anyway)
+            if (e.target.closest('form')) {
+                return;
+            }
+            e.stopPropagation();
+        });
+    });
+});
+</script>
 {% endblock %}

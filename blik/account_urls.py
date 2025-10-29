@@ -13,4 +13,5 @@ urlpatterns = [
     path('subscription/reactivate/', account_views.reactivate_subscription_view, name='reactivate_subscription'),
     path('delete/', account_views.delete_account, name='delete_account'),
     path('organization/delete/', account_views.delete_organization, name='delete_organization'),
+    path('mark-welcome-seen/', account_views.mark_welcome_seen, name='mark_welcome_seen'),
 ]

@@ -3,8 +3,8 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<!-- Welcome Modal (First Visit) -->
-<div id="welcome-modal" class="modal-overlay" style="display: none;">
+<!-- Welcome Modal -->
+<div id="welcome-modal" class="modal-overlay" style="display: none;" data-has-seen-welcome="{{ has_seen_welcome|yesno:'true,false' }}">
     <div class="modal-content" style="max-width: 600px;">
         <div style="text-align: center; margin-bottom: 2rem;">
             <div style="width: 64px; height: 64px; margin: 0 auto 1rem; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -71,6 +71,70 @@
         </div>
     </div>
 </div>
+
+<script>
+// Welcome modal logic - global functions for reuse
+window.showWelcomeModal = function() {
+    const modal = document.getElementById('welcome-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+window.dismissWelcome = function(skip = false) {
+    const modal = document.getElementById('welcome-modal');
+    if (modal) {
+        localStorage.setItem('blik_welcome_seen', 'true');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+
+        // Mark as seen in backend
+        fetch('{% url "account:mark_welcome_seen" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                'Content-Type': 'application/json',
+            },
+        }).catch(err => console.error('Failed to mark welcome as seen:', err));
+    }
+};
+
+// Auto-show on first visit (only if not already seen)
+(function() {
+    const hasSeenWelcomeLocal = localStorage.getItem('blik_welcome_seen');
+    const hasSeenWelcomeBackend = document.getElementById('welcome-modal')?.dataset.hasSeenWelcome === 'true';
+    const autoShow = document.getElementById('welcome-modal')?.dataset.autoShow !== 'false';
+
+    // Show modal on first visit only if:
+    // 1. Auto-show is enabled
+    // 2. User hasn't seen it on this device (localStorage)
+    // 3. User hasn't seen it on any device (backend)
+    if (!hasSeenWelcomeLocal && !hasSeenWelcomeBackend && autoShow) {
+        showWelcomeModal();
+    }
+})();
+
+// Modal event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('welcome-modal');
+    if (!modal) return;
+
+    // Close on overlay click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            dismissWelcome(true);
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            dismissWelcome(true);
+        }
+    });
+});
+</script>
 
 <div class="page-header">
     <div>
@@ -328,38 +392,4 @@
     </div>
 </div>
 {% endif %}
-
-<script>
-// Welcome modal logic
-(function() {
-    const modal = document.getElementById('welcome-modal');
-    const hasSeenWelcome = localStorage.getItem('blik_welcome_seen');
-
-    // Show modal on first visit
-    if (!hasSeenWelcome) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    window.dismissWelcome = function(skip = false) {
-        localStorage.setItem('blik_welcome_seen', 'true');
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    };
-
-    // Close on overlay click
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            dismissWelcome(true);
-        }
-    });
-
-    // Close on Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            dismissWelcome(true);
-        }
-    });
-})();
-</script>
 {% endblock %}

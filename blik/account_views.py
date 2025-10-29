@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from accounts.services import export_organization_data, delete_user_account, delete_organization
 from accounts.import_service import (
     import_organization_data,
@@ -304,3 +304,16 @@ def delete_organization(request):
     except Exception as e:
         messages.error(request, f'Error deleting organization: {str(e)}')
         return redirect('account_settings')
+
+
+@login_required
+@require_POST
+def mark_welcome_seen(request):
+    """Mark the welcome modal as seen for the current user."""
+    try:
+        profile = request.user.profile
+        profile.has_seen_welcome = True
+        profile.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

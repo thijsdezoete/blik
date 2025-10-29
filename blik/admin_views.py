@@ -84,6 +84,13 @@ def dashboard(request):
             'report_exists': report_exists,
         })
 
+    # Check if user has seen welcome modal
+    has_seen_welcome = False
+    try:
+        has_seen_welcome = request.user.profile.has_seen_welcome
+    except UserProfile.DoesNotExist:
+        pass
+
     context = {
         'total_reviewees': total_reviewees,
         'active_cycles': active_cycles,
@@ -93,6 +100,7 @@ def dashboard(request):
         'active_cycles_data': active_cycles_data,
         'completed_cycles_data': completed_cycles_data,
         'subscription_status': subscription_status,
+        'has_seen_welcome': has_seen_welcome,
     }
 
     return render(request, 'admin_dashboard/dashboard.html', context)

@@ -21,6 +21,10 @@ class UserProfile(TimeStampedModel):
         default=False,
         help_text='If False, user can only create cycles for themselves'
     )
+    has_seen_welcome = models.BooleanField(
+        default=False,
+        help_text='Whether user has seen the welcome modal'
+    )
 
     objects = OrganizationManager()
 

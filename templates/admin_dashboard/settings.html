@@ -350,6 +350,19 @@
                 </a>
             </div>
 
+            <!-- Import Data -->
+            {% if is_org_admin %}
+            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+                <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px;">Import Organization Data</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                    Upload a previously exported JSON file to import data.
+                </p>
+                <button type="button" class="btn btn-primary btn-sm" onclick="showImportModal()">
+                    Import Data
+                </button>
+            </div>
+            {% endif %}
+
             {% if subscription %}
             <!-- Subscription Management -->
             <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
@@ -449,7 +462,139 @@
 </div>
 {% endif %}
 
+<!-- Import Data Modal -->
+{% if is_org_admin %}
+<div id="importModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; overflow-y: auto; padding: 2rem;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto;">
+        <h3 style="margin-top: 0;">Import Organization Data</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Upload a previously exported JSON file to restore or merge data into your organization.
+        </p>
+
+        <!-- Step 1: File Selection and Preview -->
+        <div id="importStep1">
+            <form id="importPreviewForm" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label class="form-label">Select Import File:</label>
+                    <input type="file" id="importFile" name="import_file" accept=".json" class="form-control" required>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">
+                        Maximum file size: 50MB
+                    </small>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="hideImportModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="previewImport()">
+                        <span id="previewBtnText">Preview Import</span>
+                        <span id="previewSpinner" style="display: none;">⏳ Loading...</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Preview Results -->
+            <div id="importPreview" style="display: none; margin-top: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color);">
+                <h4 style="margin-top: 0; margin-bottom: 1rem; font-size: 1rem;">Import Preview</h4>
+
+                <div id="previewContent"></div>
+
+                <div id="previewErrors" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #fee; border-left: 3px solid #dc2626; border-radius: 4px;">
+                    <strong style="color: #dc2626;">Validation Errors:</strong>
+                    <ul id="errorList" style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;"></ul>
+                </div>
+
+                <div id="previewWarnings" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #fef3c7; border-left: 3px solid #f59e0b; border-radius: 4px;">
+                    <strong style="color: #92400e;">Warnings:</strong>
+                    <ul id="warningList" style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;"></ul>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="showImportOptions()" style="margin-top: 1rem; width: 100%;">
+                    Continue to Import Options
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Import Options -->
+        <div id="importStep2" style="display: none;">
+            <form id="importForm" method="post" action="{% url 'account:import_data' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <input type="file" id="importFileActual" name="import_file" style="display: none;">
+
+                <div class="form-group">
+                    <label class="form-label">Conflict Resolution:</label>
+                    <select name="conflict_resolution" class="form-control">
+                        <option value="skip">Skip Existing Items</option>
+                        <option value="overwrite">Overwrite Existing Items</option>
+                        <option value="duplicate">Create Duplicates</option>
+                    </select>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">
+                        How to handle items that already exist in your organization
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Data to Import:</label>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" name="import_reviewees" checked>
+                            <span>Reviewees</span>
+                            <span id="revieweeCount" style="color: var(--text-secondary); font-size: 0.875rem;"></span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" name="import_questionnaires" checked>
+                            <span>Questionnaires</span>
+                            <span id="questionnaireCount" style="color: var(--text-secondary); font-size: 0.875rem;"></span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" name="import_cycles" checked>
+                            <span>Review Cycles</span>
+                            <span id="cycleCount" style="color: var(--text-secondary); font-size: 0.875rem;"></span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" name="import_users">
+                            <span>Users</span>
+                            <span id="userCount" style="color: var(--text-secondary); font-size: 0.875rem;"></span>
+                            <small style="color: var(--text-secondary); display: block; margin-left: 1.5rem; font-size: 0.75rem;">
+                                (Users will be created with random passwords)
+                            </small>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" name="import_reports">
+                            <span>Reports</span>
+                            <span id="reportCount" style="color: var(--text-secondary); font-size: 0.875rem;"></span>
+                            <small style="color: var(--text-secondary); display: block; margin-left: 1.5rem; font-size: 0.75rem;">
+                                (Attaches to imported cycles, or creates new cycles if needed)
+                            </small>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="padding: 1rem; background: #dbeafe; border-left: 3px solid #3b82f6; border-radius: 4px; margin-top: 1rem;">
+                    <strong style="color: #1e40af;">Import Information:</strong>
+                    <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; color: #1e3a8a; font-size: 0.875rem;">
+                        <li>All import operations are atomic - if any error occurs, no changes will be made</li>
+                        <li>Reviewer anonymity is preserved - no reviewer email addresses are restored</li>
+                        <li>Response data may be skipped if question matching fails</li>
+                        <li>Reports attach to imported cycles, or create new cycles if importing separately</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="backToPreview()">Back</button>
+                    <button type="submit" class="btn btn-primary">
+                        Confirm Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <script>
+// Modal control functions
 function showDeleteAccountModal() {
     document.getElementById('deleteAccountModal').style.display = 'flex';
 }
@@ -461,6 +606,167 @@ function showDeleteOrgModal() {
 }
 function hideDeleteOrgModal() {
     document.getElementById('deleteOrgModal').style.display = 'none';
+}
+
+// Import modal functions
+let currentImportFile = null;
+let previewData = null;
+
+function showImportModal() {
+    document.getElementById('importModal').style.display = 'flex';
+    document.getElementById('importStep1').style.display = 'block';
+    document.getElementById('importStep2').style.display = 'none';
+    document.getElementById('importPreview').style.display = 'none';
+    document.getElementById('importFile').value = '';
+    currentImportFile = null;
+    previewData = null;
+}
+
+function hideImportModal() {
+    document.getElementById('importModal').style.display = 'none';
+}
+
+async function previewImport() {
+    const fileInput = document.getElementById('importFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('Please select a file to import');
+        return;
+    }
+
+    // Show loading state
+    document.getElementById('previewBtnText').style.display = 'none';
+    document.getElementById('previewSpinner').style.display = 'inline';
+
+    const formData = new FormData();
+    formData.append('import_file', file);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    try {
+        const response = await fetch('{% url "account:preview_import" %}', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        // Reset loading state
+        document.getElementById('previewBtnText').style.display = 'inline';
+        document.getElementById('previewSpinner').style.display = 'none';
+
+        if (!response.ok) {
+            alert('Error: ' + (result.error || 'Failed to preview import'));
+            return;
+        }
+
+        if (!result.valid) {
+            // Show validation errors
+            const errorList = document.getElementById('errorList');
+            errorList.innerHTML = result.errors.map(e => `<li>${e}</li>`).join('');
+            document.getElementById('previewErrors').style.display = 'block';
+            document.getElementById('importPreview').style.display = 'block';
+            return;
+        }
+
+        // Store file and preview data for later
+        currentImportFile = file;
+        previewData = result.preview;
+
+        // Display preview
+        displayPreview(result.preview, result.warnings);
+
+    } catch (error) {
+        document.getElementById('previewBtnText').style.display = 'inline';
+        document.getElementById('previewSpinner').style.display = 'none';
+        alert('Error previewing import: ' + error.message);
+    }
+}
+
+function displayPreview(preview, warnings) {
+    const content = document.getElementById('previewContent');
+
+    content.innerHTML = `
+        <div style="display: grid; gap: 1rem;">
+            <div>
+                <strong>Organization:</strong> ${preview.organization_name}
+                ${preview.organization_email ? `<br><small style="color: var(--text-secondary);">${preview.organization_email}</small>` : ''}
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; padding: 1rem; background: var(--bg-card); border-radius: 6px;">
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${preview.counts.reviewees}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Reviewees</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${preview.counts.questionnaires}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Questionnaires</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${preview.counts.review_cycles}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Review Cycles</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${preview.counts.users}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Users</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: var(--primary-color);">${preview.counts.reports}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Reports</div>
+                </div>
+            </div>
+
+            ${preview.questionnaire_details.length > 0 ? `
+                <div>
+                    <strong>Questionnaires:</strong>
+                    <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
+                        ${preview.questionnaire_details.map(q =>
+                            `<li>${q.name} (${q.sections} sections, ${q.questions} questions)</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            ` : ''}
+        </div>
+    `;
+
+    // Show warnings if any
+    if (warnings && warnings.length > 0) {
+        const warningList = document.getElementById('warningList');
+        warningList.innerHTML = warnings.map(w => `<li>${w}</li>`).join('');
+        document.getElementById('previewWarnings').style.display = 'block';
+    } else {
+        document.getElementById('previewWarnings').style.display = 'none';
+    }
+
+    document.getElementById('previewErrors').style.display = 'none';
+    document.getElementById('importPreview').style.display = 'block';
+}
+
+function showImportOptions() {
+    // Update counts in the import options form
+    if (previewData) {
+        document.getElementById('revieweeCount').textContent = `(${previewData.counts.reviewees})`;
+        document.getElementById('questionnaireCount').textContent = `(${previewData.counts.questionnaires})`;
+        document.getElementById('cycleCount').textContent = `(${previewData.counts.review_cycles})`;
+        document.getElementById('userCount').textContent = `(${previewData.counts.users})`;
+        document.getElementById('reportCount').textContent = `(${previewData.counts.reports})`;
+    }
+
+    // Transfer the file to the actual form
+    if (currentImportFile) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(currentImportFile);
+        document.getElementById('importFileActual').files = dataTransfer.files;
+    }
+
+    // Switch to step 2
+    document.getElementById('importStep1').style.display = 'none';
+    document.getElementById('importStep2').style.display = 'block';
+}
+
+function backToPreview() {
+    document.getElementById('importStep2').style.display = 'none';
+    document.getElementById('importStep1').style.display = 'block';
 }
 </script>
 {% endblock %}

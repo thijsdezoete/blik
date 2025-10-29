@@ -8,6 +8,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Q, Max
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from datetime import timedelta
 
 from accounts.models import Reviewee, UserProfile, OrganizationInvitation
@@ -107,10 +109,8 @@ def team_list(request):
         messages.error(request, 'No organization found.')
         return redirect('admin_dashboard')
 
-    # Get all users in this organization
-    users_qs = UserProfile.objects.filter(
-        organization=org
-    ).select_related('user').order_by('-user__date_joined')
+    # Get all active (non-anonymized) users in this organization
+    users_qs = UserProfile.objects.for_organization(org).select_related('user').order_by('-user__date_joined')
 
     # Get per_page from request, default to 25
     per_page = request.GET.get('per_page', '25')
@@ -238,6 +238,7 @@ def reviewee_list(request):
     from questionnaires.models import Questionnaire
 
     org = request.organization
+    # Filter out anonymized reviewees (those with @deleted.invalid emails)
     reviewees_qs = Reviewee.objects.for_organization(org).filter(is_active=True).annotate(
         cycle_count=Count('review_cycles')
     ).order_by('name')
@@ -678,12 +679,16 @@ def questionnaire_edit(request, questionnaire_id):
 def review_cycle_list(request):
     """List all review cycles"""
     org = request.organization
-    cycles_qs = ReviewCycle.objects.select_related(
-        'reviewee', 'questionnaire', 'created_by'
-    )
 
     if org:
-        cycles_qs = cycles_qs.filter(reviewee__organization=org)
+        # Filter out cycles for anonymized reviewees
+        cycles_qs = ReviewCycle.objects.for_organization(org).select_related(
+            'reviewee', 'questionnaire', 'created_by'
+        )
+    else:
+        cycles_qs = ReviewCycle.objects.select_related(
+            'reviewee', 'questionnaire', 'created_by'
+        )
 
     cycles_qs = cycles_qs.annotate(
         token_count=Count('tokens'),
@@ -1278,9 +1283,9 @@ def gdpr_management(request):
         per_page = 25
 
     if active_tab == 'users':
-        # List users with data summaries
-        users_qs = UserProfile.objects.filter(
-            organization=org
+        # List users with data summaries (include GDPR-deleted for audit purposes)
+        users_qs = UserProfile.objects.for_organization(
+            org, include_deleted=True
         ).select_related('user').order_by('-user__date_joined')
 
         # Paginate
@@ -1307,8 +1312,8 @@ def gdpr_management(request):
             'per_page': per_page,
         }
     else:
-        # List reviewees with data summaries
-        reviewees_qs = Reviewee.objects.for_organization(org).select_related('organization').order_by('-created_at')
+        # List reviewees with data summaries (include GDPR-deleted for audit purposes)
+        reviewees_qs = Reviewee.objects.for_organization(org, include_deleted=True).select_related('organization').order_by('-created_at')
 
         # Paginate
         paginator = Paginator(reviewees_qs, per_page)
@@ -1385,7 +1390,7 @@ def gdpr_delete_user_view(request, user_id):
     except Exception as e:
         messages.error(request, f'Error deleting user: {str(e)}')
 
-    return redirect('gdpr_management' + '?tab=users')
+    return HttpResponseRedirect(reverse('gdpr_management') + '?tab=users')
 
 
 @login_required

@@ -7,6 +7,11 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from accounts.services import export_organization_data, delete_user_account, delete_organization
+from accounts.import_service import (
+    import_organization_data,
+    validate_import_data,
+    generate_import_preview
+)
 from accounts.permissions import can_delete_organization_required
 from subscriptions.services import cancel_subscription, reactivate_subscription
 from subscriptions.models import Subscription
@@ -97,6 +102,147 @@ def export_data(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def preview_import(request):
+    """
+    Preview import data without actually importing.
+    Returns validation results and preview information.
+    """
+    org = request.organization
+    if not org:
+        return JsonResponse({'error': 'Organization not found'}, status=404)
+
+    # Check if user is org admin
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        return JsonResponse({'error': 'Only organization administrators can import data'}, status=403)
+
+    try:
+        import_file = request.FILES.get('import_file')
+        if not import_file:
+            return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+        # Validate file size (max 50MB)
+        max_size = 50 * 1024 * 1024
+        if import_file.size > max_size:
+            return JsonResponse({'error': f'File too large (max {max_size // (1024*1024)}MB)'}, status=400)
+
+        # Validate file type
+        if not import_file.name.endswith('.json'):
+            return JsonResponse({'error': 'Only JSON files are allowed'}, status=400)
+
+        # Parse JSON
+        try:
+            data = json.load(import_file)
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': f'Invalid JSON format: {str(e)}'}, status=400)
+
+        # Validate structure
+        validation = validate_import_data(data)
+        if not validation['valid']:
+            return JsonResponse({
+                'valid': False,
+                'errors': validation['errors'],
+                'warnings': validation.get('warnings', [])
+            })
+
+        # Generate preview
+        preview = generate_import_preview(data)
+
+        return JsonResponse({
+            'valid': True,
+            'errors': [],
+            'warnings': validation.get('warnings', []),
+            'preview': preview
+        })
+
+    except Exception as e:
+        return JsonResponse({'error': f'Preview failed: {str(e)}'}, status=500)
+
+
+@login_required
+@require_POST
+def import_data(request):
+    """
+    Import organization data from uploaded JSON file.
+    """
+    org = request.organization
+    if not org:
+        messages.error(request, 'Organization not found')
+        return redirect('settings')
+
+    # Check if user is org admin
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Only organization administrators can import data')
+        return redirect('settings')
+
+    try:
+        import_file = request.FILES.get('import_file')
+        if not import_file:
+            messages.error(request, 'No file uploaded')
+            return redirect('settings')
+
+        # Validate file size (max 50MB)
+        max_size = 50 * 1024 * 1024
+        if import_file.size > max_size:
+            messages.error(request, f'File too large (max {max_size // (1024*1024)}MB)')
+            return redirect('settings')
+
+        # Validate file type
+        if not import_file.name.endswith('.json'):
+            messages.error(request, 'Only JSON files are allowed')
+            return redirect('settings')
+
+        # Parse JSON
+        try:
+            data = json.load(import_file)
+        except json.JSONDecodeError as e:
+            messages.error(request, f'Invalid JSON format: {str(e)}')
+            return redirect('settings')
+
+        # Get import options from form
+        import_options = {
+            'users': request.POST.get('import_users') == 'on',
+            'reviewees': request.POST.get('import_reviewees') == 'on',
+            'questionnaires': request.POST.get('import_questionnaires') == 'on',
+            'cycles': request.POST.get('import_cycles') == 'on',
+            'reports': request.POST.get('import_reports') == 'on',
+        }
+
+        # Get conflict resolution mode
+        conflict_resolution = request.POST.get('conflict_resolution', 'skip')
+
+        # Perform import
+        result = import_organization_data(
+            organization=org,
+            data=data,
+            mode='merge',
+            conflict_resolution=conflict_resolution,
+            import_options=import_options,
+            importing_user=request.user
+        )
+
+        if result['success']:
+            messages.success(request, f'Import completed successfully: {result["summary"]}')
+
+            # Show warnings if any
+            if result.get('warnings'):
+                for warning in result['warnings'][:5]:  # Show first 5 warnings
+                    messages.warning(request, warning)
+                if len(result['warnings']) > 5:
+                    messages.info(request, f'... and {len(result["warnings"]) - 5} more warnings')
+        else:
+            messages.error(request, 'Import failed')
+            for error in result.get('errors', [])[:3]:  # Show first 3 errors
+                messages.error(request, error)
+
+        return redirect('settings')
+
+    except Exception as e:
+        messages.error(request, f'Import failed: {str(e)}')
+        return redirect('settings')
 
 
 @login_required

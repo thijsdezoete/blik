@@ -417,7 +417,7 @@ def send_report_ready_notification(report, request=None):
     if request:
         base_url = f"{request.scheme}://{request.get_host()}"
     else:
-        base_url = settings.SITE_URL
+        base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
 
     report_url = f"{base_url}{reverse('reports:reviewee_report', kwargs={'access_token': report.access_token})}"
 

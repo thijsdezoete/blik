@@ -84,13 +84,13 @@ def send_reviewer_invitations(cycle, token_ids=None):
     if token_ids:
         tokens = tokens.filter(id__in=token_ids)
     else:
-        # Only send to tokens that haven't been sent yet
-        tokens = tokens.filter(invitation_sent_at__isnull=True)
+        # Only send to tokens that haven't been sent yet and aren't completed
+        tokens = tokens.filter(invitation_sent_at__isnull=True, completed_at__isnull=True)
 
     for token in tokens:
         try:
             # Generate feedback URL
-            feedback_url = f"{settings.SITE_URL}/feedback/{token.token}/"
+            feedback_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/feedback/{token.token}/"
 
             # Render email templates
             context = {
@@ -151,7 +151,7 @@ def send_reminder_emails(cycle, token_ids=None):
     for token in tokens:
         try:
             # Generate feedback URL
-            feedback_url = f"{settings.SITE_URL}/feedback/{token.token}/"
+            feedback_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/feedback/{token.token}/"
 
             # Render email templates
             context = {
@@ -206,7 +206,7 @@ def send_reviewee_notifications(cycle, request=None):
     if request:
         base_url = f"{request.scheme}://{request.get_host()}"
     else:
-        base_url = settings.SITE_URL
+        base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
 
     # 1. Send self-assessment email
     try:

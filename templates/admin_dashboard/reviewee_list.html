@@ -142,6 +142,34 @@
         </table>
         </div>
     </div>
+
+    {% if reviewees.has_other_pages %}
+    <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="color: var(--text-secondary); font-size: 0.875rem;">Items per page:</span>
+            <select onchange="window.location.href='?per_page=' + this.value" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
+                <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+        <div class="pagination">
+            {% if reviewees.has_previous %}
+                <a href="?page=1&per_page={{ per_page }}" class="pagination-link">First</a>
+                <a href="?page={{ reviewees.previous_page_number }}&per_page={{ per_page }}" class="pagination-link">Previous</a>
+            {% endif %}
+
+            <span class="pagination-info">
+                Page {{ reviewees.number }} of {{ reviewees.paginator.num_pages }}
+            </span>
+
+            {% if reviewees.has_next %}
+                <a href="?page={{ reviewees.next_page_number }}&per_page={{ per_page }}" class="pagination-link">Next</a>
+                <a href="?page={{ reviewees.paginator.num_pages }}&per_page={{ per_page }}" class="pagination-link">Last</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% else %}
 <div class="card">

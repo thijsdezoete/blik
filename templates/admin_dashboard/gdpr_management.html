@@ -1,0 +1,470 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}GDPR Data Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>GDPR Data Management</h1>
+        <p class="page-description">Manage personal data and handle deletion requests</p>
+    </div>
+</div>
+
+<!-- Info Card -->
+<div class="card mb-2" style="background: #eff6ff; border-color: #3b82f6;">
+    <div class="card-body" style="padding: 1rem;">
+        <div style="display: flex; gap: 0.75rem; align-items: start;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <div>
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; font-weight: 600; color: #1e40af;">GDPR Compliance Information</h3>
+                <p style="margin: 0; font-size: 0.875rem; color: #1e3a8a; line-height: 1.5;">
+                    <strong>Soft Delete (Anonymization):</strong> Removes personal identifiable information while preserving data structure for analytics. Recommended for most cases.
+                    <br>
+                    <strong>Hard Delete (Complete Removal):</strong> Permanently removes all data including related records. Use only when legally required or explicitly requested.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Navigation -->
+<div style="border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+    <div style="display: flex; gap: 0; overflow-x: auto;">
+        <a href="?tab=reviewees&per_page={{ per_page }}"
+           class="tab-link {% if active_tab == 'reviewees' %}active{% endif %}"
+           style="padding: 1rem 1.5rem; border-bottom: 2px solid {% if active_tab == 'reviewees' %}var(--primary-color){% else %}transparent{% endif %}; color: {% if active_tab == 'reviewees' %}var(--primary-color){% else %}var(--text-secondary){% endif %}; text-decoration: none; white-space: nowrap; font-weight: 500;">
+            Reviewees
+        </a>
+        <a href="?tab=users&per_page={{ per_page }}"
+           class="tab-link {% if active_tab == 'users' %}active{% endif %}"
+           style="padding: 1rem 1.5rem; border-bottom: 2px solid {% if active_tab == 'users' %}var(--primary-color){% else %}transparent{% endif %}; color: {% if active_tab == 'users' %}var(--primary-color){% else %}var(--text-secondary){% endif %}; text-decoration: none; white-space: nowrap; font-weight: 500;">
+            Users
+        </a>
+    </div>
+</div>
+
+{% if active_tab == 'reviewees' %}
+<!-- Reviewees Tab -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Reviewees ({{ reviewees.paginator.count }})</h2>
+    </div>
+    <div class="card-body">
+        {% if reviewees %}
+        <!-- Desktop table -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Cycles</th>
+                        <th>Responses</th>
+                        <th>Reports</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reviewee in reviewees %}
+                    <tr>
+                        <td><strong>{{ reviewee.name }}</strong></td>
+                        <td>{{ reviewee.email }}</td>
+                        <td>{{ reviewee.department|default:"—" }}</td>
+                        <td>
+                            {% if reviewee.gdpr_summary %}
+                                {{ reviewee.gdpr_summary.review_cycles.total }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reviewee.gdpr_summary %}
+                                {{ reviewee.gdpr_summary.responses }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reviewee.gdpr_summary %}
+                                {{ reviewee.gdpr_summary.reports }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reviewee.is_active %}
+                                <span class="badge" style="background: #10b981; color: white;">Active</span>
+                            {% else %}
+                                <span class="badge" style="background: #6b7280; color: white;">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                    onclick="showDeleteRevieweeModal({{ reviewee.id }}, '{{ reviewee.name|escapejs }}', {{ reviewee.gdpr_summary.review_cycles.total|default:0 }}, {{ reviewee.gdpr_summary.responses|default:0 }})">
+                                Delete Data
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile card list -->
+        <div class="d-md-none">
+            {% for reviewee in reviewees %}
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <div><strong>{{ reviewee.name }}</strong></div>
+                    <div>
+                        {% if reviewee.is_active %}
+                            <span class="badge" style="background: #10b981; color: white; font-size: 11px;">Active</span>
+                        {% else %}
+                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mobile-card-body">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Email</span>
+                        <span>{{ reviewee.email }}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Department</span>
+                        <span>{{ reviewee.department|default:"—" }}</span>
+                    </div>
+                    {% if reviewee.gdpr_summary %}
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Data</span>
+                        <span>{{ reviewee.gdpr_summary.review_cycles.total }} cycles, {{ reviewee.gdpr_summary.responses }} responses</span>
+                    </div>
+                    {% endif %}
+                    <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 0.5rem;"
+                            onclick="showDeleteRevieweeModal({{ reviewee.id }}, '{{ reviewee.name|escapejs }}', {{ reviewee.gdpr_summary.review_cycles.total|default:0 }}, {{ reviewee.gdpr_summary.responses|default:0 }})">
+                        Delete Data
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No reviewees found</p>
+        {% endif %}
+    </div>
+
+    {% if reviewees.has_other_pages %}
+    <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="color: var(--text-secondary); font-size: 0.875rem;">Items per page:</span>
+            <select onchange="window.location.href='?tab=reviewees&per_page=' + this.value" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
+                <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+        <div class="pagination">
+            {% if reviewees.has_previous %}
+                <a href="?tab=reviewees&page=1&per_page={{ per_page }}" class="pagination-link">First</a>
+                <a href="?tab=reviewees&page={{ reviewees.previous_page_number }}&per_page={{ per_page }}" class="pagination-link">Previous</a>
+            {% endif %}
+            <span class="pagination-info">Page {{ reviewees.number }} of {{ reviewees.paginator.num_pages }}</span>
+            {% if reviewees.has_next %}
+                <a href="?tab=reviewees&page={{ reviewees.next_page_number }}&per_page={{ per_page }}" class="pagination-link">Next</a>
+                <a href="?tab=reviewees&page={{ reviewees.paginator.num_pages }}&per_page={{ per_page }}" class="pagination-link">Last</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Reviewee Modal -->
+<div id="delete-reviewee-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+        <h2 style="margin-top: 0; color: #dc2626;">Delete Reviewee Data</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Delete or anonymize data for <strong id="modal-reviewee-name"></strong>
+        </p>
+
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; font-weight: 600;">Affected Data</h4>
+            <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                <li><span id="modal-cycles-count">0</span> review cycle(s)</li>
+                <li><span id="modal-responses-count">0</span> feedback response(s)</li>
+                <li>Associated reports and tokens</li>
+            </ul>
+        </div>
+
+        <form method="post" id="delete-reviewee-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Deletion Type</label>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="form-check">
+                        <input type="radio" id="reviewee-soft" name="deletion_type" value="soft" class="form-check-input" checked>
+                        <label for="reviewee-soft" style="display: inline; font-weight: normal;">
+                            <strong>Soft Delete (Anonymization) - Recommended</strong>
+                            <small style="display: block; color: var(--text-secondary); margin-left: 24px;">
+                                Anonymizes name, email, and department. Preserves review cycles, responses, and reports for analytics.
+                            </small>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="reviewee-full" name="deletion_type" value="full_anonymization" class="form-check-input">
+                        <label for="reviewee-full" style="display: inline; font-weight: normal;">
+                            <strong>Full Anonymization</strong>
+                            <small style="display: block; color: var(--text-secondary); margin-left: 24px;">
+                                Anonymizes reviewee AND all reviewer emails in their cycles. Maximum privacy protection.
+                            </small>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="reviewee-hard" name="deletion_type" value="hard" class="form-check-input">
+                        <label for="reviewee-hard" style="display: inline; font-weight: normal;">
+                            <strong style="color: #dc2626;">Hard Delete (Complete Removal)</strong>
+                            <small style="display: block; color: #dc2626; margin-left: 24px;">
+                                Permanently deletes ALL data including review cycles, responses, and reports. Cannot be undone.
+                            </small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="hideDeleteRevieweeModal()">Cancel</button>
+                <button type="submit" class="btn" style="background: #dc2626; color: white;">Delete Data</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% else %}
+<!-- Users Tab -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Users ({{ users.paginator.count }})</h2>
+    </div>
+    <div class="card-body">
+        {% if users %}
+        <!-- Desktop table -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Joined</th>
+                        <th>Created Cycles</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_profile in users %}
+                    <tr>
+                        <td>
+                            <strong>{{ user_profile.user.first_name|default:user_profile.user.username }}</strong>
+                            {% if user_profile.user.last_name %}{{ user_profile.user.last_name }}{% endif %}
+                            {% if user_profile.user.id == request.user.id %}
+                                <span class="badge" style="background: #6b7280; color: white; font-size: 11px; margin-left: 4px;">You</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user_profile.user.email }}</td>
+                        <td>{{ user_profile.user.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            {% if user_profile.gdpr_summary %}
+                                {{ user_profile.gdpr_summary.created_cycles }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user_profile.user.is_active %}
+                                <span class="badge" style="background: #10b981; color: white;">Active</span>
+                            {% else %}
+                                <span class="badge" style="background: #6b7280; color: white;">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
+                            <button type="button" class="btn btn-sm btn-secondary"
+                                    onclick="showDeleteUserModal({{ user_profile.user.id }}, '{{ user_profile.user.username|escapejs }}', {{ user_profile.gdpr_summary.created_cycles|default:0 }})">
+                                Delete Data
+                            </button>
+                            {% else %}
+                            <span style="color: var(--text-tertiary); font-size: 12px;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile card list -->
+        <div class="d-md-none">
+            {% for user_profile in users %}
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <div>
+                        <strong>{{ user_profile.user.first_name|default:user_profile.user.username }}</strong>
+                        {% if user_profile.user.last_name %}{{ user_profile.user.last_name }}{% endif %}
+                        {% if user_profile.user.id == request.user.id %}
+                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px; margin-left: 4px;">You</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if user_profile.user.is_active %}
+                            <span class="badge" style="background: #10b981; color: white; font-size: 11px;">Active</span>
+                        {% else %}
+                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mobile-card-body">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Email</span>
+                        <span>{{ user_profile.user.email }}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Joined</span>
+                        <span>{{ user_profile.user.date_joined|date:"M d, Y" }}</span>
+                    </div>
+                    {% if user_profile.gdpr_summary %}
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Created Cycles</span>
+                        <span>{{ user_profile.gdpr_summary.created_cycles }}</span>
+                    </div>
+                    {% endif %}
+                    {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
+                    <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 0.5rem;"
+                            onclick="showDeleteUserModal({{ user_profile.user.id }}, '{{ user_profile.user.username|escapejs }}', {{ user_profile.gdpr_summary.created_cycles|default:0 }})">
+                        Delete Data
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No users found</p>
+        {% endif %}
+    </div>
+
+    {% if users.has_other_pages %}
+    <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="color: var(--text-secondary); font-size: 0.875rem;">Items per page:</span>
+            <select onchange="window.location.href='?tab=users&per_page=' + this.value" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
+                <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+        <div class="pagination">
+            {% if users.has_previous %}
+                <a href="?tab=users&page=1&per_page={{ per_page }}" class="pagination-link">First</a>
+                <a href="?tab=users&page={{ users.previous_page_number }}&per_page={{ per_page }}" class="pagination-link">Previous</a>
+            {% endif %}
+            <span class="pagination-info">Page {{ users.number }} of {{ users.paginator.num_pages }}</span>
+            {% if users.has_next %}
+                <a href="?tab=users&page={{ users.next_page_number }}&per_page={{ per_page }}" class="pagination-link">Next</a>
+                <a href="?tab=users&page={{ users.paginator.num_pages }}&per_page={{ per_page }}" class="pagination-link">Last</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete User Modal -->
+<div id="delete-user-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+        <h2 style="margin-top: 0; color: #dc2626;">Delete User Data</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Delete or anonymize data for user <strong id="modal-user-name"></strong>
+        </p>
+
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <h4 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; font-weight: 600;">Affected Data</h4>
+            <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                <li>User account and profile</li>
+                <li><span id="modal-user-cycles-count">0</span> created review cycle(s)</li>
+                <li>Login history and security logs</li>
+            </ul>
+        </div>
+
+        <form method="post" id="delete-user-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Deletion Type</label>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="form-check">
+                        <input type="radio" id="user-soft" name="deletion_type" value="soft" class="form-check-input" checked>
+                        <label for="user-soft" style="display: inline; font-weight: normal;">
+                            <strong>Soft Delete (Anonymization) - Recommended</strong>
+                            <small style="display: block; color: var(--text-secondary); margin-left: 24px;">
+                                Anonymizes username, email, and name. Preserves profile structure and created cycles remain intact.
+                            </small>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="user-hard" name="deletion_type" value="hard" class="form-check-input">
+                        <label for="user-hard" style="display: inline; font-weight: normal;">
+                            <strong style="color: #dc2626;">Hard Delete (Complete Removal)</strong>
+                            <small style="display: block; color: #dc2626; margin-left: 24px;">
+                                Permanently deletes user account and profile. Created cycles are preserved but creator reference is removed. Cannot be undone.
+                            </small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="hideDeleteUserModal()">Cancel</button>
+                <button type="submit" class="btn" style="background: #dc2626; color: white;">Delete Data</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<script>
+// Reviewee deletion modal
+function showDeleteRevieweeModal(revieweeId, name, cyclesCount, responsesCount) {
+    document.getElementById('modal-reviewee-name').textContent = name;
+    document.getElementById('modal-cycles-count').textContent = cyclesCount;
+    document.getElementById('modal-responses-count').textContent = responsesCount;
+    document.getElementById('delete-reviewee-form').action = '{% url "gdpr_delete_reviewee" reviewee_id=0 %}'.replace('0', revieweeId);
+    document.getElementById('delete-reviewee-modal').style.display = 'flex';
+}
+
+function hideDeleteRevieweeModal() {
+    document.getElementById('delete-reviewee-modal').style.display = 'none';
+}
+
+// User deletion modal
+function showDeleteUserModal(userId, username, cyclesCount) {
+    document.getElementById('modal-user-name').textContent = username;
+    document.getElementById('modal-user-cycles-count').textContent = cyclesCount;
+    document.getElementById('delete-user-form').action = '{% url "gdpr_delete_user" user_id=0 %}'.replace('0', userId);
+    document.getElementById('delete-user-modal').style.display = 'flex';
+}
+
+function hideDeleteUserModal() {
+    document.getElementById('delete-user-modal').style.display = 'none';
+}
+
+// Close modals on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideDeleteRevieweeModal();
+        hideDeleteUserModal();
+    }
+});
+</script>
+{% endblock %}

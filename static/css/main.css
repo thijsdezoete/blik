@@ -1778,3 +1778,52 @@ body.setup-page {
     }
 }
 
+/* ==================== Pagination ==================== */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.pagination-link {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.pagination-link:hover {
+    background: var(--bg-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.pagination-info {
+    padding: 0 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.card-footer {
+    padding: 1rem 1.5rem;
+    background: var(--bg-light);
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+    .card-footer {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .pagination {
+        width: 100%;
+        justify-content: center;
+    }
+}
+

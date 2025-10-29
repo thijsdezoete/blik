@@ -4,6 +4,7 @@ Admin dashboard views for Blik
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Q, Max
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -15,6 +16,7 @@ from reviews.services import assign_tokens_to_emails, send_reviewer_invitations
 from questionnaires.models import Questionnaire
 from reports.models import Report
 from core.models import Organization
+from core.gdpr import GDPRDeletionService
 
 
 def get_cycle_or_404(cycle_id, organization):
@@ -106,9 +108,28 @@ def team_list(request):
         return redirect('admin_dashboard')
 
     # Get all users in this organization
-    users = UserProfile.objects.filter(
+    users_qs = UserProfile.objects.filter(
         organization=org
     ).select_related('user').order_by('-user__date_joined')
+
+    # Get per_page from request, default to 25
+    per_page = request.GET.get('per_page', '25')
+    try:
+        per_page = int(per_page)
+        if per_page not in [25, 50, 100]:
+            per_page = 25
+    except (ValueError, TypeError):
+        per_page = 25
+
+    # Paginate users
+    paginator = Paginator(users_qs, per_page)
+    page = request.GET.get('page')
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
 
     # Add permission data as dynamic attribute
     for user_profile in users:
@@ -127,6 +148,7 @@ def team_list(request):
         'users': users,
         'invitations': invitations,
         'subscription_status': subscription_status,
+        'per_page': per_page,
     }
 
     return render(request, 'admin_dashboard/team.html', context)
@@ -216,9 +238,28 @@ def reviewee_list(request):
     from questionnaires.models import Questionnaire
 
     org = request.organization
-    reviewees = Reviewee.objects.for_organization(org).filter(is_active=True).annotate(
+    reviewees_qs = Reviewee.objects.for_organization(org).filter(is_active=True).annotate(
         cycle_count=Count('review_cycles')
     ).order_by('name')
+
+    # Get per_page from request, default to 25
+    per_page = request.GET.get('per_page', '25')
+    try:
+        per_page = int(per_page)
+        if per_page not in [25, 50, 100]:
+            per_page = 25
+    except (ValueError, TypeError):
+        per_page = 25
+
+    # Paginate reviewees
+    paginator = Paginator(reviewees_qs, per_page)
+    page = request.GET.get('page')
+    try:
+        reviewees = paginator.page(page)
+    except PageNotAnInteger:
+        reviewees = paginator.page(1)
+    except EmptyPage:
+        reviewees = paginator.page(paginator.num_pages)
 
     # Get subscription status
     subscription_status = get_subscription_status(org) if org else None
@@ -237,9 +278,10 @@ def reviewee_list(request):
 
     context = {
         'reviewees_with_latest': reviewees_with_latest,
-        'reviewees': reviewees,  # Keep for backward compatibility
+        'reviewees': reviewees,  # Paginated object
         'questionnaires': questionnaires,
         'subscription_status': subscription_status,
+        'per_page': per_page,
     }
 
     return render(request, 'admin_dashboard/reviewee_list.html', context)
@@ -643,10 +685,29 @@ def review_cycle_list(request):
     if org:
         cycles_qs = cycles_qs.filter(reviewee__organization=org)
 
-    cycles = cycles_qs.annotate(
+    cycles_qs = cycles_qs.annotate(
         token_count=Count('tokens'),
         completed_count=Count('tokens', filter=Q(tokens__completed_at__isnull=False))
     ).order_by('-created_at')
+
+    # Get per_page from request, default to 25
+    per_page = request.GET.get('per_page', '25')
+    try:
+        per_page = int(per_page)
+        if per_page not in [25, 50, 100]:
+            per_page = 25
+    except (ValueError, TypeError):
+        per_page = 25
+
+    # Paginate cycles
+    paginator = Paginator(cycles_qs, per_page)
+    page = request.GET.get('page')
+    try:
+        cycles = paginator.page(page)
+    except PageNotAnInteger:
+        cycles = paginator.page(1)
+    except EmptyPage:
+        cycles = paginator.page(paginator.num_pages)
 
     # Get available questionnaires for quick cycle creation
     questionnaires = Questionnaire.objects.for_organization(org).filter(is_active=True).order_by('-is_default', 'name')
@@ -662,7 +723,9 @@ def review_cycle_list(request):
 
     context = {
         'cycles_with_latest': cycles_with_latest,
+        'cycles': cycles,  # Paginated object
         'questionnaires': questionnaires,
+        'per_page': per_page,
     }
 
     return render(request, 'admin_dashboard/review_cycle_list.html', context)
@@ -1187,3 +1250,199 @@ def settings_view(request):
     }
 
     return render(request, 'admin_dashboard/settings.html', context)
+
+
+@login_required
+def gdpr_management(request):
+    """GDPR data management and deletion for organization admins"""
+    # Check permission
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to access GDPR management.')
+        return redirect('team_list')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('admin_dashboard')
+
+    # Get tab parameter (users or reviewees)
+    active_tab = request.GET.get('tab', 'reviewees')
+
+    # Get per_page from request
+    per_page = request.GET.get('per_page', '25')
+    try:
+        per_page = int(per_page)
+        if per_page not in [25, 50, 100]:
+            per_page = 25
+    except (ValueError, TypeError):
+        per_page = 25
+
+    if active_tab == 'users':
+        # List users with data summaries
+        users_qs = UserProfile.objects.filter(
+            organization=org
+        ).select_related('user').order_by('-user__date_joined')
+
+        # Paginate
+        paginator = Paginator(users_qs, per_page)
+        page = request.GET.get('page')
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
+
+        # Add data summaries
+        for user_profile in users:
+            try:
+                user_profile.gdpr_summary = GDPRDeletionService.get_user_data_summary(user_profile.user.id)
+            except:
+                user_profile.gdpr_summary = None
+
+        context = {
+            'active_tab': 'users',
+            'users': users,
+            'reviewees': None,
+            'per_page': per_page,
+        }
+    else:
+        # List reviewees with data summaries
+        reviewees_qs = Reviewee.objects.for_organization(org).select_related('organization').order_by('-created_at')
+
+        # Paginate
+        paginator = Paginator(reviewees_qs, per_page)
+        page = request.GET.get('page')
+        try:
+            reviewees = paginator.page(page)
+        except PageNotAnInteger:
+            reviewees = paginator.page(1)
+        except EmptyPage:
+            reviewees = paginator.page(paginator.num_pages)
+
+        # Add data summaries
+        for reviewee in reviewees:
+            try:
+                reviewee.gdpr_summary = GDPRDeletionService.get_reviewee_data_summary(reviewee.id)
+            except:
+                reviewee.gdpr_summary = None
+
+        context = {
+            'active_tab': 'reviewees',
+            'users': None,
+            'reviewees': reviewees,
+            'per_page': per_page,
+        }
+
+    return render(request, 'admin_dashboard/gdpr_management.html', context)
+
+
+@login_required
+@require_POST
+def gdpr_delete_user_view(request, user_id):
+    """Delete or anonymize a user (GDPR)"""
+    # Check permission
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to delete users.')
+        return redirect('gdpr_management')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('admin_dashboard')
+
+    try:
+        # Get the user profile to verify organization
+        user_profile = get_object_or_404(UserProfile, user_id=user_id, organization=org)
+        target_user = user_profile.user
+
+        # Prevent self-deletion
+        if target_user.id == request.user.id:
+            messages.error(request, 'You cannot delete your own account.')
+            return redirect('gdpr_management')
+
+        # Prevent deleting superusers
+        if target_user.is_superuser:
+            messages.error(request, 'Cannot delete super admin accounts.')
+            return redirect('gdpr_management')
+
+        # Get deletion type from POST
+        deletion_type = request.POST.get('deletion_type', 'soft')
+        hard_delete = (deletion_type == 'hard')
+
+        # Perform deletion
+        result = GDPRDeletionService.delete_user(
+            user_id=target_user.id,
+            hard_delete=hard_delete,
+            performed_by=request.user
+        )
+
+        if result['status'] == 'deleted':
+            messages.success(request, f'User {result["username"]} has been permanently deleted.')
+        else:
+            messages.success(request, f'User {result["username"]} has been anonymized.')
+
+    except Exception as e:
+        messages.error(request, f'Error deleting user: {str(e)}')
+
+    return redirect('gdpr_management' + '?tab=users')
+
+
+@login_required
+@require_POST
+def gdpr_delete_reviewee_view(request, reviewee_id):
+    """Delete or anonymize a reviewee (GDPR)"""
+    # Check permission
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to delete reviewees.')
+        return redirect('gdpr_management')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('admin_dashboard')
+
+    try:
+        # Get the reviewee to verify organization
+        reviewee = get_object_or_404(Reviewee, id=reviewee_id, organization=org)
+
+        # Get deletion type from POST
+        deletion_type = request.POST.get('deletion_type', 'soft')
+
+        if deletion_type == 'full_anonymization':
+            # Full anonymization (reviewee + reviewer emails)
+            result = GDPRDeletionService.delete_reviewee_and_anonymize_reviewer_emails(
+                reviewee_id=reviewee.id,
+                performed_by=request.user
+            )
+            messages.success(
+                request,
+                f'Reviewee {result["name"]} and all associated reviewer emails have been anonymized. '
+                f'{result.get("reviewer_emails_anonymized", 0)} reviewer email(s) anonymized.'
+            )
+        else:
+            # Soft or hard delete
+            hard_delete = (deletion_type == 'hard')
+            result = GDPRDeletionService.delete_reviewee(
+                reviewee_id=reviewee.id,
+                hard_delete=hard_delete,
+                performed_by=request.user
+            )
+
+            if result['status'] == 'deleted':
+                messages.success(
+                    request,
+                    f'Reviewee {result["name"]} has been permanently deleted along with '
+                    f'{result["review_cycles_affected"]} review cycle(s) and all associated data.'
+                )
+            else:
+                messages.success(
+                    request,
+                    f'Reviewee {result["name"]} has been anonymized. '
+                    f'{result["review_cycles_affected"]} review cycle(s) preserved.'
+                )
+
+    except Exception as e:
+        messages.error(request, f'Error deleting reviewee: {str(e)}')
+
+    return redirect('gdpr_management')

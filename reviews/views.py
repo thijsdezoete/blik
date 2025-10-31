@@ -184,6 +184,18 @@ def submit_feedback(request, token):
                 except ValueError:
                     errors.append(f'Invalid rating value')
                     continue
+            elif question.question_type == 'scale':
+                try:
+                    scale_value = int(answer_value)
+                    min_val = question.config.get('min', 1)
+                    max_val = question.config.get('max', 100)
+                    if scale_value < min_val or scale_value > max_val:
+                        errors.append(f'Scale value must be between {min_val} and {max_val}')
+                        continue
+                    answer_data = {'value': scale_value}
+                except ValueError:
+                    errors.append(f'Invalid scale value')
+                    continue
             else:
                 # text, single_choice, likert
                 answer_data = {'value': answer_value}

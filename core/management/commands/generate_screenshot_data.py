@@ -246,10 +246,10 @@ class Command(BaseCommand):
         # Create responses with differentiated patterns by category
         for token in tokens:
             for question in questions:
+                question_seed = hash(question.id) % 10
+
                 if question.question_type in ['rating', 'likert']:
                     # Create realistic differentiation between categories
-                    question_seed = hash(question.id) % 10
-
                     if token.category == 'self':
                         # Self rates lower (imposter syndrome pattern: 2-3)
                         rating = 2 if question_seed < 4 else 3
@@ -271,6 +271,81 @@ class Command(BaseCommand):
                         rating = 4
 
                     answer_data = {'value': rating}
+
+                elif question.question_type == 'scale':
+                    # Scale questions (e.g., 1-100)
+                    config = question.config or {}
+                    min_val = config.get('min', 1)
+                    max_val = config.get('max', 100)
+                    scale_range = max_val - min_val
+
+                    if token.category == 'self':
+                        # Self rates lower (40-60% of range)
+                        scale_value = min_val + int(scale_range * (0.4 + (question_seed / 50)))
+                    elif token.category == 'manager':
+                        # Managers rate 60-80% of range
+                        scale_value = min_val + int(scale_range * (0.6 + (question_seed / 50)))
+                    elif token.category == 'peer':
+                        # Peers rate 70-90% of range
+                        scale_value = min_val + int(scale_range * (0.7 + (question_seed / 50)))
+                    elif token.category == 'direct_report':
+                        # Direct reports rate highest (75-95% of range)
+                        scale_value = min_val + int(scale_range * (0.75 + (question_seed / 50)))
+                    else:
+                        scale_value = min_val + int(scale_range * 0.7)
+
+                    answer_data = {'value': scale_value}
+
+                elif question.question_type == 'single_choice':
+                    # Single choice questions - select based on weights if available
+                    config = question.config or {}
+                    choices = config.get('choices', [])
+                    weights = config.get('weights', [])
+
+                    if choices:
+                        if weights and config.get('scoring_enabled'):
+                            # Select higher weighted options based on category
+                            if token.category == 'self':
+                                # Self selects lower weighted options
+                                idx = min(len(choices) - 1, max(0, question_seed % max(1, len(choices) // 2)))
+                            elif token.category in ['peer', 'direct_report']:
+                                # Peers/reports select higher weighted options
+                                idx = max(0, len(choices) - 1 - (question_seed % max(1, len(choices) // 2)))
+                            else:
+                                # Managers select middle to high
+                                idx = max(0, len(choices) // 2 + (question_seed % max(1, len(choices) // 2)))
+                        else:
+                            # Random selection
+                            idx = question_seed % len(choices)
+                        answer_data = {'value': choices[idx]}
+                    else:
+                        answer_data = {'value': ''}
+
+                elif question.question_type == 'multiple_choice':
+                    # Multiple choice questions - select multiple options
+                    config = question.config or {}
+                    choices = config.get('choices', [])
+
+                    if choices:
+                        # Select 1-3 options based on category
+                        num_selections = 1 + (question_seed % 3)
+                        if token.category == 'self':
+                            # Self selects fewer options
+                            num_selections = max(1, num_selections - 1)
+                        elif token.category in ['peer', 'direct_report']:
+                            # Peers/reports select more options
+                            num_selections = min(len(choices), num_selections + 1)
+
+                        # Select distinct options
+                        selected = []
+                        for i in range(min(num_selections, len(choices))):
+                            idx = (question_seed + i * 7) % len(choices)
+                            if choices[idx] not in selected:
+                                selected.append(choices[idx])
+                        answer_data = {'value': selected}
+                    else:
+                        answer_data = {'value': []}
+
                 elif question.question_type == 'text':
                     # Add some text comments
                     if token.category != 'self' and hash(question.id) % 3 == 0:
@@ -336,6 +411,28 @@ class Command(BaseCommand):
                 for question in questions:
                     if question.question_type in ['rating', 'likert']:
                         answer_data = {'value': 4}
+                    elif question.question_type == 'scale':
+                        config = question.config or {}
+                        min_val = config.get('min', 1)
+                        max_val = config.get('max', 100)
+                        scale_range = max_val - min_val
+                        answer_data = {'value': min_val + int(scale_range * 0.7)}
+                    elif question.question_type == 'single_choice':
+                        config = question.config or {}
+                        choices = config.get('choices', [])
+                        if choices:
+                            answer_data = {'value': choices[len(choices) // 2]}
+                        else:
+                            answer_data = {'value': ''}
+                    elif question.question_type == 'multiple_choice':
+                        config = question.config or {}
+                        choices = config.get('choices', [])
+                        if choices:
+                            # Select 2 options from middle
+                            selected = [choices[i] for i in range(min(2, len(choices)))]
+                            answer_data = {'value': selected}
+                        else:
+                            answer_data = {'value': []}
                     else:
                         answer_data = {'value': ''}
 

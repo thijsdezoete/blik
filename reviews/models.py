@@ -143,6 +143,7 @@ class Response(TimeStampedModel):
 
     # JSON field for storing answer data
     # For rating: {"value": 4}
+    # For scale: {"value": 75}
     # For text: {"value": "text response"}
     # For single_choice: {"value": "Option 1"}
     # For multiple_choice: {"value": ["Option 1", "Option 2"]}

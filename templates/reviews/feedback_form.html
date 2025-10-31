@@ -151,6 +151,37 @@
                     {% if question.required %}
                     <input type="hidden" class="multiple-choice-validator" data-question-id="{{ question.id }}" data-required="true">
                     {% endif %}
+
+                    {% elif question.question_type == 'scale' %}
+                    <div class="scale-group">
+                        <div class="scale-labels">
+                            {% if question.config.min_label %}
+                            <span class="scale-label-min">{{ question.config.min_label }}</span>
+                            {% endif %}
+                            <span class="scale-value-display" id="scale_value_{{ question.id }}">
+                                {% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ question.config.min }}{% endif %}
+                            </span>
+                            {% if question.config.max_label %}
+                            <span class="scale-label-max">{{ question.config.max_label }}</span>
+                            {% endif %}
+                        </div>
+                        <input
+                            type="range"
+                            name="question_{{ question.id }}"
+                            id="scale_input_{{ question.id }}"
+                            class="scale-slider"
+                            min="{{ question.config.min }}"
+                            max="{{ question.config.max }}"
+                            step="{{ question.config.step }}"
+                            value="{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ question.config.min }}{% endif %}"
+                            {% if question.required %}required{% endif %}
+                            oninput="document.getElementById('scale_value_{{ question.id }}').textContent = this.value"
+                        >
+                        <div class="scale-range-labels">
+                            <span>{{ question.config.min }}</span>
+                            <span>{{ question.config.max }}</span>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
                 {% endfor %}

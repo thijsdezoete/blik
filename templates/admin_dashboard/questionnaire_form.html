@@ -118,6 +118,7 @@
                         <option value="text">Free Text</option>
                         <option value="single_choice">Single Choice (Dropdown)</option>
                         <option value="multiple_choice">Multiple Choice (Checkboxes)</option>
+                        <option value="scale">Numeric Scale</option>
                     </select>
                 </div>
 
@@ -129,6 +130,32 @@
                         class="form-control"
                         rows="5"
                     ></textarea>
+                </div>
+
+                <div id="edit_scale_container" class="form-group" style="display: none;">
+                    <label class="form-label">Scale Configuration</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div>
+                            <label style="font-size: 0.875rem; color: var(--text-secondary);">Min</label>
+                            <input type="number" id="edit_scale_min" name="scale_min" class="form-control" value="1" style="font-size: 0.875rem;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.875rem; color: var(--text-secondary);">Max</label>
+                            <input type="number" id="edit_scale_max" name="scale_max" class="form-control" value="100" style="font-size: 0.875rem;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.875rem; color: var(--text-secondary);">Step</label>
+                            <input type="number" id="edit_scale_step" name="scale_step" class="form-control" value="1" style="font-size: 0.875rem;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">
+                        <label style="font-size: 0.875rem; color: var(--text-secondary);">Min Label (Optional)</label>
+                        <input type="text" id="edit_scale_min_label" name="scale_min_label" class="form-control" placeholder="e.g., Not at all" style="font-size: 0.875rem;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.875rem; color: var(--text-secondary);">Max Label (Optional)</label>
+                        <input type="text" id="edit_scale_max_label" name="scale_max_label" class="form-control" placeholder="e.g., Extremely" style="font-size: 0.875rem;">
+                    </div>
                 </div>
 
                 <div id="edit_choices_container" class="form-group" style="display: none;">
@@ -277,6 +304,7 @@
                                     <option value="text">Free Text</option>
                                     <option value="single_choice">Single Choice (Dropdown)</option>
                                     <option value="multiple_choice">Multiple Choice (Checkboxes)</option>
+                                    <option value="scale">Numeric Scale</option>
                                 </select>
                             </div>
 
@@ -294,6 +322,35 @@ Neutral
 Agree
 Strongly Agree</textarea>
                                 <small style="color: var(--text-secondary); font-size: 0.875rem;">Default 5-point scale provided. Customize or use 3-point, 7-point, etc.</small>
+                            </div>
+
+                            <div id="scale_container_{{ section.id }}" class="form-group" style="display: none;">
+                                <label class="form-label">Scale Configuration</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <div>
+                                        <label style="font-size: 0.875rem; color: var(--text-secondary);">Min</label>
+                                        <input type="number" id="scale_min_{{ section.id }}" name="scale_min" class="form-control" value="1" style="font-size: 0.875rem;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.875rem; color: var(--text-secondary);">Max</label>
+                                        <input type="number" id="scale_max_{{ section.id }}" name="scale_max" class="form-control" value="100" style="font-size: 0.875rem;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.875rem; color: var(--text-secondary);">Step</label>
+                                        <input type="number" id="scale_step_{{ section.id }}" name="scale_step" class="form-control" value="1" style="font-size: 0.875rem;">
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <label style="font-size: 0.875rem; color: var(--text-secondary);">Min Label (Optional)</label>
+                                    <input type="text" id="scale_min_label_{{ section.id }}" name="scale_min_label" class="form-control" placeholder="e.g., Not at all" style="font-size: 0.875rem;">
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.875rem; color: var(--text-secondary);">Max Label (Optional)</label>
+                                    <input type="text" id="scale_max_label_{{ section.id }}" name="scale_max_label" class="form-control" placeholder="e.g., Extremely" style="font-size: 0.875rem;">
+                                </div>
+                                <small style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-top: 0.5rem;">
+                                    Creates a slider or numeric input for precise measurement (e.g., 1-100 scale).
+                                </small>
                             </div>
 
                             <div id="choices_container_{{ section.id }}" class="form-group" style="display: none;">
@@ -350,13 +407,17 @@ Strongly Agree</textarea>
                             <script>
                                 function toggleChoices{{ section.id }}(select) {
                                     const likertContainer = document.getElementById('likert_container_{{ section.id }}');
+                                    const scaleContainer = document.getElementById('scale_container_{{ section.id }}');
                                     const choicesContainer = document.getElementById('choices_container_{{ section.id }}');
 
                                     likertContainer.style.display = 'none';
+                                    scaleContainer.style.display = 'none';
                                     choicesContainer.style.display = 'none';
 
                                     if (select.value === 'likert') {
                                         likertContainer.style.display = 'block';
+                                    } else if (select.value === 'scale') {
+                                        scaleContainer.style.display = 'block';
                                     } else if (select.value === 'single_choice' || select.value === 'multiple_choice') {
                                         choicesContainer.style.display = 'block';
                                         updateWeightInputs{{ section.id }}();
@@ -634,6 +695,7 @@ function openEditQuestionModal(questionId, questionText, questionType, required,
 
     // Handle question type specific fields
     const likertContainer = document.getElementById('edit_likert_container');
+    const scaleContainer = document.getElementById('edit_scale_container');
     const choicesContainer = document.getElementById('edit_choices_container');
     const likertScale = document.getElementById('edit_likert_scale');
     const choices = document.getElementById('edit_choices');
@@ -641,6 +703,7 @@ function openEditQuestionModal(questionId, questionText, questionType, required,
 
     // Reset containers
     likertContainer.style.display = 'none';
+    scaleContainer.style.display = 'none';
     choicesContainer.style.display = 'none';
     likertScale.value = '';
     choices.value = '';
@@ -650,6 +713,13 @@ function openEditQuestionModal(questionId, questionText, questionType, required,
     if (questionType === 'likert' && config.scale) {
         likertContainer.style.display = 'block';
         likertScale.value = config.scale.join('\n');
+    } else if (questionType === 'scale') {
+        scaleContainer.style.display = 'block';
+        document.getElementById('edit_scale_min').value = config.min || 1;
+        document.getElementById('edit_scale_max').value = config.max || 100;
+        document.getElementById('edit_scale_step').value = config.step || 1;
+        document.getElementById('edit_scale_min_label').value = config.min_label || '';
+        document.getElementById('edit_scale_max_label').value = config.max_label || '';
     } else if ((questionType === 'single_choice' || questionType === 'multiple_choice') && config.choices) {
         choicesContainer.style.display = 'block';
         choices.value = config.choices.join('\n');
@@ -682,13 +752,17 @@ function closeEditQuestionModal() {
 function toggleEditChoices() {
     const questionType = document.getElementById('edit_question_type').value;
     const likertContainer = document.getElementById('edit_likert_container');
+    const scaleContainer = document.getElementById('edit_scale_container');
     const choicesContainer = document.getElementById('edit_choices_container');
 
     likertContainer.style.display = 'none';
+    scaleContainer.style.display = 'none';
     choicesContainer.style.display = 'none';
 
     if (questionType === 'likert') {
         likertContainer.style.display = 'block';
+    } else if (questionType === 'scale') {
+        scaleContainer.style.display = 'block';
     } else if (questionType === 'single_choice' || questionType === 'multiple_choice') {
         choicesContainer.style.display = 'block';
         updateEditWeightInputs();

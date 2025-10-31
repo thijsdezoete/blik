@@ -302,8 +302,12 @@ def generate_report(cycle):
                         'responses': category_data['responses']
                     }
 
-                    # Calculate average for rating and likert questions
+                    # Calculate average for rating, scale, and likert questions
                     if question_data['question_type'] == 'rating':
+                        numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
+                        if numeric_responses:
+                            result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
+                    elif question_data['question_type'] == 'scale':
                         numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
                         if numeric_responses:
                             result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)

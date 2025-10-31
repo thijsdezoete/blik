@@ -56,6 +56,7 @@ class Question(TimeStampedModel):
         ('text', 'Free Text'),
         ('single_choice', 'Single Choice'),
         ('multiple_choice', 'Multiple Choice'),
+        ('scale', 'Numeric Scale'),
     ]
 
     section = models.ForeignKey(
@@ -76,6 +77,7 @@ class Question(TimeStampedModel):
     #   Basic: {"choices": ["Option 1", "Option 2"]}
     #   With scoring: {"choices": ["Option 1", "Option 2"], "weights": [5, 3], "scoring_enabled": true}
     #   Note: For multiple_choice, score = sum of selected option weights (rewards selecting more positive attributes)
+    # For scale: {"min": 1, "max": 100, "step": 1, "min_label": "Not at all", "max_label": "Extremely"}
     # Optional chart configuration:
     #   "chart_weight": 1.0 (default) - Weight in section average (0.5 = half weight, 2.0 = double weight)
     #   "exclude_from_charts": false (default) - Set true to exclude from chart aggregations

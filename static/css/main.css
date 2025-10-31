@@ -1046,6 +1046,125 @@ body.setup-page {
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
+/* Scale Question Styling */
+.scale-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.scale-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.scale-label-min,
+.scale-label-max {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.scale-value-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    padding: 8px 16px;
+    background: var(--bg-light);
+    border-radius: 8px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.scale-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--bg-light);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+.scale-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.scale-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+.scale-slider::-webkit-slider-thumb:active {
+    transform: scale(1.2);
+}
+
+/* Firefox */
+.scale-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.scale-slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+.scale-slider::-moz-range-thumb:active {
+    transform: scale(1.2);
+}
+
+/* Track styling */
+.scale-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #e0e7ff 0%, var(--primary) 100%);
+    border-radius: 4px;
+}
+
+.scale-slider::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #e0e7ff 0%, var(--primary) 100%);
+    border-radius: 4px;
+}
+
+.scale-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+@media (min-width: 768px) {
+    .scale-group {
+        max-width: 700px;
+    }
+}
+
 .form-actions {
     position: sticky;
     bottom: 0;

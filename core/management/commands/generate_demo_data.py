@@ -395,4 +395,76 @@ class Command(BaseCommand):
                 else:
                     return {'value': random.choice(positive_comments)}
 
+        elif question.question_type == 'scale':
+            # Handle scale questions (e.g., 1-100)
+            config = question.config or {}
+            min_val = config.get('min', 1)
+            max_val = config.get('max', 100)
+            scale_range = max_val - min_val
+
+            # Determine scale position based on pattern
+            if pattern == 'high_performer':
+                pct = random.uniform(0.75, 0.95)
+            elif pattern == 'solid_performer':
+                pct = random.uniform(0.6, 0.85)
+            elif pattern == 'developing':
+                pct = random.uniform(0.4, 0.65)
+            elif pattern == 'imposter_syndrome':
+                pct = random.uniform(0.4, 0.6) if category == 'self' else random.uniform(0.75, 0.9)
+            elif pattern == 'overconfident':
+                pct = random.uniform(0.8, 0.95) if category == 'self' else random.uniform(0.4, 0.6)
+            else:
+                pct = random.uniform(0.5, 0.75)
+
+            scale_value = min_val + int(scale_range * pct)
+            return {'value': scale_value}
+
+        elif question.question_type == 'single_choice':
+            # Handle single choice questions
+            config = question.config or {}
+            choices = config.get('choices', [])
+            weights = config.get('weights', [])
+
+            if not choices:
+                return {'value': ''}
+
+            if weights and config.get('scoring_enabled'):
+                # Select based on weights and pattern
+                if pattern in ['high_performer', 'solid_performer']:
+                    # Select higher weighted options (last 60%)
+                    idx = random.randint(max(0, len(choices) * 2 // 5), len(choices) - 1)
+                elif pattern == 'developing':
+                    # Select lower weighted options (first 60%)
+                    idx = random.randint(0, min(len(choices) - 1, len(choices) * 3 // 5))
+                else:
+                    idx = random.randint(0, len(choices) - 1)
+            else:
+                # Random selection
+                idx = random.randint(0, len(choices) - 1)
+
+            return {'value': choices[idx]}
+
+        elif question.question_type == 'multiple_choice':
+            # Handle multiple choice questions
+            config = question.config or {}
+            choices = config.get('choices', [])
+
+            if not choices:
+                return {'value': []}
+
+            # Determine number of selections based on pattern
+            if pattern in ['high_performer', 'solid_performer']:
+                # Select more options (2-4)
+                num_selections = random.randint(2, min(4, len(choices)))
+            elif pattern == 'developing':
+                # Select fewer options (1-2)
+                num_selections = random.randint(1, min(2, len(choices)))
+            else:
+                # Select middle number (1-3)
+                num_selections = random.randint(1, min(3, len(choices)))
+
+            # Randomly select distinct options
+            selected = random.sample(choices, num_selections)
+            return {'value': selected}
+
         return {'value': ''}

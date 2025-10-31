@@ -654,6 +654,27 @@ def questionnaire_edit(request, questionnaire_id):
                                     messages.warning(request, 'Weights count did not match choices count. Scoring disabled for this question.')
                             except (ValueError, TypeError):
                                 messages.warning(request, 'Invalid weight values. Scoring disabled for this question.')
+                    elif question_type == 'scale':
+                        try:
+                            min_val = int(request.POST.get('scale_min', 1))
+                            max_val = int(request.POST.get('scale_max', 100))
+                            step_val = int(request.POST.get('scale_step', 1))
+                            min_label = request.POST.get('scale_min_label', '').strip()
+                            max_label = request.POST.get('scale_max_label', '').strip()
+
+                            config = {
+                                'min': min_val,
+                                'max': max_val,
+                                'step': step_val
+                            }
+                            if min_label:
+                                config['min_label'] = min_label
+                            if max_label:
+                                config['max_label'] = max_label
+                        except (ValueError, TypeError):
+                            # Use defaults if parsing fails
+                            config = {'min': 1, 'max': 100, 'step': 1}
+                            messages.warning(request, 'Invalid scale values. Using defaults (1-100, step 1).')
 
                     Question.objects.create(
                         section=section,
@@ -742,6 +763,27 @@ def questionnaire_edit(request, questionnaire_id):
                                     messages.warning(request, 'Weights count did not match choices count. Scoring disabled for this question.')
                             except (ValueError, TypeError):
                                 messages.warning(request, 'Invalid weight values. Scoring disabled for this question.')
+                    elif question_type == 'scale':
+                        try:
+                            min_val = int(request.POST.get('scale_min', 1))
+                            max_val = int(request.POST.get('scale_max', 100))
+                            step_val = int(request.POST.get('scale_step', 1))
+                            min_label = request.POST.get('scale_min_label', '').strip()
+                            max_label = request.POST.get('scale_max_label', '').strip()
+
+                            config = {
+                                'min': min_val,
+                                'max': max_val,
+                                'step': step_val
+                            }
+                            if min_label:
+                                config['min_label'] = min_label
+                            if max_label:
+                                config['max_label'] = max_label
+                        except (ValueError, TypeError):
+                            # Use defaults if parsing fails
+                            config = {'min': 1, 'max': 100, 'step': 1}
+                            messages.warning(request, 'Invalid scale values. Using defaults (1-100, step 1).')
 
                     question.config = config
                     question.save()

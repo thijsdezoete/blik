@@ -13,6 +13,7 @@ from django_ratelimit.decorators import ratelimit
 from datetime import datetime, timezone as dt_timezone
 from core.models import Organization
 from .models import Plan, Subscription, OneTimeLoginToken
+from accounts.services import create_user_with_email_as_username
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -176,31 +177,18 @@ def handle_checkout_session_completed(session):
         user = existing_user
         password = None  # Don't generate new password for existing user
     else:
-        # Create admin user
-        username = customer_email.split('@')[0]
-        # Ensure username is unique
-        base_username = username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_username}{counter}"
-            counter += 1
-
-        from django.contrib.auth.hashers import make_password
-        import secrets
-        import string
-
-        # Generate random password
-        alphabet = string.ascii_letters + string.digits
-        password = ''.join(secrets.choice(alphabet) for _ in range(16))
-
-        # Create user as staff (organization admin)
-        user = User.objects.create_user(
-            username=username,
-            email=customer_email,
-            password=password,
-            is_staff=True,  # Organization admin can manage their org
-            is_active=True
-        )
+        # Create admin user with random password (will be sent via email)
+        try:
+            user, password = create_user_with_email_as_username(
+                email=customer_email,
+                password=None,  # Generate random password
+                is_staff=True,  # Organization admin can manage their org
+                is_active=True
+            )
+            # password now contains the generated password for the welcome email
+        except ValueError as e:
+            print(f"ERROR: Could not create user: {e}")
+            return HttpResponse(status=400)
 
     # Create organization
     org = Organization.objects.create(

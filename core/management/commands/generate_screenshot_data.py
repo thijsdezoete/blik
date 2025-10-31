@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from accounts.models import Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin, assign_organization_member
+from accounts.services import create_user_with_email_as_username
 from questionnaires.models import Questionnaire, Question
 from reviews.models import ReviewCycle, ReviewerToken, Response
 from reports.services import generate_report
@@ -62,8 +63,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f'Created organization: {org.name}'))
 
         # Create admin user with proper org admin permissions
-        admin = User.objects.create_user(
-            username='admin_acme',
+        admin, _ = create_user_with_email_as_username(
             email='admin@acme.example.com',
             password='demo123',
             first_name='Admin',
@@ -76,7 +76,7 @@ class Command(BaseCommand):
         )
         # Assign organization admin permissions
         assign_organization_admin(admin)
-        self.stdout.write(self.style.SUCCESS(f'Created admin user: {admin.username} (password: demo123)'))
+        self.stdout.write(self.style.SUCCESS(f'Created admin user: {admin.email} (password: demo123)'))
 
         # Create additional team members for team page
         team_members = [
@@ -91,8 +91,7 @@ class Command(BaseCommand):
         ]
 
         for first, last, email, is_admin in team_members:
-            user = User.objects.create_user(
-                username=email.split('@')[0],
+            user, _ = create_user_with_email_as_username(
                 email=email,
                 password='demo123',
                 first_name=first,

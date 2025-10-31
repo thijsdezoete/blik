@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from .models import Organization
 from .forms import SetupAdminForm, SetupOrganizationForm, SetupEmailForm
+from accounts.services import create_user_with_email_as_username
 
 User = get_user_model()
 
@@ -37,14 +38,22 @@ def setup_admin(request):
         form = SetupAdminForm(request.POST)
         if form.is_valid():
             # Create regular user (organization admin via permissions)
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password']
-            )
+            try:
+                user, _ = create_user_with_email_as_username(
+                    email=form.cleaned_data['email'],
+                    password=form.cleaned_data['password']
+                )
+            except ValueError as e:
+                messages.error(request, f'Failed to create user: {e}')
+                return render(request, 'setup/admin.html', {
+                    'form': form,
+                    'step': 1,
+                    'total_steps': 3,
+                    'progress_percentage': 33,
+                })
             # Log the user in with explicit backend
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            messages.success(request, f'Admin account "{user.username}" created successfully!')
+            messages.success(request, f'Admin account "{user.email}" created successfully!')
             return redirect('setup_organization')
     else:
         form = SetupAdminForm()

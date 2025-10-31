@@ -1,8 +1,6 @@
 """
 Superuser-only views for administrative tasks
 """
-import secrets
-import string
 from datetime import timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -14,6 +12,7 @@ from core.models import Organization
 from accounts.models import UserProfile
 from core.email import send_welcome_email
 from accounts.permissions import assign_organization_admin
+from accounts.services import create_user_with_email_as_username
 
 
 def superuser_required(user):
@@ -70,24 +69,15 @@ def create_organization(request):
                     default_users_can_create_cycles=False
                 )
 
-                # Generate username from email
-                username = admin_email.split('@')[0]
-                base_username = username
-                counter = 1
-                while User.objects.filter(username=username).exists():
-                    username = f"{base_username}{counter}"
-                    counter += 1
-
-                # Generate random password
-                alphabet = string.ascii_letters + string.digits
-                password = ''.join(secrets.choice(alphabet) for _ in range(16))
-
-                # Create user account
-                user = User.objects.create_user(
-                    username=username,
-                    email=admin_email,
-                    password=password
-                )
+                # Create user account with centralized function
+                try:
+                    user, password = create_user_with_email_as_username(
+                        email=admin_email,
+                        password=None  # Generate random password
+                    )
+                except ValueError as e:
+                    messages.error(request, f'Failed to create user: {e}')
+                    return redirect('superuser_dashboard')
 
                 # Create user profile with admin privileges
                 UserProfile.objects.create(

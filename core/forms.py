@@ -9,20 +9,11 @@ User = get_user_model()
 class SetupAdminForm(forms.Form):
     """Form for creating the first admin user during setup."""
 
-    username = forms.CharField(
-        max_length=150,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'admin',
-            'autofocus': True
-        }),
-        help_text='Username for the administrator account'
-    )
-
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'admin@example.com'
+            'placeholder': 'admin@example.com',
+            'autofocus': True
         }),
         help_text='Email address for the administrator'
     )
@@ -45,11 +36,11 @@ class SetupAdminForm(forms.Form):
         help_text='Enter the same password again for verification'
     )
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if User.objects.filter(username=username).exists():
-            raise forms.ValidationError('This username is already taken.')
-        return username
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('This email is already registered.')
+        return email
 
     def clean(self):
         cleaned_data = super().clean()

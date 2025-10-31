@@ -7,6 +7,7 @@ from django.utils import timezone
 from django_ratelimit.decorators import ratelimit
 from core.models import Organization
 from accounts.models import UserProfile, OrganizationInvitation
+from accounts.services import create_user_with_email_as_username
 
 
 @require_http_methods(["GET", "POST"])
@@ -118,24 +119,12 @@ def signup_view(request):
                 'invitation_email': invitation.email
             })
 
-        # Check if user already exists
-        if User.objects.filter(email=email).exists():
-            messages.error(request, 'An account with this email already exists. Please login.')
+        # Create user using centralized function
+        try:
+            user, _ = create_user_with_email_as_username(email=email, password=password1)
+        except ValueError as e:
+            messages.error(request, str(e))
             return redirect('login')
-
-        # Create user
-        username = email.split('@')[0]
-        base_username = username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_username}{counter}"
-            counter += 1
-
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password1
-        )
 
         # Create user profile
         UserProfile.objects.create(

@@ -20,19 +20,6 @@
     {% endif %}
 
     <div class="form-group">
-        <label for="id_username">{{ form.username.label }}</label>
-        {{ form.username }}
-        {% if form.username.errors %}
-            <ul class="errorlist">
-            {% for error in form.username.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.username.help_text }}</small>
-    </div>
-
-    <div class="form-group">
         <label for="id_email">{{ form.email.label }}</label>
         {{ form.email }}
         {% if form.email.errors %}

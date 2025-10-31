@@ -176,3 +176,52 @@ def delete_organization(organization):
     organization.delete()
 
     return True
+
+
+def create_user_with_email_as_username(email, password=None, **extra_fields):
+    """
+    Create a user with email as username.
+
+    This is the centralized function for user creation across the application
+    to ensure consistency and avoid username conflicts.
+
+    Args:
+        email: User's email address (will also be used as username)
+        password: Password for the user (if None, a random password will be generated)
+        **extra_fields: Additional fields to pass to create_user (first_name, last_name, etc.)
+
+    Returns:
+        tuple: (user, generated_password) where generated_password is None if password was provided,
+               or the randomly generated password string if password was None
+
+    Raises:
+        ValueError: If email is not provided or user already exists
+    """
+    if not email:
+        raise ValueError("Email is required")
+
+    # Check if user with this email already exists
+    if User.objects.filter(email=email).exists():
+        raise ValueError(f"User with email {email} already exists")
+
+    # Use email as username
+    username = email
+
+    # Generate random password if not provided
+    generated_password = None
+    if password is None:
+        import secrets
+        import string
+        alphabet = string.ascii_letters + string.digits
+        password = ''.join(secrets.choice(alphabet) for _ in range(16))
+        generated_password = password  # Store for return value
+
+    # Create user
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+        **extra_fields
+    )
+
+    return user, generated_password

@@ -43,6 +43,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+
+        // Check multiple choice validators (for checkbox groups)
+        const multipleChoiceValidators = currentSection.querySelectorAll('.multiple-choice-validator[data-required="true"]');
+        for (let validator of multipleChoiceValidators) {
+            const questionId = validator.dataset.questionId;
+            const checkboxes = currentSection.querySelectorAll(`input[type="checkbox"][name="question_${questionId}"]`);
+            const isAnyChecked = Array.from(checkboxes).some(cb => cb.checked);
+            if (!isAnyChecked) {
+                return false;
+            }
+        }
+
         return true;
     }
 

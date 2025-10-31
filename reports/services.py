@@ -249,6 +249,7 @@ def generate_report(cycle):
         'questions': defaultdict(lambda: {
             'question_text': '',
             'question_type': '',
+            'question_config': {},
             'by_category': defaultdict(lambda: {
                 'responses': [],
                 'count': 0,
@@ -268,6 +269,7 @@ def generate_report(cycle):
         question_data = data_by_section[section.id]['questions'][question.id]
         question_data['question_text'] = question.question_text
         question_data['question_type'] = question.question_type
+        question_data['question_config'] = question.config  # Store config for weight calculations
 
         # Add response to category
         category_data = question_data['by_category'][response.category]
@@ -314,12 +316,70 @@ def generate_report(cycle):
                             result['distribution'] = dict(Counter(text_responses))
                             # For numeric calculations, use position in scale (1-indexed)
                             # This allows averaging likert responses
-                    elif question_data['question_type'] == 'multiple_choice':
-                        # Store distribution of multiple choice responses
+                    elif question_data['question_type'] == 'single_choice':
+                        # Store distribution of single choice responses (dropdown selection)
                         from collections import Counter
                         text_responses = [r for r in category_data['responses'] if r]
                         if text_responses:
                             result['distribution'] = dict(Counter(text_responses))
+
+                            # Calculate weighted score if weights are configured
+                            config = question_data.get('question_config', {})
+                            if config.get('scoring_enabled') and config.get('weights'):
+                                choices = config.get('choices', [])
+                                weights = config.get('weights', [])
+                                scores = []
+
+                                for response_text in text_responses:
+                                    try:
+                                        # Find the index of the selected choice
+                                        choice_index = choices.index(response_text)
+                                        if 0 <= choice_index < len(weights):
+                                            scores.append(weights[choice_index])
+                                    except (ValueError, IndexError):
+                                        pass  # Skip if choice not found or index out of range
+
+                                if scores:
+                                    result['avg'] = round(sum(scores) / len(scores), 2)
+
+                    elif question_data['question_type'] == 'multiple_choice':
+                        # Store distribution of multiple choice responses (checkboxes)
+                        # Each response is a list of selected options, so we need to flatten
+                        from collections import Counter
+                        all_selected_options = []
+                        for response in category_data['responses']:
+                            if response and isinstance(response, list):
+                                all_selected_options.extend(response)
+                        if all_selected_options:
+                            result['distribution'] = dict(Counter(all_selected_options))
+
+                            # Calculate weighted score if weights are configured
+                            config = question_data.get('question_config', {})
+                            if config.get('scoring_enabled') and config.get('weights'):
+                                choices = config.get('choices', [])
+                                weights = config.get('weights', [])
+                                response_scores = []
+
+                                # For each response (which is a list of selected choices)
+                                for response in category_data['responses']:
+                                    if response and isinstance(response, list):
+                                        selected_weights = []
+                                        for selected_choice in response:
+                                            try:
+                                                choice_index = choices.index(selected_choice)
+                                                if 0 <= choice_index < len(weights):
+                                                    selected_weights.append(weights[choice_index])
+                                            except (ValueError, IndexError):
+                                                pass
+
+                                        # Sum the weights for this response (not average)
+                                        # This rewards selecting more positive attributes
+                                        if selected_weights:
+                                            response_scores.append(sum(selected_weights))
+
+                                # Average all response scores
+                                if response_scores:
+                                    result['avg'] = round(sum(response_scores) / len(response_scores), 2)
 
                     report_question['by_category'][category] = result
                 else:

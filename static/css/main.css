@@ -933,6 +933,99 @@ body.setup-page {
     }
 }
 
+/* Multiple Choice (Checkbox) Styling */
+.multiple-choice-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.multiple-choice-option {
+    position: relative;
+}
+
+.multiple-choice-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.multiple-choice-label {
+    display: block;
+    padding: 16px 20px 16px 48px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg-card);
+    font-size: 1rem;
+    text-align: left;
+    position: relative;
+}
+
+/* Custom checkbox indicator */
+.multiple-choice-label::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-card);
+    transition: all 0.2s;
+}
+
+/* Checkmark */
+.multiple-choice-label::after {
+    content: '';
+    position: absolute;
+    left: 22px;
+    top: 50%;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: translateY(-65%) rotate(45deg) scale(0);
+    transition: transform 0.2s;
+}
+
+.multiple-choice-checkbox:checked + .multiple-choice-label {
+    border-color: var(--primary);
+    background: var(--bg-light);
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+    font-weight: 500;
+}
+
+.multiple-choice-checkbox:checked + .multiple-choice-label::before {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.multiple-choice-checkbox:checked + .multiple-choice-label::after {
+    transform: translateY(-65%) rotate(45deg) scale(1);
+}
+
+.multiple-choice-checkbox:focus + .multiple-choice-label {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.multiple-choice-label:hover {
+    border-color: var(--primary);
+    background: var(--bg-light);
+}
+
+@media (min-width: 768px) {
+    .multiple-choice-group {
+        max-width: 700px;
+    }
+}
+
 .text-input {
     width: 100%;
     min-height: 120px;

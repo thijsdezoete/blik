@@ -54,6 +54,7 @@ class Question(TimeStampedModel):
         ('rating', 'Rating Scale'),
         ('likert', 'Likert Scale'),
         ('text', 'Free Text'),
+        ('single_choice', 'Single Choice'),
         ('multiple_choice', 'Multiple Choice'),
     ]
 
@@ -68,7 +69,13 @@ class Question(TimeStampedModel):
     # JSON field for question configuration
     # For rating: {"min": 1, "max": 5, "labels": {"1": "Poor", "5": "Excellent"}}
     # For likert: {"scale": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]}
-    # For multiple_choice: {"choices": ["Option 1", "Option 2"]}
+    # For single_choice:
+    #   Basic: {"choices": ["Option 1", "Option 2"]}
+    #   With scoring: {"choices": ["Option 1", "Option 2"], "weights": [5, 3], "scoring_enabled": true}
+    # For multiple_choice:
+    #   Basic: {"choices": ["Option 1", "Option 2"]}
+    #   With scoring: {"choices": ["Option 1", "Option 2"], "weights": [5, 3], "scoring_enabled": true}
+    #   Note: For multiple_choice, score = sum of selected option weights (rewards selecting more positive attributes)
     # Optional chart configuration:
     #   "chart_weight": 1.0 (default) - Weight in section average (0.5 = half weight, 2.0 = double weight)
     #   "exclude_from_charts": false (default) - Set true to exclude from chart aggregations

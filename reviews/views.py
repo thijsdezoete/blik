@@ -141,33 +141,52 @@ def submit_feedback(request, token):
     # Validate and prepare responses
     for question in questions:
         field_name = f'question_{question.id}'
-        answer_value = request.POST.get(field_name, '').strip()
 
-        # Check required fields
-        if question.required and not answer_value:
-            errors.append(f'Question "{question.question_text[:50]}" is required')
-            continue
+        # Handle multiple_choice differently (get list of values)
+        if question.question_type == 'multiple_choice':
+            answer_values = request.POST.getlist(field_name)
+            # Filter out empty strings
+            answer_values = [v.strip() for v in answer_values if v.strip()]
 
-        # Skip empty optional fields
-        if not answer_value:
-            continue
-
-        # Validate based on question type
-        if question.question_type == 'rating':
-            try:
-                rating = int(answer_value)
-                min_val = question.config.get('min', 1)
-                max_val = question.config.get('max', 5)
-                if rating < min_val or rating > max_val:
-                    errors.append(f'Rating must be between {min_val} and {max_val}')
-                    continue
-                answer_data = {'value': rating}
-            except ValueError:
-                errors.append(f'Invalid rating value')
+            # Check required fields
+            if question.required and not answer_values:
+                errors.append(f'Question "{question.question_text[:50]}" is required')
                 continue
+
+            # Skip empty optional fields
+            if not answer_values:
+                continue
+
+            answer_data = {'value': answer_values}
         else:
-            # text or multiple_choice
-            answer_data = {'value': answer_value}
+            # For all other question types (single value)
+            answer_value = request.POST.get(field_name, '').strip()
+
+            # Check required fields
+            if question.required and not answer_value:
+                errors.append(f'Question "{question.question_text[:50]}" is required')
+                continue
+
+            # Skip empty optional fields
+            if not answer_value:
+                continue
+
+            # Validate based on question type
+            if question.question_type == 'rating':
+                try:
+                    rating = int(answer_value)
+                    min_val = question.config.get('min', 1)
+                    max_val = question.config.get('max', 5)
+                    if rating < min_val or rating > max_val:
+                        errors.append(f'Rating must be between {min_val} and {max_val}')
+                        continue
+                    answer_data = {'value': rating}
+                except ValueError:
+                    errors.append(f'Invalid rating value')
+                    continue
+            else:
+                # text, single_choice, likert
+                answer_data = {'value': answer_value}
 
         responses_to_save.append({
             'cycle': cycle,

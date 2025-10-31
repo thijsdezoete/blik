@@ -634,10 +634,26 @@ def questionnaire_edit(request, questionnaire_id):
                         else:
                             scale = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree']
                         config = {'scale': scale}
-                    elif question_type == 'multiple_choice':
+                    elif question_type == 'single_choice' or question_type == 'multiple_choice':
                         choices_raw = request.POST.get('choices', '')
                         choices = [c.strip() for c in choices_raw.split('\n') if c.strip()]
                         config = {'choices': choices}
+
+                        # Check if scoring is enabled and weights are provided
+                        enable_scoring = request.POST.get('enable_scoring') == 'on'
+                        if enable_scoring:
+                            weights_raw = request.POST.getlist('weights[]')
+                            try:
+                                # Parse weights as floats
+                                weights = [float(w) for w in weights_raw if w.strip()]
+                                # Validate: weights must match choices length
+                                if len(weights) == len(choices):
+                                    config['weights'] = weights
+                                    config['scoring_enabled'] = True
+                                else:
+                                    messages.warning(request, 'Weights count did not match choices count. Scoring disabled for this question.')
+                            except (ValueError, TypeError):
+                                messages.warning(request, 'Invalid weight values. Scoring disabled for this question.')
 
                     Question.objects.create(
                         section=section,
@@ -669,6 +685,70 @@ def questionnaire_edit(request, questionnaire_id):
                 messages.success(request, 'Question deleted.')
             except Exception as e:
                 messages.error(request, f'Error deleting question: {str(e)}')
+
+        elif action == 'edit_question':
+            question_id = request.POST.get('question_id')
+            question_text = request.POST.get('question_text')
+            question_type = request.POST.get('question_type', 'rating')
+            required = request.POST.get('required') == 'on'
+
+            if question_id and question_text:
+                try:
+                    question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
+
+                    # Update basic fields
+                    question.question_text = question_text
+                    question.question_type = question_type
+                    question.required = required
+
+                    # Build config based on question type
+                    config = {}
+                    if question_type == 'rating':
+                        config = {
+                            'min': 1,
+                            'max': 5,
+                            'labels': {
+                                '1': 'Strongly Disagree',
+                                '2': 'Disagree',
+                                '3': 'Neutral',
+                                '4': 'Agree',
+                                '5': 'Strongly Agree'
+                            }
+                        }
+                    elif question_type == 'likert':
+                        scale_raw = request.POST.get('likert_scale', '')
+                        if scale_raw:
+                            scale = [s.strip() for s in scale_raw.split('\n') if s.strip()]
+                        else:
+                            scale = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree']
+                        config = {'scale': scale}
+                    elif question_type == 'single_choice' or question_type == 'multiple_choice':
+                        choices_raw = request.POST.get('choices', '')
+                        choices = [c.strip() for c in choices_raw.split('\n') if c.strip()]
+                        config = {'choices': choices}
+
+                        # Check if scoring is enabled and weights are provided
+                        enable_scoring = request.POST.get('enable_scoring') == 'on'
+                        if enable_scoring:
+                            weights_raw = request.POST.getlist('weights[]')
+                            try:
+                                # Parse weights as floats
+                                weights = [float(w) for w in weights_raw if w.strip()]
+                                # Validate: weights must match choices length
+                                if len(weights) == len(choices):
+                                    config['weights'] = weights
+                                    config['scoring_enabled'] = True
+                                else:
+                                    messages.warning(request, 'Weights count did not match choices count. Scoring disabled for this question.')
+                            except (ValueError, TypeError):
+                                messages.warning(request, 'Invalid weight values. Scoring disabled for this question.')
+
+                    question.config = config
+                    question.save()
+
+                    messages.success(request, 'Question updated successfully.')
+                except Exception as e:
+                    messages.error(request, f'Error updating question: {str(e)}')
 
         return redirect('questionnaire_edit', questionnaire_id=questionnaire.id)
 

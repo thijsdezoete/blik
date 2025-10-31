@@ -116,7 +116,7 @@
                         placeholder="Share your thoughts..."
                     >{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% endif %}</textarea>
 
-                    {% elif question.question_type == 'multiple_choice' %}
+                    {% elif question.question_type == 'single_choice' %}
                     <select
                         name="question_{{ question.id }}"
                         class="text-input"
@@ -129,6 +129,28 @@
                         </option>
                         {% endfor %}
                     </select>
+
+                    {% elif question.question_type == 'multiple_choice' %}
+                    <div class="multiple-choice-group">
+                        {% for choice in question.config.choices %}
+                        <div class="multiple-choice-option">
+                            <input
+                                type="checkbox"
+                                name="question_{{ question.id }}"
+                                value="{{ choice }}"
+                                id="q{{ question.id }}_{{ forloop.counter }}"
+                                {% if existing_responses|get_item:question.id and choice in existing_responses|get_item:question.id %}checked{% endif %}
+                                class="multiple-choice-checkbox"
+                            >
+                            <label for="q{{ question.id }}_{{ forloop.counter }}" class="multiple-choice-label">
+                                {{ choice }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if question.required %}
+                    <input type="hidden" class="multiple-choice-validator" data-question-id="{{ question.id }}" data-required="true">
+                    {% endif %}
                     {% endif %}
                 </div>
                 {% endfor %}

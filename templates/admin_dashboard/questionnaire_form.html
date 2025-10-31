@@ -1,4 +1,5 @@
 {% extends "admin_dashboard/base.html" %}
+{% load json_filters %}
 
 {% block title %}{{ action }} Questionnaire{% endblock %}
 
@@ -76,6 +77,103 @@
     </div>
 
     {% if questionnaire %}
+    <!-- Edit Question Modal -->
+    <div id="edit_question_modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeEditQuestionModal()">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">Edit Question</h2>
+                <button
+                    type="button"
+                    onclick="closeEditQuestionModal()"
+                    style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 0; width: 30px; height: 30px;"
+                >&times;</button>
+            </div>
+
+            <form method="post" id="edit_question_form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit_question">
+                <input type="hidden" name="question_id" id="edit_question_id">
+
+                <div class="form-group">
+                    <label for="edit_question_text" class="form-label">Question Text *</label>
+                    <textarea
+                        id="edit_question_text"
+                        name="question_text"
+                        class="form-control"
+                        rows="2"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_question_type" class="form-label">Question Type *</label>
+                    <select
+                        id="edit_question_type"
+                        name="question_type"
+                        class="form-control"
+                        onchange="toggleEditChoices()"
+                    >
+                        <option value="rating">Rating Scale (1-5)</option>
+                        <option value="likert">Likert Scale</option>
+                        <option value="text">Free Text</option>
+                        <option value="single_choice">Single Choice (Dropdown)</option>
+                        <option value="multiple_choice">Multiple Choice (Checkboxes)</option>
+                    </select>
+                </div>
+
+                <div id="edit_likert_container" class="form-group" style="display: none;">
+                    <label for="edit_likert_scale" class="form-label">Likert Scale Items (one per line)</label>
+                    <textarea
+                        id="edit_likert_scale"
+                        name="likert_scale"
+                        class="form-control"
+                        rows="5"
+                    ></textarea>
+                </div>
+
+                <div id="edit_choices_container" class="form-group" style="display: none;">
+                    <label for="edit_choices" class="form-label">Choices (one per line)</label>
+                    <textarea
+                        id="edit_choices"
+                        name="choices"
+                        class="form-control"
+                        rows="3"
+                        oninput="updateEditWeightInputs()"
+                    ></textarea>
+
+                    <div style="margin-top: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input
+                                type="checkbox"
+                                id="edit_enable_scoring"
+                                name="enable_scoring"
+                                onchange="toggleEditWeightInputs()"
+                            >
+                            <span>Enable numeric scoring for analytics</span>
+                        </label>
+                    </div>
+
+                    <div id="edit_weights_container" style="display: none; margin-top: 1rem;">
+                        <label class="form-label">Assign weights to each option (for scoring)</label>
+                        <div id="edit_weight_inputs"></div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="required" id="edit_required">
+                        <span>Required question</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <button type="button" onclick="closeEditQuestionModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Sections and Questions -->
     <div class="card mb-2">
         <div class="card-header">
@@ -121,12 +219,23 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                                <form method="post" style="margin: 0;" onsubmit="return confirm('Delete this question?');">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="delete_question">
-                                    <input type="hidden" name="question_id" value="{{ question.id }}">
-                                    <button type="submit" class="btn btn-sm btn-secondary" style="background: var(--danger); border-color: var(--danger); color: white;">Delete</button>
-                                </form>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-secondary edit-question-btn"
+                                        data-question-id="{{ question.id }}"
+                                        data-question-text="{{ question.question_text|escapejs }}"
+                                        data-question-type="{{ question.question_type }}"
+                                        data-required="{{ question.required|yesno:'true,false' }}"
+                                        data-config="{{ question.config|to_json }}"
+                                    >Edit</button>
+                                    <form method="post" style="margin: 0;" onsubmit="return confirm('Delete this question?');">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete_question">
+                                        <input type="hidden" name="question_id" value="{{ question.id }}">
+                                        <button type="submit" class="btn btn-sm btn-secondary" style="background: var(--danger); border-color: var(--danger); color: white;">Delete</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         {% endfor %}
@@ -166,7 +275,8 @@
                                     <option value="rating">Rating Scale (1-5)</option>
                                     <option value="likert">Likert Scale</option>
                                     <option value="text">Free Text</option>
-                                    <option value="multiple_choice">Multiple Choice</option>
+                                    <option value="single_choice">Single Choice (Dropdown)</option>
+                                    <option value="multiple_choice">Multiple Choice (Checkboxes)</option>
                                 </select>
                             </div>
 
@@ -194,7 +304,38 @@ Strongly Agree</textarea>
                                     class="form-control"
                                     rows="3"
                                     placeholder="Option 1&#10;Option 2&#10;Option 3"
+                                    oninput="updateWeightInputs{{ section.id }}()"
                                 ></textarea>
+
+                                <div style="margin-top: 1rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input
+                                            type="checkbox"
+                                            id="enable_scoring_{{ section.id }}"
+                                            name="enable_scoring"
+                                            onchange="toggleWeightInputs{{ section.id }}()"
+                                        >
+                                        <span>Enable numeric scoring for analytics</span>
+                                    </label>
+                                    <small style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                                        When enabled, this question will contribute to section scores and charts
+                                        <button
+                                            type="button"
+                                            onclick="showScoringHelpModal{{ section.id }}()"
+                                            style="background: none; border: none; color: var(--primary); cursor: pointer; text-decoration: underline; padding: 0; margin-left: 0.25rem; font-size: 0.875rem;"
+                                        >
+                                            Learn more about scoring
+                                        </button>
+                                    </small>
+                                </div>
+
+                                <div id="weights_container_{{ section.id }}" style="display: none; margin-top: 1rem;">
+                                    <label class="form-label">Assign weights to each option (for scoring)</label>
+                                    <small style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">
+                                        Assign numeric values (e.g., 1-5 scale) to measure this dimension
+                                    </small>
+                                    <div id="weight_inputs_{{ section.id }}"></div>
+                                </div>
                             </div>
 
                             <div class="form-group" style="margin-bottom: 0;">
@@ -216,11 +357,206 @@ Strongly Agree</textarea>
 
                                     if (select.value === 'likert') {
                                         likertContainer.style.display = 'block';
-                                    } else if (select.value === 'multiple_choice') {
+                                    } else if (select.value === 'single_choice' || select.value === 'multiple_choice') {
                                         choicesContainer.style.display = 'block';
+                                        updateWeightInputs{{ section.id }}();
                                     }
                                 }
+
+                                function toggleWeightInputs{{ section.id }}() {
+                                    const enableScoring = document.getElementById('enable_scoring_{{ section.id }}');
+                                    const weightsContainer = document.getElementById('weights_container_{{ section.id }}');
+
+                                    if (enableScoring.checked) {
+                                        weightsContainer.style.display = 'block';
+                                        updateWeightInputs{{ section.id }}();
+                                    } else {
+                                        weightsContainer.style.display = 'none';
+                                    }
+                                }
+
+                                function updateWeightInputs{{ section.id }}() {
+                                    const enableScoring = document.getElementById('enable_scoring_{{ section.id }}');
+                                    if (!enableScoring.checked) return;
+
+                                    const choicesTextarea = document.getElementById('choices_{{ section.id }}');
+                                    const weightInputsContainer = document.getElementById('weight_inputs_{{ section.id }}');
+
+                                    const choices = choicesTextarea.value.split('\n').filter(c => c.trim());
+
+                                    // Clear existing inputs
+                                    weightInputsContainer.innerHTML = '';
+
+                                    if (choices.length === 0) return;
+
+                                    // Create a table for better layout
+                                    const table = document.createElement('table');
+                                    table.style.width = '100%';
+                                    table.style.borderCollapse = 'collapse';
+
+                                    // Header
+                                    const thead = document.createElement('thead');
+                                    const headerRow = document.createElement('tr');
+                                    headerRow.innerHTML = `
+                                        <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600;">Option</th>
+                                        <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; width: 100px;">Weight</th>
+                                    `;
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    // Body
+                                    const tbody = document.createElement('tbody');
+                                    choices.forEach((choice, index) => {
+                                        const row = document.createElement('tr');
+                                        row.innerHTML = `
+                                            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border); color: var(--text-primary);">${choice || '(empty)'}</td>
+                                            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border);">
+                                                <input
+                                                    type="number"
+                                                    name="weights[]"
+                                                    value="${index + 1}"
+                                                    min="1"
+                                                    max="10"
+                                                    step="0.1"
+                                                    class="form-control"
+                                                    style="width: 80px;"
+                                                    required
+                                                >
+                                            </td>
+                                        `;
+                                        tbody.appendChild(row);
+                                    });
+                                    table.appendChild(tbody);
+
+                                    weightInputsContainer.appendChild(table);
+                                }
+
+                                function showScoringHelpModal{{ section.id }}() {
+                                    document.getElementById('scoring_help_modal_{{ section.id }}').style.display = 'flex';
+                                }
+
+                                function closeScoringHelpModal{{ section.id }}() {
+                                    document.getElementById('scoring_help_modal_{{ section.id }}').style.display = 'none';
+                                }
                             </script>
+
+                            <!-- Scoring Help Modal -->
+                            <div id="scoring_help_modal_{{ section.id }}" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeScoringHelpModal{{ section.id }}()">
+                                <div class="modal-content" style="max-width: 700px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">Question Scoring Guide</h2>
+                                        <button
+                                            type="button"
+                                            onclick="closeScoringHelpModal{{ section.id }}()"
+                                            style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 0; width: 30px; height: 30px;"
+                                        >&times;</button>
+                                    </div>
+
+                                    <div style="color: var(--text-primary);">
+                                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--primary);">How Question Types Are Scored</h3>
+
+                                        <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                            <table style="width: 100%; border-collapse: collapse;">
+                                                <tr style="border-bottom: 1px solid var(--border);">
+                                                    <td style="padding: 0.5rem; font-weight: 600;">Question Type</td>
+                                                    <td style="padding: 0.5rem; font-weight: 600;">Scoring Method</td>
+                                                </tr>
+                                                <tr style="border-bottom: 1px solid var(--border);">
+                                                    <td style="padding: 0.5rem;">Rating Scale</td>
+                                                    <td style="padding: 0.5rem;">Automatically scored 1-5 ✓</td>
+                                                </tr>
+                                                <tr style="border-bottom: 1px solid var(--border);">
+                                                    <td style="padding: 0.5rem;">Likert Scale</td>
+                                                    <td style="padding: 0.5rem;">Position-based (1st option=1, 2nd=2, etc.) ✓</td>
+                                                </tr>
+                                                <tr style="border-bottom: 1px solid var(--border);">
+                                                    <td style="padding: 0.5rem;">Free Text</td>
+                                                    <td style="padding: 0.5rem;">Not scored (qualitative only)</td>
+                                                </tr>
+                                                <tr style="border-bottom: 1px solid var(--border);">
+                                                    <td style="padding: 0.5rem;">Single Choice</td>
+                                                    <td style="padding: 0.5rem;">Optional weighted scoring</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 0.5rem;">Multiple Choice</td>
+                                                    <td style="padding: 0.5rem;">Optional weighted scoring</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--primary);">What is Weighted Scoring?</h3>
+                                        <p style="margin-bottom: 1rem; line-height: 1.6;">
+                                            Weighted scoring lets you assign numeric values to each choice option. This allows choice-based questions to contribute to:
+                                        </p>
+                                        <ul style="margin-bottom: 1.5rem; line-height: 1.8; padding-left: 1.5rem;">
+                                            <li>Section averages and overall scores</li>
+                                            <li>Performance charts and visualizations</li>
+                                            <li>Insights & analytics (strengths/development areas)</li>
+                                            <li>Comparisons across review cycles</li>
+                                        </ul>
+
+                                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--primary);">How It Works</h3>
+
+                                        <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Single Choice (Dropdown)</h4>
+                                            <p style="margin-bottom: 0.5rem; line-height: 1.6;">User selects ONE option. Score = weight of selected option.</p>
+                                            <div style="background: var(--bg-card); padding: 0.75rem; border-radius: 4px; margin-top: 0.5rem; font-family: monospace; font-size: 0.875rem;">
+                                                <strong>Example:</strong> "How would you rate their communication?"<br>
+                                                • Excellent Communication → 5<br>
+                                                • Good Communication → 4<br>
+                                                • Average Communication → 3<br>
+                                                • Needs Improvement → 2<br>
+                                                • Poor Communication → 1<br>
+                                                <br>
+                                                <em style="color: var(--success);">If user selects "Good" → Score: 4</em>
+                                            </div>
+                                        </div>
+
+                                        <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Multiple Choice (Checkboxes)</h4>
+                                            <p style="margin-bottom: 0.5rem; line-height: 1.6;">User selects MULTIPLE options. Score = sum of selected option weights.</p>
+                                            <div style="background: var(--bg-card); padding: 0.75rem; border-radius: 4px; margin-top: 0.5rem; font-family: monospace; font-size: 0.875rem;">
+                                                <strong>Example:</strong> "Which leadership qualities do they demonstrate?"<br>
+                                                • Strategic thinking → 5<br>
+                                                • Team motivation → 5<br>
+                                                • Clear communication → 4<br>
+                                                • Delegation → 4<br>
+                                                • Time management → 3<br>
+                                                <br>
+                                                <em style="color: var(--success);">If user selects "Strategic thinking" + "Clear communication" + "Team motivation"<br>
+                                                → Score: 5 + 4 + 5 = 14 (rewards demonstrating more qualities)</em>
+                                            </div>
+                                            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6;">
+                                                <strong>Note:</strong> Multiple choice uses SUM (not average) to reward selecting more positive attributes.
+                                                This makes it ideal for competency checklists where more is better.
+                                            </p>
+                                        </div>
+
+                                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--primary);">Best Practices</h3>
+                                        <ul style="margin-bottom: 1.5rem; line-height: 1.8; padding-left: 1.5rem;">
+                                            <li><strong>Use consistent scales:</strong> Stick to 1-5 or 1-10 throughout your questionnaire</li>
+                                            <li><strong>Higher = Better:</strong> Assign higher weights to more positive/desirable options</li>
+                                            <li><strong>Frequency questions:</strong> Daily=5, Weekly=4, Monthly=3, Rarely=2, Never=1</li>
+                                            <li><strong>Competency checklists:</strong> Weight by importance/difficulty level, or set all weights to 1 to simply count how many competencies were selected</li>
+                                            <li><strong>Equal weighting:</strong> For multiple choice questions where all options are equally valuable, set all weights to 1. This creates a simple counter (3 selections = score of 3)</li>
+                                            <li><strong>Skip scoring when:</strong> Choices are purely categorical (e.g., department names, roles)</li>
+                                        </ul>
+
+                                        <div style="background: var(--bg-light); border-left: 4px solid var(--primary); padding: 1rem; border-radius: 4px; margin-top: 1.5rem;">
+                                            <p style="margin: 0; color: var(--text-primary); line-height: 1.6;">
+                                                <strong>Tip:</strong> You can leave scoring disabled for simple multiple choice questions.
+                                                Enable it only when you need numeric analytics for that specific question.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: flex-end; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                        <button type="button" onclick="closeScoringHelpModal{{ section.id }}()" class="btn btn-primary">
+                                            Got it!
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </details>
                 </div>
@@ -271,4 +607,161 @@ Strongly Agree</textarea>
     </div>
     {% endif %}
 </div>
+
+<script>
+// Attach event listeners to edit buttons
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.edit-question-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const questionId = this.dataset.questionId;
+            const questionText = this.dataset.questionText;
+            const questionType = this.dataset.questionType;
+            const required = this.dataset.required === 'true';
+            const config = JSON.parse(this.dataset.config || '{}');
+
+            openEditQuestionModal(questionId, questionText, questionType, required, config);
+        });
+    });
+});
+
+// Edit Question Modal Functions
+function openEditQuestionModal(questionId, questionText, questionType, required, config) {
+    // Set basic fields
+    document.getElementById('edit_question_id').value = questionId;
+    document.getElementById('edit_question_text').value = questionText;
+    document.getElementById('edit_question_type').value = questionType;
+    document.getElementById('edit_required').checked = required;
+
+    // Handle question type specific fields
+    const likertContainer = document.getElementById('edit_likert_container');
+    const choicesContainer = document.getElementById('edit_choices_container');
+    const likertScale = document.getElementById('edit_likert_scale');
+    const choices = document.getElementById('edit_choices');
+    const enableScoring = document.getElementById('edit_enable_scoring');
+
+    // Reset containers
+    likertContainer.style.display = 'none';
+    choicesContainer.style.display = 'none';
+    likertScale.value = '';
+    choices.value = '';
+    enableScoring.checked = false;
+
+    // Populate based on question type
+    if (questionType === 'likert' && config.scale) {
+        likertContainer.style.display = 'block';
+        likertScale.value = config.scale.join('\n');
+    } else if ((questionType === 'single_choice' || questionType === 'multiple_choice') && config.choices) {
+        choicesContainer.style.display = 'block';
+        choices.value = config.choices.join('\n');
+
+        // Check if scoring is enabled
+        if (config.scoring_enabled && config.weights) {
+            enableScoring.checked = true;
+            toggleEditWeightInputs();
+
+            // Populate weights
+            setTimeout(() => {
+                const weightInputs = document.querySelectorAll('#edit_weight_inputs input[name="weights[]"]');
+                config.weights.forEach((weight, index) => {
+                    if (weightInputs[index]) {
+                        weightInputs[index].value = weight;
+                    }
+                });
+            }, 100);
+        }
+    }
+
+    // Show modal
+    document.getElementById('edit_question_modal').style.display = 'flex';
+}
+
+function closeEditQuestionModal() {
+    document.getElementById('edit_question_modal').style.display = 'none';
+}
+
+function toggleEditChoices() {
+    const questionType = document.getElementById('edit_question_type').value;
+    const likertContainer = document.getElementById('edit_likert_container');
+    const choicesContainer = document.getElementById('edit_choices_container');
+
+    likertContainer.style.display = 'none';
+    choicesContainer.style.display = 'none';
+
+    if (questionType === 'likert') {
+        likertContainer.style.display = 'block';
+    } else if (questionType === 'single_choice' || questionType === 'multiple_choice') {
+        choicesContainer.style.display = 'block';
+        updateEditWeightInputs();
+    }
+}
+
+function toggleEditWeightInputs() {
+    const enableScoring = document.getElementById('edit_enable_scoring');
+    const weightsContainer = document.getElementById('edit_weights_container');
+
+    if (enableScoring.checked) {
+        weightsContainer.style.display = 'block';
+        updateEditWeightInputs();
+    } else {
+        weightsContainer.style.display = 'none';
+    }
+}
+
+function updateEditWeightInputs() {
+    const enableScoring = document.getElementById('edit_enable_scoring');
+    if (!enableScoring.checked) return;
+
+    const choicesTextarea = document.getElementById('edit_choices');
+    const weightInputsContainer = document.getElementById('edit_weight_inputs');
+
+    const choices = choicesTextarea.value.split('\n').filter(c => c.trim());
+
+    // Clear existing inputs
+    weightInputsContainer.innerHTML = '';
+
+    if (choices.length === 0) return;
+
+    // Create a table for better layout
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+
+    // Header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    headerRow.innerHTML = `
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600;">Option</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-weight: 600; width: 100px;">Weight</th>
+    `;
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Body
+    const tbody = document.createElement('tbody');
+    choices.forEach((choice, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border); color: var(--text-primary);">${choice || '(empty)'}</td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border);">
+                <input
+                    type="number"
+                    name="weights[]"
+                    value="${index + 1}"
+                    min="1"
+                    max="10"
+                    step="0.1"
+                    class="form-control"
+                    style="width: 80px;"
+                    required
+                >
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+
+    weightInputsContainer.appendChild(table);
+}
+</script>
+
 {% endblock %}

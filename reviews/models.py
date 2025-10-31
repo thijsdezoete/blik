@@ -144,7 +144,8 @@ class Response(TimeStampedModel):
     # JSON field for storing answer data
     # For rating: {"value": 4}
     # For text: {"value": "text response"}
-    # For multiple_choice: {"value": "Option 1"}
+    # For single_choice: {"value": "Option 1"}
+    # For multiple_choice: {"value": ["Option 1", "Option 2"]}
     answer_data = models.JSONField()
 
     objects = ResponseManager()

@@ -77,6 +77,54 @@
     </div>
 
     {% if questionnaire %}
+    <!-- Edit Section Modal -->
+    <div id="edit_section_modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeEditSectionModal()">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">Edit Section</h2>
+                <button
+                    type="button"
+                    onclick="closeEditSectionModal()"
+                    style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 0; width: 30px; height: 30px;"
+                >&times;</button>
+            </div>
+
+            <form method="post" id="edit_section_form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit_section">
+                <input type="hidden" name="section_id" id="edit_section_id">
+
+                <div class="form-group">
+                    <label for="edit_section_title" class="form-label">Section Title *</label>
+                    <input
+                        type="text"
+                        id="edit_section_title"
+                        name="section_title"
+                        class="form-control"
+                        required
+                        placeholder="e.g., Technical Skills"
+                    >
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="edit_section_description" class="form-label">Description (Optional)</label>
+                    <textarea
+                        id="edit_section_description"
+                        name="section_description"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Brief description of what this section covers"
+                    ></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <button type="button" onclick="closeEditSectionModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit Question Modal -->
     <div id="edit_question_modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeEditQuestionModal()">
         <div class="modal-content" style="max-width: 600px;">
@@ -217,12 +265,19 @@
                         <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.875rem;">{{ section.description }}</p>
                         {% endif %}
                     </div>
-                    <form method="post" style="margin: 0;" onsubmit="return confirm('Delete section and all its questions?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="delete_section">
-                        <input type="hidden" name="section_id" value="{{ section.id }}">
-                        <button type="submit" class="btn btn-sm btn-secondary" style="background: var(--danger); border-color: var(--danger); color: white;">Delete Section</button>
-                    </form>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            onclick="openEditSectionModal({{ section.id }}, '{{ section.title|escapejs }}', '{{ section.description|escapejs }}')"
+                        >Edit</button>
+                        <form method="post" style="margin: 0;" onsubmit="return confirm('Delete section and all its questions?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_section">
+                            <input type="hidden" name="section_id" value="{{ section.id }}">
+                            <button type="submit" class="btn btn-sm btn-secondary" style="background: var(--danger); border-color: var(--danger); color: white;">Delete Section</button>
+                        </form>
+                    </div>
                 </div>
                 <div class="card-body">
                     {% if section.questions.all %}
@@ -743,6 +798,18 @@ function openEditQuestionModal(questionId, questionText, questionType, required,
 
     // Show modal
     document.getElementById('edit_question_modal').style.display = 'flex';
+}
+
+// Edit Section Modal Functions
+function openEditSectionModal(sectionId, sectionTitle, sectionDescription) {
+    document.getElementById('edit_section_id').value = sectionId;
+    document.getElementById('edit_section_title').value = sectionTitle;
+    document.getElementById('edit_section_description').value = sectionDescription || '';
+    document.getElementById('edit_section_modal').style.display = 'flex';
+}
+
+function closeEditSectionModal() {
+    document.getElementById('edit_section_modal').style.display = 'none';
 }
 
 function closeEditQuestionModal() {

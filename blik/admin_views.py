@@ -601,6 +601,23 @@ def questionnaire_edit(request, questionnaire_id):
                 except Exception as e:
                     messages.error(request, f'Error adding section: {str(e)}')
 
+        elif action == 'edit_section':
+            section_id = request.POST.get('section_id')
+            section_title = request.POST.get('section_title')
+            section_description = request.POST.get('section_description', '')
+
+            if section_id and section_title:
+                try:
+                    section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
+                    section.title = section_title
+                    section.description = section_description
+                    section.save()
+                    messages.success(request, f'Section "{section_title}" updated successfully.')
+                except QuestionSection.DoesNotExist:
+                    messages.error(request, 'Section not found.')
+                except Exception as e:
+                    messages.error(request, f'Error updating section: {str(e)}')
+
         elif action == 'add_question':
             section_id = request.POST.get('section_id')
             question_text = request.POST.get('question_text')

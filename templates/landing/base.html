@@ -1,4 +1,6 @@
 {% load static landing_tags %}
+{# Base template for all landing pages - SEO optimized with single H1 per page #}
+{# New landing pages should extend this template using {% extends 'landing/base.html' %} #}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +47,7 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="logo">{{ site_name|default:"Blik" }}</h1>
+                <div class="logo">{{ site_name|default:"Blik" }}</div>
                 <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -92,6 +94,7 @@
                     <h4>Resources</h4>
                     <ul>
                         <li><a href="{% landing_url 'dreyfus_model' %}">Dreyfus Model</a></li>
+                        <li><a href="{% landing_url 'agency_levels' %}">5 Levels of Agency</a></li>
                         <li><a href="{% landing_url 'open_source' %}">Open Source</a></li>
                     </ul>
                 </div>
@@ -104,7 +107,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 {{ site_name|default:"Blik" }}. Open source under AGPL-3.0 license.</p>
+                <p>&copy; 2025 {{ site_name|default:"Blik" }}. Open source under AGPL-3.0 license.</p>
             </div>
         </div>
     </footer>

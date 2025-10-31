@@ -1,9 +1,7 @@
+{% extends 'landing/base.html' %}
 {% load static landing_tags %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+{% block meta %}
     <title>Dreyfus Model for Software Engineers | Blik</title>
     <meta name="description" content="How Blik uses the Dreyfus Model of skill acquisition for developer performance reviews. Research-based competency framework from Novice to Expert, integrated with the Sunday Test for engineering culture.">
     <meta name="keywords" content="Dreyfus model software engineering, developer skill levels, engineering competency framework, Sunday Test, 360 feedback developers, technical career ladder, skill acquisition model">
@@ -26,39 +24,9 @@
     <meta name="twitter:title" content="Dreyfus Model for Software Engineers">
     <meta name="twitter:description" content="Research-based competency framework for developer performance reviews. From Novice to Expert.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+{% endblock %}
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
-
-    <script>
-        // Theme detection and initialization
-        (function() {
-            const getPreferredTheme = () => {
-                const stored = localStorage.getItem('theme');
-                if (stored) return stored;
-                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            };
-
-            const setTheme = (theme) => {
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
-            };
-
-            setTheme(getPreferredTheme());
-
-            // Listen for system theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (!localStorage.getItem('theme')) {
-                    setTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        })();
-    </script>
-
+{% block extra_head %}
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
@@ -93,29 +61,18 @@
         }
     }
     </script>
-</head>
-<body class="landing-page">
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="logo">Blik</h1>
-                <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-                <nav class="nav">
-                    <a href="{% landing_url 'index' %}">Home</a>
-                    <a href="{% landing_url 'open_source' %}">Open Source</a>
-                    <a href="#dreyfus">Dreyfus Model</a>
-                    <a href="#sunday-test">Sunday Test</a>
-                    <a href="#framework">Framework</a>
-                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
-                </nav>
-            </div>
-        </div>
-    </header>
+{% endblock %}
 
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="{% landing_url 'open_source' %}">Open Source</a>
+    <a href="#dreyfus">Dreyfus Model</a>
+    <a href="#sunday-test">Sunday Test</a>
+    <a href="#framework">Framework</a>
+    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+{% endblock %}
+
+{% block content %}
     <section class="hero">
         <div class="container">
             <div class="hero-content">
@@ -138,6 +95,15 @@
                 <h3>Why Dreyfus for Developers?</h3>
                 <p style="margin-bottom: 1rem;">The Dreyfus model was developed by brothers Stuart and Hubert Dreyfus at UC Berkeley in the 1980s through research on how people acquire skills. Unlike arbitrary corporate competency matrices, Dreyfus describes actual cognitive patterns in skill development.</p>
                 <p>Engineers recognize themselves in these stages. The model maps naturally to technical career ladders: Junior → Mid-Level → Senior → Staff → Principal. It acknowledges that experts think differently than beginners, not just "better."</p>
+            </div>
+
+            <div style="max-width: 1000px; margin: 0 auto 4rem; text-align: center;">
+                <div style="border-radius: 8px; overflow: hidden; padding: 2rem; background: var(--card-bg);">
+                    {% include 'components/dreyfus_model_svg.html' %}
+                </div>
+                <p style="color: var(--text-secondary); margin-top: 1.5rem; font-size: 0.875rem;">
+                    Visual representation of the five Dreyfus stages, showing the progression from rigid rule following to intuitive expertise
+                </p>
             </div>
 
             <div class="features-grid">
@@ -471,42 +437,4 @@
             </div>
         </div>
     </section>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Blik. Open source under AGPL license.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile menu toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.mobile-menu-toggle');
-            const nav = document.querySelector('.nav');
-
-            if (menuToggle && nav) {
-                menuToggle.addEventListener('click', function() {
-                    const isExpanded = nav.classList.contains('active');
-                    nav.classList.toggle('active');
-                    menuToggle.setAttribute('aria-expanded', !isExpanded);
-                });
-
-                const navLinks = nav.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    });
-                });
-
-                document.addEventListener('click', function(event) {
-                    if (!nav.contains(event.target) && !menuToggle.contains(event.target)) {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-        });
-    </script>
-</body>
-</html>
+{% endblock %}

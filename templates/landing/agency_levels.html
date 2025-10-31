@@ -1,0 +1,498 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>5 Levels of Agency: Teaching Employees to Be Proactive Problem Solvers | Blik</title>
+    <meta name="description" content="The 5 Levels of Agency framework teaches employees to move from passive problem reporters to proactive problem solvers. Learn how high-agency teams operate at Level 4+ and why this matters for performance reviews.">
+    <meta name="keywords" content="5 levels of agency, high agency employees, workplace autonomy, employee initiative, proactive problem solving, agency in workplace, employee independence, performance management, 360 feedback">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/agency-levels/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/agency-levels/">
+    <meta property="og:title" content="5 Levels of Agency: High-Agency Employees and Problem Solving">
+    <meta property="og:description" content="Framework for teaching employees to be proactive problem solvers. From passive reporting to autonomous execution.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/agency-levels/">
+    <meta name="twitter:title" content="5 Levels of Agency: High-Agency Employees and Problem Solving">
+    <meta name="twitter:description" content="Framework for teaching employees to be proactive problem solvers. From passive reporting to autonomous execution.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#framework">The 5 Levels</a>
+    <a href="#workplace">Why It Matters</a>
+    <a href="#dreyfus">Dreyfus Connection</a>
+    <a href="{% landing_url 'hr_managers' %}">For HR Teams</a>
+    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+{% endblock %}
+
+{% block extra_head %}
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "5 Levels of Agency: Teaching Employees to Be Proactive Problem Solvers",
+        "description": "Framework for building high-agency teams that operate autonomously and solve problems proactively",
+        "author": {
+            "@type": "Organization",
+            "@name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "@name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-01",
+        "dateModified": "2025-01-01"
+    }
+    </script>
+
+    <style>
+        .agency-framework-diagram {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .agency-framework-diagram svg {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .level-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .level-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .level-card {
+            padding: 1rem 1.25rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            background: var(--bg-secondary);
+        }
+
+        .level-card h3 {
+            margin-bottom: 0.375rem;
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .level-card p {
+            margin: 0;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">The 5 Levels of Agency</h1>
+                <p class="hero-subtitle">Stop hiring problem reporters. Start building problem solvers. This framework shows you exactly how to teach employees to operate with high agency and autonomy.</p>
+                <div class="hero-cta">
+                    <a href="#framework" class="btn btn-primary">See the Framework</a>
+                    <a href="{% landing_url 'index' %}" class="btn btn-secondary">About Blik</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Problem with Most Employees</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">They identify problems, then walk away and wait for someone else to fix them</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <div class="feature-card feature-card-danger">
+                    <h3>Low Agency Behavior</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">❌ "There's a bug in production."</li>
+                        <li style="margin-bottom: 0.5rem;">❌ "The deployment is broken."</li>
+                        <li style="margin-bottom: 0.5rem;">❌ "This feature doesn't work."</li>
+                        <li style="margin-bottom: 0.5rem;">❌ Then they walk away</li>
+                        <li>❌ Waiting for someone else to deal with it</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card feature-card-success">
+                    <h3>High Agency Behavior</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">✅ Identifies the problem</li>
+                        <li style="margin-bottom: 0.5rem;">✅ Investigates root causes</li>
+                        <li style="margin-bottom: 0.5rem;">✅ Researches potential solutions</li>
+                        <li style="margin-bottom: 0.5rem;">✅ Recommends a specific approach</li>
+                        <li>✅ Often fixes it themselves</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-card" style="background: var(--gradient-purple); color: white; padding: 2rem; text-align: center;">
+                <h3 style="color: white; margin-bottom: 1rem;">The Real Question</h3>
+                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">Do you want employees who just report problems, or employees who solve them?</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- The 5 Levels Framework -->
+    <section id="framework" class="section">
+        <div class="container">
+            <h2 class="section-title">The 5 Levels of Agency</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">From passive problem reporting to autonomous problem solving</p>
+
+            <div class="agency-framework-diagram" role="img" aria-label="5 Levels of Agency pyramid diagram showing progression from Level 1 (Problem Identification - recognizing and stating a problem) to Level 5 (Problem Resolution - implementing and resolving the identified problem). Each level builds on the previous: Level 2 adds Cause Analysis, Level 3 adds Solution Exploration, Level 4 adds Solution Recommendation with justification.">
+                {% include 'components/agency_levels_svg.html' %}
+            </div>
+
+            <div class="level-cards">
+                <div class="level-card">
+                    <h3>Level 5: Problem Resolution</h3>
+                    <p>"I identified a problem, figured out what caused it, researched how to fix it, and I fixed it. Just wanted to keep you in the loop."</p>
+                </div>
+
+                <div class="level-card">
+                    <h3>Level 4: Solution Recommendation</h3>
+                    <p>"Here's the problem, here's what I think caused it, here are some possible solutions, and here's the one I think we should pick."</p>
+                </div>
+
+                <div class="level-card">
+                    <h3>Level 3: Solution Exploration</h3>
+                    <p>"Here's the problem, here are some possible causes, and here are some possible solutions."</p>
+                </div>
+
+                <div class="level-card">
+                    <h3>Level 2: Cause Analysis</h3>
+                    <p>"There is a problem, and I've found some causes."</p>
+                </div>
+
+                <div class="level-card">
+                    <h3>Level 1: Problem Identification</h3>
+                    <p>"There is a problem." <em>(Then you walk away.)</em></p>
+                </div>
+            </div>
+
+            <div class="feature-card feature-card-info" style="margin-top: 3rem;">
+                <h3>The Standard for New Hires</h3>
+                <p style="margin-bottom: 1rem;">Here's what to tell every new employee: <strong>You will live at Level 4 from Day 1.</strong> As we build trust, you'll rise to Level 5.</p>
+                <p>Being high agency doesn't just mean tackling problems this way. It means your entire way of working should be oriented to being a Level 4+ employee.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why It Matters Section -->
+    <section id="workplace" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Why This Matters on the Work Floor</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Managers Aren't Bottlenecks</h3>
+                    <p>When everyone operates at Level 1-2, managers become overwhelmed with trivial decisions. Level 4+ employees free up management bandwidth for strategic work.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Faster Problem Resolution</h3>
+                    <p>Level 5 employees fix issues immediately instead of creating multi-day email chains. Problems get solved in hours, not weeks.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Better Context in Decisions</h3>
+                    <p>The person closest to the problem usually understands it best. Level 4+ employees leverage that proximity to make smarter choices.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Culture of Ownership</h3>
+                    <p>Teams full of Level 4+ people don't have bystander syndrome. Everyone takes responsibility for outcomes, not just their narrow job description.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Scales with Growth</h3>
+                    <p>A team of 10 Level 1 employees needs 3 managers. A team of 10 Level 5 employees might need one. High agency scales better than headcount.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Attracts Top Talent</h3>
+                    <p>High performers hate working with people who just report problems. They want teammates who solve things. Level 4+ culture becomes a recruiting advantage.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Practical Examples -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Real Examples Across the Levels</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Same situation, different levels of agency</p>
+
+            <div class="feature-card" style="margin-bottom: 3rem;">
+                <h3>Scenario: Production Bug Discovered</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>Employee Response</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Level 1</strong></td>
+                            <td>"Hey, there's a bug in checkout." <em>(No follow-up)</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 2</strong></td>
+                            <td>"There's a bug in checkout. Looks like the payment gateway integration is failing."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 3</strong></td>
+                            <td>"Payment gateway bug. Could be API credentials, rate limiting, or version mismatch. We could roll back, switch providers temporarily, or fix the integration."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 4</strong></td>
+                            <td>"Payment API updated their auth method yesterday. We need to update our credentials. I've tested the fix in staging. Can I deploy?"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 5</strong></td>
+                            <td>"FYI: Payment gateway changed auth. I updated our credentials, tested in staging, deployed the fix. Checkout is working again. Added monitoring so we catch this faster next time."</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="feature-card">
+                <h3>Scenario: Customer Complaint About Slow Performance</h3>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>Employee Response</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Level 1</strong></td>
+                            <td>"Customer says the app is slow."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 2</strong></td>
+                            <td>"App is slow for this customer. Their account has 50,000 records, which seems to be causing the issue."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 3</strong></td>
+                            <td>"Large accounts are slow. We could add pagination, implement caching, or optimize the database queries."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 4</strong></td>
+                            <td>"The query fetches all records at once. I built a pagination solution that loads 100 at a time. Tested with 100k records—loads in 200ms now. Should I ship it?"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Level 5</strong></td>
+                            <td>"Solved the performance issue. Implemented pagination + query optimization. All large accounts are fast now. Customer confirmed it's fixed. Also added performance monitoring for accounts over 10k records."</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Connection to Dreyfus -->
+    <section id="dreyfus" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">How This Relates to the Dreyfus Model</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Agency levels correlate with skill acquisition stages, but they're not the same thing</p>
+
+            <div class="feature-card" style="margin-bottom: 3rem;">
+                <h3>The Connection</h3>
+                <p>The <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus model</a> describes how people acquire skills (Novice → Advanced Beginner → Competent → Proficient → Expert). The 5 Levels of Agency describe how people approach problems and take ownership.</p>
+                <p style="margin-top: 1rem;">You can be technically Expert but operate at Level 1 if you lack ownership mindset. Conversely, a Novice can operate at Level 4 by researching thoroughly and making recommendations within their knowledge constraints.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Novice + Level 4</h3>
+                    <p><strong>What it looks like:</strong> "I'm new to React, but I researched this state management bug. Based on the docs and Stack Overflow, I think we should lift state to the parent component. Can you review my approach?"</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Limited technical skill, but high agency in problem-solving approach.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Expert + Level 1</h3>
+                    <p><strong>What it looks like:</strong> "The microservices architecture has a latency problem." <em>(Then waits for someone else to investigate)</em></p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Deep technical expertise, but low ownership mindset. Surprisingly common in large companies.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Competent + Level 5</h3>
+                    <p><strong>What it looks like:</strong> "Database queries were slow. Added indexes on the foreign keys, reduced query time by 80%. Deployed to prod. Monitoring shows it's stable."</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Solid technical skills combined with full ownership. This is what high-performing teams are built on.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Proficient + Level 5</h3>
+                    <p><strong>What it looks like:</strong> "Noticed a pattern of slow queries across multiple services. Implemented a caching layer, updated query patterns, added monitoring. Performance improved 10x. Documented the approach for other teams."</p>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">High technical skill + high agency + systems thinking. These people multiply team effectiveness.</p>
+                </div>
+            </div>
+
+            <div class="feature-card feature-card-warning" style="margin-top: 3rem;">
+                <h3>The Ideal Combination</h3>
+                <p>In performance reviews, you want to evaluate both dimensions:</p>
+                <ul style="margin-top: 1rem;">
+                    <li><strong>Technical skill (Dreyfus):</strong> How good are they at their craft?</li>
+                    <li><strong>Agency level:</strong> How proactively do they solve problems?</li>
+                </ul>
+                <p style="margin-top: 1rem;">A Competent engineer with Level 5 agency is often more valuable than an Expert with Level 2 agency. Skills can be taught faster than ownership mindset.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- In Blik's Questionnaires -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">How Blik's Questionnaires Measure Agency</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Our default templates explicitly assess ownership and initiative</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <div class="feature-card">
+                    <h3>Professional Skills Questionnaire</h3>
+                    <p style="margin-bottom: 1rem;">Includes dedicated sections on:</p>
+                    <ul style="font-size: 0.875rem;">
+                        <li><strong>Initiative & Ownership:</strong> Do they wait to be told, or do they proactively identify and solve problems?</li>
+                        <li><strong>Problem Solving:</strong> How do they approach challenges? Surface-level reporting or deep investigation?</li>
+                        <li><strong>Adaptability:</strong> Do they escalate every unexpected situation, or do they figure it out?</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Software Engineering Questionnaire</h3>
+                    <p style="margin-bottom: 1rem;">Evaluates agency through:</p>
+                    <ul style="font-size: 0.875rem;">
+                        <li><strong>Pragmatism & Execution:</strong> Do they ship solutions or wait for perfect conditions?</li>
+                        <li><strong>Strategic Vision:</strong> Do they see problems holistically and address root causes?</li>
+                        <li><strong>Growth Potential:</strong> How quickly do they move from identifying problems to solving them independently?</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Manager 360 Review</h3>
+                    <p style="margin-bottom: 1rem;">Measures agency through leadership lens:</p>
+                    <ul style="font-size: 0.875rem;">
+                        <li><strong>Direction:</strong> Do they empower teams to operate at Level 4+, or create dependencies?</li>
+                        <li><strong>Development:</strong> Are they teaching people to be passive or proactive?</li>
+                        <li><strong>Impact:</strong> Do they solve problems or just report them up the chain?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-card feature-card-success">
+                <h3>Measuring What Matters</h3>
+                <p style="margin-bottom: 1rem;">Traditional performance reviews miss agency entirely. They measure "what" someone does (features shipped, tickets closed) but not "how" they do it (Level 1 vs Level 5 approach).</p>
+                <p>Blik's questionnaires explicitly ask reviewers: Does this person identify problems and walk away, or do they drive solutions? The difference between a team of Level 1 and Level 5 employees is the difference between constant firefighting and smooth execution.</p>
+            </div>
+
+            <div class="cta-box" style="margin-top: 3rem;">
+                <h3>Ready to Evaluate Agency in Your Team?</h3>
+                <p>Blik includes questionnaires that measure both technical skills (Dreyfus) and problem-solving ownership (Agency Levels). Get 360-degree feedback that actually tells you how people work, not just what they produce.</p>
+                <a href="{% landing_url 'index' %}#pricing" class="btn btn-primary" style="display: inline-block;">View Pricing</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Teaching Agency -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">How to Teach Agency (The Framework in Practice)</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>1. Set Clear Expectations</h3>
+                    <p>Tell new hires explicitly: "You operate at Level 4 minimum. When you spot a problem, I expect you to come with diagnosis and recommendations, not just alerts."</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>2. Reject Level 1 Behavior</h3>
+                    <p>When someone reports a problem without context, don't solve it for them. Ask: "What do you think is causing this? What solutions have you considered?" Make them level up.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>3. Reward Level 5 Actions</h3>
+                    <p>When someone solves a problem autonomously, praise it publicly. "This is exactly what high agency looks like." Make it clear this is the standard.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>4. Provide Safety Nets</h3>
+                    <p>People won't operate at Level 5 if they get punished for mistakes. Make it safe to act, fail, learn. The cost of occasional errors is lower than the cost of learned helplessness.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>5. Give Incremental Trust</h3>
+                    <p>Start new people at Level 4 (recommendations need approval). As they prove judgment, move them to Level 5 (act first, inform later). Earned autonomy works better than blanket permissions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>6. Model It Yourself</h3>
+                    <p>If you as a manager operate at Level 1 with your own boss, your team will mirror that. Show them what Level 5 looks like by doing it yourself.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Build a Team of Level 4+ Employees</h2>
+                <p>Use 360-degree feedback to identify who operates with high agency and who needs coaching. Blik's questionnaires measure both technical skills and ownership mindset.</p>
+                <div class="cta-buttons">
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

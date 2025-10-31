@@ -1,14 +1,12 @@
+{% extends 'landing/base.html' %}
 {% load static landing_tags %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ site_name }} - Open Source 360-Degree Feedback Platform</title>
+
+{% block meta %}
+    <title>Open Source 360 Feedback Platform - Self-Hosted & Anonymous | {{ site_name }}</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{{ site_description }}">
-    <meta name="keywords" content="{{ site_keywords }}">
+    <meta name="description" content="Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant. Deploy in 5 minutes with Docker. Save €17,000/year vs commercial tools.">
+    <meta name="keywords" content="open source 360 feedback, self-hosted performance review, anonymous feedback software, 360 degree feedback platform, employee feedback system, peer review software, performance management tool, GDPR compliant feedback">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/">
 
@@ -28,39 +26,10 @@
     <meta name="twitter:title" content="{{ site_name }} - Open Source 360-Degree Feedback Platform">
     <meta name="twitter:description" content="{{ site_description }}">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+{% endblock %}
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
-
-    <script>
-        // Theme detection and initialization
-        (function() {
-            const getPreferredTheme = () => {
-                const stored = localStorage.getItem('theme');
-                if (stored) return stored;
-                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            };
-
-            const setTheme = (theme) => {
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
-            };
-
-            setTheme(getPreferredTheme());
-
-            // Listen for system theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (!localStorage.getItem('theme')) {
-                    setTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        })();
-    </script>
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -68,19 +37,95 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "{{ site_name }}",
-        "description": "{{ site_description }}",
+        "description": "Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant.",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Any (Web-based)",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "EUR"
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Self-Hosted",
+                "price": "0",
+                "priceCurrency": "EUR",
+                "description": "Free open source version with unlimited users and features"
+            },
+            {
+                "@type": "Offer",
+                "name": "EU Hosted SaaS",
+                "price": "49",
+                "priceCurrency": "EUR",
+                "billingIncrement": "P1M",
+                "description": "Managed hosting for up to 50 employees with automatic updates and daily backups"
+            },
+            {
+                "@type": "Offer",
+                "name": "Enterprise",
+                "price": "199",
+                "priceCurrency": "EUR",
+                "billingIncrement": "P1M",
+                "description": "Managed hosting for up to 200 employees with priority support and SLA"
+            }
+        ],
+        "featureList": [
+            "4 pre-built 360 degree feedback questionnaires",
+            "Anonymous token-based reviews",
+            "Self-hosted deployment",
+            "GDPR compliant",
+            "Docker deployment",
+            "PostgreSQL database",
+            "Dreyfus model competency assessment"
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "{{ site_name }} - Open Source 360 Feedback Platform",
+        "description": "Self-hosted 360 degree feedback software with anonymous reviews, 4 role-specific questionnaires, and GDPR compliance. Deploy in 5 minutes with Docker.",
+        "brand": {
+            "@type": "Brand",
+            "name": "{{ site_name }}"
         },
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "5.0",
-            "ratingCount": "1"
-        }
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Self-Hosted (Free)",
+                "price": "0",
+                "priceCurrency": "EUR",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ site_protocol }}://{{ site_domain }}/",
+                "priceValidUntil": "2026-12-31"
+            },
+            {
+                "@type": "Offer",
+                "name": "EU Hosted",
+                "price": "49.00",
+                "priceCurrency": "EUR",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ site_protocol }}://{{ site_domain }}/",
+                "priceValidUntil": "2026-12-31",
+                "eligibleQuantity": {
+                    "@type": "QuantitativeValue",
+                    "value": "50",
+                    "unitText": "employees"
+                }
+            },
+            {
+                "@type": "Offer",
+                "name": "Enterprise",
+                "price": "199.00",
+                "priceCurrency": "EUR",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ site_protocol }}://{{ site_domain }}/",
+                "priceValidUntil": "2026-12-31",
+                "eligibleQuantity": {
+                    "@type": "QuantitativeValue",
+                    "value": "200",
+                    "unitText": "employees"
+                }
+            }
+        ]
     }
     </script>
 
@@ -90,7 +135,7 @@
         "@type": "Organization",
         "name": "{{ site_name }}",
         "url": "{{ site_protocol }}://{{ site_domain }}",
-        "description": "{{ site_description }}",
+        "description": "Open source 360 feedback platform for anonymous performance reviews",
         "contactPoint": {
             "@type": "ContactPoint",
             "contactType": "Customer Support",
@@ -98,44 +143,41 @@
         }
     }
     </script>
-</head>
-<body class="landing-page">
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="logo">{{ site_name }}</h1>
-                <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-                <nav class="nav">
-                    <a href="#features">Features</a>
-                    <a href="#use-cases">Use Cases</a>
-                    <a href="{% landing_url 'hr_managers' %}">For HR Teams</a>
-                    <a href="#pricing">Pricing</a>
-                    <a href="#faq">FAQ</a>
-                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
-                    <button class="theme-toggle" aria-label="Toggle theme">
-                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </button>
-                </nav>
-            </div>
-        </div>
-    </header>
 
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "MobileApplication",
+        "name": "{{ site_name }} 360 Feedback",
+        "operatingSystem": "Web Browser",
+        "applicationCategory": "BusinessApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "description": "Mobile-responsive 360 feedback platform. Complete anonymous reviews on any device - phone, tablet, or desktop."
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="#features">Features</a>
+    <a href="#questionnaires">Questionnaires</a>
+    <a href="#use-cases">Use Cases</a>
+    <a href="{% landing_url 'hr_managers' %}">For HR Teams</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+{% endblock %}
+
+{% block content %}
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Open Source 360-Degree Feedback Platform</h1>
-                <p class="hero-subtitle">Self-hosted, anonymous, and secure performance reviews. Deploy in minutes, own your data forever.</p>
+                <h1 class="hero-title">Open Source 360 Feedback Platform</h1>
+                <p class="hero-subtitle">Anonymous feedback that actually works. Four pre-built questionnaires, self-hosted, zero licensing fees. Docker deployment in 5 minutes.</p>
                 <div class="hero-cta">
                     <a href="#pricing" class="btn btn-primary">Get Started</a>
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
@@ -162,38 +204,40 @@
     <!-- Comparison Section -->
     <section class="section section-alt">
         <div class="container">
-            <h2 class="section-title">Why Self-Host Your 360 Feedback?</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Commercial tools cost thousands per year. Self-hosting costs pennies.</p>
+            <h2 class="section-title">Open Source Alternative to Lattice, Culture Amp, and 15Five</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Commercial tools like Lattice and Culture Amp cost thousands per year. Self-hosting costs pennies.</p>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                 <div class="feature-card feature-card-danger">
-                    <h3>Commercial SaaS Tools</h3>
+                    <h3>Lattice, Culture Amp, 15Five</h3>
                     <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">3,000-18,000 EUR per year (50 employees)</li>
-                        <li style="margin-bottom: 0.5rem;">Per-user pricing adds up quickly</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Lattice:</strong> €15-30/user/month (~€18,000/year for 50 people)</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Culture Amp:</strong> €12-25/user/month (~€15,000/year for 50 people)</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>15Five:</strong> €8-15/user/month (~€9,000/year for 50 people)</li>
                         <li style="margin-bottom: 0.5rem;">Your data on their servers</li>
                         <li style="margin-bottom: 0.5rem;">Vendor lock-in with proprietary formats</li>
-                        <li style="margin-bottom: 0.5rem;">Privacy and compliance concerns</li>
+                        <li style="margin-bottom: 0.5rem;">GDPR compliance complexity</li>
                         <li>Annual price increases</li>
                     </ul>
                 </div>
 
                 <div class="feature-card feature-card-success">
-                    <h3>Blik Self-Hosted</h3>
+                    <h3>{{ site_name }} (Open Source)</h3>
                     <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">0 EUR licensing (open source)</li>
-                        <li style="margin-bottom: 0.5rem;">50-200 EUR/year (small VPS hosting)</li>
+                        <li style="margin-bottom: 0.5rem;">€0 licensing (open source)</li>
+                        <li style="margin-bottom: 0.5rem;">€50-200/year (small VPS hosting)</li>
                         <li style="margin-bottom: 0.5rem;">Your data on your infrastructure</li>
                         <li style="margin-bottom: 0.5rem;">PostgreSQL - export anytime</li>
                         <li style="margin-bottom: 0.5rem;">Complete privacy control</li>
+                        <li style="margin-bottom: 0.5rem;">4 pre-built questionnaires included</li>
                         <li>No surprise costs ever</li>
                     </ul>
                 </div>
             </div>
 
             <div class="feature-card" style="background: var(--gradient-purple); color: white; padding: 2rem; text-align: center;">
-                <h3 style="color: white; margin-bottom: 1rem;">Save 2,800-17,800 EUR Annually</h3>
-                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">For a 50-person company. Savings scale with team size.</p>
+                <h3 style="color: white; margin-bottom: 1rem;">Save €8,800-17,800 EUR Annually vs Lattice & Culture Amp</h3>
+                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">For a 50-person company. Savings scale with team size. No per-user fees, no annual renewals.</p>
             </div>
 
             <div class="cta-box">
@@ -219,13 +263,13 @@
                                 <picture class="screenshot-layer screenshot-light">
                                     <source srcset="{% static 'img/screenshots/report_header_desktop_light.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/report_header_desktop_light.png' %}"
-                                         alt="360 Feedback Report Header - Light Theme"
+                                         alt="Open source 360 feedback report showing competency scores and performance summary - Blik platform"
                                          loading="eager">
                                 </picture>
                                 <picture class="screenshot-layer screenshot-dark">
                                     <source srcset="{% static 'img/screenshots/report_header_desktop_dark.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/report_header_desktop_dark.png' %}"
-                                         alt="360 Feedback Report Header - Dark Theme"
+                                         alt="Self-hosted 360 degree feedback report with radar chart and competency breakdown"
                                          loading="eager">
                                 </picture>
                                 <div class="theme-indicator">Hover to toggle theme</div>
@@ -237,13 +281,13 @@
                                 <picture class="screenshot-layer screenshot-light">
                                     <source srcset="{% static 'img/screenshots/report_charts_desktop_light.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/report_charts_desktop_light.png' %}"
-                                         alt="360 Feedback Report Charts - Light Theme"
+                                         alt="360 feedback software radar chart comparing self-assessment vs peer and manager ratings"
                                          loading="lazy">
                                 </picture>
                                 <picture class="screenshot-layer screenshot-dark">
                                     <source srcset="{% static 'img/screenshots/report_charts_desktop_dark.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/report_charts_desktop_dark.png' %}"
-                                         alt="360 Feedback Report Charts - Dark Theme"
+                                         alt="Performance review analytics with competency breakdown and visual charts - open source platform"
                                          loading="lazy">
                                 </picture>
                                 <div class="theme-indicator">Hover to toggle theme</div>
@@ -255,13 +299,13 @@
                                 <picture class="screenshot-layer screenshot-light">
                                     <source srcset="{% static 'img/screenshots/dashboard_desktop_light.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/dashboard_desktop_light.png' %}"
-                                         alt="Admin Dashboard - Light Theme"
+                                         alt="Self-hosted 360 feedback platform admin dashboard for managing review cycles and teams"
                                          loading="lazy">
                                 </picture>
                                 <picture class="screenshot-layer screenshot-dark">
                                     <source srcset="{% static 'img/screenshots/dashboard_desktop_dark.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/dashboard_desktop_dark.png' %}"
-                                         alt="Admin Dashboard - Dark Theme"
+                                         alt="Open source performance management dashboard showing active review cycles and progress"
                                          loading="lazy">
                                 </picture>
                                 <div class="theme-indicator">Hover to toggle theme</div>
@@ -273,13 +317,13 @@
                                 <picture class="screenshot-layer screenshot-light">
                                     <source srcset="{% static 'img/screenshots/feedback_desktop_light.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/feedback_desktop_light.png' %}"
-                                         alt="Anonymous Feedback Form - Light Theme"
+                                         alt="Anonymous 360 feedback form with rating scales and competency questions - peer review interface"
                                          loading="lazy">
                                 </picture>
                                 <picture class="screenshot-layer screenshot-dark">
                                     <source srcset="{% static 'img/screenshots/feedback_desktop_dark.webp' %}" type="image/webp">
                                     <img src="{% static 'img/screenshots/feedback_desktop_dark.png' %}"
-                                         alt="Anonymous Feedback Form - Dark Theme"
+                                         alt="Anonymous employee feedback collection interface with progress tracking - self-hosted platform"
                                          loading="lazy">
                                 </picture>
                                 <div class="theme-indicator">Hover to toggle theme</div>
@@ -340,38 +384,140 @@
         </div>
     </section>
 
+    <!-- Questionnaires Section -->
+    <section id="questionnaires" class="section">
+        <div class="container">
+            <h2 class="section-title">Pre-Built Questionnaires for Every Role</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">Four professional 360° feedback templates ready to use out-of-the-box, or customize to fit your needs</p>
+
+            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: var(--text-primary); line-height: 1.7;">
+                Blik includes four research-backed 360 degree feedback questionnaires for different team roles and needs. Each performance review template uses proven frameworks like the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus model of skill acquisition</a> (Novice to Expert) and the <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">5 Levels of Agency</a> (measuring proactive problem-solving). Whether you're reviewing software engineers, managers, or measuring employee initiative, these templates give you a structured starting point without having to design questions from scratch.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--primary); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">ALL ROLES</div>
+                    <h3>Professional Skills 360 Review</h3>
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Universal competency-based assessment for any professional role</p>
+                    <p style="font-size: 0.875rem;"><strong>8 Core Competency Areas:</strong></p>
+                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                        <li>Problem Solving & Decision Making</li>
+                        <li>Communication & Collaboration</li>
+                        <li>Initiative & Ownership</li>
+                        <li>Adaptability & Learning</li>
+                        <li>Quality & Excellence</li>
+                        <li>Leadership & Influence</li>
+                        <li>Professionalism & Attitude</li>
+                        <li>Overall Assessment</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Uses the Dreyfus model of skill acquisition (Novice → Expert) for precise competency assessment.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: #0284c7; color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">SOFTWARE ENGINEERS</div>
+                    <h3>Software Engineering 360 Review</h3>
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Comprehensive technical competency assessment designed for engineering teams</p>
+                    <p style="font-size: 0.875rem;"><strong>10 Engineering Competencies:</strong></p>
+                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                        <li>Industry Fit & Problem Solving</li>
+                        <li>Collaboration & Personality</li>
+                        <li>Technical Expertise & Skill Level</li>
+                        <li>Motivation & Passion</li>
+                        <li>Maturity & Best Practices</li>
+                        <li>Pragmatism & Execution</li>
+                        <li>Knowledge Sharing & Mentorship</li>
+                        <li>Growth Potential & Adaptability</li>
+                        <li>Strategic Vision & Leadership</li>
+                        <li>Overall Assessment</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Evaluates code quality, technical depth, collaboration, and engineering maturity with Dreyfus-based skill ratings.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: #7c3aed; color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">MANAGERS & LEADS</div>
+                    <h3>Manager 360 Review</h3>
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Leadership effectiveness assessment for managers and team leads</p>
+                    <p style="font-size: 0.875rem;"><strong>7 Leadership Dimensions:</strong></p>
+                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                        <li>Leadership (Visibility, Trust, Communication)</li>
+                        <li>Direction (Goal Setting, Clarity, Autonomy)</li>
+                        <li>Expertise & Judgment</li>
+                        <li>Impact (Team Performance, Results Focus)</li>
+                        <li>Feedback & Recognition</li>
+                        <li>Development (Growth Support, Skill Building)</li>
+                        <li>Overall Feedback</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Measures management effectiveness, team impact, and people development capabilities.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: #059669; color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">AGENCY & INITIATIVE</div>
+                    <h3>Agency & Initiative Assessment</h3>
+                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Streamlined assessment focused on measuring the <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">5 Levels of Agency framework</a>—are employees passive problem reporters or proactive problem solvers?</p>
+                    <p style="font-size: 0.875rem;"><strong>4 Essential Areas:</strong></p>
+                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                        <li>Technical Skills (Problem solving, code quality, expertise)</li>
+                        <li>Collaboration (Teamwork, communication, mentoring)</li>
+                        <li>Work Approach (Initiative, adaptability, reliability)</li>
+                        <li>Overall Feedback (Strengths, improvement areas)</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Lightweight questionnaire that identifies high-agency employees who drive solutions versus those who just report problems. <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none;">Learn about the Agency Levels framework →</a></p>
+                </div>
+            </div>
+
+            <div class="cta-box" style="margin-top: 3rem;">
+                <h3>Or Build Your Own</h3>
+                <p style="font-size: 1.125rem;">All questionnaires are fully customizable. Add, remove, or modify questions to match your organization's values and competency frameworks. Support for rating scales, Likert scales, multiple choice, and free text.</p>
+            </div>
+
+            <div style="margin-top: 4rem; padding: 3rem; background: var(--gradient-purple); border-radius: 12px; text-align: center;">
+                <h3 style="color: white; margin-bottom: 2rem; font-size: 1.75rem;">Built on the Dreyfus Model of Skill Acquisition</h3>
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <div style="border-radius: 8px; overflow: hidden; padding: 2rem; background: var(--card-bg);">
+                        {% include 'components/dreyfus_model_svg.html' %}
+                    </div>
+                    <p style="color: rgba(255, 255, 255, 0.95); margin-top: 2rem; font-size: 1.125rem; line-height: 1.7;">
+                        Our questionnaires use research-backed competency levels: <strong style="color: white;">Novice → Advanced Beginner → Competent → Proficient → Expert</strong>.
+                        This framework maps naturally to career progression and helps identify specific growth areas.
+                    </p>
+                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary" style="margin-top: 1.5rem; display: inline-block; background: white; color: var(--primary);">Learn About the Dreyfus Model →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
     <section id="features" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Why Choose Blik</h2>
             <div class="features-grid">
                 <div class="feature-card">
-                    <h3>True Anonymity</h3>
-                    <p>Anonymous token-based system ensures reviewer identities are never stored or tracked. Complete privacy guaranteed.</p>
+                    <h3>Actually Anonymous</h3>
+                    <p>Reviewers use tokens, not accounts. We don't store who said what - by design, not as a feature. Admins can't see who wrote which feedback even if they wanted to.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Self-Hosted</h3>
-                    <p>Deploy on your infrastructure. Full data ownership and control. No third-party access to sensitive feedback.</p>
+                    <h3>Your Server, Your Data</h3>
+                    <p>Host it wherever you want. Your data stays yours. No third-party company gets access to your team's feedback.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Open Source</h3>
-                    <p>AGPL licensed. Review the code, customize to your needs, contribute improvements back to the community.</p>
+                    <p>AGPL licensed - actually open source, not just "source available". Read the code, change what you need, fork it if you want.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Easy Deployment</h3>
-                    <p>Single Docker Compose command to launch. Web-based setup wizard. No complex configuration required.</p>
+                    <h3>Docker Deploy</h3>
+                    <p>One command to get it running. Web setup wizard walks you through the rest. No need to mess with config files unless you want to.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Customizable Questionnaires</h3>
-                    <p>Pre-configured 360 templates included. Create custom questionnaires with rating scales, multiple choice, and text responses.</p>
+                    <h3>Four Questionnaires Included</h3>
+                    <p>We've built questionnaires for professional skills, software engineers, and managers. Use them as-is or customize them. Rating scales, multiple choice, free text - all supported.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Rich Reporting</h3>
-                    <p>Aggregated insights by reviewer category. Visual charts. Automatic anonymity threshold protection.</p>
+                    <h3>Reports That Make Sense</h3>
+                    <p>See feedback grouped by role (peers, managers, reports). Charts show where you stand. If less than 3 people responded in a category, we hide it to protect anonymity.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>EU Data Residency</h3>
-                    <p>Host in EU regions for GDPR compliance. Complete control over data location and retention.</p>
+                    <h3>GDPR Friendly</h3>
+                    <p>Host in the EU if you need to. Since it's your server, you control where the data lives and how long you keep it.</p>
                 </div>
                 <div class="feature-card">
                     <h3>No Vendor Lock-in</h3>
@@ -494,8 +640,13 @@
                 </details>
 
                 <details class="faq-item">
+                    <summary>What questionnaires does Blik include, and how do I choose the right one for my team?</summary>
+                    <p>There are currently 4 default questionnaires to choose from; ranging from relatively quick & easy to very specific, detailed and advanced. You can also create your own questionnaires, but these 4 should get you started without having to think of all these questions up front.</p>
+                </details>
+
+                <details class="faq-item">
                     <summary>Can I customize the questionnaires?</summary>
-                    <p>Yes! The application comes with 2 default questionnaires, but we allow you to create your own with no restrictions. We have multiple types of answer modes like Likert scales, multiple choice, and free text. The questionnaires can contain multiple segments which work well on mobile devices too.</p>
+                    <p>Yes! The application comes with 4 default questionnaires for different roles and needs, and you can create your own with no restrictions. We have multiple types of answer modes like Likert scales, multiple choice, and free text. The questionnaires can contain multiple segments which work well on mobile devices too.</p>
                 </details>
 
                 <details class="faq-item">
@@ -504,8 +655,8 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>How is Blik different from commercial 360 tools?</summary>
-                    <p>Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies. Simplicity.</p>
+                    <summary>How is Blik different from Lattice, Culture Amp, and 15Five?</summary>
+                    <p>Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies compared to tools like Lattice (€18K/year for 50 people) or Culture Amp (€15K/year). Simplicity.</p>
                 </details>
 
                 <details class="faq-item">
@@ -580,7 +731,7 @@
 
                 <details class="faq-item">
                     <summary>How do I invite reviewers?</summary>
-                    <p>There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is the recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team.</p>
+                    <p>There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team.</p>
                 </details>
 
                 <details class="faq-item">
@@ -619,46 +770,9 @@
             </div>
         </div>
     </section>
+{% endblock %}
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>{{ site_name }}</h4>
-                    <p>Open source 360-degree feedback platform</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Product</h4>
-                    <ul>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">Documentation</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Company</h4>
-                    <ul>
-                        <li><a href="mailto:info@blik360.com">Contact</a></li>
-                        <li><a href="{% landing_url 'privacy_policy' %}">Privacy Policy</a></li>
-                        <li><a href="{% landing_url 'terms' %}">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Community</h4>
-                    <ul>
-                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a></li>
-                        <li><a href="https://github.com/thijsdezoete/blik/issues" target="_blank" rel="noopener">Issues</a></li>
-                        <li><a href="https://github.com/thijsdezoete/blik/discussions" target="_blank" rel="noopener">Discussions</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 {{ site_name }}. Released under AGPL License.</p>
-            </div>
-        </div>
-    </footer>
-
+{% block extra_scripts %}
     <!-- FAQ Schema JSON-LD -->
     <script type="application/ld+json">
     {
@@ -691,10 +805,18 @@
             },
             {
                 "@type": "Question",
+                "name": "What questionnaires does Blik include, and how do I choose the right one for my team?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "There are currently 4 default questionnaires to choose from; ranging from relatively quick & easy to very specific, detailed and advanced. You can also create your own questionnaires, but these 4 should get you started without having to think of all these questions up front."
+                }
+            },
+            {
+                "@type": "Question",
                 "name": "Can I customize the questionnaires?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes! The application comes with 2 default questionnaires, but we allow you to create your own with no restrictions. We have multiple types of answer modes like Likert scales, multiple choice, and free text. The questionnaires can contain multiple segments which work well on mobile devices too."
+                    "text": "Yes! The application comes with 4 default questionnaires for different roles and needs, and we allow you to create your own with no restrictions. We have multiple types of answer modes like Likert scales, multiple choice, and free text. The questionnaires can contain multiple segments which work well on mobile devices too."
                 }
             },
             {
@@ -707,10 +829,10 @@
             },
             {
                 "@type": "Question",
-                "name": "How is Blik different from commercial 360 tools?",
+                "name": "How is Blik different from Lattice, Culture Amp, and 15Five?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies. Simplicity."
+                    "text": "Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies compared to tools like Lattice (€18K/year for 50 people) or Culture Amp (€15K/year). Simplicity."
                 }
             },
             {
@@ -870,63 +992,8 @@
     </script>
 
     <script>
-        // Mobile menu toggle
+        // Screenshot Carousel functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.mobile-menu-toggle');
-            const nav = document.querySelector('.nav');
-
-            if (menuToggle && nav) {
-                menuToggle.addEventListener('click', function() {
-                    const isExpanded = nav.classList.contains('active');
-                    nav.classList.toggle('active');
-                    menuToggle.setAttribute('aria-expanded', !isExpanded);
-                });
-
-                // Close menu when clicking on a link
-                const navLinks = nav.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    });
-                });
-
-                // Close menu when clicking outside
-                document.addEventListener('click', function(event) {
-                    if (!nav.contains(event.target) && !menuToggle.contains(event.target)) {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-
-            // Theme toggle functionality
-            const themeToggle = document.querySelector('.theme-toggle');
-            const sunIcon = themeToggle.querySelector('.sun-icon');
-            const moonIcon = themeToggle.querySelector('.moon-icon');
-
-            const updateThemeIcons = () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                if (currentTheme === 'dark') {
-                    sunIcon.style.display = 'block';
-                    moonIcon.style.display = 'none';
-                } else {
-                    sunIcon.style.display = 'none';
-                    moonIcon.style.display = 'block';
-                }
-            };
-
-            updateThemeIcons();
-
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeIcons();
-            });
-
-            // Screenshot Carousel functionality
             const slides = document.querySelectorAll('.carousel-slide');
             const dots = document.querySelectorAll('.carousel-dot');
             const prevBtn = document.querySelector('.carousel-prev');
@@ -1040,5 +1107,4 @@
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}

@@ -96,6 +96,16 @@ def hr_managers(request):
     return render(request, 'landing/hr_managers.html', context)
 
 
+def agency_levels(request):
+    """5 Levels of Agency framework page for high-agency workplace culture."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/agency_levels.html', context)
+
+
 def signup(request):
     """Signup page with Stripe checkout integration."""
     # Get main app URL from environment or use current host for local dev

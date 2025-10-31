@@ -10,6 +10,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('open-source/', views.open_source, name='open_source'),
     path('dreyfus-model/', views.dreyfus_model, name='dreyfus_model'),
+    path('agency-levels/', views.agency_levels, name='agency_levels'),
     path('eu-tech/', views.eu_tech, name='eu_tech'),
     path('privacy/', views.privacy, name='privacy'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),

@@ -52,6 +52,12 @@ def sitemap(request):
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>{base_url}{prefix}/agency-levels/</loc>
+        <lastmod>2025-10-31</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>{base_url}{prefix}/eu-tech/</loc>
         <lastmod>2025-10-24</lastmod>
         <changefreq>weekly</changefreq>

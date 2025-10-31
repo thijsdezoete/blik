@@ -216,13 +216,48 @@
                             </div>
                         {% else %}
                             {% if cat_data.avg %}
-                                <div class="rating-display">
-                                    <span class="rating-score">{{ cat_data.avg }}</span>
-                                    <div class="rating-bar-container">
-                                        <div class="rating-bar-fill" style="width: {{ cat_data.avg|floatformat:0|add:"0"|mul:"20" }}%"></div>
+                                {% if question_data.question_type == 'scale' %}
+                                    {# Scale questions - show value in original range #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg|floatformat:1 }}</span>
+                                        <div class="rating-bar-container">
+                                            {% with min_val=question_data.question_config.min|default:1 max_val=question_data.question_config.max|default:100 %}
+                                                {% widthratio cat_data.avg max_val 100 as bar_width %}
+                                                <div class="rating-bar-fill" style="width: {{ bar_width }}%"></div>
+                                            {% endwith %}
+                                        </div>
+                                        <span class="response-count">/ {{ question_data.question_config.max|default:"100" }}</span>
                                     </div>
-                                    <span class="response-count">/ 5.0</span>
-                                </div>
+                                {% elif question_data.question_type == 'single_choice' and question_data.question_config.scoring_enabled %}
+                                    {# Single choice with scoring - show weighted average #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg|floatformat:1 }}</span>
+                                        <div class="rating-bar-container">
+                                            {% with weights=question_data.question_config.weights %}
+                                                {% if weights %}
+                                                    {% widthratio cat_data.avg weights|last 100 as bar_width %}
+                                                    <div class="rating-bar-fill" style="width: {{ bar_width }}%"></div>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                        <span class="response-count" style="font-size: 0.75rem; color: var(--text-secondary);">weighted avg</span>
+                                    </div>
+                                {% elif question_data.question_type == 'multiple_choice' and question_data.question_config.scoring_enabled %}
+                                    {# Multiple choice with scoring - show weighted sum average #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg|floatformat:1 }}</span>
+                                        <span class="response-count" style="font-size: 0.75rem; color: var(--text-secondary); margin-left: 0.5rem;">weighted avg</span>
+                                    </div>
+                                {% else %}
+                                    {# Rating questions - standard 1-5 scale #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg }}</span>
+                                        <div class="rating-bar-container">
+                                            <div class="rating-bar-fill" style="width: {{ cat_data.avg|floatformat:0|add:"0"|mul:"20" }}%"></div>
+                                        </div>
+                                        <span class="response-count">/ 5.0</span>
+                                    </div>
+                                {% endif %}
                             {% endif %}
 
                             {% if question_data.question_type == 'text' %}
@@ -233,6 +268,22 @@
                                 </div>
                             {% elif question_data.question_type == 'likert' %}
                                 <div class="likert-distribution">
+                                    {% if cat_data.distribution %}
+                                        {% for option, count in cat_data.distribution.items %}
+                                            <div style="margin-bottom: 0.5rem;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ option }}</span>
+                                                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ count }}</span>
+                                                </div>
+                                                <div style="background: var(--bg-light); border-radius: 4px; height: 8px; overflow: hidden;">
+                                                    <div style="background: var(--primary); height: 100%; width: {% widthratio count cat_data.count 100 %}%;"></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% elif question_data.question_type == 'single_choice' %}
+                                <div class="single-choice-distribution">
                                     {% if cat_data.distribution %}
                                         {% for option, count in cat_data.distribution.items %}
                                             <div style="margin-bottom: 0.5rem;">

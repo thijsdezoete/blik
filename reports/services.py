@@ -30,8 +30,19 @@ def _calculate_insights(report_data):
         section_title = section_data.get('title', '')
 
         for question_id, question_data in section_data.get('questions', {}).items():
-            # Only process rating questions for numeric insights (likert is text-based)
-            if question_data.get('question_type') != 'rating':
+            question_type = question_data.get('question_type')
+
+            # Process numeric questions: rating, scale, and choice questions with scoring
+            if question_type == 'rating' or question_type == 'scale':
+                # Direct numeric types
+                pass
+            elif question_type in ['single_choice', 'multiple_choice']:
+                # Only include if scoring is enabled
+                config = question_data.get('question_config', {})
+                if not config.get('scoring_enabled'):
+                    continue
+            else:
+                # Skip text, likert (text-based), and other non-numeric types
                 continue
 
             for category, cat_data in question_data.get('by_category', {}).items():
@@ -175,6 +186,8 @@ def _calculate_chart_data(report_data, cycle):
         section_scores = defaultdict(lambda: {'total': 0, 'weight_sum': 0})
 
         for question_id, question_data in section_data.get('questions', {}).items():
+            question_type = question_data.get('question_type')
+
             # Get question to check chart config
             try:
                 question = Question.objects.get(id=question_id)
@@ -187,8 +200,17 @@ def _calculate_chart_data(report_data, cycle):
             except Question.DoesNotExist:
                 chart_weight = 1.0
 
-            # Only process rating questions for charts
-            if question_data.get('question_type') != 'rating':
+            # Process numeric questions for charts: rating, scale, and choice questions with scoring
+            if question_type == 'rating' or question_type == 'scale':
+                # Direct numeric types
+                pass
+            elif question_type in ['single_choice', 'multiple_choice']:
+                # Only include if scoring is enabled
+                config = question_data.get('question_config', {})
+                if not config.get('scoring_enabled'):
+                    continue
+            else:
+                # Skip text, likert (text-based), and other non-numeric types
                 continue
 
             for category, cat_data in question_data.get('by_category', {}).items():
@@ -197,7 +219,41 @@ def _calculate_chart_data(report_data, cycle):
 
                 avg = cat_data.get('avg')
                 if avg is not None:
-                    section_scores[category]['total'] += avg * chart_weight
+                    # Normalize to 1-5 scale for consistent charting
+                    normalized_avg = avg
+
+                    if question_type == 'scale':
+                        # Scale questions may have different ranges - normalize to 1-5
+                        try:
+                            config = question_data.get('question_config', {})
+                            min_val = config.get('min', 1)
+                            max_val = config.get('max', 100)
+
+                            if max_val > min_val:
+                                # Normalize: 1 + ((value - min) / (max - min)) * 4
+                                normalized_avg = 1 + ((avg - min_val) / (max_val - min_val)) * 4
+                        except (KeyError, ZeroDivisionError, TypeError):
+                            # If normalization fails, use raw value
+                            pass
+
+                    elif question_type in ['single_choice', 'multiple_choice']:
+                        # Choice questions with weights - normalize based on weight range
+                        try:
+                            config = question_data.get('question_config', {})
+                            weights = config.get('weights', [])
+
+                            if weights:
+                                min_weight = min(weights)
+                                max_weight = max(weights)
+
+                                if max_weight > min_weight:
+                                    # Normalize: 1 + ((value - min) / (max - min)) * 4
+                                    normalized_avg = 1 + ((avg - min_weight) / (max_weight - min_weight)) * 4
+                        except (KeyError, ZeroDivisionError, TypeError, ValueError):
+                            # If normalization fails, use raw value
+                            pass
+
+                    section_scores[category]['total'] += normalized_avg * chart_weight
                     section_scores[category]['weight_sum'] += chart_weight
 
         # Calculate weighted averages for this section

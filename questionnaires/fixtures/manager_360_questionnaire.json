@@ -1,0 +1,486 @@
+[
+  {
+    "model": "questionnaires.questionnaire",
+    "pk": 4,
+    "fields": {
+      "name": "Manager 360 Review",
+      "description": "360-degree feedback questionnaire for managers and team leads, assessing leadership effectiveness, direction-setting, team impact, and people development.",
+      "is_default": true,
+      "is_active": true,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 201,
+    "fields": {
+      "questionnaire": 4,
+      "title": "Leadership",
+      "description": "Visibility, trust, and communication",
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2001,
+    "fields": {
+      "section": 201,
+      "question_text": "My manager is visible and engaged with the team",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Rarely present or engaged",
+          "2": "Occasionally visible",
+          "3": "Regularly engaged",
+          "4": "Consistently visible and accessible",
+          "5": "Exceptionally present and engaged"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2002,
+    "fields": {
+      "section": 201,
+      "question_text": "I trust my manager's intentions and decisions",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Low trust",
+          "2": "Some concerns",
+          "3": "Generally trustworthy",
+          "4": "High trust",
+          "5": "Complete trust"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2003,
+    "fields": {
+      "section": 201,
+      "question_text": "My manager communicates clearly about decisions and their reasoning",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Rarely explains decisions",
+          "2": "Occasionally provides context",
+          "3": "Usually communicates reasoning",
+          "4": "Consistently clear communication",
+          "5": "Exemplary transparency and clarity"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 202,
+    "fields": {
+      "questionnaire": 4,
+      "title": "Direction",
+      "description": "Goal setting, clarity, and problem-solving",
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2004,
+    "fields": {
+      "section": 202,
+      "question_text": "Goals and priorities are clearly defined",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Goals are unclear or missing",
+          "2": "Some clarity, but gaps remain",
+          "3": "Goals are mostly clear",
+          "4": "Clear and well-defined goals",
+          "5": "Crystal clear priorities and objectives"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2005,
+    "fields": {
+      "section": 202,
+      "question_text": "My manager provides clear direction and gives me autonomy to execute",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Too hands-off or micromanaging",
+          "2": "Direction needs improvement",
+          "3": "Good balance of guidance and autonomy",
+          "4": "Excellent direction with appropriate freedom",
+          "5": "Perfect balance of clarity and empowerment"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2006,
+    "fields": {
+      "section": 202,
+      "question_text": "Problems or obstacles are discussed and addressed in time",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Issues are ignored or delayed",
+          "2": "Slow to address problems",
+          "3": "Problems are handled reasonably",
+          "4": "Proactive problem-solving",
+          "5": "Exceptional at anticipating and resolving issues"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 203,
+    "fields": {
+      "questionnaire": 4,
+      "title": "Expertise & Judgment",
+      "description": "Domain knowledge and decision-making quality",
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2007,
+    "fields": {
+      "section": 203,
+      "question_text": "My manager understands the content of our work well enough to guide effectively",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Limited understanding",
+          "2": "Basic awareness",
+          "3": "Sufficient knowledge to guide",
+          "4": "Strong understanding of our work",
+          "5": "Deep expertise and insight"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2008,
+    "fields": {
+      "section": 203,
+      "question_text": "My manager makes informed decisions about our work",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Decisions often miss the mark",
+          "2": "Sometimes uninformed",
+          "3": "Generally sound decisions",
+          "4": "Consistently well-informed decisions",
+          "5": "Exceptionally wise judgment"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 204,
+    "fields": {
+      "questionnaire": 4,
+      "title": "Impact",
+      "description": "Contribution to team performance and results",
+      "order": 4,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2009,
+    "fields": {
+      "section": 204,
+      "question_text": "My manager's way of leading contributes visibly to team performance",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Negative impact on performance",
+          "2": "Limited contribution",
+          "3": "Positive impact on team",
+          "4": "Significantly improves performance",
+          "5": "Transformative leadership impact"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2010,
+    "fields": {
+      "section": 204,
+      "question_text": "My manager encourages results-oriented work",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Focus on process over results",
+          "2": "Some results focus",
+          "3": "Balanced approach",
+          "4": "Strong results orientation",
+          "5": "Exceptional focus on meaningful outcomes"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 205,
+    "fields": {
+      "questionnaire": 4,
+      "title": "Feedback & Recognition",
+      "description": "Quality of feedback and acknowledgment of contributions",
+      "order": 5,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2011,
+    "fields": {
+      "section": 205,
+      "question_text": "I receive regular, useful feedback from my manager",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Rarely receive feedback",
+          "2": "Infrequent or unhelpful feedback",
+          "3": "Regular, adequate feedback",
+          "4": "Frequent, actionable feedback",
+          "5": "Exceptional feedback quality and frequency"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2012,
+    "fields": {
+      "section": 205,
+      "question_text": "My manager recognizes good work when it happens",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Recognition is absent",
+          "2": "Rarely acknowledges contributions",
+          "3": "Recognizes good work adequately",
+          "4": "Consistently acknowledges achievements",
+          "5": "Outstanding at celebrating contributions"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 206,
+    "fields": {
+      "questionnaire": 4,
+      "title": "Development",
+      "description": "Support for growth and skill development",
+      "order": 6,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2013,
+    "fields": {
+      "section": 206,
+      "question_text": "My manager encourages personal and professional growth",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "No focus on development",
+          "2": "Limited encouragement",
+          "3": "Supports growth opportunities",
+          "4": "Actively promotes development",
+          "5": "Champion of personal and professional growth"
+        }
+      },
+      "required": true,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2014,
+    "fields": {
+      "section": 206,
+      "question_text": "My manager recognizes and names individual strengths",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "Doesn't identify strengths",
+          "2": "Occasionally notes strengths",
+          "3": "Recognizes key strengths",
+          "4": "Consistently highlights strengths",
+          "5": "Exceptional at identifying and leveraging strengths"
+        }
+      },
+      "required": true,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2015,
+    "fields": {
+      "section": 206,
+      "question_text": "My manager supports the development of new skills",
+      "question_type": "rating",
+      "config": {
+        "min": 1,
+        "max": 5,
+        "labels": {
+          "1": "No support for skill development",
+          "2": "Limited support",
+          "3": "Provides opportunities to learn",
+          "4": "Actively supports skill building",
+          "5": "Creates excellent learning opportunities"
+        }
+      },
+      "required": true,
+      "order": 3,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.questionsection",
+    "pk": 207,
+    "fields": {
+      "questionnaire": 4,
+      "title": "Overall Feedback",
+      "description": "Open-ended feedback and suggestions",
+      "order": 7,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2016,
+    "fields": {
+      "section": 207,
+      "question_text": "What should this person keep doing?",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 1,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "questionnaires.question",
+    "pk": 2017,
+    "fields": {
+      "section": 207,
+      "question_text": "What should this person do differently?",
+      "question_type": "text",
+      "config": {},
+      "required": false,
+      "order": 2,
+      "created_at": "2025-01-01T00:00:00Z",
+      "updated_at": "2025-01-01T00:00:00Z"
+    }
+  }
+]

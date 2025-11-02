@@ -1,81 +1,80 @@
-<!-- Performance Matrix 2x2 Grid SVG -->
+<!-- Performance Matrix 2x2 Grid SVG - Refined colors for elegance -->
 <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;fill:none;stroke:none;">
     <style>
         .pm-success-fill { fill: var(--success); }
         .pm-warning-fill { fill: var(--warning); }
-        .pm-danger-fill { fill: var(--danger); }
+        .pm-neutral-fill { fill: var(--text-secondary); }
         .pm-text-secondary { fill: var(--text-secondary); }
         .pm-text-primary { fill: var(--text-primary); }
-        .pm-stroke-light { stroke: currentColor; stroke-opacity: 0.3; }
-        .pm-bg-success { fill: var(--success); fill-opacity: 0.1; }
-        .pm-bg-warning { fill: var(--warning); fill-opacity: 0.1; }
-        .pm-bg-danger { fill: var(--danger); fill-opacity: 0.1; }
-        .pm-bg-secondary { fill: var(--text-secondary); fill-opacity: 0.08; }
+        .pm-stroke-light { stroke: var(--border); stroke-opacity: 0.6; }
+        .pm-success-stroke { stroke: var(--success); stroke-opacity: 0.4; }
+        .pm-warning-stroke { stroke: var(--warning); stroke-opacity: 0.3; }
+        .pm-neutral-stroke { stroke: var(--border); stroke-opacity: 0.3; }
     </style>
 
     <!-- Axes -->
-    <line x1="100" y1="700" x2="700" y2="700" class="pm-stroke-light" stroke-width="3"/>
-    <line x1="100" y1="100" x2="100" y2="700" class="pm-stroke-light" stroke-width="3"/>
+    <line x1="100" y1="700" x2="700" y2="700" class="pm-stroke-light" stroke-width="2"/>
+    <line x1="100" y1="100" x2="100" y2="700" class="pm-stroke-light" stroke-width="2"/>
 
     <!-- Axis Arrows -->
-    <polygon points="700,700 690,695 690,705" class="pm-text-secondary" opacity="0.3"/>
-    <polygon points="100,100 95,110 105,110" class="pm-text-secondary" opacity="0.3"/>
+    <polygon points="700,700 690,695 690,705" class="pm-text-secondary" opacity="0.4"/>
+    <polygon points="100,100 95,110 105,110" class="pm-text-secondary" opacity="0.4"/>
 
-    <!-- Quadrant Backgrounds -->
+    <!-- Quadrant Backgrounds - Subtle fills using CSS variables -->
     <!-- Top-Right: Force Multipliers -->
-    <rect x="100" y="100" width="600" height="300" class="pm-bg-success" stroke="var(--success)" stroke-width="2" opacity="0.8"/>
+    <rect x="400" y="100" width="300" height="300" fill="var(--success)" fill-opacity="0.08" class="pm-success-stroke" stroke-width="1.5" rx="4"/>
 
     <!-- Top-Left: Hungry Learners -->
-    <rect x="100" y="100" width="300" height="300" class="pm-bg-warning" stroke="var(--warning)" stroke-width="2" opacity="0.8"/>
+    <rect x="100" y="100" width="300" height="300" fill="var(--warning)" fill-opacity="0.06" class="pm-warning-stroke" stroke-width="1.5" rx="4"/>
 
     <!-- Bottom-Right: Brilliant Passengers -->
-    <rect x="400" y="400" width="300" height="300" class="pm-bg-warning" stroke="var(--warning)" stroke-width="2" opacity="0.6"/>
+    <rect x="400" y="400" width="300" height="300" fill="var(--warning)" fill-opacity="0.04" class="pm-warning-stroke" stroke-width="1.5" stroke-opacity="0.25" rx="4"/>
 
     <!-- Bottom-Left: Low Performers -->
-    <rect x="100" y="400" width="300" height="300" class="pm-bg-danger" stroke="var(--danger)" stroke-width="2" opacity="0.8"/>
+    <rect x="100" y="400" width="300" height="300" fill="var(--text-secondary)" fill-opacity="0.04" class="pm-neutral-stroke" stroke-width="1.5" rx="4"/>
 
     <!-- Quadrant Labels -->
     <!-- Force Multipliers (Top-Right) -->
-    <text x="550" y="200" text-anchor="middle" font-size="28" font-weight="700" class="pm-success-fill">
+    <text x="550" y="210" text-anchor="middle" font-size="26" font-weight="700" class="pm-success-fill">
         Force Multipliers
     </text>
-    <text x="550" y="230" text-anchor="middle" font-size="14" class="pm-text-secondary">
+    <text x="550" y="240" text-anchor="middle" font-size="13" class="pm-text-secondary" opacity="0.8">
         High Skill + High Agency
     </text>
-    <text x="550" y="280" text-anchor="middle" font-size="16" font-weight="600" class="pm-success-fill">
-        ✓ Hire ✓ Promote ✓ Clone
+    <text x="550" y="285" text-anchor="middle" font-size="15" font-weight="600" class="pm-success-fill" opacity="0.9">
+        Hire • Promote • Clone
     </text>
 
     <!-- Hungry Learners (Top-Left) -->
-    <text x="250" y="200" text-anchor="middle" font-size="28" font-weight="700" class="pm-warning-fill">
+    <text x="250" y="210" text-anchor="middle" font-size="26" font-weight="700" class="pm-warning-fill">
         Hungry Learners
     </text>
-    <text x="250" y="230" text-anchor="middle" font-size="14" class="pm-text-secondary">
+    <text x="250" y="240" text-anchor="middle" font-size="13" class="pm-text-secondary" opacity="0.8">
         Low Skill + High Agency
     </text>
-    <text x="250" y="280" text-anchor="middle" font-size="16" font-weight="600" class="pm-warning-fill">
+    <text x="250" y="285" text-anchor="middle" font-size="15" font-weight="600" class="pm-warning-fill" opacity="0.9">
         Best Junior Hire
     </text>
 
     <!-- Brilliant Passengers (Bottom-Right) -->
-    <text x="550" y="500" text-anchor="middle" font-size="28" font-weight="700" class="pm-warning-fill">
+    <text x="550" y="510" text-anchor="middle" font-size="26" font-weight="700" class="pm-warning-fill">
         Brilliant Passengers
     </text>
-    <text x="550" y="530" text-anchor="middle" font-size="14" class="pm-text-secondary">
+    <text x="550" y="540" text-anchor="middle" font-size="13" class="pm-text-secondary" opacity="0.8">
         High Skill + Low Agency
     </text>
-    <text x="550" y="580" text-anchor="middle" font-size="16" font-weight="600" class="pm-warning-fill">
+    <text x="550" y="585" text-anchor="middle" font-size="15" font-weight="600" class="pm-warning-fill" opacity="0.9">
         Coach on Ownership
     </text>
 
     <!-- Low Performers (Bottom-Left) -->
-    <text x="250" y="500" text-anchor="middle" font-size="28" font-weight="700" class="pm-danger-fill">
+    <text x="250" y="510" text-anchor="middle" font-size="26" font-weight="700" class="pm-neutral-fill">
         Low Performers
     </text>
-    <text x="250" y="530" text-anchor="middle" font-size="14" class="pm-text-secondary">
+    <text x="250" y="540" text-anchor="middle" font-size="13" class="pm-text-secondary" opacity="0.8">
         Low Skill + Low Agency
     </text>
-    <text x="250" y="580" text-anchor="middle" font-size="16" font-weight="600" class="pm-danger-fill">
+    <text x="250" y="585" text-anchor="middle" font-size="15" font-weight="600" class="pm-neutral-fill" opacity="0.7">
         3-Month PIP or Exit
     </text>
 

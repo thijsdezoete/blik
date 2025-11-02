@@ -169,6 +169,42 @@
                 updateThemeIcons();
             });
         });
+
+        // Expandable sections toggle (for all cornerstone pages)
+        function toggleExpandable(sectionId) {
+            const section = document.getElementById(sectionId);
+            const button = event.currentButton || event.target.closest('.read-more-toggle');
+
+            if (!section || !button) return;
+
+            if (section.classList.contains('expanded')) {
+                section.classList.remove('expanded');
+                button.classList.remove('active');
+                button.innerHTML = `Show Research Details<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+            } else {
+                section.classList.add('expanded');
+                button.classList.add('active');
+                button.innerHTML = `Hide Research Details<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+            }
+        }
+
+        // Card-level expandable content toggle
+        function toggleCardContent(contentId) {
+            const content = document.getElementById(contentId);
+            const button = event.currentButton || event.target.closest('.card-expand-toggle');
+
+            if (!content || !button) return;
+
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                button.classList.remove('active');
+                button.innerHTML = `Read more<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+            } else {
+                content.classList.add('expanded');
+                button.classList.add('active');
+                button.innerHTML = `Show less<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+            }
+        }
     </script>
 
     {% block extra_scripts %}{% endblock %}

@@ -27,6 +27,62 @@
 {% endblock %}
 
 {% block extra_head %}
+    <!-- Performance Matrix Page Styles -->
+    <style>
+        /* Archetype Deep Dive Mobile Responsiveness */
+        @media (max-width: 768px) {
+            /* Stack icon and content vertically on mobile */
+            .archetype-grid {
+                grid-template-columns: 1fr !important;
+                gap: var(--space-6) !important;
+                text-align: center;
+            }
+            .archetype-icon {
+                margin: 0 auto var(--space-6);
+            }
+            /* Scenario cards: 4 columns → 2 columns on tablet → 1 column on mobile */
+            .scenario-cards-grid {
+                grid-template-columns: 1fr !important;
+                gap: var(--space-4) !important;
+            }
+            /* Timeline mobile adjustments */
+            .timeline-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: var(--space-3) !important;
+            }
+            .timeline-header h4 {
+                font-size: var(--text-base) !important;
+            }
+            .timeline-badges {
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                width: 100%;
+                gap: var(--space-2) !important;
+            }
+            .timeline-badges span {
+                font-size: var(--text-xs) !important;
+                padding: var(--space-1) var(--space-3) !important;
+            }
+            /* Timeline bars on mobile: hide embedded text, show simplified version */
+            .timeline-bar {
+                height: 24px !important;
+            }
+            .timeline-bar-fill {
+                font-size: 0 !important; /* Hide long text on mobile */
+            }
+            .timeline-bar-label {
+                font-size: var(--text-xs) !important;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            /* Tablet: 2 columns for scenario cards */
+            .scenario-cards-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+    </style>
+
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
@@ -123,109 +179,156 @@
 {% endblock %}
 
 {% block content %}
-    <section class="hero">
+    <!-- Hero with Matrix as Primary Element -->
+    <section id="matrix" class="section" style="padding-top: var(--space-16); padding-bottom: var(--space-24); background: var(--bg-body);">
         <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">The Performance Matrix</h1>
-                <p class="hero-subtitle">Why your senior engineer spotted a critical bug, messaged you about it, then went to lunch. They have the skills but lack the agency. Traditional performance reviews miss this completely.</p>
-
-                <!-- TL;DR Box -->
-                <div style="background: var(--bg-secondary); border-left: 4px solid var(--primary); padding: 1.5rem; margin: 2rem 0; border-radius: 4px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
-                    <h2 style="margin: 0 0 0.75rem 0; font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary);">TL;DR</h2>
-                    <p style="margin: 0 0 0.5rem 0; font-size: 0.95rem; line-height: 1.6;"><strong>Technical Skill</strong> (Dreyfus Model) × <strong>Agency Level</strong> (ownership mindset) create four distinct employee archetypes. Most performance reviews only measure skill, missing 50% of the picture.</p>
-                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;"><strong>Key insight:</strong> A Competent engineer with Level 5 agency often outperforms an Expert with Level 2 agency. Skills can be taught. Agency mindset is harder to change.</p>
-                </div>
-
-                <div class="hero-cta">
-                    <a href="#matrix" class="btn btn-primary">See the Matrix</a>
-                    <a href="{% landing_url 'index' %}" class="btn btn-secondary">About Blik</a>
-                </div>
+            <div style="text-align: center; margin-bottom: var(--space-12);">
+                <h1 class="hero-title" style="font-size: var(--text-5xl); margin-bottom: var(--space-4); color: var(--text-primary);">The Performance Matrix</h1>
+                <p style="font-size: var(--text-xl); color: var(--text-secondary); max-width: 900px; margin: 0 auto var(--space-8);">Why your senior engineer spotted a critical bug, messaged you about it, then went to lunch. They have the skills but lack the agency. Traditional performance reviews miss this completely.</p>
             </div>
-        </div>
-    </section>
 
-    <!-- The Matrix Section -->
-    <section id="matrix" class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">The Performance Matrix</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">Two independent dimensions create four distinct employee types</p>
-
-            <div style="max-width: 1000px; margin: 0 auto 3rem; background: var(--bg-card); padding: 2rem; border-radius: 8px; box-shadow: var(--shadow-sm);">
+            <!-- Matrix as Hero - Full Viewport Visual -->
+            <div style="max-width: 1200px; margin: 0 auto var(--space-16); background: var(--bg-card); padding: var(--space-16); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid var(--border);">
                 {% include 'components/performance_matrix_svg.html' %}
             </div>
 
-            <div class="feature-card feature-card-info" style="margin-bottom: 3rem;">
-                <h3>Why Two Dimensions?</h3>
-                <p style="margin-bottom: 1rem;"><strong>Technical Skill</strong> (<a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus Model</a>): How good are they at their craft? Novice → Expert progression through pattern recognition and intuition.</p>
-                <p style="margin-bottom: 1rem;"><strong>Agency Level</strong> (<a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">5 Levels of Agency</a>): How proactively do they solve problems? Level 1 (report and walk away) → Level 5 (fix it and inform).</p>
-                <p style="margin-bottom: 1rem; background: var(--bg-secondary); padding: 1rem; border-radius: 4px;"><strong>Critical point:</strong> These dimensions are <em>independent</em>. You can be an Expert who waits to be told what to do. Or a Novice who owns every problem they encounter.</p>
-                <p style="font-size: 0.875rem; color: var(--text-secondary); padding-top: 1rem; border-top: 1px solid var(--border);"><strong>Related reading:</strong> <a href="https://staffeng.com/guides/staff-archetypes" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">Staff Engineer Archetypes</a> (Will Larson) explores similar patterns in engineering roles | <a href="https://leaddev.com/technical-direction/measuring-and-improving-efficiency-software-delivery" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">Measuring Engineering Effectiveness</a> (LeadDev)</p>
+            <!-- TL;DR Below Matrix -->
+            <div style="background: var(--bg-card); border: 2px solid var(--primary-200); padding: var(--space-8); margin: 0 auto var(--space-8); border-radius: var(--radius-lg); text-align: left; max-width: 900px; box-shadow: var(--shadow-sm);">
+                <h2 style="margin: 0 0 var(--space-4) 0; font-size: var(--text-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary-600);">TL;DR</h2>
+                <p style="margin: 0 0 var(--space-4) 0; font-size: var(--text-base); line-height: 1.6; color: var(--text-primary);"><strong>Technical Skill</strong> (<a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus Model</a>) × <strong>Agency Level</strong> (<a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">5 Levels</a>) create four distinct employee archetypes. Most performance reviews only measure skill, missing 50% of the picture.</p>
+                <p style="margin: 0; font-size: var(--text-base); line-height: 1.6; color: var(--text-primary);"><strong style="color: var(--primary-600);">Key insight:</strong> A Competent engineer with Level 5 agency often outperforms an Expert with Level 2 agency. Skills can be taught. Agency mindset is harder to change.</p>
+            </div>
+
+            <!-- Why Two Dimensions -->
+            <div class="feature-card feature-card-info" style="max-width: 900px; margin: 0 auto;">
+                <h3>Why Two Independent Dimensions?</h3>
+                <p style="margin-bottom: var(--space-4);"><strong>Technical Skill</strong>: How good are they at their craft? Novice → Expert progression through pattern recognition and intuition.</p>
+                <p style="margin-bottom: var(--space-4);"><strong>Agency Level</strong>: How proactively do they solve problems? Level 1 (report and walk away) → Level 5 (fix it and inform).</p>
+                <p style="background: var(--bg-secondary); padding: var(--space-4); border-radius: var(--radius-md); margin: 0;"><strong>Critical point:</strong> These dimensions are <em>independent</em>. You can be an Expert who waits to be told what to do. Or a Novice who owns every problem they encounter.</p>
             </div>
         </div>
     </section>
 
-    <!-- Four Archetypes -->
-    <section id="archetypes" class="section">
+    <!-- Four Archetypes Deep Dives -->
+    <section id="archetypes" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Four Employee Archetypes</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Every engineer falls into one of these quadrants</p>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: var(--space-16);">Every engineer falls into one of these quadrants</p>
 
-            <div class="features-grid">
-                <div class="feature-card feature-card-success">
-                    <h3>Force Multipliers</h3>
-                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> High Technical Skill + High Agency</p>
-                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"Database was slow. Added indexes on foreign keys, reduced query time 80%, deployed to prod. Monitoring shows it's stable."</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
-                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
-                        <li>Spots problems and fixes them autonomously</li>
-                        <li>Operates at Level 4-5 agency consistently</li>
-                        <li>Significantly reduces manager overhead</li>
-                        <li>Mentors others effectively</li>
-                    </ul>
-                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Hire, promote, clone. Give them leverage and autonomy. These are your <a href="https://www.construx.com/blog/the-origins-of-10x-how-valid-is-the-underlying-research/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">10x engineers</a>.</p>
+            <!-- Force Multipliers -->
+            <div class="feature-card" style="max-width: 1000px; margin: 0 auto var(--space-16); background: rgba(16, 185, 129, 0.05); border-left: 4px solid var(--success);">
+                <div class="archetype-grid" style="display: grid; grid-template-columns: 120px 1fr; gap: var(--space-8); align-items: start;">
+                    <!-- Placeholder Icon -->
+                    <div class="archetype-icon" style="width: 100px; height: 100px; background: var(--success); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"></circle>
+                        </svg>
+                    </div>
+                    <!-- Content -->
+                    <div>
+                        <h3 style="margin: 0 0 var(--space-2) 0; font-size: var(--text-3xl); color: var(--success);">Force Multipliers</h3>
+                        <p style="margin: 0 0 var(--space-4) 0; font-size: var(--text-sm); color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">High Technical Skill + High Agency</p>
+                        <p style="margin: 0 0 var(--space-6) 0; font-size: var(--text-lg); font-style: italic; color: var(--text-secondary); padding: var(--space-4); background: var(--bg-card); border-radius: var(--radius-md);">"Database was slow. Added indexes on foreign keys, reduced query time 80%, deployed to prod. Monitoring shows it's stable."</p>
+                        <div style="margin-bottom: var(--space-4);">
+                            <p style="margin: 0 0 var(--space-2) 0; font-weight: 600;">Characteristics:</p>
+                            <ul style="margin: 0; font-size: var(--text-base); line-height: 1.8;">
+                                <li>Spots problems and fixes them autonomously</li>
+                                <li>Operates at Level 4-5 agency consistently</li>
+                                <li>Significantly reduces manager overhead</li>
+                                <li>Mentors others effectively</li>
+                            </ul>
+                        </div>
+                        <p style="background: var(--success-50); padding: var(--space-4); border-radius: var(--radius-md); margin: 0; border: 1px solid var(--success-200);"><strong>Action:</strong> Hire, promote, clone. Give them leverage and autonomy. These are your <a href="https://www.construx.com/blog/the-origins-of-10x-how-valid-is-the-underlying-research/" target="_blank" rel="noopener" style="color: var(--success-700); text-decoration: underline;">10x engineers</a>.</p>
+                    </div>
                 </div>
+            </div>
 
-                <div class="feature-card" style="border-left: 4px solid #f59e0b; background: var(--bg-card);">
-                    <h3 style="color: #f59e0b;">Hungry Learners</h3>
-                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> Low Technical Skill + High Agency</p>
-                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"I'm new to React but researched this state management bug. Based on the docs, I think we should lift state to the parent. Can you review my approach?"</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
-                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
-                        <li>Owns their learning journey</li>
-                        <li>Researches before asking</li>
-                        <li>Brings recommendations, not just questions</li>
-                        <li>Growth trajectory is steep</li>
-                    </ul>
-                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Best junior hire. Invest in training. They'll outpace passive seniors in 12-18 months.</p>
+            <!-- Hungry Learners -->
+            <div class="feature-card" style="max-width: 1000px; margin: 0 auto var(--space-16); background: rgba(245, 158, 11, 0.05); border-left: 4px solid var(--warning);">
+                <div class="archetype-grid" style="display: grid; grid-template-columns: 120px 1fr; gap: var(--space-8); align-items: start;">
+                    <!-- Placeholder Icon -->
+                    <div class="archetype-icon" style="width: 100px; height: 100px; background: var(--warning); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
+                        </svg>
+                    </div>
+                    <!-- Content -->
+                    <div>
+                        <h3 style="margin: 0 0 var(--space-2) 0; font-size: var(--text-3xl); color: var(--warning);">Hungry Learners</h3>
+                        <p style="margin: 0 0 var(--space-4) 0; font-size: var(--text-sm); color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Low Technical Skill + High Agency</p>
+                        <p style="margin: 0 0 var(--space-6) 0; font-size: var(--text-lg); font-style: italic; color: var(--text-secondary); padding: var(--space-4); background: var(--bg-card); border-radius: var(--radius-md);">"I'm new to React but researched this state management bug. Based on the docs, I think we should lift state to the parent. Can you review my approach?"</p>
+                        <div style="margin-bottom: var(--space-4);">
+                            <p style="margin: 0 0 var(--space-2) 0; font-weight: 600;">Characteristics:</p>
+                            <ul style="margin: 0; font-size: var(--text-base); line-height: 1.8;">
+                                <li>Owns their learning journey</li>
+                                <li>Researches before asking</li>
+                                <li>Brings recommendations, not just questions</li>
+                                <li>Growth trajectory is steep</li>
+                            </ul>
+                        </div>
+                        <p style="background: var(--warning-50); padding: var(--space-4); border-radius: var(--radius-md); margin: 0; border: 1px solid var(--warning-200);"><strong>Action:</strong> Best junior hire. Invest in training. They'll outpace passive seniors in 12-18 months.</p>
+                    </div>
                 </div>
+            </div>
 
-                <div class="feature-card feature-card-danger">
-                    <h3>Brilliant Passengers</h3>
-                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> High Technical Skill + Low Agency</p>
-                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"The microservices architecture has a latency problem." <em>(Then waits for someone else to investigate)</em></p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
-                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
-                        <li>Technically competent but needs direction</li>
-                        <li>Identifies problems, doesn't own solutions</li>
-                        <li>Common in large companies with heavy process</li>
-                        <li>Can look great in interviews (technical skill is high)</li>
-                    </ul>
-                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Coach on ownership. Reject Level 1 behavior. If resistant after 6 months, may be cultural fit issue. Never promote to leadership.</p>
+            <!-- Brilliant Passengers -->
+            <div class="feature-card" style="max-width: 1000px; margin: 0 auto var(--space-16); background: rgba(239, 68, 68, 0.05); border-left: 4px solid var(--danger);">
+                <div class="archetype-grid" style="display: grid; grid-template-columns: 120px 1fr; gap: var(--space-8); align-items: start;">
+                    <!-- Placeholder Icon -->
+                    <div class="archetype-icon" style="width: 100px; height: 100px; background: var(--danger); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <!-- Content -->
+                    <div>
+                        <h3 style="margin: 0 0 var(--space-2) 0; font-size: var(--text-3xl); color: var(--danger);">Brilliant Passengers</h3>
+                        <p style="margin: 0 0 var(--space-4) 0; font-size: var(--text-sm); color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">High Technical Skill + Low Agency</p>
+                        <p style="margin: 0 0 var(--space-6) 0; font-size: var(--text-lg); font-style: italic; color: var(--text-secondary); padding: var(--space-4); background: var(--bg-card); border-radius: var(--radius-md);">"The microservices architecture has a latency problem." <em>(Then waits for someone else to investigate)</em></p>
+                        <div style="margin-bottom: var(--space-4);">
+                            <p style="margin: 0 0 var(--space-2) 0; font-weight: 600;">Characteristics:</p>
+                            <ul style="margin: 0; font-size: var(--text-base); line-height: 1.8;">
+                                <li>Technically competent but needs direction</li>
+                                <li>Identifies problems, doesn't own solutions</li>
+                                <li>Common in large companies with heavy process</li>
+                                <li>Can look great in interviews (technical skill is high)</li>
+                            </ul>
+                        </div>
+                        <p style="background: var(--danger-50); padding: var(--space-4); border-radius: var(--radius-md); margin: 0; border: 1px solid var(--danger-200);"><strong>Action:</strong> Coach on ownership. Reject Level 1 behavior. If resistant after 6 months, may be cultural fit issue. Never promote to leadership.</p>
+                    </div>
                 </div>
+            </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--border); background: var(--bg-card); opacity: 0.8;">
-                    <h3 style="color: var(--text-secondary);">Low Performers</h3>
-                    <p style="font-size: 0.875rem; color: var(--text-secondary); font-style: italic; margin-bottom: 1rem;">Note: We use direct language to illustrate the performance gap clearly. Everyone starts somewhere—what matters is trajectory and coachability.</p>
-                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> Low Technical Skill + Low Agency</p>
-                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"The deployment is broken." <em>(No follow-up, no investigation, waits to be told what to do)</em></p>
-                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
-                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
-                        <li>Reports problems without investigation</li>
-                        <li>Waits for explicit direction on everything</li>
-                        <li>Limited technical growth trajectory</li>
-                        <li>Drags down team morale</li>
-                    </ul>
-                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Intensive coaching for 3 months with clear performance goals. If no improvement in both skill development and ownership mindset, likely not a cultural fit.</p>
+            <!-- Low Performers -->
+            <div class="feature-card" style="max-width: 1000px; margin: 0 auto; background: rgba(100, 116, 139, 0.05); border-left: 4px solid var(--text-secondary); opacity: 0.85;">
+                <div class="archetype-grid" style="display: grid; grid-template-columns: 120px 1fr; gap: var(--space-8); align-items: start;">
+                    <!-- Placeholder Icon -->
+                    <div class="archetype-icon" style="width: 100px; height: 100px; background: var(--text-secondary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <!-- Content -->
+                    <div>
+                        <h3 style="margin: 0 0 var(--space-2) 0; font-size: var(--text-3xl); color: var(--text-secondary);">Low Performers</h3>
+                        <p style="margin: 0 0 var(--space-4) 0; font-size: var(--text-sm); color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">Low Technical Skill + Low Agency</p>
+                        <p style="font-size: var(--text-sm); color: var(--text-secondary); font-style: italic; margin-bottom: var(--space-4); background: var(--bg-card); padding: var(--space-3); border-radius: var(--radius-md);">Note: Direct language illustrates the performance gap. Everyone starts somewhere—trajectory and coachability matter most.</p>
+                        <p style="margin: 0 0 var(--space-6) 0; font-size: var(--text-lg); font-style: italic; color: var(--text-secondary); padding: var(--space-4); background: var(--bg-card); border-radius: var(--radius-md);">"The deployment is broken." <em>(No follow-up, no investigation, waits to be told what to do)</em></p>
+                        <div style="margin-bottom: var(--space-4);">
+                            <p style="margin: 0 0 var(--space-2) 0; font-weight: 600;">Characteristics:</p>
+                            <ul style="margin: 0; font-size: var(--text-base); line-height: 1.8;">
+                                <li>Reports problems without investigation</li>
+                                <li>Waits for explicit direction on everything</li>
+                                <li>Limited technical growth trajectory</li>
+                                <li>Drags down team morale</li>
+                            </ul>
+                        </div>
+                        <p style="background: var(--bg-secondary); padding: var(--space-4); border-radius: var(--radius-md); margin: 0; border: 1px solid var(--border);"><strong>Action:</strong> Intensive coaching for 3 months with clear performance goals. If no improvement in both skill development and ownership mindset, likely not a cultural fit.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -244,47 +347,78 @@
                 <p style="background: var(--bg-secondary); padding: 1rem; border-radius: 4px; margin-top: 1rem;"><strong>Result:</strong> Brilliant Passengers get promoted because they "know their stuff" technically. Teams end up full of people who need constant direction despite being "senior."</p>
             </div>
 
-            <div class="feature-card" style="margin-bottom: 3rem;">
-                <h3>Same Problem, Four Responses</h3>
-                <p style="margin-bottom: 1.5rem; background: var(--bg-secondary); padding: 1rem; border-radius: 4px; font-style: italic;">Scenario: Customer reports "Dashboard takes forever to load my data."</p>
+            <div style="margin-bottom: var(--space-16); max-width: 1200px; margin-left: auto; margin-right: auto;">
+                <h3 style="text-align: center; font-size: var(--text-3xl); margin-bottom: var(--space-4);">Same Problem, Four Responses</h3>
+                <p style="text-align: center; margin-bottom: var(--space-12); background: var(--primary-600); color: white; padding: var(--space-6); border-radius: var(--radius-lg); font-size: var(--text-lg); font-style: italic; border: 1px solid var(--primary-700);">Scenario: Customer reports "Dashboard takes forever to load my data."</p>
 
-                <table class="table" style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Archetype</th>
-                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Response</th>
-                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Manager Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-left: 4px solid var(--success); background: var(--bg-light);">
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Force Multiplier</strong></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">"Query fetched 50k records at once. Implemented pagination (100/page), loads in 200ms now. Customer confirmed fixed. Added monitoring for 10k+ accounts."</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--success); font-weight: 600;">0 min</td>
-                        </tr>
-                        <tr style="border-left: 4px solid #f59e0b;">
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Hungry Learner</strong></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">"Their account has 50k records. I researched pagination strategies. Should I implement approach X or Y?"</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: #f59e0b; font-weight: 600;">15 min</td>
-                        </tr>
-                        <tr style="border-left: 4px solid var(--danger);">
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Brilliant Passenger</strong></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">"Large accounts are slow. We could add pagination, caching, or optimize queries."</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--danger); font-weight: 600;">1 hour</td>
-                        </tr>
-                        <tr style="border-left: 4px solid var(--border); opacity: 0.7;">
-                            <td style="padding: 1rem;"><strong>Low Performer</strong></td>
-                            <td style="padding: 1rem;">"Customer says the app is slow."</td>
-                            <td style="padding: 1rem; color: var(--danger); font-weight: 600;">2+ hours</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- 4-Column Card Grid -->
+                <div class="scenario-cards-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); margin-bottom: var(--space-8);">
+                    <!-- Force Multiplier -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--success); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-md);">
+                        <!-- Manager Time Badge -->
+                        <div style="background: var(--success); color: white; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); text-align: center; margin-bottom: var(--space-4); font-weight: 700; font-size: var(--text-lg);">
+                            0 min
+                        </div>
+                        <h4 style="margin: 0 0 var(--space-4) 0; color: var(--success); font-size: var(--text-lg);">Force Multiplier</h4>
+                        <!-- Chat Bubble Response -->
+                        <div style="background: var(--success-50); border-left: 4px solid var(--success); padding: var(--space-4); border-radius: var(--radius-md); position: relative; font-size: var(--text-sm); line-height: 1.6;">
+                            "Query fetched 50k records at once. Implemented pagination (100/page), loads in 200ms now. Customer confirmed fixed. Added monitoring for 10k+ accounts."
+                            <!-- Chat tail -->
+                            <div style="position: absolute; top: -8px; left: 16px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid var(--success-50);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Hungry Learner -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--warning); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-md);">
+                        <!-- Manager Time Badge -->
+                        <div style="background: var(--warning); color: white; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); text-align: center; margin-bottom: var(--space-4); font-weight: 700; font-size: var(--text-lg);">
+                            15 min
+                        </div>
+                        <h4 style="margin: 0 0 var(--space-4) 0; color: var(--warning); font-size: var(--text-lg);">Hungry Learner</h4>
+                        <!-- Chat Bubble Response -->
+                        <div style="background: var(--warning-50); border-left: 4px solid var(--warning); padding: var(--space-4); border-radius: var(--radius-md); position: relative; font-size: var(--text-sm); line-height: 1.6;">
+                            "Their account has 50k records. I researched pagination strategies. Should I implement approach X or Y?"
+                            <!-- Chat tail -->
+                            <div style="position: absolute; top: -8px; left: 16px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid var(--warning-50);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Brilliant Passenger -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--danger); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-md);">
+                        <!-- Manager Time Badge -->
+                        <div style="background: var(--danger); color: white; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); text-align: center; margin-bottom: var(--space-4); font-weight: 700; font-size: var(--text-lg);">
+                            1 hour
+                        </div>
+                        <h4 style="margin: 0 0 var(--space-4) 0; color: var(--danger); font-size: var(--text-lg);">Brilliant Passenger</h4>
+                        <!-- Chat Bubble Response -->
+                        <div style="background: var(--danger-50); border-left: 4px solid var(--danger); padding: var(--space-4); border-radius: var(--radius-md); position: relative; font-size: var(--text-sm); line-height: 1.6;">
+                            "Large accounts are slow. We could add pagination, caching, or optimize queries."
+                            <!-- Chat tail -->
+                            <div style="position: absolute; top: -8px; left: 16px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid var(--danger-50);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Low Performer -->
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-md); opacity: 0.85;">
+                        <!-- Manager Time Badge -->
+                        <div style="background: var(--text-secondary); color: white; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); text-align: center; margin-bottom: var(--space-4); font-weight: 700; font-size: var(--text-lg);">
+                            2+ hours
+                        </div>
+                        <h4 style="margin: 0 0 var(--space-4) 0; color: var(--text-secondary); font-size: var(--text-lg);">Low Performer</h4>
+                        <!-- Chat Bubble Response -->
+                        <div style="background: var(--bg-secondary); border-left: 4px solid var(--text-secondary); padding: var(--space-4); border-radius: var(--radius-md); position: relative; font-size: var(--text-sm); line-height: 1.6; color: var(--text-secondary);">
+                            "Customer says the app is slow."
+                            <!-- Chat tail -->
+                            <div style="position: absolute; top: -8px; left: 16px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid var(--bg-secondary);"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Key Insight Box -->
-            <div class="feature-card" style="max-width: 900px; margin: 3rem auto 0; background: var(--gradient-purple); color: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow-md); text-align: center;">
-                <h3 style="color: white; margin: 0 0 1rem 0; font-size: 1.25rem;">The Manager Time Difference</h3>
-                <p style="margin: 0; font-size: 1rem; line-height: 1.6; opacity: 0.95;">Force Multipliers require minimal manager time—they identify problems, research solutions, and fix issues autonomously. Brilliant Passengers need constant direction despite high technical skill. Low performers require extensive management with minimal output. Optimizing for high agency dramatically reduces management overhead.</p>
+            <div class="feature-card" style="max-width: 900px; margin: var(--space-12) auto 0; background: var(--primary-600); color: white; padding: var(--space-12); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); text-align: center; border: 1px solid var(--primary-700);">
+                <h3 style="color: white; margin: 0 0 1rem 0; font-size: var(--text-2xl); font-weight: 700;">The Manager Time Difference</h3>
+                <p style="margin: 0; font-size: var(--text-lg); line-height: 1.6; opacity: 0.95;">Force Multipliers require minimal manager time—they identify problems, research solutions, and fix issues autonomously. Brilliant Passengers need constant direction despite high technical skill. Low performers require extensive management with minimal output. Optimizing for high agency dramatically reduces management overhead.</p>
             </div>
         </div>
     </section>
@@ -377,50 +511,106 @@
             <h2 class="section-title">Can You Move People Between Quadrants?</h2>
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">What's coachable vs what's cultural fit</p>
 
-            <div class="feature-card" style="margin-bottom: 3rem;">
-                <h3>Development Timeframes & Coachability</h3>
-                <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 1.5rem;">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Transition</th>
-                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Timeframe</th>
-                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Coachability</th>
-                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Strategy</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Low Skill → High Skill</strong></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">6-24 months</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--success); font-weight: 600;">High</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Training, mentorship, deliberate practice, feedback loops</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Hungry Learner → Force Multiplier</strong></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">12-24 months</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--success); font-weight: 600;">Very High</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Already has ownership mindset. Just needs technical development.</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Brilliant Passenger → Force Multiplier</strong></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">6-18 months</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--warning); font-weight: 600;">Medium</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Ownership coaching, reject Level 1 behavior, clear expectations, accountability</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Low Agency → High Agency</strong></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">2+ years</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--warning); font-weight: 600;">Medium-Low</td>
-                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Cultural modeling, psychological safety, gradual trust building</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 1rem;"><strong>Low Performers → Anything</strong></td>
-                            <td style="padding: 1rem;">3-6 months to know</td>
-                            <td style="padding: 1rem; color: var(--danger); font-weight: 600;">Very Low</td>
-                            <td style="padding: 1rem;">Performance improvement plan with clear metrics. If no improvement in both dimensions after 3 months, likely not a fit.</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="feature-card" style="margin-bottom: var(--space-16);">
+                <h3 style="margin-bottom: var(--space-12); font-size: var(--text-3xl);">Development Timeframes & Coachability</h3>
+
+                <!-- Visual Timeline -->
+                <div style="display: flex; flex-direction: column; gap: var(--space-10);">
+
+                    <!-- Transition 1: Low Skill → High Skill -->
+                    <div>
+                        <div class="timeline-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <h4 style="margin: 0; font-size: var(--text-lg); font-weight: 600;">Low Skill → High Skill</h4>
+                            <div class="timeline-badges" style="display: flex; gap: var(--space-4); align-items: center;">
+                                <span style="font-weight: 700; color: var(--text-primary); min-width: 130px; text-align: right;">6-24 months</span>
+                                <span style="background: var(--success-100); color: var(--success-700); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; font-size: var(--text-sm); border: 1px solid var(--success-300); min-width: 180px; text-align: center;">High Coachability</span>
+                            </div>
+                        </div>
+                        <!-- Timeline Bar -->
+                        <div class="timeline-bar" style="position: relative; height: 32px; background: var(--bg-secondary); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border);">
+                            <div class="timeline-bar-fill" style="position: absolute; left: 0; top: 0; bottom: 0; width: 75%; background: var(--success-100); border-right: 2px solid var(--success-300); display: flex; align-items: center; justify-content: center; color: var(--success-800); font-weight: 600; font-size: var(--text-sm);">
+                                Training, mentorship, deliberate practice
+                            </div>
+                            <div class="timeline-bar-label" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: var(--text-xs); font-weight: 600;">24mo</div>
+                        </div>
+                    </div>
+
+                    <!-- Transition 2: Hungry Learner → Force Multiplier -->
+                    <div>
+                        <div class="timeline-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <h4 style="margin: 0; font-size: var(--text-lg); font-weight: 600;">Hungry Learner → Force Multiplier</h4>
+                            <div class="timeline-badges" style="display: flex; gap: var(--space-4); align-items: center;">
+                                <span style="font-weight: 700; color: var(--text-primary); min-width: 130px; text-align: right;">12-24 months</span>
+                                <span style="background: var(--success-100); color: var(--success-700); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; font-size: var(--text-sm); border: 1px solid var(--success-300); min-width: 180px; text-align: center;">Very High Coachability</span>
+                            </div>
+                        </div>
+                        <!-- Timeline Bar -->
+                        <div class="timeline-bar" style="position: relative; height: 32px; background: var(--bg-secondary); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border);">
+                            <div class="timeline-bar-fill" style="position: absolute; left: 0; top: 0; bottom: 0; width: 75%; background: var(--success-100); border-right: 2px solid var(--success-300); display: flex; align-items: center; justify-content: center; color: var(--success-800); font-weight: 600; font-size: var(--text-sm);">
+                                Natural progression - already has ownership mindset
+                            </div>
+                            <div class="timeline-bar-label" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: var(--text-xs); font-weight: 600;">24mo</div>
+                        </div>
+                    </div>
+
+                    <!-- Transition 3: Brilliant Passenger → Force Multiplier -->
+                    <div>
+                        <div class="timeline-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <h4 style="margin: 0; font-size: var(--text-lg); font-weight: 600;">Brilliant Passenger → Force Multiplier</h4>
+                            <div class="timeline-badges" style="display: flex; gap: var(--space-4); align-items: center;">
+                                <span style="font-weight: 700; color: var(--text-primary); min-width: 130px; text-align: right;">6-18 months</span>
+                                <span style="background: var(--warning-100); color: var(--warning-700); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; font-size: var(--text-sm); border: 1px solid var(--warning-300); min-width: 180px; text-align: center;">Medium Coachability</span>
+                            </div>
+                        </div>
+                        <!-- Timeline Bar -->
+                        <div class="timeline-bar" style="position: relative; height: 32px; background: var(--bg-secondary); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border);">
+                            <div class="timeline-bar-fill" style="position: absolute; left: 0; top: 0; bottom: 0; width: 56%; background: var(--warning-100); border-right: 2px solid var(--warning-300); display: flex; align-items: center; justify-content: center; color: var(--warning-800); font-weight: 600; font-size: var(--text-sm);">
+                                Ownership coaching, reject Level 1 behavior
+                            </div>
+                            <div class="timeline-bar-label" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: var(--text-xs); font-weight: 600;">18mo</div>
+                        </div>
+                    </div>
+
+                    <!-- Transition 4: Low Agency → High Agency -->
+                    <div>
+                        <div class="timeline-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <h4 style="margin: 0; font-size: var(--text-lg); font-weight: 600;">Low Agency → High Agency</h4>
+                            <div class="timeline-badges" style="display: flex; gap: var(--space-4); align-items: center;">
+                                <span style="font-weight: 700; color: var(--text-primary); min-width: 130px; text-align: right;">2+ years</span>
+                                <span style="background: var(--warning-100); color: var(--warning-800); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; font-size: var(--text-sm); border: 1px solid var(--warning-400); min-width: 180px; text-align: center;">Medium-Low Coachability</span>
+                            </div>
+                        </div>
+                        <!-- Timeline Bar -->
+                        <div class="timeline-bar" style="position: relative; height: 32px; background: var(--bg-secondary); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border);">
+                            <div class="timeline-bar-fill" style="position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: var(--warning-100); border-right: 2px solid var(--warning-400); display: flex; align-items: center; justify-content: center; color: var(--warning-900); font-weight: 600; font-size: var(--text-sm);">
+                                Cultural modeling, psychological safety, gradual trust
+                            </div>
+                            <div class="timeline-bar-label" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: var(--text-xs); font-weight: 700;">2yr+</div>
+                        </div>
+                    </div>
+
+                    <!-- Transition 5: Low Performers → Anything -->
+                    <div>
+                        <div class="timeline-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                            <h4 style="margin: 0; font-size: var(--text-lg); font-weight: 600;">Low Performers → Anything</h4>
+                            <div class="timeline-badges" style="display: flex; gap: var(--space-4); align-items: center;">
+                                <span style="font-weight: 700; color: var(--text-primary); min-width: 130px; text-align: right;">3-6 months to know</span>
+                                <span style="background: var(--danger-100); color: var(--danger-700); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-weight: 600; font-size: var(--text-sm); border: 1px solid var(--danger-300); min-width: 180px; text-align: center;">Very Low Coachability</span>
+                            </div>
+                        </div>
+                        <!-- Timeline Bar -->
+                        <div class="timeline-bar" style="position: relative; height: 32px; background: var(--bg-secondary); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border);">
+                            <div class="timeline-bar-fill" style="position: absolute; left: 0; top: 0; bottom: 0; width: 19%; background: var(--danger-100); border-right: 2px solid var(--danger-300); display: flex; align-items: center; justify-content: center; color: var(--danger-800); font-weight: 600; font-size: var(--text-sm); padding: 0 var(--space-2);">
+                                PIP
+                            </div>
+                            <div class="timeline-bar-fill" style="position: absolute; left: 20%; right: 0; top: 0; bottom: 0; display: flex; align-items: center; padding-left: var(--space-3); color: var(--text-secondary); font-size: var(--text-sm); font-style: italic;">
+                                If no progress → likely not a fit
+                            </div>
+                            <div class="timeline-bar-label" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: var(--text-xs); font-weight: 600;">6mo</div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
             <div class="feature-card feature-card-success" style="margin-bottom: 3rem;">
@@ -498,9 +688,9 @@
                 </div>
             </div>
 
-            <div style="max-width: 800px; margin: 0 auto; background: var(--gradient-purple); color: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow-md); text-align: center;">
-                <h3 style="color: white; margin: 0 0 1rem 0; font-size: 1.25rem;">The Compounding Effect</h3>
-                <p style="margin: 0; font-size: 1rem; line-height: 1.6; opacity: 0.95;">A team of Force Multipliers doesn't add linearly—it multiplies. Three Force Multipliers don't produce 3x output. They produce 10x output because they unblock each other, raise the bar, and create a self-reinforcing culture of ownership.</p>
+            <div style="max-width: 800px; margin: 0 auto; background: var(--primary-600); color: white; padding: var(--space-12); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); text-align: center; border: 1px solid var(--primary-700);">
+                <h3 style="color: white; margin: 0 0 1rem 0; font-size: var(--text-2xl); font-weight: 700;">The Compounding Effect</h3>
+                <p style="margin: 0; font-size: var(--text-lg); line-height: 1.6; opacity: 0.95;">A team of Force Multipliers doesn't add linearly—it multiplies. Three Force Multipliers don't produce 3x output. They produce 10x output because they unblock each other, raise the bar, and create a self-reinforcing culture of ownership.</p>
             </div>
         </div>
     </section>
@@ -542,37 +732,39 @@
 
                 <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
                     <h4 style="margin-bottom: 1rem;">Four Archetypes At-A-Glance</h4>
-                    <table class="table" style="width: 100%; font-size: 0.875rem;">
-                        <thead>
-                            <tr>
-                                <th style="text-align: left; padding: 0.75rem; background: var(--bg-secondary);">Archetype</th>
-                                <th style="text-align: left; padding: 0.75rem; background: var(--bg-secondary);">Profile</th>
-                                <th style="text-align: left; padding: 0.75rem; background: var(--bg-secondary);">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-left: 4px solid var(--success);">
-                                <td style="padding: 0.75rem;"><strong>Force Multiplier</strong></td>
-                                <td style="padding: 0.75rem;">High Skill + High Agency</td>
-                                <td style="padding: 0.75rem;">Hire, promote, give leverage</td>
-                            </tr>
-                            <tr style="border-left: 4px solid #f59e0b;">
-                                <td style="padding: 0.75rem;"><strong>Hungry Learner</strong></td>
-                                <td style="padding: 0.75rem;">Low Skill + High Agency</td>
-                                <td style="padding: 0.75rem;">Best junior hire, invest in training</td>
-                            </tr>
-                            <tr style="border-left: 4px solid var(--danger);">
-                                <td style="padding: 0.75rem;"><strong>Brilliant Passenger</strong></td>
-                                <td style="padding: 0.75rem;">High Skill + Low Agency</td>
-                                <td style="padding: 0.75rem;">Coach on ownership, never promote to leadership</td>
-                            </tr>
-                            <tr style="border-left: 4px solid var(--border); opacity: 0.7;">
-                                <td style="padding: 0.75rem;"><strong>Low Performer</strong></td>
-                                <td style="padding: 0.75rem;">Low Skill + Low Agency</td>
-                                <td style="padding: 0.75rem;">3-month PIP or exit</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-container">
+                        <table class="table" style="font-size: 0.875rem;">
+                            <thead>
+                                <tr>
+                                    <th>Archetype</th>
+                                    <th>Profile</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-left: 4px solid var(--success);">
+                                    <td data-label="Archetype"><strong>Force Multiplier</strong></td>
+                                    <td data-label="Profile">High Skill + High Agency</td>
+                                    <td data-label="Action">Hire, promote, give leverage</td>
+                                </tr>
+                                <tr style="border-left: 4px solid var(--warning);">
+                                    <td data-label="Archetype"><strong>Hungry Learner</strong></td>
+                                    <td data-label="Profile">Low Skill + High Agency</td>
+                                    <td data-label="Action">Best junior hire, invest in training</td>
+                                </tr>
+                                <tr style="border-left: 4px solid var(--warning);">
+                                    <td data-label="Archetype"><strong>Brilliant Passenger</strong></td>
+                                    <td data-label="Profile">High Skill + Low Agency</td>
+                                    <td data-label="Action">Coach on ownership, never promote to leadership</td>
+                                </tr>
+                                <tr style="border-left: 4px solid var(--border); opacity: 0.7;">
+                                    <td data-label="Archetype"><strong>Low Performer</strong></td>
+                                    <td data-label="Profile">Low Skill + Low Agency</td>
+                                    <td data-label="Action">3-month PIP or exit</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-top: 2rem; text-align: center;">

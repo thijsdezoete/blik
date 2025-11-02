@@ -19,15 +19,18 @@ Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
 
 ### Production Deployment
 
-**Recommended: Dokploy (One-Click Deploy)**
+**One-Click Deploy Options:**
 
-1. Install [Dokploy](https://dokploy.com/) on your server
-2. Create a new Docker Compose application
-3. Connect this repository
-4. Set environment variables from `.env.production` template
-5. Deploy and visit `https://yourdomain.com/setup/`
+[![Deploy to DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/thijsdezoete/blik/tree/master&refcode=your-referral-code)
 
-**See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete deployment instructions** including Nginx/Caddy setup, email configuration, SSL/HTTPS, and database backups.
+- **DigitalOcean App Platform** - Fully managed PaaS (~$20/month) - [Guide](docs/DIGITALOCEAN.md)
+- **Dokploy** - Self-hosted deployment platform - [Guide](docs/DEPLOYMENT.md)
+
+**Manual Deployment:**
+
+See complete guides for:
+- [DigitalOcean Deployment](docs/DIGITALOCEAN.md) - App Platform or Droplet setup
+- [General Deployment Guide](docs/DEPLOYMENT.md) - Nginx/Caddy, email, SSL/HTTPS, backups
 
 ## Features
 

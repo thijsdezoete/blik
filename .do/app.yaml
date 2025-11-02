@@ -1,0 +1,195 @@
+# DigitalOcean App Platform Configuration
+# This file defines the infrastructure and deployment settings for Blik on DigitalOcean App Platform
+#
+# Deploy this app with:
+# 1. Click the "Deploy to DigitalOcean" button in README.md
+# 2. OR manually: doctl apps create --spec .do/app.yaml
+# 3. OR through the DigitalOcean dashboard (Apps > Create App > Import from GitHub)
+
+name: blik
+region: ams  # Change to your preferred region: nyc, sfo, ams, sgp, blr, fra, lon, tor
+
+# Main web service
+services:
+  - name: web
+    # GitHub repository configuration
+    github:
+      repo: thijsdezoete/blik  # Update with your GitHub username/repo
+      branch: master
+      deploy_on_push: true  # Auto-deploy on push to master
+
+    # Build configuration
+    dockerfile_path: Dockerfile
+
+    # Runtime configuration
+    http_port: 8000
+    instance_count: 1
+    instance_size_slug: basic-xxs  # $5/month - Upgrade to basic-xs ($12/month) for production
+
+    # Routing
+    routes:
+      - path: /
+
+    # Health check configuration
+    health_check:
+      http_path: /
+      initial_delay_seconds: 30  # Time to wait after deployment before first health check
+      period_seconds: 10         # How often to check
+      timeout_seconds: 3         # How long to wait for response
+      success_threshold: 1       # Successful checks needed to mark as healthy
+      failure_threshold: 3       # Failed checks before marking as unhealthy
+
+    # Environment variables
+    envs:
+      # Django Configuration
+      - key: DEBUG
+        value: "False"
+        scope: RUN_TIME
+
+      - key: ALLOWED_HOSTS
+        value: "${APP_DOMAIN}"
+        scope: RUN_TIME
+
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://${APP_DOMAIN}"
+        scope: RUN_TIME
+
+      # Database (automatically injected by DigitalOcean when database is attached)
+      - key: DATABASE_URL
+        value: "${db.DATABASE_URL}"
+        scope: RUN_TIME
+
+      - key: DATABASE_TYPE
+        value: "postgres"
+        scope: RUN_TIME
+
+      # Security Keys (REQUIRED - Set these as secrets in DO dashboard)
+      - key: SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+        # Generate with: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+
+      - key: ENCRYPTION_KEY
+        scope: RUN_TIME
+        type: SECRET
+        # Generate with: python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
+
+      # Session & Security
+      - key: SESSION_COOKIE_SECURE
+        value: "True"
+        scope: RUN_TIME
+
+      - key: CSRF_COOKIE_SECURE
+        value: "True"
+        scope: RUN_TIME
+
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+        scope: RUN_TIME
+
+      - key: SECURE_HSTS_SECONDS
+        value: "31536000"
+        scope: RUN_TIME
+
+      - key: SECURE_HSTS_INCLUDE_SUBDOMAINS
+        value: "True"
+        scope: RUN_TIME
+
+      # Organization Configuration (Optional - can be set through /setup/ wizard)
+      - key: ORGANIZATION_NAME
+        value: "My Organization"
+        scope: RUN_TIME
+
+      # Email Configuration (REQUIRED for email functionality)
+      - key: EMAIL_BACKEND
+        value: "django.core.mail.backends.smtp.EmailBackend"
+        scope: RUN_TIME
+
+      - key: EMAIL_HOST
+        scope: RUN_TIME
+        type: SECRET
+        # Example: smtp.gmail.com, smtp.sendgrid.net, email-smtp.us-east-1.amazonaws.com
+
+      - key: EMAIL_PORT
+        value: "587"
+        scope: RUN_TIME
+
+      - key: EMAIL_USE_TLS
+        value: "True"
+        scope: RUN_TIME
+
+      - key: EMAIL_HOST_USER
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: EMAIL_HOST_PASSWORD
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: DEFAULT_FROM_EMAIL
+        value: "noreply@yourdomain.com"
+        scope: RUN_TIME
+
+      # Stripe Configuration (Optional - only if using subscriptions)
+      # - key: STRIPE_PUBLISHABLE_KEY
+      #   scope: RUN_TIME
+      #   type: SECRET
+      #
+      # - key: STRIPE_SECRET_KEY
+      #   scope: RUN_TIME
+      #   type: SECRET
+      #
+      # - key: STRIPE_WEBHOOK_SECRET
+      #   scope: RUN_TIME
+      #   type: SECRET
+      #
+      # - key: STRIPE_PRICE_ID_SAAS
+      #   value: "price_xxx"
+      #   scope: RUN_TIME
+      #
+      # - key: STRIPE_PRICE_ID_ENTERPRISE
+      #   value: "price_xxx"
+      #   scope: RUN_TIME
+
+# Database configuration
+databases:
+  - name: db
+    engine: PG
+    version: "15"
+    production: false  # Set to true for production (enables high availability, increases cost)
+    cluster_name: blik-db
+    db_name: blik
+    db_user: blik
+
+# Optional: Jobs for scheduled tasks
+# jobs:
+#   - name: cleanup
+#     kind: PRE_DEPLOY  # or POST_DEPLOY, CRON
+#     dockerfile_path: Dockerfile
+#     run_command: python manage.py cleanup_old_data
+#     envs:
+#       - key: DATABASE_URL
+#         value: "${db.DATABASE_URL}"
+#         scope: RUN_TIME
+
+# Optional: Workers for background tasks
+# workers:
+#   - name: celery-worker
+#     dockerfile_path: Dockerfile
+#     run_command: celery -A blik worker -l info
+#     instance_count: 1
+#     instance_size_slug: basic-xxs
+#     envs:
+#       - key: DATABASE_URL
+#         value: "${db.DATABASE_URL}"
+#         scope: RUN_TIME
+
+# Cost Estimation (as of 2025):
+# - Web Service (basic-xxs): $5/month
+# - PostgreSQL (basic, 1GB): $15/month
+# - Total: ~$20/month
+#
+# For production, consider:
+# - Web Service (basic-xs): $12/month (1GB RAM)
+# - PostgreSQL (production: true): Enables HA, increases cost
+# - Multiple instances for redundancy

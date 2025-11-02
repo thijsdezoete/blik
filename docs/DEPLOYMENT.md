@@ -313,13 +313,26 @@ Visit `https://yourdomain.com/setup/` to complete the setup wizard.
 4. Add PostgreSQL service from Railway marketplace
 5. Deploy automatically on push
 
-### DigitalOcean App Platform
+### DigitalOcean
 
-1. Connect repository
-2. Choose "Docker Hub" or "Dockerfile"
-3. Add PostgreSQL database component
-4. Set environment variables
-5. Deploy
+DigitalOcean offers two deployment options:
+
+**App Platform (Recommended)** - Fully managed PaaS with auto-scaling and zero-downtime deployments:
+- One-click deploy via "Deploy to DigitalOcean" button in README
+- Automatic SSL certificates and GitHub integration
+- Cost: ~$20/month (web + database)
+
+**Droplet** - VPS with full control and lower cost:
+- Docker Compose setup with automated deployment script
+- Manual SSL setup with Let's Encrypt
+- Cost: ~$7-15/month depending on configuration
+
+See the comprehensive **[DigitalOcean Deployment Guide](DIGITALOCEAN.md)** for detailed instructions on both options, including:
+- One-click App Platform deployment
+- Droplet setup with automation scripts
+- SSL configuration
+- Database backups
+- Troubleshooting guide
 
 ### AWS/GCP/Azure
 

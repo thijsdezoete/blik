@@ -1,0 +1,173 @@
+# DigitalOcean Droplet Production Configuration
+# This docker-compose file is optimized for production deployment on a DigitalOcean Droplet
+#
+# Usage:
+#   docker compose -f .do/droplet/docker-compose.production.yml up -d
+#
+# Prerequisites:
+#   1. Copy .env.digitalocean.template to .env.production and fill in values
+#   2. Set up DNS records pointing to your droplet IP
+#   3. Configure SSL certificates (Let's Encrypt recommended)
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: blik-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-blik}
+      POSTGRES_USER: ${DATABASE_USER:-blik}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required}
+    networks:
+      - blik-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-blik}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Main Blik Application
+  web:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: blik-web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_files:/app/staticfiles
+      - media_files:/app/mediafiles
+    environment:
+      # Django Configuration
+      DEBUG: "False"
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:?ALLOWED_HOSTS is required}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?CSRF_TRUSTED_ORIGINS is required}
+
+      # Database
+      DATABASE_TYPE: postgres
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME:-blik}
+      DATABASE_USER: ${DATABASE_USER:-blik}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD is required}
+
+      # Security
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
+      SESSION_COOKIE_SECURE: "True"
+      CSRF_COOKIE_SECURE: "True"
+      SECURE_SSL_REDIRECT: "True"
+      SECURE_HSTS_SECONDS: "31536000"
+      SECURE_HSTS_INCLUDE_SUBDOMAINS: "True"
+
+      # Organization
+      ORGANIZATION_NAME: ${ORGANIZATION_NAME:-My Organization}
+
+      # Email Configuration
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL}
+
+      # Optional: Stripe
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      STRIPE_PRICE_ID_SAAS: ${STRIPE_PRICE_ID_SAAS:-}
+      STRIPE_PRICE_ID_ENTERPRISE: ${STRIPE_PRICE_ID_ENTERPRISE:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - blik-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/').read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy with SSL
+  nginx:
+    image: nginx:alpine
+    container_name: blik-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_files:/var/www/static:ro
+      - media_files:/var/www/media:ro
+      - certbot_conf:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    depends_on:
+      - web
+    networks:
+      - blik-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Certbot for Let's Encrypt SSL certificates
+  certbot:
+    image: certbot/certbot:latest
+    container_name: blik-certbot
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - blik-network
+
+networks:
+  blik-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  static_files:
+    driver: local
+  media_files:
+    driver: local
+  certbot_conf:
+    driver: local
+  certbot_www:
+    driver: local
+
+# Backup Configuration (Optional)
+# To enable automated backups, uncomment the following service:
+#
+# services:
+#   backup:
+#     image: postgres:15-alpine
+#     container_name: blik-backup
+#     restart: unless-stopped
+#     volumes:
+#       - ./backups:/backups
+#       - postgres_data:/var/lib/postgresql/data:ro
+#     environment:
+#       POSTGRES_DB: ${DATABASE_NAME:-blik}
+#       POSTGRES_USER: ${DATABASE_USER:-blik}
+#       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+#     networks:
+#       - blik-network
+#     entrypoint: |
+#       bash -c 'while true; do
+#         BACKUP_FILE="/backups/blik_$$(date +%Y%m%d_%H%M%S).sql.gz"
+#         pg_dump -h db -U ${DATABASE_USER:-blik} ${DATABASE_NAME:-blik} | gzip > $$BACKUP_FILE
+#         find /backups -name "blik_*.sql.gz" -mtime +7 -delete
+#         sleep 86400
+#       done'

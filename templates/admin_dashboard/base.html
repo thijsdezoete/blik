@@ -55,6 +55,9 @@
                 <li><a href="{% url 'reviewee_list' %}" {% if 'reviewee' in request.resolver_match.url_name %}class="active"{% endif %}>Reviewees</a></li>
                 <li><a href="{% url 'questionnaire_list' %}" {% if 'questionnaire' in request.resolver_match.url_name %}class="active"{% endif %}>Questionnaires</a></li>
                 <li><a href="{% url 'review_cycle_list' %}" {% if 'cycle' in request.resolver_match.url_name %}class="active"{% endif %}>Cycles</a></li>
+                {% if STRIPE_PRICE_ID_SAAS or STRIPE_PRICE_ID_ENTERPRISE %}
+                <li><a href="{% url 'product_review_list' %}" {% if 'product_review' in request.resolver_match.url_name %}class="active"{% endif %}>Reviews</a></li>
+                {% endif %}
                 <li><a href="{% url 'settings' %}" {% if request.resolver_match.url_name == 'settings' %}class="active"{% endif %}>Settings</a></li>
                 {% if user.is_superuser %}
                 <li><a href="{% url 'superuser_create_organization' %}" {% if request.resolver_match.url_name == 'superuser_create_organization' %}class="active"{% endif %}>Create Org</a></li>

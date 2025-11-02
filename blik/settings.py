@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'notifications',
     'landing',
     'subscriptions',
+    'productreviews',
 ]
 
 MIDDLEWARE = [
@@ -105,6 +106,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'landing.context_processors.url_namespace',
+                'blik.context_processors.stripe_settings',
             ],
         },
     },

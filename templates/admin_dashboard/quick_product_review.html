@@ -1,0 +1,116 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Submit Your Review{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Share Your Experience</h1>
+        <p>Help us improve by sharing your feedback</p>
+    </div>
+</div>
+
+{% if existing_review %}
+<div class="card" style="border-left: 3px solid #3b82f6; margin-bottom: 1.5rem;">
+    <div class="card-body">
+        <div style="display: flex; align-items: start; gap: 1rem;">
+            <div style="font-size: 2rem; color: #3b82f6;">ℹ️</div>
+            <div>
+                <h3 style="margin: 0; font-size: 1rem; color: #3b82f6;">You've already submitted a review</h3>
+                <p style="margin: 0.5rem 0 0 0; color: #64748b;">
+                    You submitted a {{ existing_review.rating }}-star review on {{ existing_review.created_at|date:"M d, Y" }}.
+                    {% if existing_review.status == 'approved' %}
+                    Your review has been approved and is live!
+                    {% elif existing_review.status == 'pending' %}
+                    Your review is pending approval.
+                    {% else %}
+                    Your review was not approved.
+                    {% endif %}
+                    You can update your review below.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+                <p style="margin: 0; color: #64748b;">
+                    <strong>Reviewing as:</strong> {{ user_name }} ({{ user_email }})
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="rating">How would you rate Blik? *</label>
+                <select id="rating" name="rating" class="form-control" required style="font-size: 1.1em;">
+                    <option value="">Select your rating...</option>
+                    <option value="5" {% if existing_review.rating == 5 %}selected{% endif %}>★★★★★ Excellent - Exceeded expectations</option>
+                    <option value="4" {% if existing_review.rating == 4 %}selected{% endif %}>★★★★☆ Good - Met expectations</option>
+                    <option value="3" {% if existing_review.rating == 3 %}selected{% endif %}>★★★☆☆ Average - Room for improvement</option>
+                    <option value="2" {% if existing_review.rating == 2 %}selected{% endif %}>★★☆☆☆ Below Average - Needs work</option>
+                    <option value="1" {% if existing_review.rating == 1 %}selected{% endif %}>★☆☆☆☆ Poor - Major issues</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="review_title">Review Headline *</label>
+                <input
+                    type="text"
+                    id="review_title"
+                    name="review_title"
+                    class="form-control"
+                    value="{{ existing_review.review_title|default:'' }}"
+                    placeholder="e.g., Great tool for 360 feedback, Easy to use, Saved us time"
+                    required
+                    maxlength="200"
+                >
+                <small class="form-text">A short, catchy summary of your experience</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="review_text">Your Review *</label>
+                <textarea
+                    id="review_text"
+                    name="review_text"
+                    class="form-control"
+                    rows="8"
+                    placeholder="Tell us about your experience with Blik. What do you like? What could be improved? How has it helped your team?"
+                    required
+                >{{ existing_review.review_text|default:'' }}</textarea>
+                <small class="form-text">Share details about what you liked, disliked, or found helpful</small>
+            </div>
+
+            <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 1rem; margin: 1.5rem 0;">
+                <p style="margin: 0; color: #92400e; font-size: 0.875rem;">
+                    <strong>Note:</strong> Your review will be submitted for approval before being published.
+                    We may contact you at {{ user_email }} if we have any questions.
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if existing_review %}Update Review{% else %}Submit Review{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h3 style="margin: 0 0 1rem 0; font-size: 1rem;">Why we ask for reviews</h3>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #64748b; line-height: 1.8;">
+            <li>Your feedback helps us improve Blik for everyone</li>
+            <li>Reviews help other teams decide if Blik is right for them</li>
+            <li>Verified customer reviews improve our search visibility</li>
+            <li>We read every review and use them to prioritize features</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

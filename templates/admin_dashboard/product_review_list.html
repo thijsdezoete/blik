@@ -1,0 +1,218 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Product Reviews{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Product Reviews</h1>
+        <p>Manage customer feedback and testimonials</p>
+        {% if stats.avg_rating %}
+        <p style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
+            Average Rating: {{ stats.avg_rating|floatformat:1 }}★ from {{ stats.approved_count }} approved review{{ stats.approved_count|pluralize }}
+        </p>
+        {% endif %}
+    </div>
+    {% if perms.accounts.can_manage_organization %}
+    <a href="{% url 'product_review_create' %}" class="btn btn-primary">Add Review</a>
+    {% endif %}
+</div>
+
+<!-- Filter Options -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-body" style="padding: 1rem;">
+        <form method="get" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <label for="status" class="form-label" style="margin: 0; font-weight: 500;">Status:</label>
+                <select name="status" id="status" class="form-control" style="width: auto;" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            {% if status_filter %}
+            <a href="{% url 'product_review_list' %}" class="btn btn-sm btn-secondary">Clear Filter</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+{% if stats.total_count > 0 %}
+<div class="stats-grid" style="margin-bottom: 1.5rem;">
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number primary">{{ stats.total_count }}</div>
+            <div class="stat-label">Total Reviews</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number success">{{ stats.approved_count }}</div>
+            <div class="stat-label">Approved</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number warning">{{ stats.pending_count }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body stat-card-content">
+            <div class="stat-number primary">{{ stats.avg_rating|floatformat:1 }}★</div>
+            <div class="stat-label">Average Rating</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if reviews %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Reviewer</th>
+                    <th>Company</th>
+                    <th>Rating</th>
+                    <th>Review Title</th>
+                    <th>Status</th>
+                    <th>Published</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in reviews %}
+                <tr>
+                    <td style="font-weight: 500;">
+                        {{ review.reviewer_name }}
+                        {% if review.verified_customer %}
+                        <span style="color: #10b981; margin-left: 0.25rem;" title="Verified Customer">✓</span>
+                        {% endif %}
+                        {% if review.featured %}
+                        <span style="color: #f59e0b; margin-left: 0.25rem;" title="Featured Review">★</span>
+                        {% endif %}
+                    </td>
+                    <td style="color: #64748b;">
+                        {% if review.reviewer_company %}
+                        {{ review.reviewer_company }}
+                        {% else %}
+                        <span style="color: #cbd5e1;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span style="color: #f59e0b; font-size: 1.1em;">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </span>
+                    </td>
+                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ review.review_title }}
+                    </td>
+                    <td>
+                        {% if review.status == 'approved' %}
+                        <span class="badge badge-success">Approved</span>
+                        {% elif review.status == 'pending' %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% else %}
+                        <span class="badge badge-danger">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td style="color: #64748b; font-size: 0.875rem;">
+                        {% if review.published_date %}
+                        {{ review.published_date|date:"M d, Y" }}
+                        {% else %}
+                        <span style="color: #cbd5e1;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <a href="{% url 'product_review_detail' review.id %}" class="btn btn-sm btn-secondary">View</a>
+                            {% if perms.accounts.can_manage_organization %}
+                                {% if review.status == 'pending' %}
+                                <form method="post" action="{% url 'product_review_approve' review.id %}" style="display: inline; margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm" style="background: #10b981; color: white;">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'product_review_reject' review.id %}" style="display: inline; margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                </form>
+                                {% elif review.status == 'approved' %}
+                                <form method="post" action="{% url 'product_review_reject' review.id %}" style="display: inline; margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                </form>
+                                {% elif review.status == 'rejected' %}
+                                <form method="post" action="{% url 'product_review_approve' review.id %}" style="display: inline; margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm" style="background: #10b981; color: white;">Approve</button>
+                                </form>
+                                {% endif %}
+                                <a href="{% url 'product_review_edit' review.id %}" class="btn btn-sm btn-primary">Edit</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    {% if reviews.has_other_pages %}
+    <div class="card-footer">
+        <div class="pagination">
+            <div class="pagination-info">
+                Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}
+                ({{ reviews.paginator.count }} total)
+            </div>
+            <div class="pagination-links">
+                {% if reviews.has_previous %}
+                <a href="?page={{ reviews.previous_page_number }}&per_page={{ per_page }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="pagination-link">Previous</a>
+                {% endif %}
+
+                {% for num in reviews.paginator.page_range %}
+                    {% if num == reviews.number %}
+                    <span class="pagination-link active">{{ num }}</span>
+                    {% elif num > reviews.number|add:'-3' and num < reviews.number|add:'3' %}
+                    <a href="?page={{ num }}&per_page={{ per_page }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="pagination-link">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if reviews.has_next %}
+                <a href="?page={{ reviews.next_page_number }}&per_page={{ per_page }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="pagination-link">Next</a>
+                {% endif %}
+            </div>
+            <div>
+                <form method="get" style="display: inline;">
+                    {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+                    <select name="per_page" onchange="this.form.submit()" class="form-control" style="display: inline-block; width: auto;">
+                        <option value="25" {% if per_page == 25 %}selected{% endif %}>25 per page</option>
+                        <option value="50" {% if per_page == 50 %}selected{% endif %}>50 per page</option>
+                        <option value="100" {% if per_page == 100 %}selected{% endif %}>100 per page</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            <h3>No product reviews yet</h3>
+            <p>Add your first customer review to start building social proof</p>
+            {% if perms.accounts.can_manage_organization %}
+            <a href="{% url 'product_review_create' %}" class="btn btn-primary">Add Review</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

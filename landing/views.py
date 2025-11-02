@@ -7,12 +7,18 @@ from .seo import generate_og_image
 
 def index(request):
     """SEO-optimized landing page for Blik."""
+    from .review_api import get_review_data_from_api
+
+    # Fetch review data from main app API (works across containers)
+    rating_data = get_review_data_from_api()
+
     context = {
         'site_name': settings.SITE_NAME,
         'site_domain': settings.SITE_DOMAIN,
         'site_protocol': settings.SITE_PROTOCOL,
         'site_description': settings.SITE_DESCRIPTION,
         'site_keywords': settings.SITE_KEYWORDS,
+        'rating_data': rating_data,
     }
     return render(request, 'landing/index.html', context)
 
@@ -58,10 +64,16 @@ def eu_tech(request):
 
 def privacy(request):
     """Air-gapped/privacy-focused landing page for professional services."""
+    from .review_api import get_review_data_from_api
+
+    # Fetch review data from main app API (works across containers)
+    rating_data = get_review_data_from_api()
+
     context = {
         'site_name': settings.SITE_NAME,
         'site_domain': settings.SITE_DOMAIN,
         'site_protocol': settings.SITE_PROTOCOL,
+        'rating_data': rating_data,
     }
     return render(request, 'landing/privacy.html', context)
 
@@ -104,6 +116,16 @@ def agency_levels(request):
         'site_protocol': settings.SITE_PROTOCOL,
     }
     return render(request, 'landing/agency_levels.html', context)
+
+
+def performance_matrix(request):
+    """Performance Matrix page combining Dreyfus Model with Agency Levels."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/performance_matrix.html', context)
 
 
 def signup(request):

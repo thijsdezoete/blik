@@ -91,6 +91,13 @@ def dashboard(request):
     except UserProfile.DoesNotExist:
         pass
 
+    # Check if user has submitted a product review
+    from productreviews.models import ProductReview
+    user_has_reviewed = ProductReview.objects.for_organization(org).filter(
+        reviewer_email=request.user.email,
+        is_active=True
+    ).exists()
+
     context = {
         'total_reviewees': total_reviewees,
         'active_cycles': active_cycles,
@@ -101,6 +108,7 @@ def dashboard(request):
         'completed_cycles_data': completed_cycles_data,
         'subscription_status': subscription_status,
         'has_seen_welcome': has_seen_welcome,
+        'user_has_reviewed': user_has_reviewed,
     }
 
     return render(request, 'admin_dashboard/dashboard.html', context)
@@ -1598,3 +1606,385 @@ def gdpr_delete_reviewee_view(request, reviewee_id):
         messages.error(request, f'Error deleting reviewee: {str(e)}')
 
     return redirect('gdpr_management')
+
+
+# ============================================================================
+# PRODUCT REVIEW MANAGEMENT
+# ============================================================================
+
+@login_required
+def product_review_list(request):
+    """List and manage product reviews"""
+    from productreviews.models import ProductReview
+    from django.db.models import Avg, Count
+
+    org = request.organization
+
+    # Filter reviews by organization
+    reviews_qs = ProductReview.objects.for_organization(org).filter(is_active=True)
+
+    # Filter by status if provided
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        reviews_qs = reviews_qs.filter(status=status_filter)
+
+    # Order by published date (newest first)
+    reviews_qs = reviews_qs.order_by('-published_date', '-created_at')
+
+    # Calculate aggregate stats
+    stats = reviews_qs.aggregate(
+        avg_rating=Avg('rating'),
+        total_count=Count('id'),
+        approved_count=Count('id', filter=Q(status='approved')),
+        pending_count=Count('id', filter=Q(status='pending')),
+    )
+
+    # Get per_page from request, default to 25
+    per_page = request.GET.get('per_page', '25')
+    try:
+        per_page = int(per_page)
+        if per_page not in [25, 50, 100]:
+            per_page = 25
+    except (ValueError, TypeError):
+        per_page = 25
+
+    # Paginate reviews
+    paginator = Paginator(reviews_qs, per_page)
+    page = request.GET.get('page')
+    try:
+        reviews = paginator.page(page)
+    except PageNotAnInteger:
+        reviews = paginator.page(1)
+    except EmptyPage:
+        reviews = paginator.page(paginator.num_pages)
+
+    context = {
+        'reviews': reviews,
+        'stats': stats,
+        'status_filter': status_filter,
+        'per_page': per_page,
+    }
+
+    return render(request, 'admin_dashboard/product_review_list.html', context)
+
+
+@login_required
+def product_review_create(request):
+    """Create a new product review"""
+    from productreviews.models import ProductReview
+    from datetime import date
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to create product reviews.')
+        return redirect('product_review_list')
+
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        review_title = request.POST.get('review_title')
+        review_text = request.POST.get('review_text')
+        reviewer_name = request.POST.get('reviewer_name')
+        reviewer_title = request.POST.get('reviewer_title', '')
+        reviewer_company = request.POST.get('reviewer_company', '')
+        reviewer_email = request.POST.get('reviewer_email')
+        verified_customer = request.POST.get('verified_customer') == 'on'
+        featured = request.POST.get('featured') == 'on'
+        status = request.POST.get('status', 'pending')
+        source = request.POST.get('source', '')
+        notes = request.POST.get('notes', '')
+
+        # Validation
+        if not all([rating, review_title, review_text, reviewer_name, reviewer_email]):
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'admin_dashboard/product_review_form.html', {
+                'action': 'Create',
+                'review': request.POST,
+            })
+
+        try:
+            rating = int(rating)
+            if rating < 1 or rating > 5:
+                raise ValueError('Rating must be between 1 and 5')
+        except (ValueError, TypeError):
+            messages.error(request, 'Invalid rating value.')
+            return render(request, 'admin_dashboard/product_review_form.html', {
+                'action': 'Create',
+                'review': request.POST,
+            })
+
+        # Create the review
+        review = ProductReview.objects.create(
+            organization=request.organization,
+            rating=rating,
+            review_title=review_title,
+            review_text=review_text,
+            reviewer_name=reviewer_name,
+            reviewer_title=reviewer_title,
+            reviewer_company=reviewer_company,
+            reviewer_email=reviewer_email,
+            verified_customer=verified_customer,
+            featured=featured,
+            status=status,
+            source=source,
+            notes=notes,
+            published_date=date.today() if status == 'approved' else None,
+        )
+
+        messages.success(request, f'Product review from "{reviewer_name}" created successfully.')
+        return redirect('product_review_detail', review_id=review.id)
+
+    return render(request, 'admin_dashboard/product_review_form.html', {'action': 'Create'})
+
+
+@login_required
+def product_review_detail(request, review_id):
+    """View product review details"""
+    from productreviews.models import ProductReview
+
+    review = get_object_or_404(
+        ProductReview.objects.for_organization(request.organization),
+        id=review_id
+    )
+
+    context = {
+        'review': review,
+    }
+
+    return render(request, 'admin_dashboard/product_review_detail.html', context)
+
+
+@login_required
+def product_review_edit(request, review_id):
+    """Edit an existing product review"""
+    from productreviews.models import ProductReview
+    from datetime import date
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to edit product reviews.')
+        return redirect('product_review_list')
+
+    review = get_object_or_404(
+        ProductReview.objects.for_organization(request.organization),
+        id=review_id
+    )
+
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        review_title = request.POST.get('review_title')
+        review_text = request.POST.get('review_text')
+        reviewer_name = request.POST.get('reviewer_name')
+        reviewer_title = request.POST.get('reviewer_title', '')
+        reviewer_company = request.POST.get('reviewer_company', '')
+        reviewer_email = request.POST.get('reviewer_email')
+        verified_customer = request.POST.get('verified_customer') == 'on'
+        featured = request.POST.get('featured') == 'on'
+        status = request.POST.get('status', 'pending')
+        source = request.POST.get('source', '')
+        notes = request.POST.get('notes', '')
+
+        # Validation
+        if not all([rating, review_title, review_text, reviewer_name, reviewer_email]):
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'admin_dashboard/product_review_form.html', {
+                'action': 'Edit',
+                'review': review,
+            })
+
+        try:
+            rating = int(rating)
+            if rating < 1 or rating > 5:
+                raise ValueError('Rating must be between 1 and 5')
+        except (ValueError, TypeError):
+            messages.error(request, 'Invalid rating value.')
+            return render(request, 'admin_dashboard/product_review_form.html', {
+                'action': 'Edit',
+                'review': review,
+            })
+
+        # Update the review
+        old_status = review.status
+        review.rating = rating
+        review.review_title = review_title
+        review.review_text = review_text
+        review.reviewer_name = reviewer_name
+        review.reviewer_title = reviewer_title
+        review.reviewer_company = reviewer_company
+        review.reviewer_email = reviewer_email
+        review.verified_customer = verified_customer
+        review.featured = featured
+        review.status = status
+        review.source = source
+        review.notes = notes
+
+        # Set published date when approved
+        if status == 'approved' and old_status != 'approved':
+            review.published_date = date.today()
+
+        review.save()
+
+        messages.success(request, f'Product review updated successfully.')
+        return redirect('product_review_detail', review_id=review.id)
+
+    return render(request, 'admin_dashboard/product_review_form.html', {
+        'action': 'Edit',
+        'review': review,
+    })
+
+
+@login_required
+def product_review_delete(request, review_id):
+    """Delete (soft delete) a product review"""
+    from productreviews.models import ProductReview
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to delete product reviews.')
+        return redirect('product_review_list')
+
+    review = get_object_or_404(
+        ProductReview.objects.for_organization(request.organization),
+        id=review_id
+    )
+
+    if request.method == 'POST':
+        # Soft delete
+        review.is_active = False
+        review.save()
+
+        messages.success(request, f'Product review from "{review.reviewer_name}" has been deleted.')
+        return redirect('product_review_list')
+
+    return render(request, 'admin_dashboard/product_review_confirm_delete.html', {
+        'review': review,
+    })
+
+
+@login_required
+def quick_product_review(request):
+    """
+    Quick review submission for logged-in users.
+    Pre-fills user information from their profile.
+    """
+    from productreviews.models import ProductReview
+    from datetime import date
+
+    user = request.user
+    org = request.organization
+
+    # Check if user has already submitted a review
+    existing_review = ProductReview.objects.for_organization(org).filter(
+        reviewer_email=user.email,
+        is_active=True
+    ).first()
+
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        review_title = request.POST.get('review_title', '').strip()
+        review_text = request.POST.get('review_text', '').strip()
+
+        # Validation - only rating is required
+        if not rating:
+            messages.error(request, 'Please select a rating.')
+            return render(request, 'admin_dashboard/quick_product_review.html', {
+                'existing_review': existing_review,
+            })
+
+        try:
+            rating = int(rating)
+            if rating < 1 or rating > 5:
+                raise ValueError('Rating must be between 1 and 5')
+        except (ValueError, TypeError):
+            messages.error(request, 'Invalid rating value.')
+            return render(request, 'admin_dashboard/quick_product_review.html', {
+                'existing_review': existing_review,
+            })
+
+        # Generate default title/text if not provided
+        if not review_title:
+            review_title = f"{rating}-star review"
+        if not review_text:
+            review_text = f"Rated {rating} out of 5 stars."
+
+        # Get user profile info
+        user_profile = user.userprofile if hasattr(user, 'userprofile') else None
+        reviewer_name = user.get_full_name() or user.username
+        reviewer_email = user.email
+
+        # Create or update review
+        if existing_review:
+            # Update existing review
+            existing_review.rating = rating
+            existing_review.review_title = review_title
+            existing_review.review_text = review_text
+            existing_review.status = 'pending'  # Reset to pending for re-approval
+            existing_review.save()
+            messages.success(request, 'Your review has been updated and is pending approval. Thank you!')
+        else:
+            # Create new review
+            ProductReview.objects.create(
+                organization=org,
+                rating=rating,
+                review_title=review_title,
+                review_text=review_text,
+                reviewer_name=reviewer_name,
+                reviewer_email=reviewer_email,
+                verified_customer=True,  # They're logged-in users, so verified
+                status='pending',
+                source='Dashboard Quick Review',
+            )
+            messages.success(request, 'Thank you for your review! It will be published after approval.')
+
+        return redirect('admin_dashboard')
+
+    context = {
+        'existing_review': existing_review,
+        'user_name': user.get_full_name() or user.username,
+        'user_email': user.email,
+    }
+
+    return render(request, 'admin_dashboard/quick_product_review.html', context)
+
+
+@login_required
+@require_POST
+def product_review_approve(request, review_id):
+    """Quick approve a product review"""
+    from productreviews.models import ProductReview
+    from datetime import date
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to approve reviews.')
+        return redirect('product_review_list')
+
+    review = get_object_or_404(
+        ProductReview.objects.for_organization(request.organization),
+        id=review_id
+    )
+
+    review.status = 'approved'
+    if not review.published_date:
+        review.published_date = date.today()
+    review.save()
+
+    messages.success(request, f'Review from "{review.reviewer_name}" approved successfully.')
+    return redirect('product_review_list')
+
+
+@login_required
+@require_POST
+def product_review_reject(request, review_id):
+    """Quick reject a product review"""
+    from productreviews.models import ProductReview
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to reject reviews.')
+        return redirect('product_review_list')
+
+    review = get_object_or_404(
+        ProductReview.objects.for_organization(request.organization),
+        id=review_id
+    )
+
+    review.status = 'rejected'
+    review.save()
+
+    messages.success(request, f'Review from "{review.reviewer_name}" rejected.')
+    return redirect('product_review_list')

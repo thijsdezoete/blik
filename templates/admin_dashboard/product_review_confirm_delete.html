@@ -1,0 +1,73 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Delete Product Review{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Delete Product Review</h1>
+        <p>Confirm deletion of this review</p>
+    </div>
+</div>
+
+<div class="card" style="border-left: 3px solid #ef4444;">
+    <div class="card-body">
+        <div style="display: flex; align-items: start; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="font-size: 2rem; color: #ef4444;">⚠</div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.25rem; color: #ef4444;">Are you sure?</h2>
+                <p style="margin: 0.5rem 0 0 0; color: #64748b;">
+                    This will deactivate the review. It will no longer appear in listings or be included in aggregate ratings.
+                </p>
+            </div>
+        </div>
+
+        <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;">Review Details</h3>
+
+            <div style="margin-bottom: 0.5rem;">
+                <strong>Reviewer:</strong> {{ review.reviewer_name }}
+                {% if review.reviewer_company %}({{ review.reviewer_company }}){% endif %}
+            </div>
+
+            <div style="margin-bottom: 0.5rem;">
+                <strong>Rating:</strong>
+                <span style="color: #f59e0b;">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+
+            <div style="margin-bottom: 0.5rem;">
+                <strong>Title:</strong> {{ review.review_title }}
+            </div>
+
+            <div style="margin-bottom: 0.5rem;">
+                <strong>Status:</strong>
+                {% if review.status == 'approved' %}
+                <span class="badge badge-success">Approved</span>
+                {% elif review.status == 'pending' %}
+                <span class="badge badge-warning">Pending</span>
+                {% else %}
+                <span class="badge badge-danger">Rejected</span>
+                {% endif %}
+            </div>
+
+            {% if review.published_date %}
+            <div>
+                <strong>Published:</strong> {{ review.published_date|date:"F d, Y" }}
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <a href="{% url 'product_review_detail' review.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Delete Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}{{ action }} Product Review{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ action }} Product Review</h1>
+        <p>{% if action == 'Create' %}Add a new customer review{% else %}Update review details{% endif %}</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label" for="rating">Rating *</label>
+                <select id="rating" name="rating" class="form-control" required>
+                    <option value="">Select rating...</option>
+                    <option value="5" {% if review.rating == 5 or review.rating == '5' %}selected{% endif %}>★★★★★ (5 - Excellent)</option>
+                    <option value="4" {% if review.rating == 4 or review.rating == '4' %}selected{% endif %}>★★★★☆ (4 - Good)</option>
+                    <option value="3" {% if review.rating == 3 or review.rating == '3' %}selected{% endif %}>★★★☆☆ (3 - Average)</option>
+                    <option value="2" {% if review.rating == 2 or review.rating == '2' %}selected{% endif %}>★★☆☆☆ (2 - Poor)</option>
+                    <option value="1" {% if review.rating == 1 or review.rating == '1' %}selected{% endif %}>★☆☆☆☆ (1 - Very Poor)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="review_title">Review Title *</label>
+                <input
+                    type="text"
+                    id="review_title"
+                    name="review_title"
+                    class="form-control"
+                    value="{{ review.review_title|default:'' }}"
+                    placeholder="e.g., Great tool for 360 feedback"
+                    required
+                    maxlength="200"
+                >
+                <small class="form-text">Short headline for the review (max 200 characters)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="review_text">Review Text *</label>
+                <textarea
+                    id="review_text"
+                    name="review_text"
+                    class="form-control"
+                    rows="6"
+                    placeholder="Full review text from the customer..."
+                    required
+                >{{ review.review_text|default:'' }}</textarea>
+                <small class="form-text">The complete review content</small>
+            </div>
+
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+
+            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Reviewer Information</h3>
+
+            <div class="form-group">
+                <label class="form-label" for="reviewer_name">Reviewer Name *</label>
+                <input
+                    type="text"
+                    id="reviewer_name"
+                    name="reviewer_name"
+                    class="form-control"
+                    value="{{ review.reviewer_name|default:'' }}"
+                    placeholder="e.g., Jane Smith"
+                    required
+                    maxlength="100"
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="reviewer_title">Reviewer Title</label>
+                <input
+                    type="text"
+                    id="reviewer_title"
+                    name="reviewer_title"
+                    class="form-control"
+                    value="{{ review.reviewer_title|default:'' }}"
+                    placeholder="e.g., HR Manager"
+                    maxlength="150"
+                >
+                <small class="form-text">Job title (optional)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="reviewer_company">Company</label>
+                <input
+                    type="text"
+                    id="reviewer_company"
+                    name="reviewer_company"
+                    class="form-control"
+                    value="{{ review.reviewer_company|default:'' }}"
+                    placeholder="e.g., Acme Corp"
+                    maxlength="100"
+                >
+                <small class="form-text">Company name (optional)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="reviewer_email">Reviewer Email *</label>
+                <input
+                    type="email"
+                    id="reviewer_email"
+                    name="reviewer_email"
+                    class="form-control"
+                    value="{{ review.reviewer_email|default:'' }}"
+                    placeholder="e.g., jane@example.com"
+                    required
+                >
+                <small class="form-text">Email address (not shown publicly, for verification only)</small>
+            </div>
+
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+
+            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Status & Publishing</h3>
+
+            <div class="form-group">
+                <label class="form-label" for="status">Status *</label>
+                <select id="status" name="status" class="form-control" required>
+                    <option value="pending" {% if review.status == 'pending' or not review.status %}selected{% endif %}>Pending Review</option>
+                    <option value="approved" {% if review.status == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if review.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+                <small class="form-text">Only approved reviews appear in JSON-LD structured data</small>
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; align-items: center;">
+                    <input
+                        type="checkbox"
+                        id="verified_customer"
+                        name="verified_customer"
+                        {% if review.verified_customer %}checked{% endif %}
+                        style="margin-right: 0.5rem;"
+                    >
+                    <label for="verified_customer" style="margin: 0; cursor: pointer;">
+                        Verified Customer
+                    </label>
+                </div>
+                <small class="form-text">Mark this reviewer as a verified customer/subscriber</small>
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; align-items: center;">
+                    <input
+                        type="checkbox"
+                        id="featured"
+                        name="featured"
+                        {% if review.featured %}checked{% endif %}
+                        style="margin-right: 0.5rem;"
+                    >
+                    <label for="featured" style="margin: 0; cursor: pointer;">
+                        Featured Review
+                    </label>
+                </div>
+                <small class="form-text">Highlight this review on landing pages</small>
+            </div>
+
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border);">
+
+            <h3 style="margin-bottom: 1rem; font-size: 1.125rem;">Metadata</h3>
+
+            <div class="form-group">
+                <label class="form-label" for="source">Source</label>
+                <input
+                    type="text"
+                    id="source"
+                    name="source"
+                    class="form-control"
+                    value="{{ review.source|default:'' }}"
+                    placeholder="e.g., Email Survey, G2, Direct Contact"
+                    maxlength="100"
+                >
+                <small class="form-text">Where this review came from (optional)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="notes">Internal Notes</label>
+                <textarea
+                    id="notes"
+                    name="notes"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Internal notes (not shown publicly)..."
+                >{{ review.notes|default:'' }}</textarea>
+                <small class="form-text">Private notes for internal reference only</small>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'product_review_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">{{ action }} Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

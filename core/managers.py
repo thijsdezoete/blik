@@ -33,7 +33,10 @@ class OrganizationQuerySet(models.QuerySet):
                 if model_name == 'userprofile':
                     # UserProfile: filter by user__email
                     queryset = queryset.exclude(user__email__icontains='@deleted.invalid')
-                else:
+                elif model_name == 'productreview':
+                    # ProductReview: filter by reviewer_email
+                    queryset = queryset.exclude(reviewer_email__icontains='@deleted.invalid')
+                elif hasattr(model, 'email'):
                     # Reviewee, OrganizationInvitation: filter by email directly
                     queryset = queryset.exclude(email__icontains='@deleted.invalid')
 

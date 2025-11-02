@@ -6,6 +6,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views, admin_views, seo_views, superuser_views
+from productreviews import api_views as review_api
 
 # Error handlers
 handler404 = 'blik.views.handler404'
@@ -49,6 +50,14 @@ urlpatterns = [
     path('dashboard/cycles/<int:cycle_id>/send-reminder/', admin_views.send_reminder_form, name='send_reminder_form'),
     path('dashboard/cycles/<int:cycle_id>/send-reminder/send/', admin_views.send_reminder, name='send_reminder'),
     path('dashboard/cycles/<int:cycle_id>/send-report-email/', admin_views.send_report_email, name='send_report_email'),
+    path('dashboard/product-reviews/', admin_views.product_review_list, name='product_review_list'),
+    path('dashboard/product-reviews/create/', admin_views.product_review_create, name='product_review_create'),
+    path('dashboard/product-reviews/quick-submit/', admin_views.quick_product_review, name='quick_product_review'),
+    path('dashboard/product-reviews/<int:review_id>/', admin_views.product_review_detail, name='product_review_detail'),
+    path('dashboard/product-reviews/<int:review_id>/edit/', admin_views.product_review_edit, name='product_review_edit'),
+    path('dashboard/product-reviews/<int:review_id>/delete/', admin_views.product_review_delete, name='product_review_delete'),
+    path('dashboard/product-reviews/<int:review_id>/approve/', admin_views.product_review_approve, name='product_review_approve'),
+    path('dashboard/product-reviews/<int:review_id>/reject/', admin_views.product_review_reject, name='product_review_reject'),
 
     # Other apps
     path('setup/', include('core.urls')),
@@ -58,6 +67,9 @@ urlpatterns = [
     path('', include('reports.urls')),
     path('landing/', include('landing.urls')),
     path('api/', include('subscriptions.urls')),
+
+    # Public API for landing pages
+    path('api/reviews/aggregate', review_api.aggregate_reviews_api, name='api_reviews_aggregate'),
 ]
 
 # Serve media files in development

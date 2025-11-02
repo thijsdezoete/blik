@@ -76,12 +76,14 @@
             "@type": "Offer",
             "price": "0",
             "priceCurrency": "EUR"
-        },
+        }{% if rating_data %},
         "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": "5.0",
-            "ratingCount": "1"
-        }
+            "ratingValue": "{{ rating_data.aggregateRating.ratingValue }}",
+            "ratingCount": "{{ rating_data.aggregateRating.ratingCount }}",
+            "bestRating": "5",
+            "worstRating": "1"
+        }{% endif %}
     }
     </script>
 

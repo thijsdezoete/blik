@@ -174,6 +174,29 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<!-- Quick Review Card -->
+{% if not user_has_reviewed and HAS_STRIPE_CONFIGURED %}
+<div class="card" style="border-left: 3px solid #10b981; margin-bottom: 2rem;">
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.125rem; color: #10b981;">
+                    ⭐ Share Your Experience with Blik
+                </h3>
+                <p style="margin: 0; color: #64748b;">
+                    Enjoying Blik? Take 2 minutes to share your feedback and help other teams discover us.
+                </p>
+            </div>
+            <div>
+                <button onclick="openReviewModal()" class="btn btn-primary" style="white-space: nowrap;">
+                    Submit a Review
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Subscription Status -->
 {% if subscription_status.has_subscription %}
 <div class="card mb-2">
@@ -392,4 +415,114 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 {% endif %}
+
+<!-- Review Modal -->
+<div id="review-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+            <div>
+                <h2 style="margin: 0 0 0.5rem 0; font-size: 1.5rem;">Share Your Experience</h2>
+                <p style="margin: 0; color: var(--text-secondary);">Help us improve by sharing your feedback</p>
+            </div>
+            <button onclick="closeReviewModal()" class="btn btn-secondary" style="padding: 0.5rem 1rem;">✕</button>
+        </div>
+
+        <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem;">
+            <p style="margin: 0; color: #64748b;">
+                <strong>Reviewing as:</strong> {{ user.get_full_name|default:user.username }} ({{ user.email }})
+            </p>
+        </div>
+
+        <form id="review-form" method="post" action="{% url 'quick_product_review' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label" for="modal-rating">How would you rate Blik? *</label>
+                <select id="modal-rating" name="rating" class="form-control" required style="font-size: 1.1em;">
+                    <option value="">Select your rating...</option>
+                    <option value="5">★★★★★ Excellent - Exceeded expectations</option>
+                    <option value="4">★★★★☆ Good - Met expectations</option>
+                    <option value="3">★★★☆☆ Average - Room for improvement</option>
+                    <option value="2">★★☆☆☆ Below Average - Needs work</option>
+                    <option value="1">★☆☆☆☆ Poor - Major issues</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="modal-review-title">Review Headline (Optional)</label>
+                <input
+                    type="text"
+                    id="modal-review-title"
+                    name="review_title"
+                    class="form-control"
+                    placeholder="e.g., Great tool for 360 feedback"
+                    maxlength="200"
+                >
+                <small class="form-text">A short, catchy summary of your experience</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="modal-review-text">Your Review (Optional)</label>
+                <textarea
+                    id="modal-review-text"
+                    name="review_text"
+                    class="form-control"
+                    rows="6"
+                    placeholder="Tell us about your experience with Blik..."
+                ></textarea>
+                <small class="form-text">Share what you liked, disliked, or found helpful</small>
+            </div>
+
+            <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="margin: 0; color: #92400e; font-size: 0.875rem;">
+                    <strong>Note:</strong> Your review will be submitted for approval before being published.
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" onclick="closeReviewModal()" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openReviewModal() {
+    const modal = document.getElementById('review-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeReviewModal() {
+    const modal = document.getElementById('review-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        // Reset form
+        document.getElementById('review-form').reset();
+    }
+}
+
+// Close on overlay click
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('review-modal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeReviewModal();
+            }
+        });
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeReviewModal();
+        }
+    });
+});
+</script>
 {% endblock %}

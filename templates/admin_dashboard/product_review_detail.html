@@ -1,0 +1,169 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Product Review - {{ review.reviewer_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Product Review</h1>
+        <p>Review from {{ review.reviewer_name }}</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        {% if perms.accounts.can_manage_organization %}
+        <a href="{% url 'product_review_edit' review.id %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'product_review_delete' review.id %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+        <a href="{% url 'product_review_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <h2 style="margin: 0; font-size: 1.25rem;">{{ review.review_title }}</h2>
+                <div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">
+                    by <strong>{{ review.reviewer_name }}</strong>
+                    {% if review.reviewer_title %}• {{ review.reviewer_title }}{% endif %}
+                    {% if review.reviewer_company %}at {{ review.reviewer_company }}{% endif %}
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div style="color: #f59e0b; font-size: 1.5rem; margin-bottom: 0.25rem;">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </div>
+                <div style="font-size: 0.875rem; color: #64748b;">
+                    {{ review.rating }}.0 / 5.0
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: #64748b;">Review Text</h3>
+            <p style="line-height: 1.6; white-space: pre-wrap;">{{ review.review_text }}</p>
+        </div>
+
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
+
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Status</h4>
+                <div>
+                    {% if review.status == 'approved' %}
+                    <span class="badge badge-success">Approved</span>
+                    {% elif review.status == 'pending' %}
+                    <span class="badge badge-warning">Pending</span>
+                    {% else %}
+                    <span class="badge badge-danger">Rejected</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Verification</h4>
+                <div>
+                    {% if review.verified_customer %}
+                    <span class="badge badge-success">✓ Verified Customer</span>
+                    {% else %}
+                    <span class="badge badge-secondary">Not Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Featured</h4>
+                <div>
+                    {% if review.featured %}
+                    <span class="badge badge-warning">★ Featured</span>
+                    {% else %}
+                    <span class="badge badge-secondary">Not Featured</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Published</h4>
+                <div>
+                    {% if review.published_date %}
+                    {{ review.published_date|date:"F d, Y" }}
+                    {% else %}
+                    <span style="color: #cbd5e1;">Not Published</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
+
+        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Reviewer Details</h3>
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Email</h4>
+                <div>{{ review.reviewer_email }}</div>
+            </div>
+
+            {% if review.reviewer_title %}
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Title</h4>
+                <div>{{ review.reviewer_title }}</div>
+            </div>
+            {% endif %}
+
+            {% if review.reviewer_company %}
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Company</h4>
+                <div>{{ review.reviewer_company }}</div>
+            </div>
+            {% endif %}
+
+            {% if review.source %}
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Source</h4>
+                <div>{{ review.source }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if review.notes %}
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
+        <div>
+            <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">Internal Notes</h3>
+            <p style="line-height: 1.6; white-space: pre-wrap; color: #64748b;">{{ review.notes }}</p>
+        </div>
+        {% endif %}
+
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--border);">
+
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); font-size: 0.875rem; color: #64748b;">
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Created</h4>
+                <div>{{ review.created_at|date:"F d, Y g:i A" }}</div>
+            </div>
+            <div>
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin-bottom: 0.5rem;">Last Updated</h4>
+                <div>{{ review.updated_at|date:"F d, Y g:i A" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if review.is_published %}
+<div class="card" style="border-left: 3px solid #10b981;">
+    <div class="card-body">
+        <div style="display: flex; align-items: start; gap: 1rem;">
+            <div style="font-size: 2rem; color: #10b981;">✓</div>
+            <div>
+                <h3 style="margin: 0; font-size: 1rem; color: #10b981;">Published Review</h3>
+                <p style="margin: 0.5rem 0 0 0; color: #64748b;">
+                    This review is approved and active. It will be included in aggregate ratings on landing pages and in JSON-LD structured data for SEO.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

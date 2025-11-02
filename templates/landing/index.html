@@ -39,7 +39,14 @@
         "name": "{{ site_name }}",
         "description": "Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant.",
         "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Any (Web-based)",
+        "operatingSystem": "Any (Web-based)",{% if rating_data %}
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "{{ rating_data.aggregateRating.ratingValue }}",
+            "ratingCount": "{{ rating_data.aggregateRating.ratingCount }}",
+            "bestRating": "5",
+            "worstRating": "1"
+        },{% endif %}
         "offers": [
             {
                 "@type": "Offer",
@@ -73,7 +80,29 @@
             "Docker deployment",
             "PostgreSQL database",
             "Dreyfus model competency assessment"
-        ]
+        ]{% if rating_data and rating_data.reviews %},
+        "review": [{% for review in rating_data.reviews %}
+            {
+                "@type": "Review",
+                "author": {
+                    "@type": "Person",
+                    "name": "{{ review.author.name }}"{% if review.author.organization %},
+                    "worksFor": {
+                        "@type": "Organization",
+                        "name": "{{ review.author.organization }}"
+                    }{% endif %}
+                },
+                "datePublished": "{{ review.datePublished }}",
+                "reviewBody": "{{ review.reviewBody|escapejs }}",
+                "name": "{{ review.name|escapejs }}",
+                "reviewRating": {
+                    "@type": "Rating",
+                    "ratingValue": "{{ review.reviewRating.ratingValue }}",
+                    "bestRating": "5",
+                    "worstRating": "1"
+                }
+            }{% if not forloop.last %},{% endif %}{% endfor %}
+        ]{% endif %}
     }
     </script>
 
@@ -86,7 +115,14 @@
         "brand": {
             "@type": "Brand",
             "name": "{{ site_name }}"
-        },
+        },{% if rating_data %}
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "{{ rating_data.aggregateRating.ratingValue }}",
+            "ratingCount": "{{ rating_data.aggregateRating.ratingCount }}",
+            "bestRating": "5",
+            "worstRating": "1"
+        },{% endif %}
         "offers": [
             {
                 "@type": "Offer",

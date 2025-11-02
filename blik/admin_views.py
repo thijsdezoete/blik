@@ -1628,8 +1628,9 @@ def product_review_list(request):
     if status_filter:
         reviews_qs = reviews_qs.filter(status=status_filter)
 
-    # Order by published date (newest first)
-    reviews_qs = reviews_qs.order_by('-published_date', '-created_at')
+    # Order by created date (newest first) to show pending reviews at top
+    # Pending reviews don't have published_date, so ordering by created_at ensures they appear first
+    reviews_qs = reviews_qs.order_by('-created_at')
 
     # Calculate aggregate stats
     stats = reviews_qs.aggregate(

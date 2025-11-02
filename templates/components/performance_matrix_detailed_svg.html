@@ -1,0 +1,124 @@
+<!-- Enhanced Performance Matrix: 5 Dreyfus Levels × 2 Agency Levels = 10 Types -->
+<svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;fill:none;stroke:none;">
+    <style>
+        .pm-success-fill { fill: var(--success); }
+        .pm-warning-fill { fill: var(--warning); }
+        .pm-danger-fill { fill: var(--danger); }
+        .pm-text-secondary { fill: var(--text-secondary); }
+        .pm-text-primary { fill: var(--text-primary); }
+        .pm-stroke-light { stroke: currentColor; stroke-opacity: 0.3; }
+        .pm-bg-success { fill: var(--success); fill-opacity: 0.12; }
+        .pm-bg-warning { fill: var(--warning); fill-opacity: 0.12; }
+        .pm-bg-danger { fill: var(--danger); fill-opacity: 0.12; }
+        .pm-bg-secondary { fill: var(--text-secondary); fill-opacity: 0.08; }
+        .pm-cell-text { font-size: 11px; fill: var(--text-primary); font-weight: 600; }
+        .pm-cell-label { font-size: 9px; fill: var(--text-secondary); }
+    </style>
+
+    <!-- Main Axes -->
+    <line x1="100" y1="600" x2="900" y2="600" class="pm-stroke-light" stroke-width="3"/>
+    <line x1="100" y1="100" x2="100" y2="600" class="pm-stroke-light" stroke-width="3"/>
+
+    <!-- Axis Arrows -->
+    <polygon points="900,600 890,595 890,605" class="pm-text-secondary" opacity="0.3"/>
+    <polygon points="100,100 95,110 105,110" class="pm-text-secondary" opacity="0.3"/>
+
+    <!-- Grid Lines (5 columns for Dreyfus, 2 rows for Agency) -->
+    <!-- Vertical dividers -->
+    <line x1="260" y1="100" x2="260" y2="600" class="pm-stroke-light" stroke-width="1" opacity="0.2"/>
+    <line x1="420" y1="100" x2="420" y2="600" class="pm-stroke-light" stroke-width="1" opacity="0.2"/>
+    <line x1="580" y1="100" x2="580" y2="600" class="pm-stroke-light" stroke-width="1" opacity="0.2"/>
+    <line x1="740" y1="100" x2="740" y2="600" class="pm-stroke-light" stroke-width="1" opacity="0.2"/>
+
+    <!-- Horizontal divider (Agency split) -->
+    <line x1="100" y1="350" x2="900" y2="350" class="pm-stroke-light" stroke-width="2" stroke-dasharray="8,4" opacity="0.3"/>
+
+    <!-- HIGH AGENCY ROW (Top) -->
+    <!-- Each cell: 160px wide, 250px tall -->
+
+    <!-- Cell 1: Novice + High Agency (Hungry Learner - Novice) -->
+    <rect x="100" y="100" width="160" height="250" class="pm-bg-warning" stroke="var(--warning)" stroke-width="1.5" opacity="0.9"/>
+    <text x="180" y="200" text-anchor="middle" class="pm-cell-text" fill="var(--warning)">Hungry</text>
+    <text x="180" y="215" text-anchor="middle" class="pm-cell-text" fill="var(--warning)">Learner</text>
+    <text x="180" y="235" text-anchor="middle" class="pm-cell-label">(Novice)</text>
+
+    <!-- Cell 2: Advanced Beginner + High Agency (Hungry Learner - Growing) -->
+    <rect x="260" y="100" width="160" height="250" class="pm-bg-warning" stroke="var(--warning)" stroke-width="1.5" opacity="0.9"/>
+    <text x="340" y="200" text-anchor="middle" class="pm-cell-text" fill="var(--warning)">Growing</text>
+    <text x="340" y="215" text-anchor="middle" class="pm-cell-text" fill="var(--warning)">Learner</text>
+    <text x="340" y="235" text-anchor="middle" class="pm-cell-label">(Adv. Beginner)</text>
+
+    <!-- Cell 3: Competent + High Agency (Solid Performer) -->
+    <rect x="420" y="100" width="160" height="250" class="pm-bg-success" stroke="var(--success)" stroke-width="1.5" opacity="0.9"/>
+    <text x="500" y="200" text-anchor="middle" class="pm-cell-text" fill="var(--success)">Solid</text>
+    <text x="500" y="215" text-anchor="middle" class="pm-cell-text" fill="var(--success)">Performer</text>
+    <text x="500" y="235" text-anchor="middle" class="pm-cell-label">(Competent)</text>
+
+    <!-- Cell 4: Proficient + High Agency (Force Multiplier) -->
+    <rect x="580" y="100" width="160" height="250" class="pm-bg-success" stroke="var(--success)" stroke-width="2" opacity="0.95"/>
+    <text x="660" y="195" text-anchor="middle" class="pm-cell-text" fill="var(--success)" font-size="13px">Force</text>
+    <text x="660" y="210" text-anchor="middle" class="pm-cell-text" fill="var(--success)" font-size="13px">Multiplier</text>
+    <text x="660" y="235" text-anchor="middle" class="pm-cell-label">(Proficient)</text>
+
+    <!-- Cell 5: Expert + High Agency (Elite Force Multiplier) -->
+    <rect x="740" y="100" width="160" height="250" class="pm-bg-success" stroke="var(--success)" stroke-width="2" opacity="1"/>
+    <text x="820" y="195" text-anchor="middle" class="pm-cell-text" fill="var(--success)" font-size="13px">Elite</text>
+    <text x="820" y="210" text-anchor="middle" class="pm-cell-text" fill="var(--success)" font-size="13px">Multiplier</text>
+    <text x="820" y="235" text-anchor="middle" class="pm-cell-label">(Expert)</text>
+
+    <!-- LOW AGENCY ROW (Bottom) -->
+
+    <!-- Cell 6: Novice + Low Agency (Low Performer - Novice) -->
+    <rect x="100" y="350" width="160" height="250" class="pm-bg-secondary" stroke="var(--text-secondary)" stroke-width="1.5" opacity="0.7"/>
+    <text x="180" y="450" text-anchor="middle" class="pm-cell-text" opacity="0.6">Low</text>
+    <text x="180" y="465" text-anchor="middle" class="pm-cell-text" opacity="0.6">Performer</text>
+    <text x="180" y="485" text-anchor="middle" class="pm-cell-label">(Novice)</text>
+
+    <!-- Cell 7: Advanced Beginner + Low Agency (Struggling) -->
+    <rect x="260" y="350" width="160" height="250" class="pm-bg-secondary" stroke="var(--text-secondary)" stroke-width="1.5" opacity="0.7"/>
+    <text x="340" y="450" text-anchor="middle" class="pm-cell-text" opacity="0.6">Struggling</text>
+    <text x="340" y="465" text-anchor="middle" class="pm-cell-text" opacity="0.6">Junior</text>
+    <text x="340" y="485" text-anchor="middle" class="pm-cell-label">(Adv. Beginner)</text>
+
+    <!-- Cell 8: Competent + Low Agency (Disengaged Competent) -->
+    <rect x="420" y="350" width="160" height="250" class="pm-bg-danger" stroke="var(--danger)" stroke-width="1.5" opacity="0.85"/>
+    <text x="500" y="450" text-anchor="middle" class="pm-cell-text" fill="var(--danger)">Disengaged</text>
+    <text x="500" y="465" text-anchor="middle" class="pm-cell-text" fill="var(--danger)">Mid-Level</text>
+    <text x="500" y="485" text-anchor="middle" class="pm-cell-label">(Competent)</text>
+
+    <!-- Cell 9: Proficient + Low Agency (Brilliant Passenger) -->
+    <rect x="580" y="350" width="160" height="250" class="pm-bg-danger" stroke="var(--danger)" stroke-width="2" opacity="0.9"/>
+    <text x="660" y="445" text-anchor="middle" class="pm-cell-text" fill="var(--danger)" font-size="12px">Brilliant</text>
+    <text x="660" y="460" text-anchor="middle" class="pm-cell-text" fill="var(--danger)" font-size="12px">Passenger</text>
+    <text x="660" y="485" text-anchor="middle" class="pm-cell-label">(Proficient)</text>
+
+    <!-- Cell 10: Expert + Low Agency (Senior Passenger) -->
+    <rect x="740" y="350" width="160" height="250" class="pm-bg-danger" stroke="var(--danger)" stroke-width="2" opacity="0.9"/>
+    <text x="820" y="445" text-anchor="middle" class="pm-cell-text" fill="var(--danger)" font-size="12px">Senior</text>
+    <text x="820" y="460" text-anchor="middle" class="pm-cell-text" fill="var(--danger)" font-size="12px">Passenger</text>
+    <text x="820" y="485" text-anchor="middle" class="pm-cell-label">(Expert)</text>
+
+    <!-- X-Axis Labels (Dreyfus Model) -->
+    <text x="500" y="640" text-anchor="middle" font-size="16" font-weight="600" class="pm-text-primary">
+        Technical Skill (Dreyfus Model)
+    </text>
+
+    <!-- Dreyfus Level Labels Below -->
+    <text x="180" y="620" text-anchor="middle" font-size="11" class="pm-text-secondary">Novice</text>
+    <text x="340" y="620" text-anchor="middle" font-size="11" class="pm-text-secondary">Adv. Beginner</text>
+    <text x="500" y="620" text-anchor="middle" font-size="11" class="pm-text-secondary">Competent</text>
+    <text x="660" y="620" text-anchor="middle" font-size="11" class="pm-text-secondary">Proficient</text>
+    <text x="820" y="620" text-anchor="middle" font-size="11" class="pm-text-secondary">Expert</text>
+
+    <!-- Y-Axis Label (Agency) -->
+    <text x="40" y="350" text-anchor="middle" font-size="16" font-weight="600" class="pm-text-primary" transform="rotate(-90 40 350)">
+        Agency Level
+    </text>
+
+    <!-- Agency Level Labels on Left -->
+    <text x="85" y="225" text-anchor="end" font-size="12" font-weight="600" class="pm-text-primary">High</text>
+    <text x="85" y="240" text-anchor="end" font-size="10" class="pm-text-secondary">(Level 4-5)</text>
+
+    <text x="85" y="475" text-anchor="end" font-size="12" font-weight="600" class="pm-text-primary">Low</text>
+    <text x="85" y="490" text-anchor="end" font-size="10" class="pm-text-secondary">(Level 1-2)</text>
+</svg>

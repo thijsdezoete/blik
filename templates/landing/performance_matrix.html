@@ -1,0 +1,650 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Engineering Performance Review: Technical Skills + Ownership Framework | Blik</title>
+    <meta name="description" content="Stop evaluating only technical skill. The Performance Matrix framework (Dreyfus Model + Agency Levels) identifies Force Multipliers, coaches Brilliant Passengers, and reveals who needs what development. Four archetypes every engineering manager should recognize.">
+    <meta name="keywords" content="engineering performance review, software engineer evaluation, developer assessment framework, technical skills vs ownership, engineering manager tools, team performance evaluation, Force Multiplier engineers, junior vs senior evaluation, 360 degree feedback developers">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/performance-matrix/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/performance-matrix/">
+    <meta property="og:title" content="Engineering Performance Review: Skills + Ownership Framework">
+    <meta property="og:description" content="Identify Force Multipliers vs Brilliant Passengers. Two-dimensional framework for evaluating developers: technical skill (Dreyfus) + ownership (Agency).">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/performance-matrix/">
+    <meta name="twitter:title" content="Engineering Performance Review: Skills + Ownership Framework">
+    <meta name="twitter:description" content="Identify Force Multipliers vs Brilliant Passengers. Two-dimensional framework: technical skill (Dreyfus) + ownership (Agency).">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+{% endblock %}
+
+{% block extra_head %}
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "The Performance Matrix: Why Technical Skills Alone Don't Predict Performance",
+      "description": "How combining Dreyfus Model (technical skill) with Agency Levels (ownership mindset) creates a complete performance evaluation framework",
+      "author": {
+        "@type": "Organization",
+        "name": "{{ site_name }}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ site_name }}"
+      },
+      "datePublished": "2025-01-02",
+      "dateModified": "2025-01-02"
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data for FAQs -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is a Force Multiplier engineer?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A Force Multiplier engineer combines high technical skill with high agency (ownership mindset). They spot problems, investigate causes, and fix them autonomously—often before anyone else knows the issue exists. They operate at Level 4-5 agency consistently and reduce manager overhead significantly."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What's the difference between technical skill and agency level?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Technical skill (measured by the Dreyfus Model) describes what someone knows—their expertise from Novice to Expert. Agency level describes how someone works—whether they report problems and wait (Level 1) or proactively solve them (Level 5). These are independent: you can be an Expert with low agency (Brilliant Passenger) or a Novice with high agency (Hungry Learner)."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can you coach low-agency employees to become high-agency?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Maybe, but it takes 2+ years compared to 6-12 months for technical skills. Brilliant Passengers (high skill, low agency) can move to Force Multipliers in 6-18 months with coaching: reject Level 1 behavior, set clear expectations for Level 4 minimum, and reward autonomous problem-solving. Dead Weight (low skill, low agency) rarely improves—give them a 3-month performance improvement plan as a final chance."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do you evaluate software engineer performance using two dimensions?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "For technical skill: assess code quality, problem-solving approach (rule-based vs intuitive), domain expertise, and pattern recognition. For agency level: observe whether they bring solutions or just problems, how much research they do before escalating, their response to ambiguity, and their ownership mindset vs task-completion mindset. Use 360-degree feedback—peers quickly spot agency gaps."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is a Brilliant Passenger in engineering teams?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Brilliant Passengers have high technical skill but low agency. They identify problems ('The microservices architecture has latency issues') but wait for someone else to investigate and solve them. Common in large companies with heavy process. They need constant direction despite being technically competent. Red flags include 'That's not my job' and 'Someone should fix this.'"
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Should I hire for technical skills or agency when building engineering teams?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Prioritize agency when hiring. Technical skills can be taught in 6-12 months, but agency mindset can take 2+ years to change—or may never change if it's cultural fit. A Hungry Learner (Novice with Level 5 agency) will outgrow a Brilliant Passenger (Expert with Level 2 agency) in 12-18 months and requires less management from day one. Exception: highly specialized domains where expertise takes years (security, ML infrastructure)."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What percentage of Force Multipliers should an engineering team have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Aim for 20% Force Multipliers (mentors and culture carriers), 60% solid performers at Competent + Level 4 agency or Hungry Learners with clear growth trajectory, 20% in coaching/growth phase, and 0% Dead Weight. You don't need everyone to be Force Multipliers, but you need at least one to set the cultural standard."
+                }
+            }
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#matrix">The Matrix</a>
+    <a href="#archetypes">Archetypes</a>
+    <a href="#evaluation">Evaluation</a>
+    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">The Performance Matrix</h1>
+                <p class="hero-subtitle">Why your senior engineer spotted a critical bug, messaged you about it, then went to lunch. They have the skills but lack the agency. Traditional performance reviews miss this completely.</p>
+
+                <!-- TL;DR Box -->
+                <div style="background: var(--bg-secondary); border-left: 4px solid var(--primary); padding: 1.5rem; margin: 2rem 0; border-radius: 4px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <h2 style="margin: 0 0 0.75rem 0; font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary);">TL;DR</h2>
+                    <p style="margin: 0 0 0.5rem 0; font-size: 0.95rem; line-height: 1.6;"><strong>Technical Skill</strong> (Dreyfus Model) × <strong>Agency Level</strong> (ownership mindset) create four distinct employee archetypes. Most performance reviews only measure skill, missing 50% of the picture.</p>
+                    <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;"><strong>Key insight:</strong> A Competent engineer with Level 5 agency often outperforms an Expert with Level 2 agency. Skills can be taught. Agency mindset is harder to change.</p>
+                </div>
+
+                <div class="hero-cta">
+                    <a href="#matrix" class="btn btn-primary">See the Matrix</a>
+                    <a href="{% landing_url 'index' %}" class="btn btn-secondary">About Blik</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Matrix Section -->
+    <section id="matrix" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Performance Matrix</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">Two independent dimensions create four distinct employee types</p>
+
+            <div style="max-width: 1000px; margin: 0 auto 3rem; background: var(--bg-card); padding: 2rem; border-radius: 8px; box-shadow: var(--shadow-sm);">
+                {% include 'components/performance_matrix_svg.html' %}
+            </div>
+
+            <div class="feature-card feature-card-info" style="margin-bottom: 3rem;">
+                <h3>Why Two Dimensions?</h3>
+                <p style="margin-bottom: 1rem;"><strong>Technical Skill</strong> (<a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus Model</a>): How good are they at their craft? Novice → Expert progression through pattern recognition and intuition.</p>
+                <p style="margin-bottom: 1rem;"><strong>Agency Level</strong> (<a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">5 Levels of Agency</a>): How proactively do they solve problems? Level 1 (report and walk away) → Level 5 (fix it and inform).</p>
+                <p style="margin-bottom: 1rem; background: var(--bg-secondary); padding: 1rem; border-radius: 4px;"><strong>Critical point:</strong> These dimensions are <em>independent</em>. You can be an Expert who waits to be told what to do. Or a Novice who owns every problem they encounter.</p>
+                <p style="font-size: 0.875rem; color: var(--text-secondary); padding-top: 1rem; border-top: 1px solid var(--border);"><strong>Related reading:</strong> <a href="https://staffeng.com/guides/staff-archetypes" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">Staff Engineer Archetypes</a> (Will Larson) explores similar patterns in engineering roles | <a href="https://leaddev.com/technical-direction/measuring-and-improving-efficiency-software-delivery" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">Measuring Engineering Effectiveness</a> (LeadDev)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Four Archetypes -->
+    <section id="archetypes" class="section">
+        <div class="container">
+            <h2 class="section-title">Four Employee Archetypes</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Every engineer falls into one of these quadrants</p>
+
+            <div class="features-grid">
+                <div class="feature-card feature-card-success">
+                    <h3>Force Multipliers</h3>
+                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> High Technical Skill + High Agency</p>
+                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"Database was slow. Added indexes on foreign keys, reduced query time 80%, deployed to prod. Monitoring shows it's stable."</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
+                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        <li>Spots problems and fixes them autonomously</li>
+                        <li>Operates at Level 4-5 agency consistently</li>
+                        <li>Significantly reduces manager overhead</li>
+                        <li>Mentors others effectively</li>
+                    </ul>
+                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Hire, promote, clone. Give them leverage and autonomy. These are your <a href="https://www.construx.com/blog/the-origins-of-10x-how-valid-is-the-underlying-research/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">10x engineers</a>.</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid #f59e0b; background: var(--bg-card);">
+                    <h3 style="color: #f59e0b;">Hungry Learners</h3>
+                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> Low Technical Skill + High Agency</p>
+                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"I'm new to React but researched this state management bug. Based on the docs, I think we should lift state to the parent. Can you review my approach?"</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
+                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        <li>Owns their learning journey</li>
+                        <li>Researches before asking</li>
+                        <li>Brings recommendations, not just questions</li>
+                        <li>Growth trajectory is steep</li>
+                    </ul>
+                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Best junior hire. Invest in training. They'll outpace passive seniors in 12-18 months.</p>
+                </div>
+
+                <div class="feature-card feature-card-danger">
+                    <h3>Brilliant Passengers</h3>
+                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> High Technical Skill + Low Agency</p>
+                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"The microservices architecture has a latency problem." <em>(Then waits for someone else to investigate)</em></p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
+                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        <li>Technically competent but needs direction</li>
+                        <li>Identifies problems, doesn't own solutions</li>
+                        <li>Common in large companies with heavy process</li>
+                        <li>Can look great in interviews (technical skill is high)</li>
+                    </ul>
+                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Coach on ownership. Reject Level 1 behavior. If resistant after 6 months, may be cultural fit issue. Never promote to leadership.</p>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--border); background: var(--bg-card); opacity: 0.8;">
+                    <h3 style="color: var(--text-secondary);">Low Performers</h3>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); font-style: italic; margin-bottom: 1rem;">Note: We use direct language to illustrate the performance gap clearly. Everyone starts somewhere—what matters is trajectory and coachability.</p>
+                    <p style="margin-bottom: 1rem;"><strong>Profile:</strong> Low Technical Skill + Low Agency</p>
+                    <p style="margin-bottom: 1rem; font-style: italic; color: var(--text-secondary);">"The deployment is broken." <em>(No follow-up, no investigation, waits to be told what to do)</em></p>
+                    <p style="margin-bottom: 0.5rem;"><strong>Characteristics:</strong></p>
+                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        <li>Reports problems without investigation</li>
+                        <li>Waits for explicit direction on everything</li>
+                        <li>Limited technical growth trajectory</li>
+                        <li>Drags down team morale</li>
+                    </ul>
+                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0;"><strong>Action:</strong> Intensive coaching for 3 months with clear performance goals. If no improvement in both skill development and ownership mindset, likely not a cultural fit.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Traditional Reviews Fail -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Why Traditional Performance Reviews Fail</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">One-dimensional evaluations create blind spots</p>
+
+            <div class="feature-card" style="margin-bottom: 3rem;">
+                <h3>The Typical Review Process</h3>
+                <p style="margin-bottom: 1rem;"><strong>What most reviews measure:</strong> "How good are they at coding?" (Technical skill only)</p>
+                <p style="margin-bottom: 1rem;"><strong>What they miss:</strong> "Do they own outcomes or wait to be managed?"</p>
+                <p style="background: var(--bg-secondary); padding: 1rem; border-radius: 4px; margin-top: 1rem;"><strong>Result:</strong> Brilliant Passengers get promoted because they "know their stuff" technically. Teams end up full of people who need constant direction despite being "senior."</p>
+            </div>
+
+            <div class="feature-card" style="margin-bottom: 3rem;">
+                <h3>Same Problem, Four Responses</h3>
+                <p style="margin-bottom: 1.5rem; background: var(--bg-secondary); padding: 1rem; border-radius: 4px; font-style: italic;">Scenario: Customer reports "Dashboard takes forever to load my data."</p>
+
+                <table class="table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Archetype</th>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Response</th>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Manager Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-left: 4px solid var(--success); background: var(--bg-light);">
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Force Multiplier</strong></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">"Query fetched 50k records at once. Implemented pagination (100/page), loads in 200ms now. Customer confirmed fixed. Added monitoring for 10k+ accounts."</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--success); font-weight: 600;">0 min</td>
+                        </tr>
+                        <tr style="border-left: 4px solid #f59e0b;">
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Hungry Learner</strong></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">"Their account has 50k records. I researched pagination strategies. Should I implement approach X or Y?"</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: #f59e0b; font-weight: 600;">15 min</td>
+                        </tr>
+                        <tr style="border-left: 4px solid var(--danger);">
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Brilliant Passenger</strong></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">"Large accounts are slow. We could add pagination, caching, or optimize queries."</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--danger); font-weight: 600;">1 hour</td>
+                        </tr>
+                        <tr style="border-left: 4px solid var(--border); opacity: 0.7;">
+                            <td style="padding: 1rem;"><strong>Low Performer</strong></td>
+                            <td style="padding: 1rem;">"Customer says the app is slow."</td>
+                            <td style="padding: 1rem; color: var(--danger); font-weight: 600;">2+ hours</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Key Insight Box -->
+            <div class="feature-card" style="max-width: 900px; margin: 3rem auto 0; background: var(--gradient-purple); color: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow-md); text-align: center;">
+                <h3 style="color: white; margin: 0 0 1rem 0; font-size: 1.25rem;">The Manager Time Difference</h3>
+                <p style="margin: 0; font-size: 1rem; line-height: 1.6; opacity: 0.95;">Force Multipliers require minimal manager time—they identify problems, research solutions, and fix issues autonomously. Brilliant Passengers need constant direction despite high technical skill. Low performers require extensive management with minimal output. Optimizing for high agency dramatically reduces management overhead.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Evaluate Both Dimensions -->
+    <section id="evaluation" class="section">
+        <div class="container">
+            <h2 class="section-title">How to Evaluate Both Dimensions</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Concrete questions and red flags for each dimension</p>
+
+            <div class="features-grid" style="margin-bottom: 3rem;">
+                <div class="feature-card">
+                    <h3>Evaluating Technical Skill (Dreyfus)</h3>
+                    <p style="margin-bottom: 1rem;"><strong>What to look for:</strong></p>
+                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        <li>Code review quality and thoroughness</li>
+                        <li>Problem-solving approach (rule-based vs intuitive)</li>
+                        <li>Domain expertise depth</li>
+                        <li>Pattern recognition ability</li>
+                        <li>Ability to handle novel situations</li>
+                    </ul>
+                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0; font-size: 0.9rem;"><strong>Interview question:</strong> "Walk me through how you'd architect X. What trade-offs would you consider?" (Listen for depth of reasoning, not just correct answer)</p>
+                    <p style="margin-top: 1rem;"><a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">→ Full Dreyfus Model guide</a></p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Evaluating Agency Level</h3>
+                    <p style="margin-bottom: 1rem;"><strong>What to look for:</strong></p>
+                    <ul style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        <li>Do they bring solutions or just problems?</li>
+                        <li>How much research before escalating?</li>
+                        <li>Do they need permission for everything?</li>
+                        <li>How do they respond to ambiguity?</li>
+                        <li>Ownership mindset vs task-completion mindset</li>
+                    </ul>
+                    <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; margin: 0; font-size: 0.9rem;"><strong>Interview question:</strong> "Tell me about a time you encountered an unexpected problem. Walk me through your response." (Listen for: Did they stop at identification? Recommend? Fix?)</p>
+                    <p style="margin-top: 1rem;"><a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">→ Full Agency Levels guide</a></p>
+                </div>
+            </div>
+
+            <div class="feature-card feature-card-warning" style="margin-bottom: 3rem;">
+                <h3>Red Flags by Archetype</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem; color: var(--danger);">🚩 Brilliant Passenger</h4>
+                        <ul style="font-size: 0.9rem; margin: 0;">
+                            <li>"That's not my job"</li>
+                            <li>"Someone should fix this"</li>
+                            <li>Identifies problems but waits</li>
+                            <li>Needs explicit direction constantly</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem; color: var(--text-secondary);">🚩 Low Performers</h4>
+                        <ul style="font-size: 0.9rem; margin: 0;">
+                            <li>Waiting to be told what to do</li>
+                            <li>No initiative on trivial tasks</li>
+                            <li>Reports problems without context</li>
+                            <li>Doesn't research before asking</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem; color: var(--warning);">Hungry Learner (Guardrails Needed)</h4>
+                        <ul style="font-size: 0.9rem; margin: 0;">
+                            <li>Overconfidence in new areas</li>
+                            <li>Moving too fast without validation</li>
+                            <li>Needs "ask before deploying" rules</li>
+                            <li>High agency but lacks judgment (yet)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card feature-card-info">
+                <h3>360 Feedback Reveals the Truth</h3>
+                <p style="margin-bottom: 1rem;">Colleagues spot agency gaps quickly:</p>
+                <ul style="margin: 0;">
+                    <li><strong>Brilliant Passenger:</strong> "Technically brilliant but I have to chase them down for updates and next steps."</li>
+                    <li><strong>Hungry Learner:</strong> "Still learning the stack but owns every task they're given. Never have to follow up."</li>
+                    <li><strong>Force Multiplier:</strong> "Problems get solved before I even know they exist. I just get FYI updates."</li>
+                    <li><strong>Low Performer:</strong> "I spend more time managing them than they contribute to the team."</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Development Strategies -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Can You Move People Between Quadrants?</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">What's coachable vs what's cultural fit</p>
+
+            <div class="feature-card" style="margin-bottom: 3rem;">
+                <h3>Development Timeframes & Coachability</h3>
+                <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 1.5rem;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Transition</th>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Timeframe</th>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Coachability</th>
+                            <th style="text-align: left; padding: 1rem; border-bottom: 2px solid var(--border); background: var(--bg-secondary);">Strategy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Low Skill → High Skill</strong></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">6-24 months</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--success); font-weight: 600;">High</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Training, mentorship, deliberate practice, feedback loops</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Hungry Learner → Force Multiplier</strong></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">12-24 months</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--success); font-weight: 600;">Very High</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Already has ownership mindset. Just needs technical development.</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Brilliant Passenger → Force Multiplier</strong></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">6-18 months</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--warning); font-weight: 600;">Medium</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Ownership coaching, reject Level 1 behavior, clear expectations, accountability</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);"><strong>Low Agency → High Agency</strong></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">2+ years</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border); color: var(--warning); font-weight: 600;">Medium-Low</td>
+                            <td style="padding: 1rem; border-bottom: 1px solid var(--border);">Cultural modeling, psychological safety, gradual trust building</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem;"><strong>Low Performers → Anything</strong></td>
+                            <td style="padding: 1rem;">3-6 months to know</td>
+                            <td style="padding: 1rem; color: var(--danger); font-weight: 600;">Very Low</td>
+                            <td style="padding: 1rem;">Performance improvement plan with clear metrics. If no improvement in both dimensions after 3 months, likely not a fit.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="feature-card feature-card-success" style="margin-bottom: 3rem;">
+                <h3>Key Insight: When Hiring, Prioritize Agency</h3>
+                <p style="margin-bottom: 1rem;"><strong>Why:</strong> Skills can be taught in 6-12 months. Agency mindset can take 2+ years to change—or may never change if it's cultural fit.</p>
+                <p style="margin-bottom: 1rem;"><strong>Trade-off:</strong> A Hungry Learner (Novice + Level 5 agency) will outgrow a Brilliant Passenger (Expert + Level 2 agency) in 12-18 months. Plus they require less management from day one.</p>
+                <p style="background: var(--bg-secondary); padding: 1rem; border-radius: 4px; margin: 0;"><strong>Exception:</strong> Specialized domains where expertise takes years (security, ML infrastructure). Here you may need to hire Brilliant Passengers and coach them on agency. But never put them in leadership roles.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Coaching Strategies by Archetype</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem;">Brilliant Passenger → Force Multiplier</h4>
+                        <ul style="font-size: 0.9rem;">
+                            <li><strong>Reject Level 1 behavior:</strong> "What do you recommend?" when they bring problems</li>
+                            <li><strong>Set expectations:</strong> "You operate at Level 4 minimum"</li>
+                            <li><strong>Reward Level 5 actions:</strong> Public praise for autonomous solutions</li>
+                            <li><strong>Timeline:</strong> If no change in 6 months, cultural fit issue</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem;">Hungry Learner → Force Multiplier</h4>
+                        <ul style="font-size: 0.9rem;">
+                            <li><strong>Invest in training:</strong> Books, courses, mentorship</li>
+                            <li><strong>Provide guardrails:</strong> "Check with me before deploying"</li>
+                            <li><strong>Gradual autonomy:</strong> Expand scope as skills grow</li>
+                            <li><strong>Timeline:</strong> Natural progression over 12-24 months</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem;">Low Performers → Exit</h4>
+                        <ul style="font-size: 0.9rem;">
+                            <li><strong>3-month PIP:</strong> Clear metrics for both skill and agency</li>
+                            <li><strong>Weekly check-ins:</strong> Immediate feedback on behavior</li>
+                            <li><strong>Document everything:</strong> For performance review / exit</li>
+                            <li><strong>Decision point:</strong> If no progress in both dimensions after 3 months, likely not a cultural fit</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Composition -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Building High-Performance Teams</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">You don't need everyone to be Force Multipliers, but you need the right mix</p>
+
+            <div class="features-grid" style="margin-bottom: 3rem;">
+                <div class="feature-card feature-card-success">
+                    <h3>Minimum Viable Team</h3>
+                    <ul style="margin: 0;">
+                        <li><strong>1+ Force Multipliers</strong> - Set the cultural standard</li>
+                        <li><strong>Majority at Level 4+ agency</strong> - Even if still growing technically</li>
+                        <li><strong>Zero low performers</strong> - Toxic to culture and morale</li>
+                        <li><strong>Limit Brilliant Passengers</strong> - Acceptable as ICs, never in leadership</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Ratios That Work</h3>
+                    <ul style="margin: 0;">
+                        <li><strong>20% Force Multipliers</strong> - Mentors and culture carriers</li>
+                        <li><strong>60% Solid Performers</strong> - Competent + Level 4 (or Hungry Learners growing)</li>
+                        <li><strong>20% Growth/Coaching</strong> - Acceptable if trajectory is clear</li>
+                        <li><strong>0% low performers</strong> - Non-negotiable</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card feature-card-warning">
+                    <h3>The Leadership Rule</h3>
+                    <p style="margin: 0;"><strong>Never promote Brilliant Passengers or low performers to leadership roles.</strong> A low-agency leader creates a culture where everyone stops taking initiative. They become organizational bottlenecks who train their reports to wait for direction. One low-agency leader can destroy a high-agency team culture.</p>
+                </div>
+            </div>
+
+            <div style="max-width: 800px; margin: 0 auto; background: var(--gradient-purple); color: white; padding: 2rem; border-radius: 8px; box-shadow: var(--shadow-md); text-align: center;">
+                <h3 style="color: white; margin: 0 0 1rem 0; font-size: 1.25rem;">The Compounding Effect</h3>
+                <p style="margin: 0; font-size: 1rem; line-height: 1.6; opacity: 0.95;">A team of Force Multipliers doesn't add linearly—it multiplies. Three Force Multipliers don't produce 3x output. They produce 10x output because they unblock each other, raise the bar, and create a self-reinforcing culture of ownership.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Downloadable Resources -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Performance Matrix Assessment Guide</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Use these frameworks in your next performance review</p>
+
+            <div class="feature-card" style="max-width: 900px; margin: 0 auto;">
+                <h3>Quick Reference: Evaluating Both Dimensions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="margin-bottom: 1rem; color: var(--primary);">Technical Skill (Dreyfus Model)</h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 0.75rem;"><strong>Assessment questions:</strong></p>
+                        <ul style="font-size: 0.875rem; margin-bottom: 1rem;">
+                            <li>Code quality and architectural decisions</li>
+                            <li>Problem-solving approach (rules vs intuition)</li>
+                            <li>Pattern recognition in complex scenarios</li>
+                            <li>Ability to handle novel situations</li>
+                            <li>Mentorship capability</li>
+                        </ul>
+                        <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; font-size: 0.875rem; margin: 0;"><strong>Interview probe:</strong> "Walk me through your approach to [complex problem]. What trade-offs did you consider?"</p>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 1rem; color: var(--primary);">Agency Level (Ownership Mindset)</h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 0.75rem;"><strong>Assessment questions:</strong></p>
+                        <ul style="font-size: 0.875rem; margin-bottom: 1rem;">
+                            <li>Solutions vs problems brought to manager</li>
+                            <li>Research depth before escalating</li>
+                            <li>Response to ambiguity and uncertainty</li>
+                            <li>Ownership vs task-completion mindset</li>
+                            <li>Proactive communication patterns</li>
+                        </ul>
+                        <p style="background: var(--bg-secondary); padding: 0.75rem; border-radius: 4px; font-size: 0.875rem; margin: 0;"><strong>Interview probe:</strong> "Tell me about a time you encountered an unexpected problem. How did you respond?"</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                    <h4 style="margin-bottom: 1rem;">Four Archetypes At-A-Glance</h4>
+                    <table class="table" style="width: 100%; font-size: 0.875rem;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 0.75rem; background: var(--bg-secondary);">Archetype</th>
+                                <th style="text-align: left; padding: 0.75rem; background: var(--bg-secondary);">Profile</th>
+                                <th style="text-align: left; padding: 0.75rem; background: var(--bg-secondary);">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-left: 4px solid var(--success);">
+                                <td style="padding: 0.75rem;"><strong>Force Multiplier</strong></td>
+                                <td style="padding: 0.75rem;">High Skill + High Agency</td>
+                                <td style="padding: 0.75rem;">Hire, promote, give leverage</td>
+                            </tr>
+                            <tr style="border-left: 4px solid #f59e0b;">
+                                <td style="padding: 0.75rem;"><strong>Hungry Learner</strong></td>
+                                <td style="padding: 0.75rem;">Low Skill + High Agency</td>
+                                <td style="padding: 0.75rem;">Best junior hire, invest in training</td>
+                            </tr>
+                            <tr style="border-left: 4px solid var(--danger);">
+                                <td style="padding: 0.75rem;"><strong>Brilliant Passenger</strong></td>
+                                <td style="padding: 0.75rem;">High Skill + Low Agency</td>
+                                <td style="padding: 0.75rem;">Coach on ownership, never promote to leadership</td>
+                            </tr>
+                            <tr style="border-left: 4px solid var(--border); opacity: 0.7;">
+                                <td style="padding: 0.75rem;"><strong>Low Performer</strong></td>
+                                <td style="padding: 0.75rem;">Low Skill + Low Agency</td>
+                                <td style="padding: 0.75rem;">3-month PIP or exit</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-top: 2rem; text-align: center;">
+                    <p style="margin: 0 0 1rem 0; font-weight: 600;">Want to implement this framework in your team?</p>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Blik's 360 feedback questionnaires measure both dimensions automatically. Get detailed reports showing exactly where each team member falls on the Performance Matrix.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Using Blik -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">How Blik Evaluates Both Dimensions</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">360-degree feedback that captures the complete picture</p>
+
+            <div class="features-grid" style="margin-bottom: 3rem;">
+                <div class="feature-card">
+                    <h3>Dreyfus Dimension Questions</h3>
+                    <p style="margin-bottom: 1rem;">Measure technical skill progression:</p>
+                    <ul style="font-size: 0.9rem;">
+                        <li>Technical Proficiency</li>
+                        <li>Engineering Maturity</li>
+                        <li>Strategic Vision</li>
+                        <li>Technical Breadth</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">→ See full framework</a></p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Agency Dimension Questions</h3>
+                    <p style="margin-bottom: 1rem;">Measure ownership mindset:</p>
+                    <ul style="font-size: 0.9rem;">
+                        <li>Initiative & Ownership</li>
+                        <li>Problem Solving Approach</li>
+                        <li>Pragmatism & Execution</li>
+                        <li>Adaptability</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">→ See full framework</a></p>
+                </div>
+
+                <div class="feature-card feature-card-info">
+                    <h3>360 Feedback Reveals Archetypes</h3>
+                    <p style="margin-bottom: 1rem;">Peers quickly identify:</p>
+                    <ul style="font-size: 0.9rem; margin: 0;">
+                        <li><strong>Force Multipliers:</strong> "Problems get solved before I know they exist"</li>
+                        <li><strong>Brilliant Passengers:</strong> "Smart but I chase them for updates"</li>
+                        <li><strong>Hungry Learners:</strong> "Still learning but owns every task"</li>
+                        <li><strong>Low Performers:</strong> "I spend more time managing than they contribute"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cta-box">
+                <h3>Evaluate Both Dimensions in Your Next Review</h3>
+                <p>Blik's questionnaires measure technical skill (Dreyfus) AND agency levels (ownership). Get 360 feedback that actually shows you who your Force Multipliers are—and who needs coaching.</p>
+                <a href="{% landing_url 'index' %}#pricing" class="btn btn-primary" style="display: inline-block;">View Pricing</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Stop Evaluating Only One Dimension</h2>
+                <p>Traditional performance reviews measure technical skill and miss ownership mindset. Use the Performance Matrix to identify Force Multipliers, coach Brilliant Passengers, and build high-agency teams.</p>
+                <div class="cta-buttons">
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

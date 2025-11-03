@@ -172,6 +172,10 @@ def send_reminder_emails(cycle, token_ids=None):
                 html_message=html_message,
             )
 
+            # Update last reminder sent timestamp
+            token.last_reminder_sent_at = timezone.now()
+            token.save()
+
             stats['sent'] += 1
 
         except Exception as e:

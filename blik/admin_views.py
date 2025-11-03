@@ -1743,7 +1743,7 @@ def product_review_detail(request, review_id):
     from productreviews.models import ProductReview
 
     review = get_object_or_404(
-        ProductReview.objects.for_organization(request.organization),
+        ProductReview.objects,
         id=review_id
     )
 
@@ -1765,7 +1765,7 @@ def product_review_edit(request, review_id):
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects.for_organization(request.organization),
+        ProductReview.objects,
         id=review_id
     )
 
@@ -1842,7 +1842,7 @@ def product_review_delete(request, review_id):
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects.for_organization(request.organization),
+        ProductReview.objects,
         id=review_id
     )
 
@@ -1871,8 +1871,8 @@ def quick_product_review(request):
     user = request.user
     org = request.organization
 
-    # Check if user has already submitted a review
-    existing_review = ProductReview.objects.for_organization(org).filter(
+    # Check if user has already submitted a review (global, not org-scoped)
+    existing_review = ProductReview.objects.filter(
         reviewer_email=user.email,
         is_active=True
     ).first()
@@ -1957,7 +1957,7 @@ def product_review_approve(request, review_id):
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects.for_organization(request.organization),
+        ProductReview.objects.all,
         id=review_id
     )
 
@@ -1981,7 +1981,7 @@ def product_review_reject(request, review_id):
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects.for_organization(request.organization),
+        ProductReview.objects.all,
         id=review_id
     )
 

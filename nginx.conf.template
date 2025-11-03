@@ -56,14 +56,13 @@ http {
         add_header X-XSS-Protection "1; mode=block" always;
         add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
-        # Static files served by landing container
+        # Static files served directly by nginx (faster than proxying)
         location /static/ {
-            proxy_pass http://landing_backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            # Preserve X-Forwarded-Proto from Cloudflare, fallback to $scheme
-            proxy_set_header X-Forwarded-Proto $forwarded_proto;
+            alias /app/staticfiles/;
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            # Allow CORS for fonts and other assets
+            add_header Access-Control-Allow-Origin "*";
         }
 
         # All routes - proxy to landing container

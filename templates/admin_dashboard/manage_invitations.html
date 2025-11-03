@@ -1,30 +1,27 @@
 {% extends "admin_dashboard/base.html" %}
 {% load static %}
 
-{% block title %}Manage Invitations - {{ cycle.reviewee.name }}{% endblock %}
+{% block title %}Invite Reviewers - {{ cycle.reviewee.name }}{% endblock %}
 
 {% block content %}
 <div style="margin-bottom: 2rem;">
-    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Manage Reviewer Invitations</h1>
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Invite Reviewers</h1>
     <p style="color: var(--text-secondary);">{{ cycle.reviewee.name }} - {{ cycle.questionnaire.name }}</p>
 </div>
 
+{% if total_tokens > 0 %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <h2 class="card-title">Invitation Status</h2>
     </div>
     <div class="card-body">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
             <div>
-                <div style="font-size: 0.875rem; color: var(--text-secondary);">Total Tokens</div>
-                <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">{{ total_tokens }}</div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">Invited</div>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">{{ assigned_tokens }}</div>
             </div>
             <div>
-                <div style="font-size: 0.875rem; color: var(--text-secondary);">Emails Assigned</div>
-                <div style="font-size: 2rem; font-weight: 700; color: var(--insight-skill);">{{ assigned_tokens }}</div>
-            </div>
-            <div>
-                <div style="font-size: 0.875rem; color: var(--text-secondary);">Invitations Sent</div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">Emails Sent</div>
                 <div style="font-size: 2rem; font-weight: 700; color: var(--success);">{{ sent_tokens }}</div>
             </div>
             <div>
@@ -34,34 +31,26 @@
         </div>
     </div>
 </div>
+{% endif %}
 
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h2 class="card-title">Assign Reviewer Emails</h2>
+        <h2 class="card-title">Invite Reviewers by Email</h2>
     </div>
     <div class="card-body">
-        <div class="alert alert-warning">
-            <strong>Privacy Protection</strong>
-            <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">
-                The system will anonymize email-to-token assignments. Once assigned, tokens are completely hidden to protect reviewer identity.
-            </p>
-        </div>
-
         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-            Enter email addresses for each reviewer category. Emails will be randomly assigned to tokens for anonymity.
-            Separate multiple emails with commas or newlines.
+            Enter email addresses for each reviewer category. The system will generate anonymous tokens and send invitations. Separate multiple emails with commas or newlines.
         </p>
 
-        <form method="post" action="{% url 'assign_invitations' cycle.id %}">
+        <form method="post" action="{% url 'assign_invitations' cycle.id %}" id="inviteForm">
             {% csrf_token %}
 
-            {% for category, tokens in tokens_by_category.items %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label class="form-label">{{ category }} ({{ tokens|length }} token{{ tokens|length|pluralize }})</label>
-                {% if category == "Self Assessment" and not user.profile.can_create_cycles_for_others %}
+                <label class="form-label">Self Assessment</label>
+                {% if not user.profile.can_create_cycles_for_others %}
                 <input
                     type="text"
-                    name="{{ tokens.0.category }}_emails"
+                    name="self_emails"
                     class="form-control"
                     value="{{ user.email }}"
                     readonly
@@ -72,147 +61,194 @@
                 </div>
                 {% else %}
                 <textarea
-                    name="{{ tokens.0.category }}_emails"
+                    name="self_emails"
                     class="form-control"
-                    rows="3"
-                    placeholder="email1@example.com, email2@example.com&#10;email3@example.com"
-                >{% for token in tokens %}{% if token.reviewer_email %}{{ token.reviewer_email }}{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}</textarea>
+                    rows="2"
+                    placeholder="{{ cycle.reviewee.email }}"
+                ></textarea>
                 <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    Enter {{ tokens|length }} email address{{ tokens|length|pluralize:"es" }} for this category
+                    Usually the reviewee's own email
                 </div>
                 {% endif %}
             </div>
-            {% endfor %}
 
-            <button type="submit" class="btn btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 0.5rem; vertical-align: middle;">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                Anonymize & Assign (No Emails Sent)
-            </button>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Manager/Supervisor</label>
+                <textarea
+                    name="manager_emails"
+                    class="form-control"
+                    rows="2"
+                    placeholder="manager@example.com"
+                ></textarea>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Direct manager or supervisor
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Peers</label>
+                <textarea
+                    name="peer_emails"
+                    class="form-control"
+                    rows="3"
+                    placeholder="peer1@example.com, peer2@example.com&#10;peer3@example.com"
+                ></textarea>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Colleagues at the same level
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Direct Reports</label>
+                <textarea
+                    name="direct_report_emails"
+                    class="form-control"
+                    rows="3"
+                    placeholder="report1@example.com, report2@example.com"
+                ></textarea>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    People who report to this reviewee
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button type="submit" name="action" value="assign" class="btn btn-primary">
+                    Save & Send Invitations
+                </button>
+                <button type="submit" name="action" value="assign_only" class="btn btn-secondary">
+                    Save Without Sending
+                </button>
+            </div>
         </form>
     </div>
 </div>
 
-<div class="card" style="margin-bottom: 2rem;">
-    <div class="card-header">
-        <h2 class="card-title">Send Invitations</h2>
-    </div>
-    <div class="card-body">
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-            Send email invitations to all assigned reviewers who haven't received one yet.
-        </p>
-
-        <form method="post" action="{% url 'send_invitations' cycle.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary" {% if assigned_tokens == 0 %}disabled{% endif %}>
-                Send Pending Invitations
-            </button>
-        </form>
-    </div>
-</div>
-
+{% if total_tokens > 0 %}
 <div class="card">
     <div class="card-header">
-        <h2 class="card-title">Token Details</h2>
+        <h2 class="card-title">Reviewer Response Status</h2>
     </div>
     <div class="card-body">
-        <div class="alert alert-info">
+        <div class="alert alert-info" style="margin-bottom: 1.5rem;">
             <strong>Privacy Notice</strong>
             <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">
-                Tokens are displayed in randomized order. Email addresses are never shown to protect reviewer identity.
+                Email addresses are never displayed to protect reviewer anonymity. Only response status is shown.
             </p>
         </div>
 
         {% for category, tokens in tokens_by_category.items %}
+        {% if tokens %}
         <div style="margin-bottom: 2rem;">
-            <h3 style="font-weight: 600; margin-bottom: 1rem;">{{ category }} ({{ tokens|length }} token{{ tokens|length|pluralize }})</h3>
+            <h3 style="font-weight: 600; margin-bottom: 1rem;">{{ category }}</h3>
             <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;" class="token-table" data-category="{{ category }}">
+                <table style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border);">
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Email Status</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Invitation Sent</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Completed</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Reviewer</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Invitation Status</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Response Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for token in tokens %}
-                        <tr style="border-bottom: 1px solid var(--border);" data-email-assigned="{% if token.reviewer_email %}yes{% else %}no{% endif %}" data-sent="{% if token.invitation_sent_at %}yes{% else %}no{% endif %}" data-completed="{% if token.completed_at %}yes{% else %}no{% endif %}" data-sent-date="{{ token.invitation_sent_at|date:'M d, Y H:i' }}" data-completed-date="{{ token.completed_at|date:'M d, Y H:i' }}">
-                            <td style="padding: 0.75rem;" class="email-status"></td>
-                            <td style="padding: 0.75rem;" class="sent-status"></td>
-                            <td style="padding: 0.75rem;" class="completed-status"></td>
+                        <tr style="border-bottom: 1px solid var(--border);" data-email="{{ token.reviewer_email|default:'' }}">
+                            <td style="padding: 0.75rem;" class="reviewer-col">
+                                {% if token.reviewer_email %}
+                                <span style="color: var(--success); font-weight: 500;">✓ Invited</span>
+                                {% else %}
+                                <span style="color: var(--text-secondary);">Not invited</span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                {% if token.invitation_sent_at %}
+                                <span style="color: var(--success);">Sent {{ token.invitation_sent_at|date:"M d, Y" }}</span>
+                                {% elif token.reviewer_email %}
+                                <span style="color: var(--text-secondary);">Ready to send</span>
+                                {% else %}
+                                <span style="color: var(--text-secondary);">—</span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 0.75rem;">
+                                {% if token.completed_at %}
+                                <span style="color: var(--insight-perception); font-weight: 500;">✓ Completed {{ token.completed_at|date:"M d, Y" }}</span>
+                                {% elif token.invitation_sent_at %}
+                                <div>
+                                    <span style="color: var(--text-secondary);">Pending</span>
+                                    {% if token.last_reminder_sent_at %}
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                        Reminder sent {{ token.last_reminder_sent_at|date:"M d, Y" }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <span style="color: var(--text-secondary);">—</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </div>
 
-<script>
-// Anonymize token display - shuffle order and hide emails
-(function() {
-    // Shuffle array using Fisher-Yates with crypto random
-    function shuffleArray(array) {
-        const shuffled = [...array];
-        const randomValues = new Uint32Array(shuffled.length);
-        crypto.getRandomValues(randomValues);
+{% if assigned_tokens > sent_tokens %}
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-body">
+        <form method="post" action="{% url 'send_invitations' cycle.id %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            {% csrf_token %}
+            <div>
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ assigned_tokens|add:"-"|add:sent_tokens }} pending invitation{{ assigned_tokens|add:"-"|add:sent_tokens|pluralize }}</div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">Send email invitations to reviewers who haven't received one yet</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Pending Invitations</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endif %}
 
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = randomValues[i] % (i + 1);
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
+<script>
+// Mask email addresses to show partial info: first char + **** + last char before @
+function maskEmail(email) {
+    if (!email) return '';
+
+    const atIndex = email.indexOf('@');
+    if (atIndex <= 0) return email;
+
+    const localPart = email.substring(0, atIndex);
+    const domain = email.substring(atIndex);
+
+    if (localPart.length <= 2) {
+        return localPart[0] + '****' + domain;
     }
 
-    // Process each category table
-    document.querySelectorAll('.token-table').forEach(table => {
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
+    return localPart[0] + '****' + localPart[localPart.length - 1] + domain;
+}
 
-        // Shuffle rows
-        const shuffledRows = shuffleArray(rows);
+// Update reviewer column to show masked emails for assigned but not sent tokens
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('tr[data-email]').forEach(row => {
+        const email = row.getAttribute('data-email');
+        const reviewerCol = row.querySelector('.reviewer-col');
 
-        // Clear and re-append in shuffled order
-        tbody.innerHTML = '';
-        shuffledRows.forEach(row => {
-            // Set email status (hide actual email)
-            const emailAssigned = row.getAttribute('data-email-assigned') === 'yes';
-            const emailStatus = row.querySelector('.email-status');
-            if (emailAssigned) {
-                emailStatus.innerHTML = '<span style="color: var(--success); font-weight: 500;">✓ Assigned</span>';
-            } else {
-                emailStatus.innerHTML = '<span style="color: var(--text-secondary);">Not assigned</span>';
+        if (email && reviewerCol) {
+            const span = reviewerCol.querySelector('span');
+            // Check if invitation was sent by looking at the invitation status column
+            const invitationStatus = row.children[1].textContent.trim();
+            const hasSent = invitationStatus.includes('Sent');
+
+            if (!hasSent) {
+                // Show masked email for pending invitations
+                const maskedEmail = maskEmail(email);
+                span.innerHTML = `<span style="color: var(--text-secondary); font-family: monospace; font-size: 0.875rem;">${maskedEmail}</span>`;
             }
-
-            // Set sent status
-            const sent = row.getAttribute('data-sent') === 'yes';
-            const sentStatus = row.querySelector('.sent-status');
-            if (sent) {
-                const sentDate = row.getAttribute('data-sent-date');
-                sentStatus.innerHTML = `<span style="color: var(--success);">${sentDate}</span>`;
-            } else {
-                sentStatus.innerHTML = '<span style="color: var(--text-secondary);">Not sent</span>';
-            }
-
-            // Set completed status
-            const completed = row.getAttribute('data-completed') === 'yes';
-            const completedStatus = row.querySelector('.completed-status');
-            if (completed) {
-                const completedDate = row.getAttribute('data-completed-date');
-                completedStatus.innerHTML = `<span style="color: var(--insight-perception);">${completedDate}</span>`;
-            } else {
-                completedStatus.innerHTML = '<span style="color: var(--text-secondary);">Pending</span>';
-            }
-
-            tbody.appendChild(row);
-        });
+        }
     });
-})();
+});
 </script>
 
 <div style="margin-top: 2rem;">

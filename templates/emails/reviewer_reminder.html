@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px; text-align: center; border-radius: 8px 8px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">Reminder: Feedback Request</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6; color: #374151;">
+                                Hello,
+                            </p>
+
+                            <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6; color: #374151;">
+                                This is a friendly reminder that you have a pending <strong>{{ category }}</strong> feedback request for <strong>{{ reviewee_name }}</strong>.
+                            </p>
+
+                            <p style="margin: 0 0 30px; font-size: 16px; line-height: 1.6; color: #374151;">
+                                Your feedback is important and will help {{ reviewee_name }} grow professionally. If you've already started, you can continue where you left off.
+                            </p>
+
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <a href="{{ feedback_url }}" style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                                            Continue Your Review
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 30px 0 0; font-size: 14px; line-height: 1.6; color: #6b7280;">
+                                <strong>Questionnaire:</strong> {{ questionnaire_name }}
+                            </p>
+
+                            <p style="margin: 20px 0 0; font-size: 14px; line-height: 1.6; color: #6b7280;">
+                                Your progress is saved automatically, so you can complete the review at your convenience.
+                            </p>
+
+                            <p style="margin: 30px 0 0; font-size: 14px; line-height: 1.6; color: #6b7280;">
+                                Thank you for your time.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                                This is an automated reminder from the Blik 360 Feedback System.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -82,79 +82,78 @@
             </div>
         </div>
 
-        <div class="card" style="margin-bottom: 1.5rem;">
-            <div class="card-header">
-                <h2 class="card-title">Number of Reviewers</h2>
+        <div class="card" style="margin-bottom: 1.5rem;" id="inviteSection">
+            <div class="card-header" style="cursor: pointer;" onclick="toggleInviteForm()">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="card-title" style="margin: 0;">Invite Reviewers (Optional)</h2>
+                    <svg id="inviteChevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
             </div>
-            <div class="card-body">
-                <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1.5rem;">
-                    Specify how many reviewer tokens to generate for each category. You'll send these anonymous tokens to reviewers via email.
+            <div class="card-body" id="inviteFormBody" style="display: none;">
+                <p style="color: #64748b; margin-bottom: 1.5rem;">
+                    Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines.
                 </p>
 
-                <div style="display: grid; gap: 1rem;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="self_count" class="form-label">Self Assessment</label>
-                        <input
-                            type="number"
-                            id="self_count"
-                            name="self_count"
-                            class="form-control"
-                            value="1"
-                            min="0"
-                            max="1"
-                        >
-                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            Reviewee's self-assessment (usually 1)
-                        </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Self Assessment</label>
+                    <textarea
+                        name="self_emails"
+                        id="selfEmails"
+                        class="form-control"
+                        rows="2"
+                        placeholder="reviewee@example.com"
+                    ></textarea>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        Usually the reviewee's own email (auto-filled when reviewee selected)
                     </div>
+                </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="manager_count" class="form-label">Manager Reviews</label>
-                        <input
-                            type="number"
-                            id="manager_count"
-                            name="manager_count"
-                            class="form-control"
-                            value="1"
-                            min="0"
-                            max="10"
-                        >
-                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            Direct managers or supervisors (usually 1)
-                        </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Manager/Supervisor</label>
+                    <textarea
+                        name="manager_emails"
+                        class="form-control"
+                        rows="2"
+                        placeholder="manager@example.com"
+                    ></textarea>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        Direct manager or supervisor
                     </div>
+                </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="peer_count" class="form-label">Peer Reviews (Optional)</label>
-                        <input
-                            type="number"
-                            id="peer_count"
-                            name="peer_count"
-                            class="form-control"
-                            value="0"
-                            min="0"
-                            max="20"
-                        >
-                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            Colleagues at the same level (set to 0 to use dynamic invitation links)
-                        </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Peers</label>
+                    <textarea
+                        name="peer_emails"
+                        class="form-control"
+                        rows="3"
+                        placeholder="peer1@example.com, peer2@example.com"
+                    ></textarea>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        Colleagues at the same level
                     </div>
+                </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="direct_report_count" class="form-label">Direct Report Reviews (Optional)</label>
-                        <input
-                            type="number"
-                            id="direct_report_count"
-                            name="direct_report_count"
-                            class="form-control"
-                            value="0"
-                            min="0"
-                            max="20"
-                        >
-                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            People who report to this reviewee (set to 0 to use dynamic invitation links)
-                        </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Direct Reports</label>
+                    <textarea
+                        name="direct_report_emails"
+                        class="form-control"
+                        rows="3"
+                        placeholder="report1@example.com, report2@example.com"
+                    ></textarea>
+                    <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
+                        People who report to this reviewee
                     </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; align-items: center; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
+                    <input type="checkbox" name="send_invitations_now" id="sendInvitationsNow" value="1" style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="sendInvitationsNow" style="margin: 0; cursor: pointer; font-size: 0.875rem; color: var(--text-primary);">
+                        Send invitation emails immediately after creating cycle
+                    </label>
                 </div>
             </div>
         </div>
@@ -167,25 +166,68 @@
 </div>
 
 <script>
+// Store reviewee email mapping
+const revieweeEmails = {
+    {% for reviewee in reviewees %}
+    '{{ reviewee.id }}': '{{ reviewee.email }}',
+    {% endfor %}
+};
+
 function toggleRevieweeSelect() {
     const mode = document.querySelector('input[name="creation_mode"]:checked').value;
     const revieweeGroup = document.getElementById('revieweeGroup');
     const revieweeSelect = document.getElementById('reviewee');
     const submitBtn = document.getElementById('submitBtn');
+    const inviteSection = document.getElementById('inviteSection');
 
     if (mode === 'bulk') {
         revieweeGroup.style.display = 'none';
         revieweeSelect.removeAttribute('required');
         submitBtn.textContent = 'Create Cycles for All Reviewees';
+        inviteSection.style.display = 'none'; // Hide invite section for bulk mode
     } else {
         revieweeGroup.style.display = 'block';
         revieweeSelect.setAttribute('required', 'required');
         submitBtn.textContent = 'Create Review Cycle';
+        inviteSection.style.display = 'block'; // Show invite section for single mode
+    }
+}
+
+function toggleInviteForm() {
+    const body = document.getElementById('inviteFormBody');
+    const chevron = document.getElementById('inviteChevron');
+
+    if (body.style.display === 'none') {
+        body.style.display = 'block';
+        chevron.style.transform = 'rotate(180deg)';
+    } else {
+        body.style.display = 'none';
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+function updateSelfEmail() {
+    const revieweeSelect = document.getElementById('reviewee');
+    const selfEmails = document.getElementById('selfEmails');
+
+    if (revieweeSelect && selfEmails && revieweeSelect.value) {
+        const email = revieweeEmails[revieweeSelect.value];
+        if (email) {
+            selfEmails.value = email;
+        }
     }
 }
 
 // Initialize on page load
 toggleRevieweeSelect();
+
+// Add event listener to reviewee select
+document.addEventListener('DOMContentLoaded', function() {
+    const revieweeSelect = document.getElementById('reviewee');
+    if (revieweeSelect) {
+        revieweeSelect.addEventListener('change', updateSelfEmail);
+    }
+});
 </script>
 
 {% if not reviewees %}

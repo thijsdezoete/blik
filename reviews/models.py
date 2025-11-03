@@ -100,6 +100,11 @@ class ReviewerToken(TimeStampedModel):
         help_text="Email to send invitation to (not stored with responses for anonymity)"
     )
     invitation_sent_at = models.DateTimeField(null=True, blank=True)
+    last_reminder_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When the last reminder email was sent to this reviewer"
+    )
     claimed_at = models.DateTimeField(
         null=True,
         blank=True,

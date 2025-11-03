@@ -898,12 +898,6 @@ def review_cycle_create(request):
         creation_mode = request.POST.get('creation_mode', 'single')
         questionnaire_id = request.POST.get('questionnaire')
 
-        # Get number of tokens for each category
-        self_count = int(request.POST.get('self_count', 0))
-        peer_count = int(request.POST.get('peer_count', 0))
-        manager_count = int(request.POST.get('manager_count', 0))
-        direct_report_count = int(request.POST.get('direct_report_count', 0))
-
         if not questionnaire_id:
             messages.error(request, 'Questionnaire is required.')
             return redirect('review_cycle_create')
@@ -931,35 +925,15 @@ def review_cycle_create(request):
                         status='active'
                     )
 
-                    # Create tokens
-                    categories = [
-                        ('self', self_count),
-                        ('peer', peer_count),
-                        ('manager', manager_count),
-                        ('direct_report', direct_report_count),
-                    ]
-
-                    for category, count in categories:
-                        for _ in range(count):
-                            ReviewerToken.objects.create(
-                                cycle=cycle,
-                                category=category
-                            )
-
                     created_cycles.append(cycle)
 
                     # Send notification emails to reviewee
                     from reviews.services import send_reviewee_notifications
                     send_reviewee_notifications(cycle, request)
 
-                total_tokens = sum([
-                    self_count + peer_count + manager_count + direct_report_count
-                    for _ in created_cycles
-                ])
-
                 messages.success(
                     request,
-                    f'Created {len(created_cycles)} review cycles for all active reviewees with {total_tokens} total tokens. Notification emails sent.'
+                    f'Created {len(created_cycles)} review cycles for all active reviewees. Notification emails sent.'
                 )
                 return redirect('review_cycle_list')
 
@@ -972,7 +946,7 @@ def review_cycle_create(request):
 
                 reviewee = Reviewee.objects.for_organization(org).get(id=reviewee_id)
 
-                # Create review cycle
+                # Create review cycle (no tokens created here)
                 cycle = ReviewCycle.objects.create(
                     reviewee=reviewee,
                     questionnaire=questionnaire,
@@ -980,35 +954,86 @@ def review_cycle_create(request):
                     status='active'
                 )
 
-                # Create tokens
-                categories = [
-                    ('self', self_count),
-                    ('peer', peer_count),
-                    ('manager', manager_count),
-                    ('direct_report', direct_report_count),
-                ]
-
-                total_tokens = 0
-                for category, count in categories:
-                    for _ in range(count):
-                        ReviewerToken.objects.create(
-                            cycle=cycle,
-                            category=category
-                        )
-                        total_tokens += 1
-
                 # Send notification emails to reviewee
                 from reviews.services import send_reviewee_notifications
                 email_stats = send_reviewee_notifications(cycle, request)
 
-                success_msg = f'Review cycle created for "{reviewee.name}" with {total_tokens} reviewer tokens.'
-                if email_stats['sent'] > 0:
-                    success_msg += f' {email_stats["sent"]} notification email(s) sent.'
-                if email_stats['errors']:
-                    success_msg += f' (Email errors: {", ".join(email_stats["errors"])})'
+                # Check if user provided reviewer emails
+                from django.core.validators import validate_email
+                from django.core.exceptions import ValidationError
+                import re
 
-                messages.success(request, success_msg)
-                return redirect('review_cycle_detail', cycle_id=cycle.id)
+                email_assignments = {}
+                has_emails = False
+
+                for category_code, category_display in ReviewerToken.CATEGORY_CHOICES:
+                    emails_data = request.POST.get(f'{category_code}_emails', '').strip()
+                    if emails_data:
+                        emails = re.split(r'[,\n]+', emails_data)
+                        validated_emails = []
+                        for e in emails:
+                            e = e.strip()
+                            if e:
+                                try:
+                                    validate_email(e)
+                                    validated_emails.append(e)
+                                    has_emails = True
+                                except ValidationError:
+                                    messages.warning(request, f'Invalid email skipped in {category_display}: {e}')
+                        email_assignments[category_code] = validated_emails
+                    else:
+                        email_assignments[category_code] = []
+
+                # If emails were provided, create tokens and assign them
+                if has_emails:
+                    # Create tokens dynamically based on email count
+                    for category_code, emails in email_assignments.items():
+                        if emails:
+                            for _ in range(len(emails)):
+                                ReviewerToken.objects.create(
+                                    cycle=cycle,
+                                    category=category_code
+                                )
+
+                    # Assign tokens to emails with randomization
+                    assign_stats = assign_tokens_to_emails(cycle, email_assignments)
+
+                    # Check if user wants to send invitations immediately
+                    send_now = request.POST.get('send_invitations_now') == '1'
+                    if send_now and assign_stats['assigned'] > 0:
+                        send_stats = send_reviewer_invitations(cycle)
+                        if send_stats['sent'] > 0:
+                            messages.success(
+                                request,
+                                f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) invited. {send_stats["sent"]} invitation email(s) sent.'
+                            )
+                            # Redirect to cycle detail since invitations were sent
+                            return redirect('review_cycle_detail', cycle_id=cycle.id)
+                        else:
+                            messages.success(
+                                request,
+                                f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) assigned.'
+                            )
+                            # Redirect to invitations page since emails weren't sent
+                            return redirect('manage_invitations', cycle_id=cycle.id)
+                    else:
+                        messages.success(
+                            request,
+                            f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) assigned. Visit the invitations page to send emails.'
+                        )
+                        # Redirect to invitations page to send emails
+                        return redirect('manage_invitations', cycle_id=cycle.id)
+                else:
+                    # No emails provided, show success and redirect to invitations
+                    success_msg = f'Review cycle created for "{reviewee.name}".'
+                    if email_stats['sent'] > 0:
+                        success_msg += f' {email_stats["sent"]} notification email(s) sent.'
+                    if email_stats['errors']:
+                        success_msg += f' (Email errors: {", ".join(email_stats["errors"])})'
+
+                    messages.success(request, success_msg)
+                    # Redirect to invitations page to add reviewers
+                    return redirect('manage_invitations', cycle_id=cycle.id)
 
         except Exception as e:
             messages.error(request, f'Error creating review cycle: {str(e)}')
@@ -1058,6 +1083,7 @@ def review_cycle_detail(request, cycle_id):
     total_tokens = tokens.count()
     completed_tokens = tokens.filter(completed_at__isnull=False).count()
     claimed_tokens = tokens.filter(claimed_at__isnull=False).count()
+    pending_invites = tokens.filter(reviewer_email__isnull=False, invitation_sent_at__isnull=True).count()
     completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
     claimed_completion_rate = (completed_tokens / claimed_tokens * 100) if claimed_tokens > 0 else 0
 
@@ -1076,6 +1102,7 @@ def review_cycle_detail(request, cycle_id):
         'total_tokens': total_tokens,
         'completed_tokens': completed_tokens,
         'claimed_tokens': claimed_tokens,
+        'pending_invites': pending_invites,
         'completion_rate': completion_rate,
         'claimed_completion_rate': claimed_completion_rate,
         'report_exists': report_exists,
@@ -1207,7 +1234,7 @@ def manage_invitations(request, cycle_id):
 
 @login_required
 def assign_invitations(request, cycle_id):
-    """Assign email addresses to reviewer tokens"""
+    """Assign email addresses to reviewer tokens (creating tokens dynamically)"""
     from django.core.validators import validate_email
     from django.core.exceptions import ValidationError
 
@@ -1235,6 +1262,28 @@ def assign_invitations(request, cycle_id):
             else:
                 email_assignments[category_code] = []
 
+        # Create tokens dynamically based on email count
+        tokens_created = 0
+        for category_code, emails in email_assignments.items():
+            if not emails:
+                continue
+
+            # Get existing unassigned tokens for this category (only count tokens without emails)
+            existing_unassigned = cycle.tokens.filter(
+                category=category_code,
+                reviewer_email__isnull=True
+            ).count()
+            needed_count = len(emails)
+
+            # Create additional tokens if needed
+            if needed_count > existing_unassigned:
+                for _ in range(needed_count - existing_unassigned):
+                    ReviewerToken.objects.create(
+                        cycle=cycle,
+                        category=category_code
+                    )
+                    tokens_created += 1
+
         # Assign tokens to emails with randomization
         stats = assign_tokens_to_emails(cycle, email_assignments)
 
@@ -1242,8 +1291,22 @@ def assign_invitations(request, cycle_id):
             for error in stats['errors']:
                 messages.error(request, error)
 
-        if stats['assigned'] > 0:
-            messages.success(request, f'Successfully assigned {stats["assigned"]} email(s) to reviewer tokens.')
+        # Check if user wants to send invitations immediately
+        action = request.POST.get('action', 'assign')
+        if action == 'assign' and stats['assigned'] > 0:
+            # Send invitations immediately
+            send_stats = send_reviewer_invitations(cycle)
+
+            if send_stats['sent'] > 0:
+                messages.success(request, f'Successfully invited {stats["assigned"]} reviewer(s) and sent {send_stats["sent"]} email(s).')
+            else:
+                messages.success(request, f'Successfully assigned {stats["assigned"]} email(s). Invitations will be sent separately.')
+
+            if send_stats['errors']:
+                for error in send_stats['errors']:
+                    messages.error(request, error)
+        elif stats['assigned'] > 0:
+            messages.success(request, f'Successfully assigned {stats["assigned"]} email(s). No invitations sent yet.')
 
         return redirect('manage_invitations', cycle_id=cycle.id)
 
@@ -1296,6 +1359,77 @@ def send_reminder(request, cycle_id):
         return redirect('review_cycle_detail', cycle_id=cycle.id)
 
     return redirect('send_reminder_form', cycle_id=cycle.id)
+
+
+@login_required
+@require_POST
+def send_individual_reminder(request, cycle_id, token_id):
+    """Send a reminder email to a specific reviewer"""
+    from django.core.mail import EmailMultiAlternatives
+    from django.template.loader import render_to_string
+    from django.conf import settings
+
+    cycle = get_cycle_or_404(cycle_id, request.organization)
+
+    try:
+        # Get the specific token
+        token = ReviewerToken.objects.get(id=token_id, cycle=cycle)
+
+        # Check if token has email and invitation was sent
+        if not token.reviewer_email:
+            messages.error(request, 'Cannot send reminder: no email assigned to this reviewer.')
+            return redirect('review_cycle_detail', cycle_id=cycle.id)
+
+        if not token.invitation_sent_at:
+            messages.error(request, 'Cannot send reminder: invitation not sent yet.')
+            return redirect('review_cycle_detail', cycle_id=cycle.id)
+
+        if token.is_completed:
+            messages.info(request, 'This reviewer has already completed their feedback.')
+            return redirect('review_cycle_detail', cycle_id=cycle.id)
+
+        # Build feedback URL
+        feedback_url = request.build_absolute_uri(
+            f'/feedback/{token.token}/'
+        )
+
+        # Render email
+        context = {
+            'reviewee_name': cycle.reviewee.name,
+            'questionnaire_name': cycle.questionnaire.name,
+            'feedback_url': feedback_url,
+            'category': token.get_category_display(),
+        }
+
+        html_content = render_to_string('emails/reviewer_reminder.html', context)
+        text_content = render_to_string('emails/reviewer_reminder.txt', context)
+
+        # Send email
+        from_email = settings.DEFAULT_FROM_EMAIL
+        subject = f'Reminder: Feedback Request for {cycle.reviewee.name}'
+
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=from_email,
+            to=[token.reviewer_email]
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+
+        # Update last reminder sent timestamp
+        from django.utils import timezone
+        token.last_reminder_sent_at = timezone.now()
+        token.save()
+
+        messages.success(request, f'Reminder sent to reviewer.')
+
+    except ReviewerToken.DoesNotExist:
+        messages.error(request, 'Reviewer token not found.')
+    except Exception as e:
+        messages.error(request, f'Error sending reminder: {str(e)}')
+
+    return redirect('review_cycle_detail', cycle_id=cycle.id)
 
 
 @login_required

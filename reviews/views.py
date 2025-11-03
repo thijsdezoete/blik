@@ -89,6 +89,11 @@ def feedback_form(request, token):
             'error': 'This review cycle has been closed. Feedback can no longer be submitted.'
         }, status=410)
 
+    # Mark token as claimed on first access (for email-invited users)
+    if reviewer_token.claimed_at is None:
+        reviewer_token.claimed_at = timezone.now()
+        reviewer_token.save(update_fields=['claimed_at'])
+
     questionnaire = cycle.questionnaire
 
     # Get all sections with questions

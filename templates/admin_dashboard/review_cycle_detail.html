@@ -183,11 +183,15 @@
 </div>
 
 <!-- Invitation Links (Active cycles only) -->
-<div class="card" style="margin-bottom: 2rem;">
-    <div class="card-header">
-        <h2 class="card-title">Invitation Links</h2>
-    </div>
-    <div class="card-body">
+<details style="margin-bottom: 2rem;" {% if email_invited_count == 0 %}open{% endif %}>
+    <summary style="cursor: pointer; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; font-weight: 600; list-style: none; display: flex; align-items: center; gap: 0.5rem;">
+        <svg style="width: 16px; height: 16px; transition: transform 0.2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Invitation Links
+        {% if email_invited_count > 0 %}
+        <span style="color: var(--text-secondary); font-weight: normal; margin-left: auto; font-size: 0.875rem;">Alternative to email invites</span>
+        {% endif %}
+    </summary>
+    <div style="padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px;">
         <p style="color: #64748b; margin-bottom: 1.5rem;">
             Share these links with reviewers. Each link will randomly assign an available token from the category.
             Reviewers can bookmark their feedback link or return later - progress is saved automatically.
@@ -246,7 +250,7 @@
             {% endif %}
         </div>
     </div>
-</div>
+</details>
 {% endif %}
 
 <!-- Reviewer Response Status -->
@@ -310,7 +314,14 @@
                                     {% if token.completed_at %}
                                     <span style="color: var(--insight-perception); font-weight: 500;">✓ Completed {{ token.completed_at|date:"M d, Y" }}</span>
                                     {% elif token.claimed_at %}
-                                    <span style="color: var(--warning); font-weight: 500;">In Progress</span>
+                                    <div>
+                                        <span style="color: var(--warning); font-weight: 500;">In Progress</span>
+                                        {% if token.last_reminder_sent_at %}
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                            Reminder sent {{ token.last_reminder_sent_at|date:"M d, Y" }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
                                     {% elif token.invitation_sent_at %}
                                     <div>
                                         <span style="color: var(--text-secondary);">Pending</span>
@@ -326,14 +337,37 @@
                                 </td>
                                 <td style="border-bottom: 1px solid var(--border);">
                                     {% if token.reviewer_email and not token.invitation_sent_at %}
-                                    <form method="post" action="{% url 'send_invitations' cycle.id %}" style="display: inline; margin: 0;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="token_id" value="{{ token.id }}">
-                                        <button type="submit" class="btn btn-sm btn-primary" style="white-space: nowrap;">
-                                            Send Invite
-                                        </button>
-                                    </form>
-                                    {% elif token.invitation_sent_at and not token.is_completed %}
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <form method="post" action="{% url 'send_invitations' cycle.id %}" style="display: inline; margin: 0;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="token_id" value="{{ token.id }}">
+                                            <button type="submit" class="btn btn-sm btn-primary" style="white-space: nowrap;">
+                                                Send Invite
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'remove_reviewer_token' cycle.id token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" style="white-space: nowrap;">
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% elif token.invitation_sent_at and not token.is_completed and not token.claimed_at %}
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <form method="post" action="{% url 'send_individual_reminder' cycle.id token.id %}" style="display: inline; margin: 0;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-warning" style="white-space: nowrap;">
+                                                Send Reminder
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'remove_reviewer_token' cycle.id token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" style="white-space: nowrap;">
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% elif token.invitation_sent_at and not token.is_completed and token.claimed_at %}
                                     <form method="post" action="{% url 'send_individual_reminder' cycle.id token.id %}" style="display: inline; margin: 0;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-warning" style="white-space: nowrap;">
@@ -491,6 +525,22 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endif %}
 {% endif %}
 
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 500px;">
+        <h2 style="margin: 0 0 1rem 0; font-size: 1.5rem;">Confirm Action</h2>
+        <p id="confirm-message" style="color: var(--text-secondary); margin-bottom: 2rem;"></p>
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button onclick="closeConfirmModal()" class="btn btn-secondary">
+                Cancel
+            </button>
+            <button id="confirm-action-btn" class="btn btn-danger">
+                Remove
+            </button>
+        </div>
+    </div>
+</div>
+
 <style>
 details[open] > summary svg {
     transform: rotate(90deg);
@@ -532,6 +582,43 @@ function showCopyFeedback(message) {
         feedback.classList.remove('show');
         setTimeout(() => feedback.remove(), 300);
     }, 2000);
+}
+
+// Confirmation modal functions
+function showConfirmModal(message, onConfirm) {
+    const modal = document.getElementById('confirm-modal');
+    const messageEl = document.getElementById('confirm-message');
+    const confirmBtn = document.getElementById('confirm-action-btn');
+
+    messageEl.textContent = message;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Remove old listeners and add new one
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+    newConfirmBtn.addEventListener('click', function() {
+        onConfirm();
+        closeConfirmModal();
+    });
+}
+
+function closeConfirmModal() {
+    const modal = document.getElementById('confirm-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Handle remove reviewer confirmation
+function confirmRemoveReviewer(form) {
+    showConfirmModal(
+        'Are you sure you want to remove this reviewer from the cycle?',
+        function() {
+            form.submit();
+        }
+    );
+    return false;
 }
 </script>
 {% endblock %}

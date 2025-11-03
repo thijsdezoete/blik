@@ -1085,6 +1085,7 @@ def review_cycle_detail(request, cycle_id):
     claimed_tokens = tokens.filter(claimed_at__isnull=False).count()
     pending_invites = tokens.filter(reviewer_email__isnull=False, invitation_sent_at__isnull=True).count()
     pending_reminders = tokens.filter(invitation_sent_at__isnull=False, completed_at__isnull=True).count()
+    email_invited_count = tokens.filter(reviewer_email__isnull=False).exclude(category='self').count()
     completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
     claimed_completion_rate = (completed_tokens / claimed_tokens * 100) if claimed_tokens > 0 else 0
 
@@ -1105,6 +1106,7 @@ def review_cycle_detail(request, cycle_id):
         'claimed_tokens': claimed_tokens,
         'pending_invites': pending_invites,
         'pending_reminders': pending_reminders,
+        'email_invited_count': email_invited_count,
         'completion_rate': completion_rate,
         'claimed_completion_rate': claimed_completion_rate,
         'report_exists': report_exists,
@@ -1310,7 +1312,7 @@ def assign_invitations(request, cycle_id):
         elif stats['assigned'] > 0:
             messages.success(request, f'Successfully assigned {stats["assigned"]} email(s). No invitations sent yet.')
 
-        return redirect('manage_invitations', cycle_id=cycle.id)
+        return redirect('review_cycle_detail', cycle_id=cycle.id)
 
     return redirect('manage_invitations', cycle_id=cycle.id)
 
@@ -1333,9 +1335,9 @@ def send_invitations(request, cycle_id):
         elif stats['sent'] == 0 and not stats['errors']:
             messages.info(request, 'No pending invitations to send.')
 
-        return redirect('manage_invitations', cycle_id=cycle.id)
+        return redirect('review_cycle_detail', cycle_id=cycle.id)
 
-    return redirect('manage_invitations', cycle_id=cycle.id)
+    return redirect('review_cycle_detail', cycle_id=cycle.id)
 
 
 @login_required
@@ -1430,6 +1432,38 @@ def send_individual_reminder(request, cycle_id, token_id):
         messages.error(request, 'Reviewer token not found.')
     except Exception as e:
         messages.error(request, f'Error sending reminder: {str(e)}')
+
+    return redirect('review_cycle_detail', cycle_id=cycle.id)
+
+
+@login_required
+@require_POST
+def remove_reviewer_token(request, cycle_id, token_id):
+    """Remove a reviewer token from a cycle (only if not started)"""
+    cycle = get_cycle_or_404(cycle_id, request.organization)
+
+    try:
+        # Get the specific token
+        token = ReviewerToken.objects.get(id=token_id, cycle=cycle)
+
+        # Only allow deletion if reviewer hasn't started (no claimed_at or completed_at)
+        if token.claimed_at or token.completed_at:
+            messages.error(request, 'Cannot remove: reviewer has already started or completed their feedback.')
+            return redirect('review_cycle_detail', cycle_id=cycle.id)
+
+        # Store info for success message
+        category = token.get_category_display()
+        email = token.reviewer_email if token.reviewer_email else "unclaimed token"
+
+        # Delete the token
+        token.delete()
+
+        messages.success(request, f'Removed {category} reviewer ({email}) from cycle.')
+
+    except ReviewerToken.DoesNotExist:
+        messages.error(request, 'Reviewer token not found.')
+    except Exception as e:
+        messages.error(request, f'Error removing reviewer: {str(e)}')
 
     return redirect('review_cycle_detail', cycle_id=cycle.id)
 

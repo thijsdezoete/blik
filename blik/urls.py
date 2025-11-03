@@ -50,6 +50,7 @@ urlpatterns = [
     path('dashboard/cycles/<int:cycle_id>/send-reminder/', admin_views.send_reminder_form, name='send_reminder_form'),
     path('dashboard/cycles/<int:cycle_id>/send-reminder/send/', admin_views.send_reminder, name='send_reminder'),
     path('dashboard/cycles/<int:cycle_id>/reminder/<int:token_id>/', admin_views.send_individual_reminder, name='send_individual_reminder'),
+    path('dashboard/cycles/<int:cycle_id>/remove-reviewer/<int:token_id>/', admin_views.remove_reviewer_token, name='remove_reviewer_token'),
     path('dashboard/cycles/<int:cycle_id>/send-report-email/', admin_views.send_report_email, name='send_report_email'),
     path('dashboard/product-reviews/', admin_views.product_review_list, name='product_review_list'),
     path('dashboard/product-reviews/create/', admin_views.product_review_create, name='product_review_create'),

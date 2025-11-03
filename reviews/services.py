@@ -139,9 +139,10 @@ def send_reminder_emails(cycle, token_ids=None):
         'errors': []
     }
 
-    # Get incomplete tokens with emails
+    # Get incomplete tokens with emails that have been invited
     tokens = cycle.tokens.filter(
         reviewer_email__isnull=False,
+        invitation_sent_at__isnull=False,
         completed_at__isnull=True
     )
 
@@ -174,7 +175,7 @@ def send_reminder_emails(cycle, token_ids=None):
 
             # Update last reminder sent timestamp
             token.last_reminder_sent_at = timezone.now()
-            token.save()
+            token.save(update_fields=['last_reminder_sent_at'])
 
             stats['sent'] += 1
 

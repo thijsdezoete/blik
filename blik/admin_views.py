@@ -1014,15 +1014,14 @@ def review_cycle_create(request):
                                 request,
                                 f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) assigned.'
                             )
-                            # Redirect to invitations page since emails weren't sent
-                            return redirect('manage_invitations', cycle_id=cycle.id)
+                            return redirect('review_cycle_detail', cycle_id=cycle.id)
                     else:
                         messages.success(
                             request,
                             f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) assigned. Visit the invitations page to send emails.'
                         )
                         # Redirect to invitations page to send emails
-                        return redirect('manage_invitations', cycle_id=cycle.id)
+                        return redirect('review_cycle_detail', cycle_id=cycle.id)
                 else:
                     # No emails provided, show success and redirect to invitations
                     success_msg = f'Review cycle created for "{reviewee.name}".'

@@ -1,48 +1,24 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
+__pycache__
+*.pyc
+*.pyo
+*.pyd
 .Python
-*.egg-info/
-dist/
-build/
-
-# Virtual environments
-.venv/
-venv/
 env/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Git
-.git/
-.gitignore
-
-# Environment
+venv/
+.venv/
+*.sqlite3
+db.sqlite3
 .env
 .env.local
-
-# Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
-
-# Documentation
-REQUIREMENTS.md
-LICENSE
-
-# Test and coverage
-.pytest_cache/
+*.log
+.git
+.gitignore
+.DS_Store
+docs/
+.pytest_cache
 .coverage
 htmlcov/
 .tox/
-
-# Database
-*.sqlite3
-db.sqlite3
+staticfiles/
+mediafiles/
+node_modules/

@@ -1620,8 +1620,9 @@ def product_review_list(request):
 
     org = request.organization
 
-    # Filter reviews by organization
-    reviews_qs = ProductReview.objects.for_organization(org).filter(is_active=True)
+    # Get all product reviews (not org-scoped - these are reviews of Blik as a product)
+    # Use .all() to explicitly avoid any organization filtering from the manager
+    reviews_qs = ProductReview.objects.all().filter(is_active=True)
 
     # Filter by status if provided
     status_filter = request.GET.get('status', '')

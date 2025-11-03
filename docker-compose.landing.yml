@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.landing
-    command: gunicorn --bind 0.0.0.0:${LANDING_PORT:-8001} --workers 2 --timeout 60 landing_wsgi:application
+    command: gunicorn --bind 0.0.0.0:${LANDING_PORT:-8001} --workers 2 --timeout 60 --access-logfile - --error-logfile - --log-level info landing_wsgi:application
     volumes:
       - ./:/app
       - static_volume:/app/staticfiles

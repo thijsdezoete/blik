@@ -154,9 +154,11 @@
                         <tr style="border-bottom: 1px solid var(--border);" data-email="{{ token.reviewer_email|default:'' }}">
                             <td style="padding: 0.75rem;" class="reviewer-col">
                                 {% if token.reviewer_email %}
-                                <span style="color: var(--success); font-weight: 500;">✓ Invited</span>
+                                <span style="color: var(--success); font-weight: 500;">✓ Invited by email</span>
+                                {% elif token.claimed_at or token.completed_at %}
+                                <span style="color: var(--text-secondary);">Via invite link</span>
                                 {% else %}
-                                <span style="color: var(--text-secondary);">Not invited</span>
+                                <span style="color: var(--text-secondary);">Awaiting claim</span>
                                 {% endif %}
                             </td>
                             <td style="padding: 0.75rem;">
@@ -171,6 +173,8 @@
                             <td style="padding: 0.75rem;">
                                 {% if token.completed_at %}
                                 <span style="color: var(--insight-perception); font-weight: 500;">✓ Completed {{ token.completed_at|date:"M d, Y" }}</span>
+                                {% elif token.claimed_at %}
+                                <span style="color: var(--warning); font-weight: 500;">In Progress</span>
                                 {% elif token.invitation_sent_at %}
                                 <div>
                                     <span style="color: var(--text-secondary);">Pending</span>

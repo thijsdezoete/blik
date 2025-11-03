@@ -1084,6 +1084,7 @@ def review_cycle_detail(request, cycle_id):
     completed_tokens = tokens.filter(completed_at__isnull=False).count()
     claimed_tokens = tokens.filter(claimed_at__isnull=False).count()
     pending_invites = tokens.filter(reviewer_email__isnull=False, invitation_sent_at__isnull=True).count()
+    pending_reminders = tokens.filter(invitation_sent_at__isnull=False, completed_at__isnull=True).count()
     completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
     claimed_completion_rate = (completed_tokens / claimed_tokens * 100) if claimed_tokens > 0 else 0
 
@@ -1103,6 +1104,7 @@ def review_cycle_detail(request, cycle_id):
         'completed_tokens': completed_tokens,
         'claimed_tokens': claimed_tokens,
         'pending_invites': pending_invites,
+        'pending_reminders': pending_reminders,
         'completion_rate': completion_rate,
         'claimed_completion_rate': claimed_completion_rate,
         'report_exists': report_exists,

@@ -290,9 +290,11 @@
                             <tr data-email="{{ token.reviewer_email|default:'' }}" data-sent="{% if token.invitation_sent_at %}yes{% else %}no{% endif %}">
                                 <td style="font-size: 0.875rem; border-bottom: 1px solid var(--border);" class="reviewer-col">
                                     {% if token.reviewer_email %}
-                                    <span style="color: var(--success); font-weight: 500;">✓ Invited</span>
+                                    <span style="color: var(--success); font-weight: 500;">✓ Invited by email</span>
+                                    {% elif token.claimed_at or token.completed_at %}
+                                    <span style="color: var(--text-secondary);">Via invite link</span>
                                     {% else %}
-                                    <span style="color: var(--text-secondary);">Not invited</span>
+                                    <span style="color: var(--text-secondary);">Awaiting claim</span>
                                     {% endif %}
                                 </td>
                                 <td style="border-bottom: 1px solid var(--border); font-size: 0.875rem;">
@@ -307,6 +309,8 @@
                                 <td style="border-bottom: 1px solid var(--border); font-size: 0.875rem;">
                                     {% if token.completed_at %}
                                     <span style="color: var(--insight-perception); font-weight: 500;">✓ Completed {{ token.completed_at|date:"M d, Y" }}</span>
+                                    {% elif token.claimed_at %}
+                                    <span style="color: var(--warning); font-weight: 500;">In Progress</span>
                                     {% elif token.invitation_sent_at %}
                                     <div>
                                         <span style="color: var(--text-secondary);">Pending</span>
@@ -357,6 +361,19 @@
                     <div style="font-size: 0.875rem; color: var(--text-secondary);">Send invitation emails to all reviewers who have been assigned but not sent invites yet</div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Send All Pending Invites</button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if pending_reminders > 0 %}
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
+            <form method="post" action="{% url 'send_reminder' cycle.id %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                {% csrf_token %}
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ pending_reminders }} unfinished review{{ pending_reminders|pluralize }}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Send reminder emails to all reviewers who have been sent invitations but haven't completed their feedback yet</div>
+                </div>
+                <button type="submit" class="btn btn-warning" style="white-space: nowrap; color: white;">Remind All Pending Reviewers</button>
             </form>
         </div>
         {% endif %}

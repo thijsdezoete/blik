@@ -34,13 +34,15 @@ def claim_token(request, invitation_token):
 
     # If coming from redirect page (has force_claim param), skip localStorage check
     if request.GET.get('force_claim'):
-        # Get available tokens (not claimed and not completed)
+        # Get available tokens (not claimed, not completed, and NOT assigned to an email)
+        # This prevents invite links from claiming tokens meant for specific email invitations
         available_tokens = list(
             ReviewerToken.objects.filter(
                 cycle=cycle,
                 category=category,
                 claimed_at__isnull=True,
-                completed_at__isnull=True
+                completed_at__isnull=True,
+                reviewer_email__isnull=True  # Only claim tokens without email assignments
             )
         )
 

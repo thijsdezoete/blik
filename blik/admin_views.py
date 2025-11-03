@@ -91,9 +91,9 @@ def dashboard(request):
     except UserProfile.DoesNotExist:
         pass
 
-    # Check if user has submitted a product review
+    # Check if user has submitted a product review (global, not org-scoped)
     from productreviews.models import ProductReview
-    user_has_reviewed = ProductReview.objects.for_organization(org).filter(
+    user_has_reviewed = ProductReview.objects.filter(
         reviewer_email=request.user.email,
         is_active=True
     ).exists()
@@ -1676,7 +1676,7 @@ def product_review_create(request):
     from productreviews.models import ProductReview
     from datetime import date
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to create product reviews.')
         return redirect('product_review_list')
 
@@ -1760,12 +1760,12 @@ def product_review_edit(request, review_id):
     from productreviews.models import ProductReview
     from datetime import date
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to edit product reviews.')
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects,
+        ProductReview.objects.all(),
         id=review_id
     )
 
@@ -1837,12 +1837,12 @@ def product_review_delete(request, review_id):
     """Delete (soft delete) a product review"""
     from productreviews.models import ProductReview
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to delete product reviews.')
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects,
+        ProductReview.objects.all(),
         id=review_id
     )
 
@@ -1952,12 +1952,12 @@ def product_review_approve(request, review_id):
     from productreviews.models import ProductReview
     from datetime import date
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to approve reviews.')
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects.all,
+        ProductReview.objects.all(),
         id=review_id
     )
 
@@ -1976,12 +1976,12 @@ def product_review_reject(request, review_id):
     """Quick reject a product review"""
     from productreviews.models import ProductReview
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to reject reviews.')
         return redirect('product_review_list')
 
     review = get_object_or_404(
-        ProductReview.objects.all,
+        ProductReview.objects.all(),
         id=review_id
     )
 

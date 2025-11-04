@@ -8,6 +8,15 @@ from reviews.models import ReviewCycle
 class Report(TimeStampedModel):
     """Generated report for a review cycle"""
 
+    # Public UUID for external references (API, URLs)
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        db_index=True,
+        help_text="Public identifier for API and URL usage (non-enumerable)"
+    )
+
     cycle = models.OneToOneField(
         ReviewCycle,
         on_delete=models.CASCADE,

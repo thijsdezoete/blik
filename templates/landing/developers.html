@@ -1,0 +1,723 @@
+{% extends "landing/base.html" %}
+{% load static landing_tags %}
+
+{% block title %}Developer Documentation - REST API & Webhooks | {{ site_name }}{% endblock %}
+
+{% block meta_description %}Complete API documentation for Blik's REST API. Includes authentication, endpoints, webhook events, code examples in Python, JavaScript, and curl. Start integrating in minutes.{% endblock %}
+
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Blik REST API Documentation",
+        "description": "Complete developer documentation for integrating with Blik's 360 feedback platform via REST API and webhooks",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ site_protocol }}://{{ site_domain }}/static/logo.png"
+            }
+        }
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Developer Documentation</h1>
+            <p class="hero-subtitle">Integrate 360° feedback into your workflow with our REST API and webhooks</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+                <a href="#quickstart" class="btn btn-primary">Quick Start</a>
+                <a href="#api-reference" class="btn btn-secondary">API Reference</a>
+                <a href="{{ main_app_url }}/api/v1/docs/" class="btn btn-secondary" target="_blank">Interactive Docs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Overview -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">API Overview</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Everything you need to integrate Blik into your systems</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Authentication</h3>
+                    <p>Bearer token authentication with organization-scoped access. Create API tokens in your dashboard.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>REST API</h3>
+                    <p>Full CRUD operations for cycles, reviewees, questionnaires, and reports. Standard HTTP methods with JSON responses.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Webhooks</h3>
+                    <p>Real-time event notifications with HMAC signatures. Subscribe to cycle.created, cycle.completed, feedback.submitted, and report.generated events.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>OpenAPI Docs</h3>
+                    <p>Interactive Swagger documentation at <code>/api/v1/docs/</code>. Test endpoints directly in your browser.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>No Limits</h3>
+                    <p>No rate limits, no usage caps, no hidden fees. Unlimited API calls included with your subscription.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Secure</h3>
+                    <p>Modern webhook structure with non-enumerable UUIDs. HMAC-SHA256 signatures for webhook verification.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section id="quickstart" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Quick Start</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Get started in 5 minutes</p>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>1. Create an API Token</h3>
+                    <p>Navigate to <strong>Settings → API Tokens</strong> in your dashboard and create a new token with the required permissions.</p>
+                    <div class="code-block" style="margin-top: 1rem;">
+Name: "My Integration"<br>
+Expires: Optional (recommended: 90 days)
+                    </div>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">Save the token value immediately—it's only shown once.</p>
+                </div>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>2. Make Your First Request</h3>
+                    <p>Test your authentication by listing reviewees:</p>
+
+                    <div class="code-tabs" style="margin-top: 1.5rem;">
+                        <div class="tab-buttons" style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border-color); margin-bottom: 1rem;">
+                            <button class="tab-button active" data-tab="curl-1">curl</button>
+                            <button class="tab-button" data-tab="python-1">Python</button>
+                            <button class="tab-button" data-tab="javascript-1">JavaScript</button>
+                        </div>
+
+                        <div class="tab-content active" data-tab="curl-1">
+                            <pre class="code-block">curl -X GET '{{ site_protocol }}://{{ site_domain }}/api/v1/reviewees/' \
+  -H 'Authorization: Bearer YOUR_TOKEN_HERE' \
+  -H 'Accept: application/json'</pre>
+                        </div>
+
+                        <div class="tab-content" data-tab="python-1">
+                            <pre class="code-block">import requests
+
+API_TOKEN = "YOUR_TOKEN_HERE"
+BASE_URL = "{{ site_protocol }}://{{ site_domain }}/api/v1"
+
+headers = {
+    "Authorization": f"Bearer {API_TOKEN}",
+    "Accept": "application/json"
+}
+
+response = requests.get(f"{BASE_URL}/reviewees/", headers=headers)
+reviewees = response.json()
+print(reviewees)</pre>
+                        </div>
+
+                        <div class="tab-content" data-tab="javascript-1">
+                            <pre class="code-block">const API_TOKEN = 'YOUR_TOKEN_HERE';
+const BASE_URL = '{{ site_protocol }}://{{ site_domain }}/api/v1';
+
+const headers = {
+  'Authorization': `Bearer ${API_TOKEN}`,
+  'Accept': 'application/json'
+};
+
+fetch(`${BASE_URL}/reviewees/`, { headers })
+  .then(res => res.json())
+  .then(data => console.log(data));</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h3>3. Create a Review Cycle</h3>
+                    <p>Start a 360 review programmatically:</p>
+
+                    <div class="code-tabs" style="margin-top: 1.5rem;">
+                        <div class="tab-buttons" style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border-color); margin-bottom: 1rem;">
+                            <button class="tab-button active" data-tab="curl-2">curl</button>
+                            <button class="tab-button" data-tab="python-2">Python</button>
+                            <button class="tab-button" data-tab="javascript-2">JavaScript</button>
+                        </div>
+
+                        <div class="tab-content active" data-tab="curl-2">
+                            <pre class="code-block">curl -X POST '{{ site_protocol }}://{{ site_domain }}/api/v1/cycles/' \
+  -H 'Authorization: Bearer YOUR_TOKEN_HERE' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "reviewee": "7a44880e-2f99-4593-b3a7-58109af8a468",
+    "questionnaire": "f3d7c2a1-8b9e-4f5a-9c1d-2e3f4a5b6c7d",
+    "reviewer_emails": {
+      "self": ["reviewee@example.com"],
+      "peer": ["peer1@example.com", "peer2@example.com"],
+      "manager": ["manager@example.com"]
+    },
+    "send_invitations": true
+  }'</pre>
+                        </div>
+
+                        <div class="tab-content" data-tab="python-2">
+                            <pre class="code-block">payload = {
+    "reviewee": "7a44880e-2f99-4593-b3a7-58109af8a468",
+    "questionnaire": "f3d7c2a1-8b9e-4f5a-9c1d-2e3f4a5b6c7d",
+    "reviewer_emails": {
+        "self": ["reviewee@example.com"],
+        "peer": ["peer1@example.com", "peer2@example.com"],
+        "manager": ["manager@example.com"]
+    },
+    "send_invitations": True
+}
+
+response = requests.post(
+    f"{BASE_URL}/cycles/",
+    headers=headers,
+    json=payload
+)
+cycle = response.json()
+print(f"Created cycle {cycle['uuid']}")</pre>
+                        </div>
+
+                        <div class="tab-content" data-tab="javascript-2">
+                            <pre class="code-block">const payload = {
+  reviewee: '7a44880e-2f99-4593-b3a7-58109af8a468',
+  questionnaire: 'f3d7c2a1-8b9e-4f5a-9c1d-2e3f4a5b6c7d',
+  reviewer_emails: {
+    self: ['reviewee@example.com'],
+    peer: ['peer1@example.com', 'peer2@example.com'],
+    manager: ['manager@example.com']
+  },
+  send_invitations: true
+};
+
+fetch(`${BASE_URL}/cycles/`, {
+  method: 'POST',
+  headers: { ...headers, 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload)
+})
+  .then(res => res.json())
+  .then(data => console.log(`Created cycle ${data.uuid}`));</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Reference -->
+    <section id="api-reference" class="section">
+        <div class="container">
+            <h2 class="section-title">API Reference</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Core endpoints and operations</p>
+
+            <div style="max-width: 900px; margin: 0 auto;">
+                <!-- Reviewees -->
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Reviewees</h3>
+                    <p>Manage people being reviewed</p>
+
+                    <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 0.75rem;">Method</th>
+                                <th style="text-align: left; padding: 0.75rem;">Endpoint</th>
+                                <th style="text-align: left; padding: 0.75rem;">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reviewees/</code></td>
+                                <td style="padding: 0.75rem;">List all reviewees</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>POST</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reviewees/</code></td>
+                                <td style="padding: 0.75rem;">Create reviewee</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reviewees/{uuid}/</code></td>
+                                <td style="padding: 0.75rem;">Get reviewee details</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>PUT</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reviewees/{uuid}/</code></td>
+                                <td style="padding: 0.75rem;">Update reviewee</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><code>DELETE</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reviewees/{uuid}/</code></td>
+                                <td style="padding: 0.75rem;">Soft-delete reviewee</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Review Cycles -->
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Review Cycles</h3>
+                    <p>Manage 360 feedback cycles</p>
+
+                    <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 0.75rem;">Method</th>
+                                <th style="text-align: left; padding: 0.75rem;">Endpoint</th>
+                                <th style="text-align: left; padding: 0.75rem;">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/cycles/</code></td>
+                                <td style="padding: 0.75rem;">List all cycles</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>POST</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/cycles/</code></td>
+                                <td style="padding: 0.75rem;">Create cycle with reviewers</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/cycles/{uuid}/</code></td>
+                                <td style="padding: 0.75rem;">Get cycle details</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/cycles/{uuid}/progress/</code></td>
+                                <td style="padding: 0.75rem;">Get completion stats</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><code>POST</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/cycles/{uuid}/complete/</code></td>
+                                <td style="padding: 0.75rem;">Mark as complete & generate report</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Questionnaires -->
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Questionnaires</h3>
+                    <p>Access available questionnaire templates</p>
+
+                    <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 0.75rem;">Method</th>
+                                <th style="text-align: left; padding: 0.75rem;">Endpoint</th>
+                                <th style="text-align: left; padding: 0.75rem;">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/questionnaires/</code></td>
+                                <td style="padding: 0.75rem;">List available questionnaires</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/questionnaires/{uuid}/</code></td>
+                                <td style="padding: 0.75rem;">Get full questionnaire with questions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Reports -->
+                <div class="feature-card">
+                    <h3>Reports</h3>
+                    <p>Access generated feedback reports</p>
+
+                    <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 0.75rem;">Method</th>
+                                <th style="text-align: left; padding: 0.75rem;">Endpoint</th>
+                                <th style="text-align: left; padding: 0.75rem;">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reports/</code></td>
+                                <td style="padding: 0.75rem;">List all reports</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>GET</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reports/{uuid}/</code></td>
+                                <td style="padding: 0.75rem;">Get report data with access token</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><code>POST</code></td>
+                                <td style="padding: 0.75rem;"><code>/api/v1/reports/{uuid}/regenerate/</code></td>
+                                <td style="padding: 0.75rem;">Regenerate report with fresh data</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Webhooks -->
+    <section id="webhooks" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Webhooks</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Real-time event notifications</p>
+
+            <div style="max-width: 900px; margin: 0 auto;">
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Setting Up Webhooks</h3>
+                    <p>Configure webhook endpoints in <strong>Settings → Webhooks</strong> to receive HTTP POST requests when events occur.</p>
+
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Available Events</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 0.5rem; border-left: 3px solid var(--primary); background: var(--bg-secondary); margin-bottom: 0.5rem;">
+                            <code>cycle.created</code> - Fired when a new review cycle starts
+                        </li>
+                        <li style="padding: 0.5rem; border-left: 3px solid var(--primary); background: var(--bg-secondary); margin-bottom: 0.5rem;">
+                            <code>cycle.completed</code> - Fired when a review cycle is marked as complete
+                        </li>
+                        <li style="padding: 0.5rem; border-left: 3px solid var(--primary); background: var(--bg-secondary); margin-bottom: 0.5rem;">
+                            <code>feedback.submitted</code> - Fired when a reviewer completes feedback
+                        </li>
+                        <li style="padding: 0.5rem; border-left: 3px solid var(--primary); background: var(--bg-secondary);">
+                            <code>report.generated</code> - Fired when a report is generated
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Webhook Payload Structure</h3>
+                    <p>Modern webhook format with event metadata:</p>
+
+                    <pre class="code-block">{
+  "id": "462d748a-d108-46ad-be98-ef3a6de5ccc3",
+  "event": "cycle.created",
+  "created": "2025-11-04T22:13:34Z",
+  "data": {
+    "cycle_uuid": "a8b7c6d5-e4f3-4a2b-9c1d-8e7f6a5b4c3d",
+    "reviewee": {
+      "uuid": "7a44880e-2f99-4593-b3a7-58109af8a468",
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "questionnaire": {
+      "uuid": "f3d7c2a1-8b9e-4f5a-9c1d-2e3f4a5b6c7d",
+      "name": "Software Engineering 360"
+    },
+    "created_at": "2025-11-04T22:13:34Z"
+  }
+}</pre>
+                </div>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Webhook Headers</h3>
+                    <p>Every webhook request includes these headers:</p>
+
+                    <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 0.75rem;">Header</th>
+                                <th style="text-align: left; padding: 0.75rem;">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>X-Blik-Event</code></td>
+                                <td style="padding: 0.75rem;">Event type (e.g., "cycle.created")</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>X-Blik-Signature</code></td>
+                                <td style="padding: 0.75rem;">HMAC-SHA256 signature for verification</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><code>X-Blik-Delivery</code></td>
+                                <td style="padding: 0.75rem;">Unique delivery UUID (non-enumerable)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Verifying Webhook Signatures</h3>
+                    <p>Always verify the HMAC signature to ensure the webhook came from Blik:</p>
+
+                    <div class="code-tabs" style="margin-top: 1.5rem;">
+                        <div class="tab-buttons" style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border-color); margin-bottom: 1rem;">
+                            <button class="tab-button active" data-tab="python-3">Python</button>
+                            <button class="tab-button" data-tab="javascript-3">JavaScript</button>
+                        </div>
+
+                        <div class="tab-content active" data-tab="python-3">
+                            <pre class="code-block">import hmac
+import hashlib
+
+def verify_webhook(payload, signature_header, secret):
+    """Verify webhook HMAC-SHA256 signature."""
+    if not signature_header.startswith('sha256='):
+        return False
+
+    expected_sig = signature_header[7:]  # Remove 'sha256=' prefix
+    computed_sig = hmac.new(
+        secret.encode(),
+        payload.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+    return hmac.compare_digest(expected_sig, computed_sig)
+
+# Usage in Flask/Django
+payload = request.body.decode('utf-8')
+signature = request.headers.get('X-Blik-Signature')
+secret = 'your_webhook_secret'
+
+if verify_webhook(payload, signature, secret):
+    # Process webhook
+    data = json.loads(payload)
+    print(f"Received {data['event']} event")</pre>
+                        </div>
+
+                        <div class="tab-content" data-tab="javascript-3">
+                            <pre class="code-block">const crypto = require('crypto');
+
+function verifyWebhook(payload, signatureHeader, secret) {
+  if (!signatureHeader || !signatureHeader.startsWith('sha256=')) {
+    return false;
+  }
+
+  const expectedSig = signatureHeader.slice(7); // Remove 'sha256=' prefix
+  const computedSig = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+
+  return crypto.timingSafeEqual(
+    Buffer.from(expectedSig),
+    Buffer.from(computedSig)
+  );
+}
+
+// Usage in Express
+app.post('/webhook', (req, res) => {
+  const payload = JSON.stringify(req.body);
+  const signature = req.headers['x-blik-signature'];
+  const secret = 'your_webhook_secret';
+
+  if (verifyWebhook(payload, signature, secret)) {
+    console.log(`Received ${req.body.event} event`);
+    res.status(200).send('OK');
+  } else {
+    res.status(401).send('Invalid signature');
+  }
+});</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Error Handling -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Error Handling</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Standard HTTP status codes and error responses</p>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>HTTP Status Codes</h3>
+
+                    <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 0.75rem;">Status</th>
+                                <th style="text-align: left; padding: 0.75rem;">Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>200 OK</code></td>
+                                <td style="padding: 0.75rem;">Request successful</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>201 Created</code></td>
+                                <td style="padding: 0.75rem;">Resource created successfully</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>400 Bad Request</code></td>
+                                <td style="padding: 0.75rem;">Invalid request data or validation error</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>401 Unauthorized</code></td>
+                                <td style="padding: 0.75rem;">Missing or invalid authentication token</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>403 Forbidden</code></td>
+                                <td style="padding: 0.75rem;">Insufficient permissions for this operation</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.75rem;"><code>404 Not Found</code></td>
+                                <td style="padding: 0.75rem;">Resource doesn't exist or not in your organization</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><code>500 Server Error</code></td>
+                                <td style="padding: 0.75rem;">Internal server error (contact support)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Error Response Format</h3>
+                    <p>All error responses follow this consistent format:</p>
+
+                    <pre class="code-block">{
+  "detail": "Authentication credentials were not provided.",
+  "error_code": "authentication_failed"
+}
+
+// Validation errors include field details:
+{
+  "reviewee": ["This field is required."],
+  "questionnaire": ["Invalid uuid - object does not exist."],
+  "error_code": "validation_error"
+}</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support -->
+    <section class="section section-alt">
+        <div class="container" style="text-align: center;">
+            <h2 class="section-title">Need Help?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">We're here to help you integrate successfully</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 900px; margin: 0 auto;">
+                <div class="feature-card">
+                    <h3>Interactive Docs</h3>
+                    <p>Try the API directly in your browser with our Swagger documentation.</p>
+                    <a href="{{ main_app_url }}/api/v1/docs/" class="btn btn-secondary" style="margin-top: 1rem;" target="_blank">Open Swagger Docs</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>GitHub Discussions</h3>
+                    <p>Ask questions, share integrations, and get help from the community.</p>
+                    <a href="https://github.com/thijsdezoete/blik/discussions" class="btn btn-secondary" style="margin-top: 1rem;" target="_blank">Join Discussion</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Report Issues</h3>
+                    <p>Found a bug or have a feature request? Open an issue on GitHub.</p>
+                    <a href="https://github.com/thijsdezoete/blik/issues" class="btn btn-secondary" style="margin-top: 1rem;" target="_blank">Report Issue</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+    .tab-button {
+        padding: 0.5rem 1rem;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+    }
+
+    .tab-button:hover {
+        color: var(--text-primary);
+    }
+
+    .tab-button.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .code-block {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetTab = this.dataset.tab;
+                // Extract language from tab ID (e.g., 'curl-1' -> 'curl')
+                const language = targetTab.split('-')[0];
+
+                // Update all code tabs to show the selected language
+                document.querySelectorAll('.code-tabs').forEach(container => {
+                    // Find the button for this language in this container
+                    const languageButton = Array.from(container.querySelectorAll('.tab-button'))
+                        .find(btn => btn.dataset.tab.startsWith(language + '-'));
+
+                    if (languageButton) {
+                        const langTab = languageButton.dataset.tab;
+
+                        // Remove active class from all buttons and contents in this container
+                        container.querySelectorAll('.tab-button').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        container.querySelectorAll('.tab-content').forEach(content => {
+                            content.classList.remove('active');
+                        });
+
+                        // Add active class to the language button and corresponding content
+                        languageButton.classList.add('active');
+                        const content = container.querySelector(`.tab-content[data-tab="${langTab}"]`);
+                        if (content) {
+                            content.classList.add('active');
+                        }
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

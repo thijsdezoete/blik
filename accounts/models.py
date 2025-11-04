@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.crypto import get_random_string
@@ -86,6 +87,15 @@ class OrganizationInvitation(TimeStampedModel):
 
 class Reviewee(TimeStampedModel):
     """Person being reviewed in 360 feedback"""
+    # Public UUID for external references (API, URLs)
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        db_index=True,
+        help_text="Public identifier for API and URL usage (non-enumerable)"
+    )
+
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,

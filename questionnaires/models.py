@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from core.models import TimeStampedModel, Organization
 from core.managers import QuestionnaireManager
@@ -5,6 +6,15 @@ from core.managers import QuestionnaireManager
 
 class Questionnaire(TimeStampedModel):
     """Feedback questionnaire"""
+    # Public UUID for external references (API, URLs)
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        db_index=True,
+        help_text="Public identifier for API and URL usage (non-enumerable)"
+    )
+
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,

@@ -38,7 +38,7 @@
                 </p>
                 <div class="hero-cta">
                     <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
-                    <a href="{% url 'landing:signup' %}" class="btn btn-secondary">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Blik</a>
                 </div>
             </div>
         </div>
@@ -63,19 +63,24 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Starting Price</strong></td>
-                            <td class="highlight-green">€49/month flat rate<br><small>No per-user fees</small></td>
-                            <td class="highlight-red">$11/user/month<br><small>+ $4,000 minimum</small></td>
+                            <td><strong>Deployment Options</strong></td>
+                            <td class="highlight-green">SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td class="highlight-red">SaaS only<br><small>Their servers, their terms</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SaaS Pricing</strong></td>
+                            <td class="highlight-green">€49/month flat rate<br><small>Unlimited users</small></td>
+                            <td class="highlight-red">$11-25/user/month<br><small>+ $4,000 minimum</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Implementation Cost</strong></td>
+                            <td class="highlight-green">$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
+                            <td class="highlight-red">Not disclosed publicly<br><small>Typical enterprise onboarding fees</small></td>
                         </tr>
                         <tr>
                             <td><strong>True Anonymity</strong></td>
                             <td class="highlight-green">✓ Cryptographically guaranteed<br><small>Admins cannot identify reviewers</small></td>
                             <td class="highlight-yellow">⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Deployment Model</strong></td>
-                            <td class="highlight-green">Self-hosted or managed<br><small>Your servers, your data</small></td>
-                            <td class="highlight-red">SaaS only<br><small>Their servers, their terms</small></td>
                         </tr>
                         <tr>
                             <td><strong>Mobile Experience</strong></td>
@@ -120,18 +125,34 @@
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                 <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success); margin-bottom: 1rem;">Blik Pricing</h3>
+                    <h3 style="color: var(--success); margin-bottom: 1rem;">Blik SaaS (Managed)</h3>
                     <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">€49<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
                     <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
                         <li>Unlimited users</li>
                         <li>All features included</li>
-                        <li>No per-seat fees</li>
-                        <li>No hidden costs</li>
+                        <li>We handle hosting & updates</li>
+                        <li>No setup required</li>
                         <li>Dreyfus mapping included</li>
                         <li>Perception gap analysis included</li>
                     </ul>
                     <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
-                        50 employees = €49/month
+                        50 employees = €588/year
+                    </p>
+                </div>
+
+                <div class="feature-card" style="border: 2px solid var(--success);">
+                    <h3 style="color: var(--success); margin-bottom: 1rem;">Blik Open Source (Self-Hosted)</h3>
+                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">$0<span style="font-size: 1rem; font-weight: normal;">/forever</span></div>
+                    <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
+                        <li>All features (same as SaaS)</li>
+                        <li>Your infrastructure</li>
+                        <li>Complete data control</li>
+                        <li>AGPLv3 license</li>
+                        <li>docker compose up = done</li>
+                        <li>Community support</li>
+                    </ul>
+                    <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
+                        Any size = $0/forever
                     </p>
                 </div>
 
@@ -183,8 +204,40 @@
                     </div>
                 </div>
                 <p style="margin-top: 2rem; text-align: center; font-weight: bold; color: var(--success); font-size: 1.25rem;">
-                    Save €5,800-€13,200 annually with Blik
+                    Save €5,800-€13,200 annually with Blik SaaS
                 </p>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
+                <h3 style="margin-bottom: 1.5rem;">The Hidden Cost: Implementation</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 2rem;">
+                    Enterprise SaaS platforms charge massive onboarding fees that aren't disclosed during sales. Here's what users don't see upfront:
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                    <div>
+                        <h4 style="color: var(--success);">Blik (Either Option)</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">$0</p>
+                        <ul style="color: var(--text-secondary); margin-top: 1rem; line-height: 2;">
+                            <li>docker compose up</li>
+                            <li>Ready in <1 hour</li>
+                            <li>No consultants needed</li>
+                            <li>No training required</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--danger);">Enterprise SaaS (Typical)</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$50K-200K+</p>
+                        <ul style="color: var(--text-secondary); margin-top: 1rem; line-height: 2;">
+                            <li>6-14 month timeline</li>
+                            <li>Consultant fees</li>
+                            <li>Custom integrations</li>
+                            <li>Training programs</li>
+                        </ul>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem; font-style: italic;">
+                            *Workday charges $300K-$800K implementation + requires full-time HRIS admin
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -419,7 +472,7 @@
                         <li>Are in <strong>regulated industries</strong> (healthcare, finance, legal)</li>
                         <li>Have <strong>30-500 employees</strong></li>
                     </ul>
-                    <a href="{% url 'landing:signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
                 </div>
 
                 <div class="feature-card" style="border: 2px solid var(--warning);">
@@ -446,7 +499,7 @@
                 </p>
                 <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
                     <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
-                    <a href="{% url 'landing:index' %}" class="btn btn-primary">Learn More About Blik</a>
+                    <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
                 </div>
             </div>
         </div>
@@ -461,7 +514,7 @@
                     Blik gives you the privacy guarantees and transparent pricing that Lattice users wish they had.
                     Join organizations who value honest feedback over enterprise complexity.
                 </p>
-                <a href="{% url 'landing:signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
                 <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
                     €49/month managed hosting • Open source available on GitHub
                 </p>

@@ -37,7 +37,7 @@
                     <strong>We built Blik to actually keep those promises.</strong>
                 </p>
                 <div class="hero-cta">
-                    <a href="{% url 'landing:signup' %}" class="btn btn-primary">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Try Blik</a>
                     <a href="https://github.com/TaylorDiego/blik" target="_blank" class="btn btn-secondary">View on GitHub</a>
                 </div>
             </div>
@@ -150,7 +150,74 @@
                         </div>
                     </div>
                     <div class="cta-box" style="background: var(--success-bg); border-left: 4px solid var(--success); margin-top: 1.5rem;">
-                        <p style="font-weight: bold;">50 employees? €588/year. 500 employees? €588/year. That's alignment.</p>
+                        <p style="font-weight: bold;">Blik SaaS: 50 or 500 employees? €588/year. Blik Open Source: Any size? $0/forever.</p>
+                    </div>
+
+                    <!-- Total Cost of Ownership Table -->
+                    <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                        <h4 style="margin-bottom: 1.5rem;">Total Cost of Ownership (3 Years, 100 Employees)</h4>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: var(--bg); border-bottom: 2px solid var(--border);">
+                                        <th style="padding: 1rem; text-align: left;">Cost Component</th>
+                                        <th style="padding: 1rem; text-align: right;">Blik SaaS</th>
+                                        <th style="padding: 1rem; text-align: right;">Blik Open Source</th>
+                                        <th style="padding: 1rem; text-align: right;">Typical SaaS Platform</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 1rem;">Software License (3 years)</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">€1,764</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$36,000-72,000</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 1rem;">Implementation/Setup</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$50,000-200,000</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 1rem;">Integration Fees</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$10,000-30,000</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 1rem;">Training Programs</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$5,000-15,000</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 1rem;">Ongoing Consulting</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$15,000-60,000</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 1rem;">Full-time HRIS Admin</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--warning);">~$30K/year*</td>
+                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$240,000-360,000</td>
+                                    </tr>
+                                    <tr style="background: var(--bg); font-weight: bold; font-size: 1.1rem;">
+                                        <td style="padding: 1.5rem;">Total 3-Year TCO</td>
+                                        <td style="padding: 1.5rem; text-align: right; color: var(--success);">~€1,764</td>
+                                        <td style="padding: 1.5rem; text-align: right; color: var(--success);">~$90K*</td>
+                                        <td style="padding: 1.5rem; text-align: right; color: var(--danger);">$356K-$737K</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">
+                            *Open source infrastructure costs assume partial HRIS admin time for maintenance (~30% FTE). SaaS platforms often require dedicated full-time HRIS admins.
+                        </p>
+                        <p style="margin-top: 1.5rem; padding: 1rem; background: var(--success-bg); border-radius: 4px; border-left: 4px solid var(--success);">
+                            <strong>Key insight:</strong> Implementation and ongoing consulting fees often exceed software license costs by 2-3x. Blik eliminates these entirely with docker compose deployment and intuitive UX.
+                        </p>
                     </div>
                 </div>
 
@@ -176,6 +243,36 @@
                     </div>
                     <div class="cta-box" style="background: var(--success-bg); border-left: 4px solid var(--success); margin-top: 1.5rem;">
                         <p style="font-weight: bold;">Your servers. Your data. Your SMTP. Your compliance. Zero vendor dependency.</p>
+                    </div>
+
+                    <!-- Vendor Lock-in Comparison -->
+                    <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                        <h4 style="margin-bottom: 1.5rem;">"Easy to Leave" vs. Vendor Lock-in</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                            <div>
+                                <h5 style="color: var(--success); margin-bottom: 1rem;">✓ With Blik</h5>
+                                <ul style="color: var(--text-secondary); line-height: 2;">
+                                    <li><strong>SaaS option:</strong> Cancel anytime, no notice period</li>
+                                    <li><strong>Open source option:</strong> Never need to cancel—you own it</li>
+                                    <li><strong>Data export:</strong> Standard formats, full access</li>
+                                    <li><strong>No contracts:</strong> Month-to-month or free forever</li>
+                                    <li><strong>Can't be held hostage:</strong> Self-hosting = ultimate freedom</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 style="color: var(--danger); margin-bottom: 1rem;">✗ With Typical SaaS</h5>
+                                <ul style="color: var(--text-secondary); line-height: 2;">
+                                    <li><strong>60-90 day notice:</strong> Miss it = locked in another year (Workday)</li>
+                                    <li><strong>Auto-renewal traps:</strong> "Whatever's in your current deal"</li>
+                                    <li><strong>Legacy plan sunsets:</strong> Forced 15-75% increases (BambooHR)</li>
+                                    <li><strong>Multi-year contracts:</strong> Still get 20% renewal increases (Culture Amp)</li>
+                                    <li><strong>Data hostage:</strong> Export fees, format restrictions</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p style="margin-top: 1.5rem; padding: 1rem; background: var(--primary-bg); border-radius: 4px; border-left: 4px solid var(--primary);">
+                            <strong>Real user quote:</strong> "BambooHR forced a 15% charge increase with no benefit. This will make the platform not worth the cost and I will need to look for a new HRIS." When vendors control your deployment, they control your budget.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -220,21 +317,21 @@
                         <span style="color: var(--success); font-weight: bold; font-size: 1.5rem;">✓</span>
                         <p style="color: var(--text-secondary); margin: 0;">
                             <strong>vs. Lattice:</strong> True anonymity, flat pricing, no navigation complexity, works on mobile
-                            <a href="{% url 'landing:vs_lattice' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
+                            <a href="{% landing_url 'vs_lattice' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
                         </p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <span style="color: var(--success); font-weight: bold; font-size: 1.5rem;">✓</span>
                         <p style="color: var(--text-secondary); margin: 0;">
                             <strong>vs. Culture Amp:</strong> No data loss, no 20% renewals, cryptographic anonymity, HRIS that works
-                            <a href="{% url 'landing:vs_culture_amp' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
+                            <a href="{% landing_url 'vs_culture_amp' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
                         </p>
                     </div>
                     <div style="display: flex; align-items: center; gap: 1rem;">
                         <span style="color: var(--success); font-weight: bold; font-size: 1.5rem;">✓</span>
                         <p style="color: var(--text-secondary); margin: 0;">
                             <strong>vs. 15Five:</strong> No billing traps, no survey fatigue, no "dodgy SaaS" practices
-                            <a href="{% url 'landing:vs_15five' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
+                            <a href="{% landing_url 'vs_15five' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
                         </p>
                     </div>
                 </div>
@@ -253,6 +350,7 @@
                     <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
                         Healthcare, finance, legal—anywhere HIPAA, SOC 2, or GDPR compliance requires data sovereignty. Self-hosted means sensitive performance data never leaves your infrastructure.
                     </p>
+                    <a href="{% landing_url 'privacy' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Learn About Privacy-First →</a>
                 </div>
 
                 <div class="feature-card" style="border-left: 4px solid var(--primary);">
@@ -260,6 +358,7 @@
                     <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
                         30-500 employees who need professional 360° feedback but refuse to pay $6K-15K/year for features you don't need. Dreyfus mapping resonates with engineering teams.
                     </p>
+                    <a href="{% landing_url 'open_source' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">For Developers →</a>
                 </div>
 
                 <div class="feature-card" style="border-left: 4px solid var(--primary);">
@@ -267,6 +366,7 @@
                     <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
                         GDPR compliance built-in, not bolted on. Data minimization by design. No US-based SaaS vendor holding your employee data. Full transparency through open source.
                     </p>
+                    <a href="{% landing_url 'eu_tech' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">For EU Companies →</a>
                 </div>
 
                 <div class="feature-card" style="border-left: 4px solid var(--primary);">
@@ -274,6 +374,7 @@
                     <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
                         Experienced data loss, surprise renewals, or billing traps. Want transparent pricing, reliable software, and vendor alignment. Value simplicity over feature bloat.
                     </p>
+                    <a href="{% landing_url 'hr_managers' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">For HR Teams →</a>
                 </div>
             </div>
         </div>
@@ -289,7 +390,7 @@
                     Plus psychological insights (Dreyfus mapping, perception gaps) that help teams actually grow.
                 </p>
                 <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="{% url 'landing:signup' %}" class="btn btn-primary btn-lg">Start with Managed Hosting</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Start with Managed Hosting</a>
                     <a href="https://github.com/TaylorDiego/blik" target="_blank" class="btn btn-secondary btn-lg">Deploy Self-Hosted (Free)</a>
                 </div>
                 <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary);">

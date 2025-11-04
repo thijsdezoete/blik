@@ -39,7 +39,7 @@
                 </p>
                 <div class="hero-cta">
                     <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
-                    <a href="{% url 'landing:signup' %}" class="btn btn-secondary">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Blik</a>
                 </div>
             </div>
         </div>
@@ -64,9 +64,19 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Pricing Model</strong></td>
+                            <td><strong>Deployment Options</strong></td>
+                            <td class="highlight-green">SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td class="highlight-red">SaaS only<br><small>Vendor lock-in</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SaaS Pricing Model</strong></td>
                             <td class="highlight-green">€49/month flat rate<br><small>Unlimited users</small></td>
                             <td class="highlight-red">$4-16/user/month<br><small>Scales with headcount</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Implementation Cost</strong></td>
+                            <td class="highlight-green">$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
+                            <td class="highlight-yellow">Minimal (SaaS)<br><small>But billing traps await</small></td>
                         </tr>
                         <tr>
                             <td><strong>Billing for Temporary Adds</strong></td>
@@ -142,17 +152,25 @@
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
                 <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik's Transparent Approach</h3>
+                    <h3 style="color: var(--success);">Blik SaaS: €49/month (Managed)</h3>
                     <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
                         <li><strong>Flat rate:</strong> €49/month, unlimited users</li>
                         <li><strong>No proration traps:</strong> Add/remove users freely</li>
-                        <li><strong>Self-hosted option:</strong> Cancel hosting anytime, keep using software</li>
+                        <li><strong>We handle hosting:</strong> Zero maintenance</li>
                         <li><strong>No hidden fees:</strong> All features included</li>
-                        <li><strong>No vendor lock-in:</strong> Your data, your deployment</li>
-                        <li><strong>Open source:</strong> Free forever if self-hosted</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--success);">
+                    <h3 style="color: var(--success);">Blik Open Source: $0/forever (Self-Hosted)</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Free forever:</strong> AGPLv3 license</li>
+                        <li><strong>Your infrastructure:</strong> Complete control</li>
+                        <li><strong>No vendor lock-in:</strong> Can't be held hostage</li>
+                        <li><strong>Same features:</strong> Nothing held back</li>
                     </ul>
                     <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
-                        <p style="font-weight: bold;">No billing surprises. No proration games. Just honest pricing.</p>
+                        <p style="font-weight: bold;">Choose SaaS convenience or open source freedom. Both honest.</p>
                     </div>
                 </div>
 
@@ -441,7 +459,7 @@
                         <li>Focus on <strong>360° reviews</strong> vs. weekly check-ins</li>
                         <li>Have <strong>30-500 employees</strong></li>
                     </ul>
-                    <a href="{% url 'landing:signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
                 </div>
 
                 <div class="feature-card" style="border: 2px solid var(--warning);">
@@ -468,7 +486,7 @@
                 </p>
                 <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
                     <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
-                    <a href="{% url 'landing:index' %}" class="btn btn-primary">Learn More About Blik</a>
+                    <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
                 </div>
             </div>
         </div>
@@ -483,7 +501,7 @@
                     Don't get trapped by aggressive billing practices and repetitive surveys. Blik offers transparent flat-rate pricing,
                     flexible questionnaires that stay fresh, and true anonymity that builds trust. Join organizations who value honesty over vendor lock-in.
                 </p>
-                <a href="{% url 'landing:signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
                 <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
                     €49/month managed hosting • Open source available on GitHub
                 </p>

@@ -210,7 +210,7 @@ class Command(BaseCommand):
                     'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_id"]}/invitations/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
-                    'wait_for': '.stats-grid',
+                    'wait_for': 'form',
                 },
             ]
 
@@ -227,9 +227,10 @@ class Command(BaseCommand):
                 # Add cookies
                 await page.context.add_cookies(cookies)
 
-                # Set theme
+                # Set theme and dismiss welcome modal
                 await page.add_init_script(f'''
                     localStorage.setItem('theme', '{screenshot_config['theme']}');
+                    localStorage.setItem('blik_welcome_seen', 'true');
                 ''')
 
                 # Navigate to page
@@ -332,6 +333,7 @@ class Command(BaseCommand):
 
                     await page.add_init_script(f'''
                         localStorage.setItem('theme', '{screenshot_config['theme']}');
+                        localStorage.setItem('blik_welcome_seen', 'true');
                     ''')
 
                     await page.goto(screenshot_config['url'])

@@ -185,7 +185,7 @@ class Command(BaseCommand):
         output_data = {
             'organization_id': org.id,
             'organization_name': org.name,
-            'admin_username': 'admin_acme',
+            'admin_username': admin.email,
             'admin_password': 'demo123',
             'cycles': cycles_output,
             'completed_cycle_id': cycles_output[0]['cycle_id'],

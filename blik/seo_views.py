@@ -69,6 +69,30 @@ def sitemap(request):
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
+    <url>
+        <loc>{base_url}{prefix}/vs-lattice/</loc>
+        <lastmod>2025-11-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>{base_url}{prefix}/vs-culture-amp/</loc>
+        <lastmod>2025-11-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>{base_url}{prefix}/vs-15five/</loc>
+        <lastmod>2025-11-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>{base_url}{prefix}/why-blik/</loc>
+        <lastmod>2025-11-04</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.95</priority>
+    </url>
 </urlset>'''
 
     return HttpResponse(sitemap_xml, content_type='application/xml')

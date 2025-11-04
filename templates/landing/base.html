@@ -80,29 +80,43 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>{{ site_name|default:"Blik" }}</h4>
-                    <p>Open source 360-degree feedback platform</p>
+                    <p>Open source 360-degree feedback platform with true anonymity, transparent pricing, and self-hosted control.</p>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Get Started</a>
                 </div>
                 <div class="footer-section">
                     <h4>Product</h4>
                     <ul>
                         <li><a href="{% landing_url 'index' %}">Home</a></li>
-                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">Documentation</a></li>
-                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a></li>
+                        <li><a href="{% landing_url 'hr_managers' %}">For HR Teams</a></li>
+                        <li><a href="{% landing_url 'open_source' %}">For Developers</a></li>
+                        <li><a href="{% landing_url 'eu_tech' %}">For EU Companies</a></li>
+                        <li><a href="{% landing_url 'privacy' %}">Privacy-First</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h4>Resources</h4>
+                    <h4>Learn</h4>
                     <ul>
                         <li><a href="{% landing_url 'dreyfus_model' %}">Dreyfus Model</a></li>
                         <li><a href="{% landing_url 'agency_levels' %}">5 Levels of Agency</a></li>
-                        <li><a href="{% landing_url 'open_source' %}">Open Source</a></li>
+                        <li><a href="{% landing_url 'performance_matrix' %}">Performance Matrix</a></li>
+                        <li><a href="{% landing_url 'why_blik' %}">Why Blik</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Compare</h4>
+                    <ul>
+                        <li><a href="{% landing_url 'vs_lattice' %}">Blik vs Lattice</a></li>
+                        <li><a href="{% landing_url 'vs_culture_amp' %}">Blik vs Culture Amp</a></li>
+                        <li><a href="{% landing_url 'vs_15five' %}">Blik vs 15Five</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Company</h4>
                     <ul>
-                        <li><a href="{% landing_url 'eu_tech' %}">EU Tech</a></li>
-                        <li><a href="{% landing_url 'privacy' %}">Privacy & Security</a></li>
+                        <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a></li>
+                        <li><a href="https://github.com/thijsdezoete/blik#readme" target="_blank" rel="noopener">Documentation</a></li>
+                        <li><a href="{% landing_url 'privacy_policy' %}">Privacy Policy</a></li>
+                        <li><a href="{% landing_url 'terms' %}">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>

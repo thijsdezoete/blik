@@ -147,3 +147,43 @@ def signup(request):
         'main_app_url': main_app_url,
     }
     return render(request, 'landing/signup.html', context)
+
+
+def vs_lattice(request):
+    """Blik vs Lattice comparison page."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/vs_lattice.html', context)
+
+
+def vs_culture_amp(request):
+    """Blik vs Culture Amp comparison page."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/vs_culture_amp.html', context)
+
+
+def vs_15five(request):
+    """Blik vs 15Five comparison page."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/vs_15five.html', context)
+
+
+def why_blik(request):
+    """Why Blik exists - comprehensive differentiation page."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/why_blik.html', context)

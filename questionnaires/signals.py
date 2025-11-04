@@ -1,7 +1,13 @@
 from django.db.models.signals import post_save
+from django.db.backends.signals import connection_created
+from django.db.models.signals import post_migrate
 from django.dispatch import receiver
+from django.core.management import call_command
 from core.models import Organization
 from .models import Questionnaire, QuestionSection, Question
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def clone_questionnaire_for_organization(questionnaire, organization):
@@ -49,6 +55,42 @@ def clone_questionnaire_for_organization(questionnaire, organization):
     return cloned_questionnaire
 
 
+@receiver(post_migrate)
+def load_default_questionnaire_fixtures(sender, **kwargs):
+    """
+    Automatically load default questionnaire fixtures after migrations.
+
+    This ensures that template questionnaires are available even after a database reset.
+    Only loads if no template questionnaires exist.
+    """
+    # Only run for the questionnaires app
+    if sender.name != 'questionnaires':
+        return
+
+    # Check if any template questionnaires exist
+    if Questionnaire.objects.templates().exists():
+        logger.info("Template questionnaires already exist, skipping fixture load")
+        return
+
+    # Load the default questionnaire fixtures
+    fixtures = [
+        'professional_skills_questionnaire',
+        'software_engineering_questionnaire',
+        'manager_360_questionnaire',
+        'simple_questionnaire',
+    ]
+
+    logger.info("Loading default questionnaire fixtures...")
+    for fixture in fixtures:
+        try:
+            call_command('loaddata', fixture, verbosity=0)
+            logger.info(f"✓ Loaded {fixture}")
+        except Exception as e:
+            logger.warning(f"⚠ Could not load {fixture}: {e}")
+
+    logger.info("Default questionnaire fixtures loaded successfully")
+
+
 @receiver(post_save, sender=Organization)
 def create_default_questionnaires_for_organization(sender, instance, created, **kwargs):
     """
@@ -66,6 +108,10 @@ def create_default_questionnaires_for_organization(sender, instance, created, **
 
     # Get all template questionnaires using the templates() manager method
     template_questionnaires = Questionnaire.objects.templates().order_by('pk')
+
+    if not template_questionnaires.exists():
+        logger.warning("No template questionnaires found! Default questionnaires will not be cloned.")
+        return
 
     # Clone each template for the new organization
     for template in template_questionnaires:

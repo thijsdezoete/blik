@@ -1512,39 +1512,52 @@ def settings_view(request):
         if not request.user.has_perm('accounts.can_manage_organization'):
             messages.error(request, 'You do not have permission to modify organization settings.')
             return redirect('settings')
-        # Update organization details
-        organization.name = request.POST.get('name', organization.name)
-        organization.email = request.POST.get('email', organization.email)
 
-        # Update report settings
-        min_responses = request.POST.get('min_responses_for_anonymity', 3)
-        try:
-            organization.min_responses_for_anonymity = int(min_responses)
-        except (ValueError, TypeError):
-            organization.min_responses_for_anonymity = 3
-
-        organization.auto_send_report_email = request.POST.get('auto_send_report_email') == 'on'
-
-        # Update registration settings
-        organization.allow_registration = request.POST.get('allow_registration') == 'on'
-        organization.default_users_can_create_cycles = request.POST.get('default_users_can_create_cycles') == 'on'
-
-        # Update SMTP settings
-        organization.smtp_host = request.POST.get('smtp_host', '')
-        organization.smtp_port = int(request.POST.get('smtp_port', 587))
-        organization.smtp_username = request.POST.get('smtp_username', '')
-
-        # Only update password if provided
-        smtp_password = request.POST.get('smtp_password', '')
-        if smtp_password:
-            organization.smtp_password = smtp_password
-
-        organization.smtp_use_tls = request.POST.get('smtp_use_tls') == 'on'
-        organization.from_email = request.POST.get('from_email', organization.from_email)
+        # Get which section is being updated
+        section = request.POST.get('section', 'all')
 
         try:
-            organization.save()
-            messages.success(request, 'Settings updated successfully.')
+            if section == 'organization':
+                # Update organization details
+                organization.name = request.POST.get('name', organization.name)
+                organization.email = request.POST.get('email', organization.email)
+                organization.save()
+                messages.success(request, 'Organization details updated successfully.')
+
+            elif section == 'registration':
+                # Update registration settings
+                organization.allow_registration = request.POST.get('allow_registration') == 'on'
+                organization.default_users_can_create_cycles = request.POST.get('default_users_can_create_cycles') == 'on'
+                organization.save()
+                messages.success(request, 'Registration settings updated successfully.')
+
+            elif section == 'reports':
+                # Update report settings
+                min_responses = request.POST.get('min_responses_for_anonymity', 3)
+                try:
+                    organization.min_responses_for_anonymity = int(min_responses)
+                except (ValueError, TypeError):
+                    organization.min_responses_for_anonymity = 3
+                organization.auto_send_report_email = request.POST.get('auto_send_report_email') == 'on'
+                organization.save()
+                messages.success(request, 'Report settings updated successfully.')
+
+            elif section == 'email':
+                # Update SMTP settings
+                organization.smtp_host = request.POST.get('smtp_host', '')
+                organization.smtp_port = int(request.POST.get('smtp_port', 587))
+                organization.smtp_username = request.POST.get('smtp_username', '')
+
+                # Only update password if provided
+                smtp_password = request.POST.get('smtp_password', '')
+                if smtp_password:
+                    organization.smtp_password = smtp_password
+
+                organization.smtp_use_tls = request.POST.get('smtp_use_tls') == 'on'
+                organization.from_email = request.POST.get('from_email', organization.from_email)
+                organization.save()
+                messages.success(request, 'Email settings updated successfully.')
+
             return redirect('settings')
         except Exception as e:
             messages.error(request, f'Error updating settings: {str(e)}')
@@ -1570,12 +1583,25 @@ def settings_view(request):
     admin_profiles = UserProfile.objects.for_organization(organization).select_related('user')
     admin_count = sum(1 for p in admin_profiles if p.user.has_perm('accounts.can_manage_organization'))
 
+    # Get API tokens and webhooks for this organization
+    from api.models import APIToken, WebhookEndpoint
+    api_tokens = APIToken.objects.for_organization(organization).order_by('-created_at')
+    webhooks = WebhookEndpoint.objects.for_organization(organization).order_by('-created_at')
+
+    # Check if there's a newly created token to display
+    new_token = request.session.pop('new_api_token', None)
+    new_token_name = request.session.pop('new_api_token_name', None)
+
     context = {
         'organization': organization,
         'subscription': subscription,
         'is_org_admin': is_org_admin,
         'admin_count': admin_count,
         'is_last_admin': is_org_admin and admin_count == 1,
+        'api_tokens': api_tokens,
+        'webhooks': webhooks,
+        'new_token': new_token,
+        'new_token_name': new_token_name,
     }
 
     return render(request, 'admin_dashboard/settings.html', context)
@@ -2159,3 +2185,216 @@ def product_review_reject(request, review_id):
 
     messages.success(request, f'Review from "{review.reviewer_name}" rejected.')
     return redirect('product_review_list')
+
+
+# =============================================================================
+# API TOKEN & WEBHOOK MANAGEMENT
+# =============================================================================
+
+@login_required
+def create_api_token(request):
+    """Create a new API token"""
+    if request.method != 'POST':
+        return redirect('settings')
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Permission denied.')
+        return redirect('settings')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('settings')
+
+    from api.models import APIToken
+
+    name = request.POST.get('name')
+    rate_limit = request.POST.get('rate_limit', 1000)
+    is_active = request.POST.get('is_active') == 'on'
+
+    try:
+        token = APIToken.objects.create(
+            organization=org,
+            created_by=request.user,
+            name=name,
+            rate_limit=int(rate_limit),
+            is_active=is_active
+        )
+
+        # Redirect to settings with token in session (will be displayed in modal)
+        request.session['new_api_token'] = token.token
+        request.session['new_api_token_name'] = name
+    except Exception as e:
+        messages.error(request, f'Error creating API token: {str(e)}')
+
+    return redirect('settings')
+
+
+@login_required
+def update_api_token(request, token_id):
+    """Update an existing API token"""
+    if request.method != 'POST':
+        return redirect('settings')
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Permission denied.')
+        return redirect('settings')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('settings')
+
+    from api.models import APIToken
+
+    try:
+        token = APIToken.objects.for_organization(org).get(id=token_id)
+
+        token.name = request.POST.get('name', token.name)
+        token.rate_limit = int(request.POST.get('rate_limit', token.rate_limit))
+        token.is_active = request.POST.get('is_active') == 'on'
+        token.save()
+
+        messages.success(request, 'API token updated successfully.')
+    except APIToken.DoesNotExist:
+        messages.error(request, 'API token not found.')
+    except Exception as e:
+        messages.error(request, f'Error updating API token: {str(e)}')
+
+    return redirect('settings')
+
+
+@login_required
+def delete_api_token(request, token_id):
+    """Delete (revoke) an API token"""
+    if request.method != 'POST':
+        return redirect('settings')
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Permission denied.')
+        return redirect('settings')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('settings')
+
+    from api.models import APIToken
+
+    try:
+        token = APIToken.objects.for_organization(org).get(id=token_id)
+        token_name = token.name
+        token.delete()
+
+        messages.success(request, f'API token "{token_name}" revoked successfully.')
+    except APIToken.DoesNotExist:
+        messages.error(request, 'API token not found.')
+    except Exception as e:
+        messages.error(request, f'Error revoking API token: {str(e)}')
+
+    return redirect('settings')
+
+
+@login_required
+def create_webhook(request):
+    """Create a new webhook endpoint"""
+    if request.method != 'POST':
+        return redirect('settings')
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Permission denied.')
+        return redirect('settings')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('settings')
+
+    from api.models import WebhookEndpoint
+
+    name = request.POST.get('name')
+    url = request.POST.get('url')
+    events = request.POST.getlist('events')  # Get multiple checkboxes
+    is_active = request.POST.get('is_active') == 'on'
+
+    try:
+        webhook = WebhookEndpoint.objects.create(
+            organization=org,
+            created_by=request.user,
+            name=name,
+            url=url,
+            events=events,
+            is_active=is_active
+        )
+
+        messages.success(request, f'Webhook "{name}" created successfully.')
+    except Exception as e:
+        messages.error(request, f'Error creating webhook: {str(e)}')
+
+    return redirect('settings')
+
+
+@login_required
+def update_webhook(request, webhook_id):
+    """Update an existing webhook endpoint"""
+    if request.method != 'POST':
+        return redirect('settings')
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Permission denied.')
+        return redirect('settings')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('settings')
+
+    from api.models import WebhookEndpoint
+
+    try:
+        webhook = WebhookEndpoint.objects.for_organization(org).get(id=webhook_id)
+
+        webhook.name = request.POST.get('name', webhook.name)
+        webhook.url = request.POST.get('url', webhook.url)
+        webhook.events = request.POST.getlist('events')
+        webhook.is_active = request.POST.get('is_active') == 'on'
+        webhook.save()
+
+        messages.success(request, f'Webhook "{webhook.name}" updated successfully.')
+    except WebhookEndpoint.DoesNotExist:
+        messages.error(request, 'Webhook not found.')
+    except Exception as e:
+        messages.error(request, f'Error updating webhook: {str(e)}')
+
+    return redirect('settings')
+
+
+@login_required
+def delete_webhook(request, webhook_id):
+    """Delete a webhook endpoint"""
+    if request.method != 'POST':
+        return redirect('settings')
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Permission denied.')
+        return redirect('settings')
+
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('settings')
+
+    from api.models import WebhookEndpoint
+
+    try:
+        webhook = WebhookEndpoint.objects.for_organization(org).get(id=webhook_id)
+        webhook_name = webhook.name
+        webhook.delete()
+
+        messages.success(request, f'Webhook "{webhook_name}" deleted successfully.')
+    except WebhookEndpoint.DoesNotExist:
+        messages.error(request, 'Webhook not found.')
+    except Exception as e:
+        messages.error(request, f'Error deleting webhook: {str(e)}')
+
+    return redirect('settings')

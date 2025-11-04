@@ -31,6 +31,28 @@
             });
         })();
     </script>
+    <script>
+        // Clear draft from local storage on completion
+        (async function() {
+            const feedbackToken = '{{ token.token }}';
+            if (!feedbackToken) return;
+
+            try {
+                // Hash the token using SHA-256
+                const encoder = new TextEncoder();
+                const data = encoder.encode(feedbackToken);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                const storageKey = `feedback_draft_${hashHex}`;
+                localStorage.removeItem(storageKey);
+                console.log('Draft cleared after completion');
+            } catch (e) {
+                console.error('Error clearing draft:', e);
+            }
+        })();
+    </script>
 </head>
 <body>
     <div class="container">

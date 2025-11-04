@@ -48,7 +48,7 @@
 
         <div id="error-container" class="error-message" style="display: none;"></div>
 
-        <form id="feedback-form" action="{% url 'reviews:submit_feedback' token=token.token %}" method="post">
+        <form id="feedback-form" action="{% url 'reviews:submit_feedback' token=token.token %}" method="post" data-token="{{ token.token }}">
             {% csrf_token %}
 
             {% for section in sections %}

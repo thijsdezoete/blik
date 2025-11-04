@@ -16,20 +16,20 @@
 </div>
 {% endif %}
 
-<form method="post" action="{% url 'settings' %}">
-    {% csrf_token %}
+<!-- Two Column Layout for Desktop -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
 
-    <!-- Two Column Layout for Desktop -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Left Column -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-        <!-- Left Column -->
-        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-
-            <!-- Organization Details -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Organization</h2>
-                </div>
+        <!-- Organization Details -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Organization</h2>
+            </div>
+            <form method="post" action="{% url 'settings' %}">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="organization">
                 <div class="card-body">
                     <div class="form-group">
                         <label class="form-label" for="name">Name</label>
@@ -44,7 +44,7 @@
                         >
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
+                    <div class="form-group">
                         <label class="form-label" for="email">Contact Email</label>
                         <input
                             type="email"
@@ -56,16 +56,26 @@
                             required
                         >
                     </div>
-                </div>
-            </div>
 
-            <!-- Report Settings -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Report Settings</h2>
+                    {% if perms.accounts.can_manage_organization %}
+                    <div style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                    </div>
+                    {% endif %}
                 </div>
+            </form>
+        </div>
+
+        <!-- Report Settings -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Report Settings</h2>
+            </div>
+            <form method="post" action="{% url 'settings' %}">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="reports">
                 <div class="card-body">
-                    <div class="form-group" style="margin-bottom: 0;">
+                    <div class="form-group">
                         <label class="form-label" for="min_responses_for_anonymity">Minimum Responses for Anonymity</label>
                         <input
                             type="number"
@@ -81,7 +91,7 @@
                         <small class="help-text">Minimum responses required to display results. Set to 1 for small teams, 3+ for larger teams. Self-assessments always shown.</small>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
+                    <div class="form-group">
                         <div class="form-check">
                             <input
                                 type="checkbox"
@@ -97,14 +107,24 @@
                         </div>
                         <small class="help-text">When enabled, reviewees automatically receive an email with a link to their report when all feedback is collected.</small>
                     </div>
-                </div>
-            </div>
 
-            <!-- User Registration Settings -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">User Registration</h2>
+                    {% if perms.accounts.can_manage_organization %}
+                    <div style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                    </div>
+                    {% endif %}
                 </div>
+            </form>
+        </div>
+
+        <!-- User Registration Settings -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">User Registration</h2>
+            </div>
+            <form method="post" action="{% url 'settings' %}">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="registration">
                 <div class="card-body">
                     <div class="form-group">
                         <div class="form-check">
@@ -123,7 +143,7 @@
                         <small class="help-text">When enabled, new users can register at /accounts/register/</small>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
+                    <div class="form-group">
                         <div class="form-check">
                             <input
                                 type="checkbox"
@@ -139,10 +159,17 @@
                         </div>
                         <small class="help-text">If disabled, new users can only create cycles for themselves</small>
                     </div>
-                </div>
-            </div>
 
+                    {% if perms.accounts.can_manage_organization %}
+                    <div style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </form>
         </div>
+
+    </div>
 
         <!-- Right Column -->
         <div style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -213,11 +240,14 @@
             </div>
             {% endif %}
 
-            <!-- Email Settings -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Email (SMTP) Settings</h2>
-                </div>
+        <!-- Email Settings -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Email (SMTP) Settings</h2>
+            </div>
+            <form method="post" action="{% url 'settings' %}">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="email">
                 <div class="card-body">
                     {% if subscription %}
                     <div class="alert alert-info" style="margin-bottom: 1rem; padding: 12px; font-size: 0.875rem;">
@@ -308,28 +338,151 @@
                             </label>
                         </div>
                     </div>
+
+                    {% if perms.accounts.can_manage_organization %}
+                    <div style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- API Configuration -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">API Configuration</h2>
+            </div>
+            <div class="card-body">
+                    <div style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                            <div>
+                                <label class="form-label" style="margin-bottom: 0.25rem;">API Access</label>
+                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                                    Generate tokens for plugin integrations
+                                </p>
+                            </div>
+                            <a href="/api/v1/docs/" target="_blank" class="btn btn-secondary btn-sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                API Docs
+                            </a>
+                        </div>
+
+                        <!-- API Tokens List -->
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color);">
+                            {% if api_tokens %}
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                {% for token in api_tokens %}
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--bg-card); border-radius: 4px; border: 1px solid var(--border-color);">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 500; font-size: 0.9375rem;">{{ token.name }}</div>
+                                        <div style="font-family: monospace; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                            {{ token.token|slice:":8" }}...{{ token.token|slice:"-8:" }}
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                            {% if token.is_active %}
+                                                <span style="color: #059669;">● Active</span>
+                                            {% else %}
+                                                <span style="color: #dc2626;">● Inactive</span>
+                                            {% endif %}
+                                            | Last used: {% if token.last_used_at %}{{ token.last_used_at|timesince }} ago{% else %}Never{% endif %}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="editAPIToken({{ token.id }}, '{{ token.name }}', {{ token.is_active|lower }}, {{ token.rate_limit }})">
+                                            Edit
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="showRevokeTokenModal({{ token.id }}, '{{ token.name|escapejs }}')">
+                                            Revoke
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem; text-align: center; padding: 1rem 0;">
+                                No API tokens created yet
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-sm" onclick="showCreateTokenModal()" style="margin-top: 0.75rem; width: 100%;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Create New Token
+                        </button>
+                    </div>
+
+                    <!-- Webhooks Section -->
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                        <div style="margin-bottom: 0.75rem;">
+                            <label class="form-label" style="margin-bottom: 0.25rem;">Webhooks</label>
+                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                                Receive event notifications for cycle creation, completion, etc.
+                            </p>
+                        </div>
+
+                        <!-- Webhook List -->
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color);">
+                            {% if webhooks %}
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                {% for webhook in webhooks %}
+                                <div style="display: flex; justify-content: space-between; align-items: start; padding: 0.75rem; background: var(--bg-card); border-radius: 4px; border: 1px solid var(--border-color);">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 500; font-size: 0.9375rem;">{{ webhook.name }}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; word-break: break-all;">
+                                            {{ webhook.url }}
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                            Events: {{ webhook.events|join:", " }}
+                                        </div>
+                                        <div style="font-size: 0.75rem; margin-top: 0.25rem;">
+                                            {% if webhook.is_active %}
+                                                <span style="color: #059669;">● Active</span>
+                                            {% else %}
+                                                <span style="color: #dc2626;">● Inactive</span>
+                                            {% endif %}
+                                            | Success: {{ webhook.success_count }} | Failed: {{ webhook.failure_count }}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem; margin-left: 1rem;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="editWebhook({{ webhook.id }}, '{{ webhook.name }}', '{{ webhook.url }}', {{ webhook.events|safe }}, {{ webhook.is_active|lower }})">
+                                            Edit
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="showDeleteWebhookModal({{ webhook.id }}, '{{ webhook.name|escapejs }}')">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem; text-align: center; padding: 1rem 0;">
+                                No webhooks configured
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-sm" onclick="showCreateWebhookModal()" style="margin-top: 0.75rem; width: 100%;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add Webhook
+                        </button>
+                    </div>
                 </div>
             </div>
 
-        </div>
     </div>
+    <!-- End Right Column -->
+</div>
+<!-- End Two Column Layout -->
 
-    <!-- Mobile: Stack all cards -->
-    <style>
-        @media (max-width: 768px) {
-            form > div:first-of-type {
-                grid-template-columns: 1fr !important;
-            }
+<!-- Mobile: Stack all cards -->
+<style>
+    @media (max-width: 768px) {
+        div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
         }
-    </style>
-
-    {% if perms.accounts.can_manage_organization %}
-    <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
-        <button type="submit" class="btn btn-primary">Save Settings</button>
-    </div>
-    {% endif %}
-</form>
+    }
+</style>
 
 <!-- Account Management Section -->
 <div class="card" style="margin-top: 2rem;">
@@ -768,5 +921,327 @@ function backToPreview() {
     document.getElementById('importStep2').style.display = 'none';
     document.getElementById('importStep1').style.display = 'block';
 }
+
+// API Token Modal Functions
+function showCreateTokenModal() {
+    document.getElementById('tokenModalTitle').textContent = 'Create API Token';
+    document.getElementById('tokenForm').action = '{% url "create_api_token" %}';
+    document.getElementById('tokenForm').reset();
+    document.getElementById('tokenId').value = '';
+    document.getElementById('tokenModal').style.display = 'flex';
+}
+
+function editAPIToken(id, name, isActive, rateLimit) {
+    document.getElementById('tokenModalTitle').textContent = 'Edit API Token';
+    document.getElementById('tokenForm').action = '{% url "update_api_token" 0 %}'.replace('/0/', `/${id}/`);
+    document.getElementById('tokenId').value = id;
+    document.getElementById('tokenName').value = name;
+    document.getElementById('tokenIsActive').checked = isActive;
+    document.getElementById('tokenRateLimit').value = rateLimit;
+    document.getElementById('tokenModal').style.display = 'flex';
+}
+
+function hideTokenModal() {
+    document.getElementById('tokenModal').style.display = 'none';
+}
+
+// Webhook Modal Functions
+function showCreateWebhookModal() {
+    document.getElementById('webhookModalTitle').textContent = 'Create Webhook';
+    document.getElementById('webhookForm').action = '{% url "create_webhook" %}';
+    document.getElementById('webhookForm').reset();
+    document.getElementById('webhookId').value = '';
+    document.getElementById('webhookModal').style.display = 'flex';
+}
+
+function editWebhook(id, name, url, events, isActive) {
+    document.getElementById('webhookModalTitle').textContent = 'Edit Webhook';
+    document.getElementById('webhookForm').action = '{% url "update_webhook" 0 %}'.replace('/0/', `/${id}/`);
+    document.getElementById('webhookId').value = id;
+    document.getElementById('webhookName').value = name;
+    document.getElementById('webhookUrl').value = url;
+    document.getElementById('webhookIsActive').checked = isActive;
+
+    // Update event checkboxes
+    const allEvents = ['cycle.created', 'cycle.completed', 'feedback.submitted', 'report.generated'];
+    allEvents.forEach(event => {
+        const checkbox = document.getElementById(`webhook_event_${event.replace('.', '_')}`);
+        if (checkbox) {
+            checkbox.checked = events.includes(event);
+        }
+    });
+
+    document.getElementById('webhookModal').style.display = 'flex';
+}
+
+function hideWebhookModal() {
+    document.getElementById('webhookModal').style.display = 'none';
+}
+
+// Token Created Modal Functions
+function showTokenCreatedModal(token) {
+    document.getElementById('createdTokenValue').value = token;
+    document.getElementById('tokenCreatedModal').style.display = 'flex';
+}
+
+function hideTokenCreatedModal() {
+    document.getElementById('tokenCreatedModal').style.display = 'none';
+    // Reload page to show updated token list
+    window.location.reload();
+}
+
+function showRevokeTokenModal(tokenId, tokenName) {
+    document.getElementById('modal-token-name').textContent = tokenName;
+    document.getElementById('revoke-token-form').action = '{% url "delete_api_token" 0 %}'.replace('/0/', `/${tokenId}/`);
+    document.getElementById('revokeTokenModal').style.display = 'flex';
+}
+
+function hideRevokeTokenModal() {
+    document.getElementById('revokeTokenModal').style.display = 'none';
+}
+
+function showDeleteWebhookModal(webhookId, webhookName) {
+    document.getElementById('modal-webhook-name').textContent = webhookName;
+    document.getElementById('delete-webhook-form').action = '{% url "delete_webhook" 0 %}'.replace('/0/', `/${webhookId}/`);
+    document.getElementById('deleteWebhookModal').style.display = 'flex';
+}
+
+function hideDeleteWebhookModal() {
+    document.getElementById('deleteWebhookModal').style.display = 'none';
+}
+
+function copyTokenToClipboard() {
+    const tokenInput = document.getElementById('createdTokenValue');
+    tokenInput.select();
+    tokenInput.setSelectionRange(0, 99999); // For mobile devices
+
+    navigator.clipboard.writeText(tokenInput.value).then(function() {
+        const btn = document.getElementById('copyTokenBtn');
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.background = '#10b981';
+
+        setTimeout(function() {
+            btn.textContent = originalText;
+            btn.style.background = '';
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard. Please select and copy manually.');
+    });
+}
+
+// Check if we have a newly created token to display
+{% if new_token %}
+document.addEventListener('DOMContentLoaded', function() {
+    showTokenCreatedModal('{{ new_token }}');
+});
+{% endif %}
 </script>
+
+<!-- API Token Modal -->
+<div id="tokenModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+        <h3 id="tokenModalTitle" style="margin-top: 0;">Create API Token</h3>
+        <form id="tokenForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="tokenId" name="token_id">
+
+            <div class="form-group">
+                <label class="form-label" for="tokenName">Token Name</label>
+                <input type="text" id="tokenName" name="name" class="form-control" placeholder="e.g. Slack Integration" required>
+                <small class="help-text">Descriptive name to identify this token</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="tokenRateLimit">Rate Limit (requests/hour)</label>
+                <input type="number" id="tokenRateLimit" name="rate_limit" class="form-control" value="1000" min="100" max="10000" required>
+                <small class="help-text">Maximum API requests per hour</small>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" id="tokenIsActive" name="is_active" class="form-check-input" checked>
+                    <label class="form-label" for="tokenIsActive" style="display: inline; font-weight: normal;">
+                        Active
+                    </label>
+                </div>
+                <small class="help-text">Inactive tokens cannot be used for API requests</small>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="hideTokenModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Token</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Token Created Success Modal -->
+<div id="tokenCreatedModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1001; align-items: center; justify-content: center;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px; max-width: 600px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="width: 48px; height: 48px; background: #10b981; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h3 style="margin: 0; font-size: 1.25rem; font-weight: 600;">API Token Created Successfully!</h3>
+        </div>
+
+        <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem;">
+            <p style="margin: 0 0 0.5rem 0; font-weight: 600; color: #92400e; font-size: 0.875rem;">
+                ⚠️ Save this token now - it won't be shown again!
+            </p>
+            <p style="margin: 0; color: #78350f; font-size: 0.8125rem;">
+                Store it securely. You'll need it to authenticate API requests.
+            </p>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" style="font-weight: 600; margin-bottom: 0.5rem;">Your API Token</label>
+            <div style="position: relative;">
+                <input
+                    type="text"
+                    id="createdTokenValue"
+                    class="form-control"
+                    readonly
+                    style="font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.8125rem; padding-right: 100px; background: var(--bg-secondary);"
+                >
+                <button
+                    type="button"
+                    onclick="copyTokenToClipboard()"
+                    class="btn btn-sm btn-primary"
+                    style="position: absolute; right: 4px; top: 4px; bottom: 4px; padding: 0 1rem; font-size: 0.8125rem;"
+                    id="copyTokenBtn"
+                >
+                    Copy
+                </button>
+            </div>
+            <small class="help-text">Click "Copy" to copy the token to your clipboard</small>
+        </div>
+
+        <div style="background: var(--bg-secondary); border-radius: 6px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.8125rem;">
+            <p style="margin: 0 0 0.5rem 0; font-weight: 600;">Example Usage:</p>
+            <code style="display: block; background: var(--bg-card); padding: 0.5rem; border-radius: 4px; overflow-x: auto; color: var(--text-primary);">
+curl -H "Authorization: Bearer YOUR_TOKEN" \<br>
+&nbsp;&nbsp;{{ request.scheme }}://{{ request.get_host }}/api/v1/reviewees/
+            </code>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button type="button" class="btn btn-primary" onclick="hideTokenCreatedModal()">I've Saved It</button>
+        </div>
+    </div>
+</div>
+
+<!-- Revoke API Token Modal -->
+<div id="revokeTokenModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+        <h2 style="margin-top: 0; color: #dc2626;">Revoke API Token</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Are you sure you want to revoke the API token "<strong id="modal-token-name"></strong>"?
+        </p>
+
+        <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <p style="margin: 0; color: #991b1b; font-size: 0.875rem;">
+                <strong>⚠️ Warning:</strong> This will immediately break any integrations using this token. This action cannot be undone.
+            </p>
+        </div>
+
+        <form method="post" id="revoke-token-form">
+            {% csrf_token %}
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="hideRevokeTokenModal()">Cancel</button>
+                <button type="submit" class="btn" style="background: #dc2626; color: white;">Revoke Token</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Webhook Modal -->
+<div id="deleteWebhookModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+        <h2 style="margin-top: 0; color: #dc2626;">Delete Webhook</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Are you sure you want to delete the webhook "<strong id="modal-webhook-name"></strong>"?
+        </p>
+
+        <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <p style="margin: 0; color: #991b1b; font-size: 0.875rem;">
+                <strong>⚠️ Warning:</strong> This will stop all event notifications to this endpoint. This action cannot be undone.
+            </p>
+        </div>
+
+        <form method="post" id="delete-webhook-form">
+            {% csrf_token %}
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="hideDeleteWebhookModal()">Cancel</button>
+                <button type="submit" class="btn" style="background: #dc2626; color: white;">Delete Webhook</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Webhook Modal -->
+<div id="webhookModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+        <h3 id="webhookModalTitle" style="margin-top: 0;">Create Webhook</h3>
+        <form id="webhookForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="webhookId" name="webhook_id">
+
+            <div class="form-group">
+                <label class="form-label" for="webhookName">Webhook Name</label>
+                <input type="text" id="webhookName" name="name" class="form-control" placeholder="e.g. Slack Notifications" required>
+                <small class="help-text">Descriptive name for this webhook</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="webhookUrl">Webhook URL</label>
+                <input type="url" id="webhookUrl" name="url" class="form-control" placeholder="https://hooks.slack.com/..." required>
+                <small class="help-text">POST requests will be sent to this URL</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Events to Subscribe</label>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="events" value="cycle.created" id="webhook_event_cycle_created">
+                        <span>Cycle Created</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="events" value="cycle.completed" id="webhook_event_cycle_completed">
+                        <span>Cycle Completed</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="events" value="feedback.submitted" id="webhook_event_feedback_submitted">
+                        <span>Feedback Submitted</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="events" value="report.generated" id="webhook_event_report_generated">
+                        <span>Report Generated</span>
+                    </label>
+                </div>
+                <small class="help-text">Select which events trigger this webhook</small>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" id="webhookIsActive" name="is_active" class="form-check-input" checked>
+                    <label class="form-label" for="webhookIsActive" style="display: inline; font-weight: normal;">
+                        Active
+                    </label>
+                </div>
+                <small class="help-text">Inactive webhooks will not receive events</small>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="hideWebhookModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Webhook</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}

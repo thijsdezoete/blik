@@ -127,7 +127,7 @@
                         <li>Standard PostgreSQL, export anytime</li>
                         <li>Does one thing well: 360 feedback</li>
                         <li>Clean, modern UI built with simplicity</li>
-                        <li>REST API on roadmap, direct DB access today</li>
+                        <li>REST API with webhooks available now</li>
                     </ul>
                 </div>
             </div>
@@ -227,27 +227,65 @@
             <div class="feature-card" style="margin-top: 3rem; padding: 2rem;">
                 <h4 style="text-align: center; margin-bottom: 2rem; font-size: 1.25rem;">System Architecture</h4>
                 <pre style="text-align: left; font-family: monospace; font-size: 0.75rem; line-height: 1.6; overflow-x: auto; color: var(--text-primary);">
-┌───────────────────────────────────────────────────────────┐
-│                     Docker Compose                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Nginx      │  │   Django     │  │ PostgreSQL   │     │
-│  │  (Optional)  │─▶│   Web App    │─▶│   Database   │     │
-│  │   Reverse    │  │  Gunicorn    │  │   Persistent │     │
-│  │    Proxy     │  │  WhiteNoise  │  │    Volume    │     │
-│  └──────────────┘  └──────────────┘  └──────────────┘     │
-│         │                   │                             │
-│         │                   │                             │
-│         ▼                   ▼                             │
-│  ┌──────────────┐  ┌──────────────┐                       │
-│  │   Admins     │  │   SMTP       │                       │
-│  │  Dashboard   │  │   Server     │                       │
-│  └──────────────┘  └──────────────┘                       │
-│                                                           │
-│  ┌─────────────────────────────────────────────┐          │
-│  │ External (Optional)                         │          │
-│  │   - External SMTP (SendGrid, Mailgun, etc)  │          │
-│  └─────────────────────────────────────────────┘          │
-└───────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Docker Compose Stack                        │
+│                                                                     │
+│  ┌──────────────┐         ┌──────────────┐         ┌──────────────┐│
+│  │   Nginx      │         │   Django     │         │ PostgreSQL   ││
+│  │  (Optional)  │────────▶│   Web App    │────────▶│   Database   ││
+│  │   Reverse    │  :80    │  Gunicorn    │  :5432  │   Persistent ││
+│  │    Proxy     │  :443   │  WhiteNoise  │         │    Volume    ││
+│  └──────────────┘         └──────┬───────┘         └──────────────┘│
+│                                  │                                 │
+│                                  │                                 │
+│              ┌───────────────────┼───────────────────┐             │
+│              │                   │                   │             │
+│              ▼                   ▼                   ▼             │
+│    ┌──────────────────┐ ┌──────────────┐  ┌──────────────────┐   │
+│    │ Admin Dashboard  │ │  REST API    │  │  Email Service   │   │
+│    │  /dashboard/     │ │  /api/v1/    │  │  Django SMTP     │   │
+│    │  - Settings      │ │  - CRUD ops  │  │  or External     │   │
+│    │  - Teams         │ │  - Webhooks  │  │  (SendGrid, etc) │   │
+│    │  - Cycles        │ │  - API Docs  │  └──────────────────┘   │
+│    │  - Reports       │ └──────┬───────┘                          │
+│    └──────────────────┘        │                                  │
+│                                │ Async Webhooks (threaded)        │
+│                                │                                  │
+└────────────────────────────────┼──────────────────────────────────┘
+                                 │
+                                 ▼
+            ┌────────────────────────────────────────┐
+            │   External Integrations (Your Code)    │
+            │                                        │
+            │  ┌──────────────────────────────────┐  │
+            │  │  Webhook Endpoints               │  │
+            │  │  - cycle.created                 │  │
+            │  │  - feedback.submitted            │  │
+            │  │  - report.generated              │  │
+            │  │  HMAC-SHA256 verified            │  │
+            │  └──────────────────────────────────┘  │
+            │                                        │
+            │  ┌──────────────────────────────────┐  │
+            │  │  API Clients                     │  │
+            │  │  - Bearer token auth             │  │
+            │  │  - Organization scoped           │  │
+            │  │  - Rate limiting ready           │  │
+            │  └──────────────────────────────────┘  │
+            │                                        │
+            │  ┌──────────────────────────────────┐  │
+            │  │  BI/Analytics Tools              │  │
+            │  │  - Direct PostgreSQL access      │  │
+            │  │  - Metabase, Grafana, etc        │  │
+            │  └──────────────────────────────────┘  │
+            └────────────────────────────────────────┘
+
+<strong>Key Architecture Features:</strong>
+  • Async webhook delivery (non-blocking, threaded)
+  • UUID-based tokens prevent enumeration attacks
+  • Organization-scoped multi-tenancy
+  • REST API with OpenAPI/Swagger docs at /api/docs/
+  • Django signals for event-driven architecture
+  • Fixture-based default questionnaires (auto-loaded on migrate)
                 </pre>
             </div>
         </div>
@@ -345,7 +383,7 @@
 
                 <div class="feature-card">
                     <h3>Advanced Projects</h3>
-                    <p><strong>API Development:</strong> REST API with authentication, GraphQL support, webhooks<br><br>
+                    <p><strong>API Enhancement:</strong> GraphQL support, API rate limiting, extended webhook events<br><br>
                     <strong>AI Enhancement:</strong> Local model support (Llama, Mistral), multi-model comparison<br><br>
                     <strong>Analytics:</strong> Historical trends, team analytics, visualization dashboards</p>
                 </div>
@@ -439,9 +477,14 @@
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Where we're going and how to get involved</p>
 
             <div class="features-grid">
+                <div class="feature-card feature-card-success">
+                    <h3>✅ Available Now</h3>
+                    <p>REST API with Bearer token authentication. Webhook events for real-time integrations. Interactive OpenAPI/Swagger documentation. Full CRUD operations for cycles, reviewees, questionnaires, and reports. Organization-scoped access control.</p>
+                </div>
+
                 <div class="feature-card">
                     <h3>Near-Term (Q1 2025)</h3>
-                    <p>REST API for integrations. PDF report export. Historical trend analysis. LDAP/SSO authentication. Multi-language UI support. Performance optimizations.</p>
+                    <p>PDF report export. Historical trend analysis. LDAP/SSO authentication. Multi-language UI support. Performance optimizations. API rate limiting and usage analytics.</p>
                 </div>
 
                 <div class="feature-card">

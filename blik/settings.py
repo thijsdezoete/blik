@@ -64,6 +64,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'csp',
     'axes',
+    # Third-party apps
+    'rest_framework',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
+    'django_filters',
     # Blik apps
     'core',
     'accounts',
@@ -74,6 +79,7 @@ INSTALLED_APPS = [
     'landing',
     'subscriptions',
     'productreviews',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -311,5 +317,95 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'api': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
+}
+
+# =============================================================================
+# REST FRAMEWORK SETTINGS
+# =============================================================================
+
+REST_FRAMEWORK = {
+    # Authentication
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'api.authentication.APITokenAuthentication',  # Custom token auth
+        'rest_framework.authentication.SessionAuthentication',  # For browsable API
+    ],
+
+    # Permissions
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        'api.permissions.IsOrganizationMember',
+    ],
+
+    # Pagination
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50,
+
+    # Throttling (rate limiting)
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'api.throttling.APITokenRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',
+        'api_token': '1000/hour',  # Default, overridden per token
+    },
+
+    # Rendering
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Dev only
+    ],
+
+    # Schema generation
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
+    # Filtering
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+
+    # Versioning
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ALLOWED_VERSIONS': ['v1'],
+
+    # Exception handling
+    'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler',
+}
+
+# drf-spectacular settings for OpenAPI docs
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Blik API',
+    'DESCRIPTION': 'REST API for 360-degree feedback management and performance reviews',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/v[0-9]',
+    'SERVERS': [
+        {'url': env('API_SERVER_URL', default='http://localhost:8000'), 'description': 'Current environment'},
+    ],
+    # Use locally bundled Swagger UI and Redoc assets (no CDN, CSP-friendly)
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': True,
+    },
+    'TAGS': [
+        {'name': 'reviewees', 'description': 'Manage reviewees (people being reviewed)'},
+        {'name': 'cycles', 'description': 'Manage review cycles'},
+        {'name': 'questionnaires', 'description': 'View available questionnaires'},
+        {'name': 'reports', 'description': 'Access feedback reports'},
+        {'name': 'webhooks', 'description': 'Manage webhook endpoints'},
+    ],
 }

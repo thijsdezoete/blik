@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('hr-managers/', views.hr_managers, name='hr_managers'),
     path('signup/', views.signup, name='signup'),
+    path('developers/', views.developers, name='developers'),
     path('open-source/', views.open_source, name='open_source'),
     path('dreyfus-model/', views.dreyfus_model, name='dreyfus_model'),
     path('agency-levels/', views.agency_levels, name='agency_levels'),

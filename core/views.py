@@ -74,6 +74,10 @@ def setup_organization(request):
     organization = None
     if hasattr(request.user, 'profile') and request.user.profile.organization:
         organization = request.user.profile.organization
+    elif not organization:
+        # If user has no organization but one exists (e.g., from previous setup attempt),
+        # use the first available organization
+        organization = Organization.objects.first()
 
     if request.method == 'POST':
         if organization:

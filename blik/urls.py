@@ -25,6 +25,12 @@ urlpatterns = [
     # Admin dashboard
     path('dashboard/', admin_views.dashboard, name='admin_dashboard'),
     path('dashboard/settings/', admin_views.settings_view, name='settings'),
+    path('dashboard/settings/api-tokens/create/', admin_views.create_api_token, name='create_api_token'),
+    path('dashboard/settings/api-tokens/<int:token_id>/update/', admin_views.update_api_token, name='update_api_token'),
+    path('dashboard/settings/api-tokens/<int:token_id>/delete/', admin_views.delete_api_token, name='delete_api_token'),
+    path('dashboard/settings/webhooks/create/', admin_views.create_webhook, name='create_webhook'),
+    path('dashboard/settings/webhooks/<int:webhook_id>/update/', admin_views.update_webhook, name='update_webhook'),
+    path('dashboard/settings/webhooks/<int:webhook_id>/delete/', admin_views.delete_webhook, name='delete_webhook'),
     path('dashboard/team/', admin_views.team_list, name='team_list'),
     path('dashboard/team/update-permissions/', admin_views.update_user_permissions, name='update_user_permissions'),
     path('dashboard/team/gdpr/', admin_views.gdpr_management, name='gdpr_management'),
@@ -69,6 +75,9 @@ urlpatterns = [
     path('', include('reports.urls')),
     path('landing/', include('landing.urls')),
     path('api/', include('subscriptions.urls')),
+
+    # REST API v1
+    path('api/v1/', include(('api.urls', 'api'), namespace='api')),
 
     # Public API for landing pages
     path('api/reviews/aggregate', review_api.aggregate_reviews_api, name='api_reviews_aggregate'),

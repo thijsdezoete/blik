@@ -187,3 +187,21 @@ def why_blik(request):
         'site_protocol': settings.SITE_PROTOCOL,
     }
     return render(request, 'landing/why_blik.html', context)
+
+
+def developers(request):
+    """Developer-focused landing page with API documentation and quickstart."""
+    # Get main app URL from environment or use current host for local dev
+    main_app_url = getattr(settings, 'MAIN_APP_URL', None)
+    if not main_app_url or settings.DEBUG:
+        # For local development, use the current request host
+        scheme = 'https' if request.is_secure() else 'http'
+        main_app_url = f"{scheme}://{request.get_host()}"
+
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+        'main_app_url': main_app_url,
+    }
+    return render(request, 'landing/developers.html', context)

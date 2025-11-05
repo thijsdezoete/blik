@@ -463,20 +463,23 @@ def generate_report(cycle):
     chart_data = _calculate_chart_data(report_data, cycle)
     report_data['charts'] = chart_data
 
-    # Create or update report
+    # Generate access token if needed (before save to trigger webhook correctly)
+    import uuid
+    try:
+        existing_report = Report.objects.get(cycle=cycle)
+        access_token = existing_report.access_token or uuid.uuid4()
+    except Report.DoesNotExist:
+        access_token = uuid.uuid4()
+
+    # Create or update report with access_token included
     report, created = Report.objects.update_or_create(
         cycle=cycle,
         defaults={
             'report_data': report_data,
-            'available': True
+            'available': True,
+            'access_token': access_token
         }
     )
-
-    # Ensure access token is set
-    if not report.access_token:
-        import uuid
-        report.access_token = uuid.uuid4()
-        report.save()
 
     return report
 

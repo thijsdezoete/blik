@@ -232,6 +232,18 @@ def submit_feedback(request, token):
             reviewer_token.completed_at = timezone.now()
             reviewer_token.save()
 
+            # Send feedback.submitted webhook
+            from api.webhooks import send_webhook
+            send_webhook(
+                organization=cycle.reviewee.organization,
+                event_type="feedback.submitted",
+                payload={
+                    "cycle_id": str(cycle.uuid),
+                    "category": reviewer_token.category,
+                    "submitted_at": reviewer_token.completed_at.isoformat(),
+                },
+            )
+
             # Check if all tokens are completed
             all_tokens_completed = not cycle.tokens.filter(completed_at__isnull=True).exists()
 

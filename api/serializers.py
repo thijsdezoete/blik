@@ -179,7 +179,9 @@ class ReviewCycleSerializer(serializers.ModelSerializer):
     Full review cycle serializer with related data.
     """
 
+    reviewee = serializers.UUIDField(source="reviewee.uuid", read_only=True)
     reviewee_detail = RevieweeSerializer(source="reviewee", read_only=True)
+    questionnaire = serializers.UUIDField(source="questionnaire.uuid", read_only=True)
     questionnaire_detail = QuestionnaireListSerializer(source="questionnaire", read_only=True)
     tokens = ReviewerTokenSerializer(many=True, read_only=True)
     completion_stats = serializers.SerializerMethodField()
@@ -244,6 +246,16 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
     Simplified serializer for creating cycles with reviewer emails.
     """
 
+    reviewee = serializers.SlugRelatedField(
+        slug_field="uuid",
+        queryset=Reviewee.objects.none(),  # Will be set in __init__
+        help_text="UUID of the reviewee"
+    )
+    questionnaire = serializers.SlugRelatedField(
+        slug_field="uuid",
+        queryset=Questionnaire.objects.none(),  # Will be set in __init__
+        help_text="UUID of the questionnaire"
+    )
     reviewer_emails = serializers.DictField(
         child=serializers.ListField(child=serializers.EmailField()),
         required=False,
@@ -259,6 +271,17 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewCycle
         fields = ["reviewee", "questionnaire", "reviewer_emails", "send_invitations"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "request" in self.context:
+            org = self.context["request"].organization
+            self.fields["reviewee"].queryset = Reviewee.objects.filter(organization=org, is_active=True)
+            # Questionnaires can be org-specific or shared templates (org=None)
+            from django.db.models import Q
+            self.fields["questionnaire"].queryset = Questionnaire.objects.filter(
+                Q(organization=org) | Q(organization__isnull=True)
+            )
 
     def validate_reviewer_emails(self, value):
         """Validate reviewer email structure."""
@@ -326,7 +349,9 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
 class ReviewCycleListSerializer(serializers.ModelSerializer):
     """Minimal serializer for cycle lists."""
 
+    reviewee = serializers.UUIDField(source="reviewee.uuid", read_only=True)
     reviewee_name = serializers.CharField(source="reviewee.name", read_only=True)
+    questionnaire = serializers.UUIDField(source="questionnaire.uuid", read_only=True)
     questionnaire_name = serializers.CharField(source="questionnaire.name", read_only=True)
     completion_percentage = serializers.SerializerMethodField()
 
@@ -336,6 +361,7 @@ class ReviewCycleListSerializer(serializers.ModelSerializer):
             "uuid",
             "reviewee",
             "reviewee_name",
+            "questionnaire",
             "questionnaire_name",
             "status",
             "created_at",

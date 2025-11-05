@@ -71,7 +71,7 @@
             <h2 class="card-title">Send Reminder Emails</h2>
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'send_reminder' cycle.id %}">
+            <form method="post" action="{% url 'send_reminder' cycle.uuid %}">
                 {% csrf_token %}
 
                 <div style="padding: 1rem; background: #dbeafe; border-radius: 6px; margin-bottom: 1.5rem;">
@@ -104,7 +104,7 @@
 
                 <div style="display: flex; gap: 1rem;">
                     <button type="submit" class="btn btn-primary">Send {{ pending_tokens.count }} Reminder(s)</button>
-                    <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-secondary">Cancel</a>
+                    <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>
@@ -115,7 +115,7 @@
             <div class="empty-state">
                 <h3 style="margin-bottom: 0.5rem;">All reviews completed</h3>
                 <p style="margin-bottom: 1.5rem;">There are no pending reviews for this cycle.</p>
-                <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-primary">Back to Cycle</a>
+                <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-primary">Back to Cycle</a>
             </div>
         </div>
     </div>

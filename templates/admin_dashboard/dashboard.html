@@ -65,7 +65,7 @@
             <button onclick="dismissWelcome(true)" class="btn btn-secondary">
                 Skip for now
             </button>
-            <a href="{% url 'reviewee_create' %}" class="btn btn-primary" style="text-decoration: none;">
+            <a href="{% url 'reviewee_create' %}" onclick="dismissWelcome(false)" class="btn btn-primary" style="text-decoration: none;">
                 Get Started
             </a>
         </div>
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </td>
                         <td>
-                            <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                            <a href="{% url 'review_cycle_detail' item.cycle.uuid %}" class="btn btn-sm btn-secondary">View</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -342,9 +342,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         </td>
                         <td>
                             {% if item.report_exists %}
-                            <a href="{% url 'reports:view_report' item.cycle.id %}" class="btn btn-sm btn-primary">View Report</a>
+                            <a href="{% url 'reports:view_report' item.cycle.uuid %}" class="btn btn-sm btn-primary">View Report</a>
                             {% else %}
-                            <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                            <a href="{% url 'review_cycle_detail' item.cycle.uuid %}" class="btn btn-sm btn-secondary">View</a>
                             {% endif %}
                         </td>
                     </tr>
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         {% endif %}
                     </td>
                     <td>
-                        <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                        <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-sm btn-secondary">View</a>
                     </td>
                 </tr>
                 {% endfor %}

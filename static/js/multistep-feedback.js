@@ -15,6 +15,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // === Encrypted Local Storage for Drafts ===
 
+    async function deriveKey(token) {
+        // Derive an encryption key from the token using PBKDF2
+        const encoder = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(token),
+            'PBKDF2',
+            false,
+            ['deriveKey']
+        );
+
+        // Use a fixed salt based on token hash for deterministic key derivation
+        const saltData = await crypto.subtle.digest('SHA-256', encoder.encode(token));
+
+        return crypto.subtle.deriveKey(
+            {
+                name: 'PBKDF2',
+                salt: saltData,
+                iterations: 100000,
+                hash: 'SHA-256'
+            },
+            keyMaterial,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['encrypt', 'decrypt']
+        );
+    }
+
     async function hashToken(token) {
         // Hash the token using SHA-256 to avoid storing it directly
         const encoder = new TextEncoder();
@@ -29,6 +57,44 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!feedbackToken) return null;
         const hashed = await hashToken(feedbackToken);
         return `feedback_draft_${hashed}`;
+    }
+
+    async function encryptData(data, key) {
+        const encoder = new TextEncoder();
+        const dataString = JSON.stringify(data);
+        const iv = crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV for AES-GCM
+
+        const encrypted = await crypto.subtle.encrypt(
+            { name: 'AES-GCM', iv: iv },
+            key,
+            encoder.encode(dataString)
+        );
+
+        // Combine IV and encrypted data
+        const combined = new Uint8Array(iv.length + encrypted.byteLength);
+        combined.set(iv, 0);
+        combined.set(new Uint8Array(encrypted), iv.length);
+
+        // Convert to base64 for storage
+        return btoa(String.fromCharCode.apply(null, combined));
+    }
+
+    async function decryptData(encryptedBase64, key) {
+        // Convert from base64
+        const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+
+        // Extract IV and encrypted data
+        const iv = combined.slice(0, 12);
+        const encrypted = combined.slice(12);
+
+        const decrypted = await crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv: iv },
+            key,
+            encrypted
+        );
+
+        const decoder = new TextDecoder();
+        return JSON.parse(decoder.decode(decrypted));
     }
 
     async function saveDraft() {
@@ -71,8 +137,20 @@ document.addEventListener('DOMContentLoaded', function() {
         Object.assign(drafts, checkboxGroups);
 
         if (Object.keys(drafts).length > 0) {
-            localStorage.setItem(storageKey, JSON.stringify(drafts));
-            console.log('Draft saved to encrypted storage');
+            try {
+                const draftData = {
+                    responses: drafts,
+                    currentStep: currentStep
+                };
+
+                const key = await deriveKey(feedbackToken);
+                const encrypted = await encryptData(draftData, key);
+
+                localStorage.setItem(storageKey, encrypted);
+                console.log('Draft saved to encrypted storage');
+            } catch (e) {
+                console.error('Error encrypting draft:', e);
+            }
         }
     }
 
@@ -84,7 +162,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!stored) return;
 
         try {
-            const drafts = JSON.parse(stored);
+            const key = await deriveKey(feedbackToken);
+            let storedData;
+
+            // Try to decrypt - if it fails, it might be old unencrypted data
+            try {
+                storedData = await decryptData(stored, key);
+            } catch (decryptError) {
+                console.log('Attempting to load legacy unencrypted draft');
+                storedData = JSON.parse(stored);
+            }
+
+            // Handle both old format (direct object) and new format (with responses and currentStep)
+            const drafts = storedData.responses || storedData;
+            const savedStep = storedData.currentStep;
+
             let restoredCount = 0;
 
             // Restore text inputs and textareas
@@ -116,10 +208,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
+            // Restore step position if saved
+            if (savedStep !== undefined && savedStep >= 0 && savedStep < sections.length) {
+                currentStep = savedStep;
+            }
+
             if (restoredCount > 0) {
                 console.log(`Restored ${restoredCount} draft answers from encrypted storage`);
                 // Show a subtle notification
-                showDraftRestored(restoredCount);
+                showDraftRestored(restoredCount, savedStep);
             }
         } catch (e) {
             console.error('Error loading draft:', e);
@@ -133,10 +230,16 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Draft cleared from storage');
     }
 
-    function showDraftRestored(count) {
+    function showDraftRestored(count, step) {
         const notification = document.createElement('div');
         notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10000; font-size: 14px;';
-        notification.textContent = `✓ Restored ${count} draft answer${count > 1 ? 's' : ''} from previous session`;
+
+        let message = `✓ Restored ${count} draft answer${count > 1 ? 's' : ''}`;
+        if (step !== undefined && step > 0) {
+            message += ` (Step ${step + 1})`;
+        }
+        notification.textContent = message;
+
         document.body.appendChild(notification);
 
         setTimeout(() => {
@@ -153,14 +256,23 @@ document.addEventListener('DOMContentLoaded', function() {
         saveTimeout = setTimeout(saveDraft, 1000); // Save 1 second after user stops typing
     }
 
-    if (form && feedbackToken) {
-        // Load existing draft on page load
-        loadDraft();
+    async function initialize() {
+        if (form && feedbackToken) {
+            // Load existing draft on page load
+            await loadDraft();
+        }
 
-        // Auto-save on input
-        form.addEventListener('input', debouncedSave);
-        form.addEventListener('change', debouncedSave);
+        // Show the appropriate step (will be updated by loadDraft if applicable)
+        showStep(currentStep);
+
+        if (form && feedbackToken) {
+            // Auto-save on input
+            form.addEventListener('input', debouncedSave);
+            form.addEventListener('change', debouncedSave);
+        }
     }
+
+    initialize();
 
     function showStep(stepIndex) {
         sections.forEach((section, index) => {
@@ -234,6 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentStep--;
             showStep(currentStep);
             errorContainer.style.display = 'none';
+            saveDraft(); // Save step position
         }
     });
 
@@ -248,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentStep < sections.length - 1) {
             currentStep++;
             showStep(currentStep);
+            saveDraft(); // Save step position
         }
     });
 
@@ -323,6 +437,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
         errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-
-    showStep(0);
 });

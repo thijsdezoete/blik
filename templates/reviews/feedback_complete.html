@@ -32,7 +32,7 @@
         })();
     </script>
     <script>
-        // Clear draft from local storage on completion
+        // Clear draft and step position from local storage on completion
         (async function() {
             const feedbackToken = '{{ token.token }}';
             if (!feedbackToken) return;
@@ -47,7 +47,7 @@
 
                 const storageKey = `feedback_draft_${hashHex}`;
                 localStorage.removeItem(storageKey);
-                console.log('Draft cleared after completion');
+                console.log('Draft and step position cleared after completion');
             } catch (e) {
                 console.error('Error clearing draft:', e);
             }

@@ -28,6 +28,7 @@ def send_webhook(organization, event_type, payload):
         int: Number of webhooks sent
     """
     from django.utils import timezone
+    from django.db import transaction
 
     endpoints = WebhookEndpoint.objects.filter(
         organization=organization, is_active=True, events__contains=[event_type]
@@ -43,13 +44,16 @@ def send_webhook(organization, event_type, payload):
         )
 
         # Deliver webhook asynchronously in a background thread
-        # This prevents blocking the request while waiting for webhook delivery
-        thread = threading.Thread(
-            target=_deliver_webhook_thread_safe,
-            args=(delivery.id,),
-            daemon=True  # Daemon thread won't prevent app shutdown
-        )
-        thread.start()
+        # Use on_commit to ensure the delivery record is committed before the thread starts
+        def start_delivery(delivery_id):
+            thread = threading.Thread(
+                target=_deliver_webhook_thread_safe,
+                args=(delivery_id,),
+                daemon=True  # Daemon thread won't prevent app shutdown
+            )
+            thread.start()
+
+        transaction.on_commit(lambda d_id=delivery.id: start_delivery(d_id))
         sent_count += 1
 
     return sent_count

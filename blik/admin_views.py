@@ -21,15 +21,19 @@ from core.models import Organization
 from core.gdpr import GDPRDeletionService
 
 
-def get_cycle_or_404(cycle_id, organization):
+def get_cycle_or_404(cycle_uuid, organization):
     """
-    Get a ReviewCycle by ID, filtered by organization to prevent cross-org access.
+    Get a ReviewCycle by UUID, filtered by organization to prevent cross-org access.
     Returns 404 if cycle doesn't exist or belongs to a different organization.
+
+    Args:
+        cycle_uuid: UUID string or UUID object
+        organization: Organization instance
     """
     cycles_qs = ReviewCycle.objects.select_related('reviewee', 'questionnaire', 'created_by')
     if organization:
         cycles_qs = cycles_qs.filter(reviewee__organization=organization)
-    return get_object_or_404(cycles_qs, id=cycle_id)
+    return get_object_or_404(cycles_qs, uuid=cycle_uuid)
 
 
 @login_required
@@ -417,8 +421,10 @@ def reviewee_delete(request, reviewee_id):
 @require_POST
 def quick_cycle_create(request, reviewee_id):
     """
-    Quick cycle creation from reviewee list.
-    Creates a cycle with default token counts (1 self, 3 peers, 1 manager, 0 direct reports).
+    Quick cycle creation from reviewee/cycle list.
+    Creates a cycle based on a specified source cycle or the most recent cycle for this reviewee.
+    Copies token structure and email assignments from the source cycle.
+    If no previous cycle exists, creates default tokens (1 self, 3 peers, 1 manager, 0 direct reports).
     """
     from accounts.permissions import organization_admin_required
 
@@ -433,6 +439,7 @@ def quick_cycle_create(request, reviewee_id):
     org = request.organization
     reviewee = get_object_or_404(Reviewee, id=reviewee_id, organization=org, is_active=True)
     questionnaire_id = request.POST.get('questionnaire_id')
+    source_cycle_uuid = request.POST.get('source_cycle_uuid')  # Optional: specific cycle to copy from
 
     if not questionnaire_id:
         messages.error(request, 'Questionnaire is required.')
@@ -444,7 +451,7 @@ def quick_cycle_create(request, reviewee_id):
         messages.error(request, 'Invalid questionnaire selected.')
         return redirect('reviewee_list')
 
-    # Create the cycle with default token counts
+    # Create the cycle
     cycle = ReviewCycle.objects.create(
         reviewee=reviewee,
         questionnaire=questionnaire,
@@ -452,31 +459,75 @@ def quick_cycle_create(request, reviewee_id):
         status='active'
     )
 
-    # Default token distribution: 1 self, 3 peers, 1 manager, 0 direct reports
-    token_distribution = [
-        ('self', 1),
-        ('peer', 3),
-        ('manager', 1),
-        ('direct_report', 0),
-    ]
+    # Get the cycle to copy from
+    if source_cycle_uuid:
+        # Copy from specific cycle if provided
+        try:
+            previous_cycle = ReviewCycle.objects.get(uuid=source_cycle_uuid, reviewee=reviewee)
+        except ReviewCycle.DoesNotExist:
+            previous_cycle = None
+    else:
+        # Otherwise, get the most recent previous cycle for this reviewee
+        previous_cycle = reviewee.review_cycles.exclude(id=cycle.id).order_by('-created_at').first()
 
     total_tokens = 0
-    for category, count in token_distribution:
-        for _ in range(count):
-            ReviewerToken.objects.create(
+    email_invited_count = 0
+
+    if previous_cycle:
+        # Copy tokens from previous cycle, including email assignments
+        previous_tokens = previous_cycle.tokens.all()
+
+        for prev_token in previous_tokens:
+            new_token = ReviewerToken.objects.create(
                 cycle=cycle,
-                category=category
+                category=prev_token.category,
+                reviewer_email=prev_token.reviewer_email
             )
-            total_tokens += count
+            total_tokens += 1
+            if prev_token.reviewer_email:
+                email_invited_count += 1
 
-    messages.success(
-        request,
-        f'Review cycle created for "{reviewee.name}" using "{questionnaire.name}" with {total_tokens} reviewer tokens. '
-        f'Go to the cycle details to assign reviewers and send invitations.'
-    )
+        # Send invitations to all email-assigned tokens
+        if email_invited_count > 0:
+            send_stats = send_reviewer_invitations(cycle)
 
-    # Redirect to cycle detail page to manage tokens
-    return redirect('review_cycle_detail', cycle_id=cycle.id)
+            messages.success(
+                request,
+                f'Review cycle created for "{reviewee.name}" using "{questionnaire.name}". '
+                f'Copied {total_tokens} reviewer(s) from previous cycle. '
+                f'{send_stats["sent"]} email invitation(s) sent.'
+            )
+        else:
+            messages.success(
+                request,
+                f'Review cycle created for "{reviewee.name}" using "{questionnaire.name}" with {total_tokens} reviewer token(s). '
+                f'Go to the cycle details to assign reviewers and send invitations.'
+            )
+    else:
+        # No previous cycle - use default token distribution
+        token_distribution = [
+            ('self', 1),
+            ('peer', 3),
+            ('manager', 1),
+            ('direct_report', 0),
+        ]
+
+        for category, count in token_distribution:
+            for _ in range(count):
+                ReviewerToken.objects.create(
+                    cycle=cycle,
+                    category=category
+                )
+                total_tokens += 1
+
+        messages.success(
+            request,
+            f'Review cycle created for "{reviewee.name}" using "{questionnaire.name}" with {total_tokens} reviewer token(s). '
+            f'Go to the cycle details to assign reviewers and send invitations.'
+        )
+
+    # Redirect to cycle detail page
+    return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
 
 @login_required
@@ -1008,20 +1059,20 @@ def review_cycle_create(request):
                                 f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) invited. {send_stats["sent"]} invitation email(s) sent.'
                             )
                             # Redirect to cycle detail since invitations were sent
-                            return redirect('review_cycle_detail', cycle_id=cycle.id)
+                            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                         else:
                             messages.success(
                                 request,
                                 f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) assigned.'
                             )
-                            return redirect('review_cycle_detail', cycle_id=cycle.id)
+                            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                     else:
                         messages.success(
                             request,
                             f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) assigned. Visit the invitations page to send emails.'
                         )
                         # Redirect to invitations page to send emails
-                        return redirect('review_cycle_detail', cycle_id=cycle.id)
+                        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                 else:
                     # No emails provided, show success and redirect to invitations
                     success_msg = f'Review cycle created for "{reviewee.name}".'
@@ -1032,7 +1083,7 @@ def review_cycle_create(request):
 
                     messages.success(request, success_msg)
                     # Redirect to invitations page to add reviewers
-                    return redirect('manage_invitations', cycle_id=cycle.id)
+                    return redirect('manage_invitations', cycle_uuid=cycle.uuid)
 
         except Exception as e:
             messages.error(request, f'Error creating review cycle: {str(e)}')
@@ -1064,9 +1115,9 @@ def review_cycle_create(request):
 
 
 @login_required
-def review_cycle_detail(request, cycle_id):
+def review_cycle_detail(request, cycle_uuid):
     """View details of a review cycle"""
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     tokens = cycle.tokens.all().order_by('category', 'created_at')
 
@@ -1115,11 +1166,11 @@ def review_cycle_detail(request, cycle_id):
 
 
 @login_required
-def generate_report_view(request, cycle_id):
+def generate_report_view(request, cycle_uuid):
     """Generate or regenerate report for a review cycle"""
     from reports.services import generate_report, send_report_ready_notification
 
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     try:
         report = generate_report(cycle)
@@ -1137,27 +1188,27 @@ def generate_report_view(request, cycle_id):
     except Exception as e:
         messages.error(request, f'Error generating report: {str(e)}')
 
-    return redirect('review_cycle_detail', cycle_id=cycle.id)
+    return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
 
 @login_required
-def close_cycle(request, cycle_id):
+def close_cycle(request, cycle_uuid):
     """Close/complete a review cycle and generate report if possible"""
     if request.method != 'POST':
-        return redirect('review_cycle_detail', cycle_id=cycle_id)
+        return redirect('review_cycle_detail', cycle_uuid=cycle_uuid)
 
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     if cycle.status != 'active':
         messages.warning(request, 'This cycle is already completed.')
-        return redirect('review_cycle_detail', cycle_id=cycle_id)
+        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
     # Check if there are any completed reviews
     completed_count = cycle.tokens.filter(completed_at__isnull=False).count()
 
     if completed_count == 0:
         messages.error(request, 'Cannot close cycle: No reviews have been completed yet.')
-        return redirect('review_cycle_detail', cycle_id=cycle_id)
+        return redirect('review_cycle_detail', cycle_uuid=cycle_uuid)
 
     # Remove unclaimed tokens (tokens that are still active but not claimed)
     # Keep claimed tokens as an indication that the report was closed while people were still working
@@ -1185,13 +1236,13 @@ def close_cycle(request, cycle_id):
     except Exception as e:
         messages.error(request, f'Cycle closed but error generating report: {str(e)}')
 
-    return redirect('review_cycle_detail', cycle_id=cycle_id)
+    return redirect('review_cycle_detail', cycle_uuid=cycle_uuid)
 
 
 @login_required
-def send_reminder_form(request, cycle_id):
+def send_reminder_form(request, cycle_uuid):
     """Show form to send reminders for pending reviews"""
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     # Get pending tokens
     pending_tokens = cycle.tokens.filter(completed_at__isnull=True).order_by('category')
@@ -1205,9 +1256,9 @@ def send_reminder_form(request, cycle_id):
 
 
 @login_required
-def manage_invitations(request, cycle_id):
+def manage_invitations(request, cycle_uuid):
     """Manage reviewer invitations for a cycle"""
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     # Group tokens by category
     tokens_by_category = {}
@@ -1236,12 +1287,12 @@ def manage_invitations(request, cycle_id):
 
 
 @login_required
-def assign_invitations(request, cycle_id):
+def assign_invitations(request, cycle_uuid):
     """Assign email addresses to reviewer tokens (creating tokens dynamically)"""
     from django.core.validators import validate_email
     from django.core.exceptions import ValidationError
 
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     if request.method == 'POST':
         # Parse email assignments by category
@@ -1311,15 +1362,15 @@ def assign_invitations(request, cycle_id):
         elif stats['assigned'] > 0:
             messages.success(request, f'Successfully assigned {stats["assigned"]} email(s). No invitations sent yet.')
 
-        return redirect('review_cycle_detail', cycle_id=cycle.id)
+        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
-    return redirect('manage_invitations', cycle_id=cycle.id)
+    return redirect('manage_invitations', cycle_uuid=cycle.uuid)
 
 
 @login_required
-def send_invitations(request, cycle_id):
+def send_invitations(request, cycle_uuid):
     """Send email invitations to assigned reviewers"""
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     if request.method == 'POST':
         # Send invitations
@@ -1334,17 +1385,17 @@ def send_invitations(request, cycle_id):
         elif stats['sent'] == 0 and not stats['errors']:
             messages.info(request, 'No pending invitations to send.')
 
-        return redirect('review_cycle_detail', cycle_id=cycle.id)
+        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
-    return redirect('review_cycle_detail', cycle_id=cycle.id)
+    return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
 
 @login_required
-def send_reminder(request, cycle_id):
+def send_reminder(request, cycle_uuid):
     """Send reminder emails for pending reviews"""
     from reviews.services import send_reminder_emails
 
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     if request.method == 'POST':
         # Send reminders
@@ -1359,20 +1410,20 @@ def send_reminder(request, cycle_id):
         elif stats['sent'] == 0 and not stats['errors']:
             messages.info(request, 'No pending reminders to send.')
 
-        return redirect('review_cycle_detail', cycle_id=cycle.id)
+        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
-    return redirect('send_reminder_form', cycle_id=cycle.id)
+    return redirect('send_reminder_form', cycle_uuid=cycle.uuid)
 
 
 @login_required
 @require_POST
-def send_individual_reminder(request, cycle_id, token_id):
+def send_individual_reminder(request, cycle_uuid, token_id):
     """Send a reminder email to a specific reviewer"""
     from django.core.mail import EmailMultiAlternatives
     from django.template.loader import render_to_string
     from django.conf import settings
 
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     try:
         # Get the specific token
@@ -1381,15 +1432,15 @@ def send_individual_reminder(request, cycle_id, token_id):
         # Check if token has email and invitation was sent
         if not token.reviewer_email:
             messages.error(request, 'Cannot send reminder: no email assigned to this reviewer.')
-            return redirect('review_cycle_detail', cycle_id=cycle.id)
+            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
         if not token.invitation_sent_at:
             messages.error(request, 'Cannot send reminder: invitation not sent yet.')
-            return redirect('review_cycle_detail', cycle_id=cycle.id)
+            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
         if token.is_completed:
             messages.info(request, 'This reviewer has already completed their feedback.')
-            return redirect('review_cycle_detail', cycle_id=cycle.id)
+            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
         # Build feedback URL
         feedback_url = request.build_absolute_uri(
@@ -1432,14 +1483,19 @@ def send_individual_reminder(request, cycle_id, token_id):
     except Exception as e:
         messages.error(request, f'Error sending reminder: {str(e)}')
 
-    return redirect('review_cycle_detail', cycle_id=cycle.id)
+    return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
 
 @login_required
 @require_POST
-def remove_reviewer_token(request, cycle_id, token_id):
-    """Remove a reviewer token from a cycle (only if not started)"""
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+def remove_reviewer_token(request, cycle_uuid, token_id):
+    """Remove a reviewer token from a cycle (only if not started) - Admin only"""
+    # Check organization admin permission
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to remove reviewers.')
+        return redirect('review_cycle_detail', cycle_uuid=cycle_uuid)
+
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     try:
         # Get the specific token
@@ -1448,7 +1504,7 @@ def remove_reviewer_token(request, cycle_id, token_id):
         # Only allow deletion if reviewer hasn't started (no claimed_at or completed_at)
         if token.claimed_at or token.completed_at:
             messages.error(request, 'Cannot remove: reviewer has already started or completed their feedback.')
-            return redirect('review_cycle_detail', cycle_id=cycle.id)
+            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
         # Store info for success message
         category = token.get_category_display()
@@ -1459,28 +1515,56 @@ def remove_reviewer_token(request, cycle_id, token_id):
 
         messages.success(request, f'Removed {category} reviewer ({email}) from cycle.')
 
+        # Check if all remaining tokens are completed
+        remaining_tokens = cycle.tokens.all()
+        if remaining_tokens.exists():
+            all_completed = not remaining_tokens.filter(completed_at__isnull=True).exists()
+
+            if all_completed and cycle.status == 'active':
+                # Auto-close the cycle
+                cycle.status = 'completed'
+                cycle.save()
+
+                # Auto-generate report
+                from reports.services import generate_report, send_report_ready_notification
+                try:
+                    report = generate_report(cycle)
+
+                    # Send notification email if organization setting enabled
+                    organization = cycle.reviewee.organization
+                    if organization and organization.auto_send_report_email:
+                        email_stats = send_report_ready_notification(report, request)
+                        if email_stats.get('errors'):
+                            print(f"Errors sending report email for cycle {cycle.id}: {email_stats['errors']}")
+
+                    messages.success(request, 'Cycle automatically closed and report generated (all remaining reviewers completed).')
+                except Exception as e:
+                    # Log error but don't fail the removal
+                    print(f"Error auto-generating report for cycle {cycle.id}: {e}")
+                    messages.warning(request, f'Cycle closed but error generating report: {str(e)}')
+
     except ReviewerToken.DoesNotExist:
         messages.error(request, 'Reviewer token not found.')
     except Exception as e:
         messages.error(request, f'Error removing reviewer: {str(e)}')
 
-    return redirect('review_cycle_detail', cycle_id=cycle.id)
+    return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
 
 @login_required
 @require_POST
-def send_report_email(request, cycle_id):
+def send_report_email(request, cycle_uuid):
     """Send report notification email to reviewee"""
     from reports.services import send_report_ready_notification
 
-    cycle = get_cycle_or_404(cycle_id, request.organization)
+    cycle = get_cycle_or_404(cycle_uuid, request.organization)
 
     # Check if report exists
     try:
         report = Report.objects.get(cycle=cycle)
     except Report.DoesNotExist:
         messages.error(request, 'No report found for this cycle. Please generate the report first.')
-        return redirect('review_cycle_detail', cycle_id=cycle.id)
+        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
     # Send notification email
     email_stats = send_report_ready_notification(report, request)
@@ -1494,7 +1578,7 @@ def send_report_email(request, cycle_id):
         else:
             messages.error(request, 'Failed to send email.')
 
-    return redirect('review_cycle_detail', cycle_id=cycle.id)
+    return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
 
 @login_required

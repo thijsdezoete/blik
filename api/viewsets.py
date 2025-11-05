@@ -136,7 +136,7 @@ class RevieweeViewSet(viewsets.ModelViewSet):
         description="Get all review cycles for this reviewee",
     )
     @action(detail=True, methods=["get"])
-    def cycles(self, request, pk=None):
+    def cycles(self, request, uuid=None):
         """
         Get all review cycles for this reviewee.
 
@@ -332,7 +332,7 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         },
     )
     @action(detail=True, methods=["post"])
-    def send_reminders(self, request, pk=None):
+    def send_reminders(self, request, uuid=None):
         """
         Send reminder emails to incomplete reviewers.
 
@@ -363,7 +363,7 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         description="Manually mark cycle as complete and generate report",
     )
     @action(detail=True, methods=["post"])
-    def complete(self, request, pk=None):
+    def complete(self, request, uuid=None):
         """
         Manually mark cycle as complete and generate report.
 
@@ -396,7 +396,7 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         description="Get detailed progress information including per-category stats",
     )
     @action(detail=True, methods=["get"])
-    def progress(self, request, pk=None):
+    def progress(self, request, uuid=None):
         """
         Get detailed progress information.
 
@@ -523,7 +523,7 @@ class ReportViewSet(viewsets.ReadOnlyModelViewSet):
         description="Regenerate report with updated data",
     )
     @action(detail=True, methods=["post"], permission_classes=[IsOrganizationMember, CanManageOrganization])
-    def regenerate(self, request, pk=None):
+    def regenerate(self, request, uuid=None):
         """
         Regenerate report with updated data.
 
@@ -600,7 +600,7 @@ class WebhookEndpointViewSet(viewsets.ModelViewSet):
         description="Send test webhook event",
     )
     @action(detail=True, methods=["post"])
-    def test(self, request, pk=None):
+    def test(self, request, uuid=None):
         """
         Send test webhook event.
 
@@ -623,7 +623,7 @@ class WebhookEndpointViewSet(viewsets.ModelViewSet):
         description="Get delivery history for this endpoint",
     )
     @action(detail=True, methods=["get"])
-    def deliveries(self, request, pk=None):
+    def deliveries(self, request, uuid=None):
         """
         Get delivery history for this endpoint.
 

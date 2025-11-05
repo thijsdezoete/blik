@@ -42,7 +42,7 @@
             Enter email addresses for each reviewer category. The system will generate anonymous tokens and send invitations. Separate multiple emails with commas or newlines.
         </p>
 
-        <form method="post" action="{% url 'assign_invitations' cycle.id %}" id="inviteForm">
+        <form method="post" action="{% url 'assign_invitations' cycle.uuid %}" id="inviteForm">
             {% csrf_token %}
 
             <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -202,7 +202,7 @@
 {% if assigned_tokens > sent_tokens %}
 <div class="card" style="margin-top: 2rem;">
     <div class="card-body">
-        <form method="post" action="{% url 'send_invitations' cycle.id %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+        <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
             {% csrf_token %}
             <div>
                 <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ assigned_tokens|add:"-"|add:sent_tokens }} pending invitation{{ assigned_tokens|add:"-"|add:sent_tokens|pluralize }}</div>
@@ -256,6 +256,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <div style="margin-top: 2rem;">
-    <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-secondary">Back to Cycle Details</a>
+    <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">Back to Cycle Details</a>
 </div>
 {% endblock %}

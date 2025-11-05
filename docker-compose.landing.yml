@@ -24,6 +24,7 @@ services:
       - .env
     environment:
       - LANDING_PORT=${LANDING_PORT:-8001}
+      - SITE_DOMAIN=${SITE_DOMAIN:-www.blik360.com}
     restart: unless-stopped
     networks:
       - blik_default  # Connect to main app network

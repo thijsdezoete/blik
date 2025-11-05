@@ -24,6 +24,9 @@
                     <th>Progress</th>
                     <th>Created</th>
                     <th>Actions</th>
+                    <th style="width: 50px; text-align: center;" title="Show API Identifiers">
+                        <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -60,6 +63,7 @@
                                 <!-- Main action button: Create cycle with last-used or default questionnaire -->
                                 <form method="POST" action="{% url 'quick_cycle_create' item.cycle.reviewee.id %}" style="margin: 0; display: inline;">
                                     {% csrf_token %}
+                                    <input type="hidden" name="source_cycle_uuid" value="{{ item.cycle.uuid }}">
                                     {% if item.latest_questionnaire %}
                                     <input type="hidden" name="questionnaire_id" value="{{ item.latest_questionnaire.id }}">
                                     {% else %}
@@ -102,6 +106,7 @@
                                         {# This is the questionnaire that will be used for quick create #}
                                         <form method="POST" action="{% url 'quick_cycle_create' item.cycle.reviewee.id %}" style="margin: 0;">
                                             {% csrf_token %}
+                                            <input type="hidden" name="source_cycle_uuid" value="{{ item.cycle.uuid }}">
                                             <input type="hidden" name="questionnaire_id" value="{{ q.id }}">
                                             <button type="submit" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.625rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; color: var(--text-primary); border-left: 3px solid var(--primary);">
                                                 <span style="flex: 1; padding-right: 0.5rem; font-weight: 500;">{{ q.name }}</span>
@@ -114,6 +119,7 @@
                                     {% else %}
                                         <form method="POST" action="{% url 'quick_cycle_create' item.cycle.reviewee.id %}" style="margin: 0;">
                                             {% csrf_token %}
+                                            <input type="hidden" name="source_cycle_uuid" value="{{ item.cycle.uuid }}">
                                             <input type="hidden" name="questionnaire_id" value="{{ q.id }}">
                                             <button type="submit" class="dropdown-item" style="width: 100%; text-align: left; padding: 0.625rem 1rem; border: none; background: none; cursor: pointer; font-size: 0.875rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s; color: var(--text-primary);">
                                                 <span style="flex: 1; padding-right: 0.5rem;">{{ q.name }}</span>
@@ -127,11 +133,18 @@
                                 </div>
                             </div>
 
-                            <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                            <a href="{% url 'review_cycle_detail' item.cycle.uuid %}" class="btn btn-sm btn-secondary">View</a>
                         </div>
                         {% else %}
-                        <a href="{% url 'review_cycle_detail' item.cycle.id %}" class="btn btn-sm btn-secondary">View</a>
+                        <a href="{% url 'review_cycle_detail' item.cycle.uuid %}" class="btn btn-sm btn-secondary">View</a>
                         {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        <button onclick="showUuidModal('{{ item.cycle.uuid }}', '{{ item.cycle.reviewee.uuid }}', '{{ item.cycle.reviewee.name|escapejs }}')"
+                                style="background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 0.25rem; display: inline-flex; align-items: center; justify-content: center;"
+                                title="Show API Identifiers">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -245,5 +258,135 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// UUID Modal functions
+function showUuidModal(cycleUuid, revieweeUuid, revieweeName) {
+    const modal = document.getElementById('uuid-modal');
+    if (!modal) {
+        createUuidModal();
+    }
+
+    document.getElementById('modal-reviewee-name').textContent = revieweeName;
+    document.getElementById('modal-cycle-uuid').textContent = cycleUuid;
+    document.getElementById('modal-reviewee-uuid').textContent = revieweeUuid;
+
+    document.getElementById('uuid-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeUuidModal() {
+    document.getElementById('uuid-modal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function createUuidModal() {
+    const modal = document.createElement('div');
+    modal.id = 'uuid-modal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 style="margin: 0;">API Identifiers</h3>
+                <button onclick="closeUuidModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Use these UUIDs when accessing the REST API for <strong id="modal-reviewee-name"></strong>
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">Cycle UUID</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <code id="modal-cycle-uuid" class="uuid-display"></code>
+                        <button onclick="copyUuid('modal-cycle-uuid')" class="btn btn-sm btn-secondary">Copy</button>
+                    </div>
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">Reviewee UUID</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <code id="modal-reviewee-uuid" class="uuid-display"></code>
+                        <button onclick="copyUuid('modal-reviewee-uuid')" class="btn btn-sm btn-secondary">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Close on outside click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeUuidModal();
+        }
+    });
+}
+
+function copyUuid(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+
+    navigator.clipboard.writeText(text).then(() => {
+        showCopyFeedback('UUID copied to clipboard');
+    }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showCopyFeedback('UUID copied to clipboard');
+    });
+}
+
+function showCopyFeedback(message) {
+    const existing = document.getElementById('copy-feedback');
+    if (existing) existing.remove();
+
+    const feedback = document.createElement('div');
+    feedback.id = 'copy-feedback';
+    feedback.className = 'copy-feedback';
+    feedback.textContent = message;
+    document.body.appendChild(feedback);
+
+    setTimeout(() => feedback.classList.add('show'), 10);
+    setTimeout(() => {
+        feedback.classList.remove('show');
+        setTimeout(() => feedback.remove(), 300);
+    }, 2000);
+}
 </script>
+
+<style>
+.uuid-display {
+    flex: 1;
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.875rem;
+    overflow: auto;
+    word-break: break-all;
+}
+
+.copy-feedback {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--success);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: all 0.3s ease;
+    z-index: 10000;
+}
+
+.copy-feedback.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+</style>
 {% endblock %}

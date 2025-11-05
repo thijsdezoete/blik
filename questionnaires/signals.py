@@ -21,15 +21,15 @@ def clone_questionnaire_for_organization(questionnaire, organization):
     Returns:
         The cloned questionnaire instance
     """
-    # Clone the questionnaire
+    # Clone the questionnaire by creating a new instance with copied fields
     original_pk = questionnaire.pk
-    questionnaire.pk = None
-    questionnaire.id = None
-    questionnaire.organization = organization
-    questionnaire.is_default = False  # Only templates should be marked as default
-    questionnaire.save()
-
-    cloned_questionnaire = questionnaire
+    cloned_questionnaire = Questionnaire.objects.create(
+        organization=organization,
+        name=questionnaire.name,
+        description=questionnaire.description,
+        is_default=False,  # Only templates should be marked as default
+        is_active=questionnaire.is_active
+    )
 
     # Clone all sections
     sections = QuestionSection.objects.filter(questionnaire_id=original_pk).order_by('order')

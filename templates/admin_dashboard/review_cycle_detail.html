@@ -17,7 +17,29 @@
             <p style="color: #64748b; margin-bottom: 0.25rem;">
                 <strong>Questionnaire:</strong> {{ cycle.questionnaire.name }}
             </p>
-            <p style="color: #64748b;">Created on {{ cycle.created_at|date:"F d, Y" }}</p>
+            <p style="color: #64748b; margin-bottom: 0.25rem;">Created on {{ cycle.created_at|date:"F d, Y" }}</p>
+            <details style="margin-top: 0.5rem;">
+                <summary style="cursor: pointer; color: #64748b; font-size: 0.875rem; user-select: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    API Identifiers
+                </summary>
+                <div style="margin-top: 0.5rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: 6px; font-family: monospace; font-size: 0.8rem;">
+                    <div style="margin-bottom: 0.5rem;">
+                        <strong style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Cycle UUID:</strong>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                            <code id="cycle-uuid" style="background: var(--bg-card); padding: 0.25rem 0.5rem; border-radius: 4px; flex: 1;">{{ cycle.uuid }}</code>
+                            <button onclick="copyToClipboard('cycle-uuid')" style="padding: 0.25rem 0.5rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; white-space: nowrap;">Copy</button>
+                        </div>
+                    </div>
+                    <div>
+                        <strong style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Reviewee UUID:</strong>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                            <code id="reviewee-uuid" style="background: var(--bg-card); padding: 0.25rem 0.5rem; border-radius: 4px; flex: 1;">{{ cycle.reviewee.uuid }}</code>
+                            <button onclick="copyToClipboard('reviewee-uuid')" style="padding: 0.25rem 0.5rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; white-space: nowrap;">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
         </div>
         <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">Back to List</a>
     </div>
@@ -61,7 +83,7 @@
         </div>
         {% endif %}
         <div style="display: grid; gap: 1rem;">
-            <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-primary" style="justify-content: center;">
+            <a href="{% url 'reports:view_report' cycle.uuid %}" class="btn btn-primary" style="justify-content: center;">
                 <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 View Report (Admin)
             </a>
@@ -70,7 +92,7 @@
                 <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                 View Report (Reviewee View)
             </a>
-            <form method="post" action="{% url 'send_report_email' cycle.id %}" style="margin: 0;">
+            <form method="post" action="{% url 'send_report_email' cycle.uuid %}" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-success" style="width: 100%; justify-content: center;">
                     <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
@@ -78,7 +100,7 @@
                 </button>
             </form>
             {% endif %}
-            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary" style="justify-content: center;">
+            <a href="{% url 'generate_report' cycle.uuid %}" class="btn btn-secondary" style="justify-content: center;">
                 <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 Regenerate Report
             </a>
@@ -338,42 +360,56 @@
                                 <td style="border-bottom: 1px solid var(--border);">
                                     {% if token.reviewer_email and not token.invitation_sent_at %}
                                     <div style="display: flex; gap: 0.5rem;">
-                                        <form method="post" action="{% url 'send_invitations' cycle.id %}" style="display: inline; margin: 0;">
+                                        <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: inline; margin: 0;">
                                             {% csrf_token %}
                                             <input type="hidden" name="token_id" value="{{ token.id }}">
                                             <button type="submit" class="btn btn-sm btn-primary" style="white-space: nowrap;">
                                                 Send Invite
                                             </button>
                                         </form>
-                                        <form method="post" action="{% url 'remove_reviewer_token' cycle.id token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
+                                        {% if perms.accounts.can_manage_organization %}
+                                        <form method="post" action="{% url 'remove_reviewer_token' cycle.uuid token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-sm btn-danger" style="white-space: nowrap;">
                                                 Remove
                                             </button>
                                         </form>
+                                        {% endif %}
                                     </div>
                                     {% elif token.invitation_sent_at and not token.is_completed and not token.claimed_at %}
                                     <div style="display: flex; gap: 0.5rem;">
-                                        <form method="post" action="{% url 'send_individual_reminder' cycle.id token.id %}" style="display: inline; margin: 0;">
+                                        <form method="post" action="{% url 'send_individual_reminder' cycle.uuid token.id %}" style="display: inline; margin: 0;">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-sm btn-warning" style="white-space: nowrap;">
                                                 Send Reminder
                                             </button>
                                         </form>
-                                        <form method="post" action="{% url 'remove_reviewer_token' cycle.id token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
+                                        {% if perms.accounts.can_manage_organization %}
+                                        <form method="post" action="{% url 'remove_reviewer_token' cycle.uuid token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-sm btn-danger" style="white-space: nowrap;">
                                                 Remove
                                             </button>
                                         </form>
+                                        {% endif %}
                                     </div>
                                     {% elif token.invitation_sent_at and not token.is_completed and token.claimed_at %}
-                                    <form method="post" action="{% url 'send_individual_reminder' cycle.id token.id %}" style="display: inline; margin: 0;">
+                                    <form method="post" action="{% url 'send_individual_reminder' cycle.uuid token.id %}" style="display: inline; margin: 0;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-warning" style="white-space: nowrap;">
                                             Send Reminder
                                         </button>
                                     </form>
+                                    {% elif not token.reviewer_email and not token.claimed_at and not token.is_completed %}
+                                    {# Unclaimed token - show Remove button only to org admins #}
+                                    {% if perms.accounts.can_manage_organization %}
+                                    <form method="post" action="{% url 'remove_reviewer_token' cycle.uuid token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger" style="white-space: nowrap;">
+                                            Remove
+                                        </button>
+                                    </form>
+                                    {% endif %}
                                     {% endif %}
                                 </td>
                             </tr>
@@ -388,7 +424,7 @@
 
         {% if pending_invites > 0 %}
         <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
-            <form method="post" action="{% url 'send_invitations' cycle.id %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
                 {% csrf_token %}
                 <div>
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ pending_invites }} pending invitation{{ pending_invites|pluralize }}</div>
@@ -401,7 +437,7 @@
 
         {% if pending_reminders > 0 %}
         <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
-            <form method="post" action="{% url 'send_reminder' cycle.id %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <form method="post" action="{% url 'send_reminder' cycle.uuid %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
                 {% csrf_token %}
                 <div>
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ pending_reminders }} unfinished review{{ pending_reminders|pluralize }}</div>
@@ -412,7 +448,7 @@
         </div>
         {% endif %}
         {% else %}
-        <p style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">No reviewers invited yet. <a href="{% url 'manage_invitations' cycle.id %}">Invite reviewers</a></p>
+        <p style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">No reviewers invited yet. <a href="{% url 'manage_invitations' cycle.uuid %}">Invite reviewers</a></p>
         {% endif %}
 {% if cycle.status == 'completed' %}
     </div>
@@ -468,10 +504,10 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     <div class="card-body">
         <div class="action-grid">
-            <a href="{% url 'manage_invitations' cycle.id %}" class="btn btn-primary">Manage Invitations</a>
+            <a href="{% url 'manage_invitations' cycle.uuid %}" class="btn btn-primary">Manage Invitations</a>
 
             {% if pending_invites > 0 %}
-            <form method="post" action="{% url 'send_invitations' cycle.id %}" style="margin: 0;">
+            <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
                     Send Pending Invites ({{ pending_invites }})
@@ -480,16 +516,16 @@ document.addEventListener('DOMContentLoaded', function() {
             {% endif %}
 
             {% if total_tokens|add:"-"|add:completed_tokens > 0 %}
-            <a href="{% url 'send_reminder_form' cycle.id %}" class="btn btn-warning" style="color: white;">
+            <a href="{% url 'send_reminder_form' cycle.uuid %}" class="btn btn-warning" style="color: white;">
                 Send Reminders ({{ total_tokens|add:"-"|add:completed_tokens }})
             </a>
             {% endif %}
 
             {% if report_exists %}
-            <a href="{% url 'reports:view_report' cycle.id %}" class="btn btn-secondary">View Report (Admin)</a>
-            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary">Regenerate Report</a>
+            <a href="{% url 'reports:view_report' cycle.uuid %}" class="btn btn-secondary">View Report (Admin)</a>
+            <a href="{% url 'generate_report' cycle.uuid %}" class="btn btn-secondary">Regenerate Report</a>
             {% else %}
-            <a href="{% url 'generate_report' cycle.id %}" class="btn btn-secondary">Generate Report</a>
+            <a href="{% url 'generate_report' cycle.uuid %}" class="btn btn-secondary">Generate Report</a>
             {% endif %}
 
             {% if user.is_superuser %}
@@ -498,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </a>
             {% endif %}
 
-            <form method="post" action="{% url 'close_cycle' cycle.id %}" style="margin: 0;">
+            <form method="post" action="{% url 'close_cycle' cycle.uuid %}" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-secondary" style="width: 100%;">
                     Close Cycle & Generate Report
@@ -582,6 +618,24 @@ function showCopyFeedback(message) {
         feedback.classList.remove('show');
         setTimeout(() => feedback.remove(), 300);
     }, 2000);
+}
+
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+
+    navigator.clipboard.writeText(text).then(() => {
+        showCopyFeedback('UUID copied to clipboard');
+    }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showCopyFeedback('UUID copied to clipboard');
+    });
 }
 
 // Confirmation modal functions

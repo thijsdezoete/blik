@@ -10,9 +10,9 @@ import uuid
 
 @login_required
 @can_manage_organization_required
-def view_report(request, cycle_id):
+def view_report(request, cycle_uuid):
     """View aggregated feedback report for a review cycle"""
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_object_or_404(ReviewCycle, uuid=cycle_uuid)
 
     # Get or generate report
     try:
@@ -34,9 +34,9 @@ def view_report(request, cycle_id):
 
 @login_required
 @can_manage_organization_required
-def regenerate_report(request, cycle_id):
+def regenerate_report(request, cycle_uuid):
     """Regenerate report for a review cycle"""
-    cycle = get_object_or_404(ReviewCycle, id=cycle_id)
+    cycle = get_object_or_404(ReviewCycle, uuid=cycle_uuid)
     generate_report(cycle)
 
     return redirect('reports:view_report', cycle_id=cycle_id)

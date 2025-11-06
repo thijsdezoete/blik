@@ -744,23 +744,52 @@ body.setup-page {
 }
 
 .badge-self {
-    background: #dbeafe;
-    color: #1e40af;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.06) 100%);
+    color: #2563eb;
+    border: 1.5px solid rgba(59, 130, 246, 0.2);
 }
 
 .badge-peer {
-    background: #d1fae5;
-    color: #065f46;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.06) 100%);
+    color: #059669;
+    border: 1.5px solid rgba(16, 185, 129, 0.2);
 }
 
 .badge-manager {
-    background: #fef3c7;
-    color: #92400e;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.06) 100%);
+    color: #d97706;
+    border: 1.5px solid rgba(245, 158, 11, 0.2);
 }
 
 .badge-direct_report {
-    background: #e0e7ff;
-    color: #3730a3;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(124, 58, 237, 0.06) 100%);
+    color: #7c3aed;
+    border: 1.5px solid rgba(139, 92, 246, 0.2);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .badge-self {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.12) 100%);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .badge-peer {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.12) 100%);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .badge-manager {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.12) 100%);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="dark"] .badge-direct_report {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.12) 100%);
+    color: #a78bfa;
+    border-color: rgba(139, 92, 246, 0.3);
 }
 
 /* ==================== Progress Bars ==================== */

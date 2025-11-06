@@ -93,3 +93,25 @@ def count_value(lst, value):
         return lst.count(value)
     except (AttributeError, TypeError):
         return 0
+
+
+@register.filter
+def sort_categories(categories):
+    """Sort categories dict with self first, then standard order"""
+    if not categories:
+        return []
+
+    category_order = ['self', 'peer', 'manager', 'direct_report']
+    result = []
+
+    # Add categories in standard order
+    for cat in category_order:
+        if cat in categories:
+            result.append((cat, categories[cat]))
+
+    # Add any remaining categories
+    for cat, score in categories.items():
+        if cat not in category_order:
+            result.append((cat, score))
+
+    return result

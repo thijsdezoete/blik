@@ -109,6 +109,7 @@
                             {% for rating in "54321" %}
                                 {% with rating_int=rating|add:"0" %}
                                 {% with count=cat_data.distribution|get_item:rating_int|default:0 %}
+                                {% if count > 0 %}
                                 {% with pct=count|percentage:cat_data.count %}
                                 <div class="distribution-item">
                                     <div class="distribution-header">
@@ -122,6 +123,7 @@
                                     </div>
                                 </div>
                                 {% endwith %}
+                                {% endif %}
                                 {% endwith %}
                                 {% endwith %}
                             {% endfor %}

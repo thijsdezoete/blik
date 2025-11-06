@@ -228,7 +228,7 @@
             {% endif %}
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
-                {% for category, score in categories.items %}
+                {% for category, score in categories|sort_categories %}
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: var(--bg-light); border-radius: 6px;">
                     <span class="badge badge-{{ category }}" style="text-transform: capitalize;">{% if category == "direct_report" %}direct report{% else %}{{ category }}{% endif %}</span>
                     <span style="font-weight: 600; color: var(--text-primary); font-size: 1.125rem;">{{ score|floatformat:1 }}</span>

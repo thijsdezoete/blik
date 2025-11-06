@@ -8,6 +8,50 @@ from .models import Report
 from reviews.models import Response, ReviewCycle
 from core.models import Organization
 from statistics import mean, stdev
+import copy
+
+
+def apply_display_anonymization(report_data, min_threshold, exempt_categories=None):
+    """
+    Apply anonymization filtering to report data for display purposes.
+
+    This function adds 'insufficient' flags to categories that don't meet
+    the anonymization threshold, while preserving the underlying data.
+    Charts and insights should use the raw data; only detailed report
+    displays should use this filtered version.
+
+    Args:
+        report_data: The raw report data structure
+        min_threshold: Minimum number of responses required for display
+        exempt_categories: List of categories exempt from threshold (default: ['self', 'manager'])
+
+    Returns:
+        Copy of report_data with 'insufficient' flags added where applicable
+    """
+    if exempt_categories is None:
+        exempt_categories = ['self', 'manager']
+
+    # Deep copy to avoid modifying original data
+    filtered_data = copy.deepcopy(report_data)
+
+    # Walk through all questions and apply threshold
+    for section_id, section_data in filtered_data.get('by_section', {}).items():
+        for question_id, question_data in section_data.get('questions', {}).items():
+            for category, cat_data in question_data.get('by_category', {}).items():
+                count = cat_data.get('count', 0)
+
+                # Check if category meets anonymization threshold
+                if category not in exempt_categories and count < min_threshold:
+                    # Mark as insufficient for display
+                    cat_data['insufficient'] = True
+                    cat_data['message'] = f'Insufficient responses (minimum {min_threshold} required)'
+                    # Remove detailed responses and distributions for privacy
+                    if 'responses' in cat_data:
+                        del cat_data['responses']
+                    if 'distribution' in cat_data:
+                        del cat_data['distribution']
+
+    return filtered_data
 
 
 def _calculate_insights(report_data):
@@ -46,7 +90,11 @@ def _calculate_insights(report_data):
                 continue
 
             for category, cat_data in question_data.get('by_category', {}).items():
-                if cat_data.get('insufficient'):
+                # Statistical validity check: need 2+ responses for meaningful average
+                # Exception: self and manager categories can use 1+ (single assessor)
+                count = cat_data.get('count', 0)
+                min_valid = 1 if category in ['self', 'manager'] else 2
+                if count < min_valid:
                     continue
 
                 avg = cat_data.get('avg')
@@ -214,7 +262,11 @@ def _calculate_chart_data(report_data, cycle):
                 continue
 
             for category, cat_data in question_data.get('by_category', {}).items():
-                if cat_data.get('insufficient'):
+                # Statistical validity check: need 2+ responses for meaningful average
+                # Exception: self and manager categories can use 1+ (single assessor)
+                count = cat_data.get('count', 0)
+                min_valid = 1 if category in ['self', 'manager'] else 2
+                if count < min_valid:
                     continue
 
                 avg = cat_data.get('avg')
@@ -351,104 +403,97 @@ def generate_report(cycle):
             for category, category_data in question_data['by_category'].items():
                 count = category_data['count']
 
-                # Apply anonymity threshold (except for self-assessment and manager feedback)
-                if category in ['self', 'manager'] or count >= min_threshold:
-                    result = {
-                        'count': count,
-                        'responses': category_data['responses']
-                    }
+                # Store all data without anonymization filtering
+                # Anonymization will be applied at display layer
+                result = {
+                    'count': count,
+                    'responses': category_data['responses']
+                }
 
-                    # Calculate average for rating, scale, and likert questions
-                    if question_data['question_type'] == 'rating':
-                        numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
-                        if numeric_responses:
-                            result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
-                    elif question_data['question_type'] == 'scale':
-                        numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
-                        if numeric_responses:
-                            result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
-                    elif question_data['question_type'] == 'likert':
-                        # Convert likert text responses to numeric scores (1-indexed position in scale)
-                        # Store both the text distribution and numeric average
-                        from collections import Counter
-                        text_responses = [r for r in category_data['responses'] if r]
-                        if text_responses:
-                            result['distribution'] = dict(Counter(text_responses))
-                            # For numeric calculations, use position in scale (1-indexed)
-                            # This allows averaging likert responses
-                    elif question_data['question_type'] == 'single_choice':
-                        # Store distribution of single choice responses (dropdown selection)
-                        from collections import Counter
-                        text_responses = [r for r in category_data['responses'] if r]
-                        if text_responses:
-                            result['distribution'] = dict(Counter(text_responses))
+                # Calculate average for rating, scale, and likert questions
+                if question_data['question_type'] == 'rating':
+                    numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
+                    if numeric_responses:
+                        result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
+                elif question_data['question_type'] == 'scale':
+                    numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
+                    if numeric_responses:
+                        result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
+                elif question_data['question_type'] == 'likert':
+                    # Convert likert text responses to numeric scores (1-indexed position in scale)
+                    # Store both the text distribution and numeric average
+                    from collections import Counter
+                    text_responses = [r for r in category_data['responses'] if r]
+                    if text_responses:
+                        result['distribution'] = dict(Counter(text_responses))
+                        # For numeric calculations, use position in scale (1-indexed)
+                        # This allows averaging likert responses
+                elif question_data['question_type'] == 'single_choice':
+                    # Store distribution of single choice responses (dropdown selection)
+                    from collections import Counter
+                    text_responses = [r for r in category_data['responses'] if r]
+                    if text_responses:
+                        result['distribution'] = dict(Counter(text_responses))
 
-                            # Calculate weighted score if weights are configured
-                            config = question_data.get('question_config', {})
-                            if config.get('scoring_enabled') and config.get('weights'):
-                                choices = config.get('choices', [])
-                                weights = config.get('weights', [])
-                                scores = []
+                        # Calculate weighted score if weights are configured
+                        config = question_data.get('question_config', {})
+                        if config.get('scoring_enabled') and config.get('weights'):
+                            choices = config.get('choices', [])
+                            weights = config.get('weights', [])
+                            scores = []
 
-                                for response_text in text_responses:
-                                    try:
-                                        # Find the index of the selected choice
-                                        choice_index = choices.index(response_text)
-                                        if 0 <= choice_index < len(weights):
-                                            scores.append(weights[choice_index])
-                                    except (ValueError, IndexError):
-                                        pass  # Skip if choice not found or index out of range
+                            for response_text in text_responses:
+                                try:
+                                    # Find the index of the selected choice
+                                    choice_index = choices.index(response_text)
+                                    if 0 <= choice_index < len(weights):
+                                        scores.append(weights[choice_index])
+                                except (ValueError, IndexError):
+                                    pass  # Skip if choice not found or index out of range
 
-                                if scores:
-                                    result['avg'] = round(sum(scores) / len(scores), 2)
+                            if scores:
+                                result['avg'] = round(sum(scores) / len(scores), 2)
 
-                    elif question_data['question_type'] == 'multiple_choice':
-                        # Store distribution of multiple choice responses (checkboxes)
-                        # Each response is a list of selected options, so we need to flatten
-                        from collections import Counter
-                        all_selected_options = []
-                        for response in category_data['responses']:
-                            if response and isinstance(response, list):
-                                all_selected_options.extend(response)
-                        if all_selected_options:
-                            result['distribution'] = dict(Counter(all_selected_options))
+                elif question_data['question_type'] == 'multiple_choice':
+                    # Store distribution of multiple choice responses (checkboxes)
+                    # Each response is a list of selected options, so we need to flatten
+                    from collections import Counter
+                    all_selected_options = []
+                    for response in category_data['responses']:
+                        if response and isinstance(response, list):
+                            all_selected_options.extend(response)
+                    if all_selected_options:
+                        result['distribution'] = dict(Counter(all_selected_options))
 
-                            # Calculate weighted score if weights are configured
-                            config = question_data.get('question_config', {})
-                            if config.get('scoring_enabled') and config.get('weights'):
-                                choices = config.get('choices', [])
-                                weights = config.get('weights', [])
-                                response_scores = []
+                        # Calculate weighted score if weights are configured
+                        config = question_data.get('question_config', {})
+                        if config.get('scoring_enabled') and config.get('weights'):
+                            choices = config.get('choices', [])
+                            weights = config.get('weights', [])
+                            response_scores = []
 
-                                # For each response (which is a list of selected choices)
-                                for response in category_data['responses']:
-                                    if response and isinstance(response, list):
-                                        selected_weights = []
-                                        for selected_choice in response:
-                                            try:
-                                                choice_index = choices.index(selected_choice)
-                                                if 0 <= choice_index < len(weights):
-                                                    selected_weights.append(weights[choice_index])
-                                            except (ValueError, IndexError):
-                                                pass
+                            # For each response (which is a list of selected choices)
+                            for response in category_data['responses']:
+                                if response and isinstance(response, list):
+                                    selected_weights = []
+                                    for selected_choice in response:
+                                        try:
+                                            choice_index = choices.index(selected_choice)
+                                            if 0 <= choice_index < len(weights):
+                                                selected_weights.append(weights[choice_index])
+                                        except (ValueError, IndexError):
+                                            pass
 
-                                        # Sum the weights for this response (not average)
-                                        # This rewards selecting more positive attributes
-                                        if selected_weights:
-                                            response_scores.append(sum(selected_weights))
+                                    # Sum the weights for this response (not average)
+                                    # This rewards selecting more positive attributes
+                                    if selected_weights:
+                                        response_scores.append(sum(selected_weights))
 
-                                # Average all response scores
-                                if response_scores:
-                                    result['avg'] = round(sum(response_scores) / len(response_scores), 2)
+                            # Average all response scores
+                            if response_scores:
+                                result['avg'] = round(sum(response_scores) / len(response_scores), 2)
 
-                    report_question['by_category'][category] = result
-                else:
-                    # Insufficient responses - hide for anonymity
-                    report_question['by_category'][category] = {
-                        'count': count,
-                        'insufficient': True,
-                        'message': f'Insufficient responses (minimum {min_threshold} required)'
-                    }
+                report_question['by_category'][category] = result
 
             report_section['questions'][str(question_id)] = report_question
 

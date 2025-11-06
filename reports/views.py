@@ -4,7 +4,7 @@ from django.views.decorators.http import require_http_methods
 from accounts.permissions import can_manage_organization_required
 from reviews.models import ReviewCycle
 from .models import Report
-from .services import generate_report, get_report_summary
+from .services import generate_report, get_report_summary, apply_display_anonymization
 import uuid
 
 
@@ -22,9 +22,17 @@ def view_report(request, cycle_uuid):
 
     summary = get_report_summary(report)
 
+    # Apply display-level anonymization based on organization settings
+    min_threshold = cycle.organization.min_responses_for_anonymity
+    display_data = apply_display_anonymization(
+        report.report_data,
+        min_threshold=min_threshold
+    )
+
     context = {
         'cycle': cycle,
         'report': report,
+        'display_data': display_data,  # For detailed report sections
         'summary': summary,
         'questionnaire': cycle.questionnaire,
     }
@@ -79,9 +87,17 @@ def reviewee_report(request, access_token):
 
     summary = get_report_summary(report)
 
+    # Apply display-level anonymization based on organization settings
+    min_threshold = cycle.organization.min_responses_for_anonymity
+    display_data = apply_display_anonymization(
+        report.report_data,
+        min_threshold=min_threshold
+    )
+
     context = {
         'cycle': cycle,
         'report': report,
+        'display_data': display_data,  # For detailed report sections
         'summary': summary,
         'questionnaire': cycle.questionnaire,
         'is_public_view': True,

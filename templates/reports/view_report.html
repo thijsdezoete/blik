@@ -194,7 +194,7 @@
 
         <h2 style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-primary);">Detailed Feedback</h2>
 
-        {% for section_id, section_data in report.report_data.by_section.items %}
+        {% for section_id, section_data in display_data.by_section.items %}
         <div class="section-report">
             <h2 class="section-title">{{ section_data.title }}</h2>
 

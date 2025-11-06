@@ -79,18 +79,48 @@
         </div>
 
         <div class="actions">
-            <a href="{% url 'review_cycle_detail' cycle.id %}" class="btn btn-secondary">Back to Cycle</a>
-            <a href="{% url 'reports:regenerate_report' cycle.id %}" class="btn btn-primary">Regenerate Report</a>
+            <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">Back to Cycle</a>
+            <a href="{% url 'reports:regenerate_report' cycle.uuid %}" class="btn btn-primary">Regenerate Report</a>
         </div>
 
         {% if report.report_data.insights.overall_sentiment %}
         <div class="insight-card skill-profile">
-            <div class="insight-title">Overall Performance</div>
+            <div class="insight-title">
+                Overall Performance
+                {% if report.report_data.comparison.show_trends and report.report_data.comparison.overall_trend %}
+                <span class="trend-indicator trend-{{ report.report_data.comparison.overall_trend.direction }}">
+                    {{ report.report_data.comparison.overall_trend.symbol }}
+                    {{ report.report_data.comparison.overall_trend.label }}
+                    ({{ report.report_data.comparison.overall_trend.change|floatformat:1|stringformat:"+.1f" }})
+                </span>
+                {% endif %}
+            </div>
             <div class="overall-score">
                 {{ report.report_data.insights.overall_sentiment.score }}<span>/5.0</span>
             </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill score-{% if report.report_data.insights.overall_sentiment.score >= 4.0 %}high{% elif report.report_data.insights.overall_sentiment.score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ report.report_data.insights.overall_sentiment.score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+            </div>
             <div class="insight-message">
-                <strong>{{ report.report_data.insights.overall_sentiment.rating }}</strong> - Based on aggregated feedback across all dimensions
+                <strong>{{ report.report_data.insights.overall_sentiment.rating }}</strong> - Based on feedback from peers, managers, and direct reports
+                {% if report.report_data.comparison.has_previous %}
+                <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    Compared to {{ report.report_data.comparison.previous_cycle_date }}
+                </div>
+                {% endif %}
+                {% if report.report_data.insights.overall_sentiment.self_avg %}
+                <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.875rem;">
+                    <div style="color: var(--text-secondary); margin-bottom: 0.25rem;">Your self-assessment:</div>
+                    <div style="color: var(--text-primary); font-weight: 500;">
+                        {{ report.report_data.insights.overall_sentiment.self_avg }}/5.0
+                        {% with gap=report.report_data.insights.overall_sentiment.self_avg|floatformat:2|add:"0"|add:"-"|add:report.report_data.insights.overall_sentiment.score|floatformat:2|add:"0" %}
+                        <span style="color: {% if gap|slice:':1' == '-' %}var(--danger){% else %}var(--success){% endif %};">
+                            ({% if gap|slice:':1' != '-' %}+{% endif %}{{ gap|floatformat:1 }} compared to others)
+                        </span>
+                        {% endwith %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endif %}
@@ -111,12 +141,30 @@
         {% for gap in report.report_data.insights.perception_gaps %}
         <div class="insight-card perception-gap">
             <div class="insight-title">
-                Perception Gap Detected
+                {% if gap.type == 'imposter_syndrome' %}Blind Spot: You're Better Than You Think{% else %}Calibration Opportunity{% endif %}
                 <span class="severity-badge severity-{{ gap.severity }}">{{ gap.severity|upper }}</span>
             </div>
             <div class="insight-message">
-                <p><strong>{{ gap.message }}</strong></p>
-                <p>{{ gap.interpretation }}</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                    <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">You see yourself</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ gap.message|slice:"17:20" }}</div>
+                    </div>
+                    <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Others see you</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ gap.message|slice:"-4:" }}</div>
+                    </div>
+                </div>
+                <p style="margin-top: 1rem;"><strong>{{ gap.interpretation }}</strong></p>
+                {% if gap.type == 'imposter_syndrome' %}
+                <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    <strong>Action:</strong> Consider acknowledging your strengths more openly. Your team already recognizes your capabilities.
+                </p>
+                {% else %}
+                <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    <strong>Action:</strong> Seek specific feedback on areas where you rated yourself highly to understand others' perspectives.
+                </p>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -128,8 +176,16 @@
             <ul class="strength-list">
                 {% for strength in report.report_data.insights.strengths %}
                 <li class="strength-item">
-                    <span class="area-name">{{ strength.area }}</span>
-                    <span class="area-score">{{ strength.score|floatformat:1 }}</span>
+                    <div style="flex: 1;">
+                        <div class="area-name">{{ strength.area }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            Others' avg: <strong>{{ strength.others_avg }}/5.0</strong>
+                            {% if strength.self_score %}
+                                | Self: <strong>{{ strength.self_score }}/5.0</strong>
+                                | Gap: <strong style="color: {% if strength.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if strength.gap > 0 %}+{% endif %}{{ strength.gap }}</strong>
+                            {% endif %}
+                        </div>
+                    </div>
                 </li>
                 {% endfor %}
             </ul>
@@ -142,11 +198,19 @@
             <ul class="development-list">
                 {% for area in report.report_data.insights.development_areas %}
                 <li class="development-item">
-                    <div>
-                        <span class="area-name">{{ area.area }}</span>
-                        <span class="priority-badge priority-{{ area.priority }}">{{ area.priority }} priority</span>
+                    <div style="flex: 1;">
+                        <div>
+                            <span class="area-name">{{ area.area }}</span>
+                            <span class="priority-badge priority-{{ area.priority }}">{{ area.priority }} priority</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            Others' avg: <strong>{{ area.others_avg }}/5.0</strong>
+                            {% if area.self_score %}
+                                | Self: <strong>{{ area.self_score }}/5.0</strong>
+                                | Gap: <strong style="color: {% if area.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if area.gap > 0 %}+{% endif %}{{ area.gap }}</strong>
+                            {% endif %}
+                        </div>
                     </div>
-                    <span class="area-score">{{ area.score|floatformat:1 }}</span>
                 </li>
                 {% endfor %}
             </ul>
@@ -179,15 +243,67 @@
 
         <div class="report-section">
             <h2>Section-Level Performance</h2>
-            <div class="section-scorecard">
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Performance breakdown by competency area, with self-assessment shown first
+            </p>
+            <div style="display: grid; gap: 1.5rem;">
                 {% for section_name, categories in report.report_data.section_summary.items %}
-                    {% for category, score in categories.items %}
-                    <div class="scorecard-item">
-                        <div class="scorecard-category">{{ category }}</div>
-                        <div class="scorecard-score">{{ score|floatformat:1 }}</div>
-                        <div class="scorecard-label">{{ section_name }}</div>
+                <div style="background: var(--bg-card); padding: 1.25rem; border-radius: 8px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--primary);">
+                    <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.5rem 0; color: var(--text-primary);">
+                        {{ section_name }}
+                        {% if report.report_data.comparison.show_trends and report.report_data.comparison.section_trends %}
+                            {% with trend=report.report_data.comparison.section_trends|get_item:section_name %}
+                                {% if trend %}
+                                <span class="trend-indicator trend-{{ trend.direction }}">
+                                    {{ trend.symbol }} {{ trend.change|floatformat:1|stringformat:"+.1f" }}
+                                </span>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    </h3>
+
+                    <!-- Progress bar for overall section score -->
+                    {% with avg_score=categories|others_average %}
+                        {% if avg_score > 0 %}
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill score-{% if avg_score >= 4.0 %}high{% elif avg_score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+                        </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Peer benchmark if available (admin view shows all data) -->
+                    {% if report.report_data.peer_benchmarks %}
+                        {% with benchmark=report.report_data.peer_benchmarks|get_item:section_name %}
+                            {% if benchmark %}
+                            <div style="margin: 0.75rem 0; padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                                    <span style="color: var(--text-secondary);">Comparison vs {{ benchmark.peer_count }} peers</span>
+                                    {% if benchmark.show_percentile %}
+                                    <span class="percentile-badge">Top performer - {{ benchmark.percentile }}th percentile</span>
+                                    {% endif %}
+                                </div>
+                                <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                                    Org median: {{ benchmark.peer_median }}/5.0 | This score: {{ benchmark.current_score }}/5.0
+                                    {% if benchmark.current_score > benchmark.peer_median %}
+                                    <span style="color: var(--success); margin-left: 0.5rem;">▲ Above median</span>
+                                    {% elif benchmark.current_score < benchmark.peer_median %}
+                                    <span style="color: var(--text-secondary); margin-left: 0.5rem;">Below median</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+                        {% for category, score in categories.items %}
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: var(--bg-light); border-radius: 6px;">
+                            <span class="badge badge-{{ category }}" style="text-transform: capitalize;">{% if category == "direct_report" %}direct report{% else %}{{ category }}{% endif %}</span>
+                            <span style="font-weight: 600; color: var(--text-primary); font-size: 1.125rem;">{{ score|floatformat:1 }}</span>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -203,10 +319,13 @@
                 <h3 class="question-title">{{ question_data.question_text }}</h3>
 
                 <div class="category-results">
-                    {% for category, cat_data in question_data.by_category.items %}
-                    <div class="category-result">
+                    {% if question_data.category_order %}
+                        {# New reports with explicit ordering #}
+                        {% for category in question_data.category_order %}
+                        {% with cat_data=question_data.by_category|get_item:category %}
+                        <div class="category-result">
                         <div class="category-header">
-                            <span class="category-badge badge-{{ category }}">{{ category|title }}</span>
+                            <span class="badge badge-{{ category }}">{% if category == "direct_report" %}Direct Report{% else %}{{ category|title }}{% endif %}</span>
                             <span class="response-count">{{ cat_data.count }} response{{ cat_data.count|pluralize }}</span>
                         </div>
 
@@ -316,8 +435,127 @@
                                 </div>
                             {% endif %}
                         {% endif %}
-                    </div>
-                    {% endfor %}
+                        </div>
+                        {% endwith %}
+                        {% endfor %}
+                    {% else %}
+                        {# Legacy reports without category_order - use dict iteration #}
+                        {% for category, cat_data in question_data.by_category.items %}
+                        <div class="category-result">
+                        <div class="category-header">
+                            <span class="badge badge-{{ category }}">{% if category == "direct_report" %}Direct Report{% else %}{{ category|title }}{% endif %}</span>
+                            <span class="response-count">{{ cat_data.count }} response{{ cat_data.count|pluralize }}</span>
+                        </div>
+
+                        {% if cat_data.insufficient %}
+                            <div class="insufficient-data">
+                                {{ cat_data.message }}
+                            </div>
+                        {% else %}
+                            {% if cat_data.avg %}
+                                {% if question_data.question_type == 'scale' %}
+                                    {# Scale questions - show value in original range #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg|floatformat:1 }}</span>
+                                        <div class="rating-bar-container">
+                                            {% with min_val=question_data.question_config.min|default:1 max_val=question_data.question_config.max|default:100 %}
+                                                {% widthratio cat_data.avg max_val 100 as bar_width %}
+                                                <div class="rating-bar-fill" style="width: {{ bar_width }}%"></div>
+                                            {% endwith %}
+                                        </div>
+                                        <span class="response-count">/ {{ question_data.question_config.max|default:"100" }}</span>
+                                    </div>
+                                {% elif question_data.question_type == 'single_choice' and question_data.question_config.scoring_enabled %}
+                                    {# Single choice with scoring - show weighted average #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg|floatformat:1 }}</span>
+                                        <div class="rating-bar-container">
+                                            {% with weights=question_data.question_config.weights %}
+                                                {% if weights %}
+                                                    {% widthratio cat_data.avg weights|last 100 as bar_width %}
+                                                    <div class="rating-bar-fill" style="width: {{ bar_width }}%"></div>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                        <span class="response-count" style="font-size: 0.75rem; color: var(--text-secondary);">weighted avg</span>
+                                    </div>
+                                {% elif question_data.question_type == 'multiple_choice' and question_data.question_config.scoring_enabled %}
+                                    {# Multiple choice with scoring - show weighted sum average #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg|floatformat:1 }}</span>
+                                        <span class="response-count" style="font-size: 0.75rem; color: var(--text-secondary); margin-left: 0.5rem;">weighted avg</span>
+                                    </div>
+                                {% else %}
+                                    {# Rating questions - standard 1-5 scale #}
+                                    <div class="rating-display">
+                                        <span class="rating-score">{{ cat_data.avg }}</span>
+                                        <div class="rating-bar-container">
+                                            <div class="rating-bar-fill" style="width: {{ cat_data.avg|floatformat:0|add:"0"|mul:"20" }}%"></div>
+                                        </div>
+                                        <span class="response-count">/ 5.0</span>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if question_data.question_type == 'text' %}
+                                <div class="text-responses">
+                                    {% for response in cat_data.responses %}
+                                        <div class="text-response">{{ response }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% elif question_data.question_type == 'likert' %}
+                                <div class="likert-distribution">
+                                    {% if cat_data.distribution %}
+                                        {% for option, count in cat_data.distribution.items %}
+                                            <div style="margin-bottom: 0.5rem;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ option }}</span>
+                                                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ count }}</span>
+                                                </div>
+                                                <div style="background: var(--bg-light); border-radius: 4px; height: 8px; overflow: hidden;">
+                                                    <div style="background: var(--primary); height: 100%; width: {% widthratio count cat_data.count 100 %}%;"></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% elif question_data.question_type == 'single_choice' %}
+                                <div class="single-choice-distribution">
+                                    {% if cat_data.distribution %}
+                                        {% for option, count in cat_data.distribution.items %}
+                                            <div style="margin-bottom: 0.5rem;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ option }}</span>
+                                                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ count }}</span>
+                                                </div>
+                                                <div style="background: var(--bg-light); border-radius: 4px; height: 8px; overflow: hidden;">
+                                                    <div style="background: var(--primary); height: 100%; width: {% widthratio count cat_data.count 100 %}%;"></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% elif question_data.question_type == 'multiple_choice' %}
+                                <div class="multiple-choice-distribution">
+                                    {% if cat_data.distribution %}
+                                        {% for option, count in cat_data.distribution.items %}
+                                            <div style="margin-bottom: 0.5rem;">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                    <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ option }}</span>
+                                                    <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ count }}</span>
+                                                </div>
+                                                <div style="background: var(--bg-light); border-radius: 4px; height: 8px; overflow: hidden;">
+                                                    <div style="background: var(--primary); height: 100%; width: {% widthratio count cat_data.count 100 %}%;"></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

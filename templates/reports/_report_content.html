@@ -252,7 +252,7 @@
 {% if not is_admin_view %}
 <div class="notice">
     <p>
-        <strong>Privacy Notice:</strong> All responses are anonymous and aggregated. Individual reviewers cannot be identified. Results are only shown when there are at least 3 responses per category to protect anonymity.
+        <strong>Privacy Notice:</strong> All responses are anonymous and aggregated. Individual reviewers cannot be identified. Results are only shown when there are at least {{ cycle.organization.min_responses_for_anonymity }} response{{ cycle.organization.min_responses_for_anonymity|pluralize }} per category to protect anonymity.
     </p>
 </div>
 {% endif %}

@@ -565,6 +565,7 @@ def generate_report(cycle):
             report_question = {
                 'question_text': question_data['question_text'],
                 'question_type': question_data['question_type'],
+                'question_config': question_data['question_config'],  # Include config for labels, scales, etc.
                 'category_order': present_categories,  # Explicit ordering
                 'by_category': {}
             }
@@ -584,6 +585,9 @@ def generate_report(cycle):
                     numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
                     if numeric_responses:
                         result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
+                        # Also store distribution for better display (convert keys to strings for template compatibility)
+                        from collections import Counter
+                        result['distribution'] = {str(k): v for k, v in Counter(numeric_responses).items()}
                 elif question_data['question_type'] == 'scale':
                     numeric_responses = [r for r in category_data['responses'] if isinstance(r, (int, float))]
                     if numeric_responses:

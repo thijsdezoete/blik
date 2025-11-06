@@ -8,6 +8,8 @@ def get_item(dictionary, key):
     """Get item from dictionary by key"""
     if dictionary is None:
         return None
+    if not isinstance(dictionary, dict):
+        return None
     return dictionary.get(str(key))
 
 
@@ -52,4 +54,42 @@ def subtract(value, arg):
     try:
         return float(value) - float(arg)
     except (ValueError, TypeError):
+        return 0
+
+
+@register.filter
+def percentage(value, total):
+    """Calculate percentage"""
+    try:
+        if total == 0:
+            return 0
+        return round((float(value) / float(total)) * 100)
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 0
+
+
+@register.filter
+def sort_by_frequency(distribution):
+    """Sort distribution dict by count (descending)"""
+    if not distribution:
+        return []
+    return sorted(distribution.items(), key=lambda x: x[1], reverse=True)
+
+
+@register.filter
+def get_rating_label(question_config, rating_value):
+    """Get label for a rating value from question config"""
+    try:
+        labels = question_config.get('labels', {})
+        return labels.get(str(int(rating_value)), '')
+    except (ValueError, TypeError, AttributeError):
+        return ''
+
+
+@register.filter
+def count_value(lst, value):
+    """Count occurrences of value in list"""
+    try:
+        return lst.count(value)
+    except (AttributeError, TypeError):
         return 0

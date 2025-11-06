@@ -35,6 +35,7 @@ def view_report(request, cycle_uuid):
         'display_data': display_data,  # For detailed report sections
         'summary': summary,
         'questionnaire': cycle.questionnaire,
+        'is_admin_view': True,
     }
 
     return render(request, 'reports/view_report.html', context)
@@ -47,7 +48,7 @@ def regenerate_report(request, cycle_uuid):
     cycle = get_object_or_404(ReviewCycle, uuid=cycle_uuid)
     generate_report(cycle)
 
-    return redirect('reports:view_report', cycle_id=cycle_id)
+    return redirect('reports:view_report', cycle_uuid=cycle.uuid)
 
 
 def reviewee_report(request, access_token):

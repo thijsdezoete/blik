@@ -1,0 +1,269 @@
+{% load feedback_tags %}
+{# Shared report content - used by both admin and reviewee views #}
+
+{% if report.report_data.insights.overall_sentiment %}
+<div class="insight-card skill-profile">
+    <div class="insight-title">
+        Overall Performance
+        {% if report.report_data.comparison.show_trends and report.report_data.comparison.overall_trend %}
+        <span class="trend-indicator trend-{{ report.report_data.comparison.overall_trend.direction }}">
+            {{ report.report_data.comparison.overall_trend.symbol }}
+            {{ report.report_data.comparison.overall_trend.label }}
+            ({{ report.report_data.comparison.overall_trend.change|floatformat:1|stringformat:"+.1f" }})
+        </span>
+        {% endif %}
+    </div>
+    <div class="overall-score">
+        {{ report.report_data.insights.overall_sentiment.score }}<span>/5.0</span>
+    </div>
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill score-{% if report.report_data.insights.overall_sentiment.score >= 4.0 %}high{% elif report.report_data.insights.overall_sentiment.score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ report.report_data.insights.overall_sentiment.score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+    </div>
+    <div class="insight-message">
+        <strong>{{ report.report_data.insights.overall_sentiment.rating }}</strong> - Based on feedback from peers, managers, and direct reports
+        {% if report.report_data.comparison.has_previous %}
+        <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+            Compared to {{ report.report_data.comparison.previous_cycle_date }}
+        </div>
+        {% endif %}
+        {% if report.report_data.insights.overall_sentiment.self_avg %}
+        <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.875rem;">
+            <div style="color: var(--text-secondary); margin-bottom: 0.25rem;">{% if is_admin_view %}Self-assessment:{% else %}Your self-assessment:{% endif %}</div>
+            <div style="color: var(--text-primary); font-weight: 500;">
+                {{ report.report_data.insights.overall_sentiment.self_avg }}/5.0
+                {% with gap=report.report_data.insights.overall_sentiment.self_avg|subtract:report.report_data.insights.overall_sentiment.score %}
+                <span style="color: {% if gap < 0 %}var(--danger){% else %}var(--success){% endif %};">
+                    ({% if gap > 0 %}+{% endif %}{{ gap|floatformat:1 }} compared to others)
+                </span>
+                {% endwith %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if report.report_data.insights.skill_profile %}
+<div class="insight-card skill-profile">
+    <div class="insight-title">Technical Skill Level</div>
+    <div style="margin: 1rem 0;">
+        <span class="skill-badge">{{ report.report_data.insights.skill_profile.level }}</span>
+    </div>
+    <div class="insight-message">
+        {{ report.report_data.insights.skill_profile.description }}
+    </div>
+</div>
+{% endif %}
+
+{% if report.report_data.insights.perception_gaps %}
+{% for gap in report.report_data.insights.perception_gaps %}
+<div class="insight-card perception-gap">
+    <div class="insight-title">
+        {% if gap.type == 'imposter_syndrome' %}Blind Spot: {% if is_admin_view %}Better Than Self-Perception{% else %}You're Better Than You Think{% endif %}{% else %}Calibration Opportunity{% endif %}
+        <span class="severity-badge severity-{{ gap.severity }}">{{ gap.severity|upper }}</span>
+    </div>
+    <div class="insight-message">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+            <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% if is_admin_view %}Self-assessment{% else %}You see yourself{% endif %}</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ gap.self_score }}</div>
+            </div>
+            <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% if is_admin_view %}Others' assessment{% else %}Others see you{% endif %}</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ gap.others_score }}</div>
+            </div>
+        </div>
+        <p style="margin-top: 1rem;"><strong>{{ gap.interpretation }}</strong></p>
+        {% if not is_admin_view %}
+            {% if gap.type == 'imposter_syndrome' %}
+            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                <strong>Action:</strong> Consider acknowledging your strengths more openly. Your team already recognizes your capabilities.
+            </p>
+            {% else %}
+            <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                <strong>Action:</strong> Seek specific feedback on areas where you rated yourself highly to understand others' perspectives.
+            </p>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if report.report_data.insights.strengths %}
+<div class="insight-card strengths">
+    <div class="insight-title">Key Strengths</div>
+    <ul class="strength-list">
+        {% for strength in report.report_data.insights.strengths %}
+        <li class="strength-item">
+            <div style="flex: 1;">
+                <div class="area-name">{{ strength.area }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                    Others' avg: <strong>{{ strength.others_avg }}/5.0</strong>
+                    {% if strength.self_score %}
+                        | Self: <strong>{{ strength.self_score }}/5.0</strong>
+                        | Gap: <strong style="color: {% if strength.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if strength.gap > 0 %}+{% endif %}{{ strength.gap }}</strong>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if report.report_data.insights.development_areas %}
+<div class="insight-card development">
+    <div class="insight-title">Development Opportunities</div>
+    <ul class="development-list">
+        {% for area in report.report_data.insights.development_areas %}
+        <li class="development-item">
+            <div style="flex: 1;">
+                <div>
+                    <span class="area-name">{{ area.area }}</span>
+                    <span class="priority-badge priority-{{ area.priority }}">{{ area.priority }} priority</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                    Others' avg: <strong>{{ area.others_avg }}/5.0</strong>
+                    {% if area.self_score %}
+                        | Self: <strong>{{ area.self_score }}/5.0</strong>
+                        | Gap: <strong style="color: {% if area.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if area.gap > 0 %}+{% endif %}{{ area.gap }}</strong>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if report.report_data.charts.section_scores %}
+<div class="report-section">
+    <h2>Performance Overview</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Visual comparison of {% if is_admin_view %}performance{% else %}your performance{% endif %} across all competency areas
+    </p>
+
+    <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
+        <canvas id="sectionRadarChart" style="max-height: 500px;"></canvas>
+    </div>
+</div>
+
+<div class="report-section">
+    <h2>Self vs Others Comparison</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        How {% if is_admin_view %}self-assessment compares{% else %}your self-assessment compares{% endif %} to others' feedback (sorted by gap size)
+    </p>
+
+    <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
+        <canvas id="gapChart" style="max-height: 400px;"></canvas>
+    </div>
+</div>
+{% endif %}
+
+<div class="report-section">
+    <h2>Section-Level Performance</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Performance breakdown by competency area, with self-assessment shown first
+    </p>
+    <div style="display: grid; gap: 1.5rem;">
+        {% for section_name, categories in report.report_data.section_summary.items %}
+        <div style="background: var(--bg-card); padding: 1.25rem; border-radius: 8px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--primary);">
+            <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.5rem 0; color: var(--text-primary);">
+                {{ section_name }}
+                {% if report.report_data.comparison.show_trends and report.report_data.comparison.section_trends %}
+                    {% with trend=report.report_data.comparison.section_trends|get_item:section_name %}
+                        {% if trend %}
+                        <span class="trend-indicator trend-{{ trend.direction }}">
+                            {{ trend.symbol }} {{ trend.change|floatformat:1|stringformat:"+.1f" }}
+                        </span>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </h3>
+
+            <!-- Progress bar for overall section score -->
+            {% with avg_score=categories|others_average %}
+                {% if avg_score > 0 %}
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill score-{% if avg_score >= 4.0 %}high{% elif avg_score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Peer benchmark if available -->
+            {% if report.report_data.peer_benchmarks %}
+                {% with benchmark=report.report_data.peer_benchmarks|get_item:section_name %}
+                    {% if is_admin_view and benchmark %}
+                    {# Admin view: show all benchmark data #}
+                    <div style="margin: 0.75rem 0; padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <span style="color: var(--text-secondary);">Comparison vs {{ benchmark.peer_count }} peers</span>
+                            {% if benchmark.show_percentile %}
+                            <span class="percentile-badge">Top performer - {{ benchmark.percentile }}th percentile</span>
+                            {% endif %}
+                        </div>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                            Org median: {{ benchmark.peer_median }}/5.0 | This score: {{ benchmark.current_score }}/5.0
+                            {% if benchmark.current_score > benchmark.peer_median %}
+                            <span style="color: var(--success); margin-left: 0.5rem;">▲ Above median</span>
+                            {% elif benchmark.current_score < benchmark.peer_median %}
+                            <span style="color: var(--text-secondary); margin-left: 0.5rem;">Below median</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% elif not is_admin_view and benchmark and benchmark.show_percentile %}
+                    {# Reviewee view: only show if performing well #}
+                    <div style="margin: 0.75rem 0; padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <span style="color: var(--text-secondary);">Strong performance</span>
+                            <span class="percentile-badge">Top {{ 100|add:"-"|add:benchmark.percentile|add:"0" }}% in organization</span>
+                        </div>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.8125rem;">
+                            You scored {{ benchmark.current_score }}/5.0, higher than {{ benchmark.percentile }}% of peers
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endwith %}
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+                {% for category, score in categories.items %}
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: var(--bg-light); border-radius: 6px;">
+                    <span class="badge badge-{{ category }}" style="text-transform: capitalize;">{% if category == "direct_report" %}direct report{% else %}{{ category }}{% endif %}</span>
+                    <span style="font-weight: 600; color: var(--text-primary); font-size: 1.125rem;">{{ score|floatformat:1 }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if not is_admin_view %}
+<div class="notice">
+    <p>
+        <strong>Privacy Notice:</strong> All responses are anonymous and aggregated. Individual reviewers cannot be identified. Results are only shown when there are at least 3 responses per category to protect anonymity.
+    </p>
+</div>
+{% endif %}
+
+<h2 style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-primary);">Detailed Feedback</h2>
+
+{% for section_id, section_data in display_data.by_section.items %}
+<div class="section-report">
+    <h2 class="section-title">{{ section_data.title }}</h2>
+
+    {% for question_id, question_data in section_data.questions.items %}
+        {% include "reports/_question_response.html" with question_data=question_data %}
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% if not is_admin_view %}
+<div class="report-section" style="text-align: center;">
+    <p style="color: var(--text-secondary); margin: 0;">
+        If you have questions about this report, please contact your manager or HR department.
+    </p>
+</div>
+{% endif %}

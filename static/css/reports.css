@@ -486,3 +486,42 @@ body.report-page {
 [data-theme="dark"] .distribution-count {
     background: rgba(255, 255, 255, 0.05);
 }
+
+/* Rating context label */
+.rating-context {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Likert sentiment summary */
+.likert-summary {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.likert-summary.likert-positive {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border-left: 3px solid #10b981;
+}
+
+.likert-summary.likert-mostly-positive {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border-left: 3px solid #3b82f6;
+}
+
+[data-theme="dark"] .likert-summary.likert-positive {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+[data-theme="dark"] .likert-summary.likert-mostly-positive {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}

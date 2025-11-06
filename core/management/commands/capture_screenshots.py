@@ -95,7 +95,7 @@ class Command(BaseCommand):
                 # 1. Report page - Header/Summary section - Desktop Light
                 {
                     'name': 'report_header_desktop_light',
-                    'url': f'{base_url}/report/{config["completed_cycle_id"]}/',
+                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
                     'scroll_to': 0,  # Top of page - header and summary
@@ -103,7 +103,7 @@ class Command(BaseCommand):
                 # 2. Report page - Header/Summary section - Desktop Dark
                 {
                     'name': 'report_header_desktop_dark',
-                    'url': f'{base_url}/report/{config["completed_cycle_id"]}/',
+                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'dark',
                     'scroll_to': 0,  # Top of page - header and summary
@@ -111,34 +111,38 @@ class Command(BaseCommand):
                 # 3. Report page - Charts section - Desktop Light
                 {
                     'name': 'report_charts_desktop_light',
-                    'url': f'{base_url}/report/{config["completed_cycle_id"]}/',
+                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
-                    'scroll_to': 1080,  # Scroll 1 full viewport down to show radar chart and competency breakdowns
+                    'scroll_to_element': '#sectionRadarChart',  # Scroll to radar chart
+                    'scroll_element_position': 'center',  # Position chart in center of viewport
                 },
                 # 4. Report page - Charts section - Desktop Dark
                 {
                     'name': 'report_charts_desktop_dark',
-                    'url': f'{base_url}/report/{config["completed_cycle_id"]}/',
+                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'dark',
-                    'scroll_to': 1080,  # Scroll 1 full viewport down to show radar chart and competency breakdowns
+                    'scroll_to_element': '#sectionRadarChart',  # Scroll to radar chart
+                    'scroll_element_position': 'center',  # Position chart in center of viewport
                 },
                 # 5. Report page - Tablet Light
                 {
                     'name': 'report_tablet_light',
-                    'url': f'{base_url}/report/{config["completed_cycle_id"]}/',
+                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
                     'viewport': {'width': 1024, 'height': 768},
                     'theme': 'light',
-                    'scroll_to': 400,
+                    'scroll_to_element': '#sectionRadarChart',
+                    'scroll_element_position': 'start',  # Show top of chart
                 },
                 # 6. Report page - Tablet Dark
                 {
                     'name': 'report_tablet_dark',
-                    'url': f'{base_url}/report/{config["completed_cycle_id"]}/',
+                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
                     'viewport': {'width': 1024, 'height': 768},
                     'theme': 'dark',
-                    'scroll_to': 400,
+                    'scroll_to_element': '#sectionRadarChart',
+                    'scroll_element_position': 'start',  # Show top of chart
                 },
                 # 7. Admin Dashboard - Desktop Light
                 {
@@ -175,18 +179,18 @@ class Command(BaseCommand):
                 # 11. Review Cycle Detail - Desktop Light
                 {
                     'name': 'cycle_detail_desktop_light',
-                    'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_id"]}/',
+                    'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_uuid"]}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
-                    'wait_for': '.stats-grid',
+                    'wait_for': '.card',  # Wait for any card to appear (more reliable)
                 },
                 # 12. Review Cycle Detail - Desktop Dark
                 {
                     'name': 'cycle_detail_desktop_dark',
-                    'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_id"]}/',
+                    'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_uuid"]}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'dark',
-                    'wait_for': '.stats-grid',
+                    'wait_for': '.card',  # Wait for any card to appear (more reliable)
                 },
                 # 13. Team Management - Desktop Light
                 {
@@ -207,10 +211,10 @@ class Command(BaseCommand):
                 # 15. Manage Invitations - Desktop Light
                 {
                     'name': 'invitations_desktop_light',
-                    'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_id"]}/invitations/',
+                    'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_uuid"]}/invitations/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
-                    'wait_for': 'form',
+                    'wait_for': '#inviteForm',  # Wait for the specific invite form
                 },
             ]
 
@@ -265,8 +269,53 @@ class Command(BaseCommand):
 
                 # Scroll if needed
                 if 'scroll_to' in screenshot_config:
+                    # Legacy pixel-based scrolling
                     await page.evaluate(f'window.scrollTo(0, {screenshot_config["scroll_to"]})')
                     await page.wait_for_timeout(500)
+                elif 'scroll_to_element' in screenshot_config:
+                    # Element-based scrolling
+                    try:
+                        element_selector = screenshot_config['scroll_to_element']
+                        position = screenshot_config.get('scroll_element_position', 'start')
+
+                        # Wait for element to exist
+                        await page.wait_for_selector(element_selector, timeout=5000)
+
+                        # Scroll element into view with specified position
+                        # 'start' = top of element aligned to top of viewport
+                        # 'center' = element centered in viewport
+                        # 'end' = bottom of element aligned to bottom of viewport
+                        await page.locator(element_selector).scroll_into_view_if_needed()
+
+                        if position == 'center':
+                            # Center the element in viewport
+                            await page.evaluate(f'''
+                                {{
+                                    const element = document.querySelector("{element_selector}");
+                                    const elementRect = element.getBoundingClientRect();
+                                    const absoluteElementTop = elementRect.top + window.pageYOffset;
+                                    const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 2);
+                                    window.scrollTo(0, middle);
+                                }}
+                            ''')
+                        elif position == 'end':
+                            # Align bottom of element with bottom of viewport
+                            await page.evaluate(f'''
+                                {{
+                                    const element = document.querySelector("{element_selector}");
+                                    const elementRect = element.getBoundingClientRect();
+                                    const absoluteElementTop = elementRect.top + window.pageYOffset;
+                                    const bottom = absoluteElementTop + elementRect.height - window.innerHeight;
+                                    window.scrollTo(0, bottom);
+                                }}
+                            ''')
+                        # 'start' is already handled by scroll_into_view_if_needed
+
+                        await page.wait_for_timeout(500)
+                    except Exception as e:
+                        self.stdout.write(self.style.WARNING(
+                            f'  Warning: Could not scroll to element {screenshot_config["scroll_to_element"]}: {e}'
+                        ))
 
                 # Take screenshot
                 output_file = output_path / f'{screenshot_config["name"]}.png'

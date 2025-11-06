@@ -110,10 +110,18 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'Created {len(team_members)} team members'))
 
-        # Get default questionnaire
-        questionnaire = Questionnaire.objects.filter(is_active=True).first()
+        # Get Software Engineering 360 Review questionnaire for the organization
+        questionnaire = Questionnaire.objects.filter(
+            organization=org,
+            name="Software Engineering 360 Review",
+            is_active=True
+        ).first()
+
         if not questionnaire:
-            self.stdout.write(self.style.ERROR('No questionnaire found. Run clone_default_questionnaires first.'))
+            self.stdout.write(self.style.ERROR(
+                'Software Engineering 360 Review questionnaire not found for organization.\n'
+                'Make sure questionnaire fixtures are loaded and migrations have run.'
+            ))
             return
 
         # Create reviewees for different cycle states
@@ -142,6 +150,7 @@ class Command(BaseCommand):
                     'reviewee': name,
                     'status': 'completed',
                     'cycle_id': cycle.id,
+                    'cycle_uuid': str(cycle.uuid),
                     'has_report': True
                 })
             elif cycle_type.startswith('partial_'):
@@ -151,6 +160,7 @@ class Command(BaseCommand):
                     'reviewee': name,
                     'status': 'active',
                     'cycle_id': cycle.id,
+                    'cycle_uuid': str(cycle.uuid),
                     'completion': f'{completion_pct}%'
                 })
 
@@ -170,6 +180,7 @@ class Command(BaseCommand):
                     'reviewee': name,
                     'status': 'active',
                     'cycle_id': cycle.id,
+                    'cycle_uuid': str(cycle.uuid),
                     'claimed': f'{claim_pct}%'
                 })
 
@@ -189,7 +200,9 @@ class Command(BaseCommand):
             'admin_password': 'demo123',
             'cycles': cycles_output,
             'completed_cycle_id': cycles_output[0]['cycle_id'],
+            'completed_cycle_uuid': cycles_output[0]['cycle_uuid'],
             'partial_cycle_id': cycles_output[1]['cycle_id'],
+            'partial_cycle_uuid': cycles_output[1]['cycle_uuid'],
             'feedback_token': feedback_token_for_screenshots,
             'report_access_token': report_access_token,
             'team_count': len(team_members) + 1,

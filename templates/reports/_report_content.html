@@ -164,7 +164,7 @@
 <div class="report-section">
     <h2>Section-Level Performance</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-        Performance breakdown by competency area, with self-assessment shown first
+        Performance breakdown by competency area
     </p>
     <div style="display: grid; gap: 1.5rem;">
         {% for section_name, categories in report.report_data.section_summary.items %}
@@ -185,8 +185,17 @@
             <!-- Progress bar for overall section score -->
             {% with avg_score=categories|others_average %}
                 {% if avg_score > 0 %}
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill score-{% if avg_score >= 4.0 %}high{% elif avg_score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+                <div style="margin-bottom: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
+                        <span style="font-size: 0.875rem; color: var(--text-secondary);">Overall score (excluding self-assessment)</span>
+                        <span style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">{{ avg_score|floatformat:1 }}<span style="font-size: 0.875rem; color: var(--text-secondary);">/5.0</span></span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill score-{% if avg_score >= 4.0 %}high{% elif avg_score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; display: flex; justify-content: space-between;">
+                        <span>Color: <span class="{% if avg_score >= 4.0 %}score-high{% elif avg_score >= 3.0 %}score-medium{% else %}score-low{% endif %}" style="font-weight: 500;">{% if avg_score >= 4.0 %}Strong (4.0+){% elif avg_score >= 3.0 %}Good (3.0-3.9){% else %}Needs Development (&lt;3.0){% endif %}</span></span>
+                    </div>
                 </div>
                 {% endif %}
             {% endwith %}

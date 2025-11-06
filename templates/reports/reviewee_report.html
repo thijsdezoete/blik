@@ -102,9 +102,9 @@
                     <div style="color: var(--text-secondary); margin-bottom: 0.25rem;">Your self-assessment:</div>
                     <div style="color: var(--text-primary); font-weight: 500;">
                         {{ report.report_data.insights.overall_sentiment.self_avg }}/5.0
-                        {% with gap=report.report_data.insights.overall_sentiment.self_avg|floatformat:2|add:"0"|add:"-"|add:report.report_data.insights.overall_sentiment.score|floatformat:2|add:"0" %}
-                        <span style="color: {% if gap|slice:':1' == '-' %}var(--danger){% else %}var(--success){% endif %};">
-                            ({% if gap|slice:':1' != '-' %}+{% endif %}{{ gap|floatformat:1 }} compared to others)
+                        {% with gap=report.report_data.insights.overall_sentiment.self_avg|subtract:report.report_data.insights.overall_sentiment.score %}
+                        <span style="color: {% if gap < 0 %}var(--danger){% else %}var(--success){% endif %};">
+                            ({% if gap > 0 %}+{% endif %}{{ gap|floatformat:1 }} compared to others)
                         </span>
                         {% endwith %}
                     </div>
@@ -137,11 +137,11 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
                     <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
                         <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">You see yourself</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ gap.message|slice:"17:20" }}</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ gap.self_score }}</div>
                     </div>
                     <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
                         <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Others see you</div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ gap.message|slice:"-4:" }}</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ gap.others_score }}</div>
                     </div>
                 </div>
                 <p style="margin-top: 1rem;"><strong>{{ gap.interpretation }}</strong></p>

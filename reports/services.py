@@ -259,6 +259,9 @@ def _calculate_insights(report_data):
                 insights['perception_gaps'].append({
                     'type': 'imposter_syndrome',
                     'severity': 'high' if gap < -1.0 else 'moderate',
+                    'self_score': round(self_avg, 2),
+                    'others_score': round(others_avg, 2),
+                    'gap': round(gap, 2),
                     'message': f'Self-assessment ({self_avg:.1f}) significantly lower than others\' perception ({others_avg:.1f})',
                     'interpretation': 'Strong performance but may undervalue own contributions'
                 })
@@ -266,6 +269,9 @@ def _calculate_insights(report_data):
                 insights['perception_gaps'].append({
                     'type': 'overconfidence',
                     'severity': 'high' if gap > 1.0 else 'moderate',
+                    'self_score': round(self_avg, 2),
+                    'others_score': round(others_avg, 2),
+                    'gap': round(gap, 2),
                     'message': f'Self-assessment ({self_avg:.1f}) higher than others\' perception ({others_avg:.1f})',
                     'interpretation': 'Opportunity to align self-perception with team feedback'
                 })

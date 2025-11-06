@@ -88,7 +88,7 @@
                         {{ cat_data.message }}
                     </div>
                 {% else %}
-                    {# RATING QUESTIONS - Show average with label context #}
+                    {# RATING QUESTIONS - Show average and distribution #}
                     {% if question_data.question_type == 'rating' and cat_data.avg %}
                         <div class="rating-display">
                             <span class="rating-score">{{ cat_data.avg }}</span>

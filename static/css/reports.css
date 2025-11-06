@@ -140,6 +140,62 @@ body.report-page {
     letter-spacing: 0.05em;
 }
 
+/* Section Performance */
+.section-performance-card {
+    background: var(--bg-card);
+    padding: 1.25rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--primary);
+}
+
+.section-performance-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.section-performance-score-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.section-performance-score-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.section-performance-score-value-small {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.section-performance-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.category-score-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-light);
+    border-radius: 6px;
+}
+
+.category-score-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    white-space: nowrap;
+}
+
 /* Radar Chart Placeholder */
 .radar-placeholder {
     width: 100%;

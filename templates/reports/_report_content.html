@@ -168,8 +168,8 @@
     </p>
     <div style="display: grid; gap: 1.5rem;">
         {% for section_name, categories in report.report_data.section_summary.items %}
-        <div style="background: var(--bg-card); padding: 1.25rem; border-radius: 8px; box-shadow: var(--shadow-sm); border-left: 4px solid var(--primary);">
-            <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.5rem 0; color: var(--text-primary);">
+        <div class="section-performance-card">
+            <h3 class="section-performance-title">
                 {{ section_name }}
                 {% if report.report_data.comparison.show_trends and report.report_data.comparison.section_trends %}
                     {% with trend=report.report_data.comparison.section_trends|get_item:section_name %}
@@ -187,14 +187,14 @@
                 {% if avg_score > 0 %}
                 <div style="margin-bottom: 0.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
-                        <span style="font-size: 0.875rem; color: var(--text-secondary);">Overall score (excluding self-assessment)</span>
-                        <span style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">{{ avg_score|floatformat:1 }}<span style="font-size: 0.875rem; color: var(--text-secondary);">/5.0</span></span>
+                        <span class="section-performance-score-label">Overall score (excluding self-assessment)</span>
+                        <span class="section-performance-score-value">{{ avg_score|floatformat:1 }}<span class="section-performance-score-value-small">/5.0</span></span>
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill score-{% if avg_score >= 4.0 %}high{% elif avg_score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; display: flex; justify-content: space-between;">
-                        <span>Color: <span class="{% if avg_score >= 4.0 %}score-high{% elif avg_score >= 3.0 %}score-medium{% else %}score-low{% endif %}" style="font-weight: 500;">{% if avg_score >= 4.0 %}Strong (4.0+){% elif avg_score >= 3.0 %}Good (3.0-3.9){% else %}Needs Development (&lt;3.0){% endif %}</span></span>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                        <span class="{% if avg_score >= 4.0 %}score-high{% elif avg_score >= 3.0 %}score-medium{% else %}score-low{% endif %}" style="font-weight: 500;">{% if avg_score >= 4.0 %}Strong (4.0+){% elif avg_score >= 3.0 %}Good (3.0-3.9){% else %}Needs Development (&lt;3.0){% endif %}</span>
                     </div>
                 </div>
                 {% endif %}
@@ -236,11 +236,11 @@
                 {% endwith %}
             {% endif %}
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+            <div class="section-performance-categories">
                 {% for category, score in categories|sort_categories %}
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; background: var(--bg-light); border-radius: 6px;">
+                <div class="category-score-item">
                     <span class="badge badge-{{ category }}" style="text-transform: capitalize;">{% if category == "direct_report" %}direct report{% else %}{{ category }}{% endif %}</span>
-                    <span style="font-weight: 600; color: var(--text-primary); font-size: 1.125rem;">{{ score|floatformat:1 }}</span>
+                    <span class="category-score-value">{{ score|floatformat:1 }}</span>
                 </div>
                 {% endfor %}
             </div>

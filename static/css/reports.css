@@ -411,11 +411,19 @@ body.report-page {
     transition: width 0.3s ease, background 0.3s ease;
 }
 
-.progress-bar-fill.score-high {
+.progress-bar-fill.score-excellent {
+    background: linear-gradient(90deg, #059669 0%, #047857 100%);
+}
+
+.progress-bar-fill.score-strong {
     background: linear-gradient(90deg, #10b981 0%, #059669 100%);
 }
 
-.progress-bar-fill.score-medium {
+.progress-bar-fill.score-good {
+    background: linear-gradient(90deg, #84cc16 0%, #65a30d 100%);
+}
+
+.progress-bar-fill.score-developing {
     background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
 }
 
@@ -583,11 +591,19 @@ body.report-page {
 }
 
 /* Score level indicators */
-.score-high {
+.score-excellent {
+    color: #047857;
+}
+
+.score-strong {
     color: #059669;
 }
 
-.score-medium {
+.score-good {
+    color: #65a30d;
+}
+
+.score-developing {
     color: #d97706;
 }
 
@@ -595,11 +611,19 @@ body.report-page {
     color: #dc2626;
 }
 
-[data-theme="dark"] .score-high {
+[data-theme="dark"] .score-excellent {
     color: #34d399;
 }
 
-[data-theme="dark"] .score-medium {
+[data-theme="dark"] .score-strong {
+    color: #4ade80;
+}
+
+[data-theme="dark"] .score-good {
+    color: #a3e635;
+}
+
+[data-theme="dark"] .score-developing {
     color: #fbbf24;
 }
 

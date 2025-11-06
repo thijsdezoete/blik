@@ -17,7 +17,7 @@
         {{ report.report_data.insights.overall_sentiment.score }}<span>/5.0</span>
     </div>
     <div class="progress-bar-container">
-        <div class="progress-bar-fill score-{% if report.report_data.insights.overall_sentiment.score >= 4.0 %}high{% elif report.report_data.insights.overall_sentiment.score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ report.report_data.insights.overall_sentiment.score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+        <div class="progress-bar-fill score-{% if report.report_data.insights.overall_sentiment.score >= 4.5 %}excellent{% elif report.report_data.insights.overall_sentiment.score >= 3.5 %}strong{% elif report.report_data.insights.overall_sentiment.score >= 2.6 %}good{% elif report.report_data.insights.overall_sentiment.score >= 2.0 %}developing{% else %}low{% endif %}" style="width: {{ report.report_data.insights.overall_sentiment.score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
     </div>
     <div class="insight-message">
         <strong>{{ report.report_data.insights.overall_sentiment.rating }}</strong> - Based on feedback from peers, managers, and direct reports
@@ -191,10 +191,10 @@
                         <span class="section-performance-score-value">{{ avg_score|floatformat:1 }}<span class="section-performance-score-value-small">/5.0</span></span>
                     </div>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill score-{% if avg_score >= 4.0 %}high{% elif avg_score >= 3.0 %}medium{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
+                        <div class="progress-bar-fill score-{% if avg_score >= 4.5 %}excellent{% elif avg_score >= 3.5 %}strong{% elif avg_score >= 2.6 %}good{% elif avg_score >= 2.0 %}developing{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
                     </div>
                     <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                        <span class="{% if avg_score >= 4.0 %}score-high{% elif avg_score >= 3.0 %}score-medium{% else %}score-low{% endif %}" style="font-weight: 500;">{% if avg_score >= 4.0 %}Strong (4.0+){% elif avg_score >= 3.0 %}Good (3.0-3.9){% else %}Needs Development (&lt;3.0){% endif %}</span>
+                        <span class="{% if avg_score >= 4.5 %}score-excellent{% elif avg_score >= 3.5 %}score-strong{% elif avg_score >= 2.6 %}score-good{% elif avg_score >= 2.0 %}score-developing{% else %}score-low{% endif %}" style="font-weight: 500;">{% if avg_score >= 4.5 %}Excellent (4.5+){% elif avg_score >= 3.5 %}Strong (3.5-4.4){% elif avg_score >= 2.6 %}Good (2.6-3.4){% elif avg_score >= 2.0 %}Developing (2.0-2.5){% else %}Needs Development (&lt;2.0){% endif %}</span>
                     </div>
                 </div>
                 {% endif %}

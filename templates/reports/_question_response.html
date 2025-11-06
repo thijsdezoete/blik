@@ -97,15 +97,10 @@
                             </div>
                             <span class="response-count">/ 5.0</span>
                         </div>
-                        {% with label=question_data.question_config|get_rating_label:cat_data.avg %}
-                            {% if label %}
-                                <div class="rating-context">{{ label }}</div>
-                            {% endif %}
-                        {% endwith %}
 
-                        {# Show distribution for rating questions #}
+                        {# Show distribution for rating questions - only show options that were selected #}
                         {% if cat_data.distribution %}
-                        <div class="distribution-container" style="margin-top: 1rem;">
+                        <div class="distribution-container" style="margin-top: 0.75rem;">
                             {% for rating in "54321" %}
                                 {% with rating_int=rating|add:"0" %}
                                 {% with count=cat_data.distribution|get_item:rating_int|default:0 %}

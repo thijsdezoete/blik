@@ -292,9 +292,27 @@ def reviewee_list(request):
     reviewees_with_latest = []
     for reviewee in reviewees:
         latest_cycle = reviewee.review_cycles.select_related('questionnaire').order_by('-created_at').first()
+
+        # Get active cycle (in_progress status)
+        active_cycle = reviewee.review_cycles.filter(status='in_progress').order_by('-created_at').first()
+
+        # Get latest completed cycle with a report
+        latest_completed_report = None
+        completed_cycles = reviewee.review_cycles.filter(status='completed').order_by('-created_at')
+        for cycle in completed_cycles:
+            try:
+                report = cycle.report
+                if report.available:
+                    latest_completed_report = report
+                    break
+            except:
+                continue
+
         reviewees_with_latest.append({
             'reviewee': reviewee,
             'latest_questionnaire': latest_cycle.questionnaire if latest_cycle else None,
+            'active_cycle': active_cycle,
+            'latest_completed_report': latest_completed_report,
         })
 
     context = {

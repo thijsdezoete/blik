@@ -48,15 +48,29 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if item.reviewee.cycle_count > 0 %}
-                        <span class="badge badge-info">{{ item.reviewee.cycle_count }}</span>
-                        {% else %}
-                        <span style="color: #cbd5e1;">None</span>
-                        {% endif %}
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            {% if item.reviewee.cycle_count > 0 %}
+                            <span class="badge badge-info">{{ item.reviewee.cycle_count }}</span>
+                            {% else %}
+                            <span style="color: #cbd5e1;">None</span>
+                            {% endif %}
+
+                            {% if item.active_cycle %}
+                            <a href="{% url 'review_cycle_detail' item.active_cycle.uuid %}" class="badge badge-success" style="text-decoration: none; cursor: pointer;">Active</a>
+                            {% endif %}
+
+                            {% if item.latest_completed_report %}
+                            <a href="{% url 'reports:view_report' item.latest_completed_report.cycle.uuid %}" class="btn btn-sm btn-secondary" style="text-decoration: none; cursor: pointer;">Report</a>
+                            {% endif %}
+                        </div>
                     </td>
                     <td>
                         {% if perms.accounts.can_manage_organization %}
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            {% if item.active_cycle %}
+                            <a href="{% url 'review_cycle_detail' item.active_cycle.uuid %}" class="btn btn-sm btn-secondary">View Cycle</a>
+                            {% endif %}
+
                             <!-- Split button: New Cycle (main action) + dropdown for other questionnaires -->
                             <div class="btn-group" style="position: relative; display: inline-flex;">
                                 <!-- Main action button: Create cycle with last-used or default questionnaire -->

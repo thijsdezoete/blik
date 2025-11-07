@@ -37,7 +37,7 @@
             <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
                 <a href="#quickstart" class="btn btn-primary">Quick Start</a>
                 <a href="#api-reference" class="btn btn-secondary">API Reference</a>
-                <a href="{{ main_app_url }}/api/v1/docs/" class="btn btn-secondary" target="_blank">Interactive Docs</a>
+                <a href="{{ api_swagger_url }}" class="btn btn-secondary" target="_blank">Interactive Docs</a>
             </div>
         </div>
     </section>
@@ -618,7 +618,7 @@ app.post('/webhook', (req, res) => {
                 <div class="feature-card">
                     <h3>Interactive Docs</h3>
                     <p>Try the API directly in your browser with our Swagger documentation.</p>
-                    <a href="{{ main_app_url }}/api/v1/docs/" class="btn btn-secondary" style="margin-top: 1rem;" target="_blank">Open Swagger Docs</a>
+                    <a href="{{ api_swagger_url }}" class="btn btn-secondary" style="margin-top: 1rem;" target="_blank">Open Swagger Docs</a>
                 </div>
 
                 <div class="feature-card">

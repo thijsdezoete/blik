@@ -1,9 +1,7 @@
+{% extends 'landing/base.html' %}
 {% load static landing_tags %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+{% block meta %}
     <title>Air-Gapped 360 Feedback for Professional Services | Blik</title>
     <meta name="description" content="Self-hosted 360 feedback for consulting, legal, healthcare, and financial services. Client confidentiality protected. Air-gapped deployment. GDPR, ISO 27001, SOC 2 compliance ready. No cloud dependencies.">
     <meta name="keywords" content="professional services performance review, air-gapped feedback system, confidential 360 review, compliance-ready HR software, self-hosted employee feedback, secure performance management">
@@ -26,39 +24,9 @@
     <meta name="twitter:title" content="Air-Gapped 360 Feedback for Professional Services">
     <meta name="twitter:description" content="Client confidentiality protected. Compliance-ready. No cloud dependencies.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+{% endblock %}
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
-
-    <script>
-        // Theme detection and initialization
-        (function() {
-            const getPreferredTheme = () => {
-                const stored = localStorage.getItem('theme');
-                if (stored) return stored;
-                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            };
-
-            const setTheme = (theme) => {
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
-            };
-
-            setTheme(getPreferredTheme());
-
-            // Listen for system theme changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (!localStorage.getItem('theme')) {
-                    setTheme(e.matches ? 'dark' : 'light');
-                }
-            });
-        })();
-    </script>
-
+{% block extra_head %}
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
@@ -101,37 +69,18 @@
         }
     }
     </script>
-</head>
-<body class="landing-page">
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <h1 class="logo">Blik</h1>
-                <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-                <nav class="nav">
-                    <a href="{% landing_url 'index' %}">Home</a>
-                    <a href="#security">Security</a>
-                    <a href="#industries">Industries</a>
-                    <a href="#compliance">Compliance</a>
-                    <a href="#faq">FAQ</a>
-                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
-                    <button class="theme-toggle" aria-label="Toggle theme">
-                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </button>
-                </nav>
-            </div>
-        </div>
-    </header>
+{% endblock %}
 
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#security">Security</a>
+    <a href="#industries">Industries</a>
+    <a href="#compliance">Compliance</a>
+    <a href="#faq">FAQ</a>
+    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+{% endblock %}
+
+{% block content %}
     <section class="hero">
         <div class="container">
             <div class="hero-content">
@@ -563,70 +512,4 @@
             <p style="margin-top: 2.5rem; font-size: 1rem; opacity: 0.9;">Trusted by law firms, healthcare providers, and financial advisors</p>
         </div>
     </section>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Blik. Open source under AGPL license.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile menu toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.mobile-menu-toggle');
-            const nav = document.querySelector('.nav');
-
-            if (menuToggle && nav) {
-                menuToggle.addEventListener('click', function() {
-                    const isExpanded = nav.classList.contains('active');
-                    nav.classList.toggle('active');
-                    menuToggle.setAttribute('aria-expanded', !isExpanded);
-                });
-
-                // Close menu when clicking on a link
-                const navLinks = nav.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    });
-                });
-
-                // Close menu when clicking outside
-                document.addEventListener('click', function(event) {
-                    if (!nav.contains(event.target) && !menuToggle.contains(event.target)) {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-
-            // Theme toggle functionality
-            const themeToggle = document.querySelector('.theme-toggle');
-            const sunIcon = themeToggle.querySelector('.sun-icon');
-            const moonIcon = themeToggle.querySelector('.moon-icon');
-
-            const updateThemeIcons = () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                if (currentTheme === 'dark') {
-                    sunIcon.style.display = 'block';
-                    moonIcon.style.display = 'none';
-                } else {
-                    sunIcon.style.display = 'none';
-                    moonIcon.style.display = 'block';
-                }
-            };
-
-            updateThemeIcons();
-
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeIcons();
-            });
-        });
-    </script>
-</body>
-</html>
+{% endblock %}

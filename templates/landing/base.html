@@ -47,7 +47,7 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">{{ site_name|default:"Blik" }}</div>
+                <a href="{% landing_url 'index' %}" class="logo" style="text-decoration: none; color: inherit;">{{ site_name|default:"Blik" }}</a>
                 <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -89,7 +89,8 @@
                     <ul>
                         <li><a href="{% landing_url 'index' %}">Home</a></li>
                         <li><a href="{% landing_url 'hr_managers' %}">For HR Teams</a></li>
-                        <li><a href="{% landing_url 'open_source' %}">For Developers</a></li>
+                        <li><a href="{% landing_url 'developers' %}">For Developers</a></li>
+                        <li><a href="{% landing_url 'open_source' %}">Open Source</a></li>
                         <li><a href="{% landing_url 'eu_tech' %}">For EU Companies</a></li>
                         <li><a href="{% landing_url 'privacy' %}">Privacy-First</a></li>
                     </ul>
@@ -115,6 +116,7 @@
                     <h4>Company</h4>
                     <ul>
                         <li><a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a></li>
+                        <li><a href="{{ api_swagger_url }}" target="_blank">API Docs</a></li>
                         <li><a href="https://github.com/thijsdezoete/blik#readme" target="_blank" rel="noopener">Documentation</a></li>
                         <li><a href="{% landing_url 'privacy_policy' %}">Privacy Policy</a></li>
                         <li><a href="{% landing_url 'terms' %}">Terms of Service</a></li>

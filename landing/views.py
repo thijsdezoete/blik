@@ -130,13 +130,6 @@ def performance_matrix(request):
 
 def signup(request):
     """Signup page with Stripe checkout integration."""
-    # Get main app URL from environment or use current host for local dev
-    main_app_url = getattr(settings, 'MAIN_APP_URL', None)
-    if not main_app_url or settings.DEBUG:
-        # For local development, use the current request host
-        scheme = 'https' if request.is_secure() else 'http'
-        main_app_url = f"{scheme}://{request.get_host()}"
-
     context = {
         'site_name': settings.SITE_NAME,
         'site_domain': settings.SITE_DOMAIN,
@@ -144,7 +137,7 @@ def signup(request):
         'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
         'stripe_price_id_saas': settings.STRIPE_PRICE_ID_SAAS,
         'stripe_price_id_enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
-        'main_app_url': main_app_url,
+        # main_app_url now provided by context processor
     }
     return render(request, 'landing/signup.html', context)
 
@@ -191,17 +184,10 @@ def why_blik(request):
 
 def developers(request):
     """Developer-focused landing page with API documentation and quickstart."""
-    # Get main app URL from environment or use current host for local dev
-    main_app_url = getattr(settings, 'MAIN_APP_URL', None)
-    if not main_app_url or settings.DEBUG:
-        # For local development, use the current request host
-        scheme = 'https' if request.is_secure() else 'http'
-        main_app_url = f"{scheme}://{request.get_host()}"
-
     context = {
         'site_name': settings.SITE_NAME,
         'site_domain': settings.SITE_DOMAIN,
         'site_protocol': settings.SITE_PROTOCOL,
-        'main_app_url': main_app_url,
+        # main_app_url and API URLs now provided by context processor
     }
     return render(request, 'landing/developers.html', context)

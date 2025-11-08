@@ -125,6 +125,102 @@
         </div>
     </div>
 
+    <!-- Dreyfus/Agency Configuration Modal -->
+    <div id="dreyfus_config_modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeDreyfusConfigModal()">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; position: sticky; top: 0; background: var(--bg-card); padding-bottom: 1rem; z-index: 10;">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">Dreyfus/Agency Configuration</h2>
+                    <p id="dreyfus_config_question_text" style="color: var(--text-secondary); margin: 0.5rem 0 0 0; font-size: 0.875rem;"></p>
+                </div>
+                <button
+                    type="button"
+                    onclick="closeDreyfusConfigModal()"
+                    style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 0; width: 30px; height: 30px;"
+                >&times;</button>
+            </div>
+
+            <form method="post" id="dreyfus_config_form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_dreyfus_config">
+                <input type="hidden" name="question_id" id="dreyfus_config_question_id">
+
+                <!-- Weight Configuration Section -->
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">Dreyfus Model Weights</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
+                        Configure how this question contributes to the Dreyfus skill and agency dimensions. Higher weights (up to 2.0) indicate stronger impact on that dimension.
+                    </p>
+
+                    <!-- Visual Grid Selector -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <!-- Skill Weight -->
+                        <div>
+                            <label style="display: block; font-weight: 500; margin-bottom: 1rem; color: var(--text-primary);">
+                                Skill Weight
+                                <span id="skill_weight_value" style="color: var(--primary); font-weight: 700;">0.0</span>
+                            </label>
+                            <div id="skill_weight_grid" class="weight-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                <span>None</span>
+                                <span>Low (0.5)</span>
+                                <span>Medium (1.0)</span>
+                                <span>High (1.5)</span>
+                                <span>Very High (2.0)</span>
+                            </div>
+                        </div>
+
+                        <!-- Agency Weight -->
+                        <div>
+                            <label style="display: block; font-weight: 500; margin-bottom: 1rem; color: var(--text-primary);">
+                                Agency Weight
+                                <span id="agency_weight_value" style="color: var(--primary); font-weight: 700;">0.0</span>
+                            </label>
+                            <div id="agency_weight_grid" class="weight-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                <span>None</span>
+                                <span>Low (0.5)</span>
+                                <span>Medium (1.0)</span>
+                                <span>High (1.5)</span>
+                                <span>Very High (2.0)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="skill_weight" id="skill_weight_input" value="0">
+                    <input type="hidden" name="agency_weight" id="agency_weight_input" value="0">
+                </div>
+
+                <!-- Action Items Section -->
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">Personalized Action Items</h3>
+                        <button
+                            type="button"
+                            onclick="addActionItem()"
+                            class="btn btn-sm btn-primary"
+                        >+ Add Action Item</button>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
+                        Define action items that will appear in development plans when this question scores below a threshold.
+                    </p>
+
+                    <div id="action_items_container" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Action items will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <button type="button" onclick="closeDreyfusConfigModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Configuration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit Question Modal -->
     <div id="edit_question_modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) closeEditQuestionModal()">
         <div class="modal-content" style="max-width: 600px;">
@@ -304,6 +400,13 @@
                                 <div style="display: flex; gap: 0.5rem;">
                                     <button
                                         type="button"
+                                        class="btn btn-sm btn-secondary"
+                                        onclick="openDreyfusConfigModal({{ question.id }}, '{{ question.question_text|escapejs }}')"
+                                        title="Configure Dreyfus/Agency weights and action items"
+                                        style="background: var(--primary); border-color: var(--primary); color: white;"
+                                    >Dreyfus/Agency</button>
+                                    <button
+                                        type="button"
                                         class="btn btn-sm btn-secondary edit-question-btn"
                                         data-question-id="{{ question.id }}"
                                         data-question-text="{{ question.question_text|escapejs }}"
@@ -457,6 +560,61 @@ Strongly Agree</textarea>
                                 </label>
                             </div>
 
+                            <!-- Dreyfus/Agency Configuration (Optional) -->
+                            <details style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 0.5rem;">
+                                <summary style="cursor: pointer; font-weight: 600; color: var(--primary); margin-bottom: 1rem;">
+                                    ⚙️ Dreyfus/Agency Configuration (Optional)
+                                </summary>
+
+                                <div style="margin-top: 1rem;">
+                                    <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">Model Weights</h4>
+                                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                                        Set how this question contributes to Dreyfus skill and agency dimensions
+                                    </p>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                                        <div>
+                                            <label class="form-label" style="font-size: 0.875rem;">Skill Weight</label>
+                                            <select name="add_skill_weight" class="form-control" style="font-size: 0.875rem;">
+                                                <option value="0">None (0)</option>
+                                                <option value="0.5">Low (0.5)</option>
+                                                <option value="1.0" selected>Medium (1.0)</option>
+                                                <option value="1.5">High (1.5)</option>
+                                                <option value="2.0">Very High (2.0)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="form-label" style="font-size: 0.875rem;">Agency Weight</label>
+                                            <select name="add_agency_weight" class="form-control" style="font-size: 0.875rem;">
+                                                <option value="0">None (0)</option>
+                                                <option value="0.5">Low (0.5)</option>
+                                                <option value="1.0" selected>Medium (1.0)</option>
+                                                <option value="1.5">High (1.5)</option>
+                                                <option value="2.0">Very High (2.0)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="add_action_items_section_{{ section.id }}">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                            <h4 style="font-size: 0.875rem; font-weight: 600; margin: 0; color: var(--text-primary);">Action Items</h4>
+                                            <button
+                                                type="button"
+                                                onclick="addNewQuestionActionItem{{ section.id }}()"
+                                                class="btn btn-sm btn-primary"
+                                                style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"
+                                            >+ Add</button>
+                                        </div>
+                                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                            Define action items for development plans when this question scores low
+                                        </p>
+                                        <div id="add_action_items_container_{{ section.id }}" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                            <!-- Action items will be added here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+
                             <button type="submit" class="btn btn-sm btn-primary" style="margin-top: 1rem;">Add Question</button>
 
                             <script>
@@ -553,6 +711,76 @@ Strongly Agree</textarea>
 
                                 function closeScoringHelpModal{{ section.id }}() {
                                     document.getElementById('scoring_help_modal_{{ section.id }}').style.display = 'none';
+                                }
+
+                                // Add Question Action Items Management
+                                let addActionItemCounter{{ section.id }} = 0;
+
+                                function addNewQuestionActionItem{{ section.id }}() {
+                                    const container = document.getElementById('add_action_items_container_{{ section.id }}');
+                                    const itemId = addActionItemCounter{{ section.id }}++;
+
+                                    const itemDiv = document.createElement('div');
+                                    itemDiv.id = `add_action_item_{{ section.id }}_${itemId}`;
+                                    itemDiv.style.cssText = `
+                                        padding: 0.75rem;
+                                        background: var(--bg-card);
+                                        border: 1px solid var(--border);
+                                        border-radius: 0.25rem;
+                                    `;
+
+                                    itemDiv.innerHTML = `
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                            <strong style="font-size: 0.75rem; color: var(--text-primary);">Action Item #${itemId + 1}</strong>
+                                            <button
+                                                type="button"
+                                                onclick="removeNewQuestionActionItem{{ section.id }}(${itemId})"
+                                                style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; padding: 0;"
+                                            >&times;</button>
+                                        </div>
+                                        <textarea
+                                            name="add_action_items[${itemId}][text]"
+                                            class="form-control"
+                                            rows="2"
+                                            placeholder="e.g., Practice pair programming with senior developers"
+                                            style="font-size: 0.75rem; margin-bottom: 0.5rem;"
+                                        ></textarea>
+                                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.5rem; font-size: 0.75rem;">
+                                            <div>
+                                                <label style="font-size: 0.7rem; color: var(--text-secondary);">Threshold</label>
+                                                <input
+                                                    type="number"
+                                                    name="add_action_items[${itemId}][threshold]"
+                                                    class="form-control"
+                                                    value="3.0"
+                                                    min="1"
+                                                    max="5"
+                                                    step="0.1"
+                                                    style="font-size: 0.75rem;"
+                                                >
+                                            </div>
+                                            <div>
+                                                <label style="font-size: 0.7rem; color: var(--text-secondary);">Stages (optional)</label>
+                                                <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                                                    ${[1, 2, 3, 4, 5].map(stage => `
+                                                        <label style="display: flex; align-items: center; gap: 0.15rem; font-size: 0.7rem;">
+                                                            <input type="checkbox" name="add_action_items[${itemId}][stages][]" value="${stage}">
+                                                            <span>${stage}</span>
+                                                        </label>
+                                                    `).join('')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+
+                                    container.appendChild(itemDiv);
+                                }
+
+                                function removeNewQuestionActionItem{{ section.id }}(itemId) {
+                                    const item = document.getElementById(`add_action_item_{{ section.id }}_${itemId}`);
+                                    if (item) {
+                                        item.remove();
+                                    }
                                 }
                             </script>
 
@@ -902,6 +1130,246 @@ function updateEditWeightInputs() {
     table.appendChild(tbody);
 
     weightInputsContainer.appendChild(table);
+}
+
+// Dreyfus/Agency Configuration Modal Functions
+let currentQuestionId = null;
+let actionItemCounter = 0;
+
+async function openDreyfusConfigModal(questionId, questionText) {
+    currentQuestionId = questionId;
+    document.getElementById('dreyfus_config_question_id').value = questionId;
+    document.getElementById('dreyfus_config_question_text').textContent = questionText;
+
+    // Initialize weight grids
+    initializeWeightGrid('skill');
+    initializeWeightGrid('agency');
+
+    // Load existing configuration from backend
+    await loadDreyfusConfig(questionId);
+
+    // Show modal
+    document.getElementById('dreyfus_config_modal').style.display = 'flex';
+}
+
+function closeDreyfusConfigModal() {
+    document.getElementById('dreyfus_config_modal').style.display = 'none';
+    currentQuestionId = null;
+    actionItemCounter = 0;
+}
+
+function initializeWeightGrid(dimension) {
+    const gridId = dimension + '_weight_grid';
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = '';
+
+    const weights = [0, 0.5, 1.0, 1.5, 2.0];
+
+    weights.forEach(weight => {
+        const cell = document.createElement('div');
+        cell.className = 'weight-cell';
+        cell.dataset.weight = weight;
+        cell.dataset.dimension = dimension;
+        cell.textContent = weight;
+
+        cell.style.cssText = `
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            background: var(--bg-card);
+        `;
+
+        cell.addEventListener('click', function() {
+            selectWeight(dimension, weight);
+        });
+
+        cell.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('selected')) {
+                this.style.borderColor = 'var(--primary)';
+                this.style.transform = 'scale(1.05)';
+            }
+        });
+
+        cell.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('selected')) {
+                this.style.borderColor = 'var(--border)';
+                this.style.transform = 'scale(1)';
+            }
+        });
+
+        grid.appendChild(cell);
+    });
+}
+
+function selectWeight(dimension, weight) {
+    // Update visual selection
+    const grid = document.getElementById(dimension + '_weight_grid');
+    const cells = grid.querySelectorAll('.weight-cell');
+
+    cells.forEach(cell => {
+        const cellWeight = parseFloat(cell.dataset.weight);
+        if (cellWeight === weight) {
+            cell.classList.add('selected');
+            cell.style.background = 'var(--primary)';
+            cell.style.borderColor = 'var(--primary)';
+            cell.style.color = 'white';
+            cell.style.transform = 'scale(1.1)';
+        } else {
+            cell.classList.remove('selected');
+            cell.style.background = 'var(--bg-card)';
+            cell.style.borderColor = 'var(--border)';
+            cell.style.color = 'var(--text-primary)';
+            cell.style.transform = 'scale(1)';
+        }
+    });
+
+    // Update display value
+    document.getElementById(dimension + '_weight_value').textContent = weight.toFixed(1);
+
+    // Update hidden input
+    document.getElementById(dimension + '_weight_input').value = weight;
+}
+
+async function loadDreyfusConfig(questionId) {
+    try {
+        const response = await fetch(`/api/questions/${questionId}/dreyfus-config/`);
+        if (!response.ok) {
+            console.error('Failed to load config');
+            return;
+        }
+
+        const data = await response.json();
+
+        // Set weights
+        const skillWeight = data.dreyfus_mapping?.skill || 0;
+        const agencyWeight = data.dreyfus_mapping?.agency || 0;
+
+        selectWeight('skill', skillWeight);
+        selectWeight('agency', agencyWeight);
+
+        // Load action items
+        const container = document.getElementById('action_items_container');
+        container.innerHTML = '';
+        actionItemCounter = 0;
+
+        if (data.action_items && data.action_items.length > 0) {
+            data.action_items.forEach(item => {
+                addActionItem(item.text, item.threshold, item.stages);
+            });
+        } else {
+            // Show empty state
+            container.innerHTML = '<p style="color: var(--text-secondary); font-style: italic; text-align: center; padding: 2rem;">No action items configured. Click "+ Add Action Item" to create one.</p>';
+        }
+    } catch (error) {
+        console.error('Error loading Dreyfus config:', error);
+        // Set defaults
+        selectWeight('skill', 0);
+        selectWeight('agency', 0);
+    }
+}
+
+function addActionItem(text = '', threshold = 3.0, stages = []) {
+    const container = document.getElementById('action_items_container');
+
+    // Remove empty state message if present
+    const emptyState = container.querySelector('p');
+    if (emptyState) {
+        container.innerHTML = '';
+    }
+
+    const itemId = actionItemCounter++;
+
+    const itemDiv = document.createElement('div');
+    itemDiv.id = `action_item_${itemId}`;
+    itemDiv.style.cssText = `
+        padding: 1.5rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+    `;
+
+    itemDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <h4 style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin: 0;">Action Item #${itemId + 1}</h4>
+            <button
+                type="button"
+                onclick="removeActionItem(${itemId})"
+                style="background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1.25rem; padding: 0; width: 24px; height: 24px;"
+            >&times;</button>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); font-size: 0.875rem;">Action Item Text *</label>
+            <textarea
+                name="action_items[${itemId}][text]"
+                class="form-control"
+                rows="2"
+                required
+                placeholder="e.g., Practice pair programming with senior developers"
+                style="font-size: 0.875rem;"
+            >${text}</textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+            <div>
+                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); font-size: 0.875rem;">Threshold Score</label>
+                <input
+                    type="number"
+                    name="action_items[${itemId}][threshold]"
+                    class="form-control"
+                    min="1"
+                    max="5"
+                    step="0.1"
+                    value="${threshold}"
+                    style="font-size: 0.875rem;"
+                >
+                <small style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-top: 0.25rem;">
+                    Show if score &lt; this value
+                </small>
+            </div>
+
+            <div>
+                <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); font-size: 0.875rem;">
+                    Relevant Stages (Optional)
+                </label>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    ${[1, 2, 3, 4, 5].map(stage => `
+                        <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer; padding: 0.25rem 0.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.25rem; font-size: 0.75rem;">
+                            <input
+                                type="checkbox"
+                                name="action_items[${itemId}][stages][]"
+                                value="${stage}"
+                                ${stages.includes(stage) ? 'checked' : ''}
+                            >
+                            <span>Stage ${stage}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <small style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-top: 0.25rem;">
+                    Leave unchecked for all stages
+                </small>
+            </div>
+        </div>
+    `;
+
+    container.appendChild(itemDiv);
+}
+
+function removeActionItem(itemId) {
+    const item = document.getElementById(`action_item_${itemId}`);
+    if (item) {
+        item.remove();
+    }
+
+    // Show empty state if no items left
+    const container = document.getElementById('action_items_container');
+    if (container.children.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary); font-style: italic; text-align: center; padding: 2rem;">No action items configured. Click "+ Add Action Item" to create one.</p>';
+    }
 }
 </script>
 

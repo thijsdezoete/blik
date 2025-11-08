@@ -770,13 +770,49 @@ def questionnaire_edit(request, questionnaire_id):
                             config = {'min': 1, 'max': 100, 'step': 1}
                             messages.warning(request, 'Invalid scale values. Using defaults (1-100, step 1).')
 
+                    # Add Dreyfus/Agency configuration if provided
+                    skill_weight = request.POST.get('add_skill_weight', 0)
+                    agency_weight = request.POST.get('add_agency_weight', 0)
+
+                    if skill_weight or agency_weight:
+                        config['dreyfus_mapping'] = {
+                            'skill': float(skill_weight),
+                            'agency': float(agency_weight)
+                        }
+
+                    # Parse action items for new question
+                    action_items = []
+                    action_item_indices = set()
+
+                    # Extract all action item indices from POST data
+                    for key in request.POST.keys():
+                        if key.startswith('add_action_items[') and '][text]' in key:
+                            idx_str = key.split('[')[1].split(']')[0]
+                            action_item_indices.add(idx_str)
+
+                    # Build action items list
+                    for idx in sorted(action_item_indices):
+                        text = request.POST.get(f'add_action_items[{idx}][text]', '').strip()
+                        threshold = request.POST.get(f'add_action_items[{idx}][threshold]', 3.0)
+                        stages_raw = request.POST.getlist(f'add_action_items[{idx}][stages][]')
+
+                        if text:
+                            item = {
+                                'text': text,
+                                'threshold': float(threshold)
+                            }
+                            if stages_raw:
+                                item['stages'] = [int(s) for s in stages_raw]
+                            action_items.append(item)
+
                     Question.objects.create(
                         section=section,
                         question_text=question_text,
                         question_type=question_type,
                         config=config,
                         required=required,
-                        order=next_order
+                        order=next_order,
+                        action_items=action_items
                     )
                     messages.success(request, 'Question added successfully.')
                 except Exception as e:
@@ -886,6 +922,60 @@ def questionnaire_edit(request, questionnaire_id):
                 except Exception as e:
                     messages.error(request, f'Error updating question: {str(e)}')
 
+        elif action == 'update_dreyfus_config':
+            question_id = request.POST.get('question_id')
+            skill_weight = request.POST.get('skill_weight', 0)
+            agency_weight = request.POST.get('agency_weight', 0)
+
+            if question_id:
+                try:
+                    question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
+
+                    # Update dreyfus_mapping in config
+                    if 'dreyfus_mapping' not in question.config:
+                        question.config['dreyfus_mapping'] = {}
+
+                    question.config['dreyfus_mapping']['skill'] = float(skill_weight)
+                    question.config['dreyfus_mapping']['agency'] = float(agency_weight)
+
+                    # Parse action items from form
+                    action_items = []
+                    action_item_indices = set()
+
+                    # Extract all action item indices from the POST data
+                    for key in request.POST.keys():
+                        if key.startswith('action_items[') and '][text]' in key:
+                            # Extract index from key like "action_items[0][text]"
+                            idx_str = key.split('[')[1].split(']')[0]
+                            action_item_indices.add(idx_str)
+
+                    # Build action items list
+                    for idx in sorted(action_item_indices):
+                        text = request.POST.get(f'action_items[{idx}][text]', '').strip()
+                        threshold = request.POST.get(f'action_items[{idx}][threshold]', 3.0)
+                        stages_raw = request.POST.getlist(f'action_items[{idx}][stages][]')
+
+                        if text:  # Only add if text is not empty
+                            item = {
+                                'text': text,
+                                'threshold': float(threshold)
+                            }
+
+                            # Add stages if any are selected
+                            if stages_raw:
+                                item['stages'] = [int(s) for s in stages_raw]
+
+                            action_items.append(item)
+
+                    question.action_items = action_items
+                    question.save()
+
+                    messages.success(request, 'Dreyfus/Agency configuration updated successfully.')
+                except Question.DoesNotExist:
+                    messages.error(request, 'Question not found.')
+                except Exception as e:
+                    messages.error(request, f'Error updating Dreyfus configuration: {str(e)}')
+
         return redirect('questionnaire_edit', questionnaire_id=questionnaire.id)
 
     sections = questionnaire.sections.prefetch_related('questions').all()
@@ -897,6 +987,37 @@ def questionnaire_edit(request, questionnaire_id):
     }
 
     return render(request, 'admin_dashboard/questionnaire_form.html', context)
+
+
+@login_required
+def question_dreyfus_config_api(request, question_id):
+    """API endpoint to get Dreyfus/Agency configuration for a question"""
+    from django.http import JsonResponse
+    from questionnaires.models import Question
+
+    try:
+        # Get the organization from request
+        org = getattr(request, 'organization', None)
+
+        # Get question and verify it belongs to the user's organization
+        question = Question.objects.select_related('section__questionnaire').get(
+            id=question_id,
+            section__questionnaire__organization=org
+        )
+
+        # Extract dreyfus_mapping from config
+        dreyfus_mapping = question.config.get('dreyfus_mapping', {})
+
+        # Return configuration
+        return JsonResponse({
+            'dreyfus_mapping': dreyfus_mapping,
+            'action_items': question.action_items
+        })
+
+    except Question.DoesNotExist:
+        return JsonResponse({'error': 'Question not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @login_required

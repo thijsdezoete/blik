@@ -232,16 +232,24 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
                     weight = dreyfus_mapping.get('weight', 1.0)
 
             if weight:
-                # Get average score across all categories (exclude self-assessment and insufficient data)
+                # Get average score across all categories (prefer non-self, but allow self if only option)
                 category_scores = []
+                self_score = None
+
                 for category, cat_data in question_data.get('by_category', {}).items():
-                    # Skip self-assessment in skill calculation (use only others' ratings)
-                    if category == 'self':
-                        continue
                     # Check for avg (report_data format) or average (alternative format)
                     avg_score = cat_data.get('avg') or cat_data.get('average')
                     if avg_score and not cat_data.get('insufficient', False):
-                        category_scores.append(avg_score)
+                        if category == 'self':
+                            # Store self score separately as fallback
+                            self_score = avg_score
+                        else:
+                            # Use non-self scores preferentially
+                            category_scores.append(avg_score)
+
+                # If no non-self scores but we have self-assessment, use it
+                if not category_scores and self_score is not None:
+                    category_scores.append(self_score)
 
                 if category_scores:
                     avg_score = mean(category_scores)
@@ -326,16 +334,24 @@ def calculate_agency_level(report_data: Dict, questionnaire_id: Optional[int] = 
                     weight = dreyfus_mapping.get('weight', 1.0)
 
             if weight:
-                # Get average score across all categories (exclude self-assessment)
+                # Get average score across all categories (prefer non-self, but allow self if only option)
                 category_scores = []
+                self_score = None
+
                 for category, cat_data in question_data.get('by_category', {}).items():
-                    # Skip self-assessment in agency calculation (use only others' ratings)
-                    if category == 'self':
-                        continue
                     # Check for avg (report_data format) or average (alternative format)
                     avg_score = cat_data.get('avg') or cat_data.get('average')
                     if avg_score and not cat_data.get('insufficient', False):
-                        category_scores.append(avg_score)
+                        if category == 'self':
+                            # Store self score separately as fallback
+                            self_score = avg_score
+                        else:
+                            # Use non-self scores preferentially
+                            category_scores.append(avg_score)
+
+                # If no non-self scores but we have self-assessment, use it
+                if not category_scores and self_score is not None:
+                    category_scores.append(self_score)
 
                 if category_scores:
                     avg_score = mean(category_scores)
@@ -434,6 +450,7 @@ def generate_development_recommendations(
     - Gap to next level
     - Specific feedback from reviewers
     - Weakest sub-dimensions
+    - Question-specific action items (hybrid approach)
 
     Args:
         skill_profile: Output from calculate_dreyfus_level()
@@ -499,6 +516,13 @@ def generate_development_recommendations(
                 f"Focus on improving: {area['area'].lower()}"
             )
 
+    # HYBRID APPROACH: Add personalized action items based on question scores
+    personalized_actions = _get_personalized_action_items(report_data, current_stage)
+    if personalized_actions:
+        # Insert personalized actions at the beginning (higher priority)
+        for action in reversed(personalized_actions):  # Reverse to maintain order when inserting at 0
+            recommendations['quick_wins'].insert(0, action)
+
     # Long-term goals
     if next_stage <= 5:
         stage_info = DREYFUS_STAGES[next_stage]
@@ -549,6 +573,85 @@ def generate_development_recommendations(
 
 
 # Helper functions
+
+def _get_personalized_action_items(report_data: Dict, current_stage: int) -> List[str]:
+    """
+    Extract personalized action items based on question scores and current Dreyfus stage.
+
+    This implements the hybrid approach:
+    - Generic stage-based recommendations (already in quick_wins)
+    - Question-specific action items for low-scoring areas
+
+    Args:
+        report_data: Full report data with question scores
+        current_stage: Current Dreyfus stage (1-5)
+
+    Returns:
+        List of personalized action item strings
+    """
+    from questionnaires.models import Question
+    from statistics import mean
+
+    personalized_actions = []
+    question_scores = {}  # question_id -> avg_score
+
+    # Extract question scores from report_data (exclude self-assessment)
+    for section_data in report_data.get('by_section', {}).values():
+        for question_id, question_data in section_data.get('questions', {}).items():
+            category_scores = []
+            for category, cat_data in question_data.get('by_category', {}).items():
+                # Skip self-assessment
+                if category == 'self':
+                    continue
+                avg_score = cat_data.get('avg') or cat_data.get('average')
+                if avg_score and not cat_data.get('insufficient', False):
+                    category_scores.append(avg_score)
+
+            if category_scores:
+                question_scores[str(question_id)] = mean(category_scores)
+
+    if not question_scores:
+        return personalized_actions
+
+    # Load questions with action items from database
+    question_ids = [int(qid) for qid in question_scores.keys()]
+    questions = Question.objects.filter(id__in=question_ids).only('id', 'action_items')
+
+    # Process each question's action items
+    for question in questions:
+        qid = str(question.id)
+        score = question_scores.get(qid)
+
+        if not score or not question.action_items:
+            continue
+
+        # Check each action item
+        for action_item in question.action_items:
+            if not isinstance(action_item, dict):
+                continue
+
+            text = action_item.get('text')
+            threshold = action_item.get('threshold', 3.0)  # Default threshold
+            stages = action_item.get('stages')  # Optional: [1, 2, 3]
+
+            if not text:
+                continue
+
+            # Check if action item applies
+            # 1. Score is below threshold
+            if score >= threshold:
+                continue
+
+            # 2. If stages specified, check if current stage is in list
+            if stages and current_stage not in stages:
+                continue
+
+            # Add the action item
+            personalized_actions.append(text)
+
+    # Limit to top 5 most relevant action items
+    return personalized_actions[:5]
+
 
 def _level_to_stage(level: float) -> int:
     """Convert continuous level (1.0-5.0) to discrete stage (1-5)."""

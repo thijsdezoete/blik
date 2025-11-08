@@ -26,4 +26,9 @@ urlpatterns = [
     path('og-image.png', views.og_image, name='og_image'),
     path('robots.txt', seo_views.robots, name='robots'),
     path('sitemap.xml', seo_views.sitemap, name='sitemap'),
+
+    # Growth hack: Developer Skills Assessment
+    path('dreyfus-assessment/', views.dreyfus_assessment_start, name='dreyfus_assessment_start'),
+    path('dreyfus-assessment/submit/', views.dreyfus_assessment_submit, name='dreyfus_assessment_submit'),
+    path('dreyfus-assessment/capture-email/', views.dreyfus_capture_email, name='dreyfus_capture_email'),
 ]

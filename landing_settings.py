@@ -28,6 +28,8 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 INSTALLED_APPS = [
     'django.contrib.staticfiles',  # For static file serving
     'django.contrib.contenttypes',  # Required by Django
+    'django.contrib.sessions',  # For session management (assessment flow)
+    'django.contrib.messages',  # For flash messages
     'landing',
 ]
 
@@ -35,6 +37,9 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # CSRF protection for forms
+    'django.contrib.sessions.middleware.SessionMiddleware',  # Session support
+    'django.contrib.messages.middleware.MessageMiddleware',  # Flash messages
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -50,6 +55,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.template.context_processors.static',
+                'django.contrib.messages.context_processors.messages',
                 'landing.context_processors.url_namespace',
             ],
         },
@@ -57,6 +63,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'landing_wsgi.application'
+
+# Session configuration (using signed cookies - no database needed)
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+# Cache configuration (for other uses)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'landing-cache',
+    }
+}
+
+# Message storage (for flash messages)
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # No database needed for static landing pages
 DATABASES = {}
@@ -83,8 +103,8 @@ STORAGES = {
 }
 
 # Security settings
-SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', default=True)
-CSRF_COOKIE_SECURE = env('CSRF_COOKIE_SECURE', default=True)
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)  # Set to True in production with HTTPS
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
@@ -107,6 +127,20 @@ STRIPE_PRICE_ID_ENTERPRISE = env('STRIPE_PRICE_ID_ENTERPRISE', default='')
 
 # Main app URL - used by signup page to make API calls
 MAIN_APP_URL = env('MAIN_APP_URL', default=f'{SITE_PROTOCOL}://app.{SITE_DOMAIN}')
+
+# Growth hack configuration
+# Organization is set by the API token - no need to configure separately
+GROWTH_QUESTIONNAIRE_UUID = env('GROWTH_QUESTIONNAIRE_UUID', default='')
+LANDING_SERVICE_API_TOKEN = env('LANDING_SERVICE_API_TOKEN', default='')
+
+# Email configuration
+EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = env('EMAIL_HOST', default='localhost')
+EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='noreply@blik360.com')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

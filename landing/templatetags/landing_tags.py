@@ -25,3 +25,16 @@ def landing_url(view_name):
         return reverse(view_name)
     else:
         return reverse(f'landing:{view_name}')
+
+
+@register.filter
+def get_item(dictionary, key):
+    """
+    Template filter to get item from dict by key.
+
+    Usage: {{ mydict|get_item:key }}
+    Equivalent to: mydict[key] or mydict.get(key)
+    """
+    if dictionary is None:
+        return None
+    return dictionary.get(key)

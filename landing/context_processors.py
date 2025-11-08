@@ -26,13 +26,29 @@ def _get_api_path_by_name(url_name):
 
         content = api_urls_file.read_text()
 
-        # Parse path patterns using regex: path("docs/", ..., name="swagger-ui")
-        # Looking for: path("PATH_HERE", ... name="NAME_HERE")
-        pattern = rf'path\(\s*["\']([^"\']+)["\']\s*,.*?name\s*=\s*["\']({re.escape(url_name)})["\']'
-        match = re.search(pattern, content, re.DOTALL)
+        # Parse path patterns using regex, matching complete path() calls
+        # Match: path("PATH", ...), ensuring we don't span multiple path() calls
+        # Strategy: Find name="TARGET" first, then look backwards for the nearest path("...")
 
-        if match:
-            return match.group(1)
+        # Find the position of name="url_name"
+        name_pattern = rf'name\s*=\s*["\']({re.escape(url_name)})["\']'
+        name_match = re.search(name_pattern, content)
+
+        if not name_match:
+            return None
+
+        # Look backwards from the name to find the nearest path("...") declaration
+        # Search in the substring before the name match
+        content_before = content[:name_match.start()]
+
+        # Find the last occurrence of path("PATH") before the name
+        path_pattern = r'path\(\s*["\']([^"\']+)["\']\s*,'
+        path_matches = list(re.finditer(path_pattern, content_before))
+
+        if path_matches:
+            # Get the last match (closest to our name parameter)
+            last_path_match = path_matches[-1]
+            return last_path_match.group(1)
 
     except (FileNotFoundError, PermissionError, Exception):
         # File not found or can't be read - return None to trigger fallback

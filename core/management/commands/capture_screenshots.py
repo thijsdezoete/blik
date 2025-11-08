@@ -91,60 +91,202 @@ class Command(BaseCommand):
             cookies = await page.context.cookies()
 
             # Define screenshot configurations
-            screenshot_configs = [
-                # 1. Report page - Header/Summary section - Desktop Light
-                {
-                    'name': 'report_header_desktop_light',
-                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
+            screenshot_configs = []
+
+            # Generate report screenshots for each questionnaire type
+            questionnaire_cycles = config.get('questionnaire_cycles', {})
+            report_tokens = config.get('report_tokens', {})
+
+            for q_key, cycle_data in questionnaire_cycles.items():
+                report_token = report_tokens.get(q_key)
+                if not report_token:
+                    self.stdout.write(self.style.WARNING(f'No report token for {q_key}, skipping'))
+                    continue
+
+                # Report overview - Desktop Light (top insights section)
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_overview_light',
+                    'url': f'{base_url}/my-report/{report_token}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
-                    'scroll_to': 0,  # Top of page - header and summary
-                },
-                # 2. Report page - Header/Summary section - Desktop Dark
-                {
-                    'name': 'report_header_desktop_dark',
-                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
+                    'scroll_to_element': '#overall-performance',
+                    'scroll_element_position': 'start',
+                })
+
+                # Report overview - Desktop Dark
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_overview_dark',
+                    'url': f'{base_url}/my-report/{report_token}/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'dark',
-                    'scroll_to': 0,  # Top of page - header and summary
-                },
-                # 3. Report page - Charts section - Desktop Light
-                {
-                    'name': 'report_charts_desktop_light',
-                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
+                    'scroll_to_element': '#overall-performance',
+                    'scroll_element_position': 'start',
+                })
+
+                # Report charts - Desktop Light (radar chart section)
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_charts_light',
+                    'url': f'{base_url}/my-report/{report_token}/',
                     'viewport': {'width': 1920, 'height': 1080},
-                    'theme': 'light',
-                    'scroll_to_element': '#sectionRadarChart',  # Scroll to radar chart
-                    'scroll_element_position': 'center',  # Position chart in center of viewport
-                },
-                # 4. Report page - Charts section - Desktop Dark
-                {
-                    'name': 'report_charts_desktop_dark',
-                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
-                    'viewport': {'width': 1920, 'height': 1080},
-                    'theme': 'dark',
-                    'scroll_to_element': '#sectionRadarChart',  # Scroll to radar chart
-                    'scroll_element_position': 'center',  # Position chart in center of viewport
-                },
-                # 5. Report page - Tablet Light
-                {
-                    'name': 'report_tablet_light',
-                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
-                    'viewport': {'width': 1024, 'height': 768},
                     'theme': 'light',
                     'scroll_to_element': '#sectionRadarChart',
-                    'scroll_element_position': 'start',  # Show top of chart
-                },
-                # 6. Report page - Tablet Dark
-                {
-                    'name': 'report_tablet_dark',
-                    'url': f'{base_url}/report/{config["completed_cycle_uuid"]}/',
-                    'viewport': {'width': 1024, 'height': 768},
+                    'scroll_element_position': 'center',
+                })
+
+                # Report charts - Desktop Dark
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_charts_dark',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'dark',
                     'scroll_to_element': '#sectionRadarChart',
-                    'scroll_element_position': 'start',  # Show top of chart
-                },
-                # 7. Admin Dashboard - Desktop Light
+                    'scroll_element_position': 'center',
+                })
+
+                # Report sections - Desktop Light (section-level performance with peer benchmarks)
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_sections_light',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1080},
+                    'theme': 'light',
+                    'scroll_to_element': '#section-level-performance',
+                    'scroll_element_position': 'start',
+                })
+
+                # Report sections - Desktop Dark
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_sections_dark',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1080},
+                    'theme': 'dark',
+                    'scroll_to_element': '#section-level-performance',
+                    'scroll_element_position': 'start',
+                })
+
+                # Report details - Desktop Light (detailed feedback with questions/answers)
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_details_light',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1200},
+                    'theme': 'light',
+                    'scroll_to_element': '#detailed-feedback',
+                    'scroll_element_position': 'start',
+                })
+
+                # Report details - Desktop Dark
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_details_dark',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1200},
+                    'theme': 'dark',
+                    'scroll_to_element': '#detailed-feedback',
+                    'scroll_element_position': 'start',
+                })
+
+                # Dreyfus Profile - Desktop Light (skill level visualization)
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_dreyfus_light',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1400},
+                    'theme': 'light',
+                    'scroll_to_element': '#skill-development-path',
+                    'scroll_element_position': 'start',
+                })
+
+                # Dreyfus Profile - Desktop Dark
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_dreyfus_dark',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1400},
+                    'theme': 'dark',
+                    'scroll_to_element': '#skill-development-path',
+                    'scroll_element_position': 'start',
+                })
+
+                # Agency Profile - Desktop Light (agency level visualization)
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_agency_light',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1400},
+                    'theme': 'light',
+                    'scroll_to_element': '#skill-development-path',
+                    'scroll_element_position': 'start',
+                    'click_element': 'button[data-tab="agency"]',
+                })
+
+                # Agency Profile - Desktop Dark
+                screenshot_configs.append({
+                    'name': f'report_{q_key}_agency_dark',
+                    'url': f'{base_url}/my-report/{report_token}/',
+                    'viewport': {'width': 1920, 'height': 1400},
+                    'theme': 'dark',
+                    'scroll_to_element': '#skill-development-path',
+                    'scroll_element_position': 'start',
+                    'click_element': 'button[data-tab="agency"]',
+                })
+
+            # Additional legacy screenshots using first completed cycle (for backward compatibility)
+            if config.get('report_tokens'):
+                first_token = list(config['report_tokens'].values())[0]
+
+                # Legacy report screenshots
+                screenshot_configs.extend([
+                    # Report header - Desktop Light
+                    {
+                        'name': 'report_header_desktop_light',
+                        'url': f'{base_url}/my-report/{first_token}/',
+                        'viewport': {'width': 1920, 'height': 1080},
+                        'theme': 'light',
+                        'scroll_to': 0,
+                    },
+                    # Report header - Desktop Dark
+                    {
+                        'name': 'report_header_desktop_dark',
+                        'url': f'{base_url}/my-report/{first_token}/',
+                        'viewport': {'width': 1920, 'height': 1080},
+                        'theme': 'dark',
+                        'scroll_to': 0,
+                    },
+                    # Report charts - Desktop Light
+                    {
+                        'name': 'report_charts_desktop_light',
+                        'url': f'{base_url}/my-report/{first_token}/',
+                        'viewport': {'width': 1920, 'height': 1080},
+                        'theme': 'light',
+                        'scroll_to_element': '#sectionRadarChart',
+                        'scroll_element_position': 'center',
+                    },
+                    # Report charts - Desktop Dark
+                    {
+                        'name': 'report_charts_desktop_dark',
+                        'url': f'{base_url}/my-report/{first_token}/',
+                        'viewport': {'width': 1920, 'height': 1080},
+                        'theme': 'dark',
+                        'scroll_to_element': '#sectionRadarChart',
+                        'scroll_element_position': 'center',
+                    },
+                    # Report - Tablet Light
+                    {
+                        'name': 'report_tablet_light',
+                        'url': f'{base_url}/my-report/{first_token}/',
+                        'viewport': {'width': 1024, 'height': 768},
+                        'theme': 'light',
+                        'scroll_to_element': '#sectionRadarChart',
+                        'scroll_element_position': 'start',
+                    },
+                    # Report - Tablet Dark
+                    {
+                        'name': 'report_tablet_dark',
+                        'url': f'{base_url}/my-report/{first_token}/',
+                        'viewport': {'width': 1024, 'height': 768},
+                        'theme': 'dark',
+                        'scroll_to_element': '#sectionRadarChart',
+                        'scroll_element_position': 'start',
+                    },
+                ])
+            # Dashboard and other admin screenshots
+            screenshot_configs.extend([
+                # Admin Dashboard - Desktop Light
                 {
                     'name': 'dashboard_desktop_light',
                     'url': f'{base_url}/dashboard/',
@@ -208,15 +350,15 @@ class Command(BaseCommand):
                     'theme': 'dark',
                     'wait_for': 'table',
                 },
-                # 15. Manage Invitations - Desktop Light
+                # Manage Invitations - Desktop Light
                 {
                     'name': 'invitations_desktop_light',
                     'url': f'{base_url}/dashboard/cycles/{config["partial_cycle_uuid"]}/invitations/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
-                    'wait_for': '#inviteForm',  # Wait for the specific invite form
+                    'wait_for': '#inviteForm',
                 },
-            ]
+            ])
 
             # Capture screenshots
             for i, screenshot_config in enumerate(screenshot_configs, 1):
@@ -266,6 +408,18 @@ class Command(BaseCommand):
                         )
                     except:
                         pass  # Continue even if charts don't load
+
+                # Click element if needed (e.g., for tab switching)
+                if 'click_element' in screenshot_config:
+                    try:
+                        click_selector = screenshot_config['click_element']
+                        await page.wait_for_selector(click_selector, timeout=5000)
+                        await page.click(click_selector)
+                        await page.wait_for_timeout(1000)  # Wait for tab transition
+                    except Exception as e:
+                        self.stdout.write(self.style.WARNING(
+                            f'  Warning: Could not click element {screenshot_config["click_element"]}: {e}'
+                        ))
 
                 # Scroll if needed
                 if 'scroll_to' in screenshot_config:

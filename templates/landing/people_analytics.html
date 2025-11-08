@@ -296,7 +296,7 @@
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title">Professional Skills Assessment</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Universal competency framework applicable to all roles. Based on the Dreyfus model of skill acquisition.</p>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Universal competency framework applicable to all roles. Automatically calculates <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus skill levels</a> and <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">agency stages</a> with actionable development paths.</p>
 
             <div style="max-width: 1100px; margin: 0 auto;">
                 <!-- Carousel for Professional Skills screenshots -->
@@ -360,6 +360,42 @@
                             <div class="carousel-slide" data-slide="3">
                                 <div class="screenshot-hover-wrapper">
                                     <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_dreyfus_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_dreyfus_light.png' %}"
+                                             alt="Dreyfus skill level visualization showing current stage with actionable development requirements to reach next level"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_dreyfus_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_dreyfus_dark.png' %}"
+                                             alt="Dreyfus model skill progression in dark mode with development path and concrete next steps"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Dreyfus skill level with development path showing specific requirements to reach next stage</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="4">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_agency_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_agency_light.png' %}"
+                                             alt="Agency levels assessment showing initiative and autonomy progression with actionable development steps"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_agency_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_agency_dark.png' %}"
+                                             alt="Initiative and agency progression visualization in dark mode with practical development guidance"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Agency level assessment showing initiative progression from Directed to Self-Driven</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="5">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
                                         <source srcset="{% static 'img/screenshots/report_professional_skills_details_light.webp' %}" type="image/webp">
                                         <img src="{% static 'img/screenshots/report_professional_skills_details_light.png' %}"
                                              alt="Detailed question-by-question feedback responses with role breakdowns and anonymized text comments"
@@ -382,7 +418,9 @@
                             <button class="carousel-dot active" data-slide="0" aria-label="Overview"></button>
                             <button class="carousel-dot" data-slide="1" aria-label="Charts"></button>
                             <button class="carousel-dot" data-slide="2" aria-label="Sections"></button>
-                            <button class="carousel-dot" data-slide="3" aria-label="Details"></button>
+                            <button class="carousel-dot" data-slide="3" aria-label="Dreyfus"></button>
+                            <button class="carousel-dot" data-slide="4" aria-label="Agency"></button>
+                            <button class="carousel-dot" data-slide="5" aria-label="Details"></button>
                         </div>
                     </div>
                 </div>
@@ -400,6 +438,18 @@
                         <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Assessment</li>
                     </ul>
                 </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                    <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Actionable Development Insights</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">The Professional Skills questionnaire automatically generates concrete development recommendations based on your feedback:</p>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ Your current <strong>Dreyfus skill stage</strong> (Novice → Expert) calculated from 13 weighted questions</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ Your <strong>agency level</strong> (Directed → Self-Driven) showing initiative and autonomy progression</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Specific requirements</strong> to reach the next stage with practical, observable behaviors</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Quick action items</strong> you can start this week to demonstrate next-level competencies</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Long-term development goals</strong> aligned with your career progression</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
@@ -408,7 +458,7 @@
     <section id="reports" class="section">
         <div class="container">
             <h2 class="section-title">Software Engineering Deep Dive</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Technical assessment measuring code quality, pragmatism, mentorship, and engineering maturity.</p>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Technical assessment measuring code quality, pragmatism, and mentorship. Calculates <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus technical skill levels</a> and <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">engineering agency</a> with concrete development guidance.</p>
 
             <div style="max-width: 1100px; margin: 0 auto;">
                 <!-- Carousel for Software Engineering screenshots -->
@@ -472,6 +522,42 @@
                             <div class="carousel-slide" data-slide="3">
                                 <div class="screenshot-hover-wrapper">
                                     <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_dreyfus_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_dreyfus_light.png' %}"
+                                             alt="Technical Dreyfus skill progression showing current engineering level with development path to advance"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_dreyfus_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_dreyfus_dark.png' %}"
+                                             alt="Engineering skill level visualization in dark mode with technical competency development guidance"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Technical Dreyfus level with development path specific to software engineering</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="4">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_agency_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_agency_light.png' %}"
+                                             alt="Engineering agency assessment showing initiative, refactoring ownership, and proactive problem solving"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_agency_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_agency_dark.png' %}"
+                                             alt="Technical initiative levels in dark mode measuring engineering autonomy and ownership"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Engineering agency measuring initiative, refactoring ownership, and technical leadership</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="5">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
                                         <source srcset="{% static 'img/screenshots/report_software_engineering_details_light.webp' %}" type="image/webp">
                                         <img src="{% static 'img/screenshots/report_software_engineering_details_light.png' %}"
                                              alt="Detailed technical feedback on pragmatism, passion, execution, and engineering judgment"
@@ -494,7 +580,9 @@
                             <button class="carousel-dot active" data-slide="0" aria-label="Overview"></button>
                             <button class="carousel-dot" data-slide="1" aria-label="Charts"></button>
                             <button class="carousel-dot" data-slide="2" aria-label="Sections"></button>
-                            <button class="carousel-dot" data-slide="3" aria-label="Details"></button>
+                            <button class="carousel-dot" data-slide="3" aria-label="Dreyfus"></button>
+                            <button class="carousel-dot" data-slide="4" aria-label="Agency"></button>
+                            <button class="carousel-dot" data-slide="5" aria-label="Details"></button>
                         </div>
                     </div>
                 </div>
@@ -513,9 +601,18 @@
                         <li style="padding: 0.5rem 0; color: var(--text-primary);">Strategic Vision & Leadership</li>
                         <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Assessment</li>
                     </ul>
-                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
-                        <strong>Dreyfus Skill Level:</strong> Reports automatically calculate skill progression from Novice → Advanced Beginner → Competent → Proficient → Expert based on technical competency ratings.
-                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                    <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Engineering-Specific Development Insights</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">The Software Engineering questionnaire provides targeted technical development recommendations:</p>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Technical skill level</strong> (Novice → Expert) calculated from 19 weighted questions including code quality, best practices, and mentorship</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Engineering agency</strong> measuring initiative in refactoring, technical ownership, curiosity, and team vision alignment</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Practical next steps</strong> like "Independently solve standard problems" or "Propose system improvements before issues arise"</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Technical action items</strong> such as "Review and refactor one legacy module this sprint" or "Lead next architectural decision discussion"</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Career progression guidance</strong> showing the path from IC to technical leadership roles</li>
+                    </ul>
                 </div>
             </div>
         </div>

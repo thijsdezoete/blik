@@ -4,24 +4,38 @@ Context processors for landing app.
 Provides URL namespace handling for templates that work in both
 standalone landing container and main app contexts.
 """
+import re
+from pathlib import Path
 from django.conf import settings
 from django.urls import reverse, NoReverseMatch
 
 
 def _get_api_path_by_name(url_name):
     """
-    Extract URL path from api/urls.py by looking up the name.
+    Extract URL path from api/urls.py by reading the file as plain text.
 
     Returns the path pattern (e.g., 'docs/') for a given name (e.g., 'swagger-ui').
-    This reads directly from api.urls.urlpatterns - single source of truth.
+    This reads the file directly without importing, avoiding Django model dependency issues.
     """
     try:
-        from api import urls as api_urls
+        # Read api/urls.py as plain text - no imports needed!
+        api_urls_file = Path(__file__).parent.parent / 'api' / 'urls.py'
 
-        for pattern in api_urls.urlpatterns:
-            if hasattr(pattern, 'name') and pattern.name == url_name:
-                return str(pattern.pattern)
-    except (ImportError, AttributeError):
+        if not api_urls_file.exists():
+            return None
+
+        content = api_urls_file.read_text()
+
+        # Parse path patterns using regex: path("docs/", ..., name="swagger-ui")
+        # Looking for: path("PATH_HERE", ... name="NAME_HERE")
+        pattern = rf'path\(\s*["\']([^"\']+)["\']\s*,.*?name\s*=\s*["\']({re.escape(url_name)})["\']'
+        match = re.search(pattern, content, re.DOTALL)
+
+        if match:
+            return match.group(1)
+
+    except (FileNotFoundError, PermissionError, Exception):
+        # File not found or can't be read - return None to trigger fallback
         pass
 
     return None

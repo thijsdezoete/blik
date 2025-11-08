@@ -1,0 +1,324 @@
+{% load static landing_tags %}
+
+{% if insights.skill_profile %}
+<div id="skill-development-path" class="insight-card skill-development">
+    <div class="insight-title">
+        Your Development Path
+        <span class="badge badge-dreyfus">{{ insights.skill_profile.skill_stage }}</span>
+        {% if insights.agency_profile %}
+        <span class="badge badge-agency">{{ insights.agency_profile.agency_stage }}</span>
+        {% endif %}
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="development-tabs">
+        <button class="tab-button active" data-tab="skill">
+            Skill Level
+            <a href="{% landing_url 'dreyfus_model' %}" class="tab-info-link" title="Learn more about the Dreyfus Model" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+            </a>
+        </button>
+        {% if insights.agency_profile %}
+        <button class="tab-button" data-tab="agency">
+            Agency & Initiative
+            <a href="{% landing_url 'agency_levels' %}" class="tab-info-link" title="Learn more about Agency Levels" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+            </a>
+        </button>
+        {% endif %}
+    </div>
+
+    <div class="dreyfus-compact-view">
+        <!-- Skill Tab Content -->
+        <div class="tab-content active" data-tab-content="skill">
+            <!-- Dreyfus Diamond Visualization -->
+            <div class="dreyfus-svg-container">
+                {% include "components/dreyfus_model_svg.html" with current_stage=insights.skill_profile.skill_stage %}
+            </div>
+
+            <!-- Current Stage Summary -->
+            <div class="current-stage-summary">
+                <div class="stage-header-compact">
+                    <div class="stage-name-large">{{ insights.skill_profile.skill_stage }}</div>
+                    <div class="stage-level-compact">Level {{ insights.skill_profile.skill_level }}/5.0</div>
+                </div>
+                <div class="stage-description">{{ insights.skill_profile.stage_info.description }}</div>
+            </div>
+        </div>
+
+        <!-- Agency Tab Content -->
+        {% if insights.agency_profile %}
+        <div class="tab-content" data-tab-content="agency">
+            <!-- Agency Levels Visualization -->
+            <div class="agency-svg-container">
+                {% with agency_level=insights.agency_profile.agency_level|floatformat:0 %}
+                {% include "components/agency_levels_svg.html" with current_level=agency_level %}
+                {% endwith %}
+            </div>
+
+            <!-- Current Agency Summary -->
+            <div class="current-stage-summary">
+                <div class="stage-header-compact">
+                    <div class="stage-name-large">{{ insights.agency_profile.agency_stage }}</div>
+                    <div class="stage-level-compact">Level {{ insights.agency_profile.agency_level }}/5.0</div>
+                </div>
+                <div class="stage-description">{{ insights.agency_profile.description }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Next Steps Section - Skill -->
+        {% if insights.development_plan and insights.skill_profile.stage_info.next_stage %}
+        <div class="next-steps-section" data-dimension="skill">
+            <h4 class="next-steps-title">To Reach {{ insights.skill_profile.stage_info.next_stage }}</h4>
+
+            {% if insights.development_plan.next_level_requirements %}
+            <div class="requirements-grid">
+                {% for requirement in insights.development_plan.next_level_requirements %}
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>{{ requirement }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if insights.development_plan.quick_wins %}
+            <div class="quick-wins-compact">
+                <h5 class="quick-wins-subtitle">Action Items</h5>
+                <ul class="quick-wins-compact-list">
+                    {% for win in insights.development_plan.quick_wins|slice:":3" %}
+                    <li>{{ win }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Next Steps Section - Agency -->
+        {% if insights.agency_profile and insights.agency_profile.agency_level|floatformat:0|add:"0" < 5 %}
+        <div class="next-steps-section" data-dimension="agency" style="display: none;">
+            {% with current_level=insights.agency_profile.agency_level|floatformat:0|add:"0" %}
+            {% with next_level=current_level|add:"1" %}
+            <h4 class="next-steps-title">To Reach Level {{ next_level }}:
+                {% if next_level == 2 %}Assisted
+                {% elif next_level == 3 %}Independent
+                {% elif next_level == 4 %}Proactive
+                {% elif next_level == 5 %}Self-Driven
+                {% endif %}
+            </h4>
+
+            <div class="requirements-grid">
+                {% if next_level == 2 %}
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>When reporting problems, investigate root causes</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Respond to guidance with thoughtful analysis</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Ask clarifying questions before escalating</span>
+                </div>
+                {% elif next_level == 3 %}
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Research multiple solution options before asking for help</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Take ownership of problems you discover</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Present tradeoffs of different approaches</span>
+                </div>
+                {% elif next_level == 4 %}
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Make clear recommendations backed by reasoning</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Proactively identify improvements before issues arise</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Build confidence in decision-making through successful recommendations</span>
+                </div>
+                {% elif next_level == 5 %}
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Execute solutions autonomously within your domain</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Inform stakeholders after implementing fixes</span>
+                </div>
+                <div class="requirement-item">
+                    <svg class="requirement-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Drive systemic improvements, not just point solutions</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="quick-wins-compact">
+                <h5 class="quick-wins-subtitle">Action Items</h5>
+                <ul class="quick-wins-compact-list">
+                    {% if next_level == 2 %}
+                    <li>Next time you spot an issue, spend 10 minutes investigating before reporting</li>
+                    <li>When given a task, propose at least one way to approach it</li>
+                    {% elif next_level == 3 %}
+                    <li>When facing a problem, list 2-3 possible solutions before asking for help</li>
+                    <li>Volunteer to own a small problem end-to-end this sprint</li>
+                    {% elif next_level == 4 %}
+                    <li>Present your next problem-solution with a specific recommendation and why</li>
+                    <li>Identify one process improvement opportunity this week</li>
+                    {% elif next_level == 5 %}
+                    <li>Fix the next issue you discover without asking permission (inform after)</li>
+                    <li>Document your decision-making process for others to learn from</li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endwith %}
+            {% endwith %}
+        </div>
+        {% endif %}
+
+        <!-- Optional: Quadrant Badge if both skill and agency exist -->
+        {% if insights.dreyfus_quadrant %}
+        <div class="quadrant-badge-compact">
+            <div class="quadrant-header">
+                <span class="quadrant-icon">{{ insights.dreyfus_quadrant.name }}</span>
+                <a href="{% landing_url 'performance_matrix' %}" class="quadrant-info-link" title="Learn more about the Performance Matrix" target="_blank" rel="noopener">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                </a>
+            </div>
+            <span class="quadrant-description">{{ insights.dreyfus_quadrant.description }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+(function() {
+    // Handle tab switching and next steps visibility
+    const tabButtons = document.querySelectorAll('#skill-development-path .tab-button');
+    const tabContents = document.querySelectorAll('#skill-development-path .tab-content');
+    const nextStepsSections = document.querySelectorAll('#skill-development-path .next-steps-section');
+
+    // State persistence key
+    const TAB_STATE_KEY = 'blik_development_tab_state';
+
+    function switchToTab(targetTab) {
+        // Update active button
+        tabButtons.forEach(btn => {
+            if (btn.getAttribute('data-tab') === targetTab) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Update visible tab content
+        tabContents.forEach(content => {
+            if (content.getAttribute('data-tab-content') === targetTab) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+
+        // Update visible next steps section
+        nextStepsSections.forEach(section => {
+            if (section.getAttribute('data-dimension') === targetTab) {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        });
+
+        // Save state
+        sessionStorage.setItem(TAB_STATE_KEY, targetTab);
+    }
+
+    // Restore saved tab state on load
+    const savedTab = sessionStorage.getItem(TAB_STATE_KEY);
+    if (savedTab) {
+        // Check if the saved tab still exists (in case data changed)
+        const tabExists = Array.from(tabButtons).some(btn => btn.getAttribute('data-tab') === savedTab);
+        if (tabExists) {
+            switchToTab(savedTab);
+        }
+    }
+
+    // Add click handlers
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Don't switch tabs if clicking the info link
+            if (e.target.closest('.tab-info-link')) {
+                return;
+            }
+
+            const targetTab = this.getAttribute('data-tab');
+            switchToTab(targetTab);
+        });
+    });
+
+    // Prevent info link clicks from switching tabs
+    document.querySelectorAll('.tab-info-link, .quadrant-info-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+})();
+</script>
+{% endif %}

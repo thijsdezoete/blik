@@ -630,3 +630,350 @@ body.report-page {
 [data-theme="dark"] .score-low {
     color: #f87171;
 }
+
+/* Compact Dreyfus Component */
+.insight-card.skill-development {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-left: 4px solid var(--primary);
+}
+
+.badge-dreyfus {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.badge-agency {
+    background: #10b981;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+/* Tab Navigation */
+.development-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.tab-button {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-button:hover {
+    color: var(--text-primary);
+    background: var(--bg-light);
+}
+
+.tab-button.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab-info-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin-left: 0.25rem;
+    border-radius: 50%;
+    color: var(--text-tertiary);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.tab-info-link:hover {
+    color: var(--primary);
+    background: var(--primary-50);
+    transform: scale(1.1);
+}
+
+.tab-button.active .tab-info-link {
+    color: var(--primary);
+}
+
+.tab-info-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.dreyfus-compact-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* SVG Container */
+.dreyfus-svg-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.dreyfus-svg-container .dreyfus-model {
+    width: 100%;
+    height: auto;
+}
+
+.agency-svg-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.agency-svg-container svg {
+    width: 100%;
+    height: auto;
+}
+
+/* Current Stage Summary */
+.current-stage-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stage-header-compact {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.stage-name-large {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.stage-level-compact {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.stage-description {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.agency-supplement {
+    padding: 0.75rem;
+    background: var(--bg-light);
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.agency-label {
+    color: var(--text-secondary);
+    margin-right: 0.5rem;
+}
+
+.agency-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Next Steps Section */
+.next-steps-section {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.next-steps-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+}
+
+.requirements-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.requirement-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.requirement-icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: var(--primary);
+}
+
+.quick-wins-compact {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+.quick-wins-subtitle {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.75rem 0;
+}
+
+.quick-wins-compact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.quick-wins-compact-list li {
+    padding-left: 1.5rem;
+    position: relative;
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.quick-wins-compact-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Quadrant Badge Compact */
+.quadrant-badge-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+}
+
+.quadrant-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quadrant-icon {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+.quadrant-info-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--text-tertiary);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.quadrant-info-link:hover {
+    color: var(--primary);
+    background: var(--primary-50);
+    transform: scale(1.1);
+}
+
+.quadrant-info-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+.quadrant-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .development-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-button {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+
+    .dreyfus-svg-container,
+    .agency-svg-container {
+        max-width: 100%;
+        padding: 0.5rem 0;
+    }
+
+    .stage-name-large {
+        font-size: 1.25rem;
+    }
+
+    .stage-level-compact {
+        font-size: 1rem;
+    }
+
+    .badge-dreyfus,
+    .badge-agency {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .requirements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+}

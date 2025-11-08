@@ -39,6 +39,10 @@
           "3": "Works independently",
           "4": "Sees bigger picture",
           "5": "Solves complex issues"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.0
         }
       },
       "required": true,
@@ -63,6 +67,10 @@
           "3": "Code is generally clear and maintainable",
           "4": "Code is exemplary and serves as reference",
           "5": "Code quality sets team standards"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.5
         }
       },
       "required": true,
@@ -174,17 +182,21 @@
     "pk": 7,
     "fields": {
       "section": 3,
-      "question_text": "What is their current skill level in their primary technology domain? (Dreyfus Model)",
+      "question_text": "How do they approach solving technical problems in their domain?",
       "question_type": "rating",
       "config": {
         "min": 1,
         "max": 5,
         "labels": {
-          "1": "Novice: Follows rules rigidly, needs detailed instructions",
-          "2": "Advanced Beginner: Can handle simple tasks independently",
-          "3": "Competent: Plans deliberately, solves standard problems",
-          "4": "Proficient: Sees the big picture, recognizes patterns",
-          "5": "Expert: Works from intuition, creates new approaches"
+          "1": "Needs step-by-step instructions and close guidance",
+          "2": "Can handle familiar problems with some guidance",
+          "3": "Independently solves standard problems and plans work",
+          "4": "Sees patterns quickly and handles complex situations",
+          "5": "Intuitively finds solutions and creates novel approaches"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.5
         }
       },
       "required": true,
@@ -209,6 +221,10 @@
           "3": "Competent across most of stack",
           "4": "Can work independently across entire stack",
           "5": "Expert with broad experience across domains and platforms"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.0
         }
       },
       "required": true,
@@ -307,6 +323,10 @@
           "3": "Proactively identifies and addresses problems",
           "4": "Regularly proposes improvements",
           "5": "Self-driven achiever who consistently improves systems"
+        },
+        "dreyfus_mapping": {
+          "dimension": "agency",
+          "weight": 1.5
         }
       },
       "required": true,
@@ -357,6 +377,10 @@
           "3": "Regularly uses appropriate practices",
           "4": "Exemplifies best practices, mentors others",
           "5": "Expert practitioner, sets team standards"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.0
         }
       },
       "required": true,
@@ -455,6 +479,10 @@
           "3": "Generally balances technical and business needs",
           "4": "Consistently delivers pragmatic solutions",
           "5": "Expert at finding simple solutions to complex problems"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.0
         }
       },
       "required": true,
@@ -577,6 +605,10 @@
           "3": "Can explain most decisions adequately",
           "4": "Provides clear, well-justified explanations",
           "5": "System expert who quickly brings others up to speed"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.0
         }
       },
       "required": true,
@@ -627,6 +659,10 @@
           "3": "Picks up new technologies at reasonable pace",
           "4": "Quick learner who adapts easily",
           "5": "Exceptionally fast learner, eagerly explores new tools"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 0.5
         }
       },
       "required": true,
@@ -651,6 +687,10 @@
           "3": "Shows healthy interest in learning",
           "4": "Actively seeks out new knowledge",
           "5": "Voracious learner, constantly expanding expertise"
+        },
+        "dreyfus_mapping": {
+          "dimension": "agency",
+          "weight": 1.0
         }
       },
       "required": true,
@@ -725,6 +765,10 @@
           "3": "Understands product goals and aligns work accordingly",
           "4": "Considers broader business implications",
           "5": "Product visionary who shapes strategic direction"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.0
         }
       },
       "required": true,
@@ -749,6 +793,10 @@
           "3": "Generally considers future implications",
           "4": "Consistently anticipates and plans for challenges",
           "5": "Exceptional foresight, prevents problems before they occur"
+        },
+        "dreyfus_mapping": {
+          "dimension": "skill",
+          "weight": 1.0
         }
       },
       "required": true,

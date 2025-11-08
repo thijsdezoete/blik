@@ -2,7 +2,7 @@
 {# Shared report content - used by both admin and reviewee views #}
 
 {% if report.report_data.insights.overall_sentiment %}
-<div class="insight-card skill-profile">
+<div id="overall-performance" class="insight-card skill-profile">
     <div class="insight-title">
         Overall Performance
         {% if report.report_data.comparison.show_trends and report.report_data.comparison.overall_trend %}
@@ -43,19 +43,11 @@
 </div>
 {% endif %}
 
-{% if report.report_data.insights.skill_profile %}
-<div class="insight-card skill-profile">
-    <div class="insight-title">Technical Skill Level</div>
-    <div style="margin: 1rem 0;">
-        <span class="skill-badge">{{ report.report_data.insights.skill_profile.level }}</span>
-    </div>
-    <div class="insight-message">
-        {{ report.report_data.insights.skill_profile.description }}
-    </div>
-</div>
-{% endif %}
+{# Dreyfus Model Skill Profile - Comprehensive view with visualization and development plan #}
+{% include "reports/_dreyfus_profile.html" with insights=report.report_data.insights %}
 
 {% if report.report_data.insights.perception_gaps %}
+<div id="perception-gaps">
 {% for gap in report.report_data.insights.perception_gaps %}
 <div class="insight-card perception-gap">
     <div class="insight-title">
@@ -88,10 +80,11 @@
     </div>
 </div>
 {% endfor %}
+</div>
 {% endif %}
 
 {% if report.report_data.insights.strengths %}
-<div class="insight-card strengths">
+<div id="key-strengths" class="insight-card strengths">
     <div class="insight-title">Key Strengths</div>
     <ul class="strength-list">
         {% for strength in report.report_data.insights.strengths %}
@@ -113,7 +106,7 @@
 {% endif %}
 
 {% if report.report_data.insights.development_areas %}
-<div class="insight-card development">
+<div id="development-opportunities" class="insight-card development">
     <div class="insight-title">Development Opportunities</div>
     <ul class="development-list">
         {% for area in report.report_data.insights.development_areas %}
@@ -161,7 +154,7 @@
 </div>
 {% endif %}
 
-<div class="report-section">
+<div id="section-level-performance" class="report-section">
     <h2>Section-Level Performance</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
         Performance breakdown by competency area
@@ -257,7 +250,7 @@
 </div>
 {% endif %}
 
-<h2 style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-primary);">Detailed Feedback</h2>
+<h2 id="detailed-feedback" style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-primary);">Detailed Feedback</h2>
 
 {% for section_id, section_data in display_data.by_section.items %}
 <div class="section-report">

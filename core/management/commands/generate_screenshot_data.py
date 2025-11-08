@@ -110,33 +110,58 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'Created {len(team_members)} team members'))
 
-        # Get Software Engineering 360 Review questionnaire for the organization
-        questionnaire = Questionnaire.objects.filter(
-            organization=org,
-            name="Software Engineering 360 Review",
-            is_active=True
-        ).first()
+        # Get all questionnaires for the organization
+        questionnaires_to_use = [
+            "Professional Skills 360 Review",
+            "Software Engineering 360 Review",
+            "Manager 360 Review",
+            "360 Degree Feedback"
+        ]
 
-        if not questionnaire:
+        questionnaires = {}
+        for q_name in questionnaires_to_use:
+            q = Questionnaire.objects.filter(
+                organization=org,
+                name=q_name,
+                is_active=True
+            ).first()
+            if q:
+                questionnaires[q_name] = q
+            else:
+                self.stdout.write(self.style.WARNING(f'Questionnaire "{q_name}" not found'))
+
+        if not questionnaires:
             self.stdout.write(self.style.ERROR(
-                'Software Engineering 360 Review questionnaire not found for organization.\n'
+                'No questionnaires found for organization.\n'
                 'Make sure questionnaire fixtures are loaded and migrations have run.'
             ))
             return
 
-        # Create reviewees for different cycle states
+        # Create completed reviewees with different questionnaires
         reviewees_data = [
-            ('John Smith', 'john.smith@acme.example.com', 'Engineering', 'completed'),
+            ('Alex Rivera', 'alex.rivera@acme.example.com', 'Engineering', 'Professional Skills 360 Review'),
+            ('Jordan Chen', 'jordan.chen@acme.example.com', 'Engineering', 'Software Engineering 360 Review'),
+            ('Morgan Taylor', 'morgan.taylor@acme.example.com', 'Engineering', 'Manager 360 Review'),
+            ('Casey Johnson', 'casey.johnson@acme.example.com', 'Product', '360 Degree Feedback'),
+        ]
+
+        # Create partial cycles for dashboard/invitation screenshots
+        partial_reviewees_data = [
             ('Emma Davis', 'emma.davis@acme.example.com', 'Product', 'partial_60'),
             ('Robert Brown', 'robert.brown@acme.example.com', 'Design', 'partial_20'),
             ('Sophia Garcia', 'sophia.garcia@acme.example.com', 'Engineering', 'new_90'),
-            ('William Lee', 'william.lee@acme.example.com', 'Sales', 'completed'),
         ]
 
         cycles_output = []
+        questionnaire_cycles = {}
         feedback_token_for_screenshots = None
 
-        for name, email, dept, cycle_type in reviewees_data:
+        # Create completed cycles with different questionnaires
+        for name, email, dept, questionnaire_name in reviewees_data:
+            if questionnaire_name not in questionnaires:
+                self.stdout.write(self.style.WARNING(f'Skipping {name} - questionnaire not found'))
+                continue
+
             reviewee = Reviewee.objects.create(
                 name=name,
                 email=email,
@@ -144,20 +169,40 @@ class Command(BaseCommand):
                 organization=org
             )
 
-            if cycle_type == 'completed':
-                cycle = self._create_completed_cycle(reviewee, questionnaire, admin)
-                cycles_output.append({
-                    'reviewee': name,
-                    'status': 'completed',
-                    'cycle_id': cycle.id,
-                    'cycle_uuid': str(cycle.uuid),
-                    'has_report': True
-                })
-            elif cycle_type.startswith('partial_'):
+            questionnaire = questionnaires[questionnaire_name]
+            cycle = self._create_completed_cycle(reviewee, questionnaire, admin)
+
+            cycle_data = {
+                'reviewee': name,
+                'questionnaire': questionnaire_name,
+                'status': 'completed',
+                'cycle_id': cycle.id,
+                'cycle_uuid': str(cycle.uuid),
+                'has_report': True
+            }
+            cycles_output.append(cycle_data)
+
+            # Store by questionnaire type for easy reference
+            q_key = questionnaire_name.lower().replace(' ', '_').replace('360', '').replace('review', '').strip('_')
+            questionnaire_cycles[q_key] = cycle_data
+
+        # Create partial cycles using first available questionnaire
+        default_questionnaire = questionnaires.get("Software Engineering 360 Review") or list(questionnaires.values())[0]
+
+        for name, email, dept, cycle_type in partial_reviewees_data:
+            reviewee = Reviewee.objects.create(
+                name=name,
+                email=email,
+                department=dept,
+                organization=org
+            )
+
+            if cycle_type.startswith('partial_'):
                 completion_pct = int(cycle_type.split('_')[1])
-                cycle = self._create_partial_cycle(reviewee, questionnaire, admin, completion_pct)
+                cycle = self._create_partial_cycle(reviewee, default_questionnaire, admin, completion_pct)
                 cycles_output.append({
                     'reviewee': name,
+                    'questionnaire': default_questionnaire.name,
                     'status': 'active',
                     'cycle_id': cycle.id,
                     'cycle_uuid': str(cycle.uuid),
@@ -175,22 +220,27 @@ class Command(BaseCommand):
 
             elif cycle_type.startswith('new_'):
                 claim_pct = int(cycle_type.split('_')[1])
-                cycle = self._create_new_cycle(reviewee, questionnaire, admin, claim_pct)
+                cycle = self._create_new_cycle(reviewee, default_questionnaire, admin, claim_pct)
                 cycles_output.append({
                     'reviewee': name,
+                    'questionnaire': default_questionnaire.name,
                     'status': 'active',
                     'cycle_id': cycle.id,
                     'cycle_uuid': str(cycle.uuid),
                     'claimed': f'{claim_pct}%'
                 })
 
-        self.stdout.write(self.style.SUCCESS(f'Created {len(reviewees_data)} review cycles'))
+        self.stdout.write(self.style.SUCCESS(f'Created {len(cycles_output)} review cycles'))
 
-        # Get report access token for completed cycle
-        report_access_token = None
-        completed_report = Report.objects.filter(cycle_id=cycles_output[0]['cycle_id']).first()
-        if completed_report and completed_report.access_token:
-            report_access_token = str(completed_report.access_token)
+        # Get report access tokens for all completed cycles
+        report_tokens = {}
+        for q_key, cycle_data in questionnaire_cycles.items():
+            report = Report.objects.filter(cycle_id=cycle_data['cycle_id']).first()
+            if report and report.access_token:
+                report_tokens[q_key] = str(report.access_token)
+
+        # Find partial cycle for screenshots
+        partial_cycle = next((c for c in cycles_output if c.get('completion')), None)
 
         # Output JSON for screenshot script
         output_data = {
@@ -199,12 +249,11 @@ class Command(BaseCommand):
             'admin_username': admin.email,
             'admin_password': 'demo123',
             'cycles': cycles_output,
-            'completed_cycle_id': cycles_output[0]['cycle_id'],
-            'completed_cycle_uuid': cycles_output[0]['cycle_uuid'],
-            'partial_cycle_id': cycles_output[1]['cycle_id'],
-            'partial_cycle_uuid': cycles_output[1]['cycle_uuid'],
+            'questionnaire_cycles': questionnaire_cycles,
+            'report_tokens': report_tokens,
+            'partial_cycle_id': partial_cycle['cycle_id'] if partial_cycle else None,
+            'partial_cycle_uuid': partial_cycle['cycle_uuid'] if partial_cycle else None,
             'feedback_token': feedback_token_for_screenshots,
-            'report_access_token': report_access_token,
             'team_count': len(team_members) + 1,
             'base_url': 'http://localhost:8000'
         }

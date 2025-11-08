@@ -10,6 +10,9 @@ from core.models import Organization
 from statistics import mean, stdev, median
 import copy
 
+# Import Dreyfus service functions
+from . import dreyfus_service
+
 
 def _get_previous_cycle_report(cycle):
     """
@@ -181,6 +184,9 @@ def _calculate_insights(report_data):
         'strengths': [],
         'development_areas': [],
         'skill_profile': None,
+        'agency_profile': None,
+        'dreyfus_quadrant': None,
+        'development_plan': None,
         'overall_sentiment': None
     }
 
@@ -308,38 +314,33 @@ def _calculate_insights(report_data):
                     dev_area['gap'] = round(self_score - avg_score, 2)
                 insights['development_areas'].append(dev_area)
 
-    # Detect Dreyfus skill level from technical expertise section
-    tech_section = section_summary.get('Technical Expertise & Skill Level', {})
-    if tech_section:
-        tech_scores = [v for v in tech_section.values() if v]
-        if tech_scores:
-            avg_tech = mean(tech_scores)
+    # Calculate Dreyfus skill and agency profiles using new service
+    questionnaire_id = report_data.get('questionnaire_id')
 
-            if avg_tech >= 4.5:
-                insights['skill_profile'] = {
-                    'level': 'Expert',
-                    'description': 'Works from intuition, creates new approaches, recognized authority'
-                }
-            elif avg_tech >= 3.5:
-                insights['skill_profile'] = {
-                    'level': 'Proficient',
-                    'description': 'Sees big picture, recognizes patterns, works independently'
-                }
-            elif avg_tech >= 2.5:
-                insights['skill_profile'] = {
-                    'level': 'Competent',
-                    'description': 'Plans deliberately, solves standard problems'
-                }
-            elif avg_tech >= 1.5:
-                insights['skill_profile'] = {
-                    'level': 'Advanced Beginner',
-                    'description': 'Handles simple tasks independently'
-                }
-            else:
-                insights['skill_profile'] = {
-                    'level': 'Novice',
-                    'description': 'Follows rules, needs detailed instructions'
-                }
+    # Calculate skill profile (uses weighted questions with dreyfus_mapping metadata)
+    skill_profile = dreyfus_service.calculate_dreyfus_level(report_data, questionnaire_id)
+    if skill_profile:
+        insights['skill_profile'] = skill_profile
+
+    # Calculate agency profile (initiative/autonomy)
+    agency_profile = dreyfus_service.calculate_agency_level(report_data, questionnaire_id)
+    if agency_profile:
+        insights['agency_profile'] = agency_profile
+
+    # Calculate quadrant position (Skill × Agency)
+    if skill_profile and agency_profile:
+        insights['dreyfus_quadrant'] = dreyfus_service.calculate_dreyfus_quadrant(
+            skill_profile['skill_level'],
+            agency_profile['agency_level']
+        )
+
+    # Generate personalized development recommendations
+    if skill_profile:
+        insights['development_plan'] = dreyfus_service.generate_development_recommendations(
+            skill_profile,
+            agency_profile,
+            report_data
+        )
 
     # Overall sentiment - based on others only (exclude self)
     others_ratings = all_peer_ratings + all_manager_ratings
@@ -535,7 +536,10 @@ def generate_report(cycle):
         category_data['count'] += 1
 
     # Calculate averages and apply anonymity threshold
-    report_data = {'by_section': {}}
+    report_data = {
+        'by_section': {},
+        'questionnaire_id': questionnaire.id
+    }
 
     for section_id, section_data in data_by_section.items():
         report_section = {

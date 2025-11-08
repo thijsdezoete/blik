@@ -8,24 +8,24 @@
     <meta name="description" content="Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant. Deploy in 5 minutes with Docker. Save €17,000/year vs commercial tools.">
     <meta name="keywords" content="open source 360 feedback, self-hosted performance review, anonymous feedback software, 360 degree feedback platform, employee feedback system, peer review software, performance management tool, GDPR compliant feedback">
     <meta name="author" content="Blik">
-    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
     <meta property="og:title" content="{{ site_name }} - Open Source 360-Degree Feedback Platform">
     <meta property="og:description" content="{{ site_description }}">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
     <meta name="twitter:title" content="{{ site_name }} - Open Source 360-Degree Feedback Platform">
     <meta name="twitter:description" content="{{ site_description }}">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -762,7 +762,7 @@
 
                 <details class="faq-item">
                     <summary>Is there an API for integrations?</summary>
-                    <p>Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available at <code>/api/docs/</code> when you're logged in. No usage limits, no integration fees—just standard authentication and full CRUD operations.</p>
+                    <p>Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available at <a href="{{ api_swagger_url }}" target="_blank" style="color: var(--primary); text-decoration: underline;">{{ api_swagger_url }}</a>. No usage limits, no integration fees—just standard authentication and full CRUD operations. <a href="{% landing_url 'developers' %}" style="color: var(--primary);">View full API documentation →</a></p>
                 </details>
 
                 <details class="faq-item">
@@ -980,7 +980,7 @@
                 "name": "Is there an API for integrations?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available at /api/docs/ when you're logged in. No usage limits, no integration fees—just standard authentication and full CRUD operations."
+                    "text": "Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available. No usage limits, no integration fees—just standard authentication and full CRUD operations."
                 }
             },
             {

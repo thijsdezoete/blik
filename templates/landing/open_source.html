@@ -6,24 +6,24 @@
     <meta name="description" content="AGPL-licensed 360 feedback platform for developer teams. Modern Django stack, Docker deployment, extensible architecture. Contribute, customize, self-host. No vendor lock-in.">
     <meta name="keywords" content="open source performance review, developer 360 feedback, self-hosted HR tool, Django feedback system, customizable review platform, AGPL HR software, developer-first performance management">
     <meta name="author" content="Blik">
-    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/open-source/">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'open_source' %}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/open-source/">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'open_source' %}">
     <meta property="og:title" content="Open Source 360 Feedback Built by Developers">
     <meta property="og:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/open-source/">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'open_source' %}">
     <meta name="twitter:title" content="Open Source 360 Feedback Built by Developers">
     <meta name="twitter:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -485,12 +485,12 @@
 
                 <div class="feature-card">
                     <h3>Near-Term (Q1 2025)</h3>
-                    <p>PDF report export. Historical trend analysis. LDAP/SSO authentication. Multi-language UI support. Performance optimizations. API rate limiting and usage analytics.</p>
+                    <p>Manager analytics dashboard. PDF report export. LDAP/SSO authentication. Multi-language UI support. Performance optimizations. API rate limiting and usage analytics.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Mid-Term (Q2-Q3 2025)</h3>
-                    <p>GraphQL API. Advanced analytics dashboards. Custom competency builder UI. Workflow automation. Integration marketplace. Mobile app (optional).</p>
+                    <p>Manager analytics dashboard with team insights. Custom competency builder UI. Workflow automation. Integration marketplace. Mobile app (optional).</p>
                 </div>
 
                 <div class="feature-card">

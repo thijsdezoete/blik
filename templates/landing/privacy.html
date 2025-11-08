@@ -6,24 +6,24 @@
     <meta name="description" content="Self-hosted 360 feedback for consulting, legal, healthcare, and financial services. Client confidentiality protected. Air-gapped deployment. GDPR, ISO 27001, SOC 2 compliance ready. No cloud dependencies.">
     <meta name="keywords" content="professional services performance review, air-gapped feedback system, confidential 360 review, compliance-ready HR software, self-hosted employee feedback, secure performance management">
     <meta name="author" content="Blik">
-    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/privacy/">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'privacy' %}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/privacy/">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'privacy' %}">
     <meta property="og:title" content="Air-Gapped 360 Feedback for Professional Services">
     <meta property="og:description" content="Client confidentiality protected. Compliance-ready. No cloud dependencies.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/privacy/">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'privacy' %}">
     <meta name="twitter:title" content="Air-Gapped 360 Feedback for Professional Services">
     <meta name="twitter:description" content="Client confidentiality protected. Compliance-ready. No cloud dependencies.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}/landing/og-image.png">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
 {% endblock %}
 
 {% block extra_head %}

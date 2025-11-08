@@ -191,3 +191,23 @@ def developers(request):
         # main_app_url and API URLs now provided by context processor
     }
     return render(request, 'landing/developers.html', context)
+
+
+def people_analytics(request):
+    """People analytics landing page showcasing role-specific questionnaires."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/people_analytics.html', context)
+
+
+def about(request):
+    """About page - who built Blik and why."""
+    context = {
+        'site_name': settings.SITE_NAME,
+        'site_domain': settings.SITE_DOMAIN,
+        'site_protocol': settings.SITE_PROTOCOL,
+    }
+    return render(request, 'landing/about.html', context)

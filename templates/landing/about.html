@@ -1,0 +1,279 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>About Blik - Built by Founders, for Founders | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="The story behind Blik360: Why a CEO built an open source 360 feedback platform using modern tech and AI. From frustration with commercial tools to self-hosted freedom.">
+    <meta name="keywords" content="about blik, founder story, tinify, performance reviews, self-hosted feedback, open source development, AI-assisted development">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/landing/about/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/landing/about/">
+    <meta property="og:title" content="About Blik - Built by Founders, for Founders">
+    <meta property="og:description" content="The story behind Blik360: Why a CEO built an open source 360 feedback platform using modern tech and AI.">
+    <meta property="og:site_name" content="{{ site_name }}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/landing/about/">
+    <meta name="twitter:title" content="About Blik - Built by Founders, for Founders">
+    <meta name="twitter:description" content="The story behind Blik360: Why a CEO built an open source 360 feedback platform using modern tech and AI.">
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="{% landing_url 'about' %}">About</a>
+    <a href="{% landing_url 'hr_managers' %}">For HR Teams</a>
+    <a href="{% landing_url 'developers' %}">Developers</a>
+    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero" style="background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%); padding: 4rem 0;">
+        <div class="container">
+            <div class="hero-content" style="text-align: center;">
+                <h1 class="hero-title" style="color: white;">Built by Founders, for Founders</h1>
+                <p class="hero-subtitle" style="color: rgba(255,255,255,0.95); max-width: 700px; margin: 0 auto;">The story of how frustration with expensive, complex performance review tools led to building an open source alternative with AI assistance.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 class="section-title">Why Blik Exists</h2>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>The Problem</h3>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        I run <a href="https://tinify.com" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500;">Tinify</a>, an image optimization API company. Like most CEOs, I wanted to implement proper performance reviews for my team. The kind where people get honest feedback from peers, managers, and direct reports—360-degree reviews.
+                    </p>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary);">
+                        I looked at the usual suspects: Lattice, Culture Amp, 15Five. The pricing was absurd—€15,000-18,000 per year for a 50-person team. The features were bloated. The interfaces were cluttered. And worst of all, I'd be putting my team's sensitive feedback data on someone else's servers.
+                    </p>
+                </div>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>What I Actually Needed</h3>
+                    <ul style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-left: 1.5rem;">
+                        <li style="margin-bottom: 0.75rem;"><strong>True anonymity</strong> - Not just a promise, but architectural impossibility to trace feedback</li>
+                        <li style="margin-bottom: 0.75rem;"><strong>Self-hosted option</strong> - Our data, our servers, our control</li>
+                        <li style="margin-bottom: 0.75rem;"><strong>Simple pricing</strong> - Ideally free for self-hosting</li>
+                        <li style="margin-bottom: 0.75rem;"><strong>Pre-built questionnaires</strong> - I didn't want to design feedback forms from scratch</li>
+                        <li style="margin-bottom: 0.75rem;"><strong>Docker deployment</strong> - Up and running in minutes, not days</li>
+                        <li><strong>Clean interface</strong> - No feature bloat, just what's needed</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: var(--primary-50); border: 1px solid var(--primary-200);">
+                    <p style="font-size: 1.25rem; line-height: 1.8; color: var(--text-primary); font-style: italic; margin: 0;">
+                        "When I couldn't find a tool that met these basic requirements without costing thousands per year, I decided to build it myself."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 class="section-title">Who Built This</h2>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Thijs de Zoete - CEO & Founder</h3>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        I'm the CEO of <a href="https://tinify.com" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500;">Tinify</a>, a company that provides image optimization APIs used by millions of developers worldwide. Before that, I built and sold several tech startups.
+                    </p>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary);">
+                        I'm a serial entrepreneur who believes in building tools that solve real problems. Not tools that exist to justify VC funding rounds or support bloated sales teams. Tools that work, that you can trust, and that respect your data ownership.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Philosophy</h3>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary);">
+                        I believe software should be:
+                    </p>
+                    <ul style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-left: 1.5rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.75rem;"><strong>Honest about pricing</strong> - No "contact sales" nonsense</li>
+                        <li style="margin-bottom: 0.75rem;"><strong>Open source where possible</strong> - Let users see what they're running</li>
+                        <li style="margin-bottom: 0.75rem;"><strong>Self-hostable</strong> - Your data shouldn't be held hostage</li>
+                        <li><strong>Simple to use</strong> - Complexity is a bug, not a feature</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How Section -->
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 class="section-title">How It Was Built</h2>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h3>Tech Stack</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div>
+                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Backend</h4>
+                            <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                                <li style="margin-bottom: 0.5rem;">• Django (Python web framework)</li>
+                                <li style="margin-bottom: 0.5rem;">• PostgreSQL database</li>
+                                <li style="margin-bottom: 0.5rem;">• RESTful API with DRF</li>
+                                <li>• Gunicorn + Nginx</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Frontend</h4>
+                            <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                                <li style="margin-bottom: 0.5rem;">• Vanilla JavaScript (no framework bloat)</li>
+                                <li style="margin-bottom: 0.5rem;">• CSS custom properties</li>
+                                <li style="margin-bottom: 0.5rem;">• Mobile-first responsive design</li>
+                                <li>• Dark mode support</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Deployment</h4>
+                            <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                                <li style="margin-bottom: 0.5rem;">• Docker & Docker Compose</li>
+                                <li style="margin-bottom: 0.5rem;">• Single-command deployment</li>
+                                <li style="margin-bottom: 0.5rem;">• SQLite for standalone mode</li>
+                                <li>• Postgres for production</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="background: var(--success-50); border: 1px solid var(--success-200); margin-bottom: 2rem;">
+                    <h3 style="color: var(--success-700);">Built with Claude</h3>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        Blik was built with significant assistance from <strong>Claude</strong> (Anthropic's AI). Not as a marketing gimmick, but because it genuinely made development faster and better.
+                    </p>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        Claude helped with:
+                    </p>
+                    <ul style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-left: 1.5rem;">
+                        <li style="margin-bottom: 0.75rem;">Architecting the token-based anonymity system</li>
+                        <li style="margin-bottom: 0.75rem;">Designing the Dreyfus model competency framework</li>
+                        <li style="margin-bottom: 0.75rem;">Writing the 4 default questionnaires</li>
+                        <li style="margin-bottom: 0.75rem;">Building the reporting and analytics engine</li>
+                        <li>Optimizing database queries and API endpoints</li>
+                    </ul>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-top: 1rem;">
+                        This is the future of software development: humans providing vision and judgment, AI handling implementation details. The result is better code, shipped faster.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Development Timeline</h3>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        Initial version: <strong>~3 weeks of focused development</strong> (evenings and weekends)
+                    </p>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary);">
+                        What normally would have taken months of solo development was compressed into weeks thanks to AI assistance. This meant I could validate the concept quickly and iterate based on real usage with my own team.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Source Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 class="section-title">Why Open Source</h2>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        Blik is released under the <strong>AGPL license</strong>. This is deliberately copyleft—if you modify and host Blik, you must share your changes.
+                    </p>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary);">
+                        Why? Because performance review data is sensitive. You should be able to:
+                    </p>
+                    <ul style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-left: 1.5rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.75rem;">Audit the code that handles your team's feedback</li>
+                        <li style="margin-bottom: 0.75rem;">Verify that anonymity is actually enforced</li>
+                        <li style="margin-bottom: 0.75rem;">Modify the platform to fit your exact needs</li>
+                        <li style="margin-bottom: 0.75rem;">Run it on your own infrastructure forever</li>
+                        <li>Never worry about vendor lock-in or price increases</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: var(--primary-50); border: 1px solid var(--primary-200);">
+                    <h3>The Business Model</h3>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        <strong>Self-hosted:</strong> Completely free. Download, deploy, use forever.
+                    </p>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1rem;">
+                        <strong>Managed hosting:</strong> €49-199/month depending on team size. This covers hosting costs, automatic updates, backups, and support. Transparent pricing, no sales calls.
+                    </p>
+                    <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary);">
+                        The hosted version subsidizes development of the open source version. Everyone wins.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 class="section-title">The Vision</h2>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <p style="font-size: 1.25rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 1.5rem;">
+                        Performance reviews shouldn't cost €18,000/year for a small team. They shouldn't require giving your data to a third party. They shouldn't be so complex that you need training to use them.
+                    </p>
+                    <p style="font-size: 1.25rem; line-height: 1.8; color: var(--text-primary);">
+                        Blik exists to prove that you can build professional-grade HR tools that are:
+                    </p>
+                    <ul style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-left: 1.5rem; margin-top: 1rem;">
+                        <li style="margin-bottom: 0.75rem;">Open source and auditable</li>
+                        <li style="margin-bottom: 0.75rem;">Self-hostable and privacy-preserving</li>
+                        <li style="margin-bottom: 0.75rem;">Simple to use and deploy</li>
+                        <li style="margin-bottom: 0.75rem;">Transparently priced</li>
+                        <li>Built by people who actually use them</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%); border: none; padding: 3rem; text-align: center;">
+                    <h3 style="color: white; font-size: 1.75rem; margin-bottom: 1.5rem;">Join the Movement</h3>
+                    <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
+                        Whether you self-host or use our managed service, you're supporting a different way of building software. One that respects users, values transparency, and rejects vendor lock-in.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" style="background: white; color: var(--primary); border: none;" target="_blank" rel="noopener">Star on GitHub</a>
+                        <a href="{% landing_url 'signup' %}" class="btn" style="background: transparent; color: white; border: 2px solid white;">Try Managed Hosting</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+                <h2 class="section-title">Get in Touch</h2>
+                <p style="font-size: 1.125rem; line-height: 1.8; color: var(--text-primary); margin-bottom: 2rem;">
+                    Questions? Feedback? Want to contribute? I'd love to hear from you.
+                </p>
+                <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/thijsdezoete/blik/issues" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 1.125rem;">GitHub Issues</a>
+                    <span style="color: var(--text-secondary);">•</span>
+                    <a href="https://github.com/thijsdezoete/blik/discussions" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 1.125rem;">Discussions</a>
+                    <span style="color: var(--text-secondary);">•</span>
+                    <a href="https://tinify.com" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; font-weight: 500; font-size: 1.125rem;">Tinify</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

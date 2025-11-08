@@ -1,9 +1,32 @@
 {% extends "landing/base.html" %}
 {% load static landing_tags %}
 
-{% block title %}Developer Documentation - REST API & Webhooks | {{ site_name }}{% endblock %}
+{% block meta %}
+    <title>Developer Documentation - REST API & Webhooks | {{ site_name }}</title>
 
-{% block meta_description %}Complete API documentation for Blik's REST API. Includes authentication, endpoints, webhook events, code examples in Python, JavaScript, and curl. Start integrating in minutes.{% endblock %}
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Complete API documentation for Blik's REST API. Includes authentication, endpoints, webhook events, code examples in Python, JavaScript, and curl. Start integrating in minutes.">
+    <meta name="keywords" content="performance review API, 360 feedback API, HR software integration, REST API documentation, webhook integration, developer docs, API integration examples">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'developers' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'developers' %}">
+    <meta property="og:title" content="Developer Documentation - REST API & Webhooks | {{ site_name }}">
+    <meta property="og:description" content="Complete API documentation for Blik's REST API. Includes authentication, endpoints, webhook events, code examples in Python, JavaScript, and curl.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'developers' %}">
+    <meta name="twitter:title" content="Developer Documentation - REST API & Webhooks | {{ site_name }}">
+    <meta name="twitter:description" content="Complete API documentation for Blik's REST API. Includes authentication, endpoints, webhook events, code examples.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+{% endblock %}
 
 {% block extra_head %}
     <script type="application/ld+json">

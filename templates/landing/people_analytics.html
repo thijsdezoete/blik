@@ -1,0 +1,1056 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>People Analytics Without the PhD | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Pre-built 360 feedback questionnaires with automated people analytics. Professional skills, software engineering, manager, and quick 360 templates. Dreyfus model skill assessment, perception gap analysis, peer benchmarks - no data science degree required.">
+    <meta name="keywords" content="people analytics, 360 feedback questionnaires, competency assessment, performance insights, role-specific feedback, dreyfus model, skill level assessment, perception gap analysis, peer benchmarks, software engineering 360, manager 360 review, professional skills assessment, automated insights, performance review templates">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/people-analytics/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/people-analytics/">
+    <meta property="og:title" content="People Analytics Without the PhD | 4 Pre-Built 360 Feedback Questionnaires">
+    <meta property="og:description" content="Role-specific 360 feedback with automated insights. Professional skills, software engineering, manager, and quick assessments. Dreyfus skill levels, perception gaps, peer benchmarks generated automatically.">
+    <meta property="og:site_name" content="{{ site_name }}">
+{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
+
+    <!-- JSON-LD Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "People Analytics Without the PhD",
+        "description": "Pre-built 360 feedback questionnaires with automated people analytics insights",
+        "url": "{{ site_protocol }}://{{ site_domain }}/people-analytics/",
+        "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "{{ site_protocol }}://{{ site_domain }}/"
+            },{
+                "@type": "ListItem",
+                "position": 2,
+                "name": "People Analytics",
+                "item": "{{ site_protocol }}://{{ site_domain }}/people-analytics/"
+            }]
+        },
+        "about": {
+            "@type": "SoftwareApplication",
+            "name": "{{ site_name }}",
+            "applicationCategory": "BusinessApplication",
+            "featureList": [
+                "Professional Skills 360 Review - 8 core competencies with Dreyfus model",
+                "Software Engineering 360 - 10 technical competencies for developers",
+                "Manager 360 Review - 7 leadership dimensions with upward feedback",
+                "Quick 360 Degree Feedback - 12 questions across 4 core areas",
+                "Automated perception gap detection",
+                "Dreyfus skill level calculation (Novice to Expert)",
+                "Peer benchmark comparison",
+                "Key strengths and development priorities identification"
+            ]
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "360 Feedback Questionnaires",
+        "description": "Four pre-built 360 degree feedback templates for different roles and use cases",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                    "@type": "CreativeWork",
+                    "name": "360 Degree Feedback (Simple)",
+                    "description": "Quick, lightweight feedback template - 12 questions across 4 sections for fast feedback cycles",
+                    "keywords": "360 feedback, quick assessment, entry-level review"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@type": "CreativeWork",
+                    "name": "Professional Skills 360",
+                    "description": "Universal competency assessment with 27 questions across 8 areas using Dreyfus model",
+                    "keywords": "professional skills, competency assessment, dreyfus model, skill acquisition"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                    "@type": "CreativeWork",
+                    "name": "Software Engineering 360",
+                    "description": "Technical assessment with 35 questions evaluating code quality, pragmatism, and mentorship",
+                    "keywords": "software engineering, technical skills, code quality, developer assessment"
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "item": {
+                    "@type": "CreativeWork",
+                    "name": "Manager 360 Review",
+                    "description": "Leadership assessment with 17 questions measuring people development and team impact",
+                    "keywords": "manager review, leadership assessment, upward feedback, team development"
+                }
+            }
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="#questionnaires">Questionnaires</a>
+    <a href="#insights">Insights</a>
+    <a href="#reports">Reports</a>
+    <a href="#pricing">Pricing</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">People Analytics Without the PhD</h1>
+                <p class="hero-subtitle">Role-specific 360 feedback questionnaires that generate actionable insights automatically. Professional skills, software engineering, and management assessments built on proven competency frameworks. <a href="{% landing_url 'index' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Open source alternative to Lattice & Culture Amp →</a></p>
+                <div class="hero-cta">
+                    <a href="#questionnaires" class="btn btn-primary">Explore Questionnaires</a>
+                    <a href="{% landing_url 'index' %}#pricing" class="btn btn-secondary">See Pricing</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section id="questionnaires" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Four Questionnaires for Every Role</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Pre-built templates designed for specific roles and competencies. Use as-is or customize to your needs.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--success-600); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">QUICK START</div>
+                    <h3>360 Degree Feedback</h3>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Universal • 12 questions • 4 sections</div>
+                    <p>Quick, lightweight feedback template for any role. Covers technical skills, collaboration, work approach, and overall assessment.</p>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Best for:</strong> Fast feedback cycles, entry-level roles, general assessments
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--primary); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">ALL ROLES</div>
+                    <h3>Professional Skills 360</h3>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Universal • 27 questions • 8 competency areas</div>
+                    <p>Comprehensive assessment based on the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus model</a> of skill acquisition. Works for all professional roles across your organization.</p>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Competencies:</strong> Problem solving, communication, initiative, adaptability, quality, leadership, professionalism
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--insight-skill); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">SOFTWARE ENGINEERS</div>
+                    <h3>Software Engineering 360</h3>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Technical • 35 questions • 10 competency areas</div>
+                    <p>Deep technical assessment with <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus skill levels</a>. Evaluates code quality, pragmatism, mentorship, and engineering maturity.</p>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Focus areas:</strong> Technical expertise, best practices, knowledge sharing, growth potential, strategic vision
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--insight-perception); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">MANAGERS & LEADS</div>
+                    <h3>Manager 360 Review</h3>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Leadership • 17 questions • 7 competency areas</div>
+                    <p>Leadership-specific assessment measuring people development, team impact, and direction-setting capabilities.</p>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                        <strong>Focus areas:</strong> Leadership, direction, expertise, impact, feedback, recognition, development
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questionnaire Comparison Table -->
+            <div style="margin-top: 4rem;">
+                <h3 style="text-align: center; font-size: 1.5rem; margin-bottom: 2rem;">Choose the Right Questionnaire</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: var(--bg-light);">
+                                <th style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border);">Feature</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">360 Degree</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Professional Skills</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Software Engineering</th>
+                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Manager</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Questions</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">12</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">27</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">35</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">17</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Sections</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">4</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">8</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">10</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">7</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Dreyfus Skill Levels</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">—</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">✓</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">✓</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">—</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Best For</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">Quick cycles, entry-level</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">All professional roles</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">Engineers, developers</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">Managers, team leads</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Time to Complete</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~5 min</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~12 min</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~15 min</td>
+                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~8 min</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem; font-weight: 500;">Perception Gap Analysis</td>
+                                <td style="padding: 1rem; text-align: center;">✓</td>
+                                <td style="padding: 1rem; text-align: center;">✓</td>
+                                <td style="padding: 1rem; text-align: center;">✓</td>
+                                <td style="padding: 1rem; text-align: center;">✓</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CTA after comparison -->
+            <div class="cta-box" style="margin-top: 3rem;">
+                <h3>Ready to Get Started?</h3>
+                <p style="font-size: 1.125rem; margin-bottom: 1.5rem;">Deploy Blik in 5 minutes with Docker or use our managed hosting. All four questionnaires included.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="{% landing_url 'index' %}#pricing" class="btn btn-primary">View Pricing</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Automated Insights Section -->
+    <section id="insights" class="section">
+        <div class="container">
+            <h2 class="section-title">Insights Generated Automatically</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">No data science degree required. Reports analyze responses and surface actionable insights without manual work.</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Perception Gaps</h3>
+                    <p>Automatically detects imposter syndrome patterns where self-assessment is significantly lower than peer feedback. Highlights blind spots for coaching conversations.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Skill Level Assessment</h3>
+                    <p>For engineering and professional skills questionnaires, reports calculate <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus skill levels</a> (Novice → Expert) based on competency ratings.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Key Strengths Identification</h3>
+                    <p>Surfaces top-performing competency areas (4.0+ average) with category breakdowns. Shows where individuals excel relative to self-perception.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Development Priorities</h3>
+                    <p>Flags areas scoring below 3.0 with automatic priority levels (high/medium/low). Makes performance improvement conversations concrete.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Peer Benchmarks</h3>
+                    <p>Compares performance to 3+ organizational peers in similar roles. Shows percentile rankings for top performers to celebrate excellence.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Skills Report Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Professional Skills Assessment</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Universal competency framework applicable to all roles. Based on the Dreyfus model of skill acquisition.</p>
+
+            <div style="max-width: 1100px; margin: 0 auto;">
+                <!-- Carousel for Professional Skills screenshots -->
+                <div class="screenshot-carousel">
+                    <div class="carousel-container">
+                        <div class="carousel-slides">
+                            <div class="carousel-slide active" data-slide="0">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_overview_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_overview_light.png' %}"
+                                             alt="Professional Skills 360 feedback report showing overall performance score, Dreyfus skill level badge, and perception gap analysis"
+                                             loading="eager">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_overview_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_overview_dark.png' %}"
+                                             alt="Professional Skills 360 feedback report in dark mode - overall performance metrics and competency assessment"
+                                             loading="eager">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Overall performance with skill level badge and perception gaps</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="1">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_charts_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_charts_light.png' %}"
+                                             alt="Radar chart visualization comparing self-assessment vs peer feedback across 8 professional competencies"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_charts_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_charts_dark.png' %}"
+                                             alt="360 feedback radar chart in dark mode - competency comparison visualization"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Visual radar chart comparing self-assessment vs others across 8 competencies</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="2">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_sections_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_sections_light.png' %}"
+                                             alt="Professional skills competency section breakdown with peer benchmarks and percentile rankings"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_sections_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_sections_dark.png' %}"
+                                             alt="360 degree feedback section performance analysis in dark mode with comparison metrics"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Section-level breakdown with peer benchmarks and percentile rankings</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="3">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_details_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_details_light.png' %}"
+                                             alt="Detailed question-by-question feedback responses with role breakdowns and anonymized text comments"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_professional_skills_details_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_professional_skills_details_dark.png' %}"
+                                             alt="Professional skills detailed feedback view in dark mode with granular response data"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Question-by-question responses with category breakdowns and text comments</p>
+                            </div>
+                        </div>
+                        <button class="carousel-nav carousel-prev" aria-label="Previous screenshot">‹</button>
+                        <button class="carousel-nav carousel-next" aria-label="Next screenshot">›</button>
+                        <div class="carousel-dots">
+                            <button class="carousel-dot active" data-slide="0" aria-label="Overview"></button>
+                            <button class="carousel-dot" data-slide="1" aria-label="Charts"></button>
+                            <button class="carousel-dot" data-slide="2" aria-label="Sections"></button>
+                            <button class="carousel-dot" data-slide="3" aria-label="Details"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">8 Core Competencies</h3>
+                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Problem Solving & Decision Making</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Communication & Collaboration</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Initiative & Ownership</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Adaptability & Learning</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Quality & Excellence</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Leadership & Influence</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Professionalism & Attitude</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Assessment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Software Engineering Report Section -->
+    <section id="reports" class="section">
+        <div class="container">
+            <h2 class="section-title">Software Engineering Deep Dive</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Technical assessment measuring code quality, pragmatism, mentorship, and engineering maturity.</p>
+
+            <div style="max-width: 1100px; margin: 0 auto;">
+                <!-- Carousel for Software Engineering screenshots -->
+                <div class="screenshot-carousel">
+                    <div class="carousel-container">
+                        <div class="carousel-slides">
+                            <div class="carousel-slide active" data-slide="0">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_overview_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_overview_light.png' %}"
+                                             alt="Software engineering 360 review showing technical skill level assessment using Dreyfus model"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_overview_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_overview_dark.png' %}"
+                                             alt="Engineering competency assessment report in dark mode with technical proficiency metrics"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Technical skill level (Dreyfus model) with engineering-specific insights</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="1">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_charts_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_charts_light.png' %}"
+                                             alt="Technical competency radar chart showing 10 software engineering skill areas - code quality, mentorship, pragmatism"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_charts_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_charts_dark.png' %}"
+                                             alt="Software engineering performance visualization in dark mode - technical skills radar chart"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">10 technical competencies visualized across expertise, pragmatism, and mentorship</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="2">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_sections_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_sections_light.png' %}"
+                                             alt="Code quality, best practices, and knowledge sharing metrics with peer comparison benchmarks"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_sections_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_sections_dark.png' %}"
+                                             alt="Engineering competency sections in dark mode - best practices and mentorship assessment"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Code quality, best practices, and knowledge sharing metrics with peer comparisons</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="3">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_details_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_details_light.png' %}"
+                                             alt="Detailed technical feedback on pragmatism, passion, execution, and engineering judgment"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_software_engineering_details_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_software_engineering_details_dark.png' %}"
+                                             alt="Software engineering detailed feedback in dark mode with question-level technical assessments"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Detailed technical feedback on specific questions about pragmatism, passion, and execution</p>
+                            </div>
+                        </div>
+                        <button class="carousel-nav carousel-prev" aria-label="Previous screenshot">‹</button>
+                        <button class="carousel-nav carousel-next" aria-label="Next screenshot">›</button>
+                        <div class="carousel-dots">
+                            <button class="carousel-dot active" data-slide="0" aria-label="Overview"></button>
+                            <button class="carousel-dot" data-slide="1" aria-label="Charts"></button>
+                            <button class="carousel-dot" data-slide="2" aria-label="Sections"></button>
+                            <button class="carousel-dot" data-slide="3" aria-label="Details"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">10 Technical Competencies</h3>
+                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Industry Fit & Problem Solving</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Collaboration & Personality</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Technical Expertise & Skill Level</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Motivation & Passion</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Maturity & Best Practices</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Pragmatism & Execution</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Knowledge Sharing & Mentorship</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Growth Potential & Adaptability</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Strategic Vision & Leadership</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Assessment</li>
+                    </ul>
+                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>Dreyfus Skill Level:</strong> Reports automatically calculate skill progression from Novice → Advanced Beginner → Competent → Proficient → Expert based on technical competency ratings.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manager Report Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Manager Leadership Assessment</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Leadership evaluation measuring people development, team impact, and direction-setting effectiveness.</p>
+
+            <div style="max-width: 1100px; margin: 0 auto;">
+                <!-- Carousel for Manager screenshots -->
+                <div class="screenshot-carousel">
+                    <div class="carousel-container">
+                        <div class="carousel-slides">
+                            <div class="carousel-slide active" data-slide="0">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_manager_overview_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_overview_light.png' %}"
+                                             alt="Manager 360 review showing leadership effectiveness with direct report upward feedback perspective"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_manager_overview_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_overview_dark.png' %}"
+                                             alt="Leadership assessment report in dark mode with team management performance metrics"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Leadership effectiveness overview with direct report feedback perspective</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="1">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_manager_charts_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_charts_light.png' %}"
+                                             alt="Leadership competency radar chart - 7 dimensions including direction, development, and team impact"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_manager_charts_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_charts_dark.png' %}"
+                                             alt="Manager 360 feedback visualization in dark mode - leadership competency assessment chart"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">7 leadership competencies visualized across direction, development, and impact</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="2">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_manager_sections_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_sections_light.png' %}"
+                                             alt="Leadership competency breakdown with upward feedback from direct reports and team members"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_manager_sections_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_sections_dark.png' %}"
+                                             alt="Manager performance sections in dark mode with direct report feedback analysis"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Leadership competency breakdowns with upward feedback from direct reports</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="3">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_manager_details_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_details_light.png' %}"
+                                             alt="Detailed leadership feedback on team development, goal clarity, recognition, and coaching"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_manager_details_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_manager_details_dark.png' %}"
+                                             alt="Manager detailed feedback in dark mode with question-level leadership assessment"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Detailed leadership feedback on team development, goal clarity, and recognition</p>
+                            </div>
+                        </div>
+                        <button class="carousel-nav carousel-prev" aria-label="Previous screenshot">‹</button>
+                        <button class="carousel-nav carousel-next" aria-label="Next screenshot">›</button>
+                        <div class="carousel-dots">
+                            <button class="carousel-dot active" data-slide="0" aria-label="Overview"></button>
+                            <button class="carousel-dot" data-slide="1" aria-label="Charts"></button>
+                            <button class="carousel-dot" data-slide="2" aria-label="Sections"></button>
+                            <button class="carousel-dot" data-slide="3" aria-label="Details"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">7 Leadership Competencies</h3>
+                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Leadership (visibility, trust, communication)</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Direction (goals, clarity, problem-solving)</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Expertise & Judgment</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Impact (performance, results focus)</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Feedback & Recognition</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Development (growth support, mentoring)</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Feedback</li>
+                    </ul>
+                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>Direct Report Feedback:</strong> Includes dedicated feedback from team members managed by the reviewee, providing critical upward feedback perspective.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simple 360 Degree Feedback Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">360 Degree Feedback (Simple)</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Lightweight feedback template for quick assessments. 12 questions across 4 core areas.</p>
+
+            <div style="max-width: 1100px; margin: 0 auto;">
+                <!-- Carousel for Simple 360 screenshots -->
+                <div class="screenshot-carousel">
+                    <div class="carousel-container">
+                        <div class="carousel-slides">
+                            <div class="carousel-slide active" data-slide="0">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_overview_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_overview_light.png' %}"
+                                             alt="Quick 360 degree feedback assessment overview showing core competencies and perception gap insights"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_overview_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_overview_dark.png' %}"
+                                             alt="Lightweight 360 feedback report in dark mode with simplified competency assessment"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Quick assessment overview with core competency insights and perception gaps</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="1">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_charts_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_charts_light.png' %}"
+                                             alt="Simple 360 feedback radar chart - 4 core sections including technical skills, collaboration, and work approach"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_charts_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_charts_dark.png' %}"
+                                             alt="360 degree feedback chart visualization in dark mode - streamlined competency assessment"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">4 core sections visualized: technical skills, collaboration, work approach, and feedback</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="2">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_sections_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_sections_light.png' %}"
+                                             alt="Simplified competency breakdown optimized for fast feedback cycles and entry-level roles"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_sections_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_sections_dark.png' %}"
+                                             alt="Quick 360 feedback sections in dark mode with streamlined performance metrics"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Simplified competency breakdown optimized for fast feedback cycles</p>
+                            </div>
+                            <div class="carousel-slide" data-slide="3">
+                                <div class="screenshot-hover-wrapper">
+                                    <picture class="screenshot-layer screenshot-light">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_details_light.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_details_light.png' %}"
+                                             alt="Concise question-level feedback ideal for quick assessments and general performance reviews"
+                                             loading="lazy">
+                                    </picture>
+                                    <picture class="screenshot-layer screenshot-dark">
+                                        <source srcset="{% static 'img/screenshots/report_degree_feedback_details_dark.webp' %}" type="image/webp">
+                                        <img src="{% static 'img/screenshots/report_degree_feedback_details_dark.png' %}"
+                                             alt="Simple 360 degree feedback detailed view in dark mode with lightweight question responses"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="theme-indicator">Hover to toggle theme</div>
+                                </div>
+                                <p class="carousel-caption">Concise question-level feedback ideal for entry-level roles and quick assessments</p>
+                            </div>
+                        </div>
+                        <button class="carousel-nav carousel-prev" aria-label="Previous screenshot">‹</button>
+                        <button class="carousel-nav carousel-next" aria-label="Next screenshot">›</button>
+                        <div class="carousel-dots">
+                            <button class="carousel-dot active" data-slide="0" aria-label="Overview"></button>
+                            <button class="carousel-dot" data-slide="1" aria-label="Charts"></button>
+                            <button class="carousel-dot" data-slide="2" aria-label="Sections"></button>
+                            <button class="carousel-dot" data-slide="3" aria-label="Details"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">4 Core Sections</h3>
+                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Technical Skills</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Collaboration</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Work Approach</li>
+                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Feedback</li>
+                    </ul>
+                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                        <strong>Best for:</strong> Fast feedback cycles, entry-level roles, or when you need quick insights without extensive competency frameworks.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Role-Specific Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Why Role-Specific Matters</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Unlike generic tools like <a href="{% landing_url 'vs_15five' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">15Five</a>, <a href="{% landing_url 'vs_culture_amp' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Culture Amp</a>, and Lattice that use one-size-fits-all questionnaires, Blik provides targeted assessments for different roles and career levels.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                <div class="feature-card feature-card-danger">
+                    <h3>Generic 360 Feedback</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">One-size-fits-all questions miss role nuances</li>
+                        <li style="margin-bottom: 0.5rem;">Technical teams get asked about "communication"</li>
+                        <li style="margin-bottom: 0.5rem;">Managers assessed on individual contributor skills</li>
+                        <li style="margin-bottom: 0.5rem;">No skill progression frameworks</li>
+                        <li style="margin-bottom: 0.5rem;">Vague insights requiring manual interpretation</li>
+                        <li>Low actionability for performance conversations</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card feature-card-success">
+                    <h3>Role-Specific Questionnaires</h3>
+                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
+                        <li style="margin-bottom: 0.5rem;">Questions tailored to actual job competencies</li>
+                        <li style="margin-bottom: 0.5rem;">Engineers assessed on code quality and mentorship</li>
+                        <li style="margin-bottom: 0.5rem;">Managers evaluated on people development</li>
+                        <li style="margin-bottom: 0.5rem;"><a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus model</a> tracks skill progression</li>
+                        <li style="margin-bottom: 0.5rem;">Automated insights highlight patterns</li>
+                        <li>Concrete development priorities generated</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; text-align: center;">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Learn more about our competency frameworks:</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary" style="font-size: 0.9375rem;">The Dreyfus Model →</a>
+                    <a href="{% landing_url 'agency_levels' %}" class="btn btn-secondary" style="font-size: 0.9375rem;">5 Levels of Agency →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>What's the difference between the four questionnaires? How do I choose which one to use?</summary>
+                    <p>Each one has its own strength and purpose. The <strong>Manager 360</strong> is tailored toward evaluating management—how they support teams and develop people. The <strong>Engineering questionnaire</strong> focuses more on skill and team dynamics, code quality, that sort of thing. The <strong>Agency questionnaire</strong> is a short test you can send to everyone to get a feel for the level of agency in your company or team. And the <strong>Professional Skills questionnaire</strong> is more of an all-round business questionnaire. Pick based on what role you're assessing and how deep you want to go.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How long does it take reviewers to complete each questionnaire?</summary>
+                    <p>It's hard to say honestly. All questionnaires are different in terms of how long they take to answer. You can never really tell because open answers might require someone to think, which takes more time. Usually the more questions, the longer it takes, but that's not a good benchmark. Good news is we make sure all feedback is saved locally, so someone can accidentally close and come back without losing their valuable typed work.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do the automated insights work for all questionnaires, or only specific ones?</summary>
+                    <p>Yes, most automated insights work for all questionnaires. However, some more Dreyfus related questions will contain more Dreyfus related insights like skill levels. If you create your own questionnaires, that's up to you of course—it depends on the question types and rating scales you choose.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I customize the pre-built questionnaires or do I have to use them as-is?</summary>
+                    <p>Yes, you can customize the questionnaires, question types, and score answer weights and values. The four pre-built ones are starting points. Use them as-is or change whatever you need.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How does Blik protect reviewer anonymity in the reports?</summary>
+                    <p>We take anonymity very seriously. It's impossible for anyone using the system to identify a reviewer—excluding writing style for open questions of course. Reviews use unique tokens with no connection to who submitted them. If fewer than 3 people respond in a category, we hide those responses entirely. There's no technical way to trace feedback back to someone. It's anonymity by design.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I use multiple questionnaires for the same person?</summary>
+                    <p>Yes, a review cycle can use any questionnaire. Our default behavior for new cycles is to re-use the same questionnaire, since it allows cycle-to-cycle comparison. But you can just create a cycle with a new questionnaire whenever you want. Not locked in.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do perception gaps work? What insights do they provide?</summary>
+                    <p>Perception gaps show the difference between how you see yourself versus how others see you. The reports automatically flag significant mismatches. For example, if you rate yourself a 3.0 on a competency but your peers rate you 4.2, that's a perception gap. Could be imposter syndrome, could be undervaluing your own work. If you rate yourself higher than others rate you, that's a blind spot worth looking at. These show up visually in the overview and in the radar charts.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What are peer benchmarks and how are they calculated?</summary>
+                    <p>Peer benchmarks are how you compare to colleagues in the same department or at a similar level. We calculate average scores across peers in comparable roles, then show where you rank. Helps identify top performers and gives context—a 3.5 might be excellent in one team and average in another. Peer benchmarks require at least 3 comparable employees to protect anonymity.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How does the Dreyfus skill level calculation work?</summary>
+                    <p>For questionnaires using Dreyfus-based ratings, the system automatically calculates your skill level (Novice → Advanced Beginner → Competent → Proficient → Expert) based on average scores. The calculation maps rating scores to the five Dreyfus stages—a research-backed framework for how people progress from beginners to experts. Learn more about the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus Model of Skill Acquisition</a>.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I export the reports or raw feedback data?</summary>
+                    <p>You can export your entire account—we don't have individual feedback or report export. It's all-or-nothing to keep things simple. The export is JSON and includes all review cycles, questionnaires, responses, and reports. Since Blik uses PostgreSQL, you can also query the data directly if you need custom exports.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="cta-box">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Get Started with Role-Specific Feedback</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
+                    Self-hosted starting at €0. Managed hosting from €49/month for up to 50 employees.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="{% landing_url 'index' %}#pricing" class="btn btn-primary">See Pricing</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_scripts %}
+    <!-- FAQ Schema JSON-LD for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What's the difference between the four questionnaires? How do I choose which one to use?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Each one has its own strength and purpose. The Manager 360 is tailored toward evaluating management—how they support teams and develop people. The Engineering questionnaire focuses more on skill and team dynamics, code quality. The Agency questionnaire is a short test you can send to everyone to get a feel for the level of agency in your company or team. And the Professional Skills questionnaire is more of an all-round business questionnaire. Pick based on what role you're assessing and how deep you want to go."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How long does it take reviewers to complete each questionnaire?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "It's hard to say honestly. All questionnaires are different in terms of how long they take to answer. You can never really tell because open answers might require someone to think, which takes more time. Usually the more questions, the longer it takes, but that's not a good benchmark. Good news is we make sure all feedback is saved locally, so someone can accidentally close and come back without losing their valuable typed work."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do the automated insights work for all questionnaires, or only specific ones?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, most automated insights work for all questionnaires. However, some more Dreyfus related questions will contain more Dreyfus related insights like skill levels. If you create your own questionnaires, that's up to you of course—it depends on the question types and rating scales you choose."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I customize the pre-built questionnaires or do I have to use them as-is?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, you can customize the questionnaires, question types, and score answer weights and values. The four pre-built ones are starting points. Use them as-is or change whatever you need."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How does Blik protect reviewer anonymity in the reports?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We take anonymity very seriously. It's impossible for anyone using the system to identify a reviewer—excluding writing style for open questions of course. Reviews use unique tokens with no connection to who submitted them. If fewer than 3 people respond in a category, we hide those responses entirely. There's no technical way to trace feedback back to someone. It's anonymity by design."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I use multiple questionnaires for the same person?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, a review cycle can use any questionnaire. Our default behavior for new cycles is to re-use the same questionnaire, since it allows cycle-to-cycle comparison. But you can just create a cycle with a new questionnaire whenever you want. Not locked in."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do perception gaps work? What insights do they provide?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Perception gaps show the difference between how you see yourself versus how others see you. The reports automatically flag significant mismatches. For example, if you rate yourself a 3.0 on a competency but your peers rate you 4.2, that's a perception gap. Could be imposter syndrome, could be undervaluing your own work. These show up visually in the overview and in the radar charts."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What are peer benchmarks and how are they calculated?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Peer benchmarks are how you compare to colleagues in the same department or at a similar level. We calculate average scores across peers in comparable roles, then show where you rank. Helps identify top performers and gives context—a 3.5 might be excellent in one team and average in another. Peer benchmarks require at least 3 comparable employees to protect anonymity."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How does the Dreyfus skill level calculation work?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "For questionnaires using Dreyfus-based ratings, the system automatically calculates your skill level (Novice → Advanced Beginner → Competent → Proficient → Expert) based on average scores. The calculation maps rating scores to the five Dreyfus stages—a research-backed framework for how people progress from beginners to experts."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I export the reports or raw feedback data?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "You can export your entire account—we don't have individual feedback or report export. It's all-or-nothing to keep things simple. The export is JSON and includes all review cycles, questionnaires, responses, and reports. Since Blik uses PostgreSQL, you can also query the data directly if you need custom exports."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <script>
+        // Screenshot Carousel functionality - handles multiple carousels on page
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousels = document.querySelectorAll('.screenshot-carousel');
+
+            carousels.forEach(carousel => {
+                const slides = carousel.querySelectorAll('.carousel-slide');
+                const dots = carousel.querySelectorAll('.carousel-dot');
+                const prevBtn = carousel.querySelector('.carousel-prev');
+                const nextBtn = carousel.querySelector('.carousel-next');
+                let currentSlide = 0;
+                let autoplayInterval;
+                let isHovering = false;
+
+                function showSlide(index) {
+                    if (index >= slides.length) index = 0;
+                    if (index < 0) index = slides.length - 1;
+
+                    slides.forEach(slide => slide.classList.remove('active'));
+                    slides[index].classList.add('active');
+
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    dots[index].classList.add('active');
+
+                    currentSlide = index;
+                }
+
+                function nextSlide() {
+                    showSlide(currentSlide + 1);
+                }
+
+                function prevSlide() {
+                    showSlide(currentSlide - 1);
+                }
+
+                if (nextBtn) nextBtn.addEventListener('click', () => {
+                    nextSlide();
+                    resetAutoplay();
+                });
+
+                if (prevBtn) prevBtn.addEventListener('click', () => {
+                    prevSlide();
+                    resetAutoplay();
+                });
+
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        showSlide(index);
+                        resetAutoplay();
+                    });
+                });
+
+                function startAutoplay() {
+                    if (!isHovering) {
+                        stopAutoplay();
+                        autoplayInterval = setInterval(nextSlide, 5000);
+                    }
+                }
+
+                function stopAutoplay() {
+                    if (autoplayInterval) {
+                        clearInterval(autoplayInterval);
+                        autoplayInterval = null;
+                    }
+                }
+
+                function resetAutoplay() {
+                    stopAutoplay();
+                    if (!isHovering) {
+                        startAutoplay();
+                    }
+                }
+
+                const carouselContainer = carousel.querySelector('.carousel-container');
+                if (carouselContainer) {
+                    carouselContainer.addEventListener('mouseenter', () => {
+                        isHovering = true;
+                        stopAutoplay();
+                    });
+                    carouselContainer.addEventListener('mouseleave', () => {
+                        isHovering = false;
+                        startAutoplay();
+                    });
+                }
+
+                startAutoplay();
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        stopAutoplay();
+                    } else {
+                        startAutoplay();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -110,12 +110,16 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
 # Trust proxy headers (Cloudflare/Traefik)
+# This allows Django to detect HTTPS from X-Forwarded-Proto header
+# Protocol is dynamically detected in templates via context processor
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 
 # SEO settings
 SITE_NAME = 'Blik360'
 SITE_DOMAIN = env('SITE_DOMAIN', default='blik360.com')
+# SITE_PROTOCOL: Only used for MAIN_APP_URL construction below
+# Templates get protocol dynamically via context_processors.url_namespace()
 SITE_PROTOCOL = env('SITE_PROTOCOL', default='http')
 SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
 SITE_KEYWORDS = '360 feedback, performance review, open source, self-hosted, anonymous feedback, employee feedback'

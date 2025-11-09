@@ -36,9 +36,6 @@ def index(request):
     rating_data = get_review_data_from_api()
 
     context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
         'site_description': settings.SITE_DESCRIPTION,
         'site_keywords': settings.SITE_KEYWORDS,
         'rating_data': rating_data,
@@ -57,32 +54,17 @@ def og_image(request):
 
 def open_source(request):
     """Open source landing page for developer audience."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/open_source.html', context)
+    return render(request, 'landing/open_source.html')
 
 
 def dreyfus_model(request):
     """Dreyfus Model and competency framework explanation page."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/dreyfus_model.html', context)
+    return render(request, 'landing/dreyfus_model.html')
 
 
 def eu_tech(request):
     """EU/GDPR-focused landing page for European tech companies."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/eu_tech.html', context)
+    return render(request, 'landing/eu_tech.html')
 
 
 def privacy(request):
@@ -93,9 +75,6 @@ def privacy(request):
     rating_data = get_review_data_from_api()
 
     context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
         'rating_data': rating_data,
     }
     return render(request, 'landing/privacy.html', context)
@@ -103,137 +82,74 @@ def privacy(request):
 
 def privacy_policy(request):
     """Privacy policy page."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/privacy_policy.html', context)
+    return render(request, 'landing/privacy_policy.html')
 
 
 def terms(request):
     """Terms of service page."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/terms.html', context)
+    return render(request, 'landing/terms.html')
 
 
 def hr_managers(request):
     """HR manager focused landing page for growing teams (30-50 employees)."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/hr_managers.html', context)
+    return render(request, 'landing/hr_managers.html')
 
 
 def agency_levels(request):
     """5 Levels of Agency framework page for high-agency workplace culture."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/agency_levels.html', context)
+    return render(request, 'landing/agency_levels.html')
 
 
 def performance_matrix(request):
     """Performance Matrix page combining Dreyfus Model with Agency Levels."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/performance_matrix.html', context)
+    return render(request, 'landing/performance_matrix.html')
 
 
 def signup(request):
     """Signup page with Stripe checkout integration."""
     context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
         'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
         'stripe_price_id_saas': settings.STRIPE_PRICE_ID_SAAS,
         'stripe_price_id_enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
-        # main_app_url now provided by context processor
+        # main_app_url, site_name, site_domain, site_protocol now provided by context processor
     }
     return render(request, 'landing/signup.html', context)
 
 
 def vs_lattice(request):
     """Blik vs Lattice comparison page."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/vs_lattice.html', context)
+    return render(request, 'landing/vs_lattice.html')
 
 
 def vs_culture_amp(request):
     """Blik vs Culture Amp comparison page."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/vs_culture_amp.html', context)
+    return render(request, 'landing/vs_culture_amp.html')
 
 
 def vs_15five(request):
     """Blik vs 15Five comparison page."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/vs_15five.html', context)
+    return render(request, 'landing/vs_15five.html')
 
 
 def why_blik(request):
     """Why Blik exists - comprehensive differentiation page."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/why_blik.html', context)
+    return render(request, 'landing/why_blik.html')
 
 
 def developers(request):
     """Developer-focused landing page with API documentation and quickstart."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-        # main_app_url and API URLs now provided by context processor
-    }
-    return render(request, 'landing/developers.html', context)
+    # main_app_url, API URLs, site_name, site_domain, site_protocol now provided by context processor
+    return render(request, 'landing/developers.html')
 
 
 def people_analytics(request):
     """People analytics landing page showcasing role-specific questionnaires."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/people_analytics.html', context)
+    return render(request, 'landing/people_analytics.html')
 
 
 def about(request):
     """About page - who built Blik and why."""
-    context = {
-        'site_name': settings.SITE_NAME,
-        'site_domain': settings.SITE_DOMAIN,
-        'site_protocol': settings.SITE_PROTOCOL,
-    }
-    return render(request, 'landing/about.html', context)
+    return render(request, 'landing/about.html')
 
 
 # =============================================================================
@@ -254,16 +170,15 @@ def dreyfus_assessment_start(request):
         questionnaire_uuid = getattr(settings, 'GROWTH_QUESTIONNAIRE_UUID', None)
 
         if not questionnaire_uuid:
-            messages.error(request, "Assessment is not configured. Please contact support.")
-            return redirect(_get_view_name('index'))
+            logger.error("GROWTH_QUESTIONNAIRE_UUID not configured")
+            return render(request, 'landing/dreyfus_assessment_unavailable.html', {
+                'error_message': 'The assessment is currently being configured. Please check back soon.'
+            })
 
         # Fetch questionnaire from main app API
         questionnaire_data = api_client.get_questionnaire(questionnaire_uuid)
 
         context = {
-            'site_name': settings.SITE_NAME,
-            'site_domain': settings.SITE_DOMAIN,
-            'site_protocol': settings.SITE_PROTOCOL,
             'questionnaire': questionnaire_data,
             'total_questions': sum(
                 len([q for q in section.get('questions', []) if q.get('required')])
@@ -275,12 +190,14 @@ def dreyfus_assessment_start(request):
 
     except BlikAPIError as e:
         logger.error(f"API error fetching questionnaire: {str(e)}")
-        messages.error(request, "Unable to load assessment. Please try again later.")
-        return redirect(_get_view_name('index'))
+        return render(request, 'landing/dreyfus_assessment_unavailable.html', {
+            'error_message': 'Unable to connect to our assessment service. Please try again in a few minutes.'
+        })
     except Exception as e:
         logger.exception(f"Unexpected error in dreyfus_assessment_start: {str(e)}")
-        messages.error(request, "An error occurred. Please try again.")
-        return redirect(_get_view_name('index'))
+        return render(request, 'landing/dreyfus_assessment_unavailable.html', {
+            'error_message': 'An unexpected error occurred while loading the assessment.'
+        })
 
 
 def dreyfus_assessment_submit(request):
@@ -348,14 +265,14 @@ def dreyfus_assessment_submit(request):
         cycle_uuid = cycle_data['uuid']
 
         # Extract self-assessment token from creation response
-        logger.info(f"Cycle creation response keys: {list(cycle_data.keys())}")
-        logger.info(f"Tokens in cycle: {cycle_data.get('tokens', [])}")
+        logger.debug(f"Cycle creation response keys: {list(cycle_data.keys())}")
+        logger.debug(f"Tokens in cycle: {cycle_data.get('tokens', [])}")
 
         self_token = None
         for token in cycle_data.get('tokens', []):
             if token.get('category') == 'self':
                 self_token = token.get('uuid')
-                logger.info(f"Found self-assessment token: {self_token}")
+                logger.debug(f"Found self-assessment token: {self_token}")
                 break
 
         if not self_token:
@@ -372,12 +289,9 @@ def dreyfus_assessment_submit(request):
         request.session['assessment_preview'] = preview
         request.session['assessment_answers'] = answers  # Store answers for later submission
         request.session['assessment_self_token'] = self_token  # Store token for response submission
-        logger.info(f"Stored in session - cycle: {cycle_uuid}, reviewee: {reviewee_uuid}, self_token: {self_token}, session_key: {request.session.session_key}")
+        logger.debug(f"Stored in session - cycle: {cycle_uuid}, reviewee: {reviewee_uuid}, self_token: {self_token}, session_key: {request.session.session_key}")
 
         context = {
-            'site_name': settings.SITE_NAME,
-            'site_domain': settings.SITE_DOMAIN,
-            'site_protocol': settings.SITE_PROTOCOL,
             'preview': preview,
             'cycle_uuid': cycle_uuid,
         }
@@ -427,7 +341,7 @@ def dreyfus_capture_email(request):
         answers = request.session.get('assessment_answers', {})
         self_token = request.session.get('assessment_self_token')
 
-        logger.info(f"Email capture - cycle_uuid: {cycle_uuid}, reviewee_uuid: {reviewee_uuid}, self_token: {self_token}, session_key: {request.session.session_key}")
+        logger.debug(f"Email capture - cycle_uuid: {cycle_uuid}, reviewee_uuid: {reviewee_uuid}, self_token: {self_token}, session_key: {request.session.session_key}")
 
         if not cycle_uuid or not reviewee_uuid:
             logger.error(f"Session data missing - cycle: {cycle_uuid}, reviewee: {reviewee_uuid}")
@@ -447,7 +361,7 @@ def dreyfus_capture_email(request):
             # If email already exists, that's okay - user is retaking the assessment
             # Just continue with the existing temp reviewee
             if 'already exists' in str(e).lower():
-                logger.info(f"Email {email} already has a reviewee, continuing with temp reviewee {reviewee_uuid}")
+                logger.debug(f"Email {email} already has a reviewee, continuing with temp reviewee {reviewee_uuid}")
             else:
                 raise
 
@@ -462,11 +376,11 @@ def dreyfus_capture_email(request):
                 })
 
             if responses:
-                logger.info(f"Submitting {len(responses)} responses with token {self_token}")
+                logger.debug(f"Submitting {len(responses)} responses with token {self_token}")
                 logger.debug(f"Response data: {responses[:3]}...")  # Log first 3
                 try:
                     result = api_client.submit_responses(cycle_uuid, responses, token_uuid=self_token)
-                    logger.info(f"Response submission result: {result}")
+                    logger.debug(f"Response submission result: {result}")
                 except Exception as e:
                     logger.exception(f"Error submitting responses: {str(e)}")
                     # Continue even if response submission fails
@@ -475,7 +389,7 @@ def dreyfus_capture_email(request):
 
         # Complete cycle - this triggers report generation
         report_data = api_client.complete_cycle(cycle_uuid)
-        logger.info(f"Complete cycle response keys: {list(report_data.keys())}")
+        logger.debug(f"Complete cycle response keys: {list(report_data.keys())}")
 
         # Get report URL from response
         report_url = report_data.get('report_url')
@@ -484,7 +398,7 @@ def dreyfus_capture_email(request):
         if report_url and not report_url.startswith('http'):
             report_url = f"{settings.MAIN_APP_URL}{report_url}"
 
-        logger.info(f"Report URL: {report_url}")
+        logger.debug(f"Report URL: {report_url}")
 
         # Send custom assessment report email with preview results
         if report_url:
@@ -498,7 +412,7 @@ def dreyfus_capture_email(request):
                 html_message = render_to_string('emails/assessment_report.html', email_context)
                 text_message = render_to_string('emails/assessment_report.txt', email_context)
 
-                logger.info(f"Attempting to send email to: {email}")
+                logger.debug(f"Attempting to send email to: {email}")
                 send_mail(
                     subject='Your Developer Skills Assessment Results',
                     message=text_message,
@@ -508,7 +422,7 @@ def dreyfus_capture_email(request):
                     fail_silently=False,
                 )
 
-                logger.info(f"Assessment report email sent successfully to: {email}")
+                logger.debug(f"Assessment report email sent successfully to: {email}")
             except Exception as e:
                 logger.exception(f"Error sending assessment email: {str(e)}")
                 # Don't fail the request if email sending fails
@@ -528,9 +442,6 @@ def dreyfus_capture_email(request):
             logger.info(f"Newsletter subscription requested for: {email}")
 
         context = {
-            'site_name': settings.SITE_NAME,
-            'site_domain': settings.SITE_DOMAIN,
-            'site_protocol': settings.SITE_PROTOCOL,
             'email': email,
             'report_url': report_url,
             'preview': preview,
@@ -543,7 +454,6 @@ def dreyfus_capture_email(request):
         messages.error(request, f"Error sending report: {str(e)}")
         # Don't redirect - show error on current page
         return render(request, 'landing/dreyfus_results_preview.html', {
-            'site_name': settings.SITE_NAME,
             'preview': request.session.get('assessment_preview', {}),
             'cycle_uuid': request.session.get('assessment_cycle_uuid'),
             'error': str(e)

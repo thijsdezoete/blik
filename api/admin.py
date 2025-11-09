@@ -35,7 +35,7 @@ class APITokenAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         """Make token read-only after creation."""
         if obj:  # Editing
-            return self.readonly_fields + ("organization", "created_by")
+            return self.readonly_fields + ["organization", "created_by"]
         return self.readonly_fields
 
 
@@ -85,7 +85,7 @@ class WebhookEndpointAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         """Make organization and secret read-only after creation."""
         if obj:  # Editing
-            return self.readonly_fields + ("organization", "created_by")
+            return self.readonly_fields + ["organization", "created_by"]
         return self.readonly_fields
 
 

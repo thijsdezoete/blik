@@ -18,8 +18,8 @@ services:
     volumes:
       - ./:/app
       - static_volume:/app/staticfiles
-    expose:
-      - "${LANDING_PORT:-8001}"
+    ports:
+      - "${LANDING_PORT:-8001}:${LANDING_PORT:-8001}"
     env_file:
       - .env
     environment:

@@ -1,0 +1,158 @@
+{% extends 'landing/base.html' %}
+{% load static %}
+{% load landing_tags %}
+
+{% block meta %}
+<title>Check Your Inbox | {{ site_name }}</title>
+<meta name="robots" content="noindex">
+{% endblock %}
+
+{% block content %}
+<main class="confirmation-page">
+    <div class="container" style="max-width: 600px; margin: 0 auto; padding: 4rem 1rem; text-align: center;">
+
+        <!-- Success Icon -->
+        <div style="margin-bottom: 2rem;">
+            <svg style="width: 5rem; height: 5rem; margin: 0 auto; color: #10b981;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-text);">
+            Check Your Inbox!
+        </h1>
+
+        <p style="font-size: 1.125rem; color: var(--color-text-muted); margin-bottom: 2rem;">
+            We've sent your full Developer Skills Assessment report to:
+        </p>
+
+        <div style="background: var(--color-bg-secondary); padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem; font-weight: 600; color: var(--color-primary);">
+            {{ email }}
+        </div>
+
+        {% if report_url %}
+        <div style="background: var(--color-bg-secondary); padding: 2rem; border-radius: 0.75rem; margin-bottom: 2rem; text-align: left;">
+            <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--color-text);">
+                Quick Reminder of Your Results:
+            </h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">Skill Level</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">
+                        {{ preview.skill_level }} / {{ preview.skill_stage }}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">Agency Level</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">
+                        {{ preview.agency_level }} / {{ preview.agency_stage }}
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; padding-top: 1rem; border-top: 1px solid var(--color-border);">
+                <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 0.5rem;">Your Quadrant</div>
+                <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary);">
+                    {{ preview.quadrant.name }}
+                </div>
+            </div>
+        </div>
+
+        <a href="{{ report_url }}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.125rem; margin-bottom: 2rem;">
+            View Full Report Now →
+        </a>
+        {% endif %}
+
+        <!-- Main CTA: 360 Feedback -->
+        <div style="margin-top: 3rem; padding: 2.5rem; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); border-radius: 0.75rem; color: white;">
+            <h3 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; color: white;">
+                Your Self-Assessment is Just the Beginning
+            </h3>
+            <p style="font-size: 1.125rem; margin-bottom: 1.5rem; opacity: 0.95;">
+                Most developers overestimate some skills and underestimate others. Get 360° feedback from peers and managers to see the full picture.
+            </p>
+
+            <div style="display: grid; gap: 1rem; text-align: left; margin-bottom: 2rem;">
+                <div style="display: flex; align-items: start; gap: 0.75rem;">
+                    <svg style="width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-top: 0.125rem;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <strong>Spot perception gaps</strong> – Find where your self-view differs from others
+                    </div>
+                </div>
+                <div style="display: flex; align-items: start; gap: 0.75rem;">
+                    <svg style="width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-top: 0.125rem;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <strong>100% anonymous</strong> – Honest feedback without fear of consequences
+                    </div>
+                </div>
+                <div style="display: flex; align-items: start; gap: 0.75rem;">
+                    <svg style="width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-top: 0.125rem;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <strong>Self-hosted or EU cloud</strong> – Your data, your infrastructure
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% landing_url 'signup' %}" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.125rem; background: white; color: var(--primary);">
+                Start 14-Day Free Trial →
+            </a>
+            <div style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.9;">
+                Free forever if you self-host. €49/month for managed EU hosting.
+            </div>
+        </div>
+
+        <!-- Secondary Actions -->
+        <div style="margin-top: 2rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--color-text);">
+                More Ways to Grow
+            </h3>
+
+            <div style="display: grid; gap: 1.5rem; text-align: left;">
+                <div style="background: var(--color-bg-secondary); padding: 1.5rem; border-radius: 0.5rem;">
+                    <div style="font-weight: 600; color: var(--color-text); margin-bottom: 0.5rem;">
+                        Share with your team
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-muted);">
+                        Help your colleagues discover their Dreyfus and Agency levels too
+                    </div>
+                </div>
+
+                <div style="background: var(--color-bg-secondary); padding: 1.5rem; border-radius: 0.5rem;">
+                    <div style="font-weight: 600; color: var(--color-text); margin-bottom: 0.5rem;">
+                        Learn the frameworks
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">
+                        Dive deeper into the Dreyfus Model and Agency Levels
+                    </div>
+                    <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--color-primary); font-weight: 600; font-size: 0.875rem; margin-right: 1rem;">
+                        Dreyfus Model →
+                    </a>
+                    <a href="{% landing_url 'agency_levels' %}" style="color: var(--color-primary); font-weight: 600; font-size: 0.875rem;">
+                        Agency Levels →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 3rem; font-size: 0.875rem; color: var(--color-text-muted);">
+            Didn't receive the email? Check your spam folder or
+            <a href="mailto:support@blik360.com" style="color: var(--color-primary);">contact us</a>.
+        </p>
+
+    </div>
+</main>
+
+<style>
+@media (max-width: 640px) {
+    [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
+{% endblock %}

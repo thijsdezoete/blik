@@ -45,6 +45,7 @@ urlpatterns = [
     path('dashboard/questionnaires/create/', admin_views.questionnaire_create, name='questionnaire_create'),
     path('dashboard/questionnaires/<int:questionnaire_id>/edit/', admin_views.questionnaire_edit, name='questionnaire_edit'),
     path('dashboard/questionnaires/<int:questionnaire_id>/preview/', admin_views.questionnaire_preview, name='questionnaire_preview'),
+    path('api/questions/<int:question_id>/dreyfus-config/', admin_views.question_dreyfus_config_api, name='question_dreyfus_config_api'),
     path('dashboard/cycles/', admin_views.review_cycle_list, name='review_cycle_list'),
     path('dashboard/cycles/create/', admin_views.review_cycle_create, name='review_cycle_create'),
     path('dashboard/cycles/<uuid:cycle_uuid>/', admin_views.review_cycle_detail, name='review_cycle_detail'),

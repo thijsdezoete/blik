@@ -1,0 +1,210 @@
+{% extends 'landing/base.html' %}
+{% load static %}
+{% load landing_tags %}
+
+{% block meta %}
+<title>Your Assessment Results | {{ site_name }}</title>
+<meta name="robots" content="noindex">
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="results-page">
+    <div class="container" style="max-width: 700px; margin: 0 auto; padding: 2rem 1rem;">
+
+        <script>
+        // Scroll to top when results page loads
+        window.scrollTo(0, 0);
+        </script>
+
+        <!-- Results Display -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-text);">
+                You're a {{ preview.quadrant.name }}!
+            </h1>
+            <p style="font-size: 1.125rem; color: var(--color-text-muted); margin-bottom: 2rem;">
+                {{ preview.quadrant.description }}
+            </p>
+        </div>
+
+        <!-- Scores Card -->
+        <div style="background: var(--color-bg-secondary); padding: 2rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
+                <div style="text-align: center;">
+                    <div style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+                        Skill Level
+                    </div>
+                    <div style="font-size: 3rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.25rem;">
+                        {{ preview.skill_level }}
+                    </div>
+                    <div style="font-size: 1.125rem; font-weight: 500; color: var(--color-text);">
+                        {{ preview.skill_stage }}
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+                        Agency Level
+                    </div>
+                    <div style="font-size: 3rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.25rem;">
+                        {{ preview.agency_level }}
+                    </div>
+                    <div style="font-size: 1.125rem; font-weight: 500; color: var(--color-text);">
+                        {{ preview.agency_stage }}
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding-top: 1.5rem; border-top: 1px solid var(--color-border); text-align: center;">
+                <div style="display: inline-block; padding: 0.5rem 1rem; background: var(--color-primary-light); border-radius: 9999px; font-weight: 600; color: var(--color-primary);">
+                    Quadrant: {{ preview.quadrant.name }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Preview Screenshots -->
+        <div style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-text); text-align: center;">
+                But wait... would your colleagues agree?
+            </h2>
+            <p style="text-align: center; color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 1.125rem;">
+                Your full report includes detailed visualizations and insights
+            </p>
+
+            <!-- Report Overview Screenshot -->
+            <div class="screenshot-hover-wrapper" style="margin-bottom: 2rem;">
+                <picture class="screenshot-layer screenshot-light">
+                    <source srcset="{% static 'img/screenshots/report_software_engineering_overview_light.webp' %}" type="image/webp">
+                    <img src="{% static 'img/screenshots/report_software_engineering_overview_light.png' %}"
+                         alt="Sample Developer Skills Report - Light Theme"
+                         style="width: 100%; border-radius: 0.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--color-border);">
+                </picture>
+                <picture class="screenshot-layer screenshot-dark">
+                    <source srcset="{% static 'img/screenshots/report_software_engineering_overview_dark.webp' %}" type="image/webp">
+                    <img src="{% static 'img/screenshots/report_software_engineering_overview_dark.png' %}"
+                         alt="Sample Developer Skills Report - Dark Theme"
+                         style="width: 100%; border-radius: 0.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--color-border);">
+                </picture>
+                <div class="theme-indicator">Hover to toggle theme</div>
+            </div>
+
+            <!-- Dreyfus Model Visualization -->
+            <div class="screenshot-hover-wrapper" style="margin-bottom: 2rem;">
+                <picture class="screenshot-layer screenshot-light">
+                    <source srcset="{% static 'img/screenshots/report_software_engineering_dreyfus_light.webp' %}" type="image/webp">
+                    <img src="{% static 'img/screenshots/report_software_engineering_dreyfus_light.png' %}"
+                         alt="Dreyfus Model Skill Visualization - Light Theme"
+                         style="width: 100%; border-radius: 0.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--color-border);">
+                </picture>
+                <picture class="screenshot-layer screenshot-dark">
+                    <source srcset="{% static 'img/screenshots/report_software_engineering_dreyfus_dark.webp' %}" type="image/webp">
+                    <img src="{% static 'img/screenshots/report_software_engineering_dreyfus_dark.png' %}"
+                         alt="Dreyfus Model Skill Visualization - Dark Theme"
+                         style="width: 100%; border-radius: 0.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--color-border);">
+                </picture>
+                <div class="theme-indicator">Hover to toggle theme</div>
+            </div>
+
+            <!-- Agency Levels Visualization -->
+            <div class="screenshot-hover-wrapper">
+                <picture class="screenshot-layer screenshot-light">
+                    <source srcset="{% static 'img/screenshots/report_software_engineering_agency_light.webp' %}" type="image/webp">
+                    <img src="{% static 'img/screenshots/report_software_engineering_agency_light.png' %}"
+                         alt="Agency Levels Visualization - Light Theme"
+                         style="width: 100%; border-radius: 0.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--color-border);">
+                </picture>
+                <picture class="screenshot-layer screenshot-dark">
+                    <source srcset="{% static 'img/screenshots/report_software_engineering_agency_dark.webp' %}" type="image/webp">
+                    <img src="{% static 'img/screenshots/report_software_engineering_agency_dark.png' %}"
+                         alt="Agency Levels Visualization - Dark Theme"
+                         style="width: 100%; border-radius: 0.75rem; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--color-border);">
+                </picture>
+                <div class="theme-indicator">Hover to toggle theme</div>
+            </div>
+        </div>
+
+        <!-- Email Capture -->
+        <div style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); padding: 2.5rem; border-radius: 0.75rem; color: white; margin-bottom: 2rem;">
+            <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.75rem; text-align: center;">
+                Get Your Full Report
+            </h2>
+            <p style="text-align: center; margin-bottom: 2rem; opacity: 0.9;">
+                See how your self-assessment translates into detailed insights:
+            </p>
+
+            <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+                <li style="padding: 0.5rem 0; display: flex; align-items: center;">
+                    <svg style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Beautiful Dreyfus + Agency visualizations
+                </li>
+                <li style="padding: 0.5rem 0; display: flex; align-items: center;">
+                    <svg style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Personalized development recommendations
+                </li>
+                <li style="padding: 0.5rem 0; display: flex; align-items: center;">
+                    <svg style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex-shrink: 0;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Clear growth path to your next level
+                </li>
+            </ul>
+
+            <form method="post" action="{% landing_url 'dreyfus_capture_email' %}" style="display: flex; flex-direction: column; gap: 1rem;">
+                {% csrf_token %}
+
+                <input type="email"
+                       name="email"
+                       placeholder="your.email@company.com"
+                       required
+                       style="padding: 1rem; border-radius: 0.5rem; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 1rem;">
+
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; opacity: 0.9; cursor: pointer;">
+                    <input type="checkbox" name="subscribe_newsletter" style="margin: 0;">
+                    Send me occasional developer insights (optional)
+                </label>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem;">
+                    Send Me My Full Report →
+                </button>
+
+                <p style="text-align: center; font-size: 0.875rem; opacity: 0.8; margin-top: 0.5rem;">
+                    No spam. View report anytime. Unsubscribe easily.
+                </p>
+            </form>
+        </div>
+
+        <!-- Learn More -->
+        <div style="text-align: center; color: var(--color-text-muted);">
+            <p>
+                Want 360° feedback from your team?
+                <a href="{% landing_url 'signup' %}" style="color: var(--color-primary); font-weight: 600;">Try Blik Free</a>
+            </p>
+        </div>
+
+    </div>
+</main>
+
+<style>
+@media (max-width: 640px) {
+    [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+input[type="email"]:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.6);
+}
+
+input[type="email"]::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+</style>
+
+{% endblock %}

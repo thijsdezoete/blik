@@ -95,9 +95,16 @@ def url_namespace(request):
             api_swagger_url = f"{main_app_url}/api/v1/{swagger_path}" if swagger_path else f"{main_app_url}/api/v1/docs/"
             api_redoc_url = f"{main_app_url}/api/v1/{redoc_path}" if redoc_path else f"{main_app_url}/api/v1/redoc/"
 
+    # Dynamically detect protocol from request (respects X-Forwarded-Proto header)
+    # This ensures HTTPS URLs are generated in production while avoiding infinite redirects
+    site_protocol = 'https' if request.is_secure() else 'http'
+
     return {
         'landing_ns': '' if is_standalone else 'landing:',
         'main_app_url': main_app_url,
         'api_swagger_url': api_swagger_url,
         'api_redoc_url': api_redoc_url,
+        'site_protocol': site_protocol,
+        'site_name': getattr(settings, 'SITE_NAME', 'Blik360'),
+        'site_domain': getattr(settings, 'SITE_DOMAIN', 'blik360.com'),
     }

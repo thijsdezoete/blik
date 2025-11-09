@@ -69,6 +69,15 @@ class Question(TimeStampedModel):
         ('scale', 'Numeric Scale'),
     ]
 
+    # Public UUID for external references (API, URLs)
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        db_index=True,
+        help_text="Public identifier for API and URL usage (non-enumerable)"
+    )
+
     section = models.ForeignKey(
         QuestionSection,
         on_delete=models.CASCADE,
@@ -91,7 +100,19 @@ class Question(TimeStampedModel):
     # Optional chart configuration:
     #   "chart_weight": 1.0 (default) - Weight in section average (0.5 = half weight, 2.0 = double weight)
     #   "exclude_from_charts": false (default) - Set true to exclude from chart aggregations
+    # Optional Dreyfus model configuration:
+    #   "dreyfus_mapping": {"skill": 1.5, "agency": 0.5} - Weights for skill/agency dimensions
     config = models.JSONField(default=dict)
+
+    # Personalized action items for development plans
+    # Format: [
+    #   {
+    #     "text": "Practice pair programming with senior developers",
+    #     "threshold": 3.0,  // Include if question score < threshold
+    #     "stages": [1, 2, 3]  // Optional: Relevant Dreyfus stages (1-5)
+    #   }
+    # ]
+    action_items = models.JSONField(default=list, blank=True)
 
     required = models.BooleanField(default=True)
     order = models.IntegerField(default=0)

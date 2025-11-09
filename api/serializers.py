@@ -86,6 +86,7 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = [
+            "uuid",
             "question_text",
             "question_type",
             "config",
@@ -93,7 +94,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             "order",
             "section",
         ]
-        read_only_fields = []
+        read_only_fields = ["uuid"]
 
 
 class QuestionSectionSerializer(serializers.ModelSerializer):
@@ -167,6 +168,27 @@ class ReviewerTokenSerializer(serializers.ModelSerializer):
             "invitation_sent_at",
         ]
         read_only_fields = fields  # All fields are read-only
+
+
+class ReviewerTokenWithUUIDSerializer(serializers.ModelSerializer):
+    """
+    Token serializer that includes UUID - ONLY for cycle creation response.
+    Used by API clients that need to submit responses programmatically.
+    """
+
+    is_completed = serializers.BooleanField(read_only=True)
+    uuid = serializers.UUIDField(source='token', read_only=True)
+
+    class Meta:
+        model = ReviewerToken
+        fields = [
+            "uuid",
+            "category",
+            "is_completed",
+            "claimed_at",
+            "completed_at",
+        ]
+        read_only_fields = fields
 
 
 # =============================================================================
@@ -268,9 +290,12 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
         help_text="Automatically send invitation emails to reviewers",
     )
 
+    tokens = ReviewerTokenWithUUIDSerializer(many=True, read_only=True)
+
     class Meta:
         model = ReviewCycle
-        fields = ["reviewee", "questionnaire", "reviewer_emails", "send_invitations"]
+        fields = ["uuid", "reviewee", "questionnaire", "reviewer_emails", "send_invitations", "tokens"]
+        read_only_fields = ["uuid", "tokens"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

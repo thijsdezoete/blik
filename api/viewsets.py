@@ -387,9 +387,137 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
             {
                 "message": "Cycle completed",
                 "report_id": report.id,
-                "report_url": f"/reports/view/{report.access_token}/",
+                "report_url": f"/my-report/{report.access_token}/",
             }
         )
+
+    @extend_schema(
+        tags=["cycles"],
+        description="Submit responses for a review cycle using a reviewer token",
+        request={
+            'application/json': {
+                'type': 'object',
+                'properties': {
+                    'token': {
+                        'type': 'string',
+                        'format': 'uuid',
+                        'description': 'Reviewer token UUID'
+                    },
+                    'responses': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'question_uuid': {
+                                    'type': 'string',
+                                    'format': 'uuid',
+                                    'description': 'Question UUID'
+                                },
+                                'value': {
+                                    'oneOf': [
+                                        {'type': 'integer'},
+                                        {'type': 'string'},
+                                        {'type': 'array', 'items': {'type': 'string'}}
+                                    ],
+                                    'description': 'Answer value (int for ratings, string for text, array for multiple choice)'
+                                }
+                            },
+                            'required': ['question_uuid', 'value']
+                        }
+                    }
+                },
+                'required': ['token', 'responses']
+            }
+        },
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'message': {'type': 'string'},
+                    'count': {'type': 'integer'}
+                }
+            },
+            400: {'description': 'Token required or responses already submitted'},
+            404: {'description': 'Invalid token'},
+            410: {'description': 'Review cycle has been closed'}
+        },
+        examples=[
+            OpenApiExample(
+                'Rating responses',
+                value={
+                    "token": "7a11e37c-32f6-4027-a807-16c43dd21626",
+                    "responses": [
+                        {"question_uuid": "4da69a6f-2d8a-4461-a851-899b371e4956", "value": 4},
+                        {"question_uuid": "bf9ff592-255c-443a-bc0b-ff377f543732", "value": 5}
+                    ]
+                },
+                request_only=True
+            )
+        ]
+    )
+    @action(detail=True, methods=["post"])
+    def submit_responses(self, request, uuid=None):
+        """
+        Submit responses for a review cycle using a token.
+        """
+        from reviews.models import ReviewerToken, Response as QuestionResponse
+        from questionnaires.models import Question
+
+        cycle = self.get_object()
+        token_uuid = request.data.get('token')
+        responses_data = request.data.get('responses', [])
+
+        if not token_uuid:
+            return Response({"error": "Token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get and validate token
+        try:
+            reviewer_token = ReviewerToken.objects.get(token=token_uuid, cycle=cycle)
+        except ReviewerToken.DoesNotExist:
+            return Response({"error": "Invalid token"}, status=status.HTTP_404_NOT_FOUND)
+
+        if reviewer_token.is_completed:
+            return Response({"error": "Responses already submitted"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if cycle.status == 'completed':
+            return Response(
+                {"error": "This review cycle has been closed"},
+                status=status.HTTP_410_GONE
+            )
+
+        # Get all questions for validation
+        questions = Question.objects.filter(section__questionnaire=cycle.questionnaire)
+        question_dict = {str(q.uuid): q for q in questions}
+
+        # Process responses
+        created_responses = []
+        for resp_data in responses_data:
+            question_uuid = resp_data.get('question_uuid')
+            value = resp_data.get('value')
+
+            if not question_uuid or question_uuid not in question_dict:
+                continue
+
+            question = question_dict[question_uuid]
+
+            # Create response with answer_data
+            response = QuestionResponse.objects.create(
+                cycle=cycle,
+                question=question,
+                token=reviewer_token,
+                category=reviewer_token.category,
+                answer_data={'value': value}
+            )
+            created_responses.append(response)
+
+        # Mark token as completed
+        reviewer_token.completed_at = timezone.now()
+        reviewer_token.save()
+
+        return Response({
+            "message": "Responses submitted successfully",
+            "count": len(created_responses)
+        })
 
     @extend_schema(
         tags=["cycles"],

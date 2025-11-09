@@ -4,9 +4,31 @@
 
 {% block meta %}
 <title>Developer Skills Assessment - Discover Your Level | {{ site_name }}</title>
+
+<!-- SEO Meta Tags -->
 <meta name="description" content="Take our 8-minute Developer Skills Assessment. Discover your Dreyfus skill level and agency dimension. Get personalized development recommendations.">
+<meta name="keywords" content="developer skills assessment, software engineer evaluation, Dreyfus model, agency levels, skill assessment, developer competency, programming skills test">
+<meta name="author" content="Blik">
+<link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'dreyfus_assessment_start' %}">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'dreyfus_assessment_start' %}">
 <meta property="og:title" content="Developer Skills Assessment - What's Your Level?">
 <meta property="og:description" content="Free 8-minute assessment. Discover your Dreyfus skill level and agency dimension.">
+<meta property="og:site_name" content="{{ site_name }}">
+<meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Developer%20Skills%20Assessment&subtitle=Discover%20Your%20Skill%20Level">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Developer Skills Assessment - Discover Your Skill Level">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'dreyfus_assessment_start' %}">
+<meta name="twitter:title" content="Developer Skills Assessment - What's Your Level?">
+<meta name="twitter:description" content="Free 8-minute assessment. Discover your Dreyfus skill level and agency dimension.">
+<meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Developer%20Skills%20Assessment&subtitle=Discover%20Your%20Skill%20Level">
 {% endblock %}
 
 {% block extra_head %}

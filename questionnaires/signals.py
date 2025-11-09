@@ -49,6 +49,7 @@ def clone_questionnaire_for_organization(questionnaire, organization):
         for question in questions:
             question.pk = None
             question.id = None
+            question.uuid = None  # Reset UUID to generate a new one
             question.section = cloned_section
             question.save()
 

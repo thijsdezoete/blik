@@ -53,11 +53,6 @@ def generate_og_image(title, subtitle=None):
         b = int(229 + (234 - 229) * y / height)
         draw.rectangle([(0, y), (width, y + 1)], fill=(r, g, b))
 
-    # Add subtle overlay pattern (circles in corners)
-    overlay_color = (255, 255, 255, 15)
-    draw.ellipse([(-100, -100), (300, 300)], fill=overlay_color)
-    draw.ellipse([(900, 400), (1400, 900)], fill=overlay_color)
-
     # Try to use system fonts with multiple fallbacks
     title_font = None
     subtitle_font = None
@@ -90,14 +85,14 @@ def generate_og_image(title, subtitle=None):
         subtitle_font = ImageFont.load_default()
         brand_font = ImageFont.load_default()
 
-    # Add brand logo/icon in top left (simple circle with "B")
+    # Add brand logo/icon in top left (simple circle)
     logo_x, logo_y = 60, 50
-    logo_size = 70
+    logo_size = 60
     draw.ellipse([logo_x, logo_y, logo_x + logo_size, logo_y + logo_size], fill='white')
-    draw.ellipse([logo_x + 3, logo_y + 3, logo_x + logo_size - 3, logo_y + logo_size - 3], fill=(79, 70, 229))
+    draw.ellipse([logo_x + 4, logo_y + 4, logo_x + logo_size - 4, logo_y + logo_size - 4], fill=(79, 70, 229))
 
     # Draw "Blik360" brand name next to logo
-    draw.text((logo_x + logo_size + 20, logo_y + 15), "Blik360", fill='white', font=brand_font)
+    draw.text((logo_x + logo_size + 15, logo_y + 12), "Blik360", fill='white', font=brand_font)
 
     # Calculate text positioning
     content_y_start = 220
@@ -114,8 +109,6 @@ def generate_og_image(title, subtitle=None):
         line_height = bbox[3] - bbox[1]
         x = (width - line_width) // 2
 
-        # Add subtle shadow for depth
-        draw.text((x + 2, current_y + 2), line, fill=(0, 0, 0, 80), font=title_font)
         draw.text((x, current_y), line, fill='white', font=title_font)
         current_y += line_height + 20
 
@@ -133,16 +126,13 @@ def generate_og_image(title, subtitle=None):
             draw.text((x, current_y), line, fill=(255, 255, 255, 230), font=subtitle_font)
             current_y += line_height + 15
 
-    # Add bottom accent line
-    accent_y = height - 80
-    draw.rectangle([(60, accent_y), (width - 60, accent_y + 4)], fill=(255, 255, 255, 100))
-
     # Add tagline at bottom
     tagline = "Open Source • Self-Hosted • Privacy-First"
     tagline_bbox = draw.textbbox((0, 0), tagline, font=subtitle_font)
     tagline_width = tagline_bbox[2] - tagline_bbox[0]
     tagline_x = (width - tagline_width) // 2
-    draw.text((tagline_x, accent_y + 20), tagline, fill=(255, 255, 255, 200), font=subtitle_font)
+    tagline_y = height - 70
+    draw.text((tagline_x, tagline_y), tagline, fill=(255, 255, 255, 200), font=subtitle_font)
 
     # Save to BytesIO
     buffer = BytesIO()

@@ -500,14 +500,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Count ANSWERED questions (not inputs)
             const allQuestions = Array.from(document.querySelectorAll('.question-card'));
 
-            // Debug: show all question IDs
-            const questionIds = allQuestions.map(q => q.getAttribute('data-question-id'));
-            console.log('All question IDs:', questionIds);
-
             const answered = allQuestions.filter(card => isQuestionAnswered(card)).length;
             const percentage = Math.round((answered / totalQuestions) * 100);
-
-            console.log('Progress:', answered, '/', totalQuestions, '=', percentage + '%');
 
             progressBar.style.width = percentage + '%';
             progressPercentage.textContent = percentage + '%';

@@ -16,12 +16,16 @@
     <meta property="og:title" content="About Blik - Built by Founders, for Founders">
     <meta property="og:description" content="The story behind Blik360: Why a CEO built an open source 360 feedback platform using modern tech and AI.">
     <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'about' %}">
     <meta name="twitter:title" content="About Blik - Built by Founders, for Founders">
     <meta name="twitter:description" content="The story behind Blik360: Why a CEO built an open source 360 feedback platform using modern tech and AI.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
 {% endblock %}
 
 {% block nav_links %}

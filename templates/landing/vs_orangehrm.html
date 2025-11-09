@@ -1,0 +1,321 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Blik vs OrangeHRM - Honest Comparison | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Comparing Blik and OrangeHRM for 360° feedback: specialized vs. general HR suite. See which fits your performance review needs better.">
+    <meta name="keywords" content="Blik vs OrangeHRM, OrangeHRM alternative, 360 feedback comparison, open source performance review, self-hosted feedback">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-orangehrm/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-orangehrm/">
+    <meta property="og:title" content="Blik vs OrangeHRM - Specialized vs General HR Suite">
+    <meta property="og:description" content="Purpose-built 360° feedback vs. comprehensive HR management. See which open source solution fits your needs.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20OrangeHRM&subtitle=Specialized%20vs%20General%20HR">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik vs OrangeHRM - Specialized vs General HR Suite">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-orangehrm/">
+    <meta name="twitter:title" content="Blik vs OrangeHRM - Specialized vs General HR Suite">
+    <meta name="twitter:description" content="Purpose-built 360° feedback vs. comprehensive HR management. See which open source solution fits your needs.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20OrangeHRM&subtitle=Specialized%20vs%20General%20HR">
+{% endblock %}
+
+{% block nav_links %}
+    <a href="#overview">Overview</a>
+    <a href="#focus">Focus</a>
+    <a href="#features">Features</a>
+    <a href="#deployment">Deployment</a>
+    <a href="#decision">Right Choice</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Blik vs OrangeHRM: Specialized vs General HR Suite</h1>
+                <p class="hero-subtitle">
+                    Both are open source and self-hosted. One is a comprehensive HR management system with performance as a module.
+                    The other is purpose-built for 360° feedback with advanced people analytics.
+                </p>
+                <div class="hero-cta">
+                    <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Blik</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Comparison Table -->
+    <section id="overview" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">At a Glance</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+                The fundamental differences between Blik and OrangeHRM
+            </p>
+
+            <div style="overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Feature</th>
+                            <th style="width: 30%;">Blik</th>
+                            <th style="width: 30%;">OrangeHRM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Primary Purpose</strong></td>
+                            <td class="highlight-green">360° feedback & people analytics<br><small>Purpose-built for performance reviews</small></td>
+                            <td class="highlight-yellow">Full HR management suite<br><small>Performance is one of many modules</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Open Source</strong></td>
+                            <td class="highlight-green">✓ AGPL (fully open)<br><small>All features included</small></td>
+                            <td class="highlight-yellow">⚠ GPL (core only)<br><small>Pro features require paid license</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>360° Feedback</strong></td>
+                            <td class="highlight-green">✓ Native, advanced<br><small>4 role-specific questionnaires</small></td>
+                            <td class="highlight-red">✗ Basic performance reviews<br><small>No multi-rater feedback</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Anonymity</strong></td>
+                            <td class="highlight-green">✓ Cryptographic guarantee<br><small>Admin cannot identify reviewers</small></td>
+                            <td class="highlight-red">✗ Not supported<br><small>Standard named reviews</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>People Analytics</strong></td>
+                            <td class="highlight-green">✓ Automated insights<br><small>Dreyfus model, perception gaps, benchmarks</small></td>
+                            <td class="highlight-red">✗ Basic reports<br><small>Manual interpretation needed</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Setup Complexity</strong></td>
+                            <td class="highlight-green">Simple (Docker)<br><small>< 1 hour to production</small></td>
+                            <td class="highlight-yellow">Moderate<br><small>Requires LAMP stack, configuration</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Modern Tech Stack</strong></td>
+                            <td class="highlight-green">Django, Python, PostgreSQL<br><small>API-first, containerized</small></td>
+                            <td class="highlight-yellow">PHP, Symphony, MySQL<br><small>Traditional monolith</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>HR Features</strong></td>
+                            <td class="highlight-red">✗ Performance only<br><small>Focused tool</small></td>
+                            <td class="highlight-green">✓ Comprehensive<br><small>Leave, time, recruitment, etc.</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Focus Comparison -->
+    <section id="focus" class="section">
+        <div class="container">
+            <h2 class="section-title">Different Tools for Different Needs</h2>
+
+            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Blik: Specialized Performance Tool</h3>
+                    <p>Purpose-built for 360° feedback and performance reviews. Deep features for assessment and analytics. Nothing else.</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li>4 pre-built role-specific questionnaires</li>
+                        <li>Automated people analytics with Dreyfus model</li>
+                        <li>True anonymous feedback system</li>
+                        <li>API for integration with existing HR stack</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <h3>OrangeHRM: All-in-One HR Suite</h3>
+                    <p>Comprehensive HR management covering recruitment, leave, time tracking, and basic performance reviews.</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li>Employee database and self-service</li>
+                        <li>Leave and time management</li>
+                        <li>Recruitment and onboarding</li>
+                        <li>Basic performance appraisals (KPIs, reviews)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--background-alt); border-radius: 8px;">
+                <h3 style="margin-bottom: 1rem;">The Trade-off</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    <strong>Choose OrangeHRM if:</strong> You need a complete HR management system and basic performance reviews are sufficient. You're replacing multiple HR tools.
+                </p>
+                <p style="color: var(--text-secondary);">
+                    <strong>Choose Blik if:</strong> You already have HR systems (or use a simple solution) and need advanced 360° feedback with true anonymity and automated people analytics.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Deep Dive -->
+    <section id="features" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Performance Management Features</h2>
+
+            <div class="comparison-grid" style="margin-top: 3rem;">
+                <div class="comparison-item">
+                    <h3>Multi-Rater (360°) Feedback</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>Native 360° feedback with peer, manager, and self-assessments. Cryptographically anonymous reviews.</p>
+                        </div>
+                        <div>
+                            <strong>OrangeHRM:</strong>
+                            <p>Manager-to-employee reviews only. No multi-rater capability in open source version.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>Competency Frameworks</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>Built-in Dreyfus model for skill assessment. Automated skill level detection from responses.</p>
+                        </div>
+                        <div>
+                            <strong>OrangeHRM:</strong>
+                            <p>KPI-based reviews. Define custom KPIs and track against targets.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>Analytics & Insights</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>Automated insights: perception gaps, peer benchmarks, development recommendations. No manual analysis needed.</p>
+                        </div>
+                        <div>
+                            <strong>OrangeHRM:</strong>
+                            <p>Basic reports on review completion and KPI achievement. Manual interpretation required.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>Customization</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>4 pre-built questionnaires (software engineering, manager, professional, quick). Customizable via code.</p>
+                        </div>
+                        <div>
+                            <strong>OrangeHRM:</strong>
+                            <p>Custom KPIs and review templates. More flexibility but requires more setup.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deployment Section -->
+    <section id="deployment" class="section">
+        <div class="container">
+            <h2 class="section-title">Deployment & Operations</h2>
+
+            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card">
+                    <h3>Blik Deployment</h3>
+                    <ul style="text-align: left;">
+                        <li><strong>Setup:</strong> Docker Compose (5 minutes)</li>
+                        <li><strong>Requirements:</strong> Docker only</li>
+                        <li><strong>Stack:</strong> Django, PostgreSQL, Gunicorn</li>
+                        <li><strong>Maintenance:</strong> Minimal (automated updates via Docker)</li>
+                        <li><strong>Scaling:</strong> Container orchestration (K8s ready)</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>OrangeHRM Deployment</h3>
+                    <ul style="text-align: left;">
+                        <li><strong>Setup:</strong> Manual LAMP stack configuration</li>
+                        <li><strong>Requirements:</strong> Apache, PHP 7.4+, MySQL</li>
+                        <li><strong>Stack:</strong> Symfony, MySQL, Apache</li>
+                        <li><strong>Maintenance:</strong> Manual updates, database migrations</li>
+                        <li><strong>Scaling:</strong> Traditional vertical scaling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Guide -->
+    <section id="decision" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Which Should You Choose?</h2>
+
+            <div class="decision-grid" style="margin-top: 3rem;">
+                <div class="decision-card">
+                    <h3>Choose Blik If...</h3>
+                    <ul>
+                        <li>You need advanced 360° feedback with true anonymity</li>
+                        <li>You want automated people analytics and insights</li>
+                        <li>You already have HR systems for leave/time/etc.</li>
+                        <li>You prefer modern, containerized deployments</li>
+                        <li>You need API integration with existing tools</li>
+                        <li>Performance reviews are your primary focus</li>
+                    </ul>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem;">Try Blik</a>
+                </div>
+
+                <div class="decision-card">
+                    <h3>Choose OrangeHRM If...</h3>
+                    <ul>
+                        <li>You need a complete HR management system</li>
+                        <li>Basic manager-to-employee reviews are sufficient</li>
+                        <li>You want leave management, time tracking, recruitment</li>
+                        <li>You're comfortable with PHP/MySQL stack</li>
+                        <li>You're replacing multiple HR tools with one system</li>
+                        <li>HR administration is your primary focus</li>
+                    </ul>
+                    <a href="https://www.orangehrm.com/" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top: 1.5rem;">Visit OrangeHRM</a>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--primary-gradient); border-radius: 8px; color: white; text-align: center;">
+                <h3 style="color: white; margin-bottom: 1rem;">Both Are Open Source</h3>
+                <p style="margin-bottom: 1.5rem;">
+                    Try both and see which fits your workflow better. They solve different problems—you might even use them together.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary">Blik on GitHub</a>
+                    <a href="https://github.com/orangehrm/orangehrm" target="_blank" rel="noopener" class="btn btn-secondary">OrangeHRM on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Ready to Try Specialized 360° Feedback?</h2>
+                <p>Deploy Blik in 5 minutes with Docker, or try our hosted version.</p>
+                <div class="cta-buttons">
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Get Started</a>
+                    <a href="{% landing_url 'open_source' %}" class="btn btn-outline">View Documentation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -135,6 +135,16 @@ def vs_15five(request):
     return render(request, 'landing/vs_15five.html')
 
 
+def vs_orangehrm(request):
+    """Blik vs OrangeHRM comparison page."""
+    return render(request, 'landing/vs_orangehrm.html')
+
+
+def vs_odoo(request):
+    """Blik vs Odoo HR comparison page."""
+    return render(request, 'landing/vs_odoo.html')
+
+
 def why_blik(request):
     """Why Blik exists - comprehensive differentiation page."""
     return render(request, 'landing/why_blik.html')

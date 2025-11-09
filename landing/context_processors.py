@@ -99,6 +99,11 @@ def url_namespace(request):
     # This ensures HTTPS URLs are generated in production while avoiding infinite redirects
     site_protocol = 'https' if request.is_secure() else 'http'
 
+    # Force HTTPS for SEO purposes in production (non-localhost domains)
+    # This ensures canonical URLs, OG tags, and other SEO meta always use HTTPS
+    if site_protocol == 'http' and not ('localhost' in request.get_host() or '127.0.0.1' in request.get_host()):
+        site_protocol = 'https'
+
     return {
         'landing_ns': '' if is_standalone else 'landing:',
         'main_app_url': main_app_url,

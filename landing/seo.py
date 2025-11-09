@@ -59,25 +59,36 @@ def generate_og_image(title, subtitle=None):
     draw.ellipse([(900, 400), (1400, 900)], fill=overlay_color)
 
     # Try to use system fonts with multiple fallbacks
-    try:
-        title_font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 76)
-        subtitle_font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 42)
-        brand_font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 38)
-    except:
+    title_font = None
+    subtitle_font = None
+    brand_font = None
+
+    font_paths = [
+        # macOS fonts
+        ("/System/Library/Fonts/Helvetica.ttc", 76, 42, 38),
+        ("/System/Library/Fonts/SF-Pro-Display-Bold.otf", 76, 42, 38),
+        # Linux fonts (Debian/Ubuntu)
+        ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 76, 42, 38),
+        ("/usr/share/fonts/liberation/LiberationSans-Bold.ttf", 76, 42, 38),
+        # Docker Alpine fonts
+        ("/usr/share/fonts/liberation-fonts/LiberationSans-Bold.ttf", 76, 42, 38),
+    ]
+
+    for font_path, title_size, subtitle_size, brand_size in font_paths:
         try:
-            title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 76)
-            subtitle_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 42)
-            brand_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 38)
+            title_font = ImageFont.truetype(font_path, title_size)
+            subtitle_font = ImageFont.truetype(font_path, subtitle_size)
+            brand_font = ImageFont.truetype(font_path, brand_size)
+            break
         except:
-            try:
-                # Linux alternative fonts
-                title_font = ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Bold.ttf", 76)
-                subtitle_font = ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Regular.ttf", 42)
-                brand_font = ImageFont.truetype("/usr/share/fonts/liberation/LiberationSans-Bold.ttf", 38)
-            except:
-                title_font = ImageFont.load_default()
-                subtitle_font = ImageFont.load_default()
-                brand_font = ImageFont.load_default()
+            continue
+
+    # If no fonts found, use PIL's default but with proper sizing via ImageFont.truetype
+    if title_font is None:
+        # Last resort: create larger default fonts
+        title_font = ImageFont.load_default()
+        subtitle_font = ImageFont.load_default()
+        brand_font = ImageFont.load_default()
 
     # Add brand logo/icon in top left (simple circle with "B")
     logo_x, logo_y = 60, 50

@@ -6,9 +6,11 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_SYSTEM_PYTHON=1
 
-# Install system dependencies
+# Install system dependencies including fonts for OG image generation
 RUN apt-get update && apt-get install -y \
     curl \
+    fonts-liberation \
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv

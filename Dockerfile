@@ -9,9 +9,11 @@ ENV PYTHONUNBUFFERED=1 \
     DEBUG=False \
     ALLOWED_HOSTS=*
 
-# Install system dependencies
+# Install system dependencies including fonts for OG image generation
 RUN apt-get update && apt-get install -y \
     curl \
+    fonts-liberation \
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv

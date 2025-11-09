@@ -105,6 +105,7 @@ STORAGES = {
 # Security settings
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=False)  # Set to True in production with HTTPS
 CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=False)  # Set to True in production with HTTPS
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'

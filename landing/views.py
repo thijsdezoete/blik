@@ -44,10 +44,14 @@ def index(request):
 
 
 def og_image(request):
-    """Generate Open Graph image dynamically."""
+    """Generate Open Graph image dynamically with page-specific content."""
+    # Get custom title and subtitle from query params, or use defaults
+    title = request.GET.get('title', settings.SITE_NAME)
+    subtitle = request.GET.get('subtitle', 'Open Source 360° Feedback Platform')
+
     image_buffer = generate_og_image(
-        title=settings.SITE_NAME,
-        subtitle="Open Source 360° Feedback"
+        title=title,
+        subtitle=subtitle
     )
     return HttpResponse(image_buffer.getvalue(), content_type='image/png')
 

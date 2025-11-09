@@ -1,0 +1,153 @@
+{% load static landing_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Temporarily Unavailable | Blik</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <script>
+        // Theme detection and initialization
+        (function() {
+            const getPreferredTheme = () => {
+                const stored = localStorage.getItem('theme');
+                if (stored) return stored;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+
+            const setTheme = (theme) => {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            };
+
+            setTheme(getPreferredTheme());
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        })();
+    </script>
+</head>
+<body class="landing-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo"><a href="{% landing_url 'index' %}" style="text-decoration: none; color: inherit;">Blik</a></h1>
+                <nav class="nav">
+                    <a href="{% landing_url 'index' %}">Home</a>
+                    <a href="{% landing_url 'people_analytics' %}">People Analytics</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Error Section -->
+    <section class="error-section">
+        <div class="container">
+            <div class="error-content">
+                <div class="error-icon">
+                    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="60" cy="60" r="50" stroke="var(--primary)" stroke-width="4" fill="none" opacity="0.2"/>
+                        <path d="M60 30 L60 70" stroke="var(--primary)" stroke-width="6" stroke-linecap="round"/>
+                        <circle cx="60" cy="85" r="4" fill="var(--primary)"/>
+                    </svg>
+                </div>
+                <h1 class="error-title">Assessment Temporarily Unavailable</h1>
+                <p class="error-description">
+                    {% if error_message %}
+                        {{ error_message }}
+                    {% else %}
+                        We're currently experiencing technical difficulties with the Dreyfus Skills Assessment.
+                        Our team has been notified and is working to resolve the issue.
+                    {% endif %}
+                </p>
+                <p class="error-description">
+                    Please try again in a few minutes, or explore more about our people analytics platform.
+                </p>
+                <div class="error-actions">
+                    <a href="{% landing_url 'dreyfus_assessment_start' %}" class="btn btn-primary">Try Again</a>
+                    <a href="{% landing_url 'people_analytics' %}" class="btn btn-outline">Learn About Our Analytics</a>
+                    <a href="{% landing_url 'index' %}" class="btn btn-outline">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .error-section {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 0;
+        }
+
+        .error-content {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .error-icon {
+            margin: 0 auto 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .error-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .error-icon svg {
+                width: 80px;
+                height: 80px;
+            }
+
+            .error-title {
+                font-size: 2rem;
+            }
+
+            .error-description {
+                font-size: 1rem;
+            }
+
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .error-actions .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</body>
+</html>

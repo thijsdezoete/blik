@@ -6,6 +6,7 @@ from django.core.management import call_command
 from core.models import Organization
 from .models import Questionnaire, QuestionSection, Question
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ def clone_questionnaire_for_organization(questionnaire, organization):
         for question in questions:
             question.pk = None
             question.id = None
-            question.uuid = None  # Reset UUID to generate a new one
+            question.uuid = uuid.uuid4()  # Generate a new UUID
             question.section = cloned_section
             question.save()
 

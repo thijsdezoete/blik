@@ -1,0 +1,321 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>FAQ - Common Questions About Blik 360 Feedback | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Everything you need to know about Blik: self-hosting, anonymity, GDPR compliance, pricing, questionnaires, API access, and migration from other tools.">
+    <meta name="keywords" content="360 feedback faq, self-hosted performance review questions, anonymous feedback how it works, GDPR compliant HR software, open source 360 questions">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'faq' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'faq' %}">
+    <meta property="og:title" content="Frequently Asked Questions - Blik 360 Feedback">
+    <meta property="og:description" content="Get answers about self-hosting, anonymity, pricing, GDPR, questionnaires, and migrating from other 360 feedback tools.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Common%20Questions&subtitle=Everything%20You%20Need%20to%20Know">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik FAQ - Common Questions Answered">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'faq' %}">
+    <meta name="twitter:title" content="Frequently Asked Questions - Blik 360 Feedback">
+    <meta name="twitter:description" content="Get answers about self-hosting, anonymity, pricing, GDPR, questionnaires, and migrating from other 360 feedback tools.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Common%20Questions&subtitle=Everything%20You%20Need%20to%20Know">
+{% endblock %}
+
+{% block extra_head %}
+    <!-- FAQ Schema JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is 360-degree feedback?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A 360-degree feedback session is where an employee gets feedback from peers, managers, and if applicable, their direct reports. This gives you a better perspective on their performance and areas to develop. When you pair this with a self-assessment, it shows you where there might be gaps. Maybe you're being too hard on yourself in some areas, or too confident in others. Those mismatches are where the real growth opportunities are."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How does Blik ensure reviewer anonymity?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik is built with anonymity baked in from the start. We use hard-to-guess tokens in URLs, and make it impossible for employers or review administrators to see who answered what. Even as an admin, you can't trace feedback back to specific people."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is Blik GDPR compliant?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How much does Blik cost?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Self-hosting is free forever under AGPL license. Managed hosting is €49/month for up to 50 employees, or €199/month for up to 200 employees. No per-user fees, no hidden costs, cancel anytime."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I migrate from Lattice, Culture Amp, or 15Five to Blik?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Probably yes, but we don't have an automated migration tool yet. If you can provide sample exports from your current tool, we can work on making the migration smooth. Reach out and we'll figure it out together."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What questionnaires are included in Blik?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Blik includes 4 pre-built questionnaires: Professional Skills 360 (8 competencies), Software Engineering 360 (10 technical skills), Manager 360 (7 leadership dimensions), and Quick 360 (12 questions). You can also create custom questionnaires with Likert scales, multiple choice, and free text responses."
+                }
+            }
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#product">Product</a>
+    <a href="#technical">Technical</a>
+    <a href="#pricing-faq">Pricing</a>
+    <a href="#support">Support</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Frequently Asked Questions</h1>
+                <p class="hero-subtitle">
+                    Everything you need to know about Blik. If your question isn't answered here, reach out on <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" style="color: white; text-decoration: underline;">GitHub</a>.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product & Features -->
+    <section id="product" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Product & Features</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>What is 360-degree feedback?</summary>
+                    <p>A 360-degree feedback session is where an employee gets feedback from peers, managers, and if applicable, their direct reports. This gives you a better perspective on their performance and areas to develop. When you pair this with a self-assessment, it shows you where there might be gaps. Maybe you're being too hard on yourself in some areas, or too confident in others. Those mismatches are where the real growth opportunities are.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How does Blik ensure reviewer anonymity?</summary>
+                    <p>Blik is built with anonymity baked in from the start. We use hard-to-guess tokens in URLs, and make it impossible for employers or review administrators to see who answered what. I built this for myself and my team to give them the trust to answer as bluntly and honestly as possible without ever feeling like they're going to get fired for being honest. Even as an admin, you can't trace feedback back to specific people.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What questionnaires does Blik include?</summary>
+                    <p>There are currently 4 default questionnaires: <strong>Professional Skills 360</strong> (8 core competencies with Dreyfus model scoring), <strong>Software Engineering 360</strong> (10 technical competencies for developers), <strong>Manager 360</strong> (7 leadership dimensions), and <strong>Quick 360</strong> (12 questions across 4 areas). You can also create your own questionnaires with no restrictions.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I customize the questionnaires?</summary>
+                    <p>Yes! The application comes with 4 default questionnaires for different roles and needs, and you can create your own with no restrictions. We have multiple types of answer modes like Likert scales, multiple choice, and free text. The questionnaires can contain multiple segments which work well on mobile devices too.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What analytics and insights does Blik provide?</summary>
+                    <p>The report after the questionnaire is finished contains an executive overview that highlights gaps between how you see yourself and how others see you. It spots things like impostor syndrome or undervaluation of your own contributions. You'll see key strengths and weaknesses, plus a bar chart showing self vs others comparison. It also contains a radar chart with the different layers (self, peers, managers) averaged responses. The insights differ per person and questionnaire of course, but in general it should provide actionable insights.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can reviewers save progress and return later?</summary>
+                    <p>Yes, it's actually implicit. Your progress is saved on every step. Reviewers each have their own unique URL, and this allows them to come back later and continue where they left off safely and easily.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens if there are too few responses?</summary>
+                    <p>We try to keep anonymity in mind here, so we have a default (changeable) threshold of required answers in order to not be able to take any one response from someone directly. For super small teams you can just set this value to 1 and you will see all answers always. This setting also doesn't apply to managers, who I believe usually provide feedback which you can (should?) act upon.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How are reports generated and shared?</summary>
+                    <p>A report gets triggered either by all invited members finalizing the questionnaire, or by an application admin who closes the report manually. The report itself shows an executive overview plus a detailed in-depth view of all the questions and the aggregated answers per group (self, peers, managers). A report can be generated at will even if some reviewers haven't finished answering all their questions yet. It takes whatever they've filled out so far and leaves the rest of the questions blank.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I run multiple review cycles simultaneously?</summary>
+                    <p>Yes. Cycles are lightly implemented, meaning there is no enforcing of every reviewee having to be on the same cycle. There are no limits on active cycles and no problem having multiple people in different cycles simultaneously.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I invite reviewers?</summary>
+                    <p>There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical & Self-Hosting -->
+    <section id="technical" class="section">
+        <div class="container">
+            <h2 class="section-title">Technical & Self-Hosting</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>What are the system requirements for self-hosting?</summary>
+                    <p>Blik is a simple app that requires a little bit of compute and a database, which comes built in if you want. While I haven't had a chance to test it with many concurrent users, we expect a VPS with 512MB of RAM and a little bit of storage would suffice. It's built in Python so most operating systems will be able to host the application.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is Blik GDPR compliant?</summary>
+                    <p>If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What databases are supported?</summary>
+                    <p>Any Django-compatible database is supported. I recommend using Postgres 15 or higher. The built in standalone Dockerfile uses SQLite to make things easier for anyone to get started from the get go.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What email providers are supported?</summary>
+                    <p>Blik supports almost all email providers. We allow you to use your own credentials or even your own Gmail address.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is there an API for integrations?</summary>
+                    <p>Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available at your instance's /api/swagger/ endpoint. No usage limits, no integration fees—just standard authentication and full CRUD operations. <a href="{% landing_url 'developers' %}" style="color: var(--primary);">View full API documentation →</a></p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is there a mobile app?</summary>
+                    <p>No, you can't find Blik in the app stores, but our web based application works across all modern mobile devices. Benefit is that this also doesn't require installation or setups on user devices.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What license is Blik released under?</summary>
+                    <p>AGPL. I chose this license because I want others to be able to use, try, and modify Blik the same way I would have wanted to. You can use the app and make changes freely. The main thing is if you host a modified version, you need to make your changes available. This way, if someone adds something useful like LDAP integration, the community benefits too. I'll be honest, licenses can be confusing, but the spirit here is simple. Freedom to use and modify, with the requirement to share improvements back.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I white-label Blik for clients?</summary>
+                    <p>Yes, you can. The AGPL license allows you to white label this if you want to. Most things are pretty easy to modify or built in as variables already.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I export my data?</summary>
+                    <p>Yes. You get a full account and organization JSON export. This makes it easy to back up your data or migrate to another system if you need to.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How often is Blik updated?</summary>
+                    <p>This depends on my time and paid users as well as feedback from the community. I hope there will be many community updates, which eventually will lead to other maintainers as well. If you self-host you should probably check in every once in a while. There is no mechanism for this yet. For hosted customers, updates go live immediately after a few minutes when I push them.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing & Plans -->
+    <section id="pricing-faq" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Pricing & Plans</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>How much does Blik cost?</summary>
+                    <p>Self-hosting is free forever under AGPL license. Managed hosting is €49/month for up to 50 employees, or €199/month for up to 200 employees. No per-user fees, no hidden costs, cancel anytime. <a href="{% landing_url 'pricing' %}" style="color: var(--primary);">See full pricing details →</a></p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What's the difference between the €49 and €199 hosted plans?</summary>
+                    <p>Just the employee count. The €49 plan is for up to 50 employees, and the €199 plan is for up to 200 employees. Everything else is the same. Bigger company equals bigger bill, but it's still a negligible amount when you have 200+ employees.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Are there any hidden costs?</summary>
+                    <p>None. €49 is €49. No setup fees, no per-user charges, no feature restrictions, no surprise renewal increases. The only way your bill goes up is if you grow past 50 employees and need the larger plan.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I try the hosted version before committing?</summary>
+                    <p>Yes, there is a 14 day trial. Credit card is required to activate the trial though.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens to my data if I cancel my hosted subscription?</summary>
+                    <p>All data will be removed after 30 days. No exceptions. Make sure you export your data before canceling if you want to keep it.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How is Blik different from Lattice, Culture Amp, and 15Five?</summary>
+                    <p>Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies compared to tools like Lattice (€18K/year for 50 people) or Culture Amp (€15K/year). Simplicity.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I switch from self-hosted to hosted later?</summary>
+                    <p>Yes, but we don't have an automated migration tool yet. You'd need to export your data from your self-hosted instance and we can help you import it into a hosted account. If this is something you need, reach out and we'll figure it out.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Migration & Support -->
+    <section id="support" class="section">
+        <div class="container">
+            <h2 class="section-title">Migration & Support</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>Can I migrate from another 360 tool to Blik?</summary>
+                    <p>Probably yes, but we don't have a good import tool and haven't tested this yet. We didn't end up using any other software ourselves, so if you can provide us with sample exports from other tools, we can try to make this work. Reach out on GitHub and we'll figure it out together.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How do I get support for self-hosted installations?</summary>
+                    <p>The repo's issues and discussion tabs are where the support will most likely be given and found. I try to keep things documented that are important too. Enterprise customers will receive priority updates and a more direct line if they prefer.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do you offer professional services or implementation help?</summary>
+                    <p>Not officially yet, but if you're an Enterprise customer or have a specific need, reach out. I'm happy to help with custom questionnaire design, onboarding, or integration work on a case-by-case basis.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can Blik integrate with our HRIS (BambooHR, Workday, etc.)?</summary>
+                    <p>Not out of the box yet, but the REST API makes this possible. You'd need to build a small integration script that syncs employee data from your HRIS to Blik. If there's demand for specific integrations, we can prioritize building them. Let us know what you need.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do you have a Slack or Discord community?</summary>
+                    <p>Not yet. Right now, the GitHub Discussions is the best place to ask questions, share use cases, and connect with other Blik users. If the community grows, we'll set up something more real-time.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="cta-box" style="text-align: center;">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Still Have Questions?</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
+                    Check out our documentation on GitHub or start a discussion. The community is friendly and I respond quickly.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">GitHub Documentation</a>
+                    <a href="{% landing_url 'developers' %}" class="btn btn-secondary">API Docs</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

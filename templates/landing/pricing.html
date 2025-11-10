@@ -1,0 +1,348 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Pricing - Self-Hosted Free or EU Hosted from €49/month | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Blik pricing: Free self-hosted forever, or €49/month for 50 employees (EU hosted). Save €17,000/year vs Lattice. No per-user fees, no surprises, cancel anytime.">
+    <meta name="keywords" content="360 feedback pricing, performance review cost, self-hosted free, open source HR software pricing, Lattice alternative cost, Culture Amp pricing comparison">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
+    <meta property="og:title" content="Blik Pricing - Free Self-Hosted or €49/month">
+    <meta property="og:description" content="Open source 360 feedback with transparent pricing. Free forever for self-hosting, or €49/month for fully managed hosting (up to 50 employees).">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Transparent%20Pricing&subtitle=Free%20or%20%E2%82%AC49%2Fmonth">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik Pricing - Transparent, No Surprises">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
+    <meta name="twitter:title" content="Blik Pricing - Free Self-Hosted or €49/month">
+    <meta name="twitter:description" content="Open source 360 feedback with transparent pricing. Free forever for self-hosting, or €49/month for fully managed hosting.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Transparent%20Pricing&subtitle=Free%20or%20%E2%82%AC49%2Fmonth">
+{% endblock %}
+
+{% block extra_head %}
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ site_protocol }}://{{ site_domain }}/"
+        },{
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Pricing",
+            "item": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}"
+        }]
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data for Product Pricing -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "{{ site_name }}",
+        "description": "Open source 360-degree feedback platform with self-hosted and managed hosting options",
+        "brand": {
+            "@type": "Brand",
+            "name": "{{ site_name }}"
+        },
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Self-Hosted (Open Source)",
+                "price": "0",
+                "priceCurrency": "EUR",
+                "description": "Free forever. Host on your own infrastructure with unlimited users and features.",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}"
+            },
+            {
+                "@type": "Offer",
+                "name": "EU Hosted SaaS - Small Team",
+                "price": "49",
+                "priceCurrency": "EUR",
+                "billingIncrement": "P1M",
+                "description": "Managed hosting for up to 50 employees. EU servers, automatic updates, daily backups.",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'signup' %}"
+            },
+            {
+                "@type": "Offer",
+                "name": "EU Hosted SaaS - Enterprise",
+                "price": "199",
+                "priceCurrency": "EUR",
+                "billingIncrement": "P1M",
+                "description": "Managed hosting for up to 200 employees. Priority support, SLA, dedicated onboarding.",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'signup' %}"
+            }
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#comparison">vs Competitors</a>
+    <a href="#pricing">Plans</a>
+    <a href="#faq">FAQ</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Pricing That Makes Sense</h1>
+                <p class="hero-subtitle">
+                    Free forever if you self-host. €49-199/month if you want us to handle the infrastructure.
+                    No per-user fees. No surprise costs. No annual renewals that mysteriously cost 20% more.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section id="pricing" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Choose What Works for You</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto 3rem;">
+                <!-- Self-Hosted -->
+                <div class="feature-card feature-card-success" style="position: relative;">
+                    <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--success); color: white; padding: 0.25rem 1rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600; white-space: nowrap;">
+                        MOST POPULAR
+                    </div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; margin-top: 1rem;">Self-Hosted</h3>
+                    <div style="font-size: 3rem; font-weight: bold; color: var(--success); margin-bottom: 1rem;">€0</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Free forever</p>
+
+                    <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+                        <li style="margin-bottom: 0.75rem;">✓ Unlimited employees</li>
+                        <li style="margin-bottom: 0.75rem;">✓ All features included</li>
+                        <li style="margin-bottom: 0.75rem;">✓ 4 pre-built questionnaires</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Full API access</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Complete data control</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Your infrastructure</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Docker deployment</li>
+                        <li style="margin-bottom: 0.75rem;">✓ PostgreSQL or SQLite</li>
+                        <li style="margin-bottom: 0.75rem;">✓ AGPL-3.0 license</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Community support</li>
+                    </ul>
+
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
+                        <strong>Your costs:</strong> Just hosting (€5-50/month VPS) + your time for setup and maintenance.
+                    </p>
+
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" style="display: block; text-align: center;" target="_blank" rel="noopener">Get Started on GitHub</a>
+                </div>
+
+                <!-- Hosted - Small Team -->
+                <div class="feature-card">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">EU Hosted - Small</h3>
+                    <div style="font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">€49</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">per month</p>
+
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Up to 50 employees</p>
+
+                    <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+                        <li style="margin-bottom: 0.75rem;">✓ Everything in Self-Hosted</li>
+                        <li style="margin-bottom: 0.75rem;">✓ EU servers (Hetzner, Germany)</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Automatic updates</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Daily backups</li>
+                        <li style="margin-bottom: 0.75rem;">✓ 99% uptime target</li>
+                        <li style="margin-bottom: 0.75rem;">✓ SSL certificates included</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Email support</li>
+                        <li style="margin-bottom: 0.75rem;">✓ GDPR compliant</li>
+                        <li style="margin-bottom: 0.75rem;">✓ 14-day free trial</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Cancel anytime</li>
+                    </ul>
+
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: block; text-align: center;">Start Free Trial</a>
+                </div>
+
+                <!-- Hosted - Enterprise -->
+                <div class="feature-card">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">EU Hosted - Enterprise</h3>
+                    <div style="font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">€199</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">per month</p>
+
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Up to 200 employees</p>
+
+                    <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+                        <li style="margin-bottom: 0.75rem;">✓ Everything in Small plan</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Priority support</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Dedicated onboarding</li>
+                        <li style="margin-bottom: 0.75rem;">✓ SLA agreement</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Custom questionnaire design</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Weekly backups to your S3</li>
+                        <li style="margin-bottom: 0.75rem;">✓ Custom domain setup</li>
+                        <li style="margin-bottom: 0.75rem;">✓ SSO integration (coming soon)</li>
+                    </ul>
+
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
+                        <strong>Need more than 200 employees?</strong> Contact us for custom pricing.
+                    </p>
+
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: block; text-align: center;">Start Free Trial</a>
+                </div>
+            </div>
+
+            <div class="cta-box" style="text-align: center;">
+                <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">All hosted plans include 14-day free trial. No credit card required upfront.</p>
+                <p style="color: var(--text-secondary); font-size: 0.9375rem;">Cancel anytime. Data export available. 30-day data retention after cancellation.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison vs Competitors -->
+    <section id="comparison" class="section">
+        <div class="container">
+            <h2 class="section-title">How Blik Compares to Enterprise Tools</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                The math is simple. Commercial platforms charge per user. We don't. For a 50-person company, you'll save €8,800-17,800 annually.
+            </p>
+
+            <div class="table-container" style="overflow-x: auto;">
+                <table class="comparison-table" style="width: 100%; min-width: 700px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Provider</th>
+                            <th style="width: 25%;">Cost for 50 Employees</th>
+                            <th style="width: 25%;">Annual Cost</th>
+                            <th style="width: 25%;">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Lattice</strong></td>
+                            <td class="highlight-red">€15-30/user/month</td>
+                            <td class="highlight-red">€9,000-18,000</td>
+                            <td><small>Per-user pricing, annual contracts</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Culture Amp</strong></td>
+                            <td class="highlight-red">€12-25/user/month</td>
+                            <td class="highlight-red">€7,200-15,000</td>
+                            <td><small>Module-based pricing, complex tiers</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>15Five</strong></td>
+                            <td class="highlight-red">€8-15/user/month</td>
+                            <td class="highlight-red">€4,800-9,000</td>
+                            <td><small>Per-user fees, feature restrictions</small></td>
+                        </tr>
+                        <tr style="background: var(--success-bg);">
+                            <td><strong>Blik (Hosted)</strong></td>
+                            <td class="highlight-green">€49/month flat</td>
+                            <td class="highlight-green">€588</td>
+                            <td><small>No per-user fees, all features</small></td>
+                        </tr>
+                        <tr style="background: var(--success-bg);">
+                            <td><strong>Blik (Self-Hosted)</strong></td>
+                            <td class="highlight-green">€5-50/month VPS</td>
+                            <td class="highlight-green">€60-600</td>
+                            <td><small>Free software, hosting costs only</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="feature-card" style="background: var(--primary-600); color: white; text-align: center; margin-top: 3rem; border: 1px solid var(--primary-700);">
+                <h3 style="color: white; font-size: 1.75rem; margin-bottom: 1rem;">Save €8,800-17,400 Per Year</h3>
+                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem; max-width: 700px; margin: 0 auto;">
+                    For a 50-person company switching from Lattice or Culture Amp to Blik hosted.
+                    Savings scale with team size. At 100 employees, you're saving €17,000-35,000 annually.
+                </p>
+            </div>
+
+            <div style="margin-top: 3rem; text-align: center;">
+                <a href="{% landing_url 'vs_lattice' %}" class="btn btn-secondary" style="margin: 0.5rem;">See Detailed Comparison →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Pricing Questions</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>Why is self-hosting free?</summary>
+                    <p>Blik is open source under AGPL-3.0 license. I built this because I was tired of paying €15,000/year for features I didn't need. If you can host it yourself, you should be able to use it for free. The hosted plans exist for teams that want the software without the DevOps overhead.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What's the catch with €49/month?</summary>
+                    <p>No catch. It's a flat €49/month for up to 50 employees, all features included. I wanted pricing that doesn't require a spreadsheet to calculate. If you grow past 50 employees, you move to the €199/month tier for up to 200 employees. That's it.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Are there any hidden costs?</summary>
+                    <p>None. €49 is €49. No setup fees, no per-user charges, no feature restrictions, no surprise renewal increases. The only way your bill goes up is if you grow past 50 employees and need the larger plan.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens if I go over 50 employees on the €49 plan?</summary>
+                    <p>Nothing immediate. We're not going to shut you down at employee #51. When you're ready, you can upgrade to the €199 plan which covers up to 200 employees. We'll send you a reminder when you're approaching the limit.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I switch from self-hosted to hosted later?</summary>
+                    <p>Yes, but we don't have an automated migration tool yet. You'd need to export your data from your self-hosted instance and we can help you import it into a hosted account. If this is something you need, reach out and we'll figure it out.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do you offer discounts for non-profits or education?</summary>
+                    <p>Not formally yet, but reach out. For non-profits and educational institutions, I'm happy to work something out. Self-hosting is always free regardless.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What payment methods do you accept?</summary>
+                    <p>Credit card via Stripe for hosted plans. We handle EUR, USD, and GBP. Invoicing is available for annual contracts on the Enterprise plan.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Is there a refund policy?</summary>
+                    <p>14-day free trial means you can try before you pay. After that, if you cancel, you're billed for the current month and that's it. No refunds on partial months, but you keep access until the end of your billing period.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>How does pricing compare to building this in-house?</summary>
+                    <p>A junior developer for 2-3 months would cost you more than 5 years of Blik hosting. Plus you'd own the maintenance burden forever. Self-hosting Blik costs you maybe 4 hours of DevOps time for initial setup, then it just runs.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-box" style="text-align: center;">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Ready to Save Thousands on Performance Reviews?</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
+                    Start with self-hosting (free forever) or try our managed hosting with a 14-day free trial.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Self-Host (Free)</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted (14-Day Trial)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

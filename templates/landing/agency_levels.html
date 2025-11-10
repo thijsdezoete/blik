@@ -14,16 +14,18 @@
     <meta property="og:title" content="5 Levels of Agency: Build Autonomous Engineering Teams">
     <meta property="og:description" content="Stop hiring problem reporters. Framework for engineering managers to build Level 4+ teams that solve problems autonomously.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=5%20Levels%20of%20Agency&subtitle=Build%20Autonomous%20Teams">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="5 Levels of Agency - Build Autonomous Teams">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'agency_levels' %}">
     <meta name="twitter:title" content="5 Levels of Agency: Build Autonomous Engineering Teams">
     <meta name="twitter:description" content="Stop hiring problem reporters. Framework for engineering managers to build Level 4+ teams that solve problems autonomously.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=5%20Levels%20of%20Agency&subtitle=Build%20Autonomous%20Teams">
 {% endblock %}
 
 {% block nav_links %}
@@ -1404,6 +1406,34 @@
                 <h3>Note on Framework Origins</h3>
                 <p style="margin-bottom: 1rem;">The "5 Levels of Agency" framework presented on this page is a practical synthesis created for workplace application, not a formally published academic model. It draws conceptually from the research cited above on autonomous motivation, personal initiative, proactive behavior, and psychological empowerment.</p>
                 <p>The underlying concepts are well-established in organizational psychology literature. The specific "5 levels" structure is a pedagogical tool designed to help managers and employees understand and develop high-agency behavior in practice.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Frameworks Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Complete Your Performance Framework</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Agency measures <strong>ownership mindset</strong>, but high-agency juniors can cause damage without technical skill. You need both dimensions.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <div class="feature-card">
+                    <h3 style="margin-bottom: 1rem;">Dreyfus Model</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Learn the research-backed framework for evaluating technical skill from Novice to Expert. Used by Stripe, Thoughtbot, and hundreds of engineering teams.
+                    </p>
+                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary" style="display: inline-block;">Read Dreyfus Framework →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="margin-bottom: 1rem;">Performance Matrix</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        See what happens when you combine Dreyfus skill levels with Agency levels. Identify Force Multipliers, coach Brilliant Passengers, and avoid promoting Risk Takers.
+                    </p>
+                    <a href="{% landing_url 'performance_matrix' %}" class="btn btn-secondary" style="display: inline-block;">See the Matrix →</a>
+                </div>
             </div>
         </div>
     </section>

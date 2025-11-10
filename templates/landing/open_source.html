@@ -14,16 +14,18 @@
     <meta property="og:title" content="Open Source 360 Feedback Built by Developers">
     <meta property="og:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360&subtitle=Built%20by%20Developers%2C%20for%20Developers">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Open Source 360 - Built by Developers, for Developers">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'open_source' %}">
     <meta name="twitter:title" content="Open Source 360 Feedback Built by Developers">
     <meta name="twitter:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360&subtitle=Built%20by%20Developers%2C%20for%20Developers">
 {% endblock %}
 
 {% block extra_head %}

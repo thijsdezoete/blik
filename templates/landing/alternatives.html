@@ -1,0 +1,360 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Blik Alternatives - Compare 360 Feedback Platforms | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Compare Blik to Lattice, Culture Amp, 15Five, and other 360 feedback platforms. See honest comparisons with pricing, features, and real user pain points for each alternative.">
+    <meta name="keywords" content="lattice alternative, culture amp alternative, 15five alternative, 360 feedback comparison, performance review software comparison, open source hr software, self-hosted performance management">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'alternatives' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'alternatives' %}">
+    <meta property="og:title" content="Compare Blik to Lattice, Culture Amp & Other 360 Feedback Tools">
+    <meta property="og:description" content="Honest comparisons of Blik vs commercial 360 feedback platforms. Real pricing, actual user pain points, no marketing fluff.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Compare%20Alternatives&subtitle=Honest%20Platform%20Comparisons">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik Alternatives - Compare 360 Feedback Platforms">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'alternatives' %}">
+    <meta name="twitter:title" content="Compare Blik to Lattice, Culture Amp & Other 360 Feedback Tools">
+    <meta name="twitter:description" content="Honest comparisons of Blik vs commercial 360 feedback platforms. Real pricing, actual user pain points, no marketing fluff.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Compare%20Alternatives&subtitle=Honest%20Platform%20Comparisons">
+{% endblock %}
+
+{% block extra_head %}
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Blik vs Alternatives - Compare 360 Feedback Platforms",
+        "description": "Honest comparisons of Blik against Lattice, Culture Amp, 15Five, and other performance management platforms",
+        "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'alternatives' %}",
+        "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "{{ site_protocol }}://{{ site_domain }}/"
+            },{
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Alternatives",
+                "item": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'alternatives' %}"
+            }]
+        }
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#commercial">vs Commercial</a>
+    <a href="#open-source">vs Open Source</a>
+    <a href="#calculator">ROI Calculator</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Blik vs Alternatives: Honest Comparisons</h1>
+                <p class="hero-subtitle">
+                    We analyzed hundreds of user reviews to understand what people actually hate about commercial 360 feedback platforms.
+                    Here's how Blik compares to Lattice, Culture Amp, 15Five, and others—real pricing, actual pain points, no marketing BS.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Summary -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Short Version</h2>
+            <div style="max-width: 900px; margin: 0 auto;">
+                <div class="feature-card">
+                    <h3>Why We Built Blik</h3>
+                    <p style="margin-bottom: 1rem;">After researching commercial platforms, we found three broken promises everywhere:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;"><strong>Anonymity:</strong> "Policy-based" not architecture-based. Users don't trust it.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Pricing:</strong> €9,000-18,000/year for 50 people. Hidden costs, annual increases.</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Data Control:</strong> Your sensitive feedback on their servers, vendor lock-in.</li>
+                    </ul>
+                    <p style="font-weight: 600; color: var(--primary);">Blik fixes all three: Token-based anonymity, €588/year (or free self-hosted), your infrastructure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commercial Platforms -->
+    <section id="commercial" class="section">
+        <div class="container">
+            <h2 class="section-title">vs Commercial SaaS Platforms</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                The enterprise players. Great sales teams, complex pricing, real user frustrations.
+            </p>
+
+            <div style="display: grid; gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <!-- Lattice -->
+                <div class="feature-card">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">Blik vs Lattice</h3>
+                        <span style="background: var(--primary-100); color: var(--primary-700); padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.875rem; font-weight: 600;">MOST POPULAR</span>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Lattice is the 800-pound gorilla. Great for enterprise, overkill for everyone else. Users complain about complexity, rigid review cycles, and anonymity concerns.
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Lattice Cost (50 people)</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--danger);">€18,000/year</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Blik Cost (50 people)</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">€588/year</div>
+                        </div>
+                    </div>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Real user pain points from G2/Capterra:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li>"Anonymous feedback can be traced back" — anonymity concerns</li>
+                        <li>"Overly complex for small teams" — feature bloat</li>
+                        <li>"Expensive renewal with surprise 20% increase" — pricing games</li>
+                    </ul>
+                    <a href="{% landing_url 'vs_lattice' %}" class="btn btn-secondary" style="display: inline-block;">Read Full Comparison →</a>
+                </div>
+
+                <!-- Culture Amp -->
+                <div class="feature-card">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">Blik vs Culture Amp</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Culture Amp started as an engagement survey tool, added performance management later. Users love the analytics, hate the complexity and cost. Data disappears after contract ends.
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Culture Amp Cost (50 people)</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--danger);">€15,000/year</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Blik Cost (50 people)</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">€588/year</div>
+                        </div>
+                    </div>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Real user pain points:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li>"Lost all historical data when we didn't renew" — vendor lock-in</li>
+                        <li>"Module-based pricing gets expensive fast" — hidden costs</li>
+                        <li>"Too many features we don't use" — overwhelming complexity</li>
+                    </ul>
+                    <a href="{% landing_url 'vs_culture_amp' %}" class="btn btn-secondary" style="display: inline-block;">Read Full Comparison →</a>
+                </div>
+
+                <!-- 15Five -->
+                <div class="feature-card">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">Blik vs 15Five</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        15Five positions as the "lightweight" alternative. Still costs €9,000/year for 50 people. Users complain about feature restrictions in lower tiers and forced weekly check-ins.
+                    </p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">15Five Cost (50 people)</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--danger);">€9,000/year</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Blik Cost (50 people)</div>
+                            <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">€588/year</div>
+                        </div>
+                    </div>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Real user pain points:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li>"Forced weekly check-ins feel micromanaging" — workflow rigidity</li>
+                        <li>"360 reviews locked behind highest tier" — feature gating</li>
+                        <li>"Per-user pricing adds up quickly" — cost scales badly</li>
+                    </ul>
+                    <a href="{% landing_url 'vs_15five' %}" class="btn btn-secondary" style="display: inline-block;">Read Full Comparison →</a>
+                </div>
+
+                <!-- Engagedly -->
+                <div class="feature-card">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">Blik vs Engagedly</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Engagedly wraps everything in gamification—badges, points, leaderboards. Users call it "poorly designed and not easy to follow/use." No spell check in review forms.
+                    </p>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Real user pain points:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li>"Very poorly designed and not easy to follow/use" — UX nightmare</li>
+                        <li>"Gamification feels childish for performance reviews" — mismatched approach</li>
+                        <li>"No spell check in feedback forms" — basic features missing</li>
+                    </ul>
+                    <a href="{% landing_url 'vs_engagedly' %}" class="btn btn-secondary" style="display: inline-block;">Read Full Comparison →</a>
+                </div>
+
+                <!-- Small Improvements -->
+                <div class="feature-card">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">Blik vs Small Improvements</h3>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Small Improvements is actually pretty good—clean UI, lightweight. The catch? SaaS-only, no self-hosting option. Still per-user pricing. If you like their philosophy, you'll like Blik.
+                    </p>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">Key differences:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li><strong>Deployment:</strong> Small Improvements = SaaS only, Blik = self-hosted OR SaaS</li>
+                        <li><strong>Focus:</strong> SI has 360s + 1-on-1s + objectives, Blik = pure 360 focus</li>
+                        <li><strong>Pricing:</strong> SI = per-user fees, Blik = flat rate or free</li>
+                    </ul>
+                    <a href="{% landing_url 'vs_small_improvements' %}" class="btn btn-secondary" style="display: inline-block;">Read Full Comparison →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Source Alternatives -->
+    <section id="open-source" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">vs Open Source Alternatives</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Free to use, but built for different use cases. Here's where they make sense—and where Blik is better.
+            </p>
+
+            <div style="display: grid; gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <!-- OrangeHRM -->
+                <div class="feature-card">
+                    <h3>Blik vs OrangeHRM</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        OrangeHRM is a full HRIS (payroll, leave, time tracking, benefits). Performance reviews are an add-on module, not the core focus. Great if you need a complete HR suite. Overkill if you just want 360 feedback.
+                    </p>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">When to choose OrangeHRM:</p>
+                    <ul style="margin-bottom: 1rem;">
+                        <li>You need full HRIS (payroll, time tracking, benefits)</li>
+                        <li>Performance management is secondary to HR admin</li>
+                    </ul>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">When to choose Blik:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li>You only need 360-degree feedback</li>
+                        <li>You want modern UX and pre-built questionnaires</li>
+                        <li>You already have HRIS and just need performance reviews</li>
+                    </ul>
+                    <a href="{% landing_url 'vs_orangehrm' %}" class="btn btn-secondary" style="display: inline-block;">Read Full Comparison →</a>
+                </div>
+
+                <!-- Odoo -->
+                <div class="feature-card">
+                    <h3>Blik vs Odoo HR</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Odoo is an ERP suite (CRM, inventory, accounting, HR). The HR module has basic appraisals. Great if you're already using Odoo for everything else. Not great if you just want standalone 360 feedback.
+                    </p>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">When to choose Odoo:</p>
+                    <ul style="margin-bottom: 1rem;">
+                        <li>You're already using Odoo ERP</li>
+                        <li>You need integrated CRM + HR + Accounting</li>
+                    </ul>
+                    <p style="font-weight: 600; margin-bottom: 1rem;">When to choose Blik:</p>
+                    <ul style="margin-bottom: 1.5rem;">
+                        <li>You want purpose-built 360 feedback tool</li>
+                        <li>You don't need full ERP complexity</li>
+                        <li>You want anonymous token-based reviews (Odoo doesn't have this)</li>
+                    </ul>
+                    <a href="{% landing_url 'vs_odoo' %}" class="btn btn-secondary" style="display: inline-block;">Read Full Comparison →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI Calculator CTA -->
+    <section id="calculator" class="section">
+        <div class="container">
+            <div class="cta-box" style="text-align: center;">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Calculate Your Actual Savings</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
+                    See exactly how much you'll save switching from Lattice, Culture Amp, or 15Five to Blik.
+                    Real pricing, no games.
+                </p>
+                <a href="{% landing_url 'roi_calculator' %}" class="btn btn-primary" style="display: inline-block; font-size: 1.125rem; padding: 1rem 2rem;">Open ROI Calculator →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Matrix -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Quick Decision Guide</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+                Still not sure? Here's who should pick what.
+            </p>
+
+            <div class="table-container" style="max-width: 1000px; margin: 0 auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">If You Need...</th>
+                            <th style="width: 60%;">Choose This</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Just 360 feedback, nothing else</strong></td>
+                            <td class="highlight-green"><strong>Blik</strong> — Purpose-built for this</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Full HRIS + Payroll + Benefits</strong></td>
+                            <td>OrangeHRM or Odoo — Blik is too focused</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise features + dedicated support</strong></td>
+                            <td>Lattice or Culture Amp — You'll pay for it</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Self-hosted + data control</strong></td>
+                            <td class="highlight-green"><strong>Blik</strong> — Only real option</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Save €10,000-15,000/year</strong></td>
+                            <td class="highlight-green"><strong>Blik</strong> — €588/year vs €9,000-18,000</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Architecture-based anonymity</strong></td>
+                            <td class="highlight-green"><strong>Blik</strong> — Token-based, untraceable</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pre-built questionnaires included</strong></td>
+                            <td class="highlight-green"><strong>Blik</strong> — 4 ready-to-use frameworks</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-box" style="text-align: center;">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Try Blik Without Risk</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
+                    Self-host for free forever, or try our managed hosting with a 14-day trial. No credit card required for self-hosting.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Self-Host (Free)</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted (14-Day Trial)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -145,6 +145,16 @@ def vs_odoo(request):
     return render(request, 'landing/vs_odoo.html')
 
 
+def vs_engagedly(request):
+    """Blik vs Engagedly comparison page."""
+    return render(request, 'landing/vs_engagedly.html')
+
+
+def vs_small_improvements(request):
+    """Blik vs Small Improvements comparison page."""
+    return render(request, 'landing/vs_small_improvements.html')
+
+
 def why_blik(request):
     """Why Blik exists - comprehensive differentiation page."""
     return render(request, 'landing/why_blik.html')
@@ -164,6 +174,26 @@ def people_analytics(request):
 def about(request):
     """About page - who built Blik and why."""
     return render(request, 'landing/about.html')
+
+
+def pricing(request):
+    """Pricing page - transparent, indexed pricing information."""
+    return render(request, 'landing/pricing.html')
+
+
+def faq(request):
+    """FAQ hub page - comprehensive frequently asked questions."""
+    return render(request, 'landing/faq.html')
+
+
+def alternatives(request):
+    """Alternatives comparison hub - compare Blik to all competitors."""
+    return render(request, 'landing/alternatives.html')
+
+
+def roi_calculator(request):
+    """ROI calculator - interactive savings calculator vs competitors."""
+    return render(request, 'landing/roi_calculator.html')
 
 
 # =============================================================================

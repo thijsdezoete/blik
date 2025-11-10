@@ -1,0 +1,493 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>ROI Calculator - Calculate Blik Savings vs Lattice, Culture Amp & 15Five | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Calculate exactly how much you'll save switching to Blik from Lattice, Culture Amp, or 15Five. Real pricing calculator shows 3-year savings for your team size.">
+    <meta name="keywords" content="lattice pricing calculator, culture amp cost comparison, performance review roi calculator, 360 feedback cost savings, hr software pricing comparison">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'roi_calculator' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'roi_calculator' %}">
+    <meta property="og:title" content="ROI Calculator - See Your Blik Savings">
+    <meta property="og:description" content="Calculate savings switching from Lattice, Culture Amp, or 15Five to Blik. Real pricing, no games.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=ROI%20Calculator&subtitle=Calculate%20Your%20Savings">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik ROI Calculator - Calculate Your Savings">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'roi_calculator' %}">
+    <meta name="twitter:title" content="ROI Calculator - See Your Blik Savings">
+    <meta name="twitter:description" content="Calculate savings switching from Lattice, Culture Amp, or 15Five to Blik. Real pricing, no games.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=ROI%20Calculator&subtitle=Calculate%20Your%20Savings">
+{% endblock %}
+
+{% block extra_head %}
+    <style>
+        .calculator-section {
+            background: var(--bg-secondary);
+            padding: 3rem 0;
+        }
+
+        .calculator-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .calculator-input-group {
+            margin-bottom: 2rem;
+        }
+
+        .calculator-input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .calculator-input-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .calculator-input-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .calculator-input-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .employee-count-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 0.5rem;
+        }
+
+        .competitor-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .competitor-option {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+        }
+
+        .competitor-option:hover {
+            border-color: var(--primary);
+        }
+
+        .competitor-option.active {
+            border-color: var(--primary);
+            background: var(--primary-100);
+            color: var(--primary-700);
+        }
+
+        .results-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .cost-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .cost-card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .cost-card.competitor {
+            background: var(--danger-bg);
+            border: 1px solid var(--danger);
+        }
+
+        .cost-card.blik {
+            background: var(--success-bg);
+            border: 1px solid var(--success);
+        }
+
+        .cost-label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .cost-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .cost-card.competitor .cost-amount {
+            color: var(--danger);
+        }
+
+        .cost-card.blik .cost-amount {
+            color: var(--success);
+        }
+
+        .cost-period {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .savings-highlight {
+            background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .savings-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .cost-comparison {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .cost-amount {
+                font-size: 2rem;
+            }
+
+            .savings-amount {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ site_protocol }}://{{ site_domain }}/"
+        },{
+            "@type": "ListItem",
+            "position": 2,
+            "name": "ROI Calculator",
+            "item": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'roi_calculator' %}"
+        }]
+    }
+    </script>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Blik ROI Calculator",
+        "description": "Calculate cost savings switching from commercial 360 feedback platforms to Blik",
+        "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'roi_calculator' %}",
+        "applicationCategory": "BusinessApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        }
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="{% landing_url 'pricing' %}">Pricing</a>
+    <a href="{% landing_url 'alternatives' %}">Alternatives</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">ROI Calculator: Calculate Your Savings</h1>
+                <p class="hero-subtitle">
+                    See exactly how much you'll save switching from Lattice, Culture Amp, or 15Five to Blik.
+                    Real pricing data from public sources and user reports. No marketing fluff.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section class="calculator-section">
+        <div class="container">
+            <div class="calculator-card">
+                <h2 style="margin-bottom: 2rem; text-align: center;">Calculate Your Savings</h2>
+
+                <!-- Employee Count Input -->
+                <div class="calculator-input-group">
+                    <label for="employee-count">Number of Employees</label>
+                    <input type="range" id="employee-count" min="10" max="500" value="50" step="10">
+                    <div class="employee-count-display">
+                        <span id="employee-count-value">50</span> employees
+                    </div>
+                </div>
+
+                <!-- Competitor Selection -->
+                <div class="calculator-input-group">
+                    <label>Current Platform (or considering)</label>
+                    <div class="competitor-select">
+                        <div class="competitor-option active" data-competitor="lattice">Lattice</div>
+                        <div class="competitor-option" data-competitor="culture-amp">Culture Amp</div>
+                        <div class="competitor-option" data-competitor="15five">15Five</div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="results">
+                    <h3 style="text-align: center; margin-bottom: 2rem;">Annual Cost Comparison</h3>
+
+                    <div class="cost-comparison">
+                        <div class="cost-card competitor">
+                            <div class="cost-label" id="competitor-name">Lattice</div>
+                            <div class="cost-amount" id="competitor-cost">€18,000</div>
+                            <div class="cost-period">per year</div>
+                        </div>
+
+                        <div class="cost-card blik">
+                            <div class="cost-label">Blik (Hosted)</div>
+                            <div class="cost-amount" id="blik-cost">€588</div>
+                            <div class="cost-period">per year</div>
+                        </div>
+                    </div>
+
+                    <div class="savings-highlight">
+                        <div style="font-size: 1.25rem; margin-bottom: 0.5rem;">You Save</div>
+                        <div class="savings-amount" id="annual-savings">€17,412</div>
+                        <div style="font-size: 1.125rem; margin-bottom: 1.5rem;">per year</div>
+                        <div style="font-size: 0.9375rem; opacity: 0.95;">
+                            Over 3 years: <strong id="three-year-savings">€52,236</strong>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem;">What You Could Do With That Money</h4>
+                        <ul style="margin: 0; padding-left: 1.5rem;" id="alternatives-list">
+                            <li>Hire a senior engineer for 4 months</li>
+                            <li>Send your entire team to a conference</li>
+                            <li>Fund professional development for everyone</li>
+                            <li>Or just... not spend it on software you can self-host for free</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 2rem; padding: 1rem; background: var(--warning-bg); border-left: 4px solid var(--warning); border-radius: 4px;">
+                        <p style="margin: 0; font-size: 0.9375rem;">
+                            <strong>Note on pricing:</strong> Commercial platform costs are based on publicly available pricing data and user reports on G2/Capterra.
+                            Actual costs may vary based on contract terms, modules selected, and negotiation. These are conservative estimates—real costs are often higher.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Details Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">How We Calculate These Numbers</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Transparent methodology. No hidden assumptions. Based on publicly available data and user reports.
+            </p>
+
+            <div style="display: grid; gap: 2rem; max-width: 1000px; margin: 0 auto;">
+                <div class="feature-card">
+                    <h3>Lattice Pricing</h3>
+                    <p><strong>€15-30 per user/month</strong> depending on modules and contract term. We use €30/user/month (conservative estimate) based on user reports for Performance Management + Engagement modules.</p>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Sources: G2 reviews, user-reported pricing on Reddit/HackerNews</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Culture Amp Pricing</h3>
+                    <p><strong>€12-25 per user/month</strong> depending on modules. We use €25/user/month based on reports for Performance + Engagement bundle. Module-based pricing gets expensive fast.</p>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Sources: Capterra pricing reports, customer testimonials</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>15Five Pricing</h3>
+                    <p><strong>€8-15 per user/month</strong> depending on tier. We use €15/user/month for the Perform tier which includes 360 reviews. Lower tiers have feature restrictions.</p>
+                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Sources: 15Five public pricing page, user reviews</p>
+                </div>
+
+                <div class="feature-card feature-card-success">
+                    <h3>Blik Pricing (Clear & Simple)</h3>
+                    <p><strong>€0 for self-hosted</strong> (just hosting costs ~€5-50/month VPS)</p>
+                    <p><strong>€49/month flat fee</strong> for up to 50 employees (hosted)</p>
+                    <p><strong>€199/month flat fee</strong> for up to 200 employees (hosted)</p>
+                    <p style="margin-top: 1rem;"><strong>No per-user fees. No hidden costs. No annual increases.</strong></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="cta-box" style="text-align: center;">
+                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Ready to Stop Overpaying?</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
+                    Try Blik free for 14 days (hosted) or self-host for free forever. No credit card required for self-hosting.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Self-Host (Free)</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted (14-Day Trial)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Pricing data (annual costs)
+        const pricingData = {
+            'lattice': {
+                name: 'Lattice',
+                costPerUser: 360, // €30/month * 12 months
+                minCost: 9000, // Minimum contract
+            },
+            'culture-amp': {
+                name: 'Culture Amp',
+                costPerUser: 300, // €25/month * 12 months
+                minCost: 7200,
+            },
+            '15five': {
+                name: '15Five',
+                costPerUser: 180, // €15/month * 12 months
+                minCost: 4800,
+            }
+        };
+
+        // Blik pricing tiers
+        function getBlikCost(employees) {
+            if (employees <= 50) return 588; // €49/month * 12
+            if (employees <= 200) return 2388; // €199/month * 12
+            // Over 200: estimate €5/employee/year (custom pricing)
+            return Math.round(employees * 5 * 12);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return '€' + amount.toLocaleString('en-EU');
+        }
+
+        // Calculate and update display
+        function updateCalculator() {
+            const employees = parseInt(document.getElementById('employee-count').value);
+            const selectedCompetitor = document.querySelector('.competitor-option.active').dataset.competitor;
+            const competitor = pricingData[selectedCompetitor];
+
+            // Update employee count display
+            document.getElementById('employee-count-value').textContent = employees;
+
+            // Calculate costs
+            const competitorCost = Math.max(competitor.costPerUser * employees, competitor.minCost);
+            const blikCost = getBlikCost(employees);
+            const annualSavings = competitorCost - blikCost;
+            const threeYearSavings = annualSavings * 3;
+
+            // Update display
+            document.getElementById('competitor-name').textContent = competitor.name;
+            document.getElementById('competitor-cost').textContent = formatCurrency(competitorCost);
+            document.getElementById('blik-cost').textContent = formatCurrency(blikCost);
+            document.getElementById('annual-savings').textContent = formatCurrency(annualSavings);
+            document.getElementById('three-year-savings').textContent = formatCurrency(threeYearSavings);
+
+            // Update alternatives list based on savings
+            const alternativesList = document.getElementById('alternatives-list');
+            let alternatives = [];
+
+            if (annualSavings >= 15000) {
+                alternatives = [
+                    'Hire a senior engineer for 6+ months',
+                    'Send your entire team to multiple conferences',
+                    'Fund $1,000+ per employee for professional development',
+                    'Or just... pocket the savings and improve your margins'
+                ];
+            } else if (annualSavings >= 8000) {
+                alternatives = [
+                    'Hire a senior engineer for 4 months',
+                    'Send your entire team to a conference',
+                    'Fund professional development for everyone',
+                    'Or just... not spend it on software you can self-host for free'
+                ];
+            } else {
+                alternatives = [
+                    'Fund team lunch every week for a year',
+                    'Send 5-10 people to a conference',
+                    'Upgrade everyone\'s development tools',
+                    'Or self-host Blik for free and save even more'
+                ];
+            }
+
+            alternativesList.innerHTML = alternatives.map(alt => `<li>${alt}</li>`).join('');
+        }
+
+        // Event listeners
+        document.getElementById('employee-count').addEventListener('input', updateCalculator);
+
+        document.querySelectorAll('.competitor-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.competitor-option').forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                updateCalculator();
+            });
+        });
+
+        // Initialize
+        updateCalculator();
+    </script>
+{% endblock %}

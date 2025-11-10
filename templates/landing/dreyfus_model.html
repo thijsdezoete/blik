@@ -14,16 +14,18 @@
     <meta property="og:title" content="Developer Competency Framework: Dreyfus Model (Novice to Expert)">
     <meta property="og:description" content="Research-backed framework used by Stripe, Thoughtbot, and hundreds of engineering teams to evaluate developer skills and build career ladders.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Dreyfus%20Model&subtitle=Novice%20to%20Expert%20Framework">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Dreyfus Model - Novice to Expert Framework">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'dreyfus_model' %}">
     <meta name="twitter:title" content="Developer Competency Framework: Dreyfus Model (Novice to Expert)">
     <meta name="twitter:description" content="Research-backed framework used by Stripe, Thoughtbot, and hundreds of engineering teams to evaluate developer skills and build career ladders.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Dreyfus%20Model&subtitle=Novice%20to%20Expert%20Framework">
 {% endblock %}
 
 {% block extra_head %}
@@ -592,6 +594,34 @@
                             <span style="color: var(--text-secondary);">10-dimension competency framework (inspiration for Blik defaults)</span>
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Frameworks Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Complete Your Performance Framework</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                The Dreyfus Model measures <strong>technical skill</strong>, but that's only half the picture. High performers combine skill with ownership mindset.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <div class="feature-card">
+                    <h3 style="margin-bottom: 1rem;">5 Levels of Agency</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Technical skill alone doesn't predict performance. Learn how to identify high-agency employees who operate autonomously vs those who wait for instructions.
+                    </p>
+                    <a href="{% landing_url 'agency_levels' %}" class="btn btn-secondary" style="display: inline-block;">Read Agency Framework →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="margin-bottom: 1rem;">Performance Matrix</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        See how Dreyfus skill levels + Agency levels create four archetypes: Force Multipliers, Brilliant Passengers, Stalled Juniors, and Risk Takers.
+                    </p>
+                    <a href="{% landing_url 'performance_matrix' %}" class="btn btn-secondary" style="display: inline-block;">See the Matrix →</a>
                 </div>
             </div>
         </div>

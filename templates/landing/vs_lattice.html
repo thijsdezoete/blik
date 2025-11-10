@@ -30,6 +30,27 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Lattice&subtitle=Privacy-First%20Alternative">
 {% endblock %}
 
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Blik vs Lattice - Privacy-First Alternative Comparison",
+        "description": "Detailed comparison of Blik open source 360 feedback platform vs Lattice enterprise performance management",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-10",
+        "dateModified": "2025-11-10"
+    }
+    </script>
+{% endblock %}
+
 {% block nav_links %}
     <a href="#overview">Overview</a>
     <a href="#pricing">Pricing</a>
@@ -64,7 +85,7 @@
                 The fundamental differences between Blik and Lattice
             </p>
 
-            <div style="overflow-x: auto;">
+            <div class="table-container">
                 <table class="comparison-table">
                     <thead>
                         <tr>
@@ -76,53 +97,53 @@
                     <tbody>
                         <tr>
                             <td><strong>Deployment Options</strong></td>
-                            <td class="highlight-green">SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
-                            <td class="highlight-red">SaaS only<br><small>Their servers, their terms</small></td>
+                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Their servers, their terms</small></td>
                         </tr>
                         <tr>
                             <td><strong>SaaS Pricing</strong></td>
-                            <td class="highlight-green">€49/month flat rate<br><small>Unlimited users</small></td>
-                            <td class="highlight-red">$11-25/user/month<br><small>+ $4,000 minimum</small></td>
+                            <td>€49/month flat rate<br><small>Unlimited users</small></td>
+                            <td>$11-25/user/month<br><small>+ $4,000 minimum</small></td>
                         </tr>
                         <tr>
                             <td><strong>Implementation Cost</strong></td>
-                            <td class="highlight-green">$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
-                            <td class="highlight-red">Not disclosed publicly<br><small>Typical enterprise onboarding fees</small></td>
+                            <td>$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
+                            <td>Not disclosed publicly<br><small>Typical enterprise onboarding fees</small></td>
                         </tr>
                         <tr>
                             <td><strong>True Anonymity</strong></td>
-                            <td class="highlight-green">✓ Cryptographically guaranteed<br><small>Admins cannot identify reviewers</small></td>
-                            <td class="highlight-yellow">⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
+                            <td>✓ Cryptographically guaranteed<br><small>Admins cannot identify reviewers</small></td>
+                            <td>⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
                         </tr>
                         <tr>
                             <td><strong>Mobile Experience</strong></td>
-                            <td class="highlight-green">Fully responsive web<br><small>Works on all devices</small></td>
-                            <td class="highlight-red">"Clunky, limited"<br><small>Peer assessments unavailable</small></td>
+                            <td>Fully responsive web<br><small>Works on all devices</small></td>
+                            <td>"Clunky, limited"<br><small>Peer assessments unavailable</small></td>
                         </tr>
                         <tr>
                             <td><strong>HRIS Integration</strong></td>
-                            <td class="highlight-green">Direct data access<br><small>No vendor lock-in</small></td>
-                            <td class="highlight-yellow">⚠ Cannot map ADP fields<br><small>Must create custom fields</small></td>
+                            <td>Direct data access<br><small>No vendor lock-in</small></td>
+                            <td>⚠ Cannot map ADP fields<br><small>Must create custom fields</small></td>
                         </tr>
                         <tr>
                             <td><strong>Calendar Integration</strong></td>
-                            <td class="highlight-green">Standard iCal/Outlook<br><small>Works with any calendar</small></td>
-                            <td class="highlight-red">Proprietary calendar<br><small>"Can't link to Outlook"</small></td>
+                            <td>Standard iCal/Outlook<br><small>Works with any calendar</small></td>
+                            <td>Proprietary calendar<br><small>"Can't link to Outlook"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Navigation Complexity</strong></td>
-                            <td class="highlight-green">Clean, focused interface<br><small>Minimal clicks</small></td>
-                            <td class="highlight-red">"Too many clicks"<br><small>Features feel buried</small></td>
+                            <td>Clean, focused interface<br><small>Minimal clicks</small></td>
+                            <td>"Too many clicks"<br><small>Features feel buried</small></td>
                         </tr>
                         <tr>
                             <td><strong>Psychological Insights</strong></td>
-                            <td class="highlight-green">✓ Dreyfus skill mapping<br>✓ Perception gap detection</td>
-                            <td class="highlight-yellow">Basic analytics only</td>
+                            <td>✓ Dreyfus skill mapping<br>✓ Perception gap detection</td>
+                            <td>Basic analytics only</td>
                         </tr>
                         <tr>
                             <td><strong>Open Source</strong></td>
-                            <td class="highlight-green">✓ AGPLv3 license<br><small>Audit the code yourself</small></td>
-                            <td class="highlight-red">✗ Proprietary closed-source</td>
+                            <td>✓ AGPLv3 license<br><small>Audit the code yourself</small></td>
+                            <td>✗ Proprietary closed-source</td>
                         </tr>
                     </tbody>
                 </table>

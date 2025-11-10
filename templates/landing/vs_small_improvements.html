@@ -1,0 +1,374 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Blik vs Small Improvements - Honest Comparison | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Comparing Blik and Small Improvements: self-hosted vs SaaS-only, 360° focus vs lightweight feedback, transparent pricing vs per-user costs.">
+    <meta name="keywords" content="Blik vs Small Improvements, Small Improvements alternative, 360 feedback comparison, self-hosted performance review">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-small-improvements/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-small-improvements/">
+    <meta property="og:title" content="Blik vs Small Improvements - Self-Hosted vs Lightweight SaaS">
+    <meta property="og:description" content="Open source 360° feedback vs. lightweight SaaS. Both keep it simple—one gives you control.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Small%20Improvements&subtitle=Self-Hosted%20vs%20SaaS">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik vs Small Improvements - Self-Hosted vs Lightweight SaaS">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-small-improvements/">
+    <meta name="twitter:title" content="Blik vs Small Improvements - Self-Hosted vs Lightweight SaaS">
+    <meta name="twitter:description" content="Open source 360° feedback vs. lightweight SaaS. Both keep it simple—one gives you control.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Small%20Improvements&subtitle=Self-Hosted%20vs%20SaaS">
+{% endblock %}
+
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Blik vs Small Improvements - Control vs Convenience Comparison",
+        "description": "Comparison of Blik open source self-hosted 360 feedback vs Small Improvements lightweight SaaS platform",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-10",
+        "dateModified": "2025-11-10"
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="#overview">Overview</a>
+    <a href="#philosophy">Philosophy</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#features">Features</a>
+    <a href="#decision">Right Choice</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Blik vs Small Improvements: Control vs Convenience</h1>
+                <p class="hero-subtitle">
+                    Small Improvements is lightweight SaaS - 360s, 1-on-1s, objectives, clean UI. Blik is open source, focused just on 360° feedback. Similar philosophy about avoiding bloat, different deployment models.
+                </p>
+                <div class="hero-cta">
+                    <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Blik</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Comparison Table -->
+    <section id="overview" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">At a Glance</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+                How Blik and Small Improvements compare
+            </p>
+
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Feature</th>
+                            <th style="width: 30%;">Blik</th>
+                            <th style="width: 30%;">Small Improvements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Deployment</strong></td>
+                            <td class="highlight-green">Self-hosted OR SaaS<br><small>Your choice</small></td>
+                            <td class="highlight-red">SaaS only<br><small>Their servers only</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Open Source</strong></td>
+                            <td class="highlight-green">✓ AGPL licensed<br><small>Full code transparency</small></td>
+                            <td class="highlight-red">✗ Proprietary<br><small>Closed source</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pricing</strong></td>
+                            <td class="highlight-green">€49/mo (SaaS) or Free<br><small>Unlimited users, transparent</small></td>
+                            <td class="highlight-yellow">$7-15/user/month<br><small>Scales with headcount</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>360° Feedback</strong></td>
+                            <td class="highlight-green">✓ Core focus<br><small>4 research-backed questionnaires</small></td>
+                            <td class="highlight-green">✓ Supported<br><small>Custom feedback cycles</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>True Anonymity</strong></td>
+                            <td class="highlight-green">✓ Cryptographic guarantee<br><small>Admin cannot de-anonymize</small></td>
+                            <td class="highlight-yellow">⚠ Standard anonymous<br><small>Platform controls data</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>People Analytics</strong></td>
+                            <td class="highlight-green">✓ Automated insights<br><small>Dreyfus model, perception gaps</small></td>
+                            <td class="highlight-yellow">Basic reports<br><small>Manual interpretation</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Ownership</strong></td>
+                            <td class="highlight-green">100% yours<br><small>Self-host or export anytime</small></td>
+                            <td class="highlight-red">Vendor-owned<br><small>Limited export options</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>1-on-1s & Objectives</strong></td>
+                            <td class="highlight-red">✗ Not included<br><small>Focused on 360° only</small></td>
+                            <td class="highlight-green">✓ Core features<br><small>Meeting notes, goal tracking</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy -->
+    <section id="philosophy" class="section">
+        <div class="container">
+            <h2 class="section-title">Shared Philosophy: Simplicity Over Feature Bloat</h2>
+
+            <div style="max-width: 800px; margin: 0 auto; padding: 2rem; background: var(--background-alt); border-radius: 8px;">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    Both tools avoid the "do everything badly" trap of enterprise HR platforms. Keep it simple, do it well.
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    <strong>Where we differ:</strong> Small Improvements is lightweight SaaS. Blik is lightweight and open source. Same idea about simplicity, different control model.
+                </p>
+                <p style="color: var(--text-secondary);">
+                    If you want Small Improvements' philosophy but with self-hosting, that's basically what Blik is.
+                </p>
+            </div>
+
+            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card">
+                    <h3>What Blik Does</h3>
+                    <ul style="text-align: left;">
+                        <li>360° multi-rater feedback</li>
+                        <li>Anonymous peer reviews</li>
+                        <li>Role-specific questionnaires</li>
+                        <li>Automated people analytics</li>
+                        <li>Performance insights</li>
+                    </ul>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        <strong>What Blik doesn't do:</strong> OKRs, 1-on-1s, continuous feedback, engagement surveys. Use other tools for those.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>What Small Improvements Does</h3>
+                    <ul style="text-align: left;">
+                        <li>360° feedback cycles</li>
+                        <li>1-on-1 meeting notes</li>
+                        <li>Objectives & key results</li>
+                        <li>Continuous feedback</li>
+                        <li>Praise & recognition</li>
+                    </ul>
+                    <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                        <strong>Broader scope:</strong> Covers more of the continuous performance management workflow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Pricing Models</h2>
+
+            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card">
+                    <h3>Blik Pricing</h3>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin: 1rem 0;">Free or €49/mo</div>
+                    <ul style="text-align: left;">
+                        <li><strong>Self-hosted:</strong> €0/month forever</li>
+                        <li><strong>SaaS:</strong> €49/month flat rate</li>
+                        <li>Unlimited users in both cases</li>
+                        <li>No per-user fees as you grow</li>
+                        <li>No contracts, cancel anytime</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Small Improvements Pricing</h3>
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--text-secondary); margin: 1rem 0;">$7-15/user/mo</div>
+                    <ul style="text-align: left;">
+                        <li><strong>Essentials:</strong> $7/user/month</li>
+                        <li><strong>Business:</strong> $11/user/month</li>
+                        <li><strong>Enterprise:</strong> $15/user/month</li>
+                        <li>Cost scales linearly with team size</li>
+                        <li>Annual contracts for discount</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="comparison-info-box" style="text-align: center;">
+                <h3 class="mb-4">Cost Example: 50-person company</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--primary);">€0/year</div>
+                        <div style="color: var(--text-secondary);">Blik Self-Hosted</div>
+                        <div style="font-size: 0.875rem; margin-top: 0.5rem;">+ your hosting costs</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold; color: var(--primary);">€588/year</div>
+                        <div style="color: var(--text-secondary);">Blik SaaS</div>
+                        <div style="font-size: 0.875rem; margin-top: 0.5rem;">No per-user fees</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold; color: #dc3545;">$4,200-9,000/year</div>
+                        <div style="color: var(--text-secondary);">Small Improvements</div>
+                        <div style="font-size: 0.875rem; margin-top: 0.5rem;">Depends on plan tier</div>
+                    </div>
+                </div>
+                <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    At 50 users: Blik saves you $3,600-8,400 annually vs Small Improvements. At 200 users: $14,000-34,000 saved.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Comparison -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title">Feature Comparison</h2>
+
+            <div class="comparison-grid" style="margin-top: 3rem;">
+                <div class="comparison-item">
+                    <h3>360° Feedback Cycles</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>4 pre-built questionnaires (software engineering, manager, professional, quick). Cryptographic anonymity. Automated Dreyfus skill assessment.</p>
+                        </div>
+                        <div>
+                            <strong>Small Improvements:</strong>
+                            <p>Flexible feedback cycles with custom questions. Anonymous option. Manual review process.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>Continuous Feedback</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>Not included. Focused on structured 360° review cycles only. Integrate with Slack/Teams for ad-hoc feedback.</p>
+                        </div>
+                        <div>
+                            <strong>Small Improvements:</strong>
+                            <p>Built-in praise, feedback requests, and continuous feedback between cycles. Core feature.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>1-on-1 Meetings</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>Not included. Use your preferred tool (Notion, Google Docs, etc.) for meeting notes.</p>
+                        </div>
+                        <div>
+                            <strong>Small Improvements:</strong>
+                            <p>Shared meeting notes, talking points, action items. Integrated with feedback and objectives.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>Analytics & Insights</h3>
+                    <div class="comparison-detail">
+                        <div>
+                            <strong>Blik:</strong>
+                            <p>Automated people analytics: Dreyfus competency model, perception gap analysis, peer benchmarks. AI-driven insights.</p>
+                        </div>
+                        <div>
+                            <strong>Small Improvements:</strong>
+                            <p>Reports on feedback completion, ratings trends, objectives progress. Manual interpretation required.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Guide -->
+    <section id="decision" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Which Should You Choose?</h2>
+
+            <div class="decision-grid" style="margin-top: 3rem;">
+                <div class="decision-card">
+                    <h3>Choose Blik If...</h3>
+                    <ul>
+                        <li>You want self-hosting capability and data ownership</li>
+                        <li>You prefer open source over proprietary software</li>
+                        <li>You need flat-rate or free pricing (no per-user costs)</li>
+                        <li>360° feedback is your primary need</li>
+                        <li>You want automated people analytics (Dreyfus model)</li>
+                        <li>True cryptographic anonymity matters</li>
+                        <li>You're comfortable without 1-on-1s/OKRs in same tool</li>
+                    </ul>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem;">Try Blik</a>
+                </div>
+
+                <div class="decision-card">
+                    <h3>Choose Small Improvements If...</h3>
+                    <ul>
+                        <li>You want an all-in-one lightweight performance tool</li>
+                        <li>1-on-1s and continuous feedback are important</li>
+                        <li>You need objectives/goals tracking integrated</li>
+                        <li>You prefer fully-managed SaaS (no self-hosting)</li>
+                        <li>You're okay with per-user pricing</li>
+                        <li>Standard "anonymous" surveys are sufficient</li>
+                        <li>You want a more comprehensive feature set</li>
+                    </ul>
+                    <a href="https://www.small-improvements.com/" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem;">Visit Small Improvements</a>
+                </div>
+            </div>
+
+            <div class="comparison-cta-box" style="text-align: center;">
+                <h3 class="mb-4">Both Are Great—Choose Your Priority</h3>
+                <p style="margin-bottom: 1rem;">
+                    If you need a lightweight, integrated performance management workflow and don't mind SaaS, Small Improvements is excellent.
+                </p>
+                <p>
+                    If you want focused 360° feedback with <strong>data ownership, open source transparency, and no per-user costs</strong>, Blik is your choice.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Want Control + Simplicity?</h2>
+                <p>Self-host Blik for free or use our SaaS at €49/month. No per-user fees.</p>
+                <div class="cta-buttons">
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Get Started</a>
+                    <a href="{% landing_url 'open_source' %}" class="btn btn-outline">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

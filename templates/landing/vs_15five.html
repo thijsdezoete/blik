@@ -30,6 +30,27 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%2015Five&subtitle=No%20Billing%20Traps%2C%20No%20Survey%20Fatigue">
 {% endblock %}
 
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Blik vs 15Five - Transparent Pricing vs Billing Traps Comparison",
+        "description": "Honest comparison of Blik open source platform vs 15Five continuous feedback platform focusing on pricing and survey quality",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-10",
+        "dateModified": "2025-11-10"
+    }
+    </script>
+{% endblock %}
+
 {% block nav_links %}
     <a href="#overview">Overview</a>
     <a href="#billing">Billing</a>
@@ -65,7 +86,7 @@
                 The critical differences between Blik and 15Five
             </p>
 
-            <div style="overflow-x: auto;">
+            <div class="table-container">
                 <table class="comparison-table">
                     <thead>
                         <tr>
@@ -77,58 +98,58 @@
                     <tbody>
                         <tr>
                             <td><strong>Deployment Options</strong></td>
-                            <td class="highlight-green">SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
-                            <td class="highlight-red">SaaS only<br><small>Vendor lock-in</small></td>
+                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Vendor lock-in</small></td>
                         </tr>
                         <tr>
                             <td><strong>SaaS Pricing Model</strong></td>
-                            <td class="highlight-green">€49/month flat rate<br><small>Unlimited users</small></td>
-                            <td class="highlight-red">$4-16/user/month<br><small>Scales with headcount</small></td>
+                            <td>€49/month flat rate<br><small>Unlimited users</small></td>
+                            <td>$4-16/user/month<br><small>Scales with headcount</small></td>
                         </tr>
                         <tr>
                             <td><strong>Implementation Cost</strong></td>
-                            <td class="highlight-green">$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
-                            <td class="highlight-yellow">Minimal (SaaS)<br><small>But billing traps await</small></td>
+                            <td>$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
+                            <td>Minimal (SaaS)<br><small>But billing traps await</small></td>
                         </tr>
                         <tr>
                             <td><strong>Billing for Temporary Adds</strong></td>
-                            <td class="highlight-green">No per-user billing<br><small>Add anyone, anytime</small></td>
-                            <td class="highlight-red">"Bills immediately for 1 day"<br><small>"Most dodgy SaaS product"</small></td>
+                            <td>No per-user billing<br><small>Add anyone, anytime</small></td>
+                            <td>"Bills immediately for 1 day"<br><small>"Most dodgy SaaS product"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Refund Policy</strong></td>
-                            <td class="highlight-green">Reasonable cancellation<br><small>Self-hosted = full control</small></td>
-                            <td class="highlight-red">"Absolutely no refund"<br><small>"Non-refundable, non-cancellable"</small></td>
+                            <td>Reasonable cancellation<br><small>Self-hosted = full control</small></td>
+                            <td>"Absolutely no refund"<br><small>"Non-refundable, non-cancellable"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Survey Freshness</strong></td>
-                            <td class="highlight-green">Flexible questionnaires<br><small>Customize every cycle</small></td>
-                            <td class="highlight-red">"Sharp engagement drop after 7 months"<br><small>"Questions become repetitive"</small></td>
+                            <td>Flexible questionnaires<br><small>Customize every cycle</small></td>
+                            <td>"Sharp engagement drop after 7 months"<br><small>"Questions become repetitive"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Deployment Control</strong></td>
-                            <td class="highlight-green">Self-hosted or managed<br><small>Your servers, your rules</small></td>
-                            <td class="highlight-red">SaaS only<br><small>"Can't cancel, can't pause"</small></td>
+                            <td>Self-hosted or managed<br><small>Your servers, your rules</small></td>
+                            <td>SaaS only<br><small>"Can't cancel, can't pause"</small></td>
                         </tr>
                         <tr>
                             <td><strong>True Anonymity</strong></td>
-                            <td class="highlight-green">✓ Cryptographically guaranteed<br><small>Impossible to trace reviewers</small></td>
-                            <td class="highlight-yellow">⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
+                            <td>✓ Cryptographically guaranteed<br><small>Impossible to trace reviewers</small></td>
+                            <td>⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
                         </tr>
                         <tr>
                             <td><strong>SSO Access</strong></td>
-                            <td class="highlight-green">Standard feature<br><small>No upgrade required</small></td>
-                            <td class="highlight-red">$8/user tier only<br><small>Paywall for security</small></td>
+                            <td>Standard feature<br><small>No upgrade required</small></td>
+                            <td>$8/user tier only<br><small>Paywall for security</small></td>
                         </tr>
                         <tr>
                             <td><strong>HRIS Connectors</strong></td>
-                            <td class="highlight-green">Direct integration<br><small>Your data, your control</small></td>
-                            <td class="highlight-red">$540/year for Justworks<br><small>Extra fees for connections</small></td>
+                            <td>Direct integration<br><small>Your data, your control</small></td>
+                            <td>$540/year for Justworks<br><small>Extra fees for connections</small></td>
                         </tr>
                         <tr>
                             <td><strong>Cancellation Process</strong></td>
-                            <td class="highlight-green">Self-hosted = cancel anytime<br><small>No vendor lock-in</small></td>
-                            <td class="highlight-red">"Cannot unsubscribe via platform"<br><small>"30-day notice period"</small></td>
+                            <td>Self-hosted = cancel anytime<br><small>No vendor lock-in</small></td>
+                            <td>"Cannot unsubscribe via platform"<br><small>"30-day notice period"</small></td>
                         </tr>
                     </tbody>
                 </table>

@@ -602,6 +602,10 @@
     color: var(--primary);
 }
 
+.landing-page .footer .btn-primary {
+    color: white;
+}
+
 .landing-page .footer-bottom {
     border-top: 1px solid var(--border);
     padding-top: 1.5rem;
@@ -1179,6 +1183,200 @@
 [data-theme="dark"] .landing-page .table tbody tr[style*="border-left: 3px solid var(--warning)"],
 [data-theme="dark"] .landing-page .table tbody tr[style*="border-left: 4px solid var(--warning)"] {
     background: rgba(52, 211, 153, 0.08);
+}
+
+/* ==================== Comparison Pages ==================== */
+
+/* Comparison table styles */
+.landing-page .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.landing-page .comparison-table th,
+.landing-page .comparison-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.landing-page .comparison-table th {
+    background: var(--bg-secondary);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.landing-page .comparison-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.landing-page .comparison-table tbody tr:hover {
+    background: var(--bg-light);
+}
+
+.landing-page .comparison-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Table cell highlights */
+.landing-page .comparison-table .highlight-green {
+    background: var(--success-50);
+}
+
+.landing-page .comparison-table .highlight-yellow {
+    background: var(--warning-50);
+}
+
+.landing-page .comparison-table .highlight-red {
+    background: var(--danger-50);
+}
+
+[data-theme="dark"] .landing-page .comparison-table .highlight-green {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+[data-theme="dark"] .landing-page .comparison-table .highlight-yellow {
+    background: rgba(245, 158, 11, 0.1);
+}
+
+[data-theme="dark"] .landing-page .comparison-table .highlight-red {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Comparison warning/info boxes */
+.landing-page .comparison-warning-box {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--warning-50);
+    border-left: 4px solid var(--warning);
+    border-radius: 4px;
+}
+
+[data-theme="dark"] .landing-page .comparison-warning-box {
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.landing-page .comparison-info-box {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+}
+
+.landing-page .comparison-cta-box {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--primary-gradient);
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+}
+
+.landing-page .comparison-cta-box h3 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+/* Crosslink section */
+.landing-page .crosslink-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+}
+
+.landing-page .crosslink-section h4 {
+    margin-bottom: 1rem;
+}
+
+.landing-page .crosslink-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.landing-page .crosslink-links a {
+    color: var(--primary);
+}
+
+/* Decision cards */
+.landing-page .decision-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.landing-page .decision-card {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.landing-page .decision-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.landing-page .decision-card ul {
+    list-style: none;
+    margin-bottom: 2rem;
+}
+
+.landing-page .decision-card ul li {
+    padding: 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-primary);
+}
+
+.landing-page .decision-card ul li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Comparison grid for feature comparisons */
+.landing-page .comparison-grid {
+    margin-top: 3rem;
+    display: grid;
+    gap: 2rem;
+}
+
+.landing-page .comparison-item {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.landing-page .comparison-item h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.landing-page .comparison-detail {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.landing-page .comparison-detail > div {
+    padding: 1rem;
+    background: var(--bg-light);
+    border-radius: 6px;
+}
+
+.landing-page .comparison-detail strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
 }
 
 /* Level cards on agency page */

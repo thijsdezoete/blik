@@ -30,6 +30,27 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Culture%20Amp&subtitle=Data%20Protection%20%26%20True%20Anonymity">
 {% endblock %}
 
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Blik vs Culture Amp - Data Protection and Anonymity Comparison",
+        "description": "Comparison of Blik open source platform vs Culture Amp focusing on data loss prevention and true anonymity",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-10",
+        "dateModified": "2025-11-10"
+    }
+    </script>
+{% endblock %}
+
 {% block nav_links %}
     <a href="#overview">Overview</a>
     <a href="#data-loss">Data Loss</a>
@@ -64,7 +85,7 @@
                 The critical differences between Blik and Culture Amp
             </p>
 
-            <div style="overflow-x: auto;">
+            <div class="table-container">
                 <table class="comparison-table">
                     <thead>
                         <tr>
@@ -76,58 +97,58 @@
                     <tbody>
                         <tr>
                             <td><strong>Deployment Options</strong></td>
-                            <td class="highlight-green">SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
-                            <td class="highlight-red">SaaS only<br><small>Their servers, their pricing</small></td>
+                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Their servers, their pricing</small></td>
                         </tr>
                         <tr>
                             <td><strong>Work Loss Protection</strong></td>
-                            <td class="highlight-green">✓ Auto-save, no timeouts<br><small>Your work is always protected</small></td>
-                            <td class="highlight-red">✗ Timeout deletes work<br><small>"An hour of writing, POOF! All lost"</small></td>
+                            <td>✓ Auto-save, no timeouts<br><small>Your work is always protected</small></td>
+                            <td>✗ Timeout deletes work<br><small>"An hour of writing, POOF! All lost"</small></td>
                         </tr>
                         <tr>
                             <td><strong>SaaS Pricing Stability</strong></td>
-                            <td class="highlight-green">€49/month flat rate<br><small>No renewal surprises</small></td>
-                            <td class="highlight-red">20% renewal increases<br><small>"Refused relief until we involved VP Finance"</small></td>
+                            <td>€49/month flat rate<br><small>No renewal surprises</small></td>
+                            <td>20% renewal increases<br><small>"Refused relief until we involved VP Finance"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Implementation Cost</strong></td>
-                            <td class="highlight-green">$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
-                            <td class="highlight-red">$1,000-$20,000+<br><small>Plus ongoing consultant fees</small></td>
+                            <td>$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
+                            <td>$1,000-$20,000+<br><small>Plus ongoing consultant fees</small></td>
                         </tr>
                         <tr>
                             <td><strong>True Anonymity</strong></td>
-                            <td class="highlight-green">✓ Cryptographically guaranteed<br><small>Technically impossible to trace</small></td>
-                            <td class="highlight-red">⚠ "Comments can be traced"<br><small>"Fear of retaliatory actions"</small></td>
+                            <td>✓ Cryptographically guaranteed<br><small>Technically impossible to trace</small></td>
+                            <td>⚠ "Comments can be traced"<br><small>"Fear of retaliatory actions"</small></td>
                         </tr>
                         <tr>
                             <td><strong>HRIS Integration</strong></td>
-                            <td class="highlight-green">Direct database access<br><small>Your data, your control</small></td>
-                            <td class="highlight-red">"Rippling integration is a joke"<br><small>"Duplicate profiles, terrible data"</small></td>
+                            <td>Direct database access<br><small>Your data, your control</small></td>
+                            <td>"Rippling integration is a joke"<br><small>"Duplicate profiles, terrible data"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Individual Extensions</strong></td>
-                            <td class="highlight-green">Per-user deadline control<br><small>Extend for one person easily</small></td>
-                            <td class="highlight-red">Must reopen entire cycle<br><small>"Administrative nightmare"</small></td>
+                            <td>Per-user deadline control<br><small>Extend for one person easily</small></td>
+                            <td>Must reopen entire cycle<br><small>"Administrative nightmare"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Promised Features</strong></td>
-                            <td class="highlight-green">What we document, we deliver<br><small>Open source = verify yourself</small></td>
-                            <td class="highlight-red">9-box grids not supported<br><small>"Build it yourself outside platform"</small></td>
+                            <td>What we document, we deliver<br><small>Open source = verify yourself</small></td>
+                            <td>9-box grids not supported<br><small>"Build it yourself outside platform"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Calendar Integration</strong></td>
-                            <td class="highlight-green">Standard iCal/Outlook<br><small>Works with any calendar</small></td>
-                            <td class="highlight-red">No Google Calendar<br><small>"1:1s lose sync"</small></td>
+                            <td>Standard iCal/Outlook<br><small>Works with any calendar</small></td>
+                            <td>No Google Calendar<br><small>"1:1s lose sync"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Scalability</strong></td>
-                            <td class="highlight-green">Works at any size<br><small>Self-hosted scales with you</small></td>
-                            <td class="highlight-red">"Can't support growth"<br><small>"Scaled 100→400, product couldn't keep up"</small></td>
+                            <td>Works at any size<br><small>Self-hosted scales with you</small></td>
+                            <td>"Can't support growth"<br><small>"Scaled 100→400, product couldn't keep up"</small></td>
                         </tr>
                         <tr>
                             <td><strong>Support Model</strong></td>
-                            <td class="highlight-green">Direct email + community<br><small>Open source transparency</small></td>
-                            <td class="highlight-red">1.5-7 hour response times<br><small>"Just download CSV and do it manually"</small></td>
+                            <td>Direct email + community<br><small>Open source transparency</small></td>
+                            <td>1.5-7 hour response times<br><small>"Just download CSV and do it manually"</small></td>
                         </tr>
                     </tbody>
                 </table>

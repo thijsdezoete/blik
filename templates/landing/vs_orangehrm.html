@@ -5,36 +5,57 @@
     <title>Blik vs OrangeHRM - Honest Comparison | {{ site_name }}</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Comparing Blik and OrangeHRM for 360° feedback: specialized vs. general HR suite. See which fits your performance review needs better.">
-    <meta name="keywords" content="Blik vs OrangeHRM, OrangeHRM alternative, 360 feedback comparison, open source performance review, self-hosted feedback">
+    <meta name="description" content="Comparing Blik and OrangeHRM: premium open source vs. unstable free system, modern UX vs. 1980s forms, reliable infrastructure vs. system crashes.">
+    <meta name="keywords" content="Blik vs OrangeHRM, OrangeHRM alternative, open source performance review, self-hosted feedback, stable HR software">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-orangehrm/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-orangehrm/">
-    <meta property="og:title" content="Blik vs OrangeHRM - Specialized vs General HR Suite">
-    <meta property="og:description" content="Purpose-built 360° feedback vs. comprehensive HR management. See which open source solution fits your needs.">
+    <meta property="og:title" content="Blik vs OrangeHRM - Free vs Premium Open Source">
+    <meta property="og:description" content="See how Blik delivers premium open source quality compared to OrangeHRM's unstable systems and outdated UX.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20OrangeHRM&subtitle=Specialized%20vs%20General%20HR">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20OrangeHRM&subtitle=Free%20vs%20Premium%20Open%20Source">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Blik vs OrangeHRM - Specialized vs General HR Suite">
+    <meta property="og:image:alt" content="Blik vs OrangeHRM - Free vs Premium Open Source">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-orangehrm/">
-    <meta name="twitter:title" content="Blik vs OrangeHRM - Specialized vs General HR Suite">
-    <meta name="twitter:description" content="Purpose-built 360° feedback vs. comprehensive HR management. See which open source solution fits your needs.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20OrangeHRM&subtitle=Specialized%20vs%20General%20HR">
+    <meta name="twitter:title" content="Blik vs OrangeHRM - Free vs Premium Open Source">
+    <meta name="twitter:description" content="See how Blik delivers premium open source quality compared to OrangeHRM's unstable systems and outdated UX.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20OrangeHRM&subtitle=Free%20vs%20Premium%20Open%20Source">
+{% endblock %}
+
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Blik vs OrangeHRM - Premium vs Free Open Source Comparison",
+        "description": "Honest comparison of Blik open source platform vs OrangeHRM free HR system focusing on stability and user experience",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-10",
+        "dateModified": "2025-11-10"
+    }
+    </script>
 {% endblock %}
 
 {% block nav_links %}
     <a href="#overview">Overview</a>
-    <a href="#focus">Focus</a>
+    <a href="#stability">Stability</a>
+    <a href="#quality">Quality</a>
     <a href="#features">Features</a>
-    <a href="#deployment">Deployment</a>
     <a href="#decision">Right Choice</a>
 {% endblock %}
 
@@ -43,10 +64,11 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Blik vs OrangeHRM: Specialized vs General HR Suite</h1>
+                <h1 class="hero-title">Blik vs OrangeHRM: An Honest Comparison</h1>
                 <p class="hero-subtitle">
-                    Both are open source and self-hosted. One is a comprehensive HR management system with performance as a module.
-                    The other is purpose-built for 360° feedback with advanced people analytics.
+                    Both platforms are open source and free to self-host. But one crashes and loses all your data,
+                    has "1980s style forms," and is described as "not stable." The other offers modern UX,
+                    reliable infrastructure, and you're not begging support to add a simple field.
                 </p>
                 <div class="hero-cta">
                     <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
@@ -61,10 +83,10 @@
         <div class="container">
             <h2 class="section-title">At a Glance</h2>
             <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
-                The fundamental differences between Blik and OrangeHRM
+                The critical differences between Blik and OrangeHRM
             </p>
 
-            <div style="overflow-x: auto;">
+            <div class="table-container">
                 <table class="comparison-table">
                     <thead>
                         <tr>
@@ -75,44 +97,54 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Primary Purpose</strong></td>
-                            <td class="highlight-green">360° feedback & people analytics<br><small>Purpose-built for performance reviews</small></td>
-                            <td class="highlight-yellow">Full HR management suite<br><small>Performance is one of many modules</small></td>
+                            <td><strong>System Stability</strong></td>
+                            <td class="highlight-green">Battle-tested Django<br><small>Enterprise reliability</small></td>
+                            <td class="highlight-red">"System crashes and you lose all data"<br><small>"Happened to me twice"</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Open Source</strong></td>
-                            <td class="highlight-green">✓ AGPL (fully open)<br><small>All features included</small></td>
-                            <td class="highlight-yellow">⚠ GPL (core only)<br><small>Pro features require paid license</small></td>
+                            <td><strong>User Interface</strong></td>
+                            <td class="highlight-green">Modern, intuitive design<br><small>Built for 2025</small></td>
+                            <td class="highlight-red">"1980s style internet form"<br><small>"Outdated and less intuitive"</small></td>
                         </tr>
                         <tr>
-                            <td><strong>360° Feedback</strong></td>
-                            <td class="highlight-green">✓ Native, advanced<br><small>4 role-specific questionnaires</small></td>
-                            <td class="highlight-red">✗ Basic performance reviews<br><small>No multi-rater feedback</small></td>
+                            <td><strong>System Reliability</strong></td>
+                            <td class="highlight-green">Continuous uptime<br><small>Production-grade infrastructure</small></td>
+                            <td class="highlight-red">"Sometimes it's up, sometimes it's down"<br><small>"For no apparent reason"</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Anonymity</strong></td>
-                            <td class="highlight-green">✓ Cryptographic guarantee<br><small>Admin cannot identify reviewers</small></td>
-                            <td class="highlight-red">✗ Not supported<br><small>Standard named reviews</small></td>
+                            <td><strong>Customization Support</strong></td>
+                            <td class="highlight-green">Self-service configuration<br><small>Full admin control</small></td>
+                            <td class="highlight-red">"Have to have the folks at Orange add it"<br><small>Even for simple fields</small></td>
                         </tr>
                         <tr>
-                            <td><strong>People Analytics</strong></td>
-                            <td class="highlight-green">✓ Automated insights<br><small>Dreyfus model, perception gaps, benchmarks</small></td>
-                            <td class="highlight-red">✗ Basic reports<br><small>Manual interpretation needed</small></td>
+                            <td><strong>Open Source License</strong></td>
+                            <td class="highlight-green">AGPLv3 (100% open)<br><small>All features included</small></td>
+                            <td class="highlight-green">GPL v2 (Starter free)<br><small>Advanced features require paid Pro</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mobile Experience</strong></td>
+                            <td class="highlight-green">Responsive web design<br><small>Full features on mobile</small></td>
+                            <td class="highlight-red">"Mobile app lacks many features"<br><small>Desktop features missing</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Deployment Options</strong></td>
+                            <td class="highlight-green">SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>Docker in 5 minutes</small></td>
+                            <td class="highlight-yellow">Self-hosted (Free) OR<br>Cloud (Paid)<br><small>Complex LAMP setup</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>360 Reviews</strong></td>
+                            <td class="highlight-green">✓ Native with anonymity<br><small>Core functionality</small></td>
+                            <td class="highlight-green">✓ Available in free version<br><small>Surprisingly robust</small></td>
                         </tr>
                         <tr>
                             <td><strong>Setup Complexity</strong></td>
-                            <td class="highlight-green">Simple (Docker)<br><small>< 1 hour to production</small></td>
-                            <td class="highlight-yellow">Moderate<br><small>Requires LAMP stack, configuration</small></td>
+                            <td class="highlight-green">Docker Compose up<br><small>Ready in <1 hour</small></td>
+                            <td class="highlight-red">"Not easy to setup"<br><small>LAMP stack configuration</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Modern Tech Stack</strong></td>
-                            <td class="highlight-green">Django, Python, PostgreSQL<br><small>API-first, containerized</small></td>
-                            <td class="highlight-yellow">PHP, Symphony, MySQL<br><small>Traditional monolith</small></td>
-                        </tr>
-                        <tr>
-                            <td><strong>HR Features</strong></td>
-                            <td class="highlight-red">✗ Performance only<br><small>Focused tool</small></td>
-                            <td class="highlight-green">✓ Comprehensive<br><small>Leave, time, recruitment, etc.</small></td>
+                            <td><strong>Technical Skills Required</strong></td>
+                            <td class="highlight-green">Basic Docker knowledge<br><small>Clear documentation</small></td>
+                            <td class="highlight-red">"Limited customization without advanced skills"<br><small>Or external help needed</small></td>
                         </tr>
                     </tbody>
                 </table>
@@ -120,107 +152,291 @@
         </div>
     </section>
 
-    <!-- Focus Comparison -->
-    <section id="focus" class="section">
+    <!-- The Stability Problem -->
+    <section id="stability" class="section">
         <div class="container">
-            <h2 class="section-title">Different Tools for Different Needs</h2>
+            <h2 class="section-title">The Stability Problem</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                OrangeHRM's infrastructure issues generate concerning user reports about data loss and system reliability.
+            </p>
 
-            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Blik: Specialized Performance Tool</h3>
-                    <p>Purpose-built for 360° feedback and performance reviews. Deep features for assessment and analytics. Nothing else.</p>
-                    <ul style="text-align: left; margin-top: 1rem;">
-                        <li>4 pre-built role-specific questionnaires</li>
-                        <li>Automated people analytics with Dreyfus model</li>
-                        <li>True anonymous feedback system</li>
-                        <li>API for integration with existing HR stack</li>
+            <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-bottom: 3rem;">
+                <h3 style="color: var(--danger);">Real OrangeHRM User Experiences</h3>
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "The Orange HRM is not easy to setup and it is also <strong>not very stable. There is a risk of the system crashing and user losing all the stored data. This has happened to me twice.</strong>"
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— Verified User, Capterra Review</p>
+
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "<strong>The system is not stable, sometimes it's up, sometimes it's down, for no apparent reason.</strong>"
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— User Review</p>
+
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "My real problem is with customer support. <strong>For example to add a new type of leave, you have to have the folks at Orange add it.</strong>"
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">— User Review</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                <div class="feature-card" style="border-left: 4px solid var(--success);">
+                    <h3 style="color: var(--success);">Blik: Premium Stability</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Battle-tested stack:</strong> Django + PostgreSQL</li>
+                        <li><strong>Production-grade:</strong> Enterprise reliability</li>
+                        <li><strong>Continuous uptime:</strong> No mysterious downtime</li>
+                        <li><strong>Data integrity:</strong> ACID-compliant database</li>
+                        <li><strong>Automated backups:</strong> Never lose data</li>
                     </ul>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">🏢</div>
-                    <h3>OrangeHRM: All-in-One HR Suite</h3>
-                    <p>Comprehensive HR management covering recruitment, leave, time tracking, and basic performance reviews.</p>
-                    <ul style="text-align: left; margin-top: 1rem;">
-                        <li>Employee database and self-service</li>
-                        <li>Leave and time management</li>
-                        <li>Recruitment and onboarding</li>
-                        <li>Basic performance appraisals (KPIs, reviews)</li>
+                <div class="feature-card" style="border-left: 4px solid var(--success);">
+                    <h3 style="color: var(--success);">Blik: Self-Service Control</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Full admin access:</strong> Configure everything yourself</li>
+                        <li><strong>No vendor dependency:</strong> Add fields without begging</li>
+                        <li><strong>Modern UX:</strong> Not stuck in the 1980s</li>
+                        <li><strong>Open source:</strong> Fix issues yourself if needed</li>
                     </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
+                        <p style="font-weight: bold;">Open source doesn't mean unstable. Quality matters.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--danger);">
+                    <h3 style="color: var(--danger);">OrangeHRM: The Free Trade-offs</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>System crashes:</strong> "Happened to me twice" - data loss risk</li>
+                        <li><strong>Unstable:</strong> "Sometimes up, sometimes down"</li>
+                        <li><strong>1980s UX:</strong> "Unbelievable bare bone" time entry</li>
+                        <li><strong>Vendor dependency:</strong> Need support to add simple fields</li>
+                        <li><strong>Outdated interface:</strong> "Less intuitive" than modern software</li>
+                        <li><strong>Complex setup:</strong> "Not easy to setup" - LAMP required</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--danger-bg); border-left: 4px solid var(--danger);">
+                        <p style="font-weight: bold;">Free but feels like it - stability and UX suffer</p>
+                    </div>
                 </div>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--background-alt); border-radius: 8px;">
-                <h3 style="margin-bottom: 1rem;">The Trade-off</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    <strong>Choose OrangeHRM if:</strong> You need a complete HR management system and basic performance reviews are sufficient. You're replacing multiple HR tools.
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>The Data Loss Reality</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
+                    When a user reports <strong>"the system crashing and user losing all the stored data - this has happened to me twice,"</strong> that's not a minor inconvenience. That's losing employee records, performance reviews, time tracking data. OrangeHRM is free and feature-rich, but infrastructure stability is fundamental. You can't build trust on a system that randomly goes down or risks data loss. Blik uses battle-tested Django and PostgreSQL with ACID compliance - the same stack powering Instagram and Spotify.
                 </p>
-                <p style="color: var(--text-secondary);">
-                    <strong>Choose Blik if:</strong> You already have HR systems (or use a simple solution) and need advanced 360° feedback with true anonymity and automated people analytics.
+            </div>
+        </div>
+    </section>
+
+    <!-- Quality Question -->
+    <section id="quality" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Quality Question</h2>
+
+            <div class="cta-box" style="background: var(--warning-bg); border-left: 4px solid var(--warning); margin-bottom: 3rem;">
+                <h3 style="color: var(--warning);">The 1980s UX Problem</h3>
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "I hate to enter my working time here, <strong>it is so unbelievable bare bone, I have to create time stamps and enter them into a 1980 style internet form.</strong>"
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">— User Review</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card" style="border-left: 4px solid var(--success);">
+                    <h3 style="color: var(--success);">Blik's Modern Approach</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Clean interface:</strong> Built for 2025, not 1985</li>
+                        <li><strong>Responsive design:</strong> Full features on any device</li>
+                        <li><strong>Intuitive workflow:</strong> Minimal learning curve</li>
+                        <li><strong>Docker deployment:</strong> Ready in 5 minutes</li>
+                        <li><strong>Self-service admin:</strong> Configure everything yourself</li>
+                        <li><strong>Modern tech stack:</strong> Django, Python, PostgreSQL</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
+                        <p style="font-weight: bold;">Open source doesn't mean outdated. UX matters.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--warning);">
+                    <h3 style="color: var(--warning);">OrangeHRM's Legacy Burden</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>1980s forms:</strong> "Unbelievable bare bone" time entry</li>
+                        <li><strong>Outdated UX:</strong> "Less intuitive" than modern software</li>
+                        <li><strong>Limited mobile:</strong> "App lacks many features"</li>
+                        <li><strong>Complex setup:</strong> Manual LAMP stack configuration</li>
+                        <li><strong>Vendor dependency:</strong> Need support for simple changes</li>
+                        <li><strong>Legacy stack:</strong> PHP/MySQL architecture</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--warning-bg); border-left: 4px solid var(--warning);">
+                        <p style="font-weight: bold;">Feature-rich but feels dated - user experience suffers</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
+                <h3>Both Open Source, Different Quality Standards</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
+                    OrangeHRM and Blik are both open source. But being open source doesn't determine quality - architecture and execution do. OrangeHRM is a comprehensive HR suite that's been around since 2005, carrying two decades of legacy decisions. Blik is purpose-built for 360° feedback with <strong>modern infrastructure, clean UX, and production-grade stability</strong>. Both are free to self-host, but one requires begging support to add a leave type while the other gives you full admin control. One crashes and loses data, the other runs on battle-tested Django. Free doesn't have to feel cheap.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- Feature Deep Dive -->
-    <section id="features" class="section section-alt">
+    <!-- Feature Comparison -->
+    <section id="features" class="section">
         <div class="container">
-            <h2 class="section-title">Performance Management Features</h2>
+            <h2 class="section-title">Feature-by-Feature Comparison</h2>
 
-            <div class="comparison-grid" style="margin-top: 3rem;">
-                <div class="comparison-item">
-                    <h3>Multi-Rater (360°) Feedback</h3>
-                    <div class="comparison-detail">
-                        <div>
-                            <strong>Blik:</strong>
-                            <p>Native 360° feedback with peer, manager, and self-assessments. Cryptographically anonymous reviews.</p>
+            <div style="display: grid; gap: 2rem; margin-top: 3rem;">
+                <!-- Scope & Purpose -->
+                <div class="comparison-card">
+                    <h3>Scope & Purpose</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                        <div class="card-green">
+                            <h4>Blik</h4>
+                            <ul>
+                                <li>Focused: 360° feedback only</li>
+                                <li>Deep performance analytics</li>
+                                <li>Cryptographic anonymity</li>
+                                <li>Integrates with existing HR systems</li>
+                            </ul>
                         </div>
-                        <div>
-                            <strong>OrangeHRM:</strong>
-                            <p>Manager-to-employee reviews only. No multi-rater capability in open source version.</p>
+                        <div class="card-green">
+                            <h4>OrangeHRM</h4>
+                            <ul>
+                                <li>Comprehensive: Full HR suite</li>
+                                <li>Leave, time, recruitment included</li>
+                                <li>360 reviews available (surprisingly good)</li>
+                                <li>All-in-one replacement for multiple tools</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="comparison-item">
-                    <h3>Competency Frameworks</h3>
-                    <div class="comparison-detail">
-                        <div>
-                            <strong>Blik:</strong>
-                            <p>Built-in Dreyfus model for skill assessment. Automated skill level detection from responses.</p>
+                <!-- Infrastructure & Stability -->
+                <div class="comparison-card">
+                    <h3>Infrastructure & Stability</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                        <div class="card-green">
+                            <h4>Blik</h4>
+                            <ul>
+                                <li>Battle-tested Django + PostgreSQL</li>
+                                <li>Production-grade reliability</li>
+                                <li>ACID-compliant data integrity</li>
+                                <li>Docker deployment in 5 minutes</li>
+                            </ul>
                         </div>
-                        <div>
-                            <strong>OrangeHRM:</strong>
-                            <p>KPI-based reviews. Define custom KPIs and track against targets.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="comparison-item">
-                    <h3>Analytics & Insights</h3>
-                    <div class="comparison-detail">
-                        <div>
-                            <strong>Blik:</strong>
-                            <p>Automated insights: perception gaps, peer benchmarks, development recommendations. No manual analysis needed.</p>
-                        </div>
-                        <div>
-                            <strong>OrangeHRM:</strong>
-                            <p>Basic reports on review completion and KPI achievement. Manual interpretation required.</p>
+                        <div class="card-red">
+                            <h4>OrangeHRM</h4>
+                            <ul>
+                                <li>"System crashes and you lose all data"</li>
+                                <li>"Sometimes up, sometimes down"</li>
+                                <li>"Not easy to setup"</li>
+                                <li>Manual LAMP stack configuration</li>
+                            </ul>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="comparison-item">
-                    <h3>Customization</h3>
-                    <div class="comparison-detail">
-                        <div>
-                            <strong>Blik:</strong>
-                            <p>4 pre-built questionnaires (software engineering, manager, professional, quick). Customizable via code.</p>
+                <!-- User Experience -->
+                <div class="comparison-card">
+                    <h3>User Experience & Interface</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                        <div class="card-green">
+                            <h4>Blik</h4>
+                            <ul>
+                                <li>Modern, intuitive design</li>
+                                <li>Responsive web - full mobile features</li>
+                                <li>Clean, focused interface</li>
+                                <li>Minimal learning curve</li>
+                            </ul>
                         </div>
-                        <div>
-                            <strong>OrangeHRM:</strong>
-                            <p>Custom KPIs and review templates. More flexibility but requires more setup.</p>
+                        <div class="card-red">
+                            <h4>OrangeHRM</h4>
+                            <ul>
+                                <li>"1980s style internet form"</li>
+                                <li>"Outdated and less intuitive"</li>
+                                <li>"Mobile app lacks many features"</li>
+                                <li>"Unbelievable bare bone" interfaces</li>
+                            </ul>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Control -->
+                <div class="comparison-card">
+                    <h3>Administration & Customization</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                        <div class="card-green">
+                            <h4>Blik</h4>
+                            <ul>
+                                <li>Full self-service admin control</li>
+                                <li>Configure everything yourself</li>
+                                <li>No vendor dependency</li>
+                                <li>Open source = modify as needed</li>
+                            </ul>
+                        </div>
+                        <div class="card-red">
+                            <h4>OrangeHRM</h4>
+                            <ul>
+                                <li>"Have to have the folks at Orange add it"</li>
+                                <li>"Limited customization without advanced skills"</li>
+                                <li>External help often needed</li>
+                                <li>Complex for non-technical users</li>
+                            </ul>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anonymity & Trust -->
+                <div class="comparison-card">
+                    <h3>Anonymous Feedback</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                        <div class="card-green">
+                            <h4>Blik</h4>
+                            <ul>
+                                <li>Cryptographically impossible to trace</li>
+                                <li>UUID tokens never linked to users</li>
+                                <li>Admin-proof architecture</li>
+                                <li>Open source = verify yourself</li>
+                            </ul>
+                        </div>
+                        <div class="card-red">
+                            <h4>OrangeHRM</h4>
+                            <ul>
+                                <li>Standard named reviews (no anonymity)</li>
+                                <li>Policy-based protection only</li>
+                                <li>Must trust administrators</li>
+                                <li>360 available but not anonymous</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cost & Deployment -->
+                <div class="comparison-card">
+                    <h3>Cost & Deployment Options</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                        <div class="card-green">
+                            <h4>Blik</h4>
+                            <ul>
+                                <li>Self-hosted: Free forever (AGPLv3)</li>
+                                <li>Managed SaaS: €49/month unlimited users</li>
+                                <li>Docker Compose - ready in 5 minutes</li>
+                                <li>All features in open source version</li>
+                            </ul>
+                        </div>
+                        <div class="card-green">
+                            <h4>OrangeHRM</h4>
+                            <ul>
+                                <li>Starter: Free (GPL v2)</li>
+                                <li>Professional: Paid (advanced features)</li>
+                                <li>Cloud hosting: Paid tier</li>
+                                <li>360 reviews included in free version</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -228,94 +444,244 @@
         </div>
     </section>
 
-    <!-- Deployment Section -->
-    <section id="deployment" class="section">
+    <!-- Cost Comparison -->
+    <section class="section section-alt">
         <div class="container">
-            <h2 class="section-title">Deployment & Operations</h2>
+            <h2 class="section-title">Cost Comparison</h2>
 
-            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card">
-                    <h3>Blik Deployment</h3>
-                    <ul style="text-align: left;">
-                        <li><strong>Setup:</strong> Docker Compose (5 minutes)</li>
-                        <li><strong>Requirements:</strong> Docker only</li>
-                        <li><strong>Stack:</strong> Django, PostgreSQL, Gunicorn</li>
-                        <li><strong>Maintenance:</strong> Minimal (automated updates via Docker)</li>
-                        <li><strong>Scaling:</strong> Container orchestration (K8s ready)</li>
-                    </ul>
-                </div>
-
-                <div class="feature-card">
-                    <h3>OrangeHRM Deployment</h3>
-                    <ul style="text-align: left;">
-                        <li><strong>Setup:</strong> Manual LAMP stack configuration</li>
-                        <li><strong>Requirements:</strong> Apache, PHP 7.4+, MySQL</li>
-                        <li><strong>Stack:</strong> Symfony, MySQL, Apache</li>
-                        <li><strong>Maintenance:</strong> Manual updates, database migrations</li>
-                        <li><strong>Scaling:</strong> Traditional vertical scaling</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Decision Guide -->
-    <section id="decision" class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">Which Should You Choose?</h2>
-
-            <div class="decision-grid" style="margin-top: 3rem;">
-                <div class="decision-card">
-                    <h3>Choose Blik If...</h3>
-                    <ul>
-                        <li>You need advanced 360° feedback with true anonymity</li>
-                        <li>You want automated people analytics and insights</li>
-                        <li>You already have HR systems for leave/time/etc.</li>
-                        <li>You prefer modern, containerized deployments</li>
-                        <li>You need API integration with existing tools</li>
-                        <li>Performance reviews are your primary focus</li>
-                    </ul>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem;">Try Blik</a>
-                </div>
-
-                <div class="decision-card">
-                    <h3>Choose OrangeHRM If...</h3>
-                    <ul>
-                        <li>You need a complete HR management system</li>
-                        <li>Basic manager-to-employee reviews are sufficient</li>
-                        <li>You want leave management, time tracking, recruitment</li>
-                        <li>You're comfortable with PHP/MySQL stack</li>
-                        <li>You're replacing multiple HR tools with one system</li>
-                        <li>HR administration is your primary focus</li>
-                    </ul>
-                    <a href="https://www.orangehrm.com/" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top: 1.5rem;">Visit OrangeHRM</a>
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>Self-Hosted Deployment</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="color: var(--success);">Blik Open Source</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">$0</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">AGPLv3 - All features</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--success);">OrangeHRM Starter</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">$0</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">GPL v2 - Includes 360 reviews</p>
+                    </div>
                 </div>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--primary-gradient); border-radius: 8px; color: white; text-align: center;">
-                <h3 style="color: white; margin-bottom: 1rem;">Both Are Open Source</h3>
-                <p style="margin-bottom: 1.5rem;">
-                    Try both and see which fits your workflow better. They solve different problems—you might even use them together.
+            <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>Managed Hosting Options</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="color: var(--success);">Blik SaaS</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">€49/month</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Unlimited users, all features</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--text-secondary);">OrangeHRM Cloud</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--text-secondary);">Contact Sales</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Paid cloud hosting available</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>Professional/Support Options</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="color: var(--success);">Blik</h4>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--success);">Included</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Email support, community, full features</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--warning);">OrangeHRM Professional</h4>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: var(--warning);">Paid Upgrade</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Advanced features require paid license</p>
+                    </div>
+                </div>
+                <p style="margin-top: 2rem; text-align: center; font-weight: bold; color: var(--primary); font-size: 1.125rem;">
+                    Both offer free self-hosted options - choose based on features and stability needs
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary">Blik on GitHub</a>
-                    <a href="https://github.com/orangehrm/orangehrm" target="_blank" rel="noopener" class="btn btn-secondary">OrangeHRM on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Framework -->
+    <section id="decision" class="section">
+        <div class="container">
+            <h2 class="section-title">Which Platform Is Right for You?</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card" style="border: 2px solid var(--success);">
+                    <h3 style="color: var(--success);">Choose Blik If You:</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li>Need <strong>production-grade stability</strong> (no data loss)</li>
+                        <li>Want <strong>modern UX</strong> (not 1980s forms)</li>
+                        <li>Value <strong>cryptographic anonymity</strong></li>
+                        <li>Prefer <strong>self-service admin</strong> (no vendor dependency)</li>
+                        <li>Need <strong>easy deployment</strong> (Docker in 5 minutes)</li>
+                        <li>Focus on <strong>360° feedback</strong> as core need</li>
+                        <li>Want <strong>psychological insights</strong> (Dreyfus, perception gaps)</li>
+                        <li>Have <strong>existing HR systems</strong> for leave/time tracking</li>
+                    </ul>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                </div>
+
+                <div class="feature-card" style="border: 2px solid var(--warning);">
+                    <h3 style="color: var(--warning);">Choose OrangeHRM If You:</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li>Need <strong>comprehensive HR suite</strong> (leave, time, recruitment)</li>
+                        <li>Want <strong>360 reviews</strong> in free version</li>
+                        <li>Can accept <strong>stability risks</strong> and occasional data loss</li>
+                        <li>Don't mind <strong>outdated UX</strong> and 1980s forms</li>
+                        <li>Have <strong>technical resources</strong> for LAMP setup</li>
+                        <li>Are comfortable <strong>requesting vendor support</strong> for customization</li>
+                        <li>Need <strong>all-in-one solution</strong> to replace multiple tools</li>
+                        <li>Have <strong>budget for Professional</strong> tier if needed</li>
+                    </ul>
+                    <a href="https://www.orangehrm.com/" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Visit OrangeHRM</a>
+                </div>
+            </div>
+
+            <div class="cta-box" style="margin-top: 3rem;">
+                <h3>Not Sure Yet?</h3>
+                <p style="margin: 1rem 0;">
+                    Both Blik and OrangeHRM are open source. Deploy them yourself for free and compare.
+                    OrangeHRM is a full HR suite with 360 reviews. Blik is specialized 360° feedback with premium stability.
+                    Choose based on your actual needs, not marketing.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View Blik on GitHub</a>
+                    <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="section">
+    <!-- Final CTA -->
+    <section class="section section-alt">
         <div class="container">
-            <div class="cta-box">
-                <h2>Ready to Try Specialized 360° Feedback?</h2>
-                <p>Deploy Blik in 5 minutes with Docker, or try our hosted version.</p>
-                <div class="cta-buttons">
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Get Started</a>
-                    <a href="{% landing_url 'open_source' %}" class="btn btn-outline">View Documentation</a>
-                </div>
+            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 0;">
+                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Open Source Doesn't Mean Unstable. Quality Matters.</h2>
+                <p style="color: var(--text-secondary); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
+                    OrangeHRM is free but feels like it - system crashes, 1980s UX, vendor dependency for simple changes.
+                    Blik is open source but feels premium - battle-tested infrastructure, modern design, full admin control.
+                    Both are free to self-host. One is production-ready. Choose wisely.
+                </p>
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                    €49/month managed hosting • Open source available on GitHub
+                </p>
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.comparison-table thead {
+    background: var(--bg-secondary);
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.comparison-table th {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.comparison-table td {
+    color: var(--text-secondary);
+}
+
+.highlight-green {
+    background-color: rgba(16, 185, 129, 0.1);
+    font-weight: 500;
+    color: var(--success);
+}
+
+.highlight-red {
+    background-color: rgba(239, 68, 68, 0.1);
+    font-weight: 500;
+    color: var(--danger);
+}
+
+.highlight-yellow {
+    background-color: rgba(245, 158, 11, 0.1);
+    font-weight: 500;
+    color: var(--warning);
+}
+
+.comparison-card {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 2rem;
+    border: 1px solid var(--border);
+}
+
+.comparison-card h3 {
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.card-green,
+.card-red {
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.card-green {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.card-green h4 {
+    color: var(--success);
+    margin-bottom: 1rem;
+}
+
+.card-green ul {
+    list-style: none;
+    padding: 0;
+}
+
+.card-green ul li:before {
+    content: "✓ ";
+    color: var(--success);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.card-red {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.card-red h4 {
+    color: var(--danger);
+    margin-bottom: 1rem;
+}
+
+.card-red ul {
+    list-style: none;
+    padding: 0;
+}
+
+.card-red ul li:before {
+    content: "✗ ";
+    color: var(--danger);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+</style>
 {% endblock %}

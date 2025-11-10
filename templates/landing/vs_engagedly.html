@@ -1,0 +1,498 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Blik vs Engagedly - Honest Comparison | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Comparing Blik and Engagedly: simple effectiveness vs gamified complexity, transparent pricing vs hidden costs, clear UX vs confusing navigation.">
+    <meta name="keywords" content="Blik vs Engagedly, Engagedly alternative, performance review software, 360 feedback comparison, gamification vs simplicity">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-engagedly/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-engagedly/">
+    <meta property="og:title" content="Blik vs Engagedly - Effectiveness Over Gamification">
+    <meta property="og:description" content="See how Blik delivers clear, honest feedback without badges, points, or confusing navigation.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Engagedly&subtitle=Effectiveness%20Over%20Gamification">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik vs Engagedly - Effectiveness Over Gamification">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-engagedly/">
+    <meta name="twitter:title" content="Blik vs Engagedly - Effectiveness Over Gamification">
+    <meta name="twitter:description" content="See how Blik delivers clear, honest feedback without badges, points, or confusing navigation.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Engagedly&subtitle=Effectiveness%20Over%20Gamification">
+{% endblock %}
+
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Blik vs Engagedly - Simple Effectiveness vs Gamified Complexity Comparison",
+        "description": "Honest comparison of Blik open source platform vs Engagedly gamified performance platform focusing on usability and effectiveness",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-10",
+        "dateModified": "2025-11-10"
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="#overview">Overview</a>
+    <a href="#navigation">Navigation</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#gamification">Gamification</a>
+    <a href="#decision">Right Choice</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Blik vs Engagedly: An Honest Comparison</h1>
+                <p class="hero-subtitle">
+                    Both platforms enable performance management. But one is "very poorly designed and not easy to follow/use,"
+                    wraps everything in gamification, and has no spell check. The other offers clean, focused feedback that actually improves performance.
+                </p>
+                <div class="hero-cta">
+                    <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Blik</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Comparison Table -->
+    <section id="overview" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">At a Glance</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+                The critical differences between Blik and Engagedly
+            </p>
+
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Feature</th>
+                            <th style="width: 30%;">Blik</th>
+                            <th style="width: 30%;">Engagedly</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Deployment Options</strong></td>
+                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Vendor lock-in</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SaaS Pricing Model</strong></td>
+                            <td>€49/month flat rate<br><small>Unlimited users</small></td>
+                            <td>Per-user pricing<br><small>Contact sales for quote</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>User Experience</strong></td>
+                            <td>Clean, focused interface<br><small>Minimal learning curve</small></td>
+                            <td>"Very poorly designed"<br><small>"Not easy to follow/use"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Navigation Clarity</strong></td>
+                            <td>Purpose-built for 360°<br><small>No module confusion</small></td>
+                            <td>"Getting lost in modules"<br><small>"Not clear where to go"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Basic Features</strong></td>
+                            <td>Spell check included<br><small>Standard text editing</small></td>
+                            <td>"No spell check"<br><small>"When creating goals/evaluations"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reporting</strong></td>
+                            <td>Dreyfus insights, clear exports<br><small>Designed for clarity</small></td>
+                            <td>"Limited capabilities"<br><small>"For complex data analysis"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Update Stability</strong></td>
+                            <td>Self-hosted = you control timing<br><small>Or managed updates</small></td>
+                            <td>"Updates disrupt workflow"<br><small>"Temporary disruptions"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gamification</strong></td>
+                            <td>None<br><small>Focused on effectiveness</small></td>
+                            <td>AI-powered badges, points<br><small>Leaderboards throughout</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Feature Focus</strong></td>
+                            <td>360° feedback & analytics<br><small>Does one thing well</small></td>
+                            <td>All-in-one platform<br><small>OKRs, LMS, surveys, etc.</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>True Anonymity</strong></td>
+                            <td>Cryptographically guaranteed<br><small>Impossible to trace reviewers</small></td>
+                            <td>Standard anonymous surveys<br><small>Platform holds all data</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation Problem -->
+    <section id="navigation" class="section">
+        <div class="container">
+            <h2 class="section-title">The Navigation Problem</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Engagedly's all-in-one approach creates a confusing user experience that frustrates both admins and employees.
+            </p>
+
+            <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-bottom: 3rem;">
+                <h3 style="color: var(--danger);">Real Engagedly User Experiences</h3>
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "The system is <strong>very poorly designed and not easy to follow/use</strong>."
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— Verified User</p>
+
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "<strong>Getting lost when you are the Admin who also manages people. Sometimes I forget I am in my Teams module when I need to be in Admin.</strong>"
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— Admin User</p>
+
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "<strong>It's not always clear where to go for information or if the information is visible to others.</strong>"
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">— User Review</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                <div class="feature-card" style="border-left: 4px solid var(--success);">
+                    <h3 style="color: var(--success);">Blik's Focused Approach</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Single purpose:</strong> 360° feedback only</li>
+                        <li><strong>Clear navigation:</strong> No module confusion</li>
+                        <li><strong>Admin clarity:</strong> No role-switching headaches</li>
+                        <li><strong>Obvious visibility:</strong> Clear privacy controls</li>
+                        <li><strong>Minimal learning curve:</strong> Works immediately</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
+                        <p style="font-weight: bold;">Simple tools work better because people actually use them.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--danger);">
+                    <h3 style="color: var(--danger);">Engagedly's Complexity</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Multiple modules:</strong> OKRs, LMS, surveys, reviews, recognition</li>
+                        <li><strong>Module confusion:</strong> "Getting lost" between Teams and Admin</li>
+                        <li><strong>Unclear paths:</strong> "Not always clear where to go"</li>
+                        <li><strong>Visibility uncertainty:</strong> Don't know who sees what</li>
+                        <li><strong>Steep learning curve:</strong> Training required</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--danger-bg); border-left: 4px solid var(--danger);">
+                        <p style="font-weight: bold;">"Very poorly designed and not easy to follow/use"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>The Feature Overload Problem</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
+                    Engagedly tries to be everything: performance reviews, OKRs, learning management, engagement surveys, recognition, 1-on-1s. Each feature sounds good in a sales demo. But when you're an admin managing people, <strong>you forget which module you're in</strong>. When you're an employee trying to submit feedback, <strong>it's not clear where to go</strong>. Complexity kills adoption. Blik does one thing—360° feedback—and does it well enough that people don't need training.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Comparison -->
+    <section id="pricing" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Pricing Reality</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card" style="border-left: 4px solid var(--primary);">
+                    <h3 style="color: var(--primary);">Blik SaaS: €49/month (Managed)</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Flat rate:</strong> €49/month, unlimited users</li>
+                        <li><strong>All features:</strong> No premium tiers</li>
+                        <li><strong>We handle hosting:</strong> Zero maintenance</li>
+                        <li><strong>No hidden fees:</strong> Transparent pricing</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--primary);">
+                    <h3 style="color: var(--primary);">Blik Open Source: $0/forever (Self-Hosted)</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Free forever:</strong> AGPLv3 license</li>
+                        <li><strong>Your infrastructure:</strong> Complete control</li>
+                        <li><strong>No vendor lock-in:</strong> Can't be held hostage</li>
+                        <li><strong>Same features:</strong> Nothing held back</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
+                        <p style="font-weight: bold;">Choose SaaS convenience or open source freedom. Both honest.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--border);">
+                    <h3>Engagedly's Reality</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Hidden pricing:</strong> Contact sales for quote</li>
+                        <li><strong>Per-user model:</strong> Costs scale with headcount</li>
+                        <li><strong>Module tiers:</strong> Different features at different prices</li>
+                        <li><strong>Implementation fees:</strong> Setup costs not disclosed</li>
+                        <li><strong>Annual contracts:</strong> Committed spend typical</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--bg-secondary); border-left: 4px solid var(--border);">
+                        <p style="font-weight: bold;">Enterprise pricing is opaque. That's how the model works.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>Annual Cost Comparison (50 employees)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="color: var(--success);">Blik</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">€588/year</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">All features, unlimited users</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--danger);">Engagedly (estimated)</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$4,000-12,000/year</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Based on typical per-user SaaS</p>
+                    </div>
+                </div>
+                <p style="margin-top: 2rem; text-align: center; font-weight: bold; color: var(--success); font-size: 1.25rem;">
+                    Blik saves €3,400-€10,800 annually vs Engagedly
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gamification Question -->
+    <section id="gamification" class="section">
+        <div class="container">
+            <h2 class="section-title">The Gamification Question</h2>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--warning-bg); border-left: 4px solid var(--warning); border-radius: 8px;">
+                <h3 style="color: var(--warning);">Does Gamification Actually Improve Performance?</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
+                    Engagedly's differentiator is AI-powered gamification: badges, points, leaderboards throughout the performance process. The theory: make feedback fun, increase engagement. The reality: <strong>badges don't fix bad UX</strong>. If your platform is "very poorly designed and not easy to follow/use," adding a leaderboard doesn't make navigation clearer. If there's "no spell check in the platform," earning points for completing evaluations doesn't help you write better feedback.
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card" style="border-left: 4px solid var(--success);">
+                    <h3 style="color: var(--success);">Blik's Effectiveness Focus</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>No gamification:</strong> Just clear feedback mechanisms</li>
+                        <li><strong>Research-backed:</strong> Dreyfus model, perception gaps</li>
+                        <li><strong>Spell check works:</strong> Standard text editing features</li>
+                        <li><strong>Simple UX:</strong> No module confusion</li>
+                        <li><strong>Clear reporting:</strong> Insights without complexity</li>
+                        <li><strong>Focused goal:</strong> Improve performance, not engagement scores</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
+                        <p style="font-weight: bold;">Effective feedback doesn't need badges. It needs clarity.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--warning);">
+                    <h3 style="color: var(--warning);">Engagedly's Gamification Layer</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>AI-powered badges:</strong> Rewards for completing tasks</li>
+                        <li><strong>Points system:</strong> Gamified engagement tracking</li>
+                        <li><strong>Leaderboards:</strong> Competitive performance metrics</li>
+                        <li><strong>But still:</strong> "Very poorly designed" core UX</li>
+                        <li><strong>But still:</strong> "No spell check" in evaluations</li>
+                        <li><strong>But still:</strong> "Getting lost" in modules</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--warning-bg); border-left: 4px solid var(--warning);">
+                        <p style="font-weight: bold;">Gamification can't compensate for fundamental usability issues.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
+                <h3>What Actually Matters</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
+                    Performance improvement comes from <strong>honest, actionable feedback</strong>, not from collecting badges. Employees need to know: What am I doing well? Where can I improve? What specific actions should I take? Blik's Dreyfus model automatically maps feedback to skill levels (Novice → Expert). Perception gap detection shows where self-assessment differs from peer feedback. These insights drive actual improvement. A leaderboard showing who gave the most feedback this month? That drives... participation metrics. Different goals entirely.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Framework -->
+    <section id="decision" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Which Platform Is Right for You?</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card" style="border: 2px solid var(--success);">
+                    <h3 style="color: var(--success);">Choose Blik If You:</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li>Want <strong>clear, simple UX</strong> (no module confusion)</li>
+                        <li>Value <strong>effectiveness over gamification</strong></li>
+                        <li>Need <strong>transparent pricing</strong> (€49/month or free)</li>
+                        <li>Prefer <strong>cryptographic anonymity</strong></li>
+                        <li>Want <strong>self-hosted control</strong> or simple SaaS</li>
+                        <li>Need <strong>psychological insights</strong> (Dreyfus, perception gaps)</li>
+                        <li>Focus on <strong>360° feedback</strong>, not all-in-one</li>
+                        <li>Have <strong>30-500 employees</strong></li>
+                    </ul>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                </div>
+
+                <div class="feature-card" style="border: 2px solid var(--warning);">
+                    <h3 style="color: var(--warning);">Choose Engagedly If You:</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li>Want <strong>all-in-one platform</strong> (OKRs, LMS, surveys)</li>
+                        <li>Like <strong>gamification</strong> (badges, points, leaderboards)</li>
+                        <li>Need <strong>AI-powered engagement</strong> tracking</li>
+                        <li>Can accept <strong>complex navigation</strong> trade-offs</li>
+                        <li>Prefer <strong>SaaS over self-hosting</strong></li>
+                        <li>Have <strong>enterprise budget</strong> for per-user pricing</li>
+                        <li>Don't mind <strong>"contact sales"</strong> pricing</li>
+                        <li>Want <strong>vendor-managed everything</strong></li>
+                    </ul>
+                    <a href="https://engagedly.com" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Visit Engagedly</a>
+                </div>
+            </div>
+
+            <div class="cta-box" style="margin-top: 3rem;">
+                <h3>The Honest Take</h3>
+                <p style="margin: 1rem 0; color: var(--text-secondary); line-height: 1.8;">
+                    Engagedly does a lot more than performance reviews. If you need OKRs, learning management, engagement surveys, and you have enterprise budget, it might make sense. If you just need solid 360° feedback and don't want vendor lock-in, Blik does that without the extras.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+                    <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 0;">
+                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Games vs Effectiveness: Choose Clarity</h2>
+                <p style="color: var(--text-secondary); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
+                    Engagedly tries to make performance fun with games. We make it effective with simplicity. No badges needed—just clear,
+                    honest feedback that actually improves performance. Join organizations who value effectiveness over engagement metrics.
+                </p>
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
+                    €49/month managed hosting • Open source available on GitHub
+                </p>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.comparison-table thead {
+    background: var(--bg-secondary);
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.comparison-table th {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.comparison-table td {
+    color: var(--text-secondary);
+}
+
+.comparison-card {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 2rem;
+    border: 1px solid var(--border);
+}
+
+.comparison-card h3 {
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.card-green,
+.card-red {
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.card-green {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.card-green h4 {
+    color: var(--success);
+    margin-bottom: 1rem;
+}
+
+.card-green ul {
+    list-style: none;
+    padding: 0;
+}
+
+.card-green ul li:before {
+    content: "✓ ";
+    color: var(--success);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.card-red {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.card-red h4 {
+    color: var(--danger);
+    margin-bottom: 1rem;
+}
+
+.card-red ul {
+    list-style: none;
+    padding: 0;
+}
+
+.card-red ul li:before {
+    content: "✗ ";
+    color: var(--danger);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Blik vs Reflektive - Honest Comparison | {{ site_name }}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Comparing Blik and Reflektive: open source vs acquired enterprise platform, self-hosted vs SaaS-only, transparent pricing vs corporate uncertainty.">
+    <meta name="keywords" content="Blik vs Reflektive, Reflektive alternative, 360 feedback comparison, self-hosted performance review, open source alternative">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-reflektive/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-reflektive/">
+    <meta property="og:title" content="Blik vs Reflektive - Open Source vs Enterprise Acquisition">
+    <meta property="og:description" content="Independent open source vs. corporate-owned platform. See how Blik's stability compares to Reflektive's acquisition uncertainty.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Reflektive&subtitle=Open%20Source%20vs%20Acquired">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Blik vs Reflektive - Open Source vs Enterprise Acquisition">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-reflektive/">
+    <meta name="twitter:title" content="Blik vs Reflektive - Open Source vs Enterprise Acquisition">
+    <meta name="twitter:description" content="Independent open source vs. corporate-owned platform. See how Blik's stability compares to Reflektive's acquisition uncertainty.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Reflektive&subtitle=Open%20Source%20vs%20Acquired">
+{% endblock %}
+
+{% block extra_head %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Blik vs Reflektive - Independent vs Acquired Platform Comparison",
+        "description": "Detailed comparison of Blik open source 360 feedback platform vs Reflektive (acquired by Learning Technologies Group)",
+        "author": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ site_name }}"
+        },
+        "datePublished": "2025-01-10",
+        "dateModified": "2025-11-10"
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="#overview">Overview</a>
+    <a href="#usability">Usability</a>
+    <a href="#decision">Right Choice</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Blik vs Reflektive: An Honest Comparison</h1>
+                <p class="hero-subtitle">
+                    Both platforms enable performance reviews. But one has a "clunky and confusing" UX, requires
+                    extensive setup work, costs $7,500/month minimum with no free trial, and has scaled back innovation
+                    since its January 2021 acquisition. The other is simple, affordable, and open source.
+                </p>
+                <div class="hero-cta">
+                    <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Blik</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Comparison Table -->
+    <section id="overview" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">At a Glance</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+                The critical differences between Blik and Reflektive
+            </p>
+
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Feature</th>
+                            <th style="width: 30%;">Blik</th>
+                            <th style="width: 30%;">Reflektive</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Deployment Options</strong></td>
+                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Vendor lock-in</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SaaS Pricing Model</strong></td>
+                            <td>€49/month flat rate<br><small>Unlimited users</small></td>
+                            <td>$7,500/month minimum<br><small>No free trial</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Setup Complexity</strong></td>
+                            <td>$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
+                            <td>"Requires a lot of setup work"<br><small>"Spend plenty of time together"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Review Building UX</strong></td>
+                            <td>Clean, focused interface<br><small>Minimal learning curve</small></td>
+                            <td>"Clunky and confusing"<br><small>"No easy way to see designations"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Employee Complaints</strong></td>
+                            <td>Purpose-built simplicity<br><small>Focused on 360° feedback</small></td>
+                            <td>"Decent amount of complaints"<br><small>"Wasn't the easiest to use"</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Product Investment</strong></td>
+                            <td>Independent open source<br><small>Community-driven roadmap</small></td>
+                            <td>"Scaled back innovation"<br><small>Post-acquisition (Jan 2021)</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Open Source</strong></td>
+                            <td>✓ AGPL licensed<br><small>Full code transparency</small></td>
+                            <td>✗ Proprietary<br><small>Closed source</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>True Anonymity</strong></td>
+                            <td>✓ Cryptographically guaranteed<br><small>Impossible to trace reviewers</small></td>
+                            <td>⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Real-time Feedback</strong></td>
+                            <td>✗ Not included<br><small>Focused on 360° cycles</small></td>
+                            <td>✓ Core feature<br><small>Continuous feedback workflow</small></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ownership Stability</strong></td>
+                            <td>Independent project<br><small>No acquisition risk</small></td>
+                            <td>Acquired by LTG Group<br><small>Corporate-controlled roadmap</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usability Problem -->
+    <section id="usability" class="section">
+        <div class="container">
+            <h2 class="section-title">The Usability Problem</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Reflektive's real-time feedback integration is compelling. But if the core review UX is clunky, the foundation is shaky.
+            </p>
+
+            <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-bottom: 2rem;">
+                <h3 style="color: var(--danger);">Real Reflektive User Experiences</h3>
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "The process of building a review can be <strong>clunky and confusing, since there's no easy way to see which questions are being designated for self/manager/peer</strong>."
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— Brand Marketing Assistant, Capterra Review</p>
+
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "The workflow wasn't horrible, but it also <strong>wasn't the easiest to use either. There were a decent amount of complaints from employees</strong>."
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— Sr. Manager, Capterra Review</p>
+
+                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
+                    "<strong>Requires a lot of setup work, teams and customer success representatives often need to spend plenty of time together trying to determine the best way to use the tool.</strong>"
+                </blockquote>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">— User Review, G2</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                <div class="feature-card" style="border-left: 4px solid var(--primary);">
+                    <h3 style="color: var(--primary);">Blik SaaS: €49/month</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Flat rate:</strong> €49/month, unlimited users</li>
+                        <li><strong>Simple setup:</strong> Docker compose, ready in <1 hour</li>
+                        <li><strong>Clear interface:</strong> No confusion about question assignments</li>
+                        <li><strong>Minimal complaints:</strong> Purpose-built for 360° feedback</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--primary);">
+                    <h3 style="color: var(--primary);">Blik Open Source: $0/forever</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>Free forever:</strong> AGPLv3 license</li>
+                        <li><strong>Your infrastructure:</strong> Complete control</li>
+                        <li><strong>No vendor lock-in:</strong> Can't be held hostage</li>
+                        <li><strong>Same features:</strong> Nothing held back</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--bg-secondary); border-left: 4px solid var(--primary);">
+                        <p style="font-weight: bold;">Choose SaaS convenience or open source freedom. Both straightforward.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="border-left: 4px solid var(--border);">
+                    <h3>Reflektive's Reality</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li><strong>High entry cost:</strong> $7,500/month minimum</li>
+                        <li><strong>No trial:</strong> Can't test before committing</li>
+                        <li><strong>Clunky UX:</strong> "Confusing" review building process</li>
+                        <li><strong>Setup burden:</strong> "Requires a lot of setup work"</li>
+                        <li><strong>Employee friction:</strong> "Decent amount of complaints"</li>
+                        <li><strong>Post-acquisition:</strong> "Scaled back innovation"</li>
+                    </ul>
+                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--bg-secondary); border-left: 4px solid var(--border);">
+                        <p style="font-weight: bold;">Enterprise integrations don't matter if employees hate using it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>The Integration Trade-off</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
+                    Reflektive's real-time feedback integration with Slack and Outlook sounds compelling on a demo call. But if the core review-building experience is "clunky and confusing," and employees complain about the workflow, you've traded convenience for adoption. <strong>A simple tool people actually use beats a complex tool they avoid</strong>. Blik focuses on making 360° feedback straightforward—no extensive setup sessions, no confusion about question designations, no vendor lock-in.
+                </p>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+                <h3>Annual Cost Comparison (50 employees)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+                    <div>
+                        <h4 style="color: var(--primary);">Blik</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--primary);">€588/year</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">All features, unlimited users</p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--danger);">Reflektive</h4>
+                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$90,000/year</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">$7,500/month minimum</p>
+                    </div>
+                </div>
+                <p style="margin-top: 2rem; text-align: center; font-weight: bold; color: var(--primary); font-size: 1.25rem;">
+                    Blik saves you $89,000+ annually vs Reflektive's minimum
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decision Framework -->
+    <section id="decision" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Which Platform Is Right for You?</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                <div class="feature-card" style="border: 2px solid var(--primary);">
+                    <h3 style="color: var(--primary);">Choose Blik If You:</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li>Want <strong>simple, clear UX</strong> (not clunky)</li>
+                        <li>Need <strong>affordable pricing</strong> (€49/mo vs $7,500/mo)</li>
+                        <li>Value <strong>quick setup</strong> (<1 hour vs "plenty of time")</li>
+                        <li>Prefer <strong>self-hosted control</strong></li>
+                        <li>Want <strong>cryptographic anonymity</strong></li>
+                        <li>Need <strong>no vendor lock-in</strong></li>
+                        <li>Focus on <strong>360° reviews</strong> vs. real-time feedback</li>
+                        <li>Have <strong>30-500 employees</strong></li>
+                    </ul>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                </div>
+
+                <div class="feature-card" style="border: 2px solid var(--border);">
+                    <h3>Choose Reflektive If You:</h3>
+                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                        <li>Need <strong>real-time feedback</strong> in Slack/Outlook</li>
+                        <li>Want <strong>continuous feedback culture</strong></li>
+                        <li>Have <strong>$90,000+/year budget</strong></li>
+                        <li>Can invest <strong>extensive setup time</strong></li>
+                        <li>Are comfortable with <strong>post-acquisition platforms</strong></li>
+                        <li>Don't mind <strong>"clunky" UX</strong> for integrations</li>
+                        <li>Want <strong>integrated performance platform</strong></li>
+                        <li>Have <strong>enterprise-scale needs</strong></li>
+                    </ul>
+                    <a href="https://www.reflektive.com/" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Visit Reflektive</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Simple Performance Reviews</h2>
+                <p>Self-host Blik for free or use our SaaS. No clunky workflows, no extensive setup sessions.</p>
+                <div class="cta-buttons">
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Get Started</a>
+                    <a href="{% landing_url 'open_source' %}" class="btn btn-outline">View on GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

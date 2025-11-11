@@ -28,6 +28,10 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Performance%20Matrix&subtitle=Skills%20%2B%20Ownership">
 {% endblock %}
 
+{% block structured_data %}
+    {% article_schema "landing/performance_matrix.html" headline="Engineering Performance Review: Technical Skills + Ownership Framework" description="Stop evaluating only technical skill. The Performance Matrix framework (Dreyfus Model + Agency Levels) identifies Force Multipliers and reveals who needs what development." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Performance%20Matrix&subtitle=Skills%20%2B%20Ownership" %}
+{% endblock %}
+
 {% block extra_head %}
     <!-- Performance Matrix Page Styles -->
     <style>
@@ -841,4 +845,6 @@
             </div>
         </div>
     </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/performance_matrix.html" author="Thijs de Zoete" %}
 {% endblock %}

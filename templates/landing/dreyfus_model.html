@@ -28,41 +28,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Dreyfus%20Model&subtitle=Novice%20to%20Expert%20Framework">
 {% endblock %}
 
-{% block extra_head %}
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "Dreyfus Model for Software Engineers",
-      "description": "How Blik uses the Dreyfus Model of skill acquisition for developer performance reviews",
-      "author": {
-        "@type": "Organization",
-        "name": "{{ site_name }}"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "{{ site_name }}"
-      },
-      "datePublished": "2025-01-01",
-      "dateModified": "2025-01-01"
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "{{ site_name }}",
-        "url": "{{ site_protocol }}://{{ site_domain }}",
-        "description": "Open source 360-degree feedback platform",
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "contactType": "Customer Support",
-            "availableLanguage": ["English"]
-        }
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/dreyfus_model.html" headline="Dreyfus Model for Software Engineers: Novice to Expert Framework" description="Research-backed framework to evaluate software engineers from Novice to Expert. Used for career ladders, performance reviews, and hiring decisions." canonical_url=request.build_absolute_uri image_url=request.build_absolute_uri|add:"?title=Dreyfus%20Model&subtitle=Novice%20to%20Expert%20Framework" %}
 {% endblock %}
 
 {% block nav_links %}
@@ -78,7 +45,7 @@
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">Competency Frameworks That Engineers Actually Respect</h1>
-                <p class="hero-subtitle">Research-based skill models. No corporate jargon. No arbitrary matrices. Just practical frameworks for measuring technical growth.</p>
+                <p class="hero-subtitle">I built Blik's assessments on the Dreyfus Model—40 years of research on how people actually develop skills. No corporate jargon, no arbitrary matrices. Just Novice to Expert, the way cognitive scientists describe it.</p>
 
                 <!-- TL;DR Box -->
                 <div style="background: var(--bg-card); border: 2px solid var(--primary-200); padding: var(--space-8); margin: var(--space-8) 0; border-radius: var(--radius-lg); text-align: left; max-width: 720px; margin-left: auto; margin-right: auto; box-shadow: var(--shadow-sm);">
@@ -131,7 +98,7 @@
                 <p style="margin-bottom: var(--space-6); font-size: var(--text-base); line-height: 1.6;">Developed by <a href="https://en.wikipedia.org/wiki/Dreyfus_model_of_skill_acquisition" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">Stuart and Hubert Dreyfus at UC Berkeley (1980s)</a> through Air Force-funded research on pilot training. Engineers recognize themselves in these stages because the model describes <strong>actual cognitive patterns</strong> in skill development, not arbitrary corporate levels.</p>
                 <p style="margin-bottom: var(--space-6); font-size: var(--text-base); line-height: 1.6;"><strong>The model maps naturally to career ladders:</strong> Junior → Mid-Level → Senior → Staff → Principal. It acknowledges that experts think <em>differently</em> than beginners, not just "better."</p>
                 <div style="background: var(--success-50); padding: var(--space-6); border-radius: var(--radius-md); margin-top: var(--space-6); border: 1px solid var(--success-200);">
-                    <p style="margin: 0; font-size: var(--text-sm); line-height: 1.6; color: var(--success-900);"><strong>Core Insight:</strong> Beginners rely on explicit rules. Experts rely on intuition and pattern recognition. This isn't just "knowing more"—it's a fundamental shift in how the brain processes expertise. <a href="#research" style="color: var(--success-600); text-decoration: underline;">See research →</a></p>
+                    <p style="margin: 0; font-size: var(--text-sm); line-height: 1.6; color: var(--success-900);"><strong>Core Insight:</strong> Beginners rely on explicit rules ("always use dependency injection"). Experts rely on intuition and pattern recognition. This isn't just "knowing more"—it's a fundamental shift in how the brain processes expertise. <a href="#research" style="color: var(--success-600); text-decoration: underline;">See research →</a></p>
                 </div>
                 <p style="margin-top: var(--space-6); padding-top: var(--space-6); border-top: 1px solid var(--border); font-size: var(--text-base);"><strong>But technical skill is only half the picture.</strong> An Expert developer who waits to be told what to do creates more management overhead than a Competent developer with high agency. See how Dreyfus combines with ownership mindset in the <a href="{% landing_url 'performance_matrix' %}" style="color: var(--primary); text-decoration: underline; font-weight: 600;">Performance Matrix →</a></p>
             </div>
@@ -630,7 +597,7 @@
     <section class="cta-section">
         <div class="container">
             <h2>Use These Frameworks in Your Reviews</h2>
-            <p>Deploy Blik with Dreyfus-based questionnaires included. Customize to your team's needs.</p>
+            <p>Blik comes with these questionnaires built in. Use them as-is or customize them for your team.</p>
             <div class="hero-cta">
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
@@ -638,9 +605,12 @@
 
             <div class="cta-box">
                 <h3>Ready-to-Use or Fully Managed</h3>
-                <p>Self-host for free with our Docker setup, or skip the infrastructure hassle with our fully managed EU-hosted version for €49/month. Same Dreyfus frameworks, zero DevOps.</p>
+                <p>Self-host for free if you want full control, or use the managed EU-hosted version for €49/month if you don't want to deal with infrastructure. Same questionnaires either way.</p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View Plans</a>
             </div>
+
         </div>
     </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/dreyfus_model.html" %}
 {% endblock %}

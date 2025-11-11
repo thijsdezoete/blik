@@ -28,6 +28,10 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=5%20Levels%20of%20Agency&subtitle=Build%20Autonomous%20Teams">
 {% endblock %}
 
+{% block structured_data %}
+    {% article_schema "landing/agency_levels.html" headline="5 Levels of Agency Framework for Engineering Managers" description="Stop hiring problem reporters. The 5 Levels of Agency framework teaches engineers to operate autonomously from passive (Level 1) to proactive (Level 5). Reduce manager bottlenecks, scale faster." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=5%20Levels%20of%20Agency&subtitle=Build%20Autonomous%20Teams" %}
+{% endblock %}
+
 {% block nav_links %}
     <a href="{% landing_url 'index' %}">Home</a>
     <a href="#framework">The Framework</a>
@@ -1451,4 +1455,6 @@
             </div>
         </div>
     </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/agency_levels.html" author="Thijs de Zoete" %}
 {% endblock %}

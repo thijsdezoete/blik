@@ -28,6 +28,10 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360&subtitle=Built%20by%20Developers%2C%20for%20Developers">
 {% endblock %}
 
+{% block structured_data %}
+    {% article_schema "landing/open_source.html" headline="Open Source 360 Feedback Built by Developers" description="AGPL-licensed 360 feedback platform for developer teams. Modern Django stack, Docker deployment, extensible architecture. Contribute, customize, self-host. No vendor lock-in." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Open%20Source%20360&subtitle=Built%20by%20Developers%2C%20for%20Developers" %}
+{% endblock %}
+
 {% block extra_head %}
 
     <!-- JSON-LD Structured Data -->
@@ -47,21 +51,6 @@
       "softwareVersion": "1.0",
       "programmingLanguage": "Python",
       "codeRepository": "https://github.com/thijsdezoete/blik"
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "{{ site_name }}",
-        "url": "{{ site_protocol }}://{{ site_domain }}",
-        "description": "Open source 360-degree feedback platform built by developers",
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "contactType": "Customer Support",
-            "availableLanguage": ["English"]
-        }
     }
     </script>
 {% endblock %}
@@ -584,4 +573,6 @@
             </div>
         </div>
     </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/open_source.html" %}
 {% endblock %}

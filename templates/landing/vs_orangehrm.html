@@ -30,25 +30,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20OrangeHRM&subtitle=Free%20vs%20Premium%20Open%20Source">
 {% endblock %}
 
-{% block extra_head %}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "Blik vs OrangeHRM - Premium vs Free Open Source Comparison",
-        "description": "Honest comparison of Blik open source platform vs OrangeHRM free HR system focusing on stability and user experience",
-        "author": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "datePublished": "2025-01-10",
-        "dateModified": "2025-11-10"
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/vs_orangehrm.html" headline="Blik vs OrangeHRM - Premium vs Free Open Source" description="Comparing Blik and OrangeHRM: premium open source vs. unstable free system, modern UX vs. 1980s forms, reliable infrastructure vs. system crashes." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
 
 {% block nav_links %}

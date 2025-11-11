@@ -30,6 +30,10 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Common%20Questions&subtitle=Everything%20You%20Need%20to%20Know">
 {% endblock %}
 
+{% block structured_data %}
+    {% article_schema "landing/faq.html" headline="FAQ - Common Questions About Blik 360 Feedback" description="Everything you need to know about Blik: self-hosting, anonymity, GDPR compliance, pricing, questionnaires, API access, and migration from other tools." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Common%20Questions&subtitle=Everything%20You%20Need%20to%20Know" %}
+{% endblock %}
+
 {% block extra_head %}
     <!-- FAQ Schema JSON-LD -->
     <script type="application/ld+json">
@@ -318,4 +322,6 @@
             </div>
         </div>
     </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/faq.html" %}
 {% endblock %}

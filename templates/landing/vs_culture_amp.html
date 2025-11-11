@@ -30,25 +30,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Culture%20Amp&subtitle=Data%20Protection%20%26%20True%20Anonymity">
 {% endblock %}
 
-{% block extra_head %}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "Blik vs Culture Amp - Data Protection and Anonymity Comparison",
-        "description": "Comparison of Blik open source platform vs Culture Amp focusing on data loss prevention and true anonymity",
-        "author": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "datePublished": "2025-01-10",
-        "dateModified": "2025-11-10"
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/vs_culture_amp.html" headline="Blik vs Culture Amp - Data Protection and Anonymity Comparison" description="Comparing Blik and Culture Amp: data loss protection, true anonymity, transparent renewal pricing vs. timeout issues and 20% price increases." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik%20vs%20Culture%20Amp&subtitle=Data%20Protection%20%26%20True%20Anonymity" %}
 {% endblock %}
 
 {% block nav_links %}

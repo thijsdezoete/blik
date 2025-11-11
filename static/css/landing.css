@@ -58,6 +58,27 @@
 .p-8 { padding: var(--space-8); }
 .p-12 { padding: var(--space-12); }
 
+/* ==================== Citation Links ==================== */
+.citation-link {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+.citation-link:hover {
+    color: var(--primary-600);
+    text-decoration: none;
+}
+
+[data-theme="dark"] .citation-link {
+    color: var(--primary-400);
+}
+
+[data-theme="dark"] .citation-link:hover {
+    color: var(--primary-300);
+}
+
 /* ==================== Responsive Tables ==================== */
 .landing-page .table-container {
     overflow-x: auto;

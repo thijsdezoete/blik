@@ -30,27 +30,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Developer%20API%20Docs&subtitle=REST%20API%20%26%20Webhooks">
 {% endblock %}
 
-{% block extra_head %}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": "Blik REST API Documentation",
-        "description": "Complete developer documentation for integrating with Blik's 360 feedback platform via REST API and webhooks",
-        "author": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ site_name }}",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "{{ site_protocol }}://{{ site_domain }}/static/logo.png"
-            }
-        }
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/developers.html" headline="Developer Documentation - REST API & Webhooks" description="Complete API documentation for Blik's REST API. Includes authentication, endpoints, webhook events, code examples in Python, JavaScript, and curl. Start integrating in minutes." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Developer%20API%20Docs&subtitle=REST%20API%20%26%20Webhooks" %}
 {% endblock %}
 
 {% block content %}
@@ -660,6 +641,8 @@ app.post('/webhook', (req, res) => {
             </div>
         </div>
     </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/developers.html" %}
 {% endblock %}
 
 {% block extra_scripts %}

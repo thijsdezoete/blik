@@ -30,25 +30,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Odoo&subtitle=No%20ERP%20Bloat%2C%20No%20Bugs">
 {% endblock %}
 
-{% block extra_head %}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "Blik vs Odoo HR - Focused Tool vs ERP Bloat Comparison",
-        "description": "Honest comparison of Blik specialized 360 feedback platform vs Odoo ERP system with HR module",
-        "author": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "datePublished": "2025-01-10",
-        "dateModified": "2025-11-10"
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/vs_odoo.html" headline="Blik vs Odoo HR - No ERP Bloat, No Bugs" description="Comparing Blik and Odoo HR: focused 360° feedback tool vs. ERP bloat with bugs, steep learning curve, and zero accountability." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
 
 {% block nav_links %}

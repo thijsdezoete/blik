@@ -30,25 +30,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%2015Five&subtitle=No%20Billing%20Traps%2C%20No%20Survey%20Fatigue">
 {% endblock %}
 
-{% block extra_head %}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "Blik vs 15Five - Transparent Pricing vs Billing Traps Comparison",
-        "description": "Honest comparison of Blik open source platform vs 15Five continuous feedback platform focusing on pricing and survey quality",
-        "author": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "datePublished": "2025-01-10",
-        "dateModified": "2025-11-10"
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/vs_15five.html" headline="Blik vs 15Five - Transparent Pricing vs Billing Traps" description="Comparing Blik and 15Five: transparent pricing vs. aggressive billing, flexible surveys vs. repetitive questions, self-hosted control vs. SaaS lock-in." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
 
 {% block nav_links %}

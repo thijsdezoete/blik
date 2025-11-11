@@ -30,25 +30,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Engagedly&subtitle=Effectiveness%20Over%20Gamification">
 {% endblock %}
 
-{% block extra_head %}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "Blik vs Engagedly - Simple Effectiveness vs Gamified Complexity Comparison",
-        "description": "Honest comparison of Blik open source platform vs Engagedly gamified performance platform focusing on usability and effectiveness",
-        "author": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "datePublished": "2025-01-10",
-        "dateModified": "2025-11-10"
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/vs_engagedly.html" headline="Blik vs Engagedly - Effectiveness Over Gamification" description="Comparing Blik and Engagedly: simple effectiveness vs gamified complexity, transparent pricing vs hidden costs, clear UX vs confusing navigation." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
 
 {% block nav_links %}

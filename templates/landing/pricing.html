@@ -30,6 +30,10 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Transparent%20Pricing&subtitle=Free%20or%20%E2%82%AC49%2Fmonth">
 {% endblock %}
 
+{% block structured_data %}
+    {% article_schema "landing/pricing.html" headline="Pricing - Self-Hosted Free or EU Hosted from €49/month" description="Blik pricing: Free self-hosted forever, or €49/month for 50 employees (EU hosted). Save €17,000/year vs Lattice. No per-user fees, no surprises, cancel anytime." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Transparent%20Pricing&subtitle=Free%20or%20%E2%82%AC49%2Fmonth" %}
+{% endblock %}
+
 {% block extra_head %}
     <!-- Breadcrumb Schema -->
     <script type="application/ld+json">
@@ -284,7 +288,7 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>Why is self-hosting free?</summary>
-                    <p>Blik is open source under AGPL-3.0 license. I built this because I was tired of paying €15,000/year for features I didn't need. If you can host it yourself, you should be able to use it for free. The hosted plans exist for teams that want the software without the DevOps overhead.</p>
+                    <p>Blik is open source under AGPL-3.0 license. I built this because I was tired of paying €15,000/year for features I didn't need<sup><a href="#source-competitor-costs" class="citation-link">1</a></sup>. If you can host it yourself, you should be able to use it for free. The hosted plans exist for teams that want the software without the DevOps overhead.</p>
                 </details>
 
                 <details class="faq-item">
@@ -345,4 +349,29 @@
             </div>
         </div>
     </section>
+
+    <!-- Sources & References -->
+    <section class="section section-alt" style="background: var(--bg-secondary); padding: 2rem 0;">
+        <div class="container" style="max-width: 900px;">
+            <h2 style="font-size: 1.25rem; text-align: center; margin-bottom: 2rem; color: var(--text);">Sources & References</h2>
+            <div style="background: var(--bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
+                <ol style="line-height: 2; color: var(--text-secondary); padding-left: 1.5rem; font-size: 0.875rem;">
+                    <li id="source-competitor-costs">
+                        <strong>Competitor Costs:</strong> €15,000/year figure based on user-reported Culture Amp costs for mid-sized organizations. <strong>Note:</strong> Culture Amp does not publish pricing publicly (requires sales quote) - estimates of $9-14/user/month with $4,500-$8,400+ annual minimums based on G2 and Capterra user reports. Full platform with modules reaches $15,000/year for 50-person teams. <strong>Lattice</strong> (verified November 11, 2025): $11/user/month base + modules ($4-6 each), reaching $25/user/month maximum with all modules, $4,000 annual minimum = $6,600-$15,000/year for 50 employees depending on modules.
+                        <br><small style="color: var(--text-tertiary);">
+                            Sources: <a href="https://lattice.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">Lattice Pricing (Public)</a> • <a href="https://www.cultureamp.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">Culture Amp (Requires Quote)</a> • <a href="https://www.g2.com/products/culture-amp/reviews" target="_blank" rel="noopener" style="color: var(--primary);">User-Reported Costs (G2)</a>
+                        </small>
+                    </li>
+                </ol>
+
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                    <p style="font-size: 0.75rem; line-height: 1.6; color: var(--text-secondary); margin: 0;">
+                        <strong style="color: var(--text);">Pricing Calculation:</strong> The "Save €17,000/year" claim compares Blik's €588/year hosted plan (€49/month × 12) against Lattice's full platform cost of approximately €18,000/year for 50 employees ($11/user base + $6/user compensation module = $17/user/month × 50 = $850/month = $10,200/year + $4,000 minimum = ~€13,000-18,000 depending on modules). Actual savings vary based on team size and competitor modules selected.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/pricing.html" %}
 {% endblock %}

@@ -40,6 +40,28 @@
         })();
     </script>
 
+    <!-- Default Organization Structured Data (all pages) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "{{ org_name }}",
+      "url": "{{ org_url }}",
+      "logo": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}",
+      "description": "{{ org_description }}",
+      "sameAs": [
+        "{{ org_github_url }}"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support",
+        "email": "{{ org_contact_email }}",
+        "availableLanguage": ["English"]
+      }
+    }
+    </script>
+
+    {% block structured_data %}{% endblock %}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="landing-page">

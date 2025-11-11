@@ -3,11 +3,15 @@ Context processors for landing app.
 
 Provides URL namespace handling for templates that work in both
 standalone landing container and main app contexts.
+
+Also provides organization metadata for AI search optimization and
+structured data (Schema.org).
 """
 import re
 from pathlib import Path
 from django.conf import settings
 from django.urls import reverse, NoReverseMatch
+from .git_metadata import get_repository_metadata
 
 
 def _get_api_path_by_name(url_name):
@@ -113,3 +117,31 @@ def url_namespace(request):
         'site_name': getattr(settings, 'SITE_NAME', 'Blik360'),
         'site_domain': getattr(settings, 'SITE_DOMAIN', 'blik360.com'),
     }
+
+
+def organization_metadata(request):
+    """
+    Provide organization metadata for structured data and AI search.
+
+    Available in all templates:
+        {{ org_name }}, {{ org_url }}, {{ org_description }}
+        {{ org_founded }}, {{ org_contributors }}
+    """
+    repo_meta = get_repository_metadata()
+
+    # Build organization context
+    org_context = {
+        'org_name': getattr(settings, 'SITE_NAME', 'Blik'),
+        'org_url': f"https://{getattr(settings, 'SITE_DOMAIN', 'blik360.com')}",
+        'org_description': getattr(
+            settings,
+            'SITE_DESCRIPTION',
+            'Open source 360-degree feedback platform for engineering teams'
+        ),
+        'org_founded': repo_meta.get('first_commit_date'),
+        'org_contributors': repo_meta.get('contributors', []),
+        'org_github_url': 'https://github.com/thijsdezoete/blik',
+        'org_contact_email': getattr(settings, 'DEFAULT_FROM_EMAIL', 'hello@blik360.com'),
+    }
+
+    return org_context

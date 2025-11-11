@@ -30,6 +30,10 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=About%20Blik&subtitle=Built%20by%20Founders%2C%20for%20Founders">
 {% endblock %}
 
+{% block structured_data %}
+    {% article_schema "landing/about.html" headline="About Blik - Built by Founders, for Founders" description="The story behind Blik360: Why a CEO built an open source 360 feedback platform using modern tech and AI. From frustration with commercial tools to self-hosted freedom." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=About%20Blik&subtitle=Built%20by%20Founders%2C%20for%20Founders" %}
+{% endblock %}
+
 {% block nav_links %}
     <a href="{% landing_url 'index' %}">Home</a>
     <a href="{% landing_url 'about' %}">About</a>
@@ -282,4 +286,6 @@
             </div>
         </div>
     </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/about.html" %}
 {% endblock %}

@@ -112,6 +112,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'landing.context_processors.url_namespace',
+                'landing.context_processors.organization_metadata',
                 'blik.context_processors.stripe_settings',
             ],
         },

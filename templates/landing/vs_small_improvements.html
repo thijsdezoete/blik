@@ -30,25 +30,8 @@
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik%20vs%20Small%20Improvements&subtitle=Self-Hosted%20vs%20SaaS">
 {% endblock %}
 
-{% block extra_head %}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "Blik vs Small Improvements - Control vs Convenience Comparison",
-        "description": "Comparison of Blik open source self-hosted 360 feedback vs Small Improvements lightweight SaaS platform",
-        "author": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ site_name }}"
-        },
-        "datePublished": "2025-01-10",
-        "dateModified": "2025-11-10"
-    }
-    </script>
+{% block structured_data %}
+    {% article_schema "landing/vs_small_improvements.html" headline="Blik vs Small Improvements - Self-Hosted vs SaaS" description="Comparing Blik and Small Improvements: self-hosted vs SaaS-only, 360° focus vs lightweight feedback, transparent pricing vs per-user costs." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
 
 {% block nav_links %}

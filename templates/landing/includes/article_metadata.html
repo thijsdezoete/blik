@@ -1,0 +1,7 @@
+{% load landing_tags %}
+<div class="article-metadata" style="text-align: center; padding: 2rem 0; border-top: 1px solid var(--border); margin-top: 3rem;">
+    <p style="font-size: 0.875rem; color: var(--text-secondary);">
+        <strong style="color: var(--text);">Written by {{ author|default:"Thijs de Zoete" }}</strong>, CEO @ <a href="https://tinify.com" target="_blank" rel="noopener" style="color: var(--primary);">Tinify</a><br>
+        Last updated: <time>{% last_updated template_path %}</time>
+    </p>
+</div>

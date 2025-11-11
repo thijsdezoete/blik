@@ -272,6 +272,32 @@
     flex-wrap: wrap;
 }
 
+/* Hero button contrast fix - ensure primary button stands out on primary background */
+.landing-page .hero .btn-primary {
+    background: white;
+    color: var(--primary-600);
+    border: 2px solid white;
+    font-weight: 600;
+}
+
+.landing-page .hero .btn-primary:hover {
+    background: var(--primary-50);
+    color: var(--primary-700);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .landing-page .hero .btn-primary {
+    background: white;
+    color: var(--primary-600);
+    border: 2px solid white;
+}
+
+[data-theme="dark"] .landing-page .hero .btn-primary:hover {
+    background: var(--primary-50);
+    color: var(--primary-800);
+}
+
 /* Sections */
 .landing-page .section {
     padding: var(--space-24) 0;

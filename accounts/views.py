@@ -1,13 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django_ratelimit.decorators import ratelimit
 from core.models import Organization
-from accounts.models import UserProfile, OrganizationInvitation
+from accounts.models import UserProfile, OrganizationInvitation, PasswordResetToken
 from accounts.services import create_user_with_email_as_username
+from accounts.forms import ForgotPasswordForm, ResetPasswordForm
 
 
 @require_http_methods(["GET", "POST"])
@@ -169,6 +171,87 @@ def signup_view(request):
         'organization': invitation.organization,
         'invitation_email': invitation.email
     })
+
+
+@require_http_methods(["GET", "POST"])
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
+def forgot_password_view(request):
+    """Handle forgot password requests."""
+    if request.user.is_authenticated:
+        return redirect('admin_dashboard')
+
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email'].lower()
+
+            # Try to find user by email
+            try:
+                user = User.objects.get(email=email)
+                # Create password reset token
+                token = PasswordResetToken.objects.create(user=user)
+
+                # Send reset email
+                try:
+                    from core.email import send_password_reset_email
+                    send_password_reset_email(user, token)
+                except Exception as e:
+                    print(f"Failed to send password reset email to {email}: {e}")
+            except User.DoesNotExist:
+                # Don't reveal if email exists - security best practice
+                pass
+
+            # Always show success message to prevent email enumeration
+            messages.success(
+                request,
+                'If an account with that email exists, we\'ve sent password reset instructions.'
+            )
+            return redirect('login')
+    else:
+        form = ForgotPasswordForm()
+
+    return render(request, 'accounts/forgot_password.html', {'form': form})
+
+
+@require_http_methods(["GET", "POST"])
+def reset_password_view(request, token):
+    """Handle password reset with token."""
+    if request.user.is_authenticated:
+        return redirect('admin_dashboard')
+
+    # Validate token
+    try:
+        reset_token = PasswordResetToken.objects.get(token=token)
+    except PasswordResetToken.DoesNotExist:
+        messages.error(request, 'Invalid or expired password reset link.')
+        return redirect('login')
+
+    if not reset_token.is_valid():
+        messages.error(request, 'This password reset link has expired. Please request a new one.')
+        return redirect('forgot_password')
+
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            # Update user password
+            user = reset_token.user
+            user.set_password(form.cleaned_data['password1'])
+            user.save()
+
+            # Mark token as used
+            reset_token.used_at = timezone.now()
+            reset_token.save()
+
+            messages.success(request, 'Your password has been reset successfully. Please log in.')
+            return redirect('login')
+        else:
+            # Show form errors
+            for error in form.non_field_errors():
+                messages.error(request, error)
+    else:
+        form = ResetPasswordForm()
+
+    return render(request, 'accounts/reset_password.html', {'form': form, 'token': token})
 
 
 @login_required

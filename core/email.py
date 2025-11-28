@@ -84,6 +84,42 @@ def send_email(subject, message, recipient_list, html_message=None, from_email=N
     return email.send()
 
 
+def send_password_reset_email(user, token):
+    """
+    Send password reset email to user.
+
+    Args:
+        user: User object
+        token: PasswordResetToken object
+
+    Returns:
+        Number of emails sent (0 or 1)
+    """
+    from django.template.loader import render_to_string
+    from django.urls import reverse
+
+    # Build reset URL
+    reset_url = f'{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}{reverse("reset_password", args=[token.token])}'
+
+    subject = f'Reset your {settings.SITE_NAME} password'
+
+    context = {
+        'user': user,
+        'reset_url': reset_url,
+        'site_name': settings.SITE_NAME,
+    }
+
+    html_message = render_to_string('emails/password_reset.html', context)
+    text_message = render_to_string('emails/password_reset.txt', context)
+
+    return send_email(
+        subject=subject,
+        message=text_message,
+        recipient_list=[user.email],
+        html_message=html_message
+    )
+
+
 def send_welcome_email(user, organization, password=None):
     """
     Send welcome email to newly registered user.

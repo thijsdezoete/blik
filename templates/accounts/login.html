@@ -33,6 +33,10 @@
         <button type="submit" class="btn-primary">Sign In</button>
     </form>
 
+    <div class="register-link">
+        <p><a href="{% url 'forgot_password' %}">Forgot your password?</a></p>
+    </div>
+
     {% if registration_enabled %}
     <div class="register-link">
         <p>Don't have an account? <a href="{% url 'account_signup' %}">Create one</a></p>

@@ -85,6 +85,39 @@ class OrganizationInvitation(TimeStampedModel):
         )
 
 
+class PasswordResetToken(TimeStampedModel):
+    """Token for password reset requests"""
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='password_reset_tokens'
+    )
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'password_reset_tokens'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Password reset for {self.user.email}"
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = get_random_string(64)
+        if not self.expires_at:
+            from django.utils import timezone
+            from datetime import timedelta
+            self.expires_at = timezone.now() + timedelta(hours=1)
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        """Check if token is still valid (not expired and not used)"""
+        from django.utils import timezone
+        return self.used_at is None and self.expires_at > timezone.now()
+
+
 class Reviewee(TimeStampedModel):
     """Person being reviewed in 360 feedback"""
     # Public UUID for external references (API, URLs)

@@ -1,4 +1,22 @@
 # Lightweight container for landing/marketing pages
+# Multi-stage build: first stage generates git metadata, second stage runs the app
+
+# =============================================================================
+# Stage 1: Generate git metadata (requires git)
+# =============================================================================
+FROM python:3.11-slim AS metadata-builder
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY . .
+
+# Generate git metadata JSON for all landing templates
+RUN python scripts/generate_git_metadata.py
+
+# =============================================================================
+# Stage 2: Runtime (no git needed)
+# =============================================================================
 FROM python:3.11-slim
 
 # Set environment variables
@@ -22,6 +40,9 @@ WORKDIR /app
 
 # Copy project files
 COPY . .
+
+# Copy generated git metadata from builder stage
+COPY --from=metadata-builder /app/landing/git_metadata_cache.json /app/landing/git_metadata_cache.json
 
 # Install Python dependencies using uv
 RUN uv pip install --system -e .

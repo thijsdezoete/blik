@@ -9,7 +9,9 @@ Key features:
 - Author attribution from git history
 - Content versioning via git SHA
 - Build-time caching for performance
+- Falls back to pre-generated JSON cache when git is unavailable (Docker)
 """
+import json
 import subprocess
 import logging
 from pathlib import Path
@@ -18,6 +20,108 @@ from functools import lru_cache
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+# Path to pre-generated metadata cache (created during Docker build)
+METADATA_CACHE_PATH = Path(__file__).parent / 'git_metadata_cache.json'
+
+# In-memory cache for the JSON file (loaded once)
+_json_cache = None
+
+
+def _load_json_cache():
+    """Load the pre-generated metadata cache from JSON file."""
+    global _json_cache
+    if _json_cache is not None:
+        return _json_cache
+
+    if METADATA_CACHE_PATH.exists():
+        try:
+            with open(METADATA_CACHE_PATH, 'r') as f:
+                _json_cache = json.load(f)
+                logger.debug(f"Loaded git metadata cache: {len(_json_cache.get('templates', {}))} templates")
+                return _json_cache
+        except (json.JSONDecodeError, IOError) as e:
+            logger.warning(f"Failed to load git metadata cache: {e}")
+
+    _json_cache = {}
+    return _json_cache
+
+
+def _get_cached_template_metadata(template_name):
+    """
+    Get metadata for a template from the JSON cache.
+
+    Args:
+        template_name: Template name like 'landing/dreyfus_model.html'
+
+    Returns:
+        dict with metadata or None if not found
+    """
+    cache = _load_json_cache()
+    templates = cache.get('templates', {})
+
+    if template_name in templates:
+        cached = templates[template_name]
+        # Convert ISO string back to datetime
+        last_modified_iso = cached.get('last_modified_iso')
+        last_modified = None
+        if last_modified_iso:
+            try:
+                last_modified = datetime.fromisoformat(last_modified_iso.replace('Z', '+00:00'))
+            except ValueError:
+                pass
+
+        return {
+            'last_modified': last_modified,
+            'last_modified_iso': last_modified_iso,
+            'authors': cached.get('authors', []),
+            'primary_author': cached.get('primary_author'),
+            'version_hash': cached.get('version_hash'),
+            'commit_count': cached.get('commit_count', 0),
+        }
+
+    return None
+
+
+def _get_cached_repository_metadata():
+    """
+    Get repository metadata from the JSON cache.
+
+    Returns:
+        dict with repository metadata or None if not found
+    """
+    cache = _load_json_cache()
+    repo = cache.get('repository')
+
+    if repo:
+        # Convert ISO strings back to datetime
+        first_commit_date = None
+        last_updated = None
+
+        if repo.get('first_commit_date'):
+            try:
+                first_commit_date = datetime.fromisoformat(
+                    repo['first_commit_date'].replace('Z', '+00:00')
+                )
+            except ValueError:
+                pass
+
+        if repo.get('last_updated'):
+            try:
+                last_updated = datetime.fromisoformat(
+                    repo['last_updated'].replace('Z', '+00:00')
+                )
+            except ValueError:
+                pass
+
+        return {
+            'total_commits': repo.get('total_commits', 0),
+            'first_commit_date': first_commit_date,
+            'contributors': repo.get('contributors', []),
+            'last_updated': last_updated,
+        }
+
+    return None
 
 
 @lru_cache(maxsize=128)
@@ -125,8 +229,13 @@ def get_file_git_metadata(file_path):
     except subprocess.TimeoutExpired:
         logger.warning(f"Git command timeout for file: {file_path}")
         return _get_default_metadata()
+    except FileNotFoundError:
+        # Git is not available (e.g., in Docker container)
+        # Try to use cached metadata
+        logger.debug("Git not available, checking metadata cache")
+        return _get_default_metadata()
     except Exception as e:
-        logger.exception(f"Error extracting git metadata for {file_path}: {e}")
+        logger.warning(f"Error extracting git metadata for {file_path}: {e}")
         return _get_default_metadata()
 
 
@@ -135,13 +244,20 @@ def get_template_metadata(template_name):
     """
     Get git metadata for a Django template by name.
 
+    First tries live git commands, then falls back to pre-generated cache.
+
     Args:
         template_name: Template name like 'landing/dreyfus_model.html'
 
     Returns:
         dict with git metadata (see get_file_git_metadata)
     """
-    # Resolve template to file path
+    # First, try the JSON cache (fast, works in Docker)
+    cached = _get_cached_template_metadata(template_name)
+    if cached:
+        return cached
+
+    # Fall back to live git commands
     template_path = Path(settings.BASE_DIR) / 'templates' / template_name
     return get_file_git_metadata(str(template_path))
 
@@ -185,6 +301,8 @@ def get_repository_metadata():
     """
     Get metadata about the git repository itself.
 
+    First tries the JSON cache, then falls back to live git commands.
+
     Returns:
         dict with keys:
             - total_commits: total commit count
@@ -192,6 +310,11 @@ def get_repository_metadata():
             - contributors: list of all unique contributors
             - last_updated: date of most recent commit
     """
+    # First, try the JSON cache
+    cached = _get_cached_repository_metadata()
+    if cached:
+        return cached
+
     try:
         # Total commits
         result = subprocess.run(
@@ -246,8 +369,17 @@ def get_repository_metadata():
             'last_updated': last_updated,
         }
 
+    except FileNotFoundError:
+        # Git is not available (e.g., in Docker container)
+        logger.debug("Git not available for repository metadata")
+        return {
+            'total_commits': 0,
+            'first_commit_date': None,
+            'contributors': [],
+            'last_updated': None,
+        }
     except Exception as e:
-        logger.exception(f"Error extracting repository metadata: {e}")
+        logger.warning(f"Error extracting repository metadata: {e}")
         return {
             'total_commits': 0,
             'first_commit_date': None,
@@ -258,6 +390,8 @@ def get_repository_metadata():
 
 def clear_cache():
     """Clear all cached git metadata. Useful after git operations."""
+    global _json_cache
+    _json_cache = None
     get_file_git_metadata.cache_clear()
     get_template_metadata.cache_clear()
     get_view_metadata.cache_clear()

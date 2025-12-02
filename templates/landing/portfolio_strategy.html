@@ -1,0 +1,503 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Portfolio Strategy: Deploy the Right People to the Right Work | Blik</title>
+    <meta name="description" content="Not all work needs Force Multipliers. Learn how to match employee archetypes (Dreyfus + Agency) to work type quadrants. Strategic talent allocation for engineering leaders and portfolio managers.">
+    <meta name="keywords" content="portfolio management, talent allocation, engineering leadership, work type quadrants, Force Multipliers deployment, digital transformation teams, innovation teams, enterprise architecture, FENIX framework, IT portfolio strategy">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'portfolio_strategy' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'portfolio_strategy' %}">
+    <meta property="og:title" content="Portfolio Strategy: Deploy the Right People to the Right Work">
+    <meta property="og:description" content="Match employee archetypes to work type quadrants. Strategic talent allocation for engineering leaders.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Portfolio%20Strategy&subtitle=Right%20People%2C%20Right%20Work">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Portfolio Strategy - Right People, Right Work">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'portfolio_strategy' %}">
+    <meta name="twitter:title" content="Portfolio Strategy: Deploy the Right People to the Right Work">
+    <meta name="twitter:description" content="Match employee archetypes to work type quadrants. Strategic talent allocation for engineering leaders.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Portfolio%20Strategy&subtitle=Right%20People%2C%20Right%20Work">
+{% endblock %}
+
+{% block structured_data %}
+    {% article_schema "landing/portfolio_strategy.html" headline="Portfolio Strategy: Deploy the Right People to the Right Work" description="Learn how to match employee archetypes (Dreyfus + Agency) to work type quadrants. Strategic talent allocation for engineering leaders." canonical_url=request.build_absolute_uri image_url=request.build_absolute_uri|add:"?title=Portfolio%20Strategy&subtitle=Right%20People%2C%20Right%20Work" %}
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#quadrants">Work Quadrants</a>
+    <a href="#mapping">Archetype Mapping</a>
+    <a href="#strategy">Strategy</a>
+    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a>
+{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Portfolio Strategy for Engineering Leaders</h1>
+                <p class="hero-subtitle">You don't need Force Multipliers everywhere. Different work types demand different skill and agency combinations. Learn how to deploy the right people to the right work.</p>
+
+                <!-- TL;DR Box -->
+                <div style="background: var(--bg-card); border: 2px solid var(--primary-200); padding: var(--space-8); margin: var(--space-8) 0; border-radius: var(--radius-lg); text-align: left; max-width: 800px; margin-left: auto; margin-right: auto; box-shadow: var(--shadow-sm);">
+                    <h2 style="margin: 0 0 var(--space-4) 0; font-size: var(--text-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary-600);">TL;DR</h2>
+                    <p style="margin: 0 0 var(--space-4) 0; font-size: var(--text-base); line-height: 1.6; color: var(--text-primary);">Work falls into four quadrants based on whether it's <strong>differentiating vs commodity</strong> and <strong>strategic vs legacy</strong>. Each quadrant needs different employee archetypes. Putting Force Multipliers on maintenance work wastes them. Putting low-agency employees on innovation work fails.</p>
+                    <p style="margin: 0; font-size: var(--text-base); line-height: 1.6; color: var(--text-primary);"><strong style="color: var(--primary-600);">The insight:</strong> Strategic talent allocation is as important as hiring great people.</p>
+                </div>
+
+                <div class="hero-cta">
+                    <a href="#quadrants" class="btn btn-primary">See the Quadrants</a>
+                    <a href="{% landing_url 'performance_matrix' %}" class="btn btn-secondary">Learn Archetypes First</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Talent Misallocation Problem</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Most organizations make one of two mistakes</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                <div class="feature-card feature-card-danger">
+                    <h3>Mistake 1: Spreading Thin</h3>
+                    <p style="margin-bottom: var(--space-4);">Force Multipliers are distributed "fairly" across all projects. Innovation work gets the same staffing as maintenance work.</p>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;"><strong>Result:</strong> Your best people are bored on maintenance. Innovation projects lack the critical mass of talent to succeed.</p>
+                </div>
+
+                <div class="feature-card feature-card-danger">
+                    <h3>Mistake 2: Wrong Fit</h3>
+                    <p style="margin-bottom: var(--space-4);">Low-agency employees are assigned to innovation projects because they're "available." High-skill Brilliant Passengers lead R&D initiatives.</p>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;"><strong>Result:</strong> Innovation stalls waiting for direction. Projects that need autonomous execution get employees who wait to be told what to do.</p>
+                </div>
+            </div>
+
+            <div class="feature-card" style="max-width: 800px; margin: 0 auto; background: var(--primary-600); color: white; text-align: center; padding: var(--space-12); border: 1px solid var(--primary-700);">
+                <h3 style="color: white; margin: 0 0 var(--space-4) 0; font-size: var(--text-2xl);">The Core Principle</h3>
+                <p style="margin: 0; font-size: var(--text-lg); opacity: 0.95;">Match employee capabilities to work requirements. Not all work is created equal. Not all employees fit all work.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Type Quadrants -->
+    <section id="quadrants" class="section">
+        <div class="container">
+            <h2 class="section-title">The Four Work Type Quadrants</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; max-width: 900px; margin-left: auto; margin-right: auto;">
+                Classify work by two dimensions: <strong>business differentiation</strong> (does it create competitive advantage?) and <strong>strategic alignment</strong> (is it part of your target state?).
+            </p>
+
+            <!-- Large Quadrant Visualization -->
+            <div style="max-width: 1100px; margin: 0 auto var(--space-16);">
+                <div style="background: var(--bg-card); padding: var(--space-12); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid var(--border);">
+                    <!-- Quadrant Grid -->
+                    <div style="display: grid; grid-template-columns: auto 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: 0; min-height: 500px;">
+                        <!-- Empty top-left corner -->
+                        <div style="padding: var(--space-6);"></div>
+                        <!-- Column Headers -->
+                        <div style="padding: var(--space-6); text-align: center; font-weight: 700; color: var(--text-primary); font-size: var(--text-base); border-bottom: 3px solid var(--border);">
+                            <span style="display: block; margin-bottom: var(--space-2);">Non-Differentiating</span>
+                            <span style="font-size: var(--text-sm); font-weight: 400; color: var(--text-secondary);">Commodity capabilities</span>
+                        </div>
+                        <div style="padding: var(--space-6); text-align: center; font-weight: 700; color: var(--text-primary); font-size: var(--text-base); border-bottom: 3px solid var(--border);">
+                            <span style="display: block; margin-bottom: var(--space-2);">Differentiating</span>
+                            <span style="font-size: var(--text-sm); font-weight: 400; color: var(--text-secondary);">Competitive advantage</span>
+                        </div>
+
+                        <!-- Row Header: Target -->
+                        <div style="padding: var(--space-6); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-primary); font-size: var(--text-base); writing-mode: vertical-rl; transform: rotate(180deg); border-right: 3px solid var(--border);">
+                            <span>Target State</span>
+                        </div>
+
+                        <!-- Q3: Build to Change -->
+                        <div style="background: var(--primary-50); padding: var(--space-8); border: 2px solid var(--primary-200); margin: var(--space-3); border-radius: var(--radius-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+                                <h3 style="margin: 0; color: var(--primary-700); font-size: var(--text-xl);">Build to Change</h3>
+                                <span style="background: var(--primary-200); color: var(--primary-800); padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-xs); font-weight: 600;">Q3</span>
+                            </div>
+                            <p style="margin: 0 0 var(--space-4) 0; color: var(--text-secondary); font-size: var(--text-sm);">Factory mode. Major releases. Structured delivery with established patterns.</p>
+                            <div style="background: var(--bg-card); padding: var(--space-4); border-radius: var(--radius-md);">
+                                <p style="margin: 0 0 var(--space-2) 0; font-size: var(--text-sm); color: var(--text-primary);"><strong>Examples:</strong> Internal tools, operational systems, infrastructure upgrades</p>
+                                <p style="margin: 0; font-size: var(--text-sm); color: var(--text-secondary);"><strong>Velocity:</strong> Quarterly releases</p>
+                            </div>
+                        </div>
+
+                        <!-- Q2: Innovation @ Scale -->
+                        <div style="background: var(--success-50); padding: var(--space-8); border: 2px solid var(--success-200); margin: var(--space-3); border-radius: var(--radius-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+                                <h3 style="margin: 0; color: var(--success-700); font-size: var(--text-xl);">Innovation @ Scale</h3>
+                                <span style="background: var(--success-200); color: var(--success-800); padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-xs); font-weight: 600;">Q2</span>
+                            </div>
+                            <p style="margin: 0 0 var(--space-4) 0; color: var(--text-secondary); font-size: var(--text-sm);">MVPs becoming products. Managed delivery centers. Scaling what works.</p>
+                            <div style="background: var(--bg-card); padding: var(--space-4); border-radius: var(--radius-md);">
+                                <p style="margin: 0 0 var(--space-2) 0; font-size: var(--text-sm); color: var(--text-primary);"><strong>Examples:</strong> Customer-facing products, platform capabilities, API ecosystems</p>
+                                <p style="margin: 0; font-size: var(--text-sm); color: var(--text-secondary);"><strong>Velocity:</strong> Weekly/bi-weekly releases</p>
+                            </div>
+                        </div>
+
+                        <!-- Row Header: Non-Target -->
+                        <div style="padding: var(--space-6); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-primary); font-size: var(--text-base); writing-mode: vertical-rl; transform: rotate(180deg); border-right: 3px solid var(--border);">
+                            <span>Non-Target</span>
+                        </div>
+
+                        <!-- Q4: Run to Retire -->
+                        <div style="background: var(--bg-secondary); padding: var(--space-8); border: 2px solid var(--border); margin: var(--space-3); border-radius: var(--radius-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+                                <h3 style="margin: 0; color: var(--text-secondary); font-size: var(--text-xl);">Run to Retire</h3>
+                                <span style="background: var(--bg-card); color: var(--text-secondary); padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-xs); font-weight: 600; border: 1px solid var(--border);">Q4</span>
+                            </div>
+                            <p style="margin: 0 0 var(--space-4) 0; color: var(--text-secondary); font-size: var(--text-sm);">Legacy maintenance. Minor releases. Keep the lights on until replacement.</p>
+                            <div style="background: var(--bg-card); padding: var(--space-4); border-radius: var(--radius-md);">
+                                <p style="margin: 0 0 var(--space-2) 0; font-size: var(--text-sm);"><strong>Examples:</strong> Legacy systems, deprecated features, sunset products</p>
+                                <p style="margin: 0; font-size: var(--text-sm); color: var(--text-secondary);"><strong>Velocity:</strong> Bug fixes only</p>
+                            </div>
+                        </div>
+
+                        <!-- Q1: Disrupt to Succeed -->
+                        <div style="background: var(--warning-50); padding: var(--space-8); border: 2px solid var(--warning-200); margin: var(--space-3); border-radius: var(--radius-lg);">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-4);">
+                                <h3 style="margin: 0; color: var(--warning-700); font-size: var(--text-xl);">Disrupt to Succeed</h3>
+                                <span style="background: var(--warning-200); color: var(--warning-800); padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-xs); font-weight: 600;">Q1</span>
+                            </div>
+                            <p style="margin: 0 0 var(--space-4) 0; color: var(--text-secondary); font-size: var(--text-sm);">Innovation lab. Ideation and prototyping. Exploring the unknown.</p>
+                            <div style="background: var(--bg-card); padding: var(--space-4); border-radius: var(--radius-md);">
+                                <p style="margin: 0 0 var(--space-2) 0; font-size: var(--text-sm); color: var(--text-primary);"><strong>Examples:</strong> R&D projects, new market exploration, emerging tech POCs</p>
+                                <p style="margin: 0; font-size: var(--text-sm); color: var(--text-secondary);"><strong>Velocity:</strong> Rapid experimentation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div style="display: flex; justify-content: center; gap: var(--space-8); margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--border); flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: var(--space-2);">
+                            <div style="width: 12px; height: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 2px;"></div>
+                            <span style="font-size: var(--text-sm); color: var(--text-secondary);">Traditional IT Spend</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: var(--space-2);">
+                            <div style="width: 12px; height: 12px; background: var(--success-100); border: 1px solid var(--success-300); border-radius: 2px;"></div>
+                            <span style="font-size: var(--text-sm); color: var(--text-secondary);">Digital Transformation Spend</span>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); margin-top: var(--space-4); font-size: var(--text-sm);">
+                    Framework adapted from <a href="https://www.hcltech.com/brochures/digital-analytics/scaling-digital-across-enterprise-fenix-20" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: underline;">HCL's FENIX 2.0</a> portfolio management model.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Archetype Mapping -->
+    <section id="mapping" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Which Archetypes Fit Which Quadrants?</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 900px; margin-left: auto; margin-right: auto;">
+                The <a href="{% landing_url 'performance_matrix' %}" style="color: var(--primary); text-decoration: underline;">Performance Matrix</a> defines four employee archetypes based on skill (Dreyfus) and agency. Here's where each archetype excels.
+            </p>
+
+            <!-- Mapping Table -->
+            <div style="max-width: 1100px; margin: 0 auto var(--space-12);">
+                <div class="table-container">
+                    <table class="table" style="font-size: var(--text-sm);">
+                        <thead>
+                            <tr>
+                                <th>Quadrant</th>
+                                <th>Ideal Archetype</th>
+                                <th>Dreyfus Level</th>
+                                <th>Agency Level</th>
+                                <th>Why</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-left: 4px solid var(--warning);">
+                                <td data-label="Quadrant"><strong style="color: var(--warning-700);">Q1: Disrupt</strong></td>
+                                <td data-label="Archetype"><strong>Force Multipliers only</strong></td>
+                                <td data-label="Dreyfus">Proficient-Expert</td>
+                                <td data-label="Agency">Level 5</td>
+                                <td data-label="Why">Innovation requires autonomous execution. No one to tell you what to do.</td>
+                            </tr>
+                            <tr style="border-left: 4px solid var(--success);">
+                                <td data-label="Quadrant"><strong style="color: var(--success-700);">Q2: Scale</strong></td>
+                                <td data-label="Archetype"><strong>Force Multipliers + Hungry Learners</strong></td>
+                                <td data-label="Dreyfus">Competent-Expert mix</td>
+                                <td data-label="Agency">Level 4-5</td>
+                                <td data-label="Why">Scaling innovation needs leaders + people who can learn fast.</td>
+                            </tr>
+                            <tr style="border-left: 4px solid var(--primary);">
+                                <td data-label="Quadrant"><strong style="color: var(--primary-700);">Q3: Build</strong></td>
+                                <td data-label="Archetype"><strong>Competent performers + Brilliant Passengers</strong></td>
+                                <td data-label="Dreyfus">Competent-Proficient</td>
+                                <td data-label="Agency">Level 3-4</td>
+                                <td data-label="Why">Structured work. Clear requirements. Direction is provided.</td>
+                            </tr>
+                            <tr style="border-left: 4px solid var(--border);">
+                                <td data-label="Quadrant"><strong style="color: var(--text-secondary);">Q4: Run</strong></td>
+                                <td data-label="Archetype"><strong>Lower performers acceptable</strong></td>
+                                <td data-label="Dreyfus">Adv. Beginner-Competent</td>
+                                <td data-label="Agency">Level 2-3</td>
+                                <td data-label="Why">Routine maintenance. Following procedures. Minimal judgment needed.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Deep Dive Cards -->
+            <div class="features-grid">
+                <div class="feature-card" style="border-top: 4px solid var(--warning);">
+                    <h3 style="color: var(--warning-700);">Q1: Disrupt to Succeed</h3>
+                    <p style="margin-bottom: var(--space-4);"><strong>Only Force Multipliers.</strong> Innovation labs require people who can identify opportunities, research solutions, prototype, and iterate—all without being told what to do.</p>
+                    <div style="background: var(--warning-50); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+                        <p style="margin: 0; font-size: var(--text-sm);"><strong>Warning:</strong> Putting Brilliant Passengers here fails. They'll wait for requirements that don't exist. Putting Hungry Learners here is risky—high agency but not enough skill to avoid expensive mistakes.</p>
+                    </div>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">Staff Q1 sparingly with your absolute best. 2-3 Force Multipliers beat 10 average performers.</p>
+                </div>
+
+                <div class="feature-card" style="border-top: 4px solid var(--success);">
+                    <h3 style="color: var(--success-700);">Q2: Innovation @ Scale</h3>
+                    <p style="margin-bottom: var(--space-4);"><strong>Force Multipliers leading Hungry Learners.</strong> Scaling proven innovations needs autonomous leaders who can mentor growing talent.</p>
+                    <div style="background: var(--success-50); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+                        <p style="margin: 0; font-size: var(--text-sm);"><strong>Sweet spot:</strong> This is where Hungry Learners thrive. They have structure to learn from (established patterns from Q1 exploration) but enough ambiguity to develop high-agency habits.</p>
+                    </div>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">Ratio: 1 Force Multiplier per 3-4 Hungry Learners. The FM sets standards; learners execute and grow.</p>
+                </div>
+
+                <div class="feature-card" style="border-top: 4px solid var(--primary);">
+                    <h3 style="color: var(--primary-700);">Q3: Build to Change</h3>
+                    <p style="margin-bottom: var(--space-4);"><strong>Competent performers and Brilliant Passengers.</strong> Factory mode with established patterns. Clear requirements. Predictable delivery.</p>
+                    <div style="background: var(--primary-50); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+                        <p style="margin: 0; font-size: var(--text-sm);"><strong>Good fit for Brilliant Passengers:</strong> They're technically skilled but need direction. Q3 provides direction. Don't waste them on Q1 innovation or frustrate them on Q4 maintenance.</p>
+                    </div>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">Force Multipliers here get bored. Move them to Q1/Q2 or they'll leave.</p>
+                </div>
+
+                <div class="feature-card" style="border-top: 4px solid var(--text-secondary);">
+                    <h3 style="color: var(--text-secondary);">Q4: Run to Retire</h3>
+                    <p style="margin-bottom: var(--space-4);"><strong>Lower skill/agency acceptable.</strong> Legacy maintenance. Bug fixes. Keeping systems alive until replacement.</p>
+                    <div style="background: var(--bg-secondary); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+                        <p style="margin: 0; font-size: var(--text-sm);"><strong>Strategic use:</strong> Q4 can absorb employees who aren't suited for higher-stakes work. Better to have them maintaining legacy than blocking innovation.</p>
+                    </div>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">Never put Force Multipliers or Hungry Learners here. You'll kill their motivation and lose them.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Strategic Framework -->
+    <section id="strategy" class="section">
+        <div class="container">
+            <h2 class="section-title">Implementing Portfolio-Based Talent Strategy</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Five steps to align talent with work types</p>
+
+            <div style="max-width: 900px; margin: 0 auto;">
+                <!-- Step 1 -->
+                <div class="feature-card" style="margin-bottom: var(--space-6);">
+                    <div style="display: flex; gap: var(--space-6); align-items: start;">
+                        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--primary); color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-xl);">1</div>
+                        <div>
+                            <h3 style="margin: 0 0 var(--space-2) 0;">Classify Your Projects</h3>
+                            <p style="margin: 0;">Map every active project/product to a quadrant. Be honest: most "innovation" projects are actually Q3 (Build to Change) once patterns are established.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="feature-card" style="margin-bottom: var(--space-6);">
+                    <div style="display: flex; gap: var(--space-6); align-items: start;">
+                        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--primary); color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-xl);">2</div>
+                        <div>
+                            <h3 style="margin: 0 0 var(--space-2) 0;">Assess Your People</h3>
+                            <p style="margin: 0;">Use the <a href="{% landing_url 'performance_matrix' %}" style="color: var(--primary);">Performance Matrix</a> to identify each team member's archetype. 360 feedback reveals agency gaps that interviews miss.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="feature-card" style="margin-bottom: var(--space-6);">
+                    <div style="display: flex; gap: var(--space-6); align-items: start;">
+                        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--primary); color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-xl);">3</div>
+                        <div>
+                            <h3 style="margin: 0 0 var(--space-2) 0;">Identify Mismatches</h3>
+                            <p style="margin: 0;">Force Multipliers on Q4 maintenance? Brilliant Passengers leading Q1 innovation? Low performers on customer-facing products? These are your urgent reallocation targets.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="feature-card" style="margin-bottom: var(--space-6);">
+                    <div style="display: flex; gap: var(--space-6); align-items: start;">
+                        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--primary); color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-xl);">4</div>
+                        <div>
+                            <h3 style="margin: 0 0 var(--space-2) 0;">Concentrate Force Multipliers</h3>
+                            <p style="margin: 0;">Don't spread your best people thin. Concentrate Force Multipliers on Q1/Q2 work. Two FMs on one innovation project beats one FM each on five projects.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="feature-card">
+                    <div style="display: flex; gap: var(--space-6); align-items: start;">
+                        <div style="flex-shrink: 0; width: 48px; height: 48px; background: var(--primary); color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-xl);">5</div>
+                        <div>
+                            <h3 style="margin: 0 0 var(--space-2) 0;">Create Growth Paths</h3>
+                            <p style="margin: 0;">Hungry Learners in Q2 should graduate to Q1 as skills develop. Competent performers in Q3 can move to Q2 as agency increases. Make the progression visible.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Common Anti-patterns -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Anti-patterns to Avoid</h2>
+
+            <div class="features-grid">
+                <div class="feature-card feature-card-danger">
+                    <h3>Egalitarian Staffing</h3>
+                    <p>"Every team gets one senior engineer." This sounds fair but fails strategically. Q1 innovation needs concentration of talent, not distribution.</p>
+                </div>
+
+                <div class="feature-card feature-card-danger">
+                    <h3>Rewarding with Maintenance</h3>
+                    <p>"You built it, now you maintain it." Putting Force Multipliers on Q4 work as "ownership" wastes their capability and drives them to quit.</p>
+                </div>
+
+                <div class="feature-card feature-card-danger">
+                    <h3>Availability-Based Assignment</h3>
+                    <p>"Who's free?" is the wrong question. A free Brilliant Passenger shouldn't lead Q1 innovation just because Force Multipliers are busy.</p>
+                </div>
+
+                <div class="feature-card feature-card-warning">
+                    <h3>Ignoring Q4 Entirely</h3>
+                    <p>Legacy systems still need people. Assigning no one means technical debt compounds. Q4 is where lower performers can contribute value.</p>
+                </div>
+
+                <div class="feature-card feature-card-warning">
+                    <h3>Promoting Brilliant Passengers to Q1</h3>
+                    <p>High technical skill ≠ innovation capability. Brilliant Passengers need direction. Q1 has none. They'll wait for requirements that never come.</p>
+                </div>
+
+                <div class="feature-card feature-card-warning">
+                    <h3>Keeping Hungry Learners in Q4</h3>
+                    <p>Maintenance work doesn't develop high-agency habits. Hungry Learners stagnate on Q4. Move them to Q2 where they can grow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Industry Frameworks -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Related Industry Frameworks</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 900px; margin-left: auto; margin-right: auto;">
+                The quadrant model draws from established portfolio management thinking. These frameworks offer complementary perspectives.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: var(--space-12);">
+                <div class="feature-card">
+                    <h3 style="margin-bottom: var(--space-2);">HCL FENIX 2.0</h3>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-4);">The original enterprise framework our quadrants adapt. Defines digital transformation execution across dimensions of technology, people, and process.</p>
+                    <ul style="font-size: var(--text-sm); margin: 0 0 var(--space-4) var(--space-4); padding: 0;">
+                        <li><a href="https://www.hcltech.com/brochures/digital-analytics/scaling-digital-across-enterprise-fenix-20" target="_blank" rel="noopener" style="color: var(--primary);">FENIX 2.0 Overview</a></li>
+                        <li><a href="https://www.hcltech.com/sites/default/files/documents/resources/brochure/files/fenix_2.0_framework_brochure_hcl_technologies.pdf" target="_blank" rel="noopener" style="color: var(--primary);">FENIX 2.0 Brochure (PDF)</a></li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="margin-bottom: var(--space-2);">Gartner Pace-Layered</h3>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-4);">Three layers: Systems of Record (stable), Systems of Differentiation (medium pace), Systems of Innovation (fast). Different governance for different change rates.</p>
+                    <ul style="font-size: var(--text-sm); margin: 0 0 var(--space-4) var(--space-4); padding: 0;">
+                        <li><a href="https://www.gartner.com/en/information-technology/glossary/pace-layered-application-strategy" target="_blank" rel="noopener" style="color: var(--primary);">Gartner Definition</a></li>
+                        <li><a href="https://www.thoughtworks.com/radar/techniques/pace-layered-application-strategy" target="_blank" rel="noopener" style="color: var(--primary);">Thoughtworks Analysis</a></li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="margin-bottom: var(--space-2);">Wardley Mapping</h3>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-4);">Visual strategy tool mapping components by value chain position and evolution stage. Used by UK government and enterprise tech teams. Strong community following.</p>
+                    <ul style="font-size: var(--text-sm); margin: 0 0 var(--space-4) var(--space-4); padding: 0;">
+                        <li><a href="https://learnwardleymapping.com/" target="_blank" rel="noopener" style="color: var(--primary);">Learn Wardley Mapping</a></li>
+                        <li><a href="https://en.wikipedia.org/wiki/Wardley_map" target="_blank" rel="noopener" style="color: var(--primary);">Wikipedia Overview</a></li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="margin-bottom: var(--space-2);">Bimodal IT (Gartner)</h3>
+                    <p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-4);">Two-speed IT: Mode 1 (predictable, stable) vs Mode 2 (exploratory, agile). Influential but controversial—critics argue it creates unhealthy silos.</p>
+                    <ul style="font-size: var(--text-sm); margin: 0 0 var(--space-4) var(--space-4); padding: 0;">
+                        <li><a href="https://www.gartner.com/en/information-technology/glossary/bimodal" target="_blank" rel="noopener" style="color: var(--primary);">Gartner Definition</a></li>
+                        <li><a href="https://martinfowler.com/bliki/BimodalIT.html" target="_blank" rel="noopener" style="color: var(--primary);">Martin Fowler's Critique</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-card feature-card-info" style="max-width: 900px; margin: 0 auto;">
+                <h3>Why We Focus on People, Not Just Systems</h3>
+                <p style="margin-bottom: var(--space-4);">Most portfolio frameworks (Pace-Layered, Bimodal, FENIX) focus on <em>systems and applications</em>. They answer: "How should we govern this application?"</p>
+                <p style="margin-bottom: var(--space-4);">Our extension asks: "Who should <em>work on</em> this application?" The insight is that different work types need different <strong>people</strong>, not just different governance.</p>
+                <p style="margin: 0; font-size: var(--text-sm); color: var(--text-secondary);">A Force Multiplier on legacy maintenance is wasted. A Brilliant Passenger on innovation work is blocked. Matching archetypes to quadrants is the missing link in portfolio strategy.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prerequisites -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Prerequisites: Understand the Building Blocks</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                This framework builds on two foundational models. Make sure you understand them first.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div class="feature-card">
+                    <h3 style="margin-bottom: var(--space-4);">Dreyfus Model</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">The research-backed framework for evaluating technical skill from Novice to Expert. Understand how people develop expertise.</p>
+                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary" style="display: inline-block;">Learn Dreyfus Model →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="margin-bottom: var(--space-4);">5 Levels of Agency</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">Technical skill alone doesn't predict performance. Learn how to measure ownership mindset from passive (Level 1) to autonomous (Level 5).</p>
+                    <a href="{% landing_url 'agency_levels' %}" class="btn btn-secondary" style="display: inline-block;">Learn Agency Levels →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="margin-bottom: var(--space-4);">Performance Matrix</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: var(--space-4);">See how Dreyfus + Agency create four archetypes: Force Multipliers, Hungry Learners, Brilliant Passengers, and Low Performers.</p>
+                    <a href="{% landing_url 'performance_matrix' %}" class="btn btn-secondary" style="display: inline-block;">See the Matrix →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Identify Your Team's Archetypes</h2>
+            <p>Before you can deploy the right people to the right work, you need to know who your Force Multipliers are. Blik's 360 feedback questionnaires measure both technical skill (Dreyfus) and agency levels.</p>
+            <div class="hero-cta">
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
+                <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
+            </div>
+
+            <div class="cta-box">
+                <h3>Need Help with Assessment?</h3>
+                <p>Not sure how to evaluate your team? Start with our default questionnaires that measure both dimensions automatically. Get reports that show exactly where each team member falls on the Performance Matrix.</p>
+                <a href="{% landing_url 'performance_matrix' %}" class="btn btn-primary" style="display: inline-block;">Learn the Archetypes First</a>
+            </div>
+        </div>
+    </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/portfolio_strategy.html" %}
+{% endblock %}

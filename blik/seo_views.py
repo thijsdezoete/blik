@@ -165,6 +165,12 @@ def sitemap(request):
         <changefreq>weekly</changefreq>
         <priority>0.85</priority>
     </url>
+    <url>
+        <loc>{base_url}{prefix}/portfolio-strategy/</loc>
+        <lastmod>2025-12-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
 </urlset>'''
 
     return HttpResponse(sitemap_xml, content_type='application/xml')

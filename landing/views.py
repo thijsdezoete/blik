@@ -109,6 +109,11 @@ def performance_matrix(request):
     return render(request, 'landing/performance_matrix.html')
 
 
+def portfolio_strategy(request):
+    """Portfolio Strategy page - matching employee archetypes to work type quadrants."""
+    return render(request, 'landing/portfolio_strategy.html')
+
+
 def signup(request):
     """Signup page with Stripe checkout integration."""
     context = {

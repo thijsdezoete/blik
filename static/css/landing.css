@@ -663,40 +663,56 @@
 /* Special Feature Cards with Color Variants */
 .landing-page .feature-card-danger {
     background: var(--bg-card);
-    border-left: 4px solid #dc2626;
+    border-left: 4px solid var(--danger-600);
 }
 
 .landing-page .feature-card-danger h3 {
-    color: #dc2626;
+    color: var(--danger-600);
     margin-bottom: 1rem;
+}
+
+.landing-page .feature-card-danger p {
+    color: var(--text-primary);
 }
 
 .landing-page .feature-card-success {
     background: var(--bg-card);
-    border-left: 4px solid #16a34a;
+    border-left: 4px solid var(--success-600);
 }
 
 .landing-page .feature-card-success h3 {
-    color: #16a34a;
+    color: var(--success-600);
     margin-bottom: 1rem;
+}
+
+.landing-page .feature-card-success p {
+    color: var(--text-primary);
 }
 
 .landing-page .feature-card-warning {
     background: var(--bg-card);
-    border-left: 4px solid #f59e0b;
+    border-left: 4px solid var(--warning);
 }
 
 .landing-page .feature-card-warning h3 {
-    color: #d97706;
+    color: var(--warning-600);
+}
+
+.landing-page .feature-card-warning p {
+    color: var(--text-primary);
 }
 
 .landing-page .feature-card-info {
     background: var(--bg-card);
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid var(--primary);
 }
 
 .landing-page .feature-card-info h3 {
-    color: #1e40af;
+    color: var(--primary-700);
+}
+
+.landing-page .feature-card-info p {
+    color: var(--text-primary);
 }
 
 /* Read More / Expandable Content */
@@ -904,6 +920,20 @@
 .landing-page .cta-box p {
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
+}
+
+/* CTA box inside CTA section - use transparent styling */
+.landing-page .cta-section .cta-box {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.landing-page .cta-section .cta-box h3 {
+    color: inherit;
+}
+
+.landing-page .cta-section .cta-box p {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .landing-page .code-block {

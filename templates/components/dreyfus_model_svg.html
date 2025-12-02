@@ -160,7 +160,8 @@
         }
 
         /* When no stage is selected, show all at full opacity */
-        .dreyfus-model:not([data-current-stage]) g[id*="cp_"] {
+        .dreyfus-model:not([data-current-stage]) g[id*="cp_"],
+        .dreyfus-model[data-current-stage=""] g[id*="cp_"] {
             opacity: 1;
         }
     </style>

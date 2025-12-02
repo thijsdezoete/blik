@@ -11,7 +11,8 @@ db.sqlite3
 .env
 .env.local
 *.log
-.git
+# Note: .git is NOT ignored - needed for metadata generation in multi-stage builds
+# The .git folder only exists in the builder stage, not the final image
 .gitignore
 .DS_Store
 docs/

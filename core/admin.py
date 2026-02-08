@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from .models import Organization, WelcomeEmailFact
+from .models import Organization, UpgradeStep, WelcomeEmailFact
 
 
 class OrganizationAdminForm(forms.ModelForm):
@@ -56,6 +56,22 @@ class WelcomeEmailFactAdmin(admin.ModelAdmin):
     search_fields = ['title', 'content']
     list_editable = ['is_active', 'display_order']
     ordering = ['display_order', 'created_at']
+
+
+@admin.register(UpgradeStep)
+class UpgradeStepAdmin(admin.ModelAdmin):
+    list_display = ['name', 'success', 'applied_at']
+    list_filter = ['success']
+    readonly_fields = ['name', 'applied_at', 'success', 'error']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 # Note: django-axes models (AccessAttempt, AccessLog, AccessFailureLog) are

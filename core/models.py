@@ -130,3 +130,18 @@ class WelcomeEmailFact(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+
+class UpgradeStep(models.Model):
+    """Tracks one-time data upgrade steps that run on deploy."""
+    name = models.CharField(max_length=255, unique=True)
+    applied_at = models.DateTimeField(auto_now_add=True)
+    success = models.BooleanField(default=False)
+    error = models.TextField(blank=True, default='')
+
+    class Meta:
+        db_table = 'upgrade_steps'
+
+    def __str__(self):
+        status = 'OK' if self.success else 'FAILED'
+        return f'{self.name} [{status}]'

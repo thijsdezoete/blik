@@ -46,6 +46,9 @@ fi
 echo "Running database migrations..."
 python manage.py migrate --noinput
 
+echo "Running upgrade steps..."
+python manage.py upgrade
+
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 

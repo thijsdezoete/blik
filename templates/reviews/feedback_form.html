@@ -63,7 +63,7 @@
                 {% for question in section.questions.all %}
                 <div class="question">
                     <div class="question-text">
-                        {{ question.question_text }}
+                        {{ question.question_text|personalize:reviewee.name }}
                         {% if question.required %}<span class="required">*</span>{% endif %}
                     </div>
 

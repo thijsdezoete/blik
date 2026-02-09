@@ -96,6 +96,18 @@ class QuestionSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["uuid"]
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        reviewee_name = self.context.get("reviewee_name")
+        if reviewee_name:
+            first_name = reviewee_name.split()[0]
+            data["question_text"] = (
+                data["question_text"]
+                .replace("This person", first_name)
+                .replace("this person", first_name)
+            )
+        return data
+
 
 class QuestionSectionSerializer(serializers.ModelSerializer):
     """Serializer for question sections with nested questions."""

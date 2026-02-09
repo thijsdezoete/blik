@@ -521,6 +521,25 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         tags=["cycles"],
+        description="Get the full questionnaire for this cycle, personalized with the reviewee's name",
+        responses=QuestionnaireSerializer,
+    )
+    @action(detail=True, methods=["get"])
+    def questionnaire(self, request, uuid=None):
+        """
+        Get questionnaire with questions personalized for the reviewee.
+
+        GET /api/v1/cycles/{id}/questionnaire/
+        """
+        cycle = self.get_object()
+        serializer = QuestionnaireSerializer(
+            cycle.questionnaire,
+            context={**self.get_serializer_context(), "reviewee_name": cycle.reviewee.name},
+        )
+        return Response(serializer.data)
+
+    @extend_schema(
+        tags=["cycles"],
         description="Get detailed progress information including per-category stats",
     )
     @action(detail=True, methods=["get"])

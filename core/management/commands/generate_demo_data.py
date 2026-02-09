@@ -37,6 +37,11 @@ class Command(BaseCommand):
             type=int,
             help='Organization ID to create demo data for (default: first org)'
         )
+        parser.add_argument(
+            '--scenarios',
+            action='store_true',
+            help='Create deterministic per-questionnaire scenarios covering all lifecycle states'
+        )
 
     def handle(self, *args, **options):
         num_reviewees = options['reviewees']
@@ -76,6 +81,10 @@ class Command(BaseCommand):
             return
 
         admin_user = admin_profile.user
+
+        if options.get('scenarios'):
+            self._create_all_scenarios(organization, admin_user)
+            return
 
         # Get questionnaires
         questionnaires = list(Questionnaire.objects.filter(is_active=True))
@@ -158,6 +167,398 @@ class Command(BaseCommand):
             f'  - {partial_count} partially completed\n'
             f'  - {active_count} newly created'
         ))
+
+    # ------------------------------------------------------------------
+    # --scenarios mode: deterministic per-questionnaire test coverage
+    # ------------------------------------------------------------------
+
+    SCENARIO_NAMES = [
+        ('Alice', 'Complete'),     # Scenario 1 – fully completed, email invites
+        ('Bob', 'Partial'),        # Scenario 2 – partially completed, email invites
+        ('Carol', 'Anonymous'),    # Scenario 3 – anonymous link claims, mixed
+        ('Dan', 'Invited'),        # Scenario 4 – just started, invites sent
+        ('Eve', 'SelfOnly'),       # Scenario 5 – single self-review only
+    ]
+
+    QUESTIONNAIRE_TAGS = {
+        'Software Engineering 360 Review': 'SE360',
+        'Professional Skills 360 Review': 'PS360',
+        'Manager 360 Review': 'MGR360',
+        '360 Degree Feedback (Simple)': 'Simple',
+        'Agency & Initiative Assessment': 'Agency',
+        'Developer Skills Assessment': 'DevSkills',
+    }
+
+    REVIEWER_EMAILS = [
+        'peer1.reviewer@example.com',
+        'peer2.reviewer@company.io',
+        'peer3.reviewer@example.com',
+        'manager.reviewer@company.io',
+        'direct1.reviewer@example.com',
+        'direct2.reviewer@company.io',
+        'senior.reviewer@example.com',
+        'lead.reviewer@company.io',
+    ]
+
+    def _create_all_scenarios(self, organization, admin_user):
+        """Create deterministic per-questionnaire scenarios covering all lifecycle states."""
+        questionnaires = list(
+            Questionnaire.objects.filter(
+                is_active=True,
+                organization=organization,
+            )
+        )
+        if not questionnaires:
+            # Fall back to default questionnaires (no org)
+            questionnaires = list(
+                Questionnaire.objects.filter(is_active=True, organization__isnull=True)
+            )
+        if not questionnaires:
+            self.stdout.write(self.style.ERROR(
+                'No questionnaires found. Load fixtures first.'
+            ))
+            return
+
+        self.stdout.write(f'Found {len(questionnaires)} questionnaires for scenarios')
+
+        total_cycles = 0
+        total_tokens = 0
+        stats = {'completed': 0, 'active': 0}
+
+        for q in questionnaires:
+            tag = self.QUESTIONNAIRE_TAGS.get(q.name, q.name[:8])
+            self.stdout.write(f'\n  Questionnaire: {q.name} [{tag}]')
+
+            questions = list(Question.objects.filter(
+                section__questionnaire=q,
+            ).order_by('section__order', 'order'))
+
+            for idx, (first, scenario_label) in enumerate(self.SCENARIO_NAMES):
+                reviewee_name = f'{first} {scenario_label} [{tag}]'
+                email = f'{first.lower()}.{scenario_label.lower()}.{tag.lower()}@demo.example.com'
+
+                reviewee = Reviewee.objects.create(
+                    name=reviewee_name,
+                    email=email,
+                    department='Engineering',
+                    organization=organization,
+                )
+
+                scenario_num = idx + 1
+                cycle, num_tokens = self._create_scenario_cycle(
+                    scenario_num, reviewee, q, questions, admin_user,
+                )
+                total_cycles += 1
+                total_tokens += num_tokens
+                status_label = 'completed' if cycle.status == 'completed' else 'active'
+                stats[status_label] += 1
+                self.stdout.write(f'    Scenario {scenario_num} ({scenario_label}): '
+                                  f'{status_label}, {num_tokens} tokens')
+
+        self.stdout.write(self.style.SUCCESS(
+            f'\nScenario generation complete:\n'
+            f'  Cycles:    {total_cycles}\n'
+            f'  Completed: {stats["completed"]}\n'
+            f'  Active:    {stats["active"]}\n'
+            f'  Tokens:    {total_tokens}'
+        ))
+
+    def _create_scenario_cycle(self, scenario_num, reviewee, questionnaire,
+                               questions, admin_user):
+        """Dispatch to the right scenario builder. Returns (cycle, token_count)."""
+        builders = {
+            1: self._scenario_fully_completed_email,
+            2: self._scenario_partially_completed_email,
+            3: self._scenario_anonymous_mixed,
+            4: self._scenario_just_started_invites,
+            5: self._scenario_self_review_only,
+        }
+        return builders[scenario_num](reviewee, questionnaire, questions, admin_user)
+
+    # -- helper: create an email-invited token ---------------------------
+
+    def _create_email_invite_token(self, cycle, category, email,
+                                   invited_days_ago=7,
+                                   claimed=False, completed=False,
+                                   reminded=False):
+        """Create a token that was delivered via email invitation."""
+        now = timezone.now()
+        invitation_sent = now - timedelta(days=invited_days_ago)
+        kwargs = {
+            'cycle': cycle,
+            'category': category,
+            'token': uuid.uuid4(),
+            'reviewer_email': email,
+            'invitation_sent_at': invitation_sent,
+        }
+        if reminded:
+            kwargs['last_reminder_sent_at'] = invitation_sent + timedelta(days=3)
+        if claimed:
+            kwargs['claimed_at'] = invitation_sent + timedelta(
+                hours=random.randint(2, 48)
+            )
+        if completed and claimed:
+            kwargs['completed_at'] = kwargs['claimed_at'] + timedelta(
+                hours=random.randint(1, 24)
+            )
+        return ReviewerToken.objects.create(**kwargs)
+
+    # -- helper: create an anonymous-link token --------------------------
+
+    def _create_anonymous_token(self, cycle, category,
+                                claimed=False, completed=False):
+        """Create a token simulating anonymous link usage (no reviewer_email)."""
+        now = timezone.now()
+        kwargs = {
+            'cycle': cycle,
+            'category': category,
+            'token': uuid.uuid4(),
+        }
+        if claimed:
+            kwargs['claimed_at'] = now - timedelta(
+                days=random.randint(1, 10),
+                hours=random.randint(0, 23),
+            )
+        if completed and claimed:
+            kwargs['completed_at'] = kwargs['claimed_at'] + timedelta(
+                hours=random.randint(1, 24)
+            )
+        return ReviewerToken.objects.create(**kwargs)
+
+    # -- helper: fill responses for a token ------------------------------
+
+    def _fill_responses(self, cycle, token, questions, pattern='solid_performer'):
+        """Create Response objects for every question in the questionnaire."""
+        for question in questions:
+            answer_data = self._generate_answer(question, token.category, pattern)
+            Response.objects.create(
+                cycle=cycle,
+                question=question,
+                token=token,
+                category=token.category,
+                answer_data=answer_data,
+            )
+
+    # ====================================================================
+    # Scenario 1 – Fully completed (email invites)
+    # ====================================================================
+
+    def _scenario_fully_completed_email(self, reviewee, questionnaire,
+                                        questions, admin_user):
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=admin_user,
+            status='completed',
+        )
+
+        categories = ['self', 'peer', 'peer', 'peer', 'manager',
+                       'direct_report', 'direct_report']
+        emails = self.REVIEWER_EMAILS[:len(categories)]
+        pattern = random.choice([
+            'high_performer', 'solid_performer', 'solid_performer',
+            'imposter_syndrome', 'overconfident',
+        ])
+
+        for cat, email in zip(categories, emails):
+            token = self._create_email_invite_token(
+                cycle, cat, email,
+                invited_days_ago=14,
+                claimed=True, completed=True,
+            )
+            self._fill_responses(cycle, token, questions, pattern)
+
+        try:
+            generate_report(cycle)
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(
+                f'    Could not generate report for {reviewee.name}: {e}'
+            ))
+
+        return cycle, len(categories)
+
+    # ====================================================================
+    # Scenario 2 – Partially completed (email invites, mixed states)
+    # ====================================================================
+
+    def _scenario_partially_completed_email(self, reviewee, questionnaire,
+                                            questions, admin_user):
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=admin_user,
+            status='active',
+        )
+
+        token_count = 0
+
+        # Self – completed
+        t = self._create_email_invite_token(
+            cycle, 'self', self.REVIEWER_EMAILS[0],
+            invited_days_ago=10, claimed=True, completed=True,
+        )
+        self._fill_responses(cycle, t, questions, 'solid_performer')
+        token_count += 1
+
+        # Peer 1 – completed
+        t = self._create_email_invite_token(
+            cycle, 'peer', self.REVIEWER_EMAILS[1],
+            invited_days_ago=10, claimed=True, completed=True,
+        )
+        self._fill_responses(cycle, t, questions, 'high_performer')
+        token_count += 1
+
+        # Peer 2 – claimed, not completed (opened the form)
+        self._create_email_invite_token(
+            cycle, 'peer', self.REVIEWER_EMAILS[2],
+            invited_days_ago=10, claimed=True, completed=False,
+        )
+        token_count += 1
+
+        # Manager – invited, reminded, not claimed
+        self._create_email_invite_token(
+            cycle, 'manager', self.REVIEWER_EMAILS[3],
+            invited_days_ago=10, claimed=False, reminded=True,
+        )
+        token_count += 1
+
+        # Direct report 1 – invited, not claimed
+        self._create_email_invite_token(
+            cycle, 'direct_report', self.REVIEWER_EMAILS[4],
+            invited_days_ago=7, claimed=False,
+        )
+        token_count += 1
+
+        # Peer 3 – completed
+        t = self._create_email_invite_token(
+            cycle, 'peer', self.REVIEWER_EMAILS[5],
+            invited_days_ago=8, claimed=True, completed=True,
+        )
+        self._fill_responses(cycle, t, questions, 'developing')
+        token_count += 1
+
+        return cycle, token_count
+
+    # ====================================================================
+    # Scenario 3 – Anonymous link claims (mixed states)
+    # ====================================================================
+
+    def _scenario_anonymous_mixed(self, reviewee, questionnaire,
+                                  questions, admin_user):
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=admin_user,
+            status='active',
+        )
+
+        token_count = 0
+
+        # Self – anonymous, claimed + completed
+        t = self._create_anonymous_token(
+            cycle, 'self', claimed=True, completed=True,
+        )
+        self._fill_responses(cycle, t, questions, 'solid_performer')
+        token_count += 1
+
+        # Peer 1 – anonymous, claimed + completed
+        t = self._create_anonymous_token(
+            cycle, 'peer', claimed=True, completed=True,
+        )
+        self._fill_responses(cycle, t, questions, 'high_performer')
+        token_count += 1
+
+        # Peer 2 – anonymous, claimed but not completed
+        self._create_anonymous_token(
+            cycle, 'peer', claimed=True, completed=False,
+        )
+        token_count += 1
+
+        # Manager – anonymous, claimed + completed
+        t = self._create_anonymous_token(
+            cycle, 'manager', claimed=True, completed=True,
+        )
+        self._fill_responses(cycle, t, questions, 'solid_performer')
+        token_count += 1
+
+        # Direct report – anonymous, unclaimed (link shared but not clicked)
+        self._create_anonymous_token(
+            cycle, 'direct_report', claimed=False,
+        )
+        token_count += 1
+
+        # Peer 3 – anonymous, unclaimed
+        self._create_anonymous_token(
+            cycle, 'peer', claimed=False,
+        )
+        token_count += 1
+
+        return cycle, token_count
+
+    # ====================================================================
+    # Scenario 4 – Just started (all invites sent, none claimed)
+    # ====================================================================
+
+    def _scenario_just_started_invites(self, reviewee, questionnaire,
+                                       questions, admin_user):
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=admin_user,
+            status='active',
+        )
+
+        categories = ['self', 'peer', 'peer', 'manager', 'direct_report']
+        emails = self.REVIEWER_EMAILS[:len(categories)]
+        token_count = 0
+
+        for cat, email in zip(categories, emails):
+            self._create_email_invite_token(
+                cycle, cat, email,
+                invited_days_ago=2, claimed=False,
+            )
+            token_count += 1
+
+        return cycle, token_count
+
+    # ====================================================================
+    # Scenario 5 – Self-review only (self completed, others pending)
+    # ====================================================================
+
+    def _scenario_self_review_only(self, reviewee, questionnaire,
+                                   questions, admin_user):
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=admin_user,
+            status='active',
+        )
+
+        token_count = 0
+
+        # Self – email invite, claimed + completed
+        t = self._create_email_invite_token(
+            cycle, 'self', self.REVIEWER_EMAILS[0],
+            invited_days_ago=5, claimed=True, completed=True,
+        )
+        self._fill_responses(cycle, t, questions, 'developing')
+        token_count += 1
+
+        # Peers and others – email invites sent, none claimed
+        other_categories = ['peer', 'peer', 'manager', 'direct_report']
+        other_emails = self.REVIEWER_EMAILS[1:1 + len(other_categories)]
+        for cat, email in zip(other_categories, other_emails):
+            self._create_email_invite_token(
+                cycle, cat, email,
+                invited_days_ago=5, claimed=False,
+            )
+            token_count += 1
+
+        return cycle, token_count
+
+    # ------------------------------------------------------------------
+    # Original (random) mode helpers
+    # ------------------------------------------------------------------
 
     def _create_completed_cycle(self, reviewee, questionnaire, admin_user):
         """Create a completed cycle with all responses and generated report"""

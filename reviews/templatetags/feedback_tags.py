@@ -96,6 +96,17 @@ def count_value(lst, value):
 
 
 @register.filter
+def personalize(text, name):
+    """Replace 'This person' / 'this person' with the reviewee's first name."""
+    if not name:
+        return text
+    first_name = name.split()[0] if name else "This person"
+    text = text.replace("This person", first_name)
+    text = text.replace("this person", first_name)
+    return text
+
+
+@register.filter
 def sort_categories(categories):
     """Sort categories dict with self first, then standard order"""
     if not categories:

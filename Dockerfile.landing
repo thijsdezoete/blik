@@ -27,6 +27,7 @@ ENV PYTHONUNBUFFERED=1 \
 # Install system dependencies including fonts for OG image generation
 RUN apt-get update && apt-get install -y \
     curl \
+    git \
     fonts-liberation \
     fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*

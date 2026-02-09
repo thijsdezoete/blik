@@ -246,7 +246,14 @@ def submit_feedback(request, token):
             )
 
             # Check if all tokens are completed
-            all_tokens_completed = not cycle.tokens.filter(completed_at__isnull=True).exists()
+            # Only auto-close when every token has a reviewer_email (email-assigned cycle).
+            # Invite-link cycles (tokens without emails) stay open for new reviewers.
+            all_tokens = cycle.tokens.all()
+            has_open_invite = all_tokens.filter(reviewer_email__isnull=True).exists()
+            all_tokens_completed = (
+                not has_open_invite
+                and not all_tokens.filter(completed_at__isnull=True).exists()
+            )
 
             if all_tokens_completed and cycle.status == 'active':
                 # Auto-close the cycle

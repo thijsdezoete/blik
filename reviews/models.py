@@ -41,6 +41,11 @@ class ReviewCycle(TimeStampedModel):
         related_name='created_review_cycles'
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    close_check_sent_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When the close check-in email was sent to the reviewee"
+    )
 
     @property
     def organization(self):

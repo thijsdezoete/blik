@@ -7,7 +7,9 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.urls import reverse
 from core.email import send_email
-from .models import ReviewerToken
+from datetime import timedelta
+from django.db.models import Q
+from .models import ReviewCycle, ReviewerToken
 
 
 def assign_tokens_to_emails(cycle, email_assignments):
@@ -266,5 +268,83 @@ def send_reviewee_notifications(cycle, request=None):
 
     except Exception as e:
         stats['errors'].append(f"Failed to send invitation links email: {str(e)}")
+
+    return stats
+
+
+def send_close_check_emails(dry_run=False):
+    """
+    Send check-in emails to reviewees whose invite-link cycles have been
+    open for at least 7 days and have at least one completed review.
+
+    Args:
+        dry_run: If True, find eligible cycles but don't send emails.
+
+    Returns:
+        dict: Statistics about emails sent
+    """
+    stats = {
+        'sent': 0,
+        'eligible': 0,
+        'errors': [],
+    }
+
+    cutoff = timezone.now() - timedelta(days=7)
+
+    cycles = ReviewCycle.objects.filter(
+        status='active',
+        close_check_sent_at__isnull=True,
+        created_at__lte=cutoff,
+    ).filter(
+        tokens__completed_at__isnull=False,
+    ).distinct().select_related('reviewee', 'questionnaire')
+
+    stats['eligible'] = cycles.count()
+
+    if dry_run:
+        return stats
+
+    base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
+
+    for cycle in cycles:
+        try:
+            if not cycle.reviewee.email:
+                stats['errors'].append(
+                    f"No email for reviewee {cycle.reviewee.name} (cycle {cycle.uuid})"
+                )
+                continue
+
+            completed_count = cycle.tokens.filter(completed_at__isnull=False).count()
+            total_count = cycle.tokens.count()
+            dashboard_url = f"{base_url}/dashboard/cycles/{cycle.uuid}/"
+
+            context = {
+                'reviewee': cycle.reviewee,
+                'cycle': cycle,
+                'questionnaire_name': cycle.questionnaire.name,
+                'completed_count': completed_count,
+                'total_count': total_count,
+                'dashboard_url': dashboard_url,
+            }
+
+            html_message = render_to_string('emails/cycle_close_check.html', context)
+            text_message = render_to_string('emails/cycle_close_check.txt', context)
+
+            send_email(
+                subject=f'Review Check-In: {cycle.questionnaire.name}',
+                message=text_message,
+                recipient_list=[cycle.reviewee.email],
+                html_message=html_message,
+            )
+
+            cycle.close_check_sent_at = timezone.now()
+            cycle.save(update_fields=['close_check_sent_at'])
+
+            stats['sent'] += 1
+
+        except Exception as e:
+            stats['errors'].append(
+                f"Failed to send close check for cycle {cycle.uuid}: {str(e)}"
+            )
 
     return stats

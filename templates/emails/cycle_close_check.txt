@@ -1,0 +1,12 @@
+Hi {{ reviewee.name }},
+
+{{ completed_count }} review{{ completed_count|pluralize }} {{ completed_count|pluralize:"has,have" }} been completed for your {{ questionnaire_name }} cycle.
+
+If everyone has submitted their feedback, you can close the cycle and generate your report from your dashboard:
+
+{{ dashboard_url }}
+
+Note: Your cycle will stay open until you manually close it, so additional reviewers can still submit feedback via the invite link.
+
+Best regards,
+Your Feedback Team

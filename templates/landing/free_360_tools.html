@@ -1,0 +1,367 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>Free 360 Feedback Tools Compared (2026) | Blik360</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Honest comparison of free 360 degree feedback tools. We tested Google Forms, SurveyMonkey, Spidergap, Primalogik, and Trakstar so you don't have to. See what's actually free and what's not.">
+    <meta name="keywords" content="free 360 degree feedback software, free 360 feedback tools, free 360 review software, open source 360 feedback, 360 feedback comparison, affordable 360 feedback">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'free_360_tools' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'free_360_tools' %}">
+    <meta property="og:title" content="Free 360 Feedback Tools Compared (2026)">
+    <meta property="og:description" content="Honest comparison of free 360 degree feedback tools. What's actually free, what's a free trial, and what's worth paying for.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Free%20360%20Tools&subtitle=Compared%20(2026)">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Free 360 Feedback Tools Compared (2026)">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'free_360_tools' %}">
+    <meta name="twitter:title" content="Free 360 Feedback Tools Compared (2026)">
+    <meta name="twitter:description" content="Honest comparison of free 360 degree feedback tools. What's actually free, what's a free trial, and what's worth paying for.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Free%20360%20Tools&subtitle=Compared%20(2026)">
+{% endblock %}
+
+{% block structured_data %}
+    {% article_schema "landing/free_360_tools.html" headline="Free 360 Feedback Tools Compared (2026)" description="Honest comparison of free 360 degree feedback tools including Google Forms, SurveyMonkey, Spidergap, Primalogik, and Trakstar." canonical_url=request.build_absolute_uri image_url=request.build_absolute_uri|add:"?title=Free%20360%20Tools&subtitle=Compared%20(2026)" %}
+{% endblock %}
+
+{% block extra_head %}
+    <!-- JSON-LD ItemList for comparison -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Free 360 Feedback Tools Compared (2026)",
+        "description": "Comparison of free and affordable 360 degree feedback tools",
+        "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'free_360_tools' %}",
+        "numberOfItems": 6,
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Blik360",
+                "url": "{{ site_protocol }}://{{ site_domain }}/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Google Forms",
+                "url": "https://docs.google.com/forms"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "SurveyMonkey",
+                "url": "https://www.surveymonkey.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Spidergap",
+                "url": "https://www.spidergap.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 5,
+                "name": "Primalogik",
+                "url": "https://www.primalogik.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 6,
+                "name": "Trakstar / Engagedly",
+                "url": "https://www.engagedly.com"
+            }
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#comparison">Comparison</a>
+    <a href="#tools">Tools</a>
+    <a href="#what-to-look-for">What to Look For</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Free 360 Feedback Tools Compared (2026)</h1>
+                <p class="hero-subtitle">
+                    Most 360 feedback platforms cost $5,000-$20,000 per year. That's wild for what's essentially a structured survey.
+                    We looked at every tool that claims to be free or affordable and tested them ourselves.
+                    Here's what's actually free, what's a free trial in disguise, and what's worth paying for.
+                </p>
+                <div class="hero-cta">
+                    <a href="#comparison" class="btn btn-primary">See the Comparison</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Blik Free</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section id="comparison" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Side-by-Side Comparison</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                "Free" means different things to different vendors. Here's what you actually get.
+            </p>
+
+            <div class="table-container" style="max-width: 1100px; margin: 0 auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Truly Free?</th>
+                            <th>Self-Hosted?</th>
+                            <th>Anonymous?</th>
+                            <th>360-Specific?</th>
+                            <th>Pricing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-left: 3px solid var(--success);">
+                            <td data-label="Tool"><strong>Blik360</strong></td>
+                            <td data-label="Truly Free?" class="highlight-green">&#10003; Self-host free</td>
+                            <td data-label="Self-Hosted?" class="highlight-green">&#10003;</td>
+                            <td data-label="Anonymous?" class="highlight-green">&#10003; Token-based</td>
+                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Pricing"><strong>Free</strong> (self-host) / $49/mo (managed)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Tool"><strong>Google Forms</strong></td>
+                            <td data-label="Truly Free?" class="highlight-green">&#10003; Completely free</td>
+                            <td data-label="Self-Hosted?">&#10007;</td>
+                            <td data-label="Anonymous?">&#10007; Email visible</td>
+                            <td data-label="360-Specific?">&#10007; Generic survey</td>
+                            <td data-label="Pricing"><strong>Free</strong></td>
+                        </tr>
+                        <tr>
+                            <td data-label="Tool"><strong>SurveyMonkey</strong></td>
+                            <td data-label="Truly Free?">&#10007; 10 questions max</td>
+                            <td data-label="Self-Hosted?">&#10007;</td>
+                            <td data-label="Anonymous?">Partial</td>
+                            <td data-label="360-Specific?">&#10007; Generic survey</td>
+                            <td data-label="Pricing"><strong>Free tier</strong> / $25+/mo (usable)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Tool"><strong>Spidergap</strong></td>
+                            <td data-label="Truly Free?">&#10007; 5 respondents max</td>
+                            <td data-label="Self-Hosted?">&#10007;</td>
+                            <td data-label="Anonymous?" class="highlight-green">&#10003;</td>
+                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Pricing"><strong>Free (5 people)</strong> / from $989/yr</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Tool"><strong>Primalogik</strong></td>
+                            <td data-label="Truly Free?">&#10007; Free trial only</td>
+                            <td data-label="Self-Hosted?">&#10007;</td>
+                            <td data-label="Anonymous?" class="highlight-green">&#10003;</td>
+                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Pricing"><strong>Trial</strong> / from $159/mo</td>
+                        </tr>
+                        <tr>
+                            <td data-label="Tool"><strong>Trakstar / Engagedly</strong></td>
+                            <td data-label="Truly Free?">&#10007; No free tier</td>
+                            <td data-label="Self-Hosted?">&#10007;</td>
+                            <td data-label="Anonymous?" class="highlight-green">&#10003;</td>
+                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Pricing"><strong>Contact sales</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tool Details -->
+    <section id="tools" class="section">
+        <div class="container">
+            <h2 class="section-title">Tool-by-Tool Breakdown</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                What each tool actually does, who it's for, and where it falls short.
+            </p>
+
+            <div style="display: grid; gap: 2rem; max-width: 1000px; margin: 0 auto;">
+                <!-- Blik360 -->
+                <div class="feature-card feature-card-success">
+                    <h3>Blik360</h3>
+                    <p style="margin-bottom: 1rem;">
+                        Full disclosure: this is us. Blik is an open-source 360 feedback platform you can self-host for free or use our managed hosting for $49/month. It's the only tool on this list that's both purpose-built for 360 feedback and genuinely free to use.
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        Self-hosting means your data stays on your servers. Token-based anonymity means responses can't be traced back to individuals, even by database admins. Pre-built questionnaires based on the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary);">Dreyfus Model</a> are included, so you're not starting from scratch.
+                    </p>
+                    <p style="margin-bottom: 1.5rem;">
+                        The trade-off: self-hosting requires some technical ability. If you don't have a developer on your team, the managed plan at $49/month is still a fraction of what competitors charge.
+                    </p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <a href="{% landing_url 'pricing' %}" class="btn btn-secondary" style="display: inline-block;">See Pricing</a>
+                        <a href="{% landing_url 'open_source' %}" class="btn btn-secondary" style="display: inline-block;">Open Source Details</a>
+                    </div>
+                </div>
+
+                <!-- Google Forms -->
+                <div class="feature-card">
+                    <h3>Google Forms</h3>
+                    <p style="margin-bottom: 1rem;">
+                        Google Forms is the tool people reach for first because it's completely free and everyone already has a Google account. For a quick, one-off feedback round, it works. You can build a questionnaire in 15 minutes and share a link.
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        The problems start when you try to run an actual 360 review process. There's no concept of reviewers and reviewees. No automated distribution. No way to guarantee anonymity—if respondents are logged into Google, their email is attached to the response. You'll spend hours manually creating separate forms per reviewee, collecting responses in spreadsheets, and building reports by hand.
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Best for:</strong> One-time team feedback with 5 or fewer people, where you don't mind doing the admin work yourself. Not viable for recurring 360 reviews.
+                    </p>
+                </div>
+
+                <!-- SurveyMonkey -->
+                <div class="feature-card">
+                    <h3>SurveyMonkey</h3>
+                    <p style="margin-bottom: 1rem;">
+                        SurveyMonkey's free tier is aggressively limited: 10 questions per survey, 25 responses per survey, no data export. For a 360 review with 20-30 questions and multiple reviewers per person, you'll hit the wall immediately.
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        Their paid plans start at $25/month for basic features, but you need the $75+/month tier for useful things like data export and custom branding. It's a general-purpose survey tool, not built for 360 feedback—no review cycles, no multi-rater workflows, no competency frameworks.
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Best for:</strong> Quick employee pulse surveys. Not designed for structured 360 feedback with multiple raters per person.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <div style="display: grid; gap: 2rem; max-width: 1000px; margin: 0 auto;">
+                <!-- Spidergap -->
+                <div class="feature-card">
+                    <h3>Spidergap</h3>
+                    <p style="margin-bottom: 1rem;">
+                        Spidergap is actually purpose-built for 360 feedback, and their free tier is real—you can run a full 360 review for up to 5 respondents at no cost. The interface is clean, reports look professional, and the workflow is designed specifically for multi-rater feedback.
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        The catch is scaling. Once you go beyond 5 respondents, pricing starts at $989/year. For a team of 20, you're looking at significantly more. It's a solid tool if your team is tiny, but it gets expensive as you grow.
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Best for:</strong> Small teams (under 5 people) who want a proper 360 tool without paying anything. Also worth considering if you only run 360s once a year and can work within the free limits.
+                    </p>
+                </div>
+
+                <!-- Primalogik -->
+                <div class="feature-card">
+                    <h3>Primalogik</h3>
+                    <p style="margin-bottom: 1rem;">
+                        Primalogik offers a free trial, not a free tier. After 30 days, you're looking at $159/month minimum for their 360 feedback module. The product itself is solid—well-designed 360 workflows, good reporting, competency mapping.
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        The issue is positioning. If you're searching for "free 360 feedback software," Primalogik isn't it. It's a good mid-market tool competing with Lattice and Culture Amp at a lower price point, but it's not free by any definition.
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Best for:</strong> Mid-size companies (50-500 employees) who want 360 feedback without enterprise pricing. Not free, but more affordable than Lattice.
+                    </p>
+                </div>
+
+                <!-- Trakstar / Engagedly -->
+                <div class="feature-card">
+                    <h3>Trakstar / Engagedly</h3>
+                    <p style="margin-bottom: 1rem;">
+                        Trakstar was acquired by Engagedly and merged into their platform. There's no free tier, no public pricing, and no self-service signup. You have to "contact sales" and sit through a demo to get a quote. For most teams, this is a red flag.
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        The platform itself is comprehensive—360 reviews, performance management, learning modules, engagement surveys. If you're an enterprise buyer with budget and want an all-in-one HR performance suite, it's worth evaluating. But if you're looking for free or affordable 360 feedback, look elsewhere.
+                    </p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Best for:</strong> Enterprise buyers who need a full performance management suite and have budget for "contact sales" pricing.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What to Look For -->
+    <section id="what-to-look-for" class="section">
+        <div class="container">
+            <h2 class="section-title">What to Look for in Free 360 Feedback Software</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Not all 360 tools are created equal. These are the four things that actually matter.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Anonymity</h3>
+                    <p style="margin-bottom: 1rem;">If respondents don't trust that their feedback is anonymous, they'll give safe, useless answers. Look for tools where anonymity is architectural (token-based), not just a policy checkbox.</p>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Google Forms and SurveyMonkey can't guarantee this. Blik and Spidergap can.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Data Ownership</h3>
+                    <p style="margin-bottom: 1rem;">360 feedback data is some of the most sensitive information in your organization. Where does it live? Can you export it? What happens when you cancel?</p>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Self-hosting is the only way to guarantee full data ownership. Only Blik offers this.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Questionnaire Quality</h3>
+                    <p style="margin-bottom: 1rem;">A 360 review is only as good as its questions. Generic "rate communication skills 1-5" surveys produce generic results. Look for tools with research-backed frameworks.</p>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Blik includes questionnaires based on the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary);">Dreyfus Model</a> for measuring real competency development.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Ease of Setup</h3>
+                    <p style="margin-bottom: 1rem;">If it takes two weeks to configure, you'll never actually run a review. Look for tools with pre-built templates, simple invitation flows, and automatic reminders.</p>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Most tools on this list score well here. Google Forms is the exception—easy to create, but managing the 360 workflow is manual.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Most Free Tools Aren't Really Free -->
+    <section class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Why Most "Free" Tools Aren't Really Free</h2>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <p style="margin-bottom: 1.5rem;">
+                    The word "free" in software usually means one of three things: a limited trial designed to get you hooked, a free tier so restricted it's unusable for real work, or an open-source project you can actually self-host. Only the last one is genuinely free.
+                </p>
+                <p style="margin-bottom: 1.5rem;">
+                    SurveyMonkey's free tier caps you at 10 questions and 25 responses. A single 360 review for one person easily exceeds both limits. Primalogik's "free trial" expires after 30 days. Trakstar doesn't even pretend—there's no free option at all. These tools use "free" as a lead generation tactic, not a real offering.
+                </p>
+                <p style="margin-bottom: 1.5rem;">
+                    Then there's vendor lock-in. Your 360 feedback data—honest assessments of your team's strengths and weaknesses—lives on someone else's servers. Cancel your subscription and you lose access. Switch providers and you start from scratch. Per-user pricing means your bill grows every time you hire, which is exactly when you're already spending money.
+                </p>
+                <p style="margin-bottom: 0;">
+                    Self-hosting solves all of this. Your data, your servers, no per-user fees, no lock-in. The trade-off is setup time, which is why Blik offers both: self-host for free if you have the technical ability, or use managed hosting at $49/month if you don't.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Self-Host Blik360 for Free, or Get Managed Hosting at $49/mo</h2>
+            <p>The only 360 feedback tool that's open source, self-hostable, and purpose-built for multi-rater reviews. No per-user pricing. No vendor lock-in. No "contact sales."</p>
+            <div class="hero-cta">
+                <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">View on GitHub</a>
+                <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Start Free Trial</a>
+            </div>
+        </div>
+    </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/free_360_tools.html" %}
+{% endblock %}

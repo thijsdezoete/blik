@@ -30,6 +30,7 @@ urlpatterns = [
     path('pricing/', views.pricing, name='pricing'),
     path('faq/', views.faq, name='faq'),
     path('alternatives/', views.alternatives, name='alternatives'),
+    path('free-360-feedback-tools/', views.free_360_tools, name='free_360_tools'),
     path('roi-calculator/', views.roi_calculator, name='roi_calculator'),
     path('about/', views.about, name='about'),
     path('og-image.png', views.og_image, name='og_image'),

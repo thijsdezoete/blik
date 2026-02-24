@@ -196,6 +196,11 @@ def alternatives(request):
     return render(request, 'landing/alternatives.html')
 
 
+def free_360_tools(request):
+    """Free 360 feedback tools comparison page."""
+    return render(request, 'landing/free_360_tools.html')
+
+
 def roi_calculator(request):
     """ROI calculator - interactive savings calculator vs competitors."""
     return render(request, 'landing/roi_calculator.html')

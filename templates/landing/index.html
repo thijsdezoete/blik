@@ -2,10 +2,10 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>Open Source 360 Feedback Platform - Self-Hosted & Anonymous | {{ site_name }}</title>
+    <title>360° Feedback That Saves €17,000/Year — Free or Hosted | Blik360</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant. Deploy in 5 minutes with Docker. Save €17,000/year vs commercial tools.">
+    <meta name="description" content="Run anonymous 360 feedback reviews without per-user fees. Four ready-made questionnaires, radar chart results. Self-host free or EU hosting from €49/mo.">
     <meta name="keywords" content="open source 360 feedback, self-hosted performance review, anonymous feedback software, 360 degree feedback platform, employee feedback system, peer review software, performance management tool, GDPR compliant feedback">
     <meta name="author" content="Thijs de Zoete">
     <meta name="article:modified_time" content="2025-01-11T00:00:00Z">
@@ -14,25 +14,25 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
-    <meta property="og:title" content="{{ site_name }} - Open Source 360-Degree Feedback Platform">
-    <meta property="og:description" content="{{ site_description }}">
+    <meta property="og:title" content="360° Feedback That Saves €17,000/Year — Free or Hosted | Blik360">
+    <meta property="og:description" content="Run anonymous 360 feedback reviews without per-user fees. Four ready-made questionnaires, radar chart results. Self-host free or EU hosting from €49/mo.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360&subtitle=Open%20Source%20360%C2%B0%20Feedback">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360&subtitle=Save%20%E2%82%AC17%2C000%2FYear%20on%20360%20Feedback">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Blik360 - Open Source 360° Feedback Platform">
+    <meta property="og:image:alt" content="Blik360 — 360° Feedback That Saves €17,000/Year">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
-    <meta name="twitter:title" content="{{ site_name }} - Open Source 360-Degree Feedback Platform">
-    <meta name="twitter:description" content="{{ site_description }}">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360&subtitle=Open%20Source%20360%C2%B0%20Feedback">
+    <meta name="twitter:title" content="360° Feedback That Saves €17,000/Year — Free or Hosted | Blik360">
+    <meta name="twitter:description" content="Run anonymous 360 feedback reviews without per-user fees. Four ready-made questionnaires, radar chart results. Self-host free or EU hosting from €49/mo.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360&subtitle=Save%20%E2%82%AC17%2C000%2FYear%20on%20360%20Feedback">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/index.html" headline="Open Source 360 Feedback Platform - Self-Hosted & Anonymous" description="Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant. Deploy in 5 minutes with Docker." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360&subtitle=Open%20Source%20360%C2%B0%20Feedback" %}
+    {% article_schema "landing/index.html" headline="Open Source 360 Feedback Platform - Self-Hosted & Anonymous" description="Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant. Deploy in 5 minutes with Docker." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360&subtitle=Save%20%E2%82%AC17%2C000%2FYear%20on%20360%20Feedback" %}
 {% endblock %}
 
 {% block extra_head %}

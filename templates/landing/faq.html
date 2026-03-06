@@ -2,10 +2,10 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>FAQ - Common Questions About Blik 360 Feedback | {{ site_name }}</title>
+    <title>Blik360 FAQ — Setup, Anonymity, GDPR, Migration, Pricing</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Everything you need to know about Blik: self-hosting, anonymity, GDPR compliance, pricing, questionnaires, API access, and migration from other tools.">
+    <meta name="description" content="How anonymous is it? Can I migrate from Lattice? Is it GDPR compliant? How long does setup take? Answers teams ask before switching.">
     <meta name="keywords" content="360 feedback faq, self-hosted performance review questions, anonymous feedback how it works, GDPR compliant HR software, open source 360 questions">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'faq' %}">
@@ -13,25 +13,25 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'faq' %}">
-    <meta property="og:title" content="Frequently Asked Questions - Blik 360 Feedback">
-    <meta property="og:description" content="Get answers about self-hosting, anonymity, pricing, GDPR, questionnaires, and migrating from other 360 feedback tools.">
+    <meta property="og:title" content="Blik360 FAQ — Setup, Anonymity, GDPR, Migration, Pricing">
+    <meta property="og:description" content="How anonymous is it? Can I migrate from Lattice? Is it GDPR compliant? How long does setup take? Answers teams ask before switching.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Common%20Questions&subtitle=Everything%20You%20Need%20to%20Know">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20FAQ&subtitle=Setup%2C%20Anonymity%2C%20GDPR%2C%20Pricing">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Blik FAQ - Common Questions Answered">
+    <meta property="og:image:alt" content="Blik360 FAQ — Setup, Anonymity, GDPR, Migration, Pricing">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'faq' %}">
-    <meta name="twitter:title" content="Frequently Asked Questions - Blik 360 Feedback">
-    <meta name="twitter:description" content="Get answers about self-hosting, anonymity, pricing, GDPR, questionnaires, and migrating from other 360 feedback tools.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Common%20Questions&subtitle=Everything%20You%20Need%20to%20Know">
+    <meta name="twitter:title" content="Blik360 FAQ — Setup, Anonymity, GDPR, Migration, Pricing">
+    <meta name="twitter:description" content="How anonymous is it? Can I migrate from Lattice? Is it GDPR compliant? How long does setup take? Answers teams ask before switching.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20FAQ&subtitle=Setup%2C%20Anonymity%2C%20GDPR%2C%20Pricing">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/faq.html" headline="FAQ - Common Questions About Blik 360 Feedback" description="Everything you need to know about Blik: self-hosting, anonymity, GDPR compliance, pricing, questionnaires, API access, and migration from other tools." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Common%20Questions&subtitle=Everything%20You%20Need%20to%20Know" %}
+    {% article_schema "landing/faq.html" headline="FAQ - Common Questions About Blik 360 Feedback" description="Everything you need to know about Blik: self-hosting, anonymity, GDPR compliance, pricing, questionnaires, API access, and migration from other tools." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360%20FAQ&subtitle=Setup%2C%20Anonymity%2C%20GDPR%2C%20Pricing" %}
 {% endblock %}
 
 {% block extra_head %}

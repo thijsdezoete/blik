@@ -2,8 +2,8 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>Open Source 360 Feedback Built by Developers | Blik</title>
-    <meta name="description" content="AGPL-licensed 360 feedback platform for developer teams. Modern Django stack, Docker deployment, extensible architecture. Contribute, customize, self-host. No vendor lock-in.">
+    <title>Why Open Source 360 Feedback? No Vendor Lock-In | Blik360</title>
+    <meta name="description" content="AGPL-licensed, full source code, PostgreSQL export. No vendor lock-in, no data hostage. Run on your servers or use EU managed hosting.">
     <meta name="keywords" content="open source performance review, developer 360 feedback, self-hosted HR tool, Django feedback system, customizable review platform, AGPL HR software, developer-first performance management">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'open_source' %}">
@@ -11,25 +11,25 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'open_source' %}">
-    <meta property="og:title" content="Open Source 360 Feedback Built by Developers">
-    <meta property="og:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
+    <meta property="og:title" content="Why Open Source 360 Feedback? No Vendor Lock-In | Blik360">
+    <meta property="og:description" content="AGPL-licensed, full source code, PostgreSQL export. No vendor lock-in, no data hostage. Run on your servers or use EU managed hosting.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360&subtitle=Built%20by%20Developers%2C%20for%20Developers">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360&subtitle=No%20Vendor%20Lock-In">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Open Source 360 - Built by Developers, for Developers">
+    <meta property="og:image:alt" content="Why Open Source 360 Feedback? No Vendor Lock-In">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'open_source' %}">
-    <meta name="twitter:title" content="Open Source 360 Feedback Built by Developers">
-    <meta name="twitter:description" content="AGPL-licensed, Django-based, Docker-first. Built by devs, for devs.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360&subtitle=Built%20by%20Developers%2C%20for%20Developers">
+    <meta name="twitter:title" content="Why Open Source 360 Feedback? No Vendor Lock-In | Blik360">
+    <meta name="twitter:description" content="AGPL-licensed, full source code, PostgreSQL export. No vendor lock-in, no data hostage. Run on your servers or use EU managed hosting.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360&subtitle=No%20Vendor%20Lock-In">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/open_source.html" headline="Open Source 360 Feedback Built by Developers" description="AGPL-licensed 360 feedback platform for developer teams. Modern Django stack, Docker deployment, extensible architecture. Contribute, customize, self-host. No vendor lock-in." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Open%20Source%20360&subtitle=Built%20by%20Developers%2C%20for%20Developers" %}
+    {% article_schema "landing/open_source.html" headline="Open Source 360 Feedback Built by Developers" description="AGPL-licensed 360 feedback platform for developer teams. Modern Django stack, Docker deployment, extensible architecture. Contribute, customize, self-host. No vendor lock-in." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Open%20Source%20360&subtitle=No%20Vendor%20Lock-In" %}
 {% endblock %}
 
 {% block extra_head %}

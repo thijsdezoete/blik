@@ -1,0 +1,45 @@
+{% load json_filters %}
+<div id="question-card-{{ question.id }}" style="position: relative; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+        <div style="flex: 1;">
+            <div id="question-text-{{ question.id }}" style="font-weight: 500; margin-bottom: 0.25rem; color: var(--text-primary);">
+                <span class="question-text-value">{{ question.question_text }}</span>
+                {% if question.required %}
+                <span class="question-required-indicator" style="color: var(--danger);">*</span>
+                {% endif %}
+            </div>
+            <div id="question-meta-{{ question.id }}" style="font-size: 0.875rem; color: var(--text-secondary);">
+                Type: {{ question.get_question_type_display }}
+                {% if question.question_type == 'rating' and question.config.min %}
+                | Scale: {{ question.config.min }}-{{ question.config.max }}
+                {% elif question.question_type == 'likert' and question.config.scale %}
+                | {{ question.config.scale|length }}-point scale
+                {% endif %}
+            </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button
+                type="button"
+                class="btn btn-sm btn-secondary"
+                onclick="openDreyfusConfigModal({{ question.id }}, '{{ question.question_text|escapejs }}')"
+                title="Configure Dreyfus/Agency weights and action items"
+                style="background: var(--primary); border-color: var(--primary); color: white;"
+            >Dreyfus/Agency</button>
+            <button
+                type="button"
+                class="btn btn-sm btn-secondary edit-question-btn"
+                data-question-id="{{ question.id }}"
+                data-question-text="{{ question.question_text|escapejs }}"
+                data-question-type="{{ question.question_type }}"
+                data-required="{{ question.required|yesno:'true,false' }}"
+                data-config="{{ question.config|to_json }}"
+            >Edit</button>
+            <form method="post" style="margin: 0;" onsubmit="return confirm('Delete this question?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_question">
+                <input type="hidden" name="question_id" value="{{ question.id }}">
+                <button type="submit" class="btn btn-sm btn-secondary" style="background: var(--danger); border-color: var(--danger); color: white;">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>

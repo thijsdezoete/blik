@@ -3,6 +3,8 @@ Admin dashboard views for Blik
 """
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Q, Max
@@ -700,6 +702,7 @@ def questionnaire_edit(request, questionnaire_id):
             question_text = request.POST.get('question_text')
             question_type = request.POST.get('question_type', 'rating')
             required = request.POST.get('required') == 'on'
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
             if section_id and question_text:
                 try:
@@ -805,7 +808,7 @@ def questionnaire_edit(request, questionnaire_id):
                                 item['stages'] = [int(s) for s in stages_raw]
                             action_items.append(item)
 
-                    Question.objects.create(
+                    question = Question.objects.create(
                         section=section,
                         question_text=question_text,
                         question_type=question_type,
@@ -814,8 +817,28 @@ def questionnaire_edit(request, questionnaire_id):
                         order=next_order,
                         action_items=action_items
                     )
+
+                    if is_ajax:
+                        question_html = render_to_string(
+                            'admin_dashboard/partials/question_card.html',
+                            {'question': question},
+                            request=request,
+                        )
+                        return JsonResponse({
+                            'success': True,
+                            'message': 'Question added successfully.',
+                            'section_id': section.id,
+                            'question_id': question.id,
+                            'question_html': question_html,
+                        })
+
                     messages.success(request, 'Question added successfully.')
                 except Exception as e:
+                    if is_ajax:
+                        return JsonResponse({
+                            'success': False,
+                            'message': f'Error adding question: {str(e)}',
+                        }, status=400)
                     messages.error(request, f'Error adding question: {str(e)}')
 
         elif action == 'delete_section':
@@ -842,6 +865,7 @@ def questionnaire_edit(request, questionnaire_id):
             question_text = request.POST.get('question_text')
             question_type = request.POST.get('question_type', 'rating')
             required = request.POST.get('required') == 'on'
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
             if question_id and question_text:
                 try:
@@ -918,8 +942,27 @@ def questionnaire_edit(request, questionnaire_id):
                     question.config = config
                     question.save()
 
+                    if is_ajax:
+                        return JsonResponse({
+                            'success': True,
+                            'message': 'Question updated successfully.',
+                            'question': {
+                                'id': question.id,
+                                'question_text': question.question_text,
+                                'question_type': question.question_type,
+                                'question_type_display': question.get_question_type_display(),
+                                'required': question.required,
+                                'config': question.config,
+                            },
+                        })
+
                     messages.success(request, 'Question updated successfully.')
                 except Exception as e:
+                    if is_ajax:
+                        return JsonResponse({
+                            'success': False,
+                            'message': f'Error updating question: {str(e)}',
+                        }, status=400)
                     messages.error(request, f'Error updating question: {str(e)}')
 
         elif action == 'update_dreyfus_config':

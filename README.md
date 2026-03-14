@@ -6,22 +6,36 @@ Blik is an open-source application for conducting anonymous 360-degree feedback 
 
 ## Quick Start
 
+Blik supports two local startup modes:
+
+- `docker run` starts the standalone app container and uses SQLite by default
+- `docker compose` starts the full development stack and uses PostgreSQL by default
+
 ### Standalone Docker (Simplest)
 
-Run Blik with a single Docker command:
+For a quick evaluation with ephemeral data:
 
 ```bash
 docker build -t blik .
-docker run -d -p 8000:8000 -v blik-data:/app blik
+docker run -d --name blik -p 8000:8000 blik
 ```
 
 Visit `http://localhost:8000/setup/` to complete the interactive setup wizard.
+
+To persist SQLite data across container restarts without masking the application code:
+
+```bash
+docker run -d --name blik -p 8000:8000 \
+  -e DATABASE_URL=sqlite:////data/db.sqlite3 \
+  -v blik-data:/data \
+  blik
+```
 
 ### Production Deployment
 
 **One-Click Deploy Options:**
 
-[![Deploy to DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/thijsdezoete/blik/tree/master&refcode=your-referral-code)
+[![Deploy to DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/thijsdezoete/blik/tree/master)
 
 - **DigitalOcean App Platform** - Fully managed PaaS (~$20/month) - [Guide](docs/DIGITALOCEAN.md)
 - **Dokploy** - Self-hosted deployment platform - [Guide](docs/DEPLOYMENT.md)
@@ -40,7 +54,7 @@ See complete guides for:
 - **Analytical Reports** - Statistical analysis with configurable anonymity thresholds
 - **Email Notifications** - SMTP integration for invites and reminders
 - **Setup Wizard** - Interactive first-run setup at `/setup/`
-- **Docker-Ready** - Single command deployment with SQLite or PostgreSQL
+- **Docker-Ready** - Containerized deployment with SQLite or PostgreSQL
 
 ## How It Works
 
@@ -72,7 +86,6 @@ The standalone Docker image supports SQLite (default) and PostgreSQL:
 docker run -d -p 8000:8000 \
   -e DATABASE_TYPE=postgres \
   -e DATABASE_URL=postgresql://user:password@host:5432/dbname \
-  -v blik-data:/app \
   blik
 ```
 
@@ -85,7 +98,6 @@ docker run -d -p 8000:8000 \
   -e DATABASE_NAME=blik \
   -e DATABASE_USER=blik_user \
   -e DATABASE_PASSWORD=your_secure_password \
-  -v blik-data:/app \
   blik
 ```
 
@@ -109,13 +121,21 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete environment variable d
 ### Local Setup
 
 ```bash
-git clone https://github.com/yourusername/blik.git
+git clone https://github.com/thijsdezoete/blik.git
 cd blik
 cp .env.example .env
-docker compose up -d
+docker compose up -d --build
 ```
 
-Visit `http://localhost:8000/setup/` to complete setup.
+Unlike the standalone `docker run` example above, this Docker Compose setup uses PostgreSQL by default because [`docker-compose.yml`](docker-compose.yml) starts both `web` and `db` services and sets `DATABASE_TYPE=postgres`.
+
+Check that the web container is healthy:
+
+```bash
+docker compose logs -f web
+```
+
+Then visit `http://localhost:8000/setup/` to complete setup.
 
 ### Contributing
 

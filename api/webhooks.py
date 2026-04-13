@@ -9,6 +9,7 @@ import hashlib
 import json
 import logging
 import threading
+from django.db import connection
 from django.utils import timezone
 from .models import WebhookEndpoint, WebhookDelivery
 
@@ -31,8 +32,19 @@ def send_webhook(organization, event_type, payload):
     from django.db import transaction
 
     endpoints = WebhookEndpoint.objects.filter(
-        organization=organization, is_active=True, events__contains=[event_type]
+        organization=organization,
+        is_active=True,
     )
+
+    # SQLite does not support Django's JSONField __contains lookup.
+    # Filter in Python there, keep DB-side filtering for PostgreSQL.
+    if connection.vendor == "sqlite":
+        endpoints = [
+            endpoint for endpoint in endpoints
+            if event_type in (endpoint.events or [])
+        ]
+    else:
+        endpoints = endpoints.filter(events__contains=[event_type])
 
     sent_count = 0
     for endpoint in endpoints:

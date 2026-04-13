@@ -377,62 +377,20 @@
                 </div>
                 <div class="card-body">
                     {% if section.questions.all %}
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div id="section-questions-{{ section.id }}" style="display: flex; flex-direction: column; gap: 1rem;">
                         {% for question in section.questions.all %}
-                        <div style="padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 500; margin-bottom: 0.25rem; color: var(--text-primary);">
-                                        {{ question.question_text }}
-                                        {% if question.required %}
-                                        <span style="color: var(--danger);">*</span>
-                                        {% endif %}
-                                    </div>
-                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                                        Type: {{ question.get_question_type_display }}
-                                        {% if question.question_type == 'rating' and question.config.min %}
-                                        | Scale: {{ question.config.min }}-{{ question.config.max }}
-                                        {% elif question.question_type == 'likert' and question.config.scale %}
-                                        | {{ question.config.scale|length }}-point scale
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-secondary"
-                                        onclick="openDreyfusConfigModal({{ question.id }}, '{{ question.question_text|escapejs }}')"
-                                        title="Configure Dreyfus/Agency weights and action items"
-                                        style="background: var(--primary); border-color: var(--primary); color: white;"
-                                    >Dreyfus/Agency</button>
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-secondary edit-question-btn"
-                                        data-question-id="{{ question.id }}"
-                                        data-question-text="{{ question.question_text|escapejs }}"
-                                        data-question-type="{{ question.question_type }}"
-                                        data-required="{{ question.required|yesno:'true,false' }}"
-                                        data-config="{{ question.config|to_json }}"
-                                    >Edit</button>
-                                    <form method="post" style="margin: 0;" onsubmit="return confirm('Delete this question?');">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="action" value="delete_question">
-                                        <input type="hidden" name="question_id" value="{{ question.id }}">
-                                        <button type="submit" class="btn btn-sm btn-secondary" style="background: var(--danger); border-color: var(--danger); color: white;">Delete</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        {% include "admin_dashboard/partials/question_card.html" with question=question %}
                         {% endfor %}
                     </div>
                     {% else %}
-                    <p style="color: var(--text-secondary); margin: 0;">No questions in this section yet.</p>
+                    <p id="section-empty-{{ section.id }}" style="color: var(--text-secondary); margin: 0;">No questions in this section yet.</p>
+                    <div id="section-questions-{{ section.id }}" style="display: flex; flex-direction: column; gap: 1rem;"></div>
                     {% endif %}
 
                     <!-- Add Question Form -->
                     <details style="margin-top: 1rem;">
                         <summary style="cursor: pointer; font-weight: 500; color: var(--primary); padding: 0.5rem 0;">Add Question to This Section</summary>
-                        <form method="post" style="margin-top: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;">
+                        <form method="post" class="add-question-form" data-section-id="{{ section.id }}" style="margin-top: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="add_question">
                             <input type="hidden" name="section_id" value="{{ section.id }}">
@@ -955,17 +913,16 @@ Strongly Agree</textarea>
 <script>
 // Attach event listeners to edit buttons
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.edit-question-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const questionId = this.dataset.questionId;
-            const questionText = this.dataset.questionText;
-            const questionType = this.dataset.questionType;
-            const required = this.dataset.required === 'true';
-            const config = JSON.parse(this.dataset.config || '{}');
+    const editQuestionForm = document.getElementById('edit_question_form');
+    if (editQuestionForm) {
+        editQuestionForm.addEventListener('submit', submitEditQuestionForm);
+    }
 
-            openEditQuestionModal(questionId, questionText, questionType, required, config);
-        });
+    document.querySelectorAll('.add-question-form').forEach(function(form) {
+        form.addEventListener('submit', submitAddQuestionForm);
     });
+
+    bindEditQuestionButtons(document);
 });
 
 // Edit Question Modal Functions
@@ -1042,6 +999,233 @@ function closeEditSectionModal() {
 
 function closeEditQuestionModal() {
     document.getElementById('edit_question_modal').style.display = 'none';
+}
+
+function getCsrfToken(form) {
+    return form.querySelector('input[name="csrfmiddlewaretoken"]')?.value || '';
+}
+
+function buildQuestionMeta(question) {
+    let meta = `Type: ${question.question_type_display}`;
+
+    if (question.question_type === 'rating' && question.config?.min !== undefined && question.config?.max !== undefined) {
+        meta += ` | Scale: ${question.config.min}-${question.config.max}`;
+    } else if (question.question_type === 'likert' && Array.isArray(question.config?.scale)) {
+        meta += ` | ${question.config.scale.length}-point scale`;
+    }
+
+    return meta;
+}
+
+function updateQuestionCard(question) {
+    const textContainer = document.getElementById(`question-text-${question.id}`);
+    const metaContainer = document.getElementById(`question-meta-${question.id}`);
+    const editButton = document.querySelector(`.edit-question-btn[data-question-id="${question.id}"]`);
+
+    if (textContainer) {
+        textContainer.innerHTML = '';
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'question-text-value';
+        textSpan.textContent = question.question_text;
+        textContainer.appendChild(textSpan);
+
+        if (question.required) {
+            const requiredIndicator = document.createElement('span');
+            requiredIndicator.className = 'question-required-indicator';
+            requiredIndicator.style.color = 'var(--danger)';
+            requiredIndicator.textContent = '*';
+            textContainer.appendChild(document.createTextNode(' '));
+            textContainer.appendChild(requiredIndicator);
+        }
+    }
+
+    if (metaContainer) {
+        metaContainer.textContent = buildQuestionMeta(question);
+    }
+
+    if (editButton) {
+        editButton.dataset.questionText = question.question_text;
+        editButton.dataset.questionType = question.question_type;
+        editButton.dataset.required = question.required ? 'true' : 'false';
+        editButton.dataset.config = JSON.stringify(question.config || {});
+    }
+}
+
+function showFloatingAlert(targetElement, message, level = 'success') {
+    if (!targetElement) return;
+
+    targetElement.style.position = targetElement.style.position || 'relative';
+    const existingAlert = targetElement.querySelector('.floating-question-alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+
+    const colors = {
+        success: { background: 'var(--success-50)', text: 'var(--success-700)', border: 'var(--success)' },
+        error: { background: 'var(--danger-50)', text: 'var(--danger-700)', border: 'var(--danger)' },
+    };
+
+    const palette = colors[level] || colors.success;
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${level} floating-question-alert`;
+    alert.textContent = message;
+    alert.style.cssText = `
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 20;
+        max-width: min(360px, calc(100% - 1.5rem));
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        background: ${palette.background};
+        color: ${palette.text};
+        border-left: 4px solid ${palette.border};
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+        font-weight: 500;
+        line-height: 1.4;
+        opacity: 0;
+        transform: translate(1.25rem, -1.25rem);
+        transition: opacity 180ms ease, transform 180ms ease;
+        pointer-events: auto;
+        margin-bottom: 0;
+    `;
+
+    targetElement.appendChild(alert);
+
+    requestAnimationFrame(() => {
+        alert.style.opacity = '1';
+        alert.style.transform = 'translate(1.25rem, -1.25rem)';
+    });
+
+    window.setTimeout(() => {
+        alert.style.opacity = '0';
+        alert.style.transform = 'translate(1.25rem, -1.5rem)';
+        window.setTimeout(() => alert.remove(), 220);
+    }, 5000);
+}
+
+function bindEditQuestionButtons(rootElement) {
+    rootElement.querySelectorAll('.edit-question-btn').forEach(function(btn) {
+        if (btn.dataset.boundEditClick === 'true') {
+            return;
+        }
+
+        btn.dataset.boundEditClick = 'true';
+        btn.addEventListener('click', function() {
+            const questionId = this.dataset.questionId;
+            const questionText = this.dataset.questionText;
+            const questionType = this.dataset.questionType;
+            const required = this.dataset.required === 'true';
+            const config = JSON.parse(this.dataset.config || '{}');
+
+            openEditQuestionModal(questionId, questionText, questionType, required, config);
+        });
+    });
+}
+
+function getQuestionCard(questionId) {
+    return document.getElementById(`question-card-${questionId}`);
+}
+
+async function postFormAsJson(form) {
+    const response = await fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCsrfToken(form),
+        },
+        body: new FormData(form),
+        credentials: 'same-origin',
+    });
+
+    const payload = await response.json();
+
+    if (!response.ok || !payload.success) {
+        throw new Error(payload.message || 'Request failed.');
+    }
+
+    return payload;
+}
+
+async function submitEditQuestionForm(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalLabel = submitButton.textContent;
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Saving...';
+
+    try {
+        const payload = await postFormAsJson(form);
+        updateQuestionCard(payload.question);
+        const questionCard = getQuestionCard(payload.question.id);
+        closeEditQuestionModal();
+        if (questionCard) {
+            showFloatingAlert(questionCard, payload.message, 'success');
+        }
+    } catch (error) {
+        showFloatingAlert(document.getElementById('edit_question_modal').querySelector('.modal-content'), error.message || 'Failed to update question.', 'error');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalLabel;
+    }
+}
+
+async function submitAddQuestionForm(event) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalLabel = submitButton.textContent;
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Adding...';
+
+    try {
+        const payload = await postFormAsJson(form);
+        const questionsContainer = document.getElementById(`section-questions-${payload.section_id}`);
+        const emptyState = document.getElementById(`section-empty-${payload.section_id}`);
+
+        if (!questionsContainer) {
+            throw new Error('Question list container not found.');
+        }
+
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        questionsContainer.insertAdjacentHTML('beforeend', payload.question_html);
+        const questionCard = getQuestionCard(payload.question_id);
+        if (questionCard) {
+            bindEditQuestionButtons(questionCard);
+            questionCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            showFloatingAlert(questionCard, payload.message, 'success');
+        }
+
+        form.reset();
+        const sectionId = form.dataset.sectionId;
+        const typeSelect = form.querySelector(`#question_type_${sectionId}`);
+        if (typeSelect) {
+            typeSelect.value = 'rating';
+            const toggleChoicesFn = window[`toggleChoices${sectionId}`];
+            if (typeof toggleChoicesFn === 'function') {
+                toggleChoicesFn(typeSelect);
+            }
+        }
+
+        const actionItemsContainer = document.getElementById(`add_action_items_container_${sectionId}`);
+        if (actionItemsContainer) {
+            actionItemsContainer.innerHTML = '';
+        }
+    } catch (error) {
+        showFloatingAlert(form, error.message || 'Failed to add question.', 'error');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalLabel;
+    }
 }
 
 function toggleEditChoices() {

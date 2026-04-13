@@ -8,6 +8,9 @@ from django_ratelimit.decorators import ratelimit
 from .models import ReviewerToken, Response, ReviewCycle
 from questionnaires.models import Question
 import secrets
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def claim_token(request, invitation_token):
@@ -278,7 +281,8 @@ def submit_feedback(request, token):
         return JsonResponse({'success': True, 'redirect': f'/feedback/{token}/complete/'})
 
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        logger.exception('Error submitting feedback')
+        return JsonResponse({'error': 'Something went wrong. Please try again.'}, status=500)
 
 
 def feedback_complete(request, token):

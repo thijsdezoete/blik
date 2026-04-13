@@ -1,5 +1,8 @@
 """Account and organization management views."""
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -101,7 +104,8 @@ def export_data(request):
         return response
 
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        logger.exception('Error exporting data')
+        return JsonResponse({'error': 'Export failed. Please try again.'}, status=500)
 
 
 @login_required
@@ -137,7 +141,7 @@ def preview_import(request):
         try:
             data = json.load(import_file)
         except json.JSONDecodeError as e:
-            return JsonResponse({'error': f'Invalid JSON format: {str(e)}'}, status=400)
+            return JsonResponse({'error': 'Invalid JSON format. Please check your file.'}, status=400)
 
         # Validate structure
         validation = validate_import_data(data)
@@ -159,7 +163,8 @@ def preview_import(request):
         })
 
     except Exception as e:
-        return JsonResponse({'error': f'Preview failed: {str(e)}'}, status=500)
+        logger.exception('Preview import failed')
+        return JsonResponse({'error': 'Preview failed. Please try again.'}, status=500)
 
 
 @login_required
@@ -316,4 +321,5 @@ def mark_welcome_seen(request):
         profile.save()
         return JsonResponse({'success': True})
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        logger.exception('Error marking welcome as seen')
+        return JsonResponse({'success': False, 'error': 'Something went wrong.'}, status=500)

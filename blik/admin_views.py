@@ -22,6 +22,9 @@ from reports.models import Report
 from core.models import Organization
 from core.gdpr import GDPRDeletionService
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def get_cycle_or_404(cycle_uuid, organization):
     """
@@ -834,12 +837,13 @@ def questionnaire_edit(request, questionnaire_id):
 
                     messages.success(request, 'Question added successfully.')
                 except Exception as e:
+                    logger.exception('Error adding question')
                     if is_ajax:
                         return JsonResponse({
                             'success': False,
-                            'message': f'Error adding question: {str(e)}',
+                            'message': 'Error adding question. Please try again.',
                         }, status=400)
-                    messages.error(request, f'Error adding question: {str(e)}')
+                    messages.error(request, 'Error adding question. Please try again.')
 
         elif action == 'delete_section':
             section_id = request.POST.get('section_id')
@@ -958,12 +962,13 @@ def questionnaire_edit(request, questionnaire_id):
 
                     messages.success(request, 'Question updated successfully.')
                 except Exception as e:
+                    logger.exception('Error updating question')
                     if is_ajax:
                         return JsonResponse({
                             'success': False,
-                            'message': f'Error updating question: {str(e)}',
+                            'message': 'Error updating question. Please try again.',
                         }, status=400)
-                    messages.error(request, f'Error updating question: {str(e)}')
+                    messages.error(request, 'Error updating question. Please try again.')
 
         elif action == 'update_dreyfus_config':
             question_id = request.POST.get('question_id')
@@ -1060,7 +1065,8 @@ def question_dreyfus_config_api(request, question_id):
     except Question.DoesNotExist:
         return JsonResponse({'error': 'Question not found'}, status=404)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        logger.exception('Error fetching Dreyfus config')
+        return JsonResponse({'error': 'Internal server error'}, status=500)
 
 
 @login_required

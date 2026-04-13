@@ -1,5 +1,8 @@
 import stripe
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -68,7 +71,8 @@ def create_checkout_session(request):
 
         return JsonResponse({'session_id': session.id})
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        logger.exception('Error creating checkout session')
+        return JsonResponse({'error': 'Could not create checkout session. Please try again.'}, status=400)
 
 
 @require_POST

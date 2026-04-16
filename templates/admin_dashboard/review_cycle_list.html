@@ -36,7 +36,10 @@
                         <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
                         <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
                     </td>
-                    <td style="font-size: 0.875rem;">{{ item.cycle.questionnaire.name }}</td>
+                    <td>
+                        <div style="font-weight: 500;">{{ item.cycle.questionnaire.name }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.125rem;">{{ item.cycle.questionnaire.report_type_label }}</div>
+                    </td>
                     <td>
                         {% if item.cycle.status == 'active' %}
                         <span class="badge badge-warning">Active</span>
@@ -282,14 +285,19 @@ function closeUuidModal() {
 function createUuidModal() {
     const modal = document.createElement('div');
     modal.id = 'uuid-modal';
-    modal.className = 'modal';
+    // Reuse the existing .modal-overlay styling (fixed backdrop + centered flex).
+    modal.className = 'modal-overlay';
+    modal.style.display = 'none';
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                 <h3 style="margin: 0;">API Identifiers</h3>
-                <button onclick="closeUuidModal()" class="modal-close">&times;</button>
+                <button onclick="closeUuidModal()" aria-label="Close"
+                        style="background: none; border: none; cursor: pointer; font-size: 1.5rem; line-height: 1; color: var(--text-secondary); padding: 0.25rem 0.5rem; border-radius: 6px;">
+                    &times;
+                </button>
             </div>
-            <div class="modal-body">
+            <div>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
                     Use these UUIDs when accessing the REST API for <strong id="modal-reviewee-name"></strong>
                 </p>

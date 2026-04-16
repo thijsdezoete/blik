@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import transaction
 from django.db.models import Count, Q, Max
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -296,10 +297,16 @@ def reviewee_list(request):
     # Annotate each reviewee with their latest cycle info
     reviewees_with_latest = []
     for reviewee in reviewees:
-        latest_cycle = reviewee.review_cycles.select_related('questionnaire').order_by('-created_at').first()
+        latest_cycle = (
+            reviewee.review_cycles
+            .select_related('questionnaire')
+            .prefetch_related('questionnaire__sections__questions')
+            .order_by('-created_at')
+            .first()
+        )
 
-        # Get active cycle (in_progress status)
-        active_cycle = reviewee.review_cycles.filter(status='in_progress').order_by('-created_at').first()
+        # Get active cycle
+        active_cycle = reviewee.review_cycles.filter(status='active').order_by('-created_at').first()
 
         # Get latest completed cycle with a report
         latest_completed_report = None
@@ -577,6 +584,8 @@ def questionnaire_list(request):
     questionnaires = questionnaires_qs.annotate(
         question_count=Subquery(question_count_subquery),
         cycle_count=Count('review_cycles')
+    ).prefetch_related(
+        'sections__questions'
     ).order_by('-is_default', 'name')
 
     context = {
@@ -598,6 +607,130 @@ def questionnaire_preview(request, questionnaire_id):
     }
 
     return render(request, 'admin_dashboard/questionnaire_preview.html', context)
+
+
+@login_required
+def questionnaire_sample_report(request, questionnaire_id):
+    """Render an illustrative sample report for a questionnaire.
+
+    Builds a synthetic but shape-correct `insights` and `charts` data set so we
+    can reuse the real Dreyfus diamond + agency SVGs and Chart.js radar/gap
+    graphs. Seeded by questionnaire id so reloads look identical.
+    """
+    import random
+    from reports.dreyfus_service import (
+        DREYFUS_STAGES,
+        AGENCY_STAGES,
+        QUADRANTS,
+        calculate_dreyfus_quadrant,
+        _level_to_stage,
+        _get_development_focus,
+    )
+
+    questionnaire = get_object_or_404(
+        Questionnaire.objects.prefetch_related('sections__questions'),
+        id=questionnaire_id,
+    )
+
+    rng = random.Random(questionnaire.id)
+
+    def score(center, spread=0.35):
+        value = rng.uniform(center - spread, center + spread)
+        return round(max(1.0, min(5.0, value)), 1)
+
+    # Per-section scores, shaped exactly like what chart.js expects.
+    section_scores = {}
+    sections_data = []
+    overall_totals = []
+    for section in questionnaire.sections.all():
+        base = rng.uniform(3.4, 4.4)
+        cats = {
+            'self': score(base - 0.2),
+            'peer': score(base + 0.05),
+            'manager': score(base + 0.15),
+            'direct_report': score(base),
+        }
+        cats['others_avg'] = round(
+            (cats['peer'] + cats['manager'] + cats['direct_report']) / 3, 1
+        )
+        section_scores[section.title] = cats
+        sections_data.append({
+            'title': section.title,
+            'overall_score': cats['others_avg'],
+            'category_scores': [
+                ('self', cats['self']),
+                ('peer', cats['peer']),
+                ('manager', cats['manager']),
+                ('direct_report', cats['direct_report']),
+            ],
+            'question_count': section.questions.count(),
+        })
+        overall_totals.append(cats['others_avg'])
+
+    overall_score = round(sum(overall_totals) / len(overall_totals), 1) if overall_totals else 0.0
+
+    # Build the `insights` dict that `reports/_dreyfus_profile.html` consumes.
+    has_skill, has_agency = questionnaire.dreyfus_dimensions
+    insights = {}
+
+    if has_skill:
+        skill_level = round(rng.uniform(3.2, 4.1), 2)
+        stage_num = _level_to_stage(skill_level)
+        stage_info = DREYFUS_STAGES[stage_num].copy()
+        next_stage_num = min(5, stage_num + 1)
+        if next_stage_num > stage_num:
+            stage_info['next_stage'] = DREYFUS_STAGES[next_stage_num]['name']
+            stage_info['development_focus'] = _get_development_focus(stage_num, next_stage_num)
+        else:
+            stage_info['next_stage'] = None
+            stage_info['development_focus'] = ['Continue deepening expertise and innovating']
+
+        insights['skill_profile'] = {
+            'skill_level': skill_level,
+            'skill_stage': stage_info['name'],
+            'confidence': 0.85,
+            'stage_info': stage_info,
+        }
+
+    if has_agency:
+        agency_level = round(rng.uniform(3.4, 4.3), 2)
+        agency_stage_num = max(1, min(5, round(agency_level)))
+        agency_stage_info = AGENCY_STAGES[agency_stage_num]
+        insights['agency_profile'] = {
+            'agency_level': agency_level,
+            'agency_stage': agency_stage_info['name'],
+            'confidence': 0.85,
+            'description': agency_stage_info['description'],
+        }
+
+    if has_skill and has_agency:
+        insights['dreyfus_quadrant'] = calculate_dreyfus_quadrant(
+            insights['skill_profile']['skill_level'],
+            insights['agency_profile']['agency_level'],
+        )
+
+    # Minimal development plan so the "next level" cards render.
+    if has_skill:
+        insights['development_plan'] = {
+            'next_level_requirements': insights['skill_profile']['stage_info'].get(
+                'development_focus', []
+            ),
+            'quick_wins': [
+                'Pair with a more senior teammate on a challenging problem this sprint',
+                'Document one decision you made and why — share it for review',
+                'Pick a weak area from the feedback and book focused practice time',
+            ],
+        }
+
+    context = {
+        'questionnaire': questionnaire,
+        'sections_data': sections_data,
+        'overall_score': overall_score,
+        'insights': insights,
+        'chart_data': {'section_scores': section_scores},
+    }
+
+    return render(request, 'admin_dashboard/questionnaire_sample_report.html', context)
 
 
 @login_required
@@ -1084,7 +1217,9 @@ def review_cycle_list(request):
             'reviewee', 'questionnaire', 'created_by'
         )
 
-    cycles_qs = cycles_qs.annotate(
+    cycles_qs = cycles_qs.prefetch_related(
+        'questionnaire__sections__questions'
+    ).annotate(
         token_count=Count('tokens'),
         completed_count=Count('tokens', filter=Q(tokens__completed_at__isnull=False))
     ).order_by('-created_at')
@@ -1153,28 +1288,34 @@ def review_cycle_create(request):
             created_cycles = []
 
             if creation_mode == 'bulk':
-                # Create cycles for all active reviewees
+                # Create cycles for all active reviewees. Intentionally do NOT
+                # send any emails here — the admin confirms sending on the
+                # follow-up bulk_send_invitations page. This prevents the
+                # request from stalling on SMTP and avoids surprise blasts.
                 reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
 
-                for reviewee in reviewees:
-                    cycle = ReviewCycle.objects.create(
-                        reviewee=reviewee,
-                        questionnaire=questionnaire,
-                        created_by=request.user,
-                        status='active'
-                    )
+                with transaction.atomic():
+                    for reviewee in reviewees:
+                        cycle = ReviewCycle.objects.create(
+                            reviewee=reviewee,
+                            questionnaire=questionnaire,
+                            created_by=request.user,
+                            status='active'
+                        )
+                        created_cycles.append(cycle)
 
-                    created_cycles.append(cycle)
-
-                    # Send notification emails to reviewee
-                    from reviews.services import send_reviewee_notifications
-                    send_reviewee_notifications(cycle, request)
+                # Stash the cycle UUIDs in the session for the send-invitations
+                # confirmation step. Session avoids URL-length limits when the
+                # org has many reviewees.
+                request.session['pending_invitation_cycles'] = [
+                    str(c.uuid) for c in created_cycles
+                ]
 
                 messages.success(
                     request,
-                    f'Created {len(created_cycles)} review cycles for all active reviewees. Notification emails sent.'
+                    f'Created {len(created_cycles)} review cycles. No invitations have been sent yet.'
                 )
-                return redirect('review_cycle_list')
+                return redirect('bulk_send_invitations')
 
             else:
                 # Single reviewee mode
@@ -1193,9 +1334,13 @@ def review_cycle_create(request):
                     status='active'
                 )
 
-                # Send notification emails to reviewee
+                # Send notification emails to reviewee. Defer to after the
+                # transaction commits so a slow SMTP backend can't stall this
+                # request (matches the pattern in api/signals.py).
                 from reviews.services import send_reviewee_notifications
-                email_stats = send_reviewee_notifications(cycle, request)
+                transaction.on_commit(
+                    lambda c=cycle: send_reviewee_notifications(c, request)
+                )
 
                 # Check if user provided reviewer emails
                 from django.core.validators import validate_email
@@ -1237,23 +1382,19 @@ def review_cycle_create(request):
                     # Assign tokens to emails with randomization
                     assign_stats = assign_tokens_to_emails(cycle, email_assignments)
 
-                    # Check if user wants to send invitations immediately
+                    # Check if user wants to send invitations immediately.
+                    # Defer the send to after-commit so SMTP latency never
+                    # stalls the request.
                     send_now = request.POST.get('send_invitations_now') == '1'
                     if send_now and assign_stats['assigned'] > 0:
-                        send_stats = send_reviewer_invitations(cycle)
-                        if send_stats['sent'] > 0:
-                            messages.success(
-                                request,
-                                f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) invited. {send_stats["sent"]} invitation email(s) sent.'
-                            )
-                            # Redirect to cycle detail since invitations were sent
-                            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
-                        else:
-                            messages.success(
-                                request,
-                                f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) assigned.'
-                            )
-                            return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
+                        transaction.on_commit(
+                            lambda c=cycle: send_reviewer_invitations(c)
+                        )
+                        messages.success(
+                            request,
+                            f'Review cycle created for "{reviewee.name}" with {assign_stats["assigned"]} reviewer(s) invited. Invitation emails are being sent.'
+                        )
+                        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                     else:
                         messages.success(
                             request,
@@ -1262,14 +1403,12 @@ def review_cycle_create(request):
                         # Redirect to invitations page to send emails
                         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                 else:
-                    # No emails provided, show success and redirect to invitations
-                    success_msg = f'Review cycle created for "{reviewee.name}".'
-                    if email_stats['sent'] > 0:
-                        success_msg += f' {email_stats["sent"]} notification email(s) sent.'
-                    if email_stats['errors']:
-                        success_msg += f' (Email errors: {", ".join(email_stats["errors"])})'
-
-                    messages.success(request, success_msg)
+                    # No emails provided, show success and redirect to invitations.
+                    # Reviewee notifications were queued via on_commit above.
+                    messages.success(
+                        request,
+                        f'Review cycle created for "{reviewee.name}". Notification emails are being sent to the reviewee.'
+                    )
                     # Redirect to invitations page to add reviewers
                     return redirect('manage_invitations', cycle_uuid=cycle.uuid)
 
@@ -1290,8 +1429,13 @@ def review_cycle_create(request):
     else:
         reviewees = Reviewee.objects.for_organization(org).filter(is_active=True).order_by('name')
 
-    # Only show questionnaires from user's organization
-    questionnaires = Questionnaire.objects.for_organization(org).order_by('-is_default', 'name')
+    # Only show questionnaires from user's organization.
+    # Prefetch sections/questions so report_type_label doesn't N+1 per option.
+    questionnaires = (
+        Questionnaire.objects.for_organization(org)
+        .prefetch_related('sections__questions')
+        .order_by('-is_default', 'name')
+    )
 
     context = {
         'reviewees': reviewees,
@@ -1300,6 +1444,54 @@ def review_cycle_create(request):
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)
+
+
+@login_required
+def bulk_send_invitations(request):
+    """Confirm + send reviewee notifications for cycles just created in bulk.
+
+    The `review_cycle_create` view stashes the UUIDs of freshly-bulk-created
+    cycles in the session under 'pending_invitation_cycles'. This view renders
+    them for review on GET and defers the actual send on POST.
+    """
+    from reviews.services import send_reviewee_notifications
+
+    org = request.organization
+    uuids = request.session.get('pending_invitation_cycles', [])
+
+    cycles_qs = (
+        ReviewCycle.objects
+        .select_related('reviewee', 'questionnaire')
+        .prefetch_related('questionnaire__sections__questions')
+        .filter(uuid__in=uuids)
+    )
+    if org:
+        cycles_qs = cycles_qs.filter(reviewee__organization=org)
+    cycles = list(cycles_qs.order_by('reviewee__name'))
+
+    if request.method == 'POST':
+        if not cycles:
+            messages.info(request, 'No pending cycles to send invitations for.')
+            return redirect('review_cycle_list')
+
+        for cycle in cycles:
+            transaction.on_commit(
+                lambda c=cycle: send_reviewee_notifications(c, request)
+            )
+
+        # Clear the session once we've scheduled the sends.
+        request.session.pop('pending_invitation_cycles', None)
+
+        messages.success(
+            request,
+            f'Invitations are being sent for {len(cycles)} review cycle(s).'
+        )
+        return redirect('review_cycle_list')
+
+    context = {
+        'cycles': cycles,
+    }
+    return render(request, 'admin_dashboard/bulk_send_invitations.html', context)
 
 
 @login_required

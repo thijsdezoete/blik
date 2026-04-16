@@ -34,6 +34,9 @@
                         </div>
                     </label>
                 </div>
+                <div id="bulkModeNote" class="alert alert-warning" style="display: none; font-size: 0.875rem;">
+                    Bulk creation does not send any emails. You'll review the new cycles and send invitations in the next step.
+                </div>
             </div>
         </div>
         {% else %}
@@ -70,13 +73,31 @@
                     <select id="questionnaire" name="questionnaire" class="form-control" required>
                         <option value="">Select a questionnaire...</option>
                         {% for q in questionnaires %}
-                        <option value="{{ q.id }}" {% if q.is_default %}selected{% endif %}>
-                            {{ q.name }}{% if q.is_default %} (Default){% endif %}
+                        <option value="{{ q.id }}"
+                                data-report-type="{{ q.report_type_label }}"
+                                data-description="{{ q.description|default_if_none:'' }}"
+                                data-sample-url="{% url 'questionnaire_sample_report' q.id %}"
+                                {% if q.is_default %}selected{% endif %}>
+                            {{ q.name }} — {{ q.report_type_label }}{% if q.is_default %} (Default){% endif %}
                         </option>
                         {% endfor %}
                     </select>
                     <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
                         Questions that reviewers will answer
+                    </div>
+                    <div id="questionnaireDetails" style="margin-top: 0.75rem; padding: 0.75rem 1rem; background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">Report type:</span>
+                                    <span id="questionnaireReportType" style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);"></span>
+                                </div>
+                                <div id="questionnaireDescription" style="font-size: 0.875rem; color: var(--text-secondary);"></div>
+                            </div>
+                            <a id="questionnaireSampleLink" href="#" target="_blank" rel="noopener" class="btn btn-sm btn-secondary" style="flex-shrink: 0; white-space: nowrap;">
+                                Preview sample report
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,16 +201,20 @@ function toggleRevieweeSelect() {
     const submitBtn = document.getElementById('submitBtn');
     const inviteSection = document.getElementById('inviteSection');
 
+    const bulkNote = document.getElementById('bulkModeNote');
+
     if (mode === 'bulk') {
         revieweeGroup.style.display = 'none';
         revieweeSelect.removeAttribute('required');
-        submitBtn.textContent = 'Create Cycles for All Reviewees';
+        submitBtn.textContent = 'Create Cycles (no emails yet)';
         inviteSection.style.display = 'none'; // Hide invite section for bulk mode
+        if (bulkNote) bulkNote.style.display = 'block';
     } else {
         revieweeGroup.style.display = 'block';
         revieweeSelect.setAttribute('required', 'required');
         submitBtn.textContent = 'Create Review Cycle';
         inviteSection.style.display = 'block'; // Show invite section for single mode
+        if (bulkNote) bulkNote.style.display = 'none';
     }
 }
 
@@ -218,6 +243,38 @@ function updateSelfEmail() {
     }
 }
 
+function updateQuestionnaireDetails() {
+    const select = document.getElementById('questionnaire');
+    const panel = document.getElementById('questionnaireDetails');
+    const typeEl = document.getElementById('questionnaireReportType');
+    const descEl = document.getElementById('questionnaireDescription');
+    const sampleLink = document.getElementById('questionnaireSampleLink');
+    if (!select || !panel) return;
+
+    const opt = select.options[select.selectedIndex];
+    const reportType = opt ? opt.getAttribute('data-report-type') : '';
+    const description = opt ? opt.getAttribute('data-description') : '';
+    const sampleUrl = opt ? opt.getAttribute('data-sample-url') : '';
+
+    if (!select.value || !reportType) {
+        panel.style.display = 'none';
+        return;
+    }
+
+    typeEl.textContent = reportType;
+    descEl.textContent = description || '';
+    descEl.style.display = description ? 'block' : 'none';
+    if (sampleLink) {
+        if (sampleUrl) {
+            sampleLink.href = sampleUrl;
+            sampleLink.style.display = 'inline-flex';
+        } else {
+            sampleLink.style.display = 'none';
+        }
+    }
+    panel.style.display = 'block';
+}
+
 // Initialize on page load
 toggleRevieweeSelect();
 
@@ -226,6 +283,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const revieweeSelect = document.getElementById('reviewee');
     if (revieweeSelect) {
         revieweeSelect.addEventListener('change', updateSelfEmail);
+    }
+    const questionnaireSelect = document.getElementById('questionnaire');
+    if (questionnaireSelect) {
+        questionnaireSelect.addEventListener('change', updateQuestionnaireDetails);
+        updateQuestionnaireDetails();
     }
 });
 </script>

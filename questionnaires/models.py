@@ -36,6 +36,46 @@ class Questionnaire(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    @property
+    def dreyfus_dimensions(self):
+        """Return (has_skill, has_agency) based on question dreyfus_mapping configs.
+
+        A dimension counts as present if any question carries a non-zero weight
+        for that dimension in its config['dreyfus_mapping']. Uses the prefetched
+        sections/questions relation when available so it doesn't N+1 in list views.
+        """
+        has_skill = False
+        has_agency = False
+
+        for section in self.sections.all():
+            for question in section.questions.all():
+                mapping = (question.config or {}).get('dreyfus_mapping') or {}
+                if not isinstance(mapping, dict):
+                    continue
+                try:
+                    if mapping.get('skill') and float(mapping['skill']) != 0:
+                        has_skill = True
+                    if mapping.get('agency') and float(mapping['agency']) != 0:
+                        has_agency = True
+                except (TypeError, ValueError):
+                    continue
+                if has_skill and has_agency:
+                    return has_skill, has_agency
+
+        return has_skill, has_agency
+
+    @property
+    def report_type_label(self):
+        """Human-readable description of what report this questionnaire produces."""
+        has_skill, has_agency = self.dreyfus_dimensions
+        if has_skill and has_agency:
+            return "Dreyfus (Skill + Agency)"
+        if has_skill:
+            return "Dreyfus (Skill)"
+        if has_agency:
+            return "Dreyfus (Agency)"
+        return "Standard 360"
+
 
 class QuestionSection(TimeStampedModel):
     """Section grouping questions within a questionnaire"""

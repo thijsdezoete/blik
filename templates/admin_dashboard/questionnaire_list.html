@@ -23,12 +23,16 @@
                     <span class="badge badge-success">Default</span>
                     {% endif %}
                 </h3>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                    {{ questionnaire.report_type_label }}
+                </div>
                 {% if questionnaire.description %}
                 <p style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">{{ questionnaire.description }}</p>
                 {% endif %}
             </div>
             <div style="display: flex; gap: 0.5rem;">
-                <a href="{% url 'questionnaire_preview' questionnaire.id %}" class="btn btn-sm btn-primary">Preview</a>
+                <a href="{% url 'questionnaire_preview' questionnaire.id %}" class="btn btn-sm btn-secondary">Preview Questions</a>
+                <a href="{% url 'questionnaire_sample_report' questionnaire.id %}" class="btn btn-sm btn-primary">Sample Report</a>
                 <a href="{% url 'questionnaire_edit' questionnaire.id %}" class="btn btn-sm btn-secondary">Edit</a>
             </div>
         </div>

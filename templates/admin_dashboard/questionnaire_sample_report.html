@@ -1,0 +1,123 @@
+{% extends "admin_dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Sample Report — {{ questionnaire.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reports.css' %}">
+{% endblock %}
+
+{% block content %}
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script src="{% static 'js/report-charts.js' %}"></script>
+
+<div class="page-header">
+    <div>
+        <h1>Sample Report</h1>
+        <p style="color: var(--text-secondary);">{{ questionnaire.name }} · {{ questionnaire.report_type_label }}</p>
+    </div>
+    <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary">Back to Questionnaires</a>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
+    <div class="card-body" style="display: flex; gap: 1rem; align-items: flex-start;">
+        <div style="font-size: 1.5rem;">📊</div>
+        <div>
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">This is a sample with synthetic data</div>
+            <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                Scores are generated deterministically from the questionnaire's structure to preview what a finished
+                report will look like. No real responses are shown. Run a cycle to see real results.
+            </div>
+        </div>
+    </div>
+</div>
+
+{# json_script makes the data available to report-charts.js via the #chart-data element #}
+{{ chart_data|json_script:"chart-data" }}
+
+<div id="overall-performance" class="insight-card skill-profile" style="margin-bottom: 1.5rem;">
+    <div class="insight-title">Overall Performance</div>
+    <div class="overall-score">
+        {{ overall_score }}<span>/5.0</span>
+    </div>
+    <div class="progress-bar-container">
+        <div class="progress-bar-fill score-{% if overall_score >= 4.5 %}excellent{% elif overall_score >= 3.5 %}strong{% elif overall_score >= 2.6 %}good{% elif overall_score >= 2.0 %}developing{% else %}low{% endif %}"
+             style="width: {% widthratio overall_score 5 100 %}%;"></div>
+    </div>
+    <div class="insight-message">
+        Aggregated across peer, manager, and direct-report feedback.
+    </div>
+</div>
+
+{# Dreyfus diamond + agency levels + quadrant — reuses the real report partial #}
+{% include "reports/_dreyfus_profile.html" with insights=insights %}
+
+<div class="report-section">
+    <h2>Performance Overview</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Visual comparison across all competency areas
+    </p>
+    <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
+        <canvas id="sectionRadarChart" style="max-height: 500px;"></canvas>
+    </div>
+</div>
+
+<div class="report-section">
+    <h2>Self vs Others Comparison</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        How the reviewee's self-assessment would compare to others' feedback (sorted by gap size)
+    </p>
+    <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
+        <canvas id="gapChart" style="max-height: 400px;"></canvas>
+    </div>
+</div>
+
+<div id="section-level-performance" class="report-section">
+    <h2>Section-Level Performance</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        Performance breakdown by competency area
+    </p>
+    <div style="display: grid; gap: 1.5rem;">
+        {% for section in sections_data %}
+        <div class="section-performance-card">
+            <h3 class="section-performance-title">{{ section.title }}</h3>
+
+            <div style="margin-bottom: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
+                    <span class="section-performance-score-label">Overall score (excluding self-assessment)</span>
+                    <span class="section-performance-score-value">{{ section.overall_score|floatformat:1 }}<span class="section-performance-score-value-small">/5.0</span></span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill score-{% if section.overall_score >= 4.5 %}excellent{% elif section.overall_score >= 3.5 %}strong{% elif section.overall_score >= 2.6 %}good{% elif section.overall_score >= 2.0 %}developing{% else %}low{% endif %}"
+                         style="width: {% widthratio section.overall_score 5 100 %}%;"></div>
+                </div>
+            </div>
+
+            <div class="section-performance-categories">
+                {% for category, value in section.category_scores %}
+                <div class="category-score-item">
+                    <span class="badge badge-{{ category }}" style="text-transform: capitalize;">{% if category == 'direct_report' %}direct report{% else %}{{ category }}{% endif %}</span>
+                    <span class="category-score-value">{{ value|floatformat:1 }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chartDataElement = document.getElementById('chart-data');
+    if (!chartDataElement) return;
+    const chartData = JSON.parse(chartDataElement.textContent);
+
+    if (document.getElementById('sectionRadarChart') && typeof renderSectionRadarChart === 'function') {
+        renderSectionRadarChart('sectionRadarChart', chartData);
+    }
+    if (document.getElementById('gapChart') && typeof renderGapChart === 'function') {
+        renderGapChart('gapChart', chartData);
+    }
+});
+</script>
+{% endblock %}

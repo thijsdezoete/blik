@@ -1,0 +1,71 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Send Bulk Invitations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Send invitations</h1>
+        <p>Review the cycles you just created, then send invitation emails.</p>
+    </div>
+    <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">Back to cycles</a>
+</div>
+
+{% if cycles %}
+<div class="alert alert-warning" style="margin-bottom: 1.5rem;">
+    <div>
+        <strong>No emails have been sent yet.</strong>
+        Review the list below and click <em>Send invitations now</em> to notify every reviewee.
+        You can also skip for now and send individual invitations later from the cycles list.
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Reviewee</th>
+                    <th>Questionnaire</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cycle in cycles %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary);">{{ cycle.reviewee.email }}</div>
+                    </td>
+                    <td style="font-size: 0.875rem;">
+                        {{ cycle.questionnaire.name }}
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">{{ cycle.questionnaire.report_type_label }}</div>
+                    </td>
+                    <td style="color: var(--text-secondary); font-size: 0.875rem;">{{ cycle.created_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+<form method="post" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">
+        Send invitations for all {{ cycles|length }} reviewee{{ cycles|length|pluralize }}
+    </button>
+    <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">Skip — I'll send later</a>
+</form>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <p style="margin: 0; color: var(--text-secondary);">
+            No pending bulk invitations. If you just created cycles, they're already in the
+            <a href="{% url 'review_cycle_list' %}">cycles list</a>.
+        </p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

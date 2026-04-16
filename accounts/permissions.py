@@ -99,6 +99,9 @@ def assign_organization_admin(user):
     ensure_permission_groups()
     admin_group, _ = Group.objects.get_or_create(name=ORG_ADMIN_GROUP)
 
+    # Remove from any org group first so role changes are clean
+    remove_from_all_org_groups(user)
+
     # Add to admin group
     user.groups.add(admin_group)
 
@@ -119,6 +122,7 @@ def assign_organization_member(user, can_create_cycles_for_others=False):
     This should be called when:
     - A user accepts an invitation
     - A new team member is added
+    - An admin is demoted to member
 
     Args:
         user: Django User instance
@@ -126,6 +130,10 @@ def assign_organization_member(user, can_create_cycles_for_others=False):
     """
     ensure_permission_groups()
     member_group, _ = Group.objects.get_or_create(name=ORG_MEMBER_GROUP)
+
+    # Remove from any org group first — otherwise demoting an admin leaves
+    # them in ORG_ADMIN_GROUP and they keep all admin permissions.
+    remove_from_all_org_groups(user)
 
     # Add to member group
     user.groups.add(member_group)
@@ -141,8 +149,13 @@ def assign_organization_member(user, can_create_cycles_for_others=False):
 
 
 def remove_from_all_org_groups(user):
-    """Remove user from all organization groups."""
-    user.groups.filter(name__in=[ORG_ADMIN_GROUP, ORG_MEMBER_GROUP]).delete()
+    """Remove user from all organization groups (without deleting the groups)."""
+    admin_group = Group.objects.filter(name=ORG_ADMIN_GROUP).first()
+    member_group = Group.objects.filter(name=ORG_MEMBER_GROUP).first()
+    if admin_group:
+        user.groups.remove(admin_group)
+    if member_group:
+        user.groups.remove(member_group)
 
 
 def organization_admin_required(view_func=None, redirect_url='admin_dashboard'):

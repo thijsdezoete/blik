@@ -30,19 +30,28 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Department</th>
+                    <th>Questionnaire</th>
                     <th>Review Cycles</th>
-                    <th>Actions</th>
+                    <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in reviewees_with_latest %}
                 <tr>
-                    <td style="font-weight: 500;">{{ item.reviewee.name }}</td>
-                    <td style="color: #64748b;">{{ item.reviewee.email }}</td>
                     <td>
-                        {% if item.reviewee.department %}
-                        <span class="badge badge-secondary">{{ item.reviewee.department }}</span>
+                        {% if item.active_cycle %}
+                            <a href="{% url 'review_cycle_detail' item.active_cycle.uuid %}" class="reviewee-name-link">{{ item.reviewee.name }}</a>
+                        {% elif item.latest_completed_report %}
+                            <a href="{% url 'reports:view_report' item.latest_completed_report.cycle.uuid %}" class="reviewee-name-link">{{ item.reviewee.name }}</a>
+                        {% else %}
+                            <span class="reviewee-name">{{ item.reviewee.name }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="color: var(--text-secondary);">{{ item.reviewee.email }}</td>
+                    <td>
+                        {% if item.latest_questionnaire %}
+                        <div style="font-weight: 500;">{{ item.latest_questionnaire.name }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.125rem;">{{ item.latest_questionnaire.report_type_label }}</div>
                         {% else %}
                         <span style="color: #cbd5e1;">—</span>
                         {% endif %}
@@ -64,9 +73,9 @@
                             {% endif %}
                         </div>
                     </td>
-                    <td>
+                    <td style="text-align: right;">
                         {% if perms.accounts.can_manage_organization %}
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <div style="display: inline-flex; gap: 0.5rem; align-items: center; justify-content: flex-end;">
                             {% if item.active_cycle %}
                             <a href="{% url 'review_cycle_detail' item.active_cycle.uuid %}" class="btn btn-sm btn-secondary">View Cycle</a>
                             {% endif %}
@@ -209,6 +218,22 @@
 .btn-group {
     position: relative;
     display: inline-flex;
+}
+.reviewee-name-link,
+.reviewee-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+.reviewee-name-link {
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+    transition: color 0.15s ease, border-bottom-color 0.15s ease;
+}
+.reviewee-name-link:hover,
+.reviewee-name-link:focus {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    text-decoration: none;
 }
 </style>
 

@@ -1,3 +1,5 @@
+import os
+
 from django.core.management.base import BaseCommand
 from core.models import Organization
 
@@ -18,55 +20,77 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        import os
-        from django.conf import settings
+        # Check if org already exists
+        try:
+            org = Organization.objects.get(id=1)
+            created = False
+        except Organization.DoesNotExist:
+            org = Organization(id=1)
+            created = True
 
-        # Get values from arguments or environment
-        org_name = options.get('name') or os.getenv('ORGANIZATION_NAME', 'Blik Organization')
-        org_email = options.get('email') or os.getenv('DEFAULT_FROM_EMAIL', 'noreply@example.com')
-
-        # Get email settings from Django settings (which come from env vars)
-        smtp_host = os.getenv('EMAIL_HOST', '')
-        smtp_port = int(os.getenv('EMAIL_PORT', '587'))
-        smtp_username = os.getenv('EMAIL_HOST_USER', '')
-        smtp_password = os.getenv('EMAIL_HOST_PASSWORD', '')
-        smtp_use_tls = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
-        from_email = os.getenv('DEFAULT_FROM_EMAIL', org_email)
-
-        # Create or update the organization
-        org, created = Organization.objects.get_or_create(
-            id=1,  # Always use ID 1 for single-org setup
-            defaults={
-                'name': org_name,
-                'email': org_email,
-                'smtp_host': smtp_host,
-                'smtp_port': smtp_port,
-                'smtp_username': smtp_username,
-                'smtp_password': smtp_password,
-                'smtp_use_tls': smtp_use_tls,
-                'from_email': from_email,
-                'is_active': True,
-            }
-        )
-
-        if not created:
-            # Update existing organization
-            org.name = org_name
-            org.email = org_email
-            org.smtp_host = smtp_host
-            org.smtp_port = smtp_port
-            org.smtp_username = smtp_username
-            org.smtp_password = smtp_password
-            org.smtp_use_tls = smtp_use_tls
-            org.from_email = from_email
+        if created:
+            # First run: use env vars with sensible defaults
+            org.name = options.get('name') or os.getenv('ORGANIZATION_NAME', 'Blik Organization')
+            org.email = options.get('email') or os.getenv('DEFAULT_FROM_EMAIL', 'noreply@example.com')
+            org.smtp_host = os.getenv('EMAIL_HOST', '')
+            org.smtp_port = int(os.getenv('EMAIL_PORT', '587'))
+            org.smtp_username = os.getenv('EMAIL_HOST_USER', '')
+            org.smtp_password = os.getenv('EMAIL_HOST_PASSWORD', '')
+            org.smtp_use_tls = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+            org.from_email = os.getenv('DEFAULT_FROM_EMAIL', org.email)
+            org.is_active = True
             org.save()
-            self.stdout.write(
-                self.style.SUCCESS(f'Updated organization: {org.name}')
-            )
-        else:
             self.stdout.write(
                 self.style.SUCCESS(f'Created organization: {org.name}')
             )
+        else:
+            # Subsequent runs: only update fields whose env vars are explicitly set
+            updated_fields = []
+
+            if options.get('name'):
+                org.name = options['name']
+                updated_fields.append('name')
+            elif os.environ.get('ORGANIZATION_NAME'):
+                org.name = os.environ['ORGANIZATION_NAME']
+                updated_fields.append('name')
+
+            if options.get('email'):
+                org.email = options['email']
+                updated_fields.append('email')
+            elif os.environ.get('DEFAULT_FROM_EMAIL'):
+                org.email = os.environ['DEFAULT_FROM_EMAIL']
+                org.from_email = os.environ['DEFAULT_FROM_EMAIL']
+                updated_fields.extend(['email', 'from_email'])
+
+            if os.environ.get('EMAIL_HOST'):
+                org.smtp_host = os.environ['EMAIL_HOST']
+                updated_fields.append('smtp_host')
+
+            if os.environ.get('EMAIL_PORT'):
+                org.smtp_port = int(os.environ['EMAIL_PORT'])
+                updated_fields.append('smtp_port')
+
+            if os.environ.get('EMAIL_HOST_USER'):
+                org.smtp_username = os.environ['EMAIL_HOST_USER']
+                updated_fields.append('smtp_username')
+
+            if os.environ.get('EMAIL_HOST_PASSWORD'):
+                org.smtp_password = os.environ['EMAIL_HOST_PASSWORD']
+                updated_fields.append('smtp_password')
+
+            if os.environ.get('EMAIL_USE_TLS'):
+                org.smtp_use_tls = os.environ['EMAIL_USE_TLS'].lower() in ('true', '1', 'yes')
+                updated_fields.append('smtp_use_tls')
+
+            if updated_fields:
+                org.save(update_fields=updated_fields)
+                self.stdout.write(
+                    self.style.SUCCESS(f'Updated organization: {org.name} (fields: {", ".join(updated_fields)})')
+                )
+            else:
+                self.stdout.write(
+                    self.style.SUCCESS(f'Organization already configured: {org.name} (no changes)')
+                )
 
         # Display configuration
         self.stdout.write('\nOrganization Configuration:')

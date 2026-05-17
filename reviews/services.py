@@ -209,11 +209,8 @@ def send_reviewee_notifications(cycle, request=None):
         stats['errors'].append(f"No email address for reviewee {cycle.reviewee.name}")
         return stats
 
-    # Build absolute URLs
-    if request:
-        base_url = f"{request.scheme}://{request.get_host()}"
-    else:
-        base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
+    # Always use SITE_DOMAIN for consistent URLs across all email contexts
+    base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
 
     # 1. Send self-assessment email
     try:

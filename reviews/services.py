@@ -80,8 +80,10 @@ def send_reviewer_invitations(cycle, token_ids=None):
         'errors': []
     }
 
-    # Get tokens to send invitations for
-    tokens = cycle.tokens.filter(reviewer_email__isnull=False)
+    # Get tokens to send invitations for (exclude 'self' category since
+    # reviewees already receive a dedicated self-assessment email via
+    # send_reviewee_notifications)
+    tokens = cycle.tokens.filter(reviewer_email__isnull=False).exclude(category='self')
 
     if token_ids:
         tokens = tokens.filter(id__in=token_ids)

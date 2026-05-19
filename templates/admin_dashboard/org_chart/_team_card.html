@@ -1,0 +1,42 @@
+{% load static %}
+<div class="oc-team-card" data-team-uuid="{{ team.uuid }}">
+    <header class="oc-team-header">
+        <h3 class="oc-team-name" data-team-uuid="{{ team.uuid }}">{{ team.name }}</h3>
+        <div class="oc-team-actions">
+            <button type="button" class="btn btn-sm btn-secondary oc-team-set-parent"
+                    data-team-uuid="{{ team.uuid }}" data-team-name="{{ team.name }}" title="Make this team report to another team">↑ Report to…</button>
+            <button type="button" class="btn btn-sm btn-secondary oc-team-rename"
+                    data-team-uuid="{{ team.uuid }}" data-team-name="{{ team.name }}" title="Rename team">⟲</button>
+            <button type="button" class="btn btn-sm oc-team-delete"
+                    data-team-uuid="{{ team.uuid }}" data-team-name="{{ team.name }}" title="Delete team">×</button>
+        </div>
+    </header>
+
+    <div class="oc-tier oc-tier-managers">
+        <div class="oc-tier-label">Managers</div>
+        <div class="oc-slots" data-role="manager" data-team-uuid="{{ team.uuid }}">
+            {% for slot in manager_slots_filled %}
+                {% include "admin_dashboard/org_chart/_chip.html" with slot=slot team=team %}
+            {% endfor %}
+            <div class="oc-slot oc-slot-empty"
+                 data-team-uuid="{{ team.uuid }}"
+                 data-role="manager"
+                 tabindex="0"
+                 aria-label="Add a manager">+</div>
+        </div>
+    </div>
+
+    <div class="oc-tier oc-tier-members">
+        <div class="oc-tier-label">Members</div>
+        <div class="oc-slots" data-role="member" data-team-uuid="{{ team.uuid }}">
+            {% for slot in member_slots_filled %}
+                {% include "admin_dashboard/org_chart/_chip.html" with slot=slot team=team %}
+            {% endfor %}
+            <div class="oc-slot oc-slot-empty"
+                 data-team-uuid="{{ team.uuid }}"
+                 data-role="member"
+                 tabindex="0"
+                 aria-label="Add a member">+</div>
+        </div>
+    </div>
+</div>

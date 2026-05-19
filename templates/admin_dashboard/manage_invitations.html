@@ -40,7 +40,7 @@
     </div>
     <div class="card-body">
         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-            {% trans 'Enter email addresses for each reviewer category. The system will generate anonymous tokens and send invitations. Separate multiple emails with commas or newlines.' %}
+            {% trans "Pick reviewers from your existing people, or add someone new. The system makes anonymous tokens and sends invitations. Names of reviewers are never stored with their responses." %}
         </p>
 
         <form method="post" action="{% url 'assign_invitations' cycle.uuid %}" id="inviteForm">
@@ -73,14 +73,11 @@
                     {% trans 'Your email is automatically assigned for self-assessment' %}
                 </div>
                 {% else %}
-                <textarea
-                    name="self_emails"
-                    class="form-control"
-                    rows="2"
-                    placeholder="{{ cycle.reviewee.email }}"
-                ></textarea>
+                <div data-reviewee-picker
+                     data-field-name="self_reviewees"
+                     data-placeholder="{% trans 'Usually the reviewee themselves' %}"></div>
                 <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    {% trans "Usually the reviewee's own email" %}
+                    {% trans "Usually the reviewee's own record" %}
                 </div>
                 {% endif %}
             </div>
@@ -89,27 +86,18 @@
             {% if cycle.include_manager %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">{% trans 'Manager/Supervisor' %}</label>
-                <textarea
-                    name="manager_emails"
-                    class="form-control"
-                    rows="2"
-                    placeholder="manager@example.com"
-                ></textarea>
-                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                    {% trans 'Direct manager or supervisor' %}
-                </div>
+                <div data-reviewee-picker
+                     data-field-name="manager_reviewees"
+                     data-placeholder="{% trans 'Search for a manager…' %}"></div>
             </div>
             {% endif %}
 
             {% if cycle.include_peer %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">{% trans 'Peers' %}</label>
-                <textarea
-                    name="peer_emails"
-                    class="form-control"
-                    rows="3"
-                    placeholder="peer1@example.com, peer2@example.com&#10;peer3@example.com"
-                ></textarea>
+                <div data-reviewee-picker
+                     data-field-name="peer_reviewees"
+                     data-placeholder="{% trans 'Search for a peer…' %}"></div>
                 <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
                     {% trans 'Colleagues at the same level' %}
                 </div>
@@ -119,12 +107,9 @@
             {% if cycle.include_direct_report %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">{% trans 'Direct Reports' %}</label>
-                <textarea
-                    name="direct_report_emails"
-                    class="form-control"
-                    rows="3"
-                    placeholder="report1@example.com, report2@example.com"
-                ></textarea>
+                <div data-reviewee-picker
+                     data-field-name="direct_report_reviewees"
+                     data-placeholder="{% trans 'Search for a direct report…' %}"></div>
                 <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
                     {% trans 'People who report to this reviewee' %}
                 </div>
@@ -143,6 +128,41 @@
                     {% trans 'Language of the invitations and reminders to the reviewers above, and of their form' %}
                 </div>
             </div>
+
+            <details style="margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light);">
+                <summary style="padding: 0.75rem 1rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);">
+                    {% trans 'Add by email (advanced)' %}
+                </summary>
+                <div style="padding: 0 1rem 1rem;">
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin: 0 0 1rem;">
+                        {% trans 'For reviewers who are not in Blik yet. Separate multiple emails with commas or newlines.' %}
+                    </p>
+                    {% if cycle.include_self and not self_token and user.profile.can_create_cycles_for_others %}
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">{% trans 'Self Assessment' %}</label>
+                        <textarea name="self_emails" class="form-control" rows="1" placeholder="{{ cycle.reviewee.email }}"></textarea>
+                    </div>
+                    {% endif %}
+                    {% if cycle.include_manager %}
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">{% trans 'Manager/Supervisor' %}</label>
+                        <textarea name="manager_emails" class="form-control" rows="1" placeholder="manager@example.com"></textarea>
+                    </div>
+                    {% endif %}
+                    {% if cycle.include_peer %}
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">{% trans 'Peers' %}</label>
+                        <textarea name="peer_emails" class="form-control" rows="2" placeholder="peer1@example.com, peer2@example.com"></textarea>
+                    </div>
+                    {% endif %}
+                    {% if cycle.include_direct_report %}
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">{% trans 'Direct Reports' %}</label>
+                        <textarea name="direct_report_emails" class="form-control" rows="2" placeholder="report1@example.com"></textarea>
+                    </div>
+                    {% endif %}
+                </div>
+            </details>
 
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                 <button type="submit" name="action" value="assign" class="btn btn-primary">
@@ -248,6 +268,7 @@
 {% endif %}
 {% endif %}
 
+<script src="{% static 'js/reviewee_picker.js' %}"></script>
 <script>
 // Mask email addresses to show partial info: first char + **** + last char before @
 function maskEmail(email) {

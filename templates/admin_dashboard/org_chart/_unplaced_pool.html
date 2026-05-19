@@ -1,0 +1,23 @@
+<div class="oc-unplaced" data-unplaced>
+    <div class="oc-unplaced-header">
+        <span class="oc-unplaced-title">Unplaced reviewees</span>
+        <span class="oc-unplaced-count">{{ unplaced|length }}</span>
+    </div>
+    {% if unplaced %}
+    <input type="text" class="oc-unplaced-search" placeholder="Filter…" aria-label="Filter unplaced reviewees">
+    <div class="oc-unplaced-list">
+        {% for r in unplaced %}
+        <span class="oc-chip oc-chip-unplaced"
+              draggable="true"
+              data-reviewee-uuid="{{ r.uuid }}"
+              data-reviewee-name="{{ r.name }}"
+              data-reviewee-email="{{ r.email }}"
+              title="{{ r.name }} ({{ r.email }})">
+            <span class="oc-chip-name">{{ r.name }}</span>
+        </span>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="oc-unplaced-empty">Everyone's been placed on a team. Nice.</p>
+    {% endif %}
+</div>

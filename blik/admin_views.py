@@ -25,7 +25,7 @@ from django.utils.functional import partition
 from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.http import require_POST
 
-from accounts.models import Reviewee, UserProfile, OrganizationInvitation
+from accounts.models import Reviewee, UserProfile, OrganizationInvitation, Team, TeamMembership
 from accounts.permissions import (
     assign_organization_admin,
     assign_organization_member,
@@ -68,6 +68,7 @@ from reports.services import generate_report, self_vs_others_gap, send_report_re
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.services import (
     assign_tokens_to_emails,
+    derive_reviewers,
     send_invitation_links_email,
     send_reminder_emails,
     send_reviewee_notifications,
@@ -112,6 +113,75 @@ def legacy_id_redirect(request, pk, model, url_name):
     """Send an old integer-id URL (bookmark) to its UUID URL, own organization only."""
     obj = get_object_or_404(model, pk=pk, organization=request.organization)
     return redirect(url_name, obj.uuid, permanent=True)
+
+
+def collect_reviewer_emails(request, organization, categories):
+    """
+    Merge reviewer selections from the picker and the email textareas into
+    {category: [email, ...]}, deduplicated by normalized email.
+
+    Picker hidden inputs are named `<category>_reviewees` and carry Reviewee
+    UUIDs. Textareas are named `<category>_emails` and carry comma/newline
+    separated emails. Categories not in `categories` come back empty.
+
+    Per the anonymity invariant, only emails are returned: the Reviewee
+    identity is dropped here and never stored on the token.
+
+    Returns (email_assignments, warnings).
+    """
+    email_assignments = {code: [] for code, _label in ReviewerToken.CATEGORY_CHOICES}
+    warnings = []
+    labels = dict(ReviewerToken.CATEGORY_CHOICES)
+
+    # One query for the chips of all categories.
+    all_uuids = set()
+    for code in categories:
+        all_uuids.update(request.POST.getlist(f'{code}_reviewees'))
+    uuid_to_email = {}
+    if all_uuids and organization:
+        valid = []
+        for u in all_uuids:
+            try:
+                valid.append(UUID(str(u)))
+            except ValueError:
+                continue
+        uuid_to_email = {
+            str(r.uuid): r.email
+            for r in Reviewee.objects.for_organization(organization).filter(uuid__in=valid)
+        }
+
+    for code in categories:
+        seen = set()
+        collected = []
+
+        # Unknown UUIDs (stale page, deleted reviewee, other org) are skipped.
+        for u in request.POST.getlist(f'{code}_reviewees'):
+            email = (uuid_to_email.get(str(u)) or '').strip().lower()
+            if email and email not in seen:
+                seen.add(email)
+                collected.append(email)
+
+        raw = (request.POST.get(f'{code}_emails') or '').strip()
+        for candidate in re.split(r'[,\n]+', raw) if raw else []:
+            candidate = candidate.strip()
+            if not candidate:
+                continue
+            try:
+                validate_email(candidate)
+            except ValidationError:
+                warnings.append(
+                    _('Invalid email skipped in %(category)s: %(email)s')
+                    % {'category': labels[code], 'email': candidate}
+                )
+                continue
+            normalized = candidate.lower()
+            if normalized not in seen:
+                seen.add(normalized)
+                collected.append(normalized)
+
+        email_assignments[code] = collected
+
+    return email_assignments, warnings
 
 
 @login_required
@@ -584,6 +654,84 @@ def reviewee_delete(request, reviewee_uuid):
     }
 
     return render(request, 'admin_dashboard/reviewee_confirm_delete.html', context)
+
+
+@login_required
+@require_POST
+def reviewee_quick_create(request):
+    """
+    Create or return an existing Reviewee for the reviewee picker component.
+
+    Accepts form-encoded POST with `name`, `email`, optional `department`.
+    Returns JSON: {uuid, name, email, department, created}.
+
+    If a Reviewee with the same (organization, email) already exists, returns
+    that one (reactivating it if it was soft-deleted) rather than erroring —
+    the picker flow treats email as the unique identity, and admins will
+    routinely "re-add" someone by email from memory.
+    """
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        return JsonResponse(
+            {'error': _('You do not have permission to create reviewees.')},
+            status=403,
+        )
+
+    org = request.organization
+    if not org:
+        return JsonResponse({'error': _('No organization context.')}, status=400)
+
+    name = (request.POST.get('name') or '').strip()
+    email = (request.POST.get('email') or '').strip().lower()
+    department = (request.POST.get('department') or '').strip()
+
+    if not name or not email:
+        return JsonResponse(
+            {'error': _('Name and email are required.')},
+            status=400,
+        )
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        return JsonResponse({'error': _('Invalid email address.')}, status=400)
+
+    existing = Reviewee.objects.filter(organization=org, email=email).first()
+    if existing:
+        reactivated = False
+        if not existing.is_active:
+            existing.is_active = True
+            reactivated = True
+        # Only update name if caller provided one and the record currently
+        # has no name — don't silently overwrite an existing admin-set name.
+        if not existing.name:
+            existing.name = name
+        if reactivated or not existing.name:
+            existing.save()
+        return JsonResponse({
+            'uuid': str(existing.uuid),
+            'name': existing.name,
+            'email': existing.email,
+            'department': existing.department,
+            'created': False,
+        })
+
+    allowed, error_message = check_employee_limit(org)
+    if not allowed:
+        return JsonResponse({'error': error_message}, status=400)
+
+    reviewee = Reviewee.objects.create(
+        organization=org,
+        name=name,
+        email=email,
+        department=department,
+    )
+    return JsonResponse({
+        'uuid': str(reviewee.uuid),
+        'name': reviewee.name,
+        'email': reviewee.email,
+        'department': reviewee.department,
+        'created': True,
+    }, status=201)
 
 
 @login_required
@@ -1698,6 +1846,13 @@ def review_cycle_create(request):
                 if credits is not None and reviewees.count() > credits:
                     raise NoCycleCredits(needed=reviewees.count(), available=credits)
 
+                # `bulk_source` controls reviewer-token pre-population:
+                #   'chart' — derive from the org chart for each reviewee
+                #   'empty' — no tokens yet (admins fill them in per cycle later)
+                bulk_source = request.POST.get('bulk_source', 'empty')
+                derived_count = 0
+                unplaced_count = 0
+
                 with transaction.atomic():
                     for reviewee in reviewees:
                         cycle = ReviewCycle.objects.create(
@@ -1709,18 +1864,43 @@ def review_cycle_create(request):
                         )
                         created_cycles.append(cycle)
 
+                        if bulk_source == 'chart':
+                            buckets = derive_reviewers(reviewee)
+                            # Build the email_assignments dict the existing
+                            # helper expects: emails only, no Reviewee FK.
+                            email_assignments = {
+                                code: [p.email.lower() for p in buckets.get(code, []) if p.email]
+                                for code in cycle.active_categories
+                            }
+                            if any(email_assignments.values()):
+                                for cat_code, emails in email_assignments.items():
+                                    for _email in emails:
+                                        ReviewerToken.objects.create(cycle=cycle, category=cat_code)
+                                assign_tokens_to_emails(cycle, email_assignments)
+                                derived_count += 1
+                            else:
+                                unplaced_count += 1
+
                 # Stash the cycle UUIDs in the session for the send-invitations
                 # confirmation step. Session avoids URL-length limits when the
                 # org has many reviewees.
                 request.session['pending_invitation_cycles'] = [
                     str(c.uuid) for c in created_cycles
                 ]
+                request.session['pending_bulk_source'] = bulk_source
 
-                messages.success(
-                    request,
-                    _('Created %(count)s review cycles. No invitations have been sent yet.')
-                    % {'count': len(created_cycles)}
-                )
+                if bulk_source == 'chart':
+                    messages.success(
+                        request,
+                        _('Created %(count)s review cycles. %(derived)s got reviewers from the org chart. %(unplaced)s reviewee(s) are not in a team yet.')
+                        % {'count': len(created_cycles), 'derived': derived_count, 'unplaced': unplaced_count}
+                    )
+                else:
+                    messages.success(
+                        request,
+                        _('Created %(count)s review cycles. No invitations have been sent yet.')
+                        % {'count': len(created_cycles)}
+                    )
                 return redirect('bulk_send_invitations')
 
             else:
@@ -1741,34 +1921,16 @@ def review_cycle_create(request):
                     **category_flags
                 )
 
-                # Check if user provided reviewer emails
-
-                email_assignments = {}
-                has_emails = False
-
-                for category_code, category_display in ReviewerToken.CATEGORY_CHOICES:
-                    if not cycle.collects(category_code):
-                        # The field is hidden for categories this cycle skips;
-                        # a stale or hand-made POST must not reinstate them.
-                        email_assignments[category_code] = []
-                        continue
-
-                    emails_data = request.POST.get(f'{category_code}_emails', '').strip()
-                    if emails_data:
-                        emails = re.split(r'[,\n]+', emails_data)
-                        validated_emails = []
-                        for e in emails:
-                            e = e.strip()
-                            if e:
-                                try:
-                                    validate_email(e)
-                                    validated_emails.append(e)
-                                    has_emails = True
-                                except ValidationError:
-                                    messages.warning(request, _('Invalid email skipped in %(category)s: %(email)s') % {'category': category_display, 'email': e})
-                        email_assignments[category_code] = validated_emails
-                    else:
-                        email_assignments[category_code] = []
+                # Reviewer emails from the picker (<category>_reviewees UUIDs)
+                # and the email textareas (<category>_emails). The form hides
+                # categories this cycle skips; a stale or hand-made POST must
+                # not reinstate them.
+                email_assignments, warnings = collect_reviewer_emails(
+                    request, org, cycle.active_categories,
+                )
+                for w in warnings:
+                    messages.warning(request, w)
+                has_emails = any(email_assignments.values())
 
                 # If emails were provided, create tokens and assign them
                 if has_emails:
@@ -1854,11 +2016,20 @@ def review_cycle_create(request):
         .order_by('-is_default', 'name')
     )
 
+    # Org chart availability drives the default for the bulk-source radio:
+    # if at least one team exists we pre-select "derive from chart"; otherwise
+    # only "leave empty" is offered.
+    has_org_chart = (
+        org is not None
+        and Team.objects.filter(organization=org).exists()
+    )
+
     context = {
         'reviewees': reviewees,
         'questionnaires': questionnaires,
         'can_create_for_others': hasattr(request.user, 'profile') and request.user.profile.can_create_cycles_for_others,
         **billing_context(org, request.user),
+        'has_org_chart': has_org_chart,
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)
@@ -1874,11 +2045,12 @@ def bulk_send_invitations(request):
     """
     org = request.organization
     uuids = request.session.get('pending_invitation_cycles', [])
+    bulk_source = request.session.get('pending_bulk_source', 'empty')
 
     cycles_qs = (
         ReviewCycle.objects
         .select_related('reviewee', 'questionnaire')
-        .prefetch_related('questionnaire__sections__questions')
+        .prefetch_related('questionnaire__sections__questions', 'tokens')
         .filter(uuid__in=uuids)
     )
     if org:
@@ -1890,22 +2062,67 @@ def bulk_send_invitations(request):
             messages.info(request, _('No pending cycles to send invitations for.'))
             return redirect('review_cycle_list')
 
+        # Always send the reviewee's own self-assessment + invite-links email.
         for cycle in cycles:
             transaction.on_commit(
                 lambda c=cycle: send_reviewee_notifications(c, request)
             )
 
+        # When the bulk was derived from the chart, tokens already have
+        # reviewer_emails — also schedule those invitations so the admin gets
+        # a truly one-click bulk experience.
+        reviewer_invites_sent = 0
+        if bulk_source == 'chart':
+            for cycle in cycles:
+                if cycle.tokens.filter(reviewer_email__isnull=False).exists():
+                    reviewer_invites_sent += 1
+                    transaction.on_commit(
+                        lambda c=cycle: send_reviewer_invitations(c)
+                    )
+
         # Clear the session once we've scheduled the sends.
         request.session.pop('pending_invitation_cycles', None)
+        request.session.pop('pending_bulk_source', None)
 
-        messages.success(
-            request,
-            _('Invitations are being sent for %(count)s review cycle(s).') % {'count': len(cycles)}
-        )
+        if reviewer_invites_sent:
+            messages.success(
+                request,
+                _('Invitations are being sent for %(count)s review cycle(s), with reviewer invitations for %(reviewers)s of them.')
+                % {'count': len(cycles), 'reviewers': reviewer_invites_sent}
+            )
+        else:
+            messages.success(
+                request,
+                _('Invitations are being sent for %(count)s review cycle(s).') % {'count': len(cycles)}
+            )
         return redirect('review_cycle_list')
+
+    # Build per-cycle reviewer count summary so the preview can flag cycles
+    # whose reviewees aren't meaningfully on the chart. "Unplaced" here means
+    # no external reviewers derived — self-assessment alone doesn't count,
+    # because every cycle has one and it would mask truly empty cycles.
+    cycle_summaries = []
+    for cycle in cycles:
+        tokens = list(cycle.tokens.all())
+        counts = {'self': 0, 'manager': 0, 'peer': 0, 'direct_report': 0}
+        for t in tokens:
+            if t.category in counts and t.reviewer_email:
+                counts[t.category] += 1
+        total = sum(counts.values())
+        non_self_total = counts['manager'] + counts['peer'] + counts['direct_report']
+        cycle_summaries.append({
+            'cycle': cycle,
+            'counts': counts,
+            'total': total,
+            'is_unplaced': (bulk_source == 'chart' and non_self_total == 0),
+        })
 
     context = {
         'cycles': cycles,
+        'cycle_summaries': cycle_summaries,
+        'bulk_source': bulk_source,
+        'derived_from_chart': bulk_source == 'chart',
+        'unplaced_count': sum(1 for s in cycle_summaries if s['is_unplaced']),
     }
     return render(request, 'admin_dashboard/bulk_send_invitations.html', context)
 
@@ -2094,38 +2311,14 @@ def assign_invitations(request, cycle_uuid):
     cycle = get_cycle_or_404(request, cycle_uuid)
 
     if request.method == 'POST':
-        # Parse email assignments by category
-        email_assignments = {}
-        self_assigned = cycle.tokens.filter(category='self', reviewer_email__isnull=False).exists()
-
-        for category_code, category_display in ReviewerToken.CATEGORY_CHOICES:
-            if not cycle.collects(category_code):
-                # The form hides these; a stale page or hand-made POST must not
-                # assign reviewers to a category this cycle does not collect.
-                email_assignments[category_code] = []
-                continue
-
-            if category_code == 'self' and self_assigned:
-                # The reviewee already has their self-assessment token; another
-                # address would start a second one.
-                email_assignments[category_code] = []
-                continue
-
-            emails_data = request.POST.get(f'{category_code}_emails', '').strip()
-            if emails_data:
-                emails = re.split(r'[,\n]+', emails_data)
-                validated_emails = []
-                for e in emails:
-                    e = e.strip()
-                    if e:
-                        try:
-                            validate_email(e)
-                            validated_emails.append(e)
-                        except ValidationError:
-                            messages.warning(request, _('Invalid email skipped in %(category)s: %(email)s') % {'category': category_display, 'email': e})
-                email_assignments[category_code] = validated_emails
-            else:
-                email_assignments[category_code] = []
+        categories = cycle.active_categories
+        if cycle.tokens.filter(category='self', reviewer_email__isnull=False).exists():
+            # The reviewee already has their self-assessment token; another
+            # address would start a second one.
+            categories = [c for c in categories if c != 'self']
+        email_assignments, warnings = collect_reviewer_emails(request, request.organization, categories)
+        for w in warnings:
+            messages.warning(request, w)
 
         # Create tokens dynamically based on email count
         tokens_created = 0
@@ -3282,3 +3475,553 @@ def delete_webhook(request, webhook_id):
         messages.error(request, _('Error deleting webhook: %(error)s') % {'error': str(e)})
 
     return redirect('settings')
+
+
+# ============================================================================
+# Org chart views
+# ============================================================================
+
+
+def _build_org_tree(organization):
+    """
+    Load every team and membership for the org, then derive a tree:
+      - A team's parent is the (lowest display_order) team in which this
+        team's first manager is a MEMBER.
+      - Teams whose manager is on no other team (or who have no manager yet)
+        are roots.
+      - A rare cycle (A-manages-B-manages-A) is broken by dropping the
+        offending parent edge so the cycle-causer becomes a root.
+
+    Returns a dict:
+      {
+        'roots': [Team, ...],
+        'children_of': {team.id: [Team, ...]},
+        'mships_by_team': {team.id: [TeamMembership sorted by (row, col)]},
+        'sibling_names_by_reviewee': {reviewee_id: [team_name, ...]},
+      }
+    """
+    teams = list(
+        Team.objects.for_organization(organization).order_by('display_order', 'name')
+    )
+    if not teams:
+        return {
+            'roots': [], 'children_of': {}, 'mships_by_team': {},
+            'sibling_names_by_reviewee': {},
+        }
+
+    team_ids = [t.id for t in teams]
+    memberships = list(
+        TeamMembership.objects
+        .filter(team_id__in=team_ids)
+        .select_related('reviewee', 'team')
+        .order_by('row', 'col')
+    )
+
+    mships_by_team = {t.id: [] for t in teams}
+    member_teams_by_reviewee = {}  # reviewee_id -> [team_id where they're MEMBER]
+    team_names_by_reviewee = {}    # reviewee_id -> [team_name, ...] (all roles)
+    for m in memberships:
+        mships_by_team[m.team_id].append(m)
+        team_names_by_reviewee.setdefault(m.reviewee_id, []).append(m.team.name)
+        if m.role == TeamMembership.MEMBER:
+            member_teams_by_reviewee.setdefault(m.reviewee_id, []).append(m.team_id)
+
+    team_by_id = {t.id: t for t in teams}
+
+    # Parent inference
+    parent_of = {}
+    for t in teams:
+        managers = [m for m in mships_by_team[t.id]
+                    if m.role == TeamMembership.MANAGER]
+        if not managers:
+            continue
+        first_mgr_rid = managers[0].reviewee_id
+        candidate_ids = [
+            tid for tid in member_teams_by_reviewee.get(first_mgr_rid, [])
+            if tid != t.id
+        ]
+        if candidate_ids:
+            candidates = [team_by_id[cid] for cid in candidate_ids]
+            candidates.sort(key=lambda x: (x.display_order, x.name))
+            parent_of[t.id] = candidates[0].id
+
+    # Break cycles: walk the parent chain from each node; if we revisit,
+    # drop the offending edge.
+    def _has_cycle(start):
+        seen, curr = set(), start
+        while curr is not None:
+            if curr in seen:
+                return True
+            seen.add(curr)
+            curr = parent_of.get(curr)
+        return False
+    for tid in list(parent_of.keys()):
+        if _has_cycle(tid):
+            del parent_of[tid]
+
+    children_of = {t.id: [] for t in teams}
+    for tid, pid in parent_of.items():
+        children_of[pid].append(team_by_id[tid])
+    for pid in children_of:
+        children_of[pid].sort(key=lambda x: (x.display_order, x.name))
+
+    roots = [t for t in teams if t.id not in parent_of]
+
+    # Sibling-team labels for the ▣ badge tooltip (names of any other team
+    # the reviewee also belongs to, regardless of role).
+    sibling_names_by_reviewee = {}
+    for rid, names in team_names_by_reviewee.items():
+        if len(names) >= 2:
+            sibling_names_by_reviewee[rid] = names
+
+    return {
+        'roots': roots,
+        'children_of': children_of,
+        'mships_by_team': mships_by_team,
+        'sibling_names_by_reviewee': sibling_names_by_reviewee,
+    }
+
+
+def _team_card_html(team, tree):
+    """
+    Render a single team card (no nested children — see _tree_node_html).
+
+    Slots are adaptive: each tier shows `filled chips + 1 trailing empty "+"`.
+    The recursion into sub-teams happens one level up, in _tree_node_html,
+    which wraps this card in an oc-tree-node and drops a connector rail to
+    any child teams rendered below.
+    """
+    mships_by_team = tree['mships_by_team']
+    sibling_names = tree['sibling_names_by_reviewee']
+
+    memberships = mships_by_team.get(team.id, [])
+    managers = [m for m in memberships if m.role == TeamMembership.MANAGER]
+    members = [m for m in memberships if m.role == TeamMembership.MEMBER]
+
+    def _slot(m):
+        r = m.reviewee
+        other = sorted(n for n in sibling_names.get(r.id, []) if n != team.name)
+        return {
+            'membership': m,
+            'reviewee': r,
+            'is_multi_team': bool(other),
+            'other_teams_label': ', '.join(other),
+        }
+
+    return render_to_string('admin_dashboard/org_chart/_team_card.html', {
+        'team': team,
+        'manager_slots_filled': [_slot(m) for m in managers],
+        'member_slots_filled': [_slot(m) for m in members],
+    })
+
+
+def _tree_node_html(team, tree):
+    """
+    Recursively render a team as a tree node: its card on top, any child
+    teams laid out horizontally below inside an `.oc-children` wrapper.
+    CSS in main.css draws connector lines between a parent card's bottom
+    and each child card's top.
+    """
+    card_html = _team_card_html(team, tree)
+    children = tree['children_of'].get(team.id, [])
+    if not children:
+        return f'<div class="oc-tree-node">{card_html}</div>'
+    children_html = ''.join(_tree_node_html(c, tree) for c in children)
+    return (
+        f'<div class="oc-tree-node">{card_html}'
+        f'<div class="oc-children">{children_html}</div>'
+        f'</div>'
+    )
+
+
+def _tree_html(organization, tree=None):
+    """
+    Render the entire org chart as horizontal trees. Multiple roots render
+    side-by-side as siblings (no connector rail above them). The outer
+    wrapper allows horizontal scroll for very wide orgs.
+    """
+    if tree is None:
+        tree = _build_org_tree(organization)
+    if not tree['roots']:
+        return ''
+    nodes = ''.join(_tree_node_html(t, tree) for t in tree['roots'])
+    return f'<div class="oc-tree-roots">{nodes}</div>'
+
+
+def _unplaced_html(organization):
+    """Render the sidebar list of reviewees not yet on any team."""
+    unplaced = (
+        Reviewee.objects.for_organization(organization)
+        .filter(is_active=True, team_memberships__isnull=True)
+        .order_by('name')
+    )
+    return render_to_string('admin_dashboard/org_chart/_unplaced_pool.html', {
+        'unplaced': unplaced,
+    })
+
+
+def _chart_change_response(organization):
+    """
+    Response after any mutation: the full tree HTML + the unplaced pool.
+
+    We re-render the whole tree on every mutation rather than doing surgical
+    per-team replacement. Reason: hierarchy can shift whenever a membership
+    changes (e.g., making Alice a member of Leadership may now re-parent
+    the 'Alice's Team' card under Leadership). Full replacement avoids a
+    class of stale-ancestry bugs and is trivially fast at SMB scale.
+    """
+    return JsonResponse({
+        'tree_html': _tree_html(organization),
+        'unplaced_html': _unplaced_html(organization),
+    })
+
+
+def _manage_required(request):
+    """Return a JSON 403 response if the user lacks manage permission."""
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        return JsonResponse(
+            {'error': 'You do not have permission to edit the org chart.'},
+            status=403,
+        )
+    return None
+
+
+@login_required
+def org_chart(request):
+    """Render the org chart editor page."""
+    org = request.organization
+    if not org:
+        messages.error(request, 'No organization found.')
+        return redirect('admin_dashboard')
+
+    tree = _build_org_tree(org)
+    context = {
+        'tree_html': _tree_html(org, tree=tree),
+        'unplaced_html': _unplaced_html(org),
+        'has_teams': bool(tree['roots']),
+    }
+    return render(request, 'admin_dashboard/org_chart/index.html', context)
+
+
+@login_required
+@require_POST
+def org_chart_team_create(request):
+    """Create a new team. Teams auto-grow — no shape config needed."""
+    err = _manage_required(request)
+    if err:
+        return err
+
+    org = request.organization
+    name = (request.POST.get('name') or '').strip()
+    if not name:
+        return JsonResponse({'error': 'Team name is required.'}, status=400)
+
+    if Team.objects.filter(organization=org, name=name).exists():
+        return JsonResponse(
+            {'error': f'A team named "{name}" already exists.'},
+            status=400,
+        )
+
+    # New teams sort to the bottom by default.
+    max_order = (
+        Team.objects.filter(organization=org).aggregate(m=Max('display_order'))['m']
+        or 0
+    )
+    Team.objects.create(
+        organization=org,
+        name=name,
+        shape={},  # unused now; kept for backward compat with existing rows
+        display_order=max_order + 1,
+    )
+    return _chart_change_response(org)
+
+
+@login_required
+@require_POST
+def org_chart_team_update(request, team_uuid):
+    """Rename a team. (Shape has no config anymore.)"""
+    err = _manage_required(request)
+    if err:
+        return err
+
+    org = request.organization
+    team = get_object_or_404(
+        Team.objects.for_organization(org),
+        uuid=team_uuid,
+    )
+
+    if 'name' in request.POST:
+        name = (request.POST.get('name') or '').strip()
+        if not name:
+            return JsonResponse({'error': 'Team name is required.'}, status=400)
+        if (
+            Team.objects.filter(organization=org, name=name)
+            .exclude(pk=team.pk).exists()
+        ):
+            return JsonResponse(
+                {'error': f'A team named "{name}" already exists.'},
+                status=400,
+            )
+        team.name = name
+        team.save()
+
+    return _chart_change_response(org)
+
+
+@login_required
+@require_POST
+def org_chart_team_delete(request, team_uuid):
+    """Delete a team and all its memberships."""
+    err = _manage_required(request)
+    if err:
+        return err
+
+    org = request.organization
+    team = get_object_or_404(
+        Team.objects.for_organization(org),
+        uuid=team_uuid,
+    )
+    team.delete()
+    return _chart_change_response(org)
+
+
+def _collect_descendants(team_id, children_of):
+    """Return the set of team ids reachable as descendants of `team_id`."""
+    out = set()
+    stack = [t.id for t in children_of.get(team_id, [])]
+    while stack:
+        tid = stack.pop()
+        if tid in out:
+            continue
+        out.add(tid)
+        stack.extend(t.id for t in children_of.get(tid, []))
+    return out
+
+
+@login_required
+@require_POST
+def org_chart_team_set_parent(request, team_uuid):
+    """
+    Make this team report to another team.
+
+    Mechanically: add the child team's first manager as a member of the
+    parent team. The tree inference then picks `parent` as the child's
+    parent (since the child's first-manager is now a MEMBER of parent).
+
+    Required POST: parent_team_uuid (UUID of the target parent team)
+
+    Refuses when:
+      - child has no managers yet (user should add one first)
+      - parent == child (would be self-referencing)
+      - parent is a descendant of child in the current tree (would cycle)
+      - child's first manager is already a MANAGER of parent (would make
+        them both a manager and a member of the same team — the data
+        model forbids duplicate memberships per team)
+    """
+    err = _manage_required(request)
+    if err:
+        return err
+
+    org = request.organization
+    child = get_object_or_404(
+        Team.objects.for_organization(org),
+        uuid=team_uuid,
+    )
+    parent_uuid = request.POST.get('parent_team_uuid')
+    if not parent_uuid:
+        return JsonResponse(
+            {'error': 'parent_team_uuid is required.'},
+            status=400,
+        )
+    parent = get_object_or_404(
+        Team.objects.for_organization(org),
+        uuid=parent_uuid,
+    )
+
+    if parent.pk == child.pk:
+        return JsonResponse(
+            {'error': "A team can't report to itself."},
+            status=400,
+        )
+
+    first_mgr = (
+        child.memberships.filter(role=TeamMembership.MANAGER)
+        .order_by('col').first()
+    )
+    if not first_mgr:
+        return JsonResponse({
+            'error': (
+                f'Add a manager to "{child.name}" first — we use that '
+                f'person as the bridge to the parent team.'
+            ),
+        }, status=400)
+
+    tree = _build_org_tree(org)
+    descendants = _collect_descendants(child.id, tree['children_of'])
+    if parent.id in descendants:
+        return JsonResponse({
+            'error': (
+                f'"{parent.name}" currently reports to "{child.name}" '
+                f'(directly or indirectly). That would create a loop.'
+            ),
+        }, status=400)
+
+    # If the first manager is already on the parent team, either it's
+    # already a member (no-op — tree will show it) or a manager (conflict).
+    existing = parent.memberships.filter(reviewee=first_mgr.reviewee).first()
+    if existing and existing.role == TeamMembership.MANAGER:
+        return JsonResponse({
+            'error': (
+                f'{first_mgr.reviewee.name} manages "{parent.name}" — '
+                f'they can\'t also report to it. Pick a different parent, '
+                f'or change "{child.name}"\'s manager.'
+            ),
+        }, status=400)
+
+    if existing is None:
+        next_col = (
+            parent.memberships.filter(row=1).aggregate(m=Max('col'))['m']
+        )
+        col = 0 if next_col is None else next_col + 1
+        TeamMembership.objects.create(
+            team=parent,
+            reviewee=first_mgr.reviewee,
+            row=1,
+            col=col,
+        )
+
+    return _chart_change_response(org)
+
+
+@login_required
+@require_POST
+def org_chart_membership_create(request):
+    """
+    Add or move a membership into a team.
+
+    Required POST params:
+        team_uuid, reviewee_uuid, role   (role = "manager" | "member")
+    Optional:
+        mode = "copy" (default) | "move"
+        source_team_uuid (required if mode=move)
+
+    Row/col are computed by the server: row = 0 for manager, 1 for member;
+    col = next unused position in that row. Clients don't need to track
+    slot coordinates.
+    """
+    err = _manage_required(request)
+    if err:
+        return err
+
+    org = request.organization
+
+    team = get_object_or_404(
+        Team.objects.for_organization(org),
+        uuid=request.POST.get('team_uuid'),
+    )
+    reviewee = get_object_or_404(
+        Reviewee.objects.for_organization(org),
+        uuid=request.POST.get('reviewee_uuid'),
+    )
+
+    role = request.POST.get('role', TeamMembership.MEMBER)
+    if role not in (TeamMembership.MANAGER, TeamMembership.MEMBER):
+        return JsonResponse(
+            {'error': 'role must be "manager" or "member".'},
+            status=400,
+        )
+    row = 0 if role == TeamMembership.MANAGER else 1
+
+    mode = request.POST.get('mode', 'copy')
+
+    with transaction.atomic():
+        if team.memberships.filter(reviewee=reviewee).exists():
+            return JsonResponse(
+                {'error': f'{reviewee.name} is already on this team.'},
+                status=400,
+            )
+
+        if mode == 'move':
+            src_team_uuid = request.POST.get('source_team_uuid')
+            src_team = get_object_or_404(
+                Team.objects.for_organization(org),
+                uuid=src_team_uuid,
+            )
+            src_team.memberships.filter(reviewee=reviewee).delete()
+
+        # Append at the next unused col in this row.
+        next_col = (
+            team.memberships.filter(row=row)
+            .aggregate(m=Max('col'))['m']
+        )
+        col = 0 if next_col is None else next_col + 1
+
+        TeamMembership.objects.create(
+            team=team,
+            reviewee=reviewee,
+            row=row,
+            col=col,
+        )
+
+    return _chart_change_response(org)
+
+
+@login_required
+@require_POST
+def org_chart_membership_delete(request, membership_id):
+    """Remove a reviewee from a team."""
+    err = _manage_required(request)
+    if err:
+        return err
+
+    org = request.organization
+    membership = get_object_or_404(
+        TeamMembership.objects.select_related('team'),
+        pk=membership_id,
+        team__organization=org,
+    )
+    membership.delete()
+    return _chart_change_response(org)
+
+
+# ============================================================================
+# Cycle-create chart integration
+# ============================================================================
+
+
+@login_required
+def derive_reviewers_for_cycle(request):
+    """
+    AJAX endpoint that returns the four reviewer buckets derived from the org
+    chart for a given reviewee UUID.
+
+    Response:
+        {
+            'self':           [{'uuid', 'name', 'email'}, ...],
+            'manager':        [...],
+            'peer':           [...],
+            'direct_report':  [...],
+        }
+    """
+    org = request.organization
+    if not org:
+        return JsonResponse({'error': 'No organization context.'}, status=400)
+
+    reviewee_uuid = request.GET.get('reviewee')
+    if not reviewee_uuid:
+        return JsonResponse({'error': 'reviewee query param is required.'}, status=400)
+
+    try:
+        reviewee = Reviewee.objects.for_organization(org).get(uuid=reviewee_uuid)
+    except Reviewee.DoesNotExist:
+        return JsonResponse({'error': 'Reviewee not found.'}, status=404)
+
+    buckets = derive_reviewers(reviewee)
+
+    return JsonResponse({
+        cat: [
+            {'uuid': str(r.uuid), 'name': r.name, 'email': r.email}
+            for r in people
+        ]
+        for cat, people in buckets.items()
+    })

@@ -58,6 +58,119 @@ def self_assessment_token(cycle):
     return token
 
 
+def derive_reviewers(reviewee):
+    """
+    Compute the four reviewer buckets (self/managers/peers/direct_reports) for
+    a given Reviewee based on the current org-chart state.
+
+    Rules (see plan: section 2):
+
+        self            = {P}
+        managers        = ⋃ over T where P is MEMBER  → managers(T)
+        peers           = (⋃ over T where P is MEMBER  → members(T) \\ {P})
+                        ∪ (⋃ over T where P is MANAGER → managers(T) \\ {P})
+        direct_reports  = ⋃ over T where P is MANAGER → members(T)
+
+    Dedup priority when the same person lands in multiple buckets:
+        self > manager > direct_report > peer.
+
+    Returns:
+        dict: {
+            'self': [Reviewee],
+            'manager': [Reviewee],
+            'peer': [Reviewee],
+            'direct_report': [Reviewee],
+        }
+        Order within each bucket is by reviewee name for stable display.
+    """
+    # Local import — avoids circular imports at module load time and keeps the
+    # dependency arrow from reviews → accounts.
+    from accounts.models import TeamMembership
+
+    # Pull every membership of P in a single query, then fan out into two
+    # queries (one per role) that fetch sibling memberships across those
+    # teams. Three queries total regardless of team count.
+    my_memberships = list(
+        TeamMembership.objects
+        .filter(reviewee=reviewee)
+        .values_list('team_id', 'role')
+    )
+
+    my_member_teams = [tid for tid, role in my_memberships if role == TeamMembership.MEMBER]
+    my_manager_teams = [tid for tid, role in my_memberships if role == TeamMembership.MANAGER]
+
+    managers, peers, direct_reports = [], [], []
+
+    if my_member_teams:
+        rows = (
+            TeamMembership.objects
+            .filter(team_id__in=my_member_teams)
+            .exclude(reviewee=reviewee)
+            .select_related('reviewee')
+        )
+        for m in rows:
+            if m.role == TeamMembership.MANAGER:
+                managers.append(m.reviewee)
+            else:
+                peers.append(m.reviewee)
+
+    if my_manager_teams:
+        rows = (
+            TeamMembership.objects
+            .filter(team_id__in=my_manager_teams)
+            .exclude(reviewee=reviewee)
+            .select_related('reviewee')
+        )
+        for m in rows:
+            if m.role == TeamMembership.MEMBER:
+                direct_reports.append(m.reviewee)
+            else:
+                # Co-manager — counts as a peer.
+                peers.append(m.reviewee)
+
+    def _dedup_by_uuid(seq):
+        """Preserve first-seen order while dropping duplicate Reviewees."""
+        seen = set()
+        out = []
+        for r in seq:
+            if r.uuid in seen:
+                continue
+            seen.add(r.uuid)
+            out.append(r)
+        return out
+
+    managers = _dedup_by_uuid(managers)
+    direct_reports = _dedup_by_uuid(direct_reports)
+    peers = _dedup_by_uuid(peers)
+
+    # Priority dedup: self > manager > direct_report > peer.
+    self_uuid = reviewee.uuid
+    claimed = {self_uuid}
+
+    def _claim(seq):
+        kept = []
+        for r in seq:
+            if r.uuid in claimed:
+                continue
+            claimed.add(r.uuid)
+            kept.append(r)
+        return kept
+
+    managers = _claim(managers)
+    direct_reports = _claim(direct_reports)
+    peers = _claim(peers)
+
+    def _by_name(seq):
+        return sorted(seq, key=lambda r: (r.name or '').lower())
+
+    return {
+        'self': [reviewee],
+        'manager': _by_name(managers),
+        'peer': _by_name(peers),
+        'direct_report': _by_name(direct_reports),
+    }
+
+
 def assign_tokens_to_emails(cycle, email_assignments, language=''):
     """
     Assign reviewer tokens to email addresses with smart randomization.

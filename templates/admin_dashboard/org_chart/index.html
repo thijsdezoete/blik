@@ -1,0 +1,87 @@
+{% extends "admin_dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Org Chart{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+    <div>
+        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Org chart</h1>
+        <p style="color: var(--text-secondary); margin: 0;">
+            Build pyramids by adding managers and members. When a member is also the manager of another team, that team automatically nests below them — turning your org chart into a real hierarchy.
+        </p>
+    </div>
+    <button type="button" class="btn btn-primary" id="ocNewTeamBtn">+ New team</button>
+</div>
+
+<p style="color: var(--text-tertiary); font-size: 0.8125rem; margin-bottom: 1rem;">
+    Click a <span style="display: inline-block; padding: 0 0.5rem; border: 1px dashed var(--border); border-radius: 4px; background: var(--bg-light);">+</span> slot to add a person. Drag chips between teams to copy the membership — hold <kbd>Shift</kbd> to move instead. Click <strong>×</strong> on a chip to remove from a team.
+</p>
+
+<div class="oc-layout">
+    <div class="oc-teams" id="ocTeams">
+        {% if has_teams %}
+            {{ tree_html|safe }}
+        {% else %}
+            <div class="oc-empty-state">
+                <p style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No teams yet</p>
+                <p style="color: var(--text-secondary);">Click <strong>+ New team</strong> to create your first pyramid.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <aside class="oc-sidebar" id="ocUnplaced">
+        {{ unplaced_html|safe }}
+    </aside>
+</div>
+
+<div class="oc-modal-backdrop" id="ocTeamModalBackdrop" hidden>
+    <div class="oc-modal" id="ocTeamModal" role="dialog" aria-modal="true" aria-labelledby="ocTeamDialogTitle">
+        <form class="oc-dialog-form" id="ocTeamForm">
+            <h2 class="oc-dialog-title" id="ocTeamDialogTitle">New team</h2>
+
+            <div class="oc-dialog-row" id="ocTeamNameRow">
+                <label class="form-label" for="ocTeamName">Team name</label>
+                <input type="text" id="ocTeamName" class="form-control" placeholder="e.g. Leadership, Engineering, Sales">
+            </div>
+
+            <p class="oc-dialog-hint">Slots grow automatically as you add people.</p>
+
+            <div class="oc-dialog-error" id="ocTeamDialogError" hidden></div>
+
+            <div class="oc-dialog-actions">
+                <button type="button" class="btn btn-secondary" id="ocTeamDialogCancel">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="ocTeamDialogSubmit">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="oc-modal-backdrop" id="ocReportToBackdrop" hidden>
+    <div class="oc-modal" role="dialog" aria-modal="true" aria-labelledby="ocReportToTitle">
+        <div class="oc-dialog-form">
+            <h2 class="oc-dialog-title" id="ocReportToTitle">Report to…</h2>
+            <p class="oc-dialog-hint" id="ocReportToIntro"></p>
+            <div class="oc-team-option-list" id="ocReportToList"></div>
+            <div class="oc-dialog-error" id="ocReportToError" hidden></div>
+            <div class="oc-dialog-actions">
+                <button type="button" class="btn btn-secondary" id="ocReportToCancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% csrf_token %}
+<script>
+    window.OC_ENDPOINTS = {
+        teamCreate:       "{% url 'org_chart_team_create' %}",
+        teamUpdate:       "{% url 'org_chart_team_update' '00000000-0000-0000-0000-000000000000' %}",
+        teamDelete:       "{% url 'org_chart_team_delete' '00000000-0000-0000-0000-000000000000' %}",
+        teamSetParent:    "{% url 'org_chart_team_set_parent' '00000000-0000-0000-0000-000000000000' %}",
+        membershipCreate: "{% url 'org_chart_membership_create' %}",
+        membershipDelete: "{% url 'org_chart_membership_delete' 0 %}",
+    };
+</script>
+<script src="{% static 'js/reviewee_picker.js' %}"></script>
+<script src="{% static 'js/org_chart.js' %}"></script>
+{% endblock %}

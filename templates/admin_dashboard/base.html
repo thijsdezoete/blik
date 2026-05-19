@@ -54,6 +54,7 @@
                 {% with url_name=request.resolver_match.url_name|default:'' %}
                 <li><a href="{% url 'admin_dashboard' %}" {% if url_name == 'admin_dashboard' %}class="active"{% endif %}>{% trans 'Dashboard' %}</a></li>
                 <li><a href="{% url 'reviewee_list' %}" {% if 'reviewee' in url_name %}class="active"{% endif %}>{% trans 'Reviewees' %}</a></li>
+                <li><a href="{% url 'org_chart' %}" {% if 'org_chart' in url_name %}class="active"{% endif %}>{% trans 'Org chart' %}</a></li>
                 <li><a href="{% url 'review_cycle_list' %}" {% if 'cycle' in url_name %}class="active"{% endif %}>{% trans 'Cycles' %}</a></li>
                 <li>
                     <details class="nav-menu">

@@ -181,3 +181,113 @@ class Reviewee(TimeStampedModel):
 
     def __str__(self):
         return f"{self.name} ({self.email})"
+
+
+class Team(TimeStampedModel):
+    """
+    A team / pyramid in the org chart.
+
+    Each team renders as a two-tier pyramid: a single "manager row" at the top
+    (row 0) with `shape.manager_cols` slots, and one or more "member rows"
+    below, each described by an entry in `shape.member_rows`.
+
+    A person can be a member of multiple teams (and can simultaneously be a
+    manager of some teams and a member of others). This is what lets the org
+    chart capture "VP of Eng is a member of Leadership AND a manager of
+    Engineering" — one person, two memberships across two teams.
+    """
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        db_index=True,
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='teams',
+    )
+    name = models.CharField(max_length=255)
+    display_order = models.IntegerField(default=0)
+    # Grid shape: {"manager_cols": 3, "member_rows": [{"cols": 3}, {"cols": 5}]}
+    shape = models.JSONField(default=dict)
+
+    objects = OrganizationManager()
+
+    class Meta:
+        db_table = 'teams'
+        ordering = ['display_order', 'name']
+        unique_together = ['organization', 'name']
+
+    def __str__(self):
+        return self.name
+
+    def default_shape(self):
+        """Minimal valid shape used when the stored one is empty."""
+        return {'manager_cols': 1, 'member_rows': [{'cols': 3}]}
+
+    def effective_shape(self):
+        s = self.shape or {}
+        if not s.get('manager_cols') or not s.get('member_rows'):
+            return self.default_shape()
+        return s
+
+    def slot_fits(self, row, col):
+        """Return True if (row, col) is a valid slot in this team's shape."""
+        s = self.effective_shape()
+        try:
+            row = int(row)
+            col = int(col)
+        except (TypeError, ValueError):
+            return False
+        if row == 0:
+            return 0 <= col < int(s['manager_cols'])
+        member_rows = s.get('member_rows') or []
+        member_idx = row - 1
+        if 0 <= member_idx < len(member_rows):
+            return 0 <= col < int(member_rows[member_idx].get('cols', 0))
+        return False
+
+
+class TeamMembership(TimeStampedModel):
+    """
+    Occupancy of a single slot in a team's pyramid.
+
+    `role` is derived from `row` (row 0 = manager, row > 0 = member) but is
+    stored denormalized so queries like "all teams where Alice is a manager"
+    don't require expression indexes or per-row arithmetic.
+    """
+    MANAGER = 'manager'
+    MEMBER = 'member'
+    ROLE_CHOICES = [(MANAGER, 'Manager'), (MEMBER, 'Member')]
+
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name='memberships',
+    )
+    reviewee = models.ForeignKey(
+        Reviewee,
+        on_delete=models.CASCADE,
+        related_name='team_memberships',
+    )
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    row = models.IntegerField()
+    col = models.IntegerField()
+
+    class Meta:
+        db_table = 'team_memberships'
+        ordering = ['team_id', 'row', 'col']
+        unique_together = [
+            ('team', 'reviewee'),   # one slot per person per team
+            ('team', 'row', 'col'),  # one person per slot
+        ]
+
+    def __str__(self):
+        return f'{self.reviewee.name} @ {self.team.name} r{self.row}c{self.col} ({self.role})'
+
+    def save(self, *args, **kwargs):
+        # Role is mechanically derived from row; enforce it here so the two
+        # can't drift via direct DB updates.
+        self.role = self.MANAGER if self.row == 0 else self.MEMBER
+        super().save(*args, **kwargs)

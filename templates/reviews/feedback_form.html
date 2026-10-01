@@ -1,10 +1,10 @@
-{% load static feedback_tags %}
+{% load i18n static feedback_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback - {{ reviewee.name }}</title>
+    <title>{% blocktrans with reviewee_name=reviewee.name %}Feedback - {{ reviewee_name }}{% endblocktrans %}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <script>
         // Theme detection and initialization
@@ -32,9 +32,12 @@
     </script>
 </head>
 <body style="background: var(--bg-body);">
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 10;">
+        {% include "components/language_selector.html" %}
+    </div>
     <div class="feedback-container">
         <div class="feedback-header">
-            <h1>360 Feedback</h1>
+            <h1>{% translate "360 Feedback" %}</h1>
             <div class="reviewee-name">{{ reviewee.name }}</div>
             <div class="category-badge">{{ token.get_category_display }}</div>
         </div>
@@ -43,7 +46,7 @@
             <div class="progress-bar">
                 <div class="progress-fill"></div>
             </div>
-            <div class="progress-text">Step 1 of {{ sections|length }}</div>
+            <div class="progress-text">{% blocktrans with section_count=sections|length %}Step 1 of {{ section_count }}{% endblocktrans %}</div>
         </div>
 
         <div id="error-container" class="error-message" style="display: none;"></div>
@@ -52,18 +55,20 @@
             {% csrf_token %}
 
             {% for section in sections %}
+            {% with translated_section=translated_sections|get_item:section.id %}
             <div class="section" data-section="{{ forloop.counter0 }}">
                 <div class="section-header">
-                    <h2 class="section-title">{{ section.title }}</h2>
-                    {% if section.description %}
-                    <p class="section-description">{{ section.description }}</p>
+                    <h2 class="section-title">{{ translated_section.title }}</h2>
+                    {% if translated_section.description %}
+                    <p class="section-description">{{ translated_section.description }}</p>
                     {% endif %}
                 </div>
 
                 {% for question in section.questions.all %}
+                {% with translated_question=translated_questions|get_item:question.id %}
                 <div class="question">
                     <div class="question-text">
-                        {{ question.question_text|personalize:reviewee.name }}
+                        {{ translated_question.question_text|personalize:reviewee.name }}
                         {% if question.required %}<span class="required">*</span>{% endif %}
                     </div>
 
@@ -81,8 +86,8 @@
                             >
                             <label for="q{{ question.id }}_{{ value }}" class="rating-label">
                                 <span class="rating-value">{{ value }}</span>
-                                {% if question.config.labels|get_item:value %}
-                                <span class="rating-description">{{ question.config.labels|get_item:value }}</span>
+                                {% if translated_question.config.labels|get_item:value %}
+                                <span class="rating-description">{{ translated_question.config.labels|get_item:value }}</span>
                                 {% endif %}
                             </label>
                         </div>
@@ -91,7 +96,7 @@
 
                     {% elif question.question_type == 'likert' %}
                     <div class="likert-group">
-                        {% for item in question.config.scale %}
+                        {% for item in translated_question.config.scale %}
                         <div class="likert-option">
                             <input
                                 type="radio"
@@ -113,7 +118,7 @@
                         name="question_{{ question.id }}"
                         class="text-input"
                         {% if question.required %}required{% endif %}
-                        placeholder="Share your thoughts..."
+                        placeholder="{% translate 'Share your thoughts...' %}"
                     >{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% endif %}</textarea>
 
                     {% elif question.question_type == 'single_choice' %}
@@ -122,8 +127,8 @@
                         class="text-input"
                         {% if question.required %}required{% endif %}
                     >
-                        <option value="">Select an option</option>
-                        {% for choice in question.config.choices %}
+                        <option value="">{% translate "Select an option" %}</option>
+                        {% for choice in translated_question.config.choices %}
                         <option value="{{ choice }}" {% if existing_responses|get_item:question.id == choice %}selected{% endif %}>
                             {{ choice }}
                         </option>
@@ -132,7 +137,7 @@
 
                     {% elif question.question_type == 'multiple_choice' %}
                     <div class="multiple-choice-group">
-                        {% for choice in question.config.choices %}
+                        {% for choice in translated_question.config.choices %}
                         <div class="multiple-choice-option">
                             <input
                                 type="checkbox"
@@ -155,14 +160,14 @@
                     {% elif question.question_type == 'scale' %}
                     <div class="scale-group">
                         <div class="scale-labels">
-                            {% if question.config.min_label %}
-                            <span class="scale-label-min">{{ question.config.min_label }}</span>
+                            {% if translated_question.config.min_label %}
+                            <span class="scale-label-min">{{ translated_question.config.min_label }}</span>
                             {% endif %}
                             <span class="scale-value-display" id="scale_value_{{ question.id }}">
-                                {% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ question.config.min }}{% endif %}
+                                {% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ translated_question.config.min }}{% endif %}
                             </span>
-                            {% if question.config.max_label %}
-                            <span class="scale-label-max">{{ question.config.max_label }}</span>
+                            {% if translated_question.config.max_label %}
+                            <span class="scale-label-max">{{ translated_question.config.max_label }}</span>
                             {% endif %}
                         </div>
                         <input
@@ -170,33 +175,35 @@
                             name="question_{{ question.id }}"
                             id="scale_input_{{ question.id }}"
                             class="scale-slider"
-                            min="{{ question.config.min }}"
-                            max="{{ question.config.max }}"
-                            step="{{ question.config.step }}"
-                            value="{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ question.config.min }}{% endif %}"
+                            min="{{ translated_question.config.min }}"
+                            max="{{ translated_question.config.max }}"
+                            step="{{ translated_question.config.step }}"
+                            value="{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ translated_question.config.min }}{% endif %}"
                             {% if question.required %}required{% endif %}
                             oninput="document.getElementById('scale_value_{{ question.id }}').textContent = this.value"
                         >
                         <div class="scale-range-labels">
-                            <span>{{ question.config.min }}</span>
-                            <span>{{ question.config.max }}</span>
+                            <span>{{ translated_question.config.min }}</span>
+                            <span>{{ translated_question.config.max }}</span>
                         </div>
                     </div>
                     {% endif %}
                 </div>
+                {% endwith %}
                 {% endfor %}
             </div>
+            {% endwith %}
             {% endfor %}
 
             <div class="form-actions">
                 <button type="button" id="prev-btn" class="btn btn-secondary" style="display: none;">
-                    Previous
+                    {% translate "Previous" %}
                 </button>
                 <button type="button" id="next-btn" class="btn btn-primary">
-                    Next
+                    {% translate "Next" %}
                 </button>
                 <button type="submit" id="submit-btn" class="btn btn-primary" style="display: none;">
-                    Submit Feedback
+                    {% translate "Submit Feedback" %}
                 </button>
             </div>
         </form>

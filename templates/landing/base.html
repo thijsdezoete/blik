@@ -1,8 +1,8 @@
-{% load static landing_tags %}
+{% load i18n static landing_tags %}
 {# Base template for all landing pages - SEO optimized with single H1 per page #}
 {# New landing pages should extend this template using {% extends 'landing/base.html' %} #}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,6 +90,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
                     </button>
+                    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 10;">
+                        {% include "components/language_selector.html" %}
+                    </div>
                 </nav>
             </div>
         </div>

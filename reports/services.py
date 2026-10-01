@@ -543,6 +543,7 @@ def generate_report(cycle):
 
     for section_id, section_data in data_by_section.items():
         report_section = {
+            'section_id': section_id,
             'title': section_data['title'],
             'questions': {}
         }
@@ -567,6 +568,7 @@ def generate_report(cycle):
             present_categories.extend([cat for cat in ordered_categories.keys() if cat not in category_order])
 
             report_question = {
+                'question_id': question_id,
                 'question_text': question_data['question_text'],
                 'question_type': question_data['question_type'],
                 'question_config': question_data['question_config'],  # Include config for labels, scales, etc.

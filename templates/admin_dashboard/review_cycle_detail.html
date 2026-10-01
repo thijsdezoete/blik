@@ -524,6 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
             {% if report_exists %}
             <a href="{% url 'reports:view_report' cycle.uuid %}" class="btn btn-secondary">View Report (Admin)</a>
             <a href="{% url 'generate_report' cycle.uuid %}" class="btn btn-secondary">Regenerate Report</a>
+            <a href="{% url 'reports:view_report' cycle.uuid %}?print=1" target="_blank" rel="noopener" class="btn btn-secondary">Print Report</a>
             {% else %}
             <a href="{% url 'generate_report' cycle.uuid %}" class="btn btn-secondary">Generate Report</a>
             {% endif %}

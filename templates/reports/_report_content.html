@@ -1,10 +1,10 @@
-{% load feedback_tags %}
+{% load i18n feedback_tags %}
 {# Shared report content - used by both admin and reviewee views #}
 
 {% if report.report_data.insights.overall_sentiment %}
 <div id="overall-performance" class="insight-card skill-profile">
     <div class="insight-title">
-        Overall Performance
+        {% translate "Overall Performance" %}
         {% if report.report_data.comparison.show_trends and report.report_data.comparison.overall_trend %}
         <span class="trend-indicator trend-{{ report.report_data.comparison.overall_trend.direction }}">
             {{ report.report_data.comparison.overall_trend.symbol }}
@@ -20,27 +20,27 @@
         <div class="progress-bar-fill score-{% if report.report_data.insights.overall_sentiment.score >= 4.5 %}excellent{% elif report.report_data.insights.overall_sentiment.score >= 3.5 %}strong{% elif report.report_data.insights.overall_sentiment.score >= 2.6 %}good{% elif report.report_data.insights.overall_sentiment.score >= 2.0 %}developing{% else %}low{% endif %}" style="width: {{ report.report_data.insights.overall_sentiment.score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
     </div>
     <div class="insight-message">
-        <strong>{{ report.report_data.insights.overall_sentiment.rating }}</strong> - Based on feedback from peers, managers, and direct reports
+        <strong>{{ report.report_data.insights.overall_sentiment.rating }}</strong> - {% translate "Based on feedback from peers, managers, and direct reports" %}
         {% if report.report_data.comparison.has_previous %}
         <div style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
-            Compared to {{ report.report_data.comparison.previous_cycle_date }}
+            {% blocktranslate with previous_cycle_date=report.report_data.comparison.previous_cycle_date %}Compared to {{ previous_cycle_date }}{% endblocktranslate %}
         </div>
         {% endif %}
         {% if report.report_data.insights.overall_sentiment.self_avg %}
         <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.875rem;">
-            <div style="color: var(--text-secondary); margin-bottom: 0.25rem;">{% if is_admin_view %}Self-assessment:{% else %}Your self-assessment:{% endif %}</div>
+            <div style="color: var(--text-secondary); margin-bottom: 0.25rem;">{% if is_admin_view %}{% translate "Self-assessment:" %}{% else %}{% translate "Your self-assessment:" %}{% endif %}</div>
             <div style="color: var(--text-primary); font-weight: 500;">
                 {{ report.report_data.insights.overall_sentiment.self_avg }}/5.0
                 {% with gap=report.report_data.insights.overall_sentiment.self_avg|subtract:report.report_data.insights.overall_sentiment.score %}
                 <span style="color: {% if gap < 0 %}var(--danger){% else %}var(--success){% endif %};">
-                    ({% if gap > 0 %}+{% endif %}{{ gap|floatformat:1 }} compared to others)
+                    ({% if gap > 0 %}+{% endif %}{{ gap|floatformat:1 }} {% translate "compared to others" %})
                 </span>
                 {% endwith %}
             </div>
         </div>
         {% endif %}
     </div>
-</div>
+    </div>
 {% endif %}
 
 {# Dreyfus Model Skill Profile - Comprehensive view with visualization and development plan #}
@@ -51,17 +51,17 @@
 {% for gap in report.report_data.insights.perception_gaps %}
 <div class="insight-card perception-gap">
     <div class="insight-title">
-        {% if gap.type == 'imposter_syndrome' %}Blind Spot: {% if is_admin_view %}Better Than Self-Perception{% else %}You're Better Than You Think{% endif %}{% else %}Calibration Opportunity{% endif %}
+        {% if gap.type == 'imposter_syndrome' %}{% translate "Blind Spot:" %} {% if is_admin_view %}{% translate "Better Than Self-Perception" %}{% else %}{% translate "You're Better Than You Think" %}{% endif %}{% else %}{% translate "Calibration Opportunity" %}{% endif %}
         <span class="severity-badge severity-{{ gap.severity }}">{{ gap.severity|upper }}</span>
     </div>
     <div class="insight-message">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
             <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
-                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% if is_admin_view %}Self-assessment{% else %}You see yourself{% endif %}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% if is_admin_view %}{% translate "Self-assessment" %}{% else %}{% translate "You see yourself" %}{% endif %}</div>
                 <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">{{ gap.self_score }}</div>
             </div>
             <div style="background: var(--bg-light); padding: 1rem; border-radius: 6px;">
-                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% if is_admin_view %}Others' assessment{% else %}Others see you{% endif %}</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% if is_admin_view %}{% translate "Others' assessment" %}{% else %}{% translate "Others see you" %}{% endif %}</div>
                 <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ gap.others_score }}</div>
             </div>
         </div>
@@ -69,11 +69,11 @@
         {% if not is_admin_view %}
             {% if gap.type == 'imposter_syndrome' %}
             <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
-                <strong>Action:</strong> Consider acknowledging your strengths more openly. Your team already recognizes your capabilities.
+                <strong>{% translate "Action:" %}</strong> {% translate "Consider acknowledging your strengths more openly. Your team already recognizes your capabilities." %}
             </p>
             {% else %}
             <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
-                <strong>Action:</strong> Seek specific feedback on areas where you rated yourself highly to understand others' perspectives.
+                <strong>{% translate "Action:" %}</strong> {% translate "Seek specific feedback on areas where you rated yourself highly to understand others' perspectives." %}
             </p>
             {% endif %}
         {% endif %}
@@ -85,17 +85,17 @@
 
 {% if report.report_data.insights.strengths %}
 <div id="key-strengths" class="insight-card strengths">
-    <div class="insight-title">Key Strengths</div>
+    <div class="insight-title">{% translate "Key Strengths" %}</div>
     <ul class="strength-list">
         {% for strength in report.report_data.insights.strengths %}
         <li class="strength-item">
             <div style="flex: 1;">
                 <div class="area-name">{{ strength.area }}</div>
                 <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                    Others' avg: <strong>{{ strength.others_avg }}/5.0</strong>
+                    {% translate "Others' avg:" %} <strong>{{ strength.others_avg }}/5.0</strong>
                     {% if strength.self_score %}
-                        | Self: <strong>{{ strength.self_score }}/5.0</strong>
-                        | Gap: <strong style="color: {% if strength.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if strength.gap > 0 %}+{% endif %}{{ strength.gap }}</strong>
+                        | {% translate "Self:" %} <strong>{{ strength.self_score }}/5.0</strong>
+                        | {% translate "Gap:" %} <strong style="color: {% if strength.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if strength.gap > 0 %}+{% endif %}{{ strength.gap }}</strong>
                     {% endif %}
                 </div>
             </div>
@@ -107,20 +107,20 @@
 
 {% if report.report_data.insights.development_areas %}
 <div id="development-opportunities" class="insight-card development">
-    <div class="insight-title">Development Opportunities</div>
+    <div class="insight-title">{% translate "Development Opportunities" %}</div>
     <ul class="development-list">
         {% for area in report.report_data.insights.development_areas %}
         <li class="development-item">
             <div style="flex: 1;">
                 <div>
                     <span class="area-name">{{ area.area }}</span>
-                    <span class="priority-badge priority-{{ area.priority }}">{{ area.priority }} priority</span>
+                    <span class="priority-badge priority-{{ area.priority }}">{% blocktranslate with priority=area.priority %}{{ priority }} priority{% endblocktranslate %}</span>
                 </div>
                 <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                    Others' avg: <strong>{{ area.others_avg }}/5.0</strong>
+                    {% translate "Others' avg:" %} <strong>{{ area.others_avg }}/5.0</strong>
                     {% if area.self_score %}
-                        | Self: <strong>{{ area.self_score }}/5.0</strong>
-                        | Gap: <strong style="color: {% if area.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if area.gap > 0 %}+{% endif %}{{ area.gap }}</strong>
+                        | {% translate "Self:" %} <strong>{{ area.self_score }}/5.0</strong>
+                        | {% translate "Gap:" %} <strong style="color: {% if area.gap < 0 %}var(--danger){% else %}var(--success){% endif %};">{% if area.gap > 0 %}+{% endif %}{{ area.gap }}</strong>
                     {% endif %}
                 </div>
             </div>
@@ -131,33 +131,35 @@
 {% endif %}
 
 {% if report.report_data.charts.section_scores %}
+<div id="performance-overview">
 <div class="report-section">
-    <h2>Performance Overview</h2>
+    <h2>{% translate "Performance Overview" %}</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-        Visual comparison of {% if is_admin_view %}performance{% else %}your performance{% endif %} across all competency areas
+        {% if is_admin_view %}{% translate "Visual comparison of performance across all competency areas" %}{% else %}{% translate "Visual comparison of your performance across all competency areas" %}{% endif %}
     </p>
 
     <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
-        <canvas id="sectionRadarChart" style="max-height: 500px;"></canvas>
+        <canvas id="sectionRadarChart" width="900" height="600" style="max-height: 500px;"></canvas>
     </div>
 </div>
 
 <div class="report-section">
-    <h2>Self vs Others Comparison</h2>
+    <h2>{% translate "Self vs Others Comparison" %}</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-        How {% if is_admin_view %}self-assessment compares{% else %}your self-assessment compares{% endif %} to others' feedback (sorted by gap size)
+        {% if is_admin_view %}{% translate "How self-assessment compares to others' feedback (sorted by gap size)" %}{% else %}{% translate "How your self-assessment compares to others' feedback (sorted by gap size)" %}{% endif %}
     </p>
 
     <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
-        <canvas id="gapChart" style="max-height: 400px;"></canvas>
+        <canvas id="gapChart" width="900" height="600" style="max-height: 400px;"></canvas>
     </div>
 </div>
+ </div>
 {% endif %}
 
 <div id="section-level-performance" class="report-section">
-    <h2>Section-Level Performance</h2>
+    <h2>{% translate "Section-Level Performance" %}</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-        Performance breakdown by competency area
+        {% translate "Performance breakdown by competency area" %}
     </p>
     <div style="display: grid; gap: 1.5rem;">
         {% for section_name, categories in report.report_data.section_summary.items %}
@@ -180,14 +182,14 @@
                 {% if avg_score > 0 %}
                 <div style="margin-bottom: 0.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
-                        <span class="section-performance-score-label">Overall score (excluding self-assessment)</span>
+                        <span class="section-performance-score-label">{% translate "Overall score (excluding self-assessment)" %}</span>
                         <span class="section-performance-score-value">{{ avg_score|floatformat:1 }}<span class="section-performance-score-value-small">/5.0</span></span>
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill score-{% if avg_score >= 4.5 %}excellent{% elif avg_score >= 3.5 %}strong{% elif avg_score >= 2.6 %}good{% elif avg_score >= 2.0 %}developing{% else %}low{% endif %}" style="width: {{ avg_score|floatformat:0|add:"0"|mul:"20" }}%;"></div>
                     </div>
                     <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                        <span class="{% if avg_score >= 4.5 %}score-excellent{% elif avg_score >= 3.5 %}score-strong{% elif avg_score >= 2.6 %}score-good{% elif avg_score >= 2.0 %}score-developing{% else %}score-low{% endif %}" style="font-weight: 500;">{% if avg_score >= 4.5 %}Excellent (4.5+){% elif avg_score >= 3.5 %}Strong (3.5-4.4){% elif avg_score >= 2.6 %}Good (2.6-3.4){% elif avg_score >= 2.0 %}Developing (2.0-2.5){% else %}Needs Development (&lt;2.0){% endif %}</span>
+                        <span class="{% if avg_score >= 4.5 %}score-excellent{% elif avg_score >= 3.5 %}score-strong{% elif avg_score >= 2.6 %}score-good{% elif avg_score >= 2.0 %}score-developing{% else %}score-low{% endif %}" style="font-weight: 500;">{% if avg_score >= 4.5 %}{% translate "Excellent (4.5+)" %}{% elif avg_score >= 3.5 %}{% translate "Strong (3.5-4.4)" %}{% elif avg_score >= 2.6 %}{% translate "Good (2.6-3.4)" %}{% elif avg_score >= 2.0 %}{% translate "Developing (2.0-2.5)" %}{% else %}{% translate "Needs Development (<2.0)" %}{% endif %}</span>
                     </div>
                 </div>
                 {% endif %}
@@ -200,17 +202,17 @@
                     {# Admin view: show all benchmark data #}
                     <div style="margin: 0.75rem 0; padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="color: var(--text-secondary);">Comparison vs {{ benchmark.peer_count }} peers</span>
+                            <span style="color: var(--text-secondary);">{% blocktranslate with peer_count=benchmark.peer_count %}Comparison vs {{ peer_count }} peers{% endblocktranslate %}</span>
                             {% if benchmark.show_percentile %}
-                            <span class="percentile-badge">Top performer - {{ benchmark.percentile }}th percentile</span>
+                            <span class="percentile-badge">{% blocktranslate with percentile=benchmark.percentile %}Top performer - {{ percentile }}th percentile{% endblocktranslate %}</span>
                             {% endif %}
                         </div>
                         <div style="margin-top: 0.5rem; color: var(--text-secondary);">
-                            Org median: {{ benchmark.peer_median }}/5.0 | This score: {{ benchmark.current_score }}/5.0
+                            {% blocktranslate with peer_median=benchmark.peer_median current_score=benchmark.current_score %}Org median: {{ peer_median }}/5.0 | This score: {{ current_score }}/5.0{% endblocktranslate %}
                             {% if benchmark.current_score > benchmark.peer_median %}
-                            <span style="color: var(--success); margin-left: 0.5rem;">▲ Above median</span>
+                            <span style="color: var(--success); margin-left: 0.5rem;">▲ {% translate "Above median" %}</span>
                             {% elif benchmark.current_score < benchmark.peer_median %}
-                            <span style="color: var(--text-secondary); margin-left: 0.5rem;">Below median</span>
+                            <span style="color: var(--text-secondary); margin-left: 0.5rem;">{% translate "Below median" %}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -218,11 +220,11 @@
                     {# Reviewee view: only show if performing well #}
                     <div style="margin: 0.75rem 0; padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="color: var(--text-secondary);">Strong performance</span>
-                            <span class="percentile-badge">Top {{ 100|add:"-"|add:benchmark.percentile|add:"0" }}% in organization</span>
+                            <span style="color: var(--text-secondary);">{% translate "Strong performance" %}</span>
+                            <span class="percentile-badge">{% blocktranslate with percentile=100|add:"-"|add:benchmark.percentile|add:"0" %}Top {{ percentile }}% in organization{% endblocktranslate %}</span>
                         </div>
                         <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.8125rem;">
-                            You scored {{ benchmark.current_score }}/5.0, higher than {{ benchmark.percentile }}% of peers
+                            {% blocktranslate with current_score=benchmark.current_score percentile=benchmark.percentile %}You scored {{ current_score }}/5.0, higher than {{ percentile }}% of peers{% endblocktranslate %}
                         </div>
                     </div>
                     {% endif %}
@@ -232,7 +234,7 @@
             <div class="section-performance-categories">
                 {% for category, score in categories|sort_categories %}
                 <div class="category-score-item">
-                    <span class="badge badge-{{ category }}" style="text-transform: capitalize;">{% if category == "direct_report" %}direct report{% else %}{{ category }}{% endif %}</span>
+                    <span class="badge badge-{{ category }}" style="text-transform: capitalize;">{% if category == "direct_report" %}{% translate "direct report" %}{% else %}{{ category }}{% endif %}</span>
                     <span class="category-score-value">{{ score|floatformat:1 }}</span>
                 </div>
                 {% endfor %}
@@ -245,27 +247,29 @@
 {% if not is_admin_view %}
 <div class="notice">
     <p>
-        <strong>Privacy Notice:</strong> All responses are anonymous and aggregated. Individual reviewers cannot be identified. Results are only shown when there are at least {{ cycle.organization.min_responses_for_anonymity }} response{{ cycle.organization.min_responses_for_anonymity|pluralize }} per category to protect anonymity.
+        <strong>{% translate "Privacy Notice:" %}</strong> {% blocktranslate count response_count=cycle.organization.min_responses_for_anonymity %}All responses are anonymous and aggregated. Individual reviewers cannot be identified. Results are only shown when there are at least {{ response_count }} response per category to protect anonymity.{% plural %}All responses are anonymous and aggregated. Individual reviewers cannot be identified. Results are only shown when there are at least {{ response_count }} responses per category to protect anonymity.{% endblocktranslate %}
     </p>
 </div>
 {% endif %}
 
-<h2 id="detailed-feedback" style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-primary);">Detailed Feedback</h2>
+<h2 id="detailed-feedback" style="font-size: 1.75rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-primary);">{% translate "Detailed Feedback" %}</h2>
 
 {% for section_id, section_data in display_data.by_section.items %}
+{% with translated_section=translated_sections|get_item:section_id %}
 <div class="section-report">
-    <h2 class="section-title">{{ section_data.title }}</h2>
+    <h2 class="section-title">{% if translated_section %}{{ translated_section.title }}{% else %}{{ section_data.title }}{% endif %}</h2>
 
     {% for question_id, question_data in section_data.questions.items %}
-        {% include "reports/_question_response.html" with question_data=question_data %}
+        {% include "reports/_question_response.html" with question_data=question_data translated_question=translated_questions|get_item:question_id %}
     {% endfor %}
 </div>
+{% endwith %}
 {% endfor %}
 
 {% if not is_admin_view %}
 <div class="report-section" style="text-align: center;">
     <p style="color: var(--text-secondary); margin: 0;">
-        If you have questions about this report, please contact your manager or HR department.
+        {% translate "If you have questions about this report, please contact your manager or HR department." %}
     </p>
 </div>
 {% endif %}

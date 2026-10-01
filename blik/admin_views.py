@@ -1969,6 +1969,10 @@ def send_report_email(request, cycle_uuid):
 @login_required
 def settings_view(request):
     """Organization and SMTP settings page"""
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'You do not have permission to access organization settings.')
+        return redirect('admin_dashboard')
+
     # Use the organization from the middleware (set based on user's profile)
     organization = request.organization
 

@@ -4,9 +4,52 @@ from django.http import Http404
 from django.views.decorators.http import require_http_methods
 from accounts.permissions import can_view_all_reports
 from reviews.models import ReviewCycle
+from questionnaires.models import Question, QuestionSection
 from .models import Report
 from .services import generate_report, get_report_summary, apply_display_anonymization
 import uuid
+
+
+def get_report_translations(report, language):
+    """Get translations for the sections and questions frozen in a report."""
+    report_sections = report.report_data.get('by_section', {})
+    section_ids = [
+        section_data.get('section_id', section_id)
+        for section_id, section_data in report_sections.items()
+    ]
+    sections_by_id = {
+        str(section.id): section
+        for section in QuestionSection.objects.filter(id__in=section_ids)
+    }
+    question_ids = [
+        question_data.get('question_id', question_id)
+        for section_data in report_sections.values()
+        for question_id, question_data in section_data.get('questions', {}).items()
+    ]
+    questions_by_id = {
+        str(question.id): question
+        for question in Question.objects.filter(id__in=question_ids)
+    }
+
+    translated_sections = {}
+    translated_questions = {}
+    for section_key, section_data in report_sections.items():
+        section_id = str(section_data.get('section_id', section_key))
+        section = sections_by_id.get(section_id)
+        if section:
+            translated_sections[section_id] = section.get_translation_only(
+                language, section_data
+            )
+
+        for question_key, question_data in section_data.get('questions', {}).items():
+            question_id = str(question_data.get('question_id', question_key))
+            question = questions_by_id.get(question_id)
+            if question:
+                translated_questions[question_id] = question.get_translation_only(
+                    language, question_data
+                )
+
+    return translated_sections, translated_questions
 
 
 def get_cycle_or_404(request, cycle_uuid):
@@ -60,11 +103,16 @@ def view_report(request, cycle_uuid):
         report.report_data,
         min_threshold=min_threshold
     )
+    translated_sections, translated_questions = get_report_translations(
+        report, request.LANGUAGE_CODE
+    )
 
     context = {
         'cycle': cycle,
         'report': report,
         'display_data': display_data,  # For detailed report sections
+        'translated_sections': translated_sections,
+        'translated_questions': translated_questions,
         'summary': summary,
         'questionnaire': cycle.questionnaire,
         'is_admin_view': True,
@@ -125,11 +173,16 @@ def reviewee_report(request, access_token):
         report.report_data,
         min_threshold=min_threshold
     )
+    translated_sections, translated_questions = get_report_translations(
+        report, request.LANGUAGE_CODE
+    )
 
     context = {
         'cycle': cycle,
         'report': report,
         'display_data': display_data,  # For detailed report sections
+        'translated_sections': translated_sections,
+        'translated_questions': translated_questions,
         'summary': summary,
         'questionnaire': cycle.questionnaire,
         'is_public_view': True,

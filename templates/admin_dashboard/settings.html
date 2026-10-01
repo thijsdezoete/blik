@@ -514,9 +514,11 @@
                 <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
                     Download all data in JSON format (GDPR compliant).
                 </p>
+                {% if perms.accounts.can_manage_organization %}
                 <a href="{% url 'account:export_data' %}" class="btn btn-secondary btn-sm">
                     Download Export
                 </a>
+                {% endif %}
             </div>
 
             <!-- Import Data -->

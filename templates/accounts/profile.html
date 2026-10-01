@@ -1,7 +1,7 @@
 {% extends 'admin_dashboard/base.html' %}
-{% load static %}
+{% load i18n static %}
 
-{% block title %}My Profile{% endblock %}
+{% block title %}{% translate "My Profile" %}{% endblock %}
 
 {% block content %}
 <!-- Welcome modal with auto-show disabled (manual trigger only) -->
@@ -15,48 +15,48 @@
                     <circle cx="12" cy="12" r="2"></circle>
                 </svg>
             </div>
-            <h2 style="margin: 0 0 0.5rem 0; font-size: 1.75rem;">Welcome to Blik</h2>
-            <p style="color: var(--text-secondary); margin: 0;">Your 360-degree feedback platform</p>
+            <h2 style="margin: 0 0 0.5rem 0; font-size: 1.75rem;">{% translate "Welcome to Blik" %}</h2>
+            <p style="color: var(--text-secondary); margin: 0;">{% translate "Your 360-degree feedback platform" %}</p>
         </div>
 
         <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">How Blik helps you:</h3>
+            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">{% translate "How Blik helps you:" %}</h3>
             <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
-                <li>Gather comprehensive feedback from peers, managers, and direct reports</li>
-                <li>Maintain complete anonymity for honest, constructive input</li>
-                <li>Generate actionable insights to drive professional growth</li>
+                <li>{% translate "Gather comprehensive feedback from peers, managers, and direct reports" %}</li>
+                <li>{% translate "Maintain complete anonymity for honest, constructive input" %}</li>
+                <li>{% translate "Generate actionable insights to drive professional growth" %}</li>
             </ul>
         </div>
 
         <div style="margin-bottom: 2rem;">
-            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">Getting started is simple:</h3>
+            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">{% translate "Getting started is simple:" %}</h3>
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div style="display: flex; gap: 1rem; align-items: start;">
                     <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">1</div>
                     <div>
-                        <strong>Add reviewees</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">People who will receive 360° feedback</p>
+                        <strong>{% translate "Add reviewees" %}</strong>
+                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% translate "People who will receive 360° feedback" %}</p>
                     </div>
                 </div>
                 <div style="display: flex; gap: 1rem; align-items: start;">
                     <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">2</div>
                     <div>
-                        <strong>Create a review cycle</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Choose a questionnaire and invite reviewers</p>
+                        <strong>{% translate "Create a review cycle" %}</strong>
+                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% translate "Choose a questionnaire and invite reviewers" %}</p>
                     </div>
                 </div>
                 <div style="display: flex; gap: 1rem; align-items: start;">
                     <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">3</div>
                     <div>
-                        <strong>Share anonymous invite links</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Copy links and share directly, or optionally send via email</p>
+                        <strong>{% translate "Share anonymous invite links" %}</strong>
+                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% translate "Copy links and share directly, or optionally send via email" %}</p>
                     </div>
                 </div>
                 <div style="display: flex; gap: 1rem; align-items: start;">
                     <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">4</div>
                     <div>
-                        <strong>Review the report</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">View aggregated insights and share with reviewees</p>
+                        <strong>{% translate "Review the report" %}</strong>
+                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% translate "View aggregated insights and share with reviewees" %}</p>
                     </div>
                 </div>
             </div>
@@ -64,10 +64,10 @@
 
         <div style="display: flex; gap: 1rem; justify-content: flex-end;">
             <button onclick="dismissWelcome(true)" class="btn btn-secondary">
-                Close
+                {% translate "Close" %}
             </button>
             <a href="{% url 'reviewee_create' %}" class="btn btn-primary" style="text-decoration: none;">
-                Get Started
+                {% translate "Get Started" %}
             </a>
         </div>
     </div>
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <h2 class="mb-4">My Profile</h2>
+            <h2 class="mb-4">{% translate "My Profile" %}</h2>
         </div>
     </div>
 
@@ -127,14 +127,14 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h4 class="mb-0">Personal Information</h4>
+                    <h4 class="mb-0">{% translate "Personal Information" %}</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" id="profile-edit-form">
                         {% csrf_token %}
 
                         <div class="mb-3">
-                            <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">{% translate "First Name" %}</label>
                             {{ form.first_name }}
                             {% if form.first_name.errors %}
                                 <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
 
                         <div class="mb-3">
-                            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">{% translate "Last Name" %}</label>
                             {{ form.last_name }}
                             {% if form.last_name.errors %}
                                 <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
 
                         <div class="mb-3">
-                            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                            <label for="{{ form.email.id_for_label }}" class="form-label">{% translate "Email" %}</label>
                             {{ form.email }}
                             {% if form.email.errors %}
                                 <div class="text-danger small">{{ form.email.errors.0 }}</div>
@@ -158,19 +158,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
+                            <label class="form-label">{% translate "Username" %}</label>
                             <input type="text" class="form-control" value="{{ user.username }}" disabled>
-                            <small class="text-muted">Username cannot be changed</small>
+                            <small class="text-muted">{% translate "Username cannot be changed" %}</small>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                        <button type="submit" class="btn btn-primary w-100">{% translate "Update Profile" %}</button>
                     </form>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <h4 class="mb-0">Organization</h4>
+                    <h4 class="mb-0">{% translate "Organization" %}</h4>
                 </div>
                 <div class="card-body">
                     <div class="mb-2">
@@ -181,20 +181,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     <hr>
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Permissions</span>
+                        <span>{% translate "Permissions" %}</span>
                     </div>
                     <div class="small">
                         {% if profile.can_create_cycles_for_others %}
-                            <span class="badge bg-success">Can create cycles for others</span>
+                            <span class="badge bg-success">{% translate "Can create cycles for others" %}</span>
                         {% else %}
-                            <span class="badge bg-warning">Self cycles only</span>
+                            <span class="badge bg-warning">{% translate "Self cycles only" %}</span>
                         {% endif %}
                     </div>
 
                     <hr>
 
                     <div class="text-muted small mb-2">
-                        Member since {{ user.date_joined|date:"F Y" }}
+                        {% blocktrans with member_since=user.date_joined|date:"F Y" %}Member since {{ member_since }}{% endblocktrans %}
                     </div>
 
                     <button onclick="showWelcomeModal()" class="btn btn-sm btn-secondary w-100" style="margin-top: 1rem;">
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <circle cx="12" cy="12" r="6"></circle>
                             <circle cx="12" cy="12" r="2"></circle>
                         </svg>
-                        View Welcome Guide
+                        {% translate "View Welcome Guide" %}
                     </button>
                 </div>
             </div>
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">My Review Cycles</h4>
+                    <h4 class="mb-0">{% translate "My Review Cycles" %}</h4>
                     <span class="badge bg-primary">{{ cycles_with_reports|length }}</span>
                 </div>
                 <div class="card-body">
@@ -225,9 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="flex-grow-1">
                                         <h5 class="mb-1">{{ cycle_data.cycle.questionnaire.name }}</h5>
                                         <p class="mb-1 text-muted small">
-                                            Created {{ cycle_data.cycle.created_at|date:"F d, Y" }}
+                                            {% blocktrans with created_date=cycle_data.cycle.created_at|date:"F d, Y" %}Created {{ created_date }}{% endblocktrans %}
                                             {% if cycle_data.cycle.created_by %}
-                                                by {{ cycle_data.cycle.created_by.get_full_name|default:cycle_data.cycle.created_by.username }}
+                                                {% blocktrans with creator=cycle_data.cycle.created_by.get_full_name|default:cycle_data.cycle.created_by.username %}by {{ creator }}{% endblocktrans %}
                                             {% endif %}
                                         </p>
 
@@ -235,34 +235,34 @@ document.addEventListener('DOMContentLoaded', function() {
                                             <div class="mt-2">
                                                 {% if cycle_data.summary %}
                                                     <div class="small mb-2">
-                                                        <strong>Responses:</strong>
+                                                        <strong>{% translate "Responses:" %}</strong>
                                                         {% for category, count in cycle_data.summary.by_category.items %}
                                                             <span class="badge bg-secondary me-1">{{ category|title }}: {{ count }}</span>
                                                         {% endfor %}
-                                                        <span class="badge bg-info">Total: {{ cycle_data.summary.total_responses }}</span>
+                                                        <span class="badge bg-info">{% blocktrans with total=cycle_data.summary.total_responses %}Total: {{ total }}{% endblocktrans %}</span>
                                                     </div>
                                                 {% endif %}
 
                                                 {% if cycle_data.cycle.status == 'completed' %}
                                                     <a href="{% url 'reports:reviewee_report' cycle_data.report.access_token %}"
                                                        class="btn btn-sm btn-success" target="_blank">
-                                                        View Report
+                                                        {% translate "View Report" %}
                                                     </a>
                                                 {% else %}
-                                                    <span class="badge bg-warning">Report available when cycle is completed</span>
+                                                    <span class="badge bg-warning">{% translate "Report available when cycle is completed" %}</span>
                                                 {% endif %}
                                             </div>
                                         {% else %}
                                             <div class="mt-2">
-                                                <span class="badge bg-secondary">No report generated yet</span>
+                                                <span class="badge bg-secondary">{% translate "No report generated yet" %}</span>
                                             </div>
                                         {% endif %}
                                     </div>
                                     <div class="ms-3">
                                         {% if cycle_data.cycle.status == 'active' %}
-                                            <span class="badge bg-success">Active</span>
+                                            <span class="badge bg-success">{% translate "Active" %}</span>
                                         {% elif cycle_data.cycle.status == 'completed' %}
-                                            <span class="badge bg-info">Completed</span>
+                                            <span class="badge bg-info">{% translate "Completed" %}</span>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -271,8 +271,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     {% else %}
                         <div class="text-center text-muted py-5">
-                            <p class="mb-0">No review cycles found for your account.</p>
-                            <p class="small">Review cycles will appear here when they're created for your email address.</p>
+                            <p class="mb-0">{% translate "No review cycles found for your account." %}</p>
+                            <p class="small">{% translate "Review cycles will appear here when they're created for your email address." %}</p>
                         </div>
                     {% endif %}
                 </div>

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
+from django.utils.translation import gettext_lazy as _
 from .models import Organization
 
 User = get_user_model()
@@ -10,36 +11,38 @@ class SetupAdminForm(forms.Form):
     """Form for creating the first admin user during setup."""
 
     email = forms.EmailField(
+        label=_('Email'),
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'admin@example.com',
             'autofocus': True
         }),
-        help_text='Email address for the administrator'
+        help_text=_('Email address for the administrator')
     )
 
     password = forms.CharField(
+        label=_('Password'),
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': '••••••••'
         }),
         min_length=8,
-        help_text='Password must be at least 8 characters'
+        help_text=_('Password must be at least 8 characters')
     )
 
     password_confirm = forms.CharField(
-        label='Confirm Password',
+        label=_('Confirm Password'),
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': '••••••••'
         }),
-        help_text='Enter the same password again for verification'
+        help_text=_('Enter the same password again for verification')
     )
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('This email is already registered.')
+            raise forms.ValidationError(_('This email is already registered.'))
         return email
 
     def clean(self):
@@ -48,7 +51,7 @@ class SetupAdminForm(forms.Form):
         password_confirm = cleaned_data.get('password_confirm')
 
         if password and password_confirm and password != password_confirm:
-            raise forms.ValidationError('Passwords do not match.')
+            raise forms.ValidationError(_('Passwords do not match.'))
 
         return cleaned_data
 
@@ -71,8 +74,12 @@ class SetupOrganizationForm(forms.ModelForm):
             }),
         }
         help_texts = {
-            'name': 'Your organization or company name',
-            'email': 'Main contact email for your organization',
+            'name': _('Your organization or company name'),
+            'email': _('Main contact email for your organization'),
+        }
+        labels = {
+            'name': _('Name'),
+            'email': _('Email'),
         }
 
 
@@ -80,7 +87,7 @@ class SetupEmailForm(forms.Form):
     """Form for configuring SMTP email settings during setup."""
 
     smtp_host = forms.CharField(
-        label='SMTP Host',
+        label=_('SMTP Host'),
         max_length=255,
         required=False,
         widget=forms.TextInput(attrs={
@@ -88,68 +95,68 @@ class SetupEmailForm(forms.Form):
             'placeholder': 'smtp.gmail.com',
             'autofocus': True
         }),
-        help_text='Your SMTP server hostname'
+        help_text=_('Your SMTP server hostname')
     )
 
     smtp_port = forms.IntegerField(
-        label='SMTP Port',
+        label=_('SMTP Port'),
         initial=587,
         required=False,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'placeholder': '587'
         }),
-        help_text='Common ports: 587 (TLS), 465 (SSL), 25 (Plain)'
+        help_text=_('Common ports: 587 (TLS), 465 (SSL), 25 (Plain)')
     )
 
     smtp_username = forms.CharField(
-        label='SMTP Username',
+        label=_('SMTP Username'),
         max_length=255,
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'your-email@gmail.com'
         }),
-        help_text='Username for SMTP authentication (usually your email)'
+        help_text=_('Username for SMTP authentication (usually your email)')
     )
 
     smtp_password = forms.CharField(
-        label='SMTP Password',
+        label=_('SMTP Password'),
         required=False,
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': '••••••••'
         }),
-        help_text='Password or app-specific password for SMTP'
+        help_text=_('Password or app-specific password for SMTP')
     )
 
     smtp_use_tls = forms.BooleanField(
-        label='Use TLS',
+        label=_('Use TLS'),
         initial=True,
         required=False,
         widget=forms.CheckboxInput(attrs={
             'class': 'form-check-input'
         }),
-        help_text='Enable TLS encryption (recommended for port 587)'
+        help_text=_('Enable TLS encryption (recommended for port 587)')
     )
 
     from_email = forms.EmailField(
-        label='From Email Address',
+        label=_('From Email Address'),
         required=False,
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'noreply@example.com'
         }),
-        help_text='Email address that appears as sender'
+        help_text=_('Email address that appears as sender')
     )
 
     skip_email_setup = forms.BooleanField(
-        label='Skip email setup (configure later)',
+        label=_('Skip email setup (configure later)'),
         required=False,
         widget=forms.CheckboxInput(attrs={
             'class': 'form-check-input'
         }),
-        help_text='You can configure email settings later in the admin panel'
+        help_text=_('You can configure email settings later in the admin panel')
     )
 
     def clean(self):
@@ -169,11 +176,11 @@ class SetupEmailForm(forms.Form):
 
         # If not skipping, ensure required fields are present
         if not cleaned_data.get('smtp_host'):
-            self.add_error('smtp_host', 'SMTP Host is required when not skipping email setup.')
+            self.add_error('smtp_host', _('SMTP Host is required when not skipping email setup.'))
         if not cleaned_data.get('smtp_port'):
-            self.add_error('smtp_port', 'SMTP Port is required when not skipping email setup.')
+            self.add_error('smtp_port', _('SMTP Port is required when not skipping email setup.'))
         if not cleaned_data.get('from_email'):
-            self.add_error('from_email', 'From Email is required when not skipping email setup.')
+            self.add_error('from_email', _('From Email is required when not skipping email setup.'))
 
         return cleaned_data
 

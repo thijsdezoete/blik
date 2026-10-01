@@ -18,6 +18,7 @@ urlpatterns = [
     path('sitemap.xml', seo_views.sitemap, name='sitemap'),
     path('robots.txt', seo_views.robots, name='robots'),
     path('admin/', admin.site.urls),
+    path('i18n/', include('django.conf.urls.i18n')),
 
     # Superuser tools
     path('superuser/create-org/', superuser_views.create_organization, name='superuser_create_organization'),

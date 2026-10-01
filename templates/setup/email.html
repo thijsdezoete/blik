@@ -1,33 +1,34 @@
 {% extends "setup/base.html" %}
+{% load i18n %}
 
-{% block title %}Email Configuration - Blik Setup{% endblock %}
+{% block title %}{% translate "Email Configuration" %} - Blik Setup{% endblock %}
 
-{% block subtitle %}Configure email settings for sending invitations{% endblock %}
+{% block subtitle %}{% translate "Configure email settings for sending invitations" %}{% endblock %}
 
 {% block content %}
-<h2 class="page-title">Email Configuration</h2>
+<h2 class="page-title">{% translate "Email Configuration" %}</h2>
 <p class="page-description">
-    Choose how Blik will send emails for review invitations and notifications.
+    {% translate "Choose how Blik will send emails for review invitations and notifications." %}
 </p>
 
 {% if has_subscription %}
 <div class="info-card">
-    <h3>✨ Recommended: Use Blik's Email Service</h3>
+    <h3>✨ {% translate "Recommended: Use Blik's Email Service" %}</h3>
     <p>
-        As a SaaS customer, you can use Blik's managed email service. All emails will be sent reliably with no configuration needed.
-        You can always switch to your own SMTP server later in settings.
+        {% translate "As a SaaS customer, you can use Blik's managed email service. All emails will be sent reliably with no configuration needed." %}
+        {% translate "You can always switch to your own SMTP server later in settings." %}
     </p>
     <form method="post" style="margin: 0;">
         {% csrf_token %}
         <input type="hidden" name="use_blik_mailer" value="true">
         <button type="submit" class="btn btn-primary" style="margin: 0;">
-            Use Blik's Email Service (Recommended)
+            {% translate "Use Blik's Email Service (Recommended)" %}
         </button>
     </form>
 </div>
 
 <div class="separator">
-    — or configure your own SMTP server below —
+    — {% translate "or configure your own SMTP server below" %} —
 </div>
 {% endif %}
 
@@ -118,7 +119,7 @@
     <div class="button-group">
         <div></div>
         <button type="submit" class="btn btn-primary">
-            Complete Setup →
+            {% translate "Complete Setup" %} →
         </button>
     </div>
 </form>

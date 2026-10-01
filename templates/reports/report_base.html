@@ -1,10 +1,10 @@
-{% load static feedback_tags %}
+{% load i18n static feedback_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if is_admin_view %}Feedback Report{% else %}360 Feedback Report{% endif %} - {{ cycle.reviewee.name }}</title>
+    <title>{% if is_admin_view %}{% translate "Feedback Report" %}{% else %}{% translate "360 Feedback Report" %}{% endif %} - {{ cycle.reviewee.name }}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/reports.css' %}">
     <script src="{% static 'js/chart.min.js' %}"></script>
@@ -36,47 +36,50 @@
     </script>
 </head>
 <body class="report-page">
-    <button class="report-theme-toggle" aria-label="Toggle theme">
+    <div class="report-language-selector" style="position: fixed; top: 1rem; right: 1rem; z-index: 10;">
+        {% include "components/language_selector.html" %}
+    </div>
+    <button class="report-theme-toggle" aria-label="{% translate 'Toggle theme' %}">
         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
         <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
         </svg>
-        <span>Toggle Theme</span>
+        <span>{% translate "Toggle Theme" %}</span>
     </button>
 
     <div class="report-container">
         {{ report.report_data.charts|json_script:"chart-data" }}
 
         <div class="report-header">
-            <h1 class="report-title">360 Feedback Report</h1>
+            <h1 class="report-title">{% translate "360 Feedback Report" %}</h1>
             <p class="report-subtitle">{{ cycle.reviewee.name }}</p>
 
             <div class="report-meta">
                 {% if is_admin_view %}
                 <div class="meta-item">
-                    <span class="meta-label">Questionnaire</span>
+                    <span class="meta-label">{% translate "Questionnaire" %}</span>
                     <span class="meta-value">{{ cycle.questionnaire.name }}</span>
                 </div>
                 {% endif %}
                 <div class="meta-item">
-                    <span class="meta-label">Review Date</span>
+                    <span class="meta-label">{% translate "Review Date" %}</span>
                     <span class="meta-value">{{ cycle.created_at|date:"F d, Y" }}</span>
                 </div>
                 {% if is_admin_view %}
                 <div class="meta-item">
-                    <span class="meta-label">Status</span>
+                    <span class="meta-label">{% translate "Status" %}</span>
                     <span class="meta-value">{{ cycle.status|title }}</span>
                 </div>
                 {% endif %}
                 <div class="meta-item">
-                    <span class="meta-label">Total Responses</span>
+                    <span class="meta-label">{% translate "Total Responses" %}</span>
                     <span class="meta-value">{{ summary.total_responses }}</span>
                 </div>
                 {% if report.report_data.insights.overall_sentiment %}
                 <div class="meta-item">
-                    <span class="meta-label">Overall Rating</span>
+                    <span class="meta-label">{% translate "Overall Rating" %}</span>
                     <span class="meta-value">{{ report.report_data.insights.overall_sentiment.rating }}</span>
                 </div>
                 {% endif %}
@@ -85,8 +88,9 @@
 
         {% if is_admin_view %}
         <div class="actions">
-            <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">Back to Cycle</a>
-            <a href="{% url 'reports:regenerate_report' cycle.uuid %}" class="btn btn-primary">Regenerate Report</a>
+            <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">{% translate "Back to Cycle" %}</a>
+            <a href="{% url 'reports:regenerate_report' cycle.uuid %}" class="btn btn-primary">{% translate "Regenerate Report" %}</a>
+            <button type="button" class="btn btn-secondary" onclick="window.print()">{% translate "Print Report" %}</button>
         </div>
         {% endif %}
 
@@ -137,6 +141,30 @@
                     renderGapChart('gapChart', chartData);
                 }
                 {% endif %}
+
+                if (new URLSearchParams(window.location.search).get('print') === '1') {
+                    window.addEventListener('load', function() {
+                        window.requestAnimationFrame(function() {
+                            window.requestAnimationFrame(function() {
+                                window.print();
+                            });
+                        });
+                    }, { once: true });
+                }
+
+                window.addEventListener('beforeprint', function() {
+                    document.querySelectorAll('.chart-container canvas').forEach(function(canvas) {
+                        const chart = Chart.getChart(canvas);
+                        if (chart) chart.resize(900, 600);
+                    });
+                });
+
+                window.addEventListener('afterprint', function() {
+                    document.querySelectorAll('.chart-container canvas').forEach(function(canvas) {
+                        const chart = Chart.getChart(canvas);
+                        if (chart) chart.resize();
+                    });
+                });
 
                 // Tab switching for development path
                 const tabButtons = document.querySelectorAll('.tab-button');

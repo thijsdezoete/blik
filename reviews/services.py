@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.urls import reverse
+from django.utils.translation import activate, gettext, override
 from core.email import send_email
 from datetime import timedelta
 from django.db.models import Q
@@ -96,20 +97,29 @@ def send_reviewer_invitations(cycle, token_ids=None):
             # Generate feedback URL
             feedback_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/feedback/{token.token}/"
 
-            # Render email templates
-            context = {
-                'reviewee_name': cycle.reviewee.name,
-                'category': token.get_category_display(),
-                'feedback_url': feedback_url,
-                'questionnaire_name': cycle.questionnaire.name,
-            }
+            language = (
+                token.language
+                or getattr(cycle.organization, 'default_language', None)
+                or 'en'
+            )
+            with override(language):
+                activate(language)
+                context = {
+                    'reviewee_name': cycle.reviewee.name,
+                    'category': token.get_category_display(),
+                    'feedback_url': feedback_url,
+                    'questionnaire_name': cycle.questionnaire.name,
+                }
 
-            html_message = render_to_string('emails/reviewer_invitation.html', context)
-            text_message = render_to_string('emails/reviewer_invitation.txt', context)
+                html_message = render_to_string('emails/reviewer_invitation.html', context)
+                text_message = render_to_string('emails/reviewer_invitation.txt', context)
+                subject = gettext(
+                    '360 Feedback Request: %(reviewee_name)s'
+                ) % {'reviewee_name': cycle.reviewee.name}
 
             # Send email
             send_email(
-                subject=f'360 Feedback Request: {cycle.reviewee.name}',
+                subject=subject,
                 message=text_message,
                 recipient_list=[token.reviewer_email],
                 html_message=html_message,
@@ -158,20 +168,29 @@ def send_reminder_emails(cycle, token_ids=None):
             # Generate feedback URL
             feedback_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}/feedback/{token.token}/"
 
-            # Render email templates
-            context = {
-                'reviewee_name': cycle.reviewee.name,
-                'category': token.get_category_display(),
-                'feedback_url': feedback_url,
-                'questionnaire_name': cycle.questionnaire.name,
-            }
+            language = (
+                token.language
+                or getattr(cycle.organization, 'default_language', None)
+                or 'en'
+            )
+            with override(language):
+                activate(language)
+                context = {
+                    'reviewee_name': cycle.reviewee.name,
+                    'category': token.get_category_display(),
+                    'feedback_url': feedback_url,
+                    'questionnaire_name': cycle.questionnaire.name,
+                }
 
-            html_message = render_to_string('emails/reviewer_reminder.html', context)
-            text_message = render_to_string('emails/reviewer_reminder.txt', context)
+                html_message = render_to_string('emails/reviewer_reminder.html', context)
+                text_message = render_to_string('emails/reviewer_reminder.txt', context)
+                subject = gettext(
+                    'Reminder: 360 Feedback Request for %(reviewee_name)s'
+                ) % {'reviewee_name': cycle.reviewee.name}
 
             # Send email
             send_email(
-                subject=f'Reminder: 360 Feedback Request for {cycle.reviewee.name}',
+                subject=subject,
                 message=text_message,
                 recipient_list=[token.reviewer_email],
                 html_message=html_message,

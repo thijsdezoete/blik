@@ -479,6 +479,20 @@ class ReportViewAnonymizationTestCase(TestCase):
         self.assertTrue(hasattr(views, 'apply_display_anonymization'),
                        "views module should import apply_display_anonymization")
 
+    def test_report_page_supports_browser_print(self):
+        from django.urls import reverse
+
+        generate_report(self.cycle)
+        self.client.force_login(self.admin)
+        response = self.client.get(
+            reverse('reports:view_report', args=[self.cycle.uuid])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Print Report')
+        self.assertContains(response, 'width="900"')
+        self.assertContains(response, 'height="600"')
+
 
 class ReportAccessControlTestCase(TestCase):
     """

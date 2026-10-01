@@ -39,14 +39,101 @@ body.report-page {
     height: 20px;
 }
 
-/* Print styles - always use light theme */
+/* Print styles */
 @media print {
+    @page {
+        size: A4;
+        margin: 1.5cm;
+    }
+
+    html[data-theme] {
+        --text-primary: #111827;
+        --text-secondary: #4b5563;
+        --bg-body: #fff;
+        --bg-card: #fff;
+        --bg-light: #f9fafb;
+        --border: #d1d5db;
+    }
+
+    .report-language-selector,
     .report-theme-toggle {
         display: none !important;
     }
 
-    body {
-        background: white !important;
+    .actions,
+    .print-hidden,
+    .development-tabs,
+    .tab-info-link {
+        display: none !important;
+    }
+
+    html,
+    body.report-page,
+    .report-container,
+    .report-section,
+    .insight-card,
+    .section-report,
+    .question-report {
+        color: #111 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+    }
+
+    body.report-page {
+        margin: 0;
+    }
+
+    .report-container {
+        max-width: none;
+        padding: 0;
+    }
+
+    .tab-content {
+        display: block !important;
+    }
+
+    .insight-card,
+    .section-report,
+    .question-report,
+    #performance-overview > .report-section,
+    .section-performance-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border-color: #d1d5db !important;
+    }
+
+    #performance-overview,
+    #section-level-performance,
+    #detailed-feedback {
+        break-before: page;
+        page-break-before: always;
+    }
+
+    #performance-overview {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    #section-level-performance {
+        break-inside: auto;
+        page-break-inside: auto;
+    }
+
+    .chart-container {
+        break-inside: avoid;
+        background: #fff !important;
+        box-shadow: none !important;
+    }
+
+    .chart-container canvas {
+        display: block;
+        max-width: 100% !important;
+    }
+
+    #sectionRadarChart {
+        width: 100% !important;
+        max-width: 12cm !important;
+        height: auto !important;
     }
 
     .insight-card,

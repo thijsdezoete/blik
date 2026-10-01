@@ -1,4 +1,5 @@
 import uuid
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 from core.models import TimeStampedModel
@@ -108,6 +109,12 @@ class ReviewerToken(TimeStampedModel):
     )
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    language = models.CharField(
+        max_length=10,
+        choices=settings.LANGUAGES,
+        blank=True,
+        null=True,
+    )
     reviewer_email = models.EmailField(
         null=True,
         blank=True,

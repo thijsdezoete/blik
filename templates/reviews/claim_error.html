@@ -1,10 +1,10 @@
-{% load static %}
+{% load i18n static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unable to Claim Token</title>
+    <title>{% translate "Unable to Claim Token" %}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <script>
         // Theme detection and initialization
@@ -32,6 +32,9 @@
     </script>
 </head>
 <body style="background: var(--primary-600); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 10;">
+        {% include "components/language_selector.html" %}
+    </div>
     <div style="background: var(--bg-card); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 3rem; max-width: 500px; text-align: center;">
         <div style="width: 64px; height: 64px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
             <svg style="width: 32px; height: 32px; color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +43,7 @@
         </div>
 
         <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">
-            Unable to Access Review
+            {% translate "Unable to Access Review" %}
         </h1>
 
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">
@@ -48,7 +51,7 @@
         </p>
 
         <p style="color: var(--text-tertiary); font-size: 0.875rem;">
-            If you believe this is an error, please contact your administrator.
+            {% translate "If you believe this is an error, please contact your administrator." %}
         </p>
     </div>
 </body>

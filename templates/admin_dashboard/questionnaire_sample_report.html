@@ -16,10 +16,10 @@
         <h1>Sample Report</h1>
         <p style="color: var(--text-secondary);">{{ questionnaire.name }} · {{ questionnaire.report_type_label }}</p>
     </div>
-    <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary">Back to Questionnaires</a>
+    <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary print-hidden">Back to Questionnaires</a>
 </div>
 
-<div class="card" style="margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
+<div class="card sample-report-notice" style="margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
     <div class="card-body" style="display: flex; gap: 1rem; align-items: flex-start;">
         <div style="font-size: 1.5rem;">📊</div>
         <div>
@@ -28,7 +28,7 @@
                 Scores are generated deterministically from the questionnaire's structure to preview what a finished
                 report will look like. No real responses are shown. Run a cycle to see real results.
             </div>
-        </div>
+            </div>
     </div>
 </div>
 
@@ -52,6 +52,7 @@
 {# Dreyfus diamond + agency levels + quadrant — reuses the real report partial #}
 {% include "reports/_dreyfus_profile.html" with insights=insights %}
 
+<div id="performance-overview">
 <div class="report-section">
     <h2>Performance Overview</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
@@ -71,6 +72,7 @@
         <canvas id="gapChart" style="max-height: 400px;"></canvas>
     </div>
 </div>
+ </div>
 
 <div id="section-level-performance" class="report-section">
     <h2>Section-Level Performance</h2>

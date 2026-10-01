@@ -9,6 +9,11 @@ from questionnaires.factories import (
     RatingQuestionFactory,
     TextQuestionFactory
 )
+from questionnaires.models import (
+    QuestionnaireTranslation,
+    QuestionSectionTranslation,
+    QuestionTranslation,
+)
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
 from reviews.models import ReviewerToken
 from reviews.services import send_reviewer_invitations, assign_tokens_to_emails
@@ -79,6 +84,70 @@ class QuestionnaireTestCase(TestCase):
         self.assertIn('max', self.question1.config)
         self.assertEqual(self.question1.config['min'], 1)
         self.assertEqual(self.question1.config['max'], 5)
+
+    def test_get_translated_questionnaire(self):
+        self.assertEqual(
+            self.questionnaire.get_translated('fr'),
+            {'name': self.questionnaire.name, 'description': self.questionnaire.description},
+        )
+
+        QuestionnaireTranslation.objects.create(
+            questionnaire=self.questionnaire,
+            language='fr',
+            name='Questionnaire traduit',
+            description='Description traduite',
+        )
+        self.assertEqual(
+            self.questionnaire.get_translated('fr'),
+            {'name': 'Questionnaire traduit', 'description': 'Description traduite'},
+        )
+
+    def test_get_translated_section(self):
+        self.assertEqual(
+            self.section.get_translated('fr'),
+            {'title': self.section.title, 'description': self.section.description},
+        )
+
+        QuestionSectionTranslation.objects.create(
+            section=self.section,
+            language='fr',
+            title='Section traduite',
+            description='Description traduite',
+        )
+        self.assertEqual(
+            self.section.get_translated('fr'),
+            {'title': 'Section traduite', 'description': 'Description traduite'},
+        )
+
+    def test_get_translated_question_uses_fallbacks_for_empty_fields(self):
+        original_action_items = [{'text': 'Original action'}]
+        self.question1.action_items = original_action_items
+        self.question1.save(update_fields=['action_items'])
+
+        self.assertEqual(
+            self.question1.get_translated('fr'),
+            {
+                'question_text': self.question1.question_text,
+                'config': self.question1.config,
+                'action_items': original_action_items,
+            },
+        )
+
+        QuestionTranslation.objects.create(
+            question=self.question1,
+            language='fr',
+            question_text='',
+            config={},
+            action_items=[],
+        )
+        self.assertEqual(
+            self.question1.get_translated('fr'),
+            {
+                'question_text': self.question1.question_text,
+                'config': self.question1.config,
+                'action_items': [],
+            },
+        )
 
 
 class InviteLinkTestCase(TestCase):

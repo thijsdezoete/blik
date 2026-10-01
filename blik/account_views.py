@@ -91,6 +91,9 @@ def export_data(request):
     if not org:
         return JsonResponse({'error': 'Organization not found'}, status=404)
 
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        return JsonResponse({'error': 'Only organization administrators can export data'}, status=403)
+
     try:
         data = export_organization_data(org)
 

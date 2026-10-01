@@ -1,15 +1,16 @@
 {% extends 'base_public.html' %}
 
-{% block title %}Register - Blik 360 Feedback{% endblock %}
+{% load i18n %}
+{% block title %}{% translate "Register" %} - Blik 360 Feedback{% endblock %}
 
 {% block content %}
 <div class="register-container">
     <div class="register-header">
-        <h1>Create Account</h1>
+        <h1>{% translate "Create Account" %}</h1>
         {% if organization %}
-            <p>Join {{ organization.name }}</p>
+            <p>{% blocktrans with organization_name=organization.name %}Join {{ organization_name }}{% endblocktrans %}</p>
         {% else %}
-            <p>Create your account</p>
+            <p>{% translate "Create your account" %}</p>
         {% endif %}
     </div>
 
@@ -25,31 +26,32 @@
         {% csrf_token %}
 
         <div class="form-group">
-            <label for="id_email">Email</label>
+            <label for="id_email">{% translate "Email" %}</label>
             <input type="email" name="email" id="id_email" class="form-control"
                    value="{{ invitation_email }}"
                    {% if invitation_email %}readonly{% endif %}
                    required autofocus>
-            <span class="form-text">Use your invited email address</span>
+            <span class="form-text">{% translate "Use your invited email address" %}</span>
         </div>
 
         <div class="form-group">
-            <label for="id_password1">Password</label>
+            <label for="id_password1">{% translate "Password" %}</label>
             <input type="password" name="password1" id="id_password1" class="form-control" required minlength="8">
-            <span class="form-text">At least 8 characters</span>
+            <span class="form-text">{% translate "At least 8 characters" %}</span>
         </div>
 
         <div class="form-group">
-            <label for="id_password2">Confirm Password</label>
+            <label for="id_password2">{% translate "Confirm Password" %}</label>
             <input type="password" name="password2" id="id_password2" class="form-control" required minlength="8">
-            <span class="form-text">Re-enter your password</span>
+            <span class="form-text">{% translate "Re-enter your password" %}</span>
         </div>
 
-        <button type="submit" class="btn-primary">Create Account</button>
+        <button type="submit" class="btn-primary">{% translate "Create Account" %}</button>
     </form>
 
     <div class="login-link">
-        <p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+        {% url 'login' as login_url %}
+        <p>{% blocktrans %}Already have an account? <a href="{{ login_url }}">Sign in</a>{% endblocktrans %}</p>
     </div>
 </div>
 {% endblock %}

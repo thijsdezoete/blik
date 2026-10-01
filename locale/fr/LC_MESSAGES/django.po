@@ -1,0 +1,1320 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-30 10:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: accounts/forms.py:13
+msgid "First name"
+msgstr "Prénom"
+
+#: accounts/forms.py:23
+msgid "Last name"
+msgstr "Nom"
+
+#: accounts/forms.py:33 accounts/forms.py:64
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+#: accounts/forms.py:57
+msgid "This email address is already in use."
+msgstr "Cette adresse e-mail est déjà utilisée."
+
+#: accounts/forms.py:77 templates/accounts/reset_password.html:25
+msgid "New Password"
+msgstr "Nouveau mot de passe"
+
+#: accounts/forms.py:85 core/forms.py:34 templates/accounts/register.html:44
+#: templates/accounts/reset_password.html:30
+msgid "Confirm Password"
+msgstr "Confirmer le mot de passe"
+
+#: accounts/forms.py:99 core/forms.py:54
+msgid "Passwords do not match."
+msgstr "Les mots de passe ne correspondent pas."
+
+#: core/forms.py:14 core/forms.py:82 templates/accounts/forgot_password.html:25
+#: templates/accounts/login.html:25 templates/accounts/profile.html:153
+#: templates/accounts/register.html:29
+msgid "Email"
+msgstr "E-mail"
+
+#: core/forms.py:20
+msgid "Email address for the administrator"
+msgstr "Adresse e-mail de l’administrateur"
+
+#: core/forms.py:24 templates/accounts/login.html:30
+#: templates/accounts/register.html:38
+msgid "Password"
+msgstr "Mot de passe"
+
+#: core/forms.py:30
+msgid "Password must be at least 8 characters"
+msgstr "Le mot de passe doit comporter au moins 8 caractères"
+
+#: core/forms.py:39
+msgid "Enter the same password again for verification"
+msgstr "Saisissez à nouveau le même mot de passe pour vérification"
+
+#: core/forms.py:45
+msgid "This email is already registered."
+msgstr "Cette adresse e-mail est déjà enregistrée."
+
+#: core/forms.py:77
+msgid "Your organization or company name"
+msgstr "Nom de votre organisation ou entreprise"
+
+#: core/forms.py:78
+msgid "Main contact email for your organization"
+msgstr "Adresse e-mail du contact principal de votre organisation"
+
+#: core/forms.py:81
+msgid "Name"
+msgstr "Nom"
+
+#: core/forms.py:90
+msgid "SMTP Host"
+msgstr "Hôte SMTP"
+
+#: core/forms.py:98
+msgid "Your SMTP server hostname"
+msgstr "Nom d’hôte de votre serveur SMTP"
+
+#: core/forms.py:102
+msgid "SMTP Port"
+msgstr "Port SMTP"
+
+#: core/forms.py:109
+msgid "Common ports: 587 (TLS), 465 (SSL), 25 (Plain)"
+msgstr "Ports courants : 587 (TLS), 465 (SSL), 25 (sans chiffrement)"
+
+#: core/forms.py:113
+msgid "SMTP Username"
+msgstr "Nom d’utilisateur SMTP"
+
+#: core/forms.py:120
+msgid "Username for SMTP authentication (usually your email)"
+msgstr "Nom d’utilisateur pour l’authentification SMTP (généralement votre adresse e-mail)"
+
+#: core/forms.py:124
+msgid "SMTP Password"
+msgstr "Mot de passe SMTP"
+
+#: core/forms.py:130
+msgid "Password or app-specific password for SMTP"
+msgstr "Mot de passe ou mot de passe spécifique à l’application pour SMTP"
+
+#: core/forms.py:134
+msgid "Use TLS"
+msgstr "Utiliser TLS"
+
+#: core/forms.py:140
+msgid "Enable TLS encryption (recommended for port 587)"
+msgstr "Activer le chiffrement TLS (recommandé pour le port 587)"
+
+#: core/forms.py:144
+msgid "From Email Address"
+msgstr "Adresse e-mail de l’expéditeur"
+
+#: core/forms.py:150
+msgid "Email address that appears as sender"
+msgstr "Adresse e-mail affichée comme expéditeur"
+
+#: core/forms.py:154
+msgid "Skip email setup (configure later)"
+msgstr "Ignorer la configuration de l’e-mail (à configurer ultérieurement)"
+
+#: core/forms.py:159
+msgid "You can configure email settings later in the admin panel"
+msgstr "Vous pourrez configurer les paramètres d’e-mail ultérieurement depuis le panneau d’administration"
+
+#: core/forms.py:179
+msgid "SMTP Host is required when not skipping email setup."
+msgstr "L’hôte SMTP est requis si vous ne choisissez pas de passer cette étape."
+
+#: core/forms.py:181
+msgid "SMTP Port is required when not skipping email setup."
+msgstr "Le port SMTP est requis si vous ne choisissez pas de passer cette étape."
+
+#: core/forms.py:183
+msgid "From Email is required when not skipping email setup."
+msgstr "L’adresse e-mail de l’expéditeur est requise si vous ne choisissez pas de passer cette étape."
+
+#: reviews/services.py:117
+#, python-format
+msgid "360 Feedback Request: %(reviewee_name)s"
+msgstr "Demande de feedback à 360° : %(reviewee_name)s"
+
+#: reviews/services.py:188
+#, python-format
+msgid "Reminder: 360 Feedback Request for %(reviewee_name)s"
+msgstr "Rappel : demande de feedback à 360° pour %(reviewee_name)s"
+
+#: templates/accounts/forgot_password.html:4
+#: templates/accounts/forgot_password.html:9
+msgid "Forgot Password"
+msgstr "Mot de passe oublié"
+
+#: templates/accounts/forgot_password.html:10
+msgid "Enter your email to receive a password reset link"
+msgstr "Saisissez votre adresse e-mail pour recevoir un lien de réinitialisation du mot de passe"
+
+#: templates/accounts/forgot_password.html:29
+msgid "Send Reset Link"
+msgstr "Envoyer le lien de réinitialisation"
+
+#: templates/accounts/forgot_password.html:33
+#: templates/accounts/reset_password.html:42
+msgid "Back to Login"
+msgstr "Retour à la connexion"
+
+#: templates/accounts/login.html:4
+msgid "Login"
+msgstr "Connexion"
+
+#: templates/accounts/login.html:9
+msgid "Welcome Back"
+msgstr "Heureux de vous revoir"
+
+#: templates/accounts/login.html:10
+msgid "Sign in to your account"
+msgstr "Connectez-vous à votre compte"
+
+#: templates/accounts/login.html:34
+msgid "Sign In"
+msgstr "Se connecter"
+
+#: templates/accounts/login.html:38
+msgid "Forgot your password?"
+msgstr "Vous avez oublié votre mot de passe ?"
+
+#: templates/accounts/login.html:44
+#, python-format
+msgid "Don't have an account? <a href=\"%(signup_url)s\">Create one</a>"
+msgstr "Vous n’avez pas de compte ? <a href=\"%(signup_url)s\">Créer un compte</a>"
+
+#: templates/accounts/profile.html:4 templates/accounts/profile.html:121
+msgid "My Profile"
+msgstr "Mon profil"
+
+#: templates/accounts/profile.html:18
+msgid "Welcome to Blik"
+msgstr "Bienvenue sur Blik"
+
+#: templates/accounts/profile.html:19
+msgid "Your 360-degree feedback platform"
+msgstr "Votre plateforme de feedback à 360°"
+
+#: templates/accounts/profile.html:23
+msgid "How Blik helps you:"
+msgstr "Comment Blik vous accompagne :"
+
+#: templates/accounts/profile.html:25
+msgid "Gather comprehensive feedback from peers, managers, and direct reports"
+msgstr "Recueillez des retours complets auprès de vos pairs, responsables et collaborateurs directs"
+
+#: templates/accounts/profile.html:26
+msgid "Maintain complete anonymity for honest, constructive input"
+msgstr "Garantissez un anonymat complet pour recueillir des retours sincères et constructifs"
+
+#: templates/accounts/profile.html:27
+msgid "Generate actionable insights to drive professional growth"
+msgstr "Générez des enseignements concrets pour favoriser le développement professionnel"
+
+#: templates/accounts/profile.html:32
+msgid "Getting started is simple:"
+msgstr "La prise en main est simple :"
+
+#: templates/accounts/profile.html:37
+msgid "Add reviewees"
+msgstr "Ajouter des personnes évaluées"
+
+#: templates/accounts/profile.html:38
+msgid "People who will receive 360° feedback"
+msgstr "Personnes qui recevront un feedback à 360°"
+
+#: templates/accounts/profile.html:44
+msgid "Create a review cycle"
+msgstr "Créer un cycle d’évaluation"
+
+#: templates/accounts/profile.html:45
+msgid "Choose a questionnaire and invite reviewers"
+msgstr "Choisissez un questionnaire et invitez les évaluateurs"
+
+#: templates/accounts/profile.html:51
+msgid "Share anonymous invite links"
+msgstr "Partager des liens d’invitation anonymes"
+
+#: templates/accounts/profile.html:52
+msgid "Copy links and share directly, or optionally send via email"
+msgstr "Copiez les liens et partagez-les directement, ou envoyez-les par e-mail si vous le souhaitez"
+
+#: templates/accounts/profile.html:58
+msgid "Review the report"
+msgstr "Consulter le rapport"
+
+#: templates/accounts/profile.html:59
+msgid "View aggregated insights and share with reviewees"
+msgstr "Consultez les enseignements agrégés et partagez-les avec les personnes évaluées"
+
+#: templates/accounts/profile.html:67
+msgid "Close"
+msgstr "Fermer"
+
+#: templates/accounts/profile.html:70
+msgid "Get Started"
+msgstr "Commencer"
+
+#: templates/accounts/profile.html:130
+msgid "Personal Information"
+msgstr "Informations personnelles"
+
+#: templates/accounts/profile.html:137
+msgid "First Name"
+msgstr "Prénom"
+
+#: templates/accounts/profile.html:145
+msgid "Last Name"
+msgstr "Nom"
+
+#: templates/accounts/profile.html:161
+msgid "Username"
+msgstr "Nom d’utilisateur"
+
+#: templates/accounts/profile.html:163
+msgid "Username cannot be changed"
+msgstr "Le nom d’utilisateur ne peut pas être modifié"
+
+#: templates/accounts/profile.html:166
+msgid "Update Profile"
+msgstr "Mettre à jour le profil"
+
+#: templates/accounts/profile.html:173
+msgid "Organization"
+msgstr "Organisation"
+
+#: templates/accounts/profile.html:184
+msgid "Permissions"
+msgstr "Autorisations"
+
+#: templates/accounts/profile.html:188
+msgid "Can create cycles for others"
+msgstr "Peut créer des cycles pour d’autres personnes"
+
+#: templates/accounts/profile.html:190
+msgid "Self cycles only"
+msgstr "Cycles personnels uniquement"
+
+#: templates/accounts/profile.html:197
+#, python-format
+msgid "Member since %(member_since)s"
+msgstr "Membre depuis le %(member_since)s"
+
+#: templates/accounts/profile.html:206
+msgid "View Welcome Guide"
+msgstr "Consulter le guide d’accueil"
+
+#: templates/accounts/profile.html:216
+msgid "My Review Cycles"
+msgstr "Mes cycles d’évaluation"
+
+#: templates/accounts/profile.html:228
+#, python-format
+msgid "Created %(created_date)s"
+msgstr "Créé le %(created_date)s"
+
+#: templates/accounts/profile.html:230
+#, python-format
+msgid "by %(creator)s"
+msgstr "par %(creator)s"
+
+#: templates/accounts/profile.html:238
+msgid "Responses:"
+msgstr "Réponses :"
+
+#: templates/accounts/profile.html:242
+#, python-format
+msgid "Total: %(total)s"
+msgstr "Total : %(total)s"
+
+#: templates/accounts/profile.html:249
+msgid "View Report"
+msgstr "Consulter le rapport"
+
+#: templates/accounts/profile.html:252
+msgid "Report available when cycle is completed"
+msgstr "Rapport disponible une fois le cycle terminé"
+
+#: templates/accounts/profile.html:257
+msgid "No report generated yet"
+msgstr "Aucun rapport n’a encore été généré"
+
+#: templates/accounts/profile.html:263
+msgid "Active"
+msgstr "En cours"
+
+#: templates/accounts/profile.html:265
+msgid "Completed"
+msgstr "Terminé"
+
+#: templates/accounts/profile.html:274
+msgid "No review cycles found for your account."
+msgstr "Aucun cycle d’évaluation n’a été trouvé pour votre compte."
+
+#: templates/accounts/profile.html:275
+msgid ""
+"Review cycles will appear here when they're created for your email address."
+msgstr "Les cycles d’évaluation apparaîtront ici lorsqu’ils seront créés pour votre adresse e-mail."
+
+#: templates/accounts/register.html:4
+msgid "Register"
+msgstr "Inscription"
+
+#: templates/accounts/register.html:9 templates/accounts/register.html:49
+msgid "Create Account"
+msgstr "Créer un compte"
+
+#: templates/accounts/register.html:11
+#, python-format
+msgid "Join %(organization_name)s"
+msgstr "Rejoindre %(organization_name)s"
+
+#: templates/accounts/register.html:13
+msgid "Create your account"
+msgstr "Créer votre compte"
+
+#: templates/accounts/register.html:34
+msgid "Use your invited email address"
+msgstr "Utilisez l’adresse e-mail associée à votre invitation"
+
+#: templates/accounts/register.html:40
+msgid "At least 8 characters"
+msgstr "8 caractères minimum"
+
+#: templates/accounts/register.html:46
+msgid "Re-enter your password"
+msgstr "Saisissez à nouveau votre mot de passe"
+
+#: templates/accounts/register.html:54
+#, python-format
+msgid "Already have an account? <a href=\"%(login_url)s\">Sign in</a>"
+msgstr "Vous avez déjà un compte ? <a href=\"%(login_url)s\">Connectez-vous</a>"
+
+#: templates/accounts/reset_password.html:4
+#: templates/accounts/reset_password.html:38
+msgid "Reset Password"
+msgstr "Réinitialiser le mot de passe"
+
+#: templates/accounts/reset_password.html:9
+msgid "Set New Password"
+msgstr "Définir un nouveau mot de passe"
+
+#: templates/accounts/reset_password.html:10
+msgid "Enter your new password below"
+msgstr "Saisissez votre nouveau mot de passe ci-dessous"
+
+#: templates/accounts/reset_password.html:35
+msgid "Password must be at least 8 characters and not too common."
+msgstr "Le mot de passe doit comporter au moins 8 caractères et ne pas être trop courant."
+
+#: templates/components/language_selector.html:5
+#: templates/components/language_selector.html:6
+msgid "Language"
+msgstr "Langue"
+
+#: templates/components/language_selector.html:12
+msgid "Change language"
+msgstr "Changer de langue"
+
+#: templates/home.html:7
+msgid "Blik - 360 Feedback System"
+msgstr "Blik - Système de feedback à 360°"
+
+#: templates/home.html:14
+msgid "360 Feedback & Performance Review System"
+msgstr "Système de feedback à 360° et d’évaluation des performances"
+
+#: templates/home.html:16
+msgid "System Running"
+msgstr "Système opérationnel"
+
+#: templates/home.html:19 templates/setup/complete.html:4
+msgid "Setup Complete"
+msgstr "Configuration terminée"
+
+#: templates/home.html:21
+msgid "Django application is running"
+msgstr "L’application Django est opérationnelle"
+
+#: templates/home.html:22
+msgid "Database connected successfully"
+msgstr "Connexion à la base de données réussie"
+
+#: templates/home.html:23
+msgid "Static files configured"
+msgstr "Fichiers statiques configurés"
+
+#: templates/home.html:24
+msgid "Ready for development"
+msgstr "Prêt pour le développement"
+
+#: templates/home.html:29
+msgid "Admin Dashboard"
+msgstr "Tableau de bord d’administration"
+
+#: templates/home.html:30
+msgid "Django Admin"
+msgstr "Administration Django"
+
+#: templates/home.html:34
+msgid "Version 0.1.0 (Pre-Alpha)"
+msgstr "Version 0.1.0 (pré-alpha)"
+
+#: templates/home.html:35
+msgid "Self-hosted | Open Source | Privacy-First"
+msgstr "Auto-hébergé | Open source | Respect de la vie privée"
+
+#: templates/reports/_dreyfus_profile.html:6
+msgid "Your Development Path"
+msgstr "Votre parcours de développement"
+
+#: templates/reports/_dreyfus_profile.html:16
+msgid "Skill Level"
+msgstr "Niveau de compétence"
+
+#: templates/reports/_dreyfus_profile.html:17
+msgid "Learn more about the Dreyfus Model"
+msgstr "En savoir plus sur le modèle de Dreyfus"
+
+#: templates/reports/_dreyfus_profile.html:25
+msgid "Agency & Initiative"
+msgstr "Autonomie et initiative"
+
+#: templates/reports/_dreyfus_profile.html:26
+msgid "Learn more about Agency Levels"
+msgstr "En savoir plus sur les niveaux d’autonomie"
+
+#: templates/reports/_dreyfus_profile.html:47
+#: templates/reports/_dreyfus_profile.html:67
+#, python-format
+msgid "Level %(level)s/5.0"
+msgstr "Niveau %(level)s/5.0"
+
+#: templates/reports/_dreyfus_profile.html:77
+#, python-format
+msgid "To Reach %(next_stage)s"
+msgstr "Pour atteindre le niveau %(next_stage)s"
+
+#: templates/reports/_dreyfus_profile.html:95
+#: templates/reports/_dreyfus_profile.html:212
+msgid "Action Items"
+msgstr "Actions à entreprendre"
+
+#: templates/reports/_dreyfus_profile.html:111
+#, python-format
+msgid "To Reach Level %(level)s:"
+msgstr "Pour atteindre le niveau %(level)s :"
+
+#: templates/reports/_dreyfus_profile.html:112
+msgid "Assisted"
+msgstr "Avec accompagnement"
+
+#: templates/reports/_dreyfus_profile.html:113
+msgid "Independent"
+msgstr "Autonome"
+
+#: templates/reports/_dreyfus_profile.html:114
+msgid "Proactive"
+msgstr "Proactif"
+
+#: templates/reports/_dreyfus_profile.html:115
+msgid "Self-Driven"
+msgstr "À l’initiative"
+
+#: templates/reports/_dreyfus_profile.html:126
+msgid "When reporting problems, investigate root causes"
+msgstr "Lorsque vous signalez un problème, recherchez-en les causes profondes"
+
+#: templates/reports/_dreyfus_profile.html:133
+msgid "Respond to guidance with thoughtful analysis"
+msgstr "Analysez les conseils reçus avec discernement"
+
+#: templates/reports/_dreyfus_profile.html:140
+msgid "Ask clarifying questions before escalating"
+msgstr "Posez des questions de clarification avant de faire remonter un problème"
+
+#: templates/reports/_dreyfus_profile.html:148
+msgid "Research multiple solution options before asking for help"
+msgstr "Étudiez plusieurs pistes de solution avant de demander de l’aide"
+
+#: templates/reports/_dreyfus_profile.html:155
+msgid "Take ownership of problems you discover"
+msgstr "Prenez en charge les problèmes que vous repérez"
+
+#: templates/reports/_dreyfus_profile.html:162
+msgid "Present tradeoffs of different approaches"
+msgstr "Présentez les compromis associés aux différentes approches"
+
+#: templates/reports/_dreyfus_profile.html:170
+msgid "Make clear recommendations backed by reasoning"
+msgstr "Formulez des recommandations claires et étayées"
+
+#: templates/reports/_dreyfus_profile.html:177
+msgid "Proactively identify improvements before issues arise"
+msgstr "Repérez les améliorations possibles avant que des problèmes ne surviennent"
+
+#: templates/reports/_dreyfus_profile.html:184
+msgid "Build confidence in decision-making through successful recommendations"
+msgstr "Renforcez votre confiance dans la prise de décision en formulant des recommandations pertinentes"
+
+#: templates/reports/_dreyfus_profile.html:192
+msgid "Execute solutions autonomously within your domain"
+msgstr "Mettez en œuvre de façon autonome des solutions dans votre périmètre"
+
+#: templates/reports/_dreyfus_profile.html:199
+msgid "Inform stakeholders after implementing fixes"
+msgstr "Informez les parties prenantes après la mise en œuvre des correctifs"
+
+#: templates/reports/_dreyfus_profile.html:206
+msgid "Drive systemic improvements, not just point solutions"
+msgstr "Faites progresser les améliorations de fond, au-delà des solutions ponctuelles"
+
+#: templates/reports/_dreyfus_profile.html:215
+msgid ""
+"Next time you spot an issue, spend 10 minutes investigating before reporting"
+msgstr "La prochaine fois que vous repérez un problème, consacrez 10 minutes à l’analyser avant de le signaler"
+
+#: templates/reports/_dreyfus_profile.html:216
+msgid "When given a task, propose at least one way to approach it"
+msgstr "Lorsqu’une tâche vous est confiée, proposez au moins une méthode pour l’aborder"
+
+#: templates/reports/_dreyfus_profile.html:218
+msgid ""
+"When facing a problem, list 2-3 possible solutions before asking for help"
+msgstr "Face à un problème, identifiez 2 ou 3 solutions possibles avant de demander de l’aide"
+
+#: templates/reports/_dreyfus_profile.html:219
+msgid "Volunteer to own a small problem end-to-end this sprint"
+msgstr "Proposez de prendre en charge de bout en bout un problème de moindre ampleur au cours de ce sprint"
+
+#: templates/reports/_dreyfus_profile.html:221
+msgid ""
+"Present your next problem-solution with a specific recommendation and why"
+msgstr "Pour votre prochain problème, présentez une solution accompagnée d’une recommandation précise et de sa justification"
+
+#: templates/reports/_dreyfus_profile.html:222
+msgid "Identify one process improvement opportunity this week"
+msgstr "Repérez cette semaine une possibilité d’améliorer un processus"
+
+#: templates/reports/_dreyfus_profile.html:224
+msgid ""
+"Fix the next issue you discover without asking permission (inform after)"
+msgstr "Résolvez le prochain problème identifié sans demander d’autorisation (puis informez les personnes concernées)"
+
+#: templates/reports/_dreyfus_profile.html:225
+msgid "Document your decision-making process for others to learn from"
+msgstr "Documentez votre processus de décision afin d’en faire bénéficier les autres"
+
+#: templates/reports/_dreyfus_profile.html:239
+msgid "Learn more about the Performance Matrix"
+msgstr "En savoir plus sur la matrice de performance"
+
+#: templates/reports/_question_response.html:11
+msgid "Question Format:"
+msgstr "Format de la question :"
+
+#: templates/reports/_question_response.html:16
+msgid "Rating scale (1-5):"
+msgstr "Échelle de notation (1 à 5) :"
+
+#: templates/reports/_question_response.html:29
+msgid "Rating scale:"
+msgstr "Échelle de notation :"
+
+#: templates/reports/_question_response.html:29
+#: templates/reports/_question_response.html:67
+msgid "to"
+msgstr "à"
+
+#: templates/reports/_question_response.html:34
+msgid "Likert scale options:"
+msgstr "Options de l’échelle de Likert :"
+
+#: templates/reports/_question_response.html:43
+msgid "DEBUG: Config="
+msgstr "DEBUG : Configuration="
+
+#: templates/reports/_question_response.html:49
+msgid "Single choice (select one):"
+msgstr "Choix unique (sélectionnez une option) :"
+
+#: templates/reports/_question_response.html:58
+msgid "Multiple choice (select all that apply):"
+msgstr "Choix multiples (sélectionnez toutes les options pertinentes) :"
+
+#: templates/reports/_question_response.html:67
+msgid "Scale:"
+msgstr "Échelle :"
+
+#: templates/reports/_question_response.html:71
+msgid "Open-ended text response"
+msgstr "Réponse en texte libre"
+
+#: templates/reports/_question_response.html:83
+msgid "Direct Report"
+msgstr "Collaborateur direct"
+
+#: templates/reports/_question_response.html:84
+#, python-format
+msgid "%(response_count)s response"
+msgid_plural "%(response_count)s responses"
+msgstr[0] "%(response_count)s réponse"
+msgstr[1] "%(response_count)s réponses"
+
+#: templates/reports/_question_response.html:153
+#, python-format
+msgid ""
+"Strong consensus: %(percentage)s%% positive (%(positive)s of %(total)s "
+"respondents)"
+msgstr "Large consensus : %(percentage)s%% de retours positifs (%(positive)s sur %(total)s répondants)"
+
+#: templates/reports/_question_response.html:157
+#, python-format
+msgid ""
+"Mostly positive: %(percentage)s%% (%(positive)s of %(total)s respondents)"
+msgstr "Avis majoritairement positifs : %(percentage)s%% (%(positive)s sur %(total)s répondants)"
+
+#: templates/reports/_question_response.html:169
+#: templates/reports/_question_response.html:209
+#, python-format
+msgid "%(response_count)s respondent (%(percentage)s%%)"
+msgid_plural "%(response_count)s respondents (%(percentage)s%%)"
+msgstr[0] "%(response_count)s répondant (%(percentage)s%%)"
+msgstr[1] "%(response_count)s répondants (%(percentage)s%%)"
+
+#: templates/reports/_question_response.html:198
+#: templates/reports/_question_response.html:225
+msgid "weighted avg"
+msgstr "moyenne pondérée"
+
+#: templates/reports/_question_response.html:236
+#, python-format
+msgid "%(selected_count)s of %(response_count)s respondent (%(percentage)s%%)"
+msgid_plural ""
+"%(selected_count)s of %(response_count)s respondents (%(percentage)s%%)"
+msgstr[0] "%(selected_count)s sur %(response_count)s répondant (%(percentage)s%%)"
+msgstr[1] "%(selected_count)s sur %(response_count)s répondants (%(percentage)s%%)"
+
+#: templates/reports/_report_content.html:7
+msgid "Overall Performance"
+msgstr "Performance globale"
+
+#: templates/reports/_report_content.html:23
+msgid "Based on feedback from peers, managers, and direct reports"
+msgstr "Fondé sur les retours des pairs, des responsables et des collaborateurs directs"
+
+#: templates/reports/_report_content.html:26
+#, python-format
+msgid "Compared to %(previous_cycle_date)s"
+msgstr "Par rapport au %(previous_cycle_date)s"
+
+#: templates/reports/_report_content.html:31
+msgid "Self-assessment:"
+msgstr "Auto-évaluation :"
+
+#: templates/reports/_report_content.html:31
+msgid "Your self-assessment:"
+msgstr "Votre auto-évaluation :"
+
+#: templates/reports/_report_content.html:36
+msgid "compared to others"
+msgstr "par rapport aux autres"
+
+#: templates/reports/_report_content.html:54
+msgid "Blind Spot:"
+msgstr "Angle mort :"
+
+#: templates/reports/_report_content.html:54
+msgid "Better Than Self-Perception"
+msgstr "Meilleur que la perception de soi"
+
+#: templates/reports/_report_content.html:54
+msgid "You're Better Than You Think"
+msgstr "Vous êtes plus performant que vous ne le pensez"
+
+#: templates/reports/_report_content.html:54
+msgid "Calibration Opportunity"
+msgstr "Piste d’ajustement"
+
+#: templates/reports/_report_content.html:60
+msgid "Self-assessment"
+msgstr "Auto-évaluation"
+
+#: templates/reports/_report_content.html:60
+msgid "You see yourself"
+msgstr "Votre perception de vous-même"
+
+#: templates/reports/_report_content.html:64
+msgid "Others' assessment"
+msgstr "Évaluation des autres"
+
+#: templates/reports/_report_content.html:64
+msgid "Others see you"
+msgstr "La perception des autres"
+
+#: templates/reports/_report_content.html:72
+#: templates/reports/_report_content.html:76
+msgid "Action:"
+msgstr "Action :"
+
+#: templates/reports/_report_content.html:72
+msgid ""
+"Consider acknowledging your strengths more openly. Your team already "
+"recognizes your capabilities."
+msgstr "Envisagez de reconnaître plus ouvertement vos points forts. Votre équipe connaît déjà vos compétences."
+
+#: templates/reports/_report_content.html:76
+msgid ""
+"Seek specific feedback on areas where you rated yourself highly to "
+"understand others' perspectives."
+msgstr "Demandez des retours précis sur les domaines dans lesquels vous vous êtes attribué une note élevée afin de mieux comprendre le point de vue des autres."
+
+#: templates/reports/_report_content.html:88
+msgid "Key Strengths"
+msgstr "Principaux points forts"
+
+#: templates/reports/_report_content.html:95
+#: templates/reports/_report_content.html:120
+msgid "Others' avg:"
+msgstr "Moyenne des autres :"
+
+#: templates/reports/_report_content.html:97
+#: templates/reports/_report_content.html:122
+msgid "Self:"
+msgstr "Auto-évaluation :"
+
+#: templates/reports/_report_content.html:98
+#: templates/reports/_report_content.html:123
+msgid "Gap:"
+msgstr "Écart :"
+
+#: templates/reports/_report_content.html:110
+msgid "Development Opportunities"
+msgstr "Axes de développement"
+
+#: templates/reports/_report_content.html:117
+#, python-format
+msgid "%(priority)s priority"
+msgstr "Priorité %(priority)s"
+
+#: templates/reports/_report_content.html:135
+msgid "Performance Overview"
+msgstr "Vue d’ensemble des performances"
+
+#: templates/reports/_report_content.html:137
+msgid "Visual comparison of performance across all competency areas"
+msgstr "Comparaison visuelle des performances dans l’ensemble des domaines de compétence"
+
+#: templates/reports/_report_content.html:137
+msgid "Visual comparison of your performance across all competency areas"
+msgstr "Comparaison visuelle de vos performances dans l’ensemble des domaines de compétence"
+
+#: templates/reports/_report_content.html:146
+msgid "Self vs Others Comparison"
+msgstr "Comparaison entre soi et les autres"
+
+#: templates/reports/_report_content.html:148
+msgid "How self-assessment compares to others' feedback (sorted by gap size)"
+msgstr "Comparaison de l’auto-évaluation aux retours des autres (triée selon l’ampleur de l’écart)"
+
+#: templates/reports/_report_content.html:148
+msgid ""
+"How your self-assessment compares to others' feedback (sorted by gap size)"
+msgstr "Comparaison de votre auto-évaluation aux retours des autres (triée selon l’ampleur de l’écart)"
+
+#: templates/reports/_report_content.html:158
+msgid "Section-Level Performance"
+msgstr "Performance par domaine"
+
+#: templates/reports/_report_content.html:160
+msgid "Performance breakdown by competency area"
+msgstr "Répartition des performances par domaine de compétence"
+
+#: templates/reports/_report_content.html:183
+msgid "Overall score (excluding self-assessment)"
+msgstr "Score global (hors auto-évaluation)"
+
+#: templates/reports/_report_content.html:190
+msgid "Excellent (4.5+)"
+msgstr "Excellent (4,5+)"
+
+#: templates/reports/_report_content.html:190
+msgid "Strong (3.5-4.4)"
+msgstr "Très bon (3,5-4,4)"
+
+#: templates/reports/_report_content.html:190
+msgid "Good (2.6-3.4)"
+msgstr "Bon (2,6-3,4)"
+
+#: templates/reports/_report_content.html:190
+msgid "Developing (2.0-2.5)"
+msgstr "En développement (2,0-2,5)"
+
+#: templates/reports/_report_content.html:190
+msgid "Needs Development (<2.0)"
+msgstr "À développer (<2,0)"
+
+#: templates/reports/_report_content.html:203
+#, python-format
+msgid "Comparison vs %(peer_count)s peers"
+msgstr "Comparaison avec %(peer_count)s pairs"
+
+#: templates/reports/_report_content.html:205
+#, python-format
+msgid "Top performer - %(percentile)sth percentile"
+msgstr "Meilleure performance - %(percentile)se percentile"
+
+#: templates/reports/_report_content.html:209
+#, python-format
+msgid "Org median: %(peer_median)s/5.0 | This score: %(current_score)s/5.0"
+msgstr "Médiane de l’organisation : %(peer_median)s/5.0 | Votre score : %(current_score)s/5.0"
+
+#: templates/reports/_report_content.html:211
+msgid "Above median"
+msgstr "Au-dessus de la médiane"
+
+#: templates/reports/_report_content.html:213
+msgid "Below median"
+msgstr "En dessous de la médiane"
+
+#: templates/reports/_report_content.html:221
+msgid "Strong performance"
+msgstr "Performance élevée"
+
+#: templates/reports/_report_content.html:222
+#, python-format
+msgid "Top %(percentile)s%% in organization"
+msgstr "Dans les %(percentile)s%% les plus performants de l’organisation"
+
+#: templates/reports/_report_content.html:225
+#, python-format
+msgid "You scored %(current_score)s/5.0, higher than %(percentile)s%% of peers"
+msgstr "Vous avez obtenu %(current_score)s/5.0, un résultat supérieur à celui de %(percentile)s%% de vos pairs"
+
+#: templates/reports/_report_content.html:235
+msgid "direct report"
+msgstr "collaborateur direct"
+
+#: templates/reports/_report_content.html:248
+msgid "Privacy Notice:"
+msgstr "Avis de confidentialité :"
+
+#: templates/reports/_report_content.html:248
+#, python-format
+msgid ""
+"All responses are anonymous and aggregated. Individual reviewers cannot be "
+"identified. Results are only shown when there are at least "
+"%(response_count)s response per category to protect anonymity."
+msgid_plural ""
+"All responses are anonymous and aggregated. Individual reviewers cannot be "
+"identified. Results are only shown when there are at least "
+"%(response_count)s responses per category to protect anonymity."
+msgstr[0] "Les réponses sont anonymes et agrégées. Il est impossible d’identifier les évaluateurs individuellement. Les résultats ne sont présentés que si chaque catégorie compte au moins %(response_count)s réponse afin de préserver l’anonymat."
+msgstr[1] "Les réponses sont anonymes et agrégées. Il est impossible d’identifier les évaluateurs individuellement. Les résultats ne sont présentés que si chaque catégorie compte au moins %(response_count)s réponses afin de préserver l’anonymat."
+
+#: templates/reports/_report_content.html:253
+msgid "Detailed Feedback"
+msgstr "Feedback détaillé"
+
+#: templates/reports/_report_content.html:270
+msgid ""
+"If you have questions about this report, please contact your manager or HR "
+"department."
+msgstr "Pour toute question concernant ce rapport, veuillez contacter votre responsable ou le service des ressources humaines."
+
+#: templates/reports/access_denied.html:7
+#: templates/reports/access_denied.html:14
+msgid "Access Denied"
+msgstr "Accès refusé"
+
+#: templates/reports/access_denied.html:16
+msgid ""
+"You don't have permission to view this report. Please check your email for "
+"the correct access link, or contact your administrator."
+msgstr "Vous n’êtes pas autorisé à consulter ce rapport. Vérifiez que le lien d’accès reçu par e-mail est correct ou contactez votre administrateur."
+
+#: templates/reports/access_denied.html:19
+#: templates/reports/report_not_ready.html:27
+msgid "Go Home"
+msgstr "Accueil"
+
+#: templates/reports/report_base.html:7
+msgid "Feedback Report"
+msgstr "Rapport de feedback"
+
+#: templates/reports/report_base.html:7 templates/reports/report_base.html:54
+msgid "360 Feedback Report"
+msgstr "Rapport de feedback à 360°"
+
+#: templates/reports/report_base.html:40
+msgid "Toggle theme"
+msgstr "Changer de thème"
+
+#: templates/reports/report_base.html:47
+msgid "Toggle Theme"
+msgstr "Changer de thème"
+
+#: templates/reports/report_base.html:60
+msgid "Questionnaire"
+msgstr "Questionnaire"
+
+#: templates/reports/report_base.html:65
+msgid "Review Date"
+msgstr "Date de l’évaluation"
+
+#: templates/reports/report_base.html:70
+msgid "Status"
+msgstr "Statut"
+
+#: templates/reports/report_base.html:75
+msgid "Total Responses"
+msgstr "Nombre total de réponses"
+
+#: templates/reports/report_base.html:80
+msgid "Overall Rating"
+msgstr "Note globale"
+
+#: templates/reports/report_base.html:89
+msgid "Back to Cycle"
+msgstr "Retour au cycle"
+
+#: templates/reports/report_base.html:90
+msgid "Regenerate Report"
+msgstr "Générer à nouveau le rapport"
+
+#: templates/reports/report_not_ready.html:7
+#: templates/reports/report_not_ready.html:14
+msgid "Report Not Ready"
+msgstr "Rapport non disponible"
+
+#: templates/reports/report_not_ready.html:16
+msgid "Your 360 feedback report is not yet available. This could be because:"
+msgstr "Votre rapport de feedback à 360° n’est pas encore disponible. Cela peut s’expliquer par les raisons suivantes :"
+
+#: templates/reports/report_not_ready.html:19
+msgid "The review cycle is still active and waiting for responses"
+msgstr "Le cycle d’évaluation est toujours en cours et attend des réponses"
+
+#: templates/reports/report_not_ready.html:20
+msgid "The report has not been generated yet"
+msgstr "Le rapport n’a pas encore été généré"
+
+#: templates/reports/report_not_ready.html:21
+msgid "There are not enough responses to generate a report"
+msgstr "Le nombre de réponses est insuffisant pour générer un rapport"
+
+#: templates/reports/report_not_ready.html:24
+msgid ""
+"Please check back later or contact your administrator for more information."
+msgstr "Veuillez revenir ultérieurement ou contacter votre administrateur pour obtenir plus d’informations."
+
+#: templates/reviews/claim_error.html:7
+msgid "Unable to Claim Token"
+msgstr "Impossible de réclamer le jeton"
+
+#: templates/reviews/claim_error.html:44
+msgid "Unable to Access Review"
+msgstr "Impossible d’accéder à l’évaluation"
+
+#: templates/reviews/claim_error.html:52
+msgid "If you believe this is an error, please contact your administrator."
+msgstr "Si vous pensez qu’il s’agit d’une erreur, veuillez contacter votre administrateur."
+
+#: templates/reviews/claim_redirect.html:7
+msgid "Loading Review..."
+msgstr "Chargement de l’évaluation..."
+
+#: templates/reviews/claim_redirect.html:20
+msgid "Checking for existing review..."
+msgstr "Vérification des évaluations existantes..."
+
+#: templates/reviews/claim_redirect.html:24
+msgid "Please wait while we locate your feedback session."
+msgstr "Veuillez patienter pendant que nous localisons votre session de feedback."
+
+#: templates/reviews/feedback_complete.html:7
+#: templates/reviews/feedback_complete.html:62
+msgid "Feedback Submitted"
+msgstr "Feedback envoyé"
+
+#: templates/reviews/feedback_complete.html:64
+#, python-format
+msgid "Thank you for completing the 360 degree feedback for %(reviewee_name)s."
+msgstr "Merci d’avoir répondu au questionnaire de feedback à 360° concernant %(reviewee_name)s."
+
+#: templates/reviews/feedback_complete.html:66
+msgid ""
+"Your anonymous feedback has been recorded and will contribute to their "
+"performance review."
+msgstr "Votre feedback anonyme a bien été enregistré et contribuera à son évaluation des performances."
+
+#: templates/reviews/feedback_complete.html:68
+msgid "You may now close this window."
+msgstr "Vous pouvez maintenant fermer cette fenêtre."
+
+#: templates/reviews/feedback_form.html:7
+#, python-format
+msgid "Feedback - %(reviewee_name)s"
+msgstr "Feedback - %(reviewee_name)s"
+
+#: templates/reviews/feedback_form.html:38
+msgid "360 Feedback"
+msgstr "Feedback à 360°"
+
+#: templates/reviews/feedback_form.html:47
+#, python-format
+msgid "Step 1 of %(section_count)s"
+msgstr "Étape 1 sur %(section_count)s"
+
+#: templates/reviews/feedback_form.html:119
+msgid "Share your thoughts..."
+msgstr "Partagez vos commentaires..."
+
+#: templates/reviews/feedback_form.html:128
+msgid "Select an option"
+msgstr "Sélectionnez une option"
+
+#: templates/reviews/feedback_form.html:198
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/reviews/feedback_form.html:201
+msgid "Next"
+msgstr "Suivant"
+
+#: templates/reviews/feedback_form.html:204
+msgid "Submit Feedback"
+msgstr "Envoyer le feedback"
+
+#: templates/setup/admin.html:4
+msgid "Create Admin Account"
+msgstr "Créer un compte administrateur"
+
+#: templates/setup/admin.html:6
+msgid "Create your administrator account"
+msgstr "Créez votre compte administrateur"
+
+#: templates/setup/admin.html:9
+msgid "Create Administrator Account"
+msgstr "Créer un compte administrateur"
+
+#: templates/setup/admin.html:11
+msgid ""
+"This account will have full access to configure and manage your Blik "
+"instance."
+msgstr "Ce compte disposera d’un accès complet à la configuration et à la gestion de votre instance Blik."
+
+#: templates/setup/admin.html:65
+msgid "Create Account & Continue"
+msgstr "Créer le compte et continuer"
+
+#: templates/setup/base.html:7
+msgid "Setup Wizard"
+msgstr "Assistant de configuration"
+
+#: templates/setup/base.html:42
+msgid "Blik Setup Wizard"
+msgstr "Assistant de configuration Blik"
+
+#: templates/setup/base.html:43
+msgid "Let's get your 360 feedback system ready"
+msgstr "Préparons votre système de feedback à 360°"
+
+#: templates/setup/base.html:47
+#, python-format
+msgid "Step %(current_step)s of %(steps)s"
+msgstr "Étape %(current_step)s sur %(steps)s"
+
+#: templates/setup/complete.html:6
+msgid "Your Blik instance is ready to use!"
+msgstr "Votre instance Blik est prête à l’emploi !"
+
+#: templates/setup/complete.html:15
+msgid "Setup Complete!"
+msgstr "Configuration terminée !"
+
+#: templates/setup/complete.html:17
+msgid ""
+"Congratulations! Your Blik 360-degree feedback system is now configured and "
+"ready to use."
+msgstr "Félicitations ! Votre système de feedback à 360° Blik est configuré et prêt à l’emploi."
+
+#: templates/setup/complete.html:21
+msgid "Configuration Summary"
+msgstr "Récapitulatif de la configuration"
+
+#: templates/setup/complete.html:24
+msgid "Administrator:"
+msgstr "Administrateur :"
+
+#: templates/setup/complete.html:28
+msgid "Email:"
+msgstr "E-mail :"
+
+#: templates/setup/complete.html:32
+msgid "Organization:"
+msgstr "Organisation :"
+
+#: templates/setup/complete.html:36
+msgid "Email Configured:"
+msgstr "E-mail configuré :"
+
+#: templates/setup/complete.html:39
+#, python-format
+msgid "Yes (%(smtp_host)s)"
+msgstr "Oui (%(smtp_host)s)"
+
+#: templates/setup/complete.html:41
+msgid "Not yet configured"
+msgstr "Pas encore configuré"
+
+#: templates/setup/complete.html:49
+msgid "Next Steps"
+msgstr "Prochaines étapes"
+
+#: templates/setup/complete.html:52
+msgid "Access admin dashboard:"
+msgstr "Accéder au tableau de bord d’administration :"
+
+#: templates/setup/complete.html:54 templates/setup/complete.html:84
+msgid "Go to Admin Dashboard"
+msgstr "Accéder au tableau de bord d’administration"
+
+#: templates/setup/complete.html:54
+msgid "to manage reviewees, questionnaires, and review cycles"
+msgstr "pour gérer les personnes évaluées, les questionnaires et les cycles d’évaluation"
+
+#: templates/setup/complete.html:57
+msgid "Create your first reviewee:"
+msgstr "Créer votre première évaluation :"
+
+#: templates/setup/complete.html:58
+msgid "Add people who will receive 360-degree feedback from the dashboard"
+msgstr "Ajoutez depuis le tableau de bord les personnes qui recevront un feedback à 360°"
+
+#: templates/setup/complete.html:61
+msgid "Start a review cycle:"
+msgstr "Démarrer un cycle d’évaluation :"
+
+#: templates/setup/complete.html:62
+msgid "Create a new review cycle and send invitations to reviewers"
+msgstr "Créez un nouveau cycle d’évaluation et envoyez les invitations aux évaluateurs"
+
+#: templates/setup/complete.html:68
+msgid "Want to explore first?"
+msgstr "Vous souhaitez d’abord découvrir la plateforme ?"
+
+#: templates/setup/complete.html:70
+msgid ""
+"Generate test data to explore the system without affecting your production "
+"data. This creates sample reviewees and a review cycle with tokens."
+msgstr "Générez des données de test pour découvrir le système sans affecter vos données de production. Cette opération crée des exemples de personnes évaluées et un cycle d’évaluation avec des jetons."
+
+#: templates/setup/complete.html:76
+msgid "Generate Test Data"
+msgstr "Générer des données de test"
+
+#: templates/setup/complete.html:89
+msgid "Need help? Check out the"
+msgstr "Besoin d’aide ? Consultez la"
+
+#: templates/setup/complete.html:89
+msgid "documentation"
+msgstr "documentation"
+
+#: templates/setup/complete.html:90
+msgid "or"
+msgstr "ou"
+
+#: templates/setup/complete.html:90
+msgid "report an issue"
+msgstr "signalez un problème"
+
+#: templates/setup/email.html:4 templates/setup/email.html:9
+msgid "Email Configuration"
+msgstr "Configuration de l’e-mail"
+
+#: templates/setup/email.html:6
+msgid "Configure email settings for sending invitations"
+msgstr "Configurez les paramètres d’e-mail pour l’envoi des invitations"
+
+#: templates/setup/email.html:11
+msgid ""
+"Choose how Blik will send emails for review invitations and notifications."
+msgstr "Choisissez le mode d’envoi des invitations et des notifications par Blik."
+
+#: templates/setup/email.html:16
+msgid "Recommended: Use Blik's Email Service"
+msgstr "Recommandé : utiliser le service d’e-mail Blik"
+
+#: templates/setup/email.html:18
+msgid ""
+"As a SaaS customer, you can use Blik's managed email service. All emails "
+"will be sent reliably with no configuration needed."
+msgstr "En tant que client SaaS, vous pouvez utiliser le service d’e-mail géré par Blik. Tous les e-mails seront envoyés de manière fiable, sans configuration requise."
+
+#: templates/setup/email.html:19
+msgid "You can always switch to your own SMTP server later in settings."
+msgstr "Vous pourrez toujours passer à votre propre serveur SMTP ultérieurement dans les paramètres."
+
+#: templates/setup/email.html:25
+msgid "Use Blik's Email Service (Recommended)"
+msgstr "Utiliser le service d’e-mail Blik (recommandé)"
+
+#: templates/setup/email.html:31
+msgid "or configure your own SMTP server below"
+msgstr "ou configurez votre propre serveur SMTP ci-dessous"
+
+#: templates/setup/email.html:122
+msgid "Complete Setup"
+msgstr "Terminer la configuration"
+
+#: templates/setup/organization.html:4
+msgid "Organization Setup"
+msgstr "Configuration de l’organisation"
+
+#: templates/setup/organization.html:6
+msgid "Configure your organization details"
+msgstr "Configurez les informations de votre organisation"
+
+#: templates/setup/organization.html:9
+msgid "Organization Details"
+msgstr "Informations sur l’organisation"
+
+#: templates/setup/organization.html:11
+msgid ""
+"Tell us about your organization. This information will be used in emails and "
+"reports."
+msgstr "Présentez-nous votre organisation. Ces informations seront utilisées dans les e-mails et les rapports."
+
+#: templates/setup/organization.html:27
+msgid "Your organization's name (e.g., 'Acme Corporation')"
+msgstr "Nom de votre organisation (par exemple, « Acme Corporation »)"
+
+#: templates/setup/organization.html:46
+msgid "Continue to Email Setup"
+msgstr "Continuer vers la configuration de l’e-mail"

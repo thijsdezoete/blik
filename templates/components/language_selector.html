@@ -1,0 +1,19 @@
+<form action="{% url 'set_language' %}" method="post" class="language-selector" style="display: inline-flex; align-items: center; gap: 0.25rem; margin: 0;">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true" style="flex-shrink: 0;">
+        <circle cx="12" cy="12" r="10"></circle>
+        <ellipse cx="12" cy="12" rx="4" ry="10"></ellipse>
+        <path d="M2 12h20M4.93 5.93a15 15 0 0 0 0 12.14m14.14-12.14a15 15 0 0 1 0 12.14"></path>
+    </svg>
+    <select id="language-selector" name="language" aria-label="Select language" onchange="this.form.submit()" style="width: 7rem; padding: 0.25rem; font-size: 0.875rem;">
+        <option value="en"{% if LANGUAGE_CODE == 'en' %} selected{% endif %}>English</option>
+        <option value="fr"{% if LANGUAGE_CODE == 'fr' %} selected{% endif %}>Français</option>
+        <option value="de"{% if LANGUAGE_CODE == 'de' %} selected{% endif %}>Deutsch</option>
+        <option value="it"{% if LANGUAGE_CODE == 'it' %} selected{% endif %}>Italiano</option>
+        <option value="es"{% if LANGUAGE_CODE == 'es' %} selected{% endif %}>Español</option>
+        <option value="pt"{% if LANGUAGE_CODE == 'pt' %} selected{% endif %}>Português</option>
+        <option value="ja"{% if LANGUAGE_CODE == 'ja' %} selected{% endif %}>日本語</option>
+        <option value="zh-hans"{% if LANGUAGE_CODE == 'zh-hans' %} selected{% endif %}>简体中文</option>
+    </select>
+</form>

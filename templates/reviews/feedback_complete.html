@@ -1,10 +1,10 @@
-{% load static %}
+{% load i18n static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback Submitted</title>
+    <title>{% translate "Feedback Submitted" %}</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/feedback.css' %}">
     <script>
@@ -55,16 +55,19 @@
     </script>
 </head>
 <body>
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 10;">
+        {% include "components/language_selector.html" %}
+    </div>
     <div class="container">
         <div class="complete-container">
             <div class="complete-icon">✓</div>
-            <h1 class="complete-title">Feedback Submitted</h1>
+            <h1 class="complete-title">{% translate "Feedback Submitted" %}</h1>
             <p class="complete-message">
-                Thank you for completing the 360 degree feedback for {{ cycle.reviewee.name }}.
+                {% blocktrans with reviewee_name=cycle.reviewee.name %}Thank you for completing the 360 degree feedback for {{ reviewee_name }}.{% endblocktrans %}
                 <br><br>
-                Your anonymous feedback has been recorded and will contribute to their performance review.
+                {% translate "Your anonymous feedback has been recorded and will contribute to their performance review." %}
                 <br><br>
-                You may now close this window.
+                {% translate "You may now close this window." %}
             </p>
         </div>
     </div>

@@ -1,13 +1,14 @@
 {% extends "setup/base.html" %}
+{% load i18n %}
 
-{% block title %}Create Admin Account - Blik Setup{% endblock %}
+{% block title %}{% translate "Create Admin Account" %} - Blik Setup{% endblock %}
 
-{% block subtitle %}Create your administrator account{% endblock %}
+{% block subtitle %}{% translate "Create your administrator account" %}{% endblock %}
 
 {% block content %}
-<h2 style="margin-bottom: 20px; color: #333;">Create Administrator Account</h2>
+<h2 style="margin-bottom: 20px; color: #333;">{% translate "Create Administrator Account" %}</h2>
 <p style="margin-bottom: 25px; color: #666;">
-    This account will have full access to configure and manage your Blik instance.
+    {% translate "This account will have full access to configure and manage your Blik instance." %}
 </p>
 
 <form method="post" novalidate>
@@ -61,7 +62,7 @@
     <div class="button-group">
         <div></div>
         <button type="submit" class="btn btn-primary">
-            Create Account & Continue →
+            {% translate "Create Account & Continue" %} →
         </button>
     </div>
 </form>

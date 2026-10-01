@@ -1,5 +1,24 @@
 from django.contrib import admin
-from .models import Questionnaire, QuestionSection, Question
+from .models import (
+    Questionnaire,
+    QuestionnaireTranslation,
+    QuestionSection,
+    QuestionSectionTranslation,
+    Question,
+    QuestionTranslation,
+)
+
+
+class QuestionnaireTranslationInline(admin.TabularInline):
+    model = QuestionnaireTranslation
+
+
+class QuestionSectionTranslationInline(admin.TabularInline):
+    model = QuestionSectionTranslation
+
+
+class QuestionTranslationInline(admin.TabularInline):
+    model = QuestionTranslation
 
 
 class QuestionInline(admin.TabularInline):
@@ -19,7 +38,7 @@ class QuestionnaireAdmin(admin.ModelAdmin):
     list_display = ['name', 'is_default', 'is_active', 'created_at']
     list_filter = ['is_default', 'is_active', 'created_at']
     search_fields = ['name', 'description']
-    inlines = [QuestionSectionInline]
+    inlines = [QuestionSectionInline, QuestionnaireTranslationInline]
 
 
 @admin.register(QuestionSection)
@@ -28,7 +47,7 @@ class QuestionSectionAdmin(admin.ModelAdmin):
     list_filter = ['questionnaire', 'created_at']
     search_fields = ['title', 'description']
     list_select_related = ['questionnaire']
-    inlines = [QuestionInline]
+    inlines = [QuestionInline, QuestionSectionTranslationInline]
 
 
 @admin.register(Question)
@@ -37,6 +56,7 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ['question_type', 'required', 'section__questionnaire']
     search_fields = ['question_text']
     list_select_related = ['section', 'section__questionnaire']
+    inlines = [QuestionTranslationInline]
 
     def question_text_short(self, obj):
         return obj.question_text[:60] + '...' if len(obj.question_text) > 60 else obj.question_text

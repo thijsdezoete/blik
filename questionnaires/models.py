@@ -1,4 +1,5 @@
 import uuid
+from django.conf import settings
 from django.db import models
 from core.models import TimeStampedModel, Organization
 from core.managers import QuestionnaireManager
@@ -35,6 +36,12 @@ class Questionnaire(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    def get_translated(self, language):
+        translation = self.translations.filter(language=language).first()
+        if translation is None:
+            return {'name': self.name, 'description': self.description}
+        return {'name': translation.name, 'description': translation.description}
 
     @property
     def dreyfus_dimensions(self):
@@ -95,6 +102,21 @@ class QuestionSection(TimeStampedModel):
 
     def __str__(self):
         return f"{self.questionnaire.name} - {self.title}"
+
+    def get_translation_only(self, language, fallback):
+        translation = self.translations.filter(language=language).first()
+        if translation is None:
+            return None
+        return {
+            'title': translation.title or fallback['title'],
+            'description': translation.description or fallback.get('description', ''),
+        }
+
+    def get_translated(self, language):
+        translation = self.translations.filter(language=language).first()
+        if translation is None:
+            return {'title': self.title, 'description': self.description}
+        return {'title': translation.title, 'description': translation.description}
 
 
 class Question(TimeStampedModel):
@@ -164,3 +186,69 @@ class Question(TimeStampedModel):
 
     def __str__(self):
         return f"{self.section.title} - {self.question_text[:50]}"
+
+    def get_translation_only(self, language, fallback):
+        translation = self.translations.filter(language=language).first()
+        if translation is None:
+            return None
+        return {
+            'question_text': translation.question_text or fallback['question_text'],
+            'config': translation.config or fallback['question_config'],
+        }
+
+    def get_translated(self, language):
+        translation = self.translations.filter(language=language).first()
+        if translation is None:
+            return {
+                'question_text': self.question_text,
+                'config': self.config,
+                'action_items': self.action_items,
+            }
+        return {
+            'question_text': translation.question_text or self.question_text,
+            'config': translation.config or self.config,
+            'action_items': translation.action_items,
+        }
+
+
+class QuestionnaireTranslation(TimeStampedModel):
+    questionnaire = models.ForeignKey(
+        Questionnaire,
+        on_delete=models.CASCADE,
+        related_name='translations',
+    )
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES)
+    name = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = [('questionnaire', 'language')]
+
+
+class QuestionSectionTranslation(TimeStampedModel):
+    section = models.ForeignKey(
+        QuestionSection,
+        on_delete=models.CASCADE,
+        related_name='translations',
+    )
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES)
+    title = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = [('section', 'language')]
+
+
+class QuestionTranslation(TimeStampedModel):
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='translations',
+    )
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES)
+    question_text = models.TextField(blank=True)
+    config = models.JSONField(default=dict, blank=True)
+    action_items = models.JSONField(default=list, blank=True)
+
+    class Meta:
+        unique_together = [('question', 'language')]

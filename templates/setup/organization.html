@@ -1,13 +1,14 @@
 {% extends "setup/base.html" %}
+{% load i18n %}
 
-{% block title %}Organization Setup - Blik Setup{% endblock %}
+{% block title %}{% translate "Organization Setup" %} - Blik Setup{% endblock %}
 
-{% block subtitle %}Configure your organization details{% endblock %}
+{% block subtitle %}{% translate "Configure your organization details" %}{% endblock %}
 
 {% block content %}
-<h2 class="page-title">Organization Details</h2>
+<h2 class="page-title">{% translate "Organization Details" %}</h2>
 <p class="page-description">
-    Tell us about your organization. This information will be used in emails and reports.
+    {% translate "Tell us about your organization. This information will be used in emails and reports." %}
 </p>
 
 <form method="post" novalidate>
@@ -23,7 +24,7 @@
             {% endfor %}
             </ul>
         {% endif %}
-        <small class="help-text">Your organization's name (e.g., "Acme Corporation")</small>
+        <small class="help-text">{% translate "Your organization's name (e.g., 'Acme Corporation')" %}</small>
     </div>
 
     <div class="form-group">
@@ -42,7 +43,7 @@
     <div class="button-group">
         <div></div>
         <button type="submit" class="btn btn-primary">
-            Continue to Email Setup →
+            {% translate "Continue to Email Setup" %} →
         </button>
     </div>
 </form>

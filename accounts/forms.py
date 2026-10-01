@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from accounts.models import UserProfile
 
 
@@ -9,6 +10,7 @@ class ProfileEditForm(forms.ModelForm):
     """Form for editing user profile information"""
 
     first_name = forms.CharField(
+        label=_('First name'),
         max_length=150,
         required=False,
         widget=forms.TextInput(attrs={
@@ -18,6 +20,7 @@ class ProfileEditForm(forms.ModelForm):
     )
 
     last_name = forms.CharField(
+        label=_('Last name'),
         max_length=150,
         required=False,
         widget=forms.TextInput(attrs={
@@ -27,6 +30,7 @@ class ProfileEditForm(forms.ModelForm):
     )
 
     email = forms.EmailField(
+        label=_('Email address'),
         required=True,
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
@@ -50,13 +54,14 @@ class ProfileEditForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         # Check if email is already taken by another user
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError('This email address is already in use.')
+            raise forms.ValidationError(_('This email address is already in use.'))
         return email
 
 
 class ForgotPasswordForm(forms.Form):
     """Form for requesting a password reset"""
     email = forms.EmailField(
+        label=_('Email address'),
         required=True,
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
@@ -69,7 +74,7 @@ class ForgotPasswordForm(forms.Form):
 class ResetPasswordForm(forms.Form):
     """Form for setting a new password"""
     password1 = forms.CharField(
-        label='New Password',
+        label=_('New Password'),
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': 'New password',
@@ -77,7 +82,7 @@ class ResetPasswordForm(forms.Form):
         })
     )
     password2 = forms.CharField(
-        label='Confirm Password',
+        label=_('Confirm Password'),
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': 'Confirm new password'
@@ -91,7 +96,7 @@ class ResetPasswordForm(forms.Form):
 
         if password1 and password2:
             if password1 != password2:
-                raise ValidationError('Passwords do not match.')
+                raise ValidationError(_('Passwords do not match.'))
             try:
                 validate_password(password1)
             except ValidationError as e:

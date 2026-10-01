@@ -1,8 +1,9 @@
 {% extends "setup/base.html" %}
+{% load i18n %}
 
-{% block title %}Setup Complete - Blik{% endblock %}
+{% block title %}{% translate "Setup Complete" %} - Blik{% endblock %}
 
-{% block subtitle %}Your Blik instance is ready to use!{% endblock %}
+{% block subtitle %}{% translate "Your Blik instance is ready to use!" %}{% endblock %}
 
 {% block content %}
 <div class="success-icon">
@@ -11,33 +12,33 @@
     </svg>
 </div>
 
-<h2 class="page-title" style="text-align: center; color: var(--success);">Setup Complete!</h2>
+<h2 class="page-title" style="text-align: center; color: var(--success);">{% translate "Setup Complete!" %}</h2>
 <p class="page-description" style="text-align: center;">
-    Congratulations! Your Blik 360-degree feedback system is now configured and ready to use.
+    {% translate "Congratulations! Your Blik 360-degree feedback system is now configured and ready to use." %}
 </p>
 
 <div class="config-summary">
-    <h3>Configuration Summary</h3>
+    <h3>{% translate "Configuration Summary" %}</h3>
     <table>
         <tr>
-            <td>Administrator:</td>
+            <td>{% translate "Administrator:" %}</td>
             <td>{{ user.username }}</td>
         </tr>
         <tr>
-            <td>Email:</td>
+            <td>{% translate "Email:" %}</td>
             <td>{{ user.email }}</td>
         </tr>
         <tr>
-            <td>Organization:</td>
+            <td>{% translate "Organization:" %}</td>
             <td>{{ organization.name }}</td>
         </tr>
         <tr>
-            <td>Email Configured:</td>
+            <td>{% translate "Email Configured:" %}</td>
             <td>
                 {% if organization.smtp_host %}
-                Yes ({{ organization.smtp_host }})
+                {% blocktrans with smtp_host=organization.smtp_host %}Yes ({{ smtp_host }}){% endblocktrans %}
                 {% else %}
-                Not yet configured
+                {% translate "Not yet configured" %}
                 {% endif %}
             </td>
         </tr>
@@ -45,33 +46,34 @@
 </div>
 
 <div class="next-steps">
-    <h3>Next Steps</h3>
+    <h3>{% translate "Next Steps" %}</h3>
     <ul>
         <li>
-            <strong>Access admin dashboard:</strong><br>
-            <a href="/dashboard/" target="_blank">Go to Admin Dashboard</a> to manage reviewees, questionnaires, and review cycles
+            <strong>{% translate "Access admin dashboard:" %}</strong><br>
+            {% url 'admin_dashboard' as dashboard_url %}
+            <a href="{{ dashboard_url }}" target="_blank">{% translate "Go to Admin Dashboard" %}</a> {% translate "to manage reviewees, questionnaires, and review cycles" %}
         </li>
         <li>
-            <strong>Create your first reviewee:</strong><br>
-            Add people who will receive 360-degree feedback from the dashboard
+            <strong>{% translate "Create your first reviewee:" %}</strong><br>
+            {% translate "Add people who will receive 360-degree feedback from the dashboard" %}
         </li>
         <li>
-            <strong>Start a review cycle:</strong><br>
-            Create a new review cycle and send invitations to reviewers
+            <strong>{% translate "Start a review cycle:" %}</strong><br>
+            {% translate "Create a new review cycle and send invitations to reviewers" %}
         </li>
     </ul>
 </div>
 
 <div class="info-card" style="margin-top: 25px;">
-    <h3>Want to explore first?</h3>
+    <h3>{% translate "Want to explore first?" %}</h3>
     <p>
-        Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens.
+        {% translate "Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens." %}
     </p>
     <form method="post" style="margin: 0;">
         {% csrf_token %}
         <input type="hidden" name="generate_test_data" value="1">
         <button type="submit" class="btn btn-primary" style="margin: 0;">
-            Generate Test Data
+            {% translate "Generate Test Data" %}
         </button>
     </form>
 </div>
@@ -79,12 +81,12 @@
 <div class="button-group" style="margin-top: 30px;">
     <div></div>
     <a href="/dashboard/" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
-        Go to Admin Dashboard
+        {% translate "Go to Admin Dashboard" %}
     </a>
 </div>
 
 <p style="text-align: center; margin-top: 30px; color: var(--text-secondary); font-size: 14px;">
-    Need help? Check out the <a href="https://github.com/yourusername/blik" style="color: var(--primary-color);">documentation</a>
-    or <a href="https://github.com/yourusername/blik/issues" style="color: var(--primary-color);">report an issue</a>.
+    {% translate "Need help? Check out the" %} <a href="https://github.com/yourusername/blik" style="color: var(--primary-color);">{% translate "documentation" %}</a>
+    {% translate "or" %} <a href="https://github.com/yourusername/blik/issues" style="color: var(--primary-color);">{% translate "report an issue" %}</a>.
 </p>
 {% endblock %}

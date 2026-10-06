@@ -17,6 +17,7 @@ from django_ratelimit.decorators import ratelimit
 from datetime import datetime, timezone as dt_timezone
 from core.models import Organization
 from .models import Plan, Subscription, OneTimeLoginToken
+from .fulfilment import _period, _ts, fulfil_checkout
 from accounts.services import create_user_with_email_as_username
 from .utils import price_id_for
 
@@ -177,20 +178,6 @@ def stripe_webhook(request):
 
     logger.info(f"[STRIPE WEBHOOK] ✓ Webhook processing complete")
     return HttpResponse(status=200)
-
-
-def _period(sub):
-    """(start, end) timestamps. Newer Stripe API versions keep them on the
-    subscription item; fall back to the old top-level fields, then trial dates."""
-    item = (sub.get('items') or {}).get('data') or [{}]
-    item = item[0]
-    start = item.get('current_period_start') or sub.get('current_period_start') or sub.get('trial_start') or sub.get('created')
-    end = item.get('current_period_end') or sub.get('current_period_end') or sub.get('trial_end')
-    return start, end
-
-
-def _ts(value):
-    return datetime.fromtimestamp(value, tz=dt_timezone.utc) if value else None
 
 
 def handle_checkout_session_completed(session):

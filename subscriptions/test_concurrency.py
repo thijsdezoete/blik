@@ -1,15 +1,20 @@
 """Tests that need real row locks. Run with ./test.sh (PostgreSQL)."""
 import threading
 from unittest import skipUnless
+from unittest.mock import patch
 
+from django.contrib.auth.models import User
 from django.db import connection, connections
 from django.test import TransactionTestCase
 
 from accounts.factories import RevieweeFactory
 from core.factories import OrganizationFactory
+from core.models import Organization
 from questionnaires.factories import QuestionnaireFactory
 from reviews.models import ReviewCycle
-from subscriptions.testing import grant
+from subscriptions.fulfilment import fulfil_checkout
+from subscriptions.models import CheckoutFulfilment, RoundPurchase
+from subscriptions.testing import checkout_session, grant
 from subscriptions.utils import NoCycleCredits, cycle_credits
 
 
@@ -53,3 +58,18 @@ class LastCreditRaceTests(TransactionTestCase):
         self.assertEqual(ReviewCycle.objects.filter(reviewee=reviewee).count(), 1)
         self.assertEqual(sum(isinstance(r, NoCycleCredits) for r in results), 1)
         self.assertEqual(cycle_credits(org), 0)
+
+
+@skipUnless(connection.vendor == 'postgresql', 'row locks need PostgreSQL')
+class ConcurrentFulfilmentTests(TransactionTestCase):
+    serialized_rollback = True
+
+    def test_webhook_and_success_page_at_once_fulfil_once(self):
+        with patch('core.email.send_email'):
+            results = run_twice_at_once(lambda: fulfil_checkout(checkout_session()))
+
+        self.assertEqual([r for r in results if isinstance(r, Exception)], [])
+        self.assertEqual(CheckoutFulfilment.objects.count(), 1)
+        self.assertEqual(RoundPurchase.objects.count(), 1)
+        self.assertEqual(User.objects.filter(email='buyer@example.com').count(), 1)
+        self.assertEqual(Organization.objects.filter(email='buyer@example.com').count(), 1)

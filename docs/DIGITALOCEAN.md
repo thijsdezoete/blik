@@ -143,6 +143,7 @@ Only if using subscription features:
 | `STRIPE_WEBHOOK_SECRET` | Secret | `whsec_...` |
 | `STRIPE_PRICE_ID_SAAS` | Plain | `price_...` |
 | `STRIPE_PRICE_ID_ENTERPRISE` | Plain | `price_...` |
+| `STRIPE_PRICE_ID_SINGLE` | Plain | `price_...` |
 
 ### Custom Domain (App Platform)
 

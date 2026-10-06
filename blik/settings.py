@@ -275,6 +275,7 @@ STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY', default='')
 STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET', default='')
 STRIPE_PRICE_ID_SAAS = env('STRIPE_PRICE_ID_SAAS', default='')
 STRIPE_PRICE_ID_ENTERPRISE = env('STRIPE_PRICE_ID_ENTERPRISE', default='')
+STRIPE_PRICE_ID_SINGLE = env('STRIPE_PRICE_ID_SINGLE', default='')
 
 # CORS settings - allow landing page to call main app API
 # Default to deriving from ALLOWED_HOSTS with site protocol

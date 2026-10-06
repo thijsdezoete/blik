@@ -142,3 +142,15 @@ def billing_context(organization, user):
             organization=organization).exists(),
         'is_org_admin': user.has_perm('accounts.can_manage_organization'),
     }
+
+
+def price_id_for(plan_type):
+    """The Stripe price for a plan type. The client never chooses the price."""
+    price_id = {
+        'saas': settings.STRIPE_PRICE_ID_SAAS,
+        'enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
+        'single': settings.STRIPE_PRICE_ID_SINGLE,
+    }.get(plan_type)
+    if not price_id:
+        raise ValueError(f"No Stripe price configured for plan type {plan_type!r}")
+    return price_id

@@ -133,6 +133,7 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 # Copy the Price ID for each product (starts with price_...)
 STRIPE_PRICE_ID_SAAS=price_your_saas_price_id_here
 STRIPE_PRICE_ID_ENTERPRISE=price_your_enterprise_price_id_here
+STRIPE_PRICE_ID_SINGLE=price_your_single_round_price_id_here
 ```
 
 See [docs/STRIPE_WEBHOOKS.md](STRIPE_WEBHOOKS.md) for complete Stripe setup instructions.

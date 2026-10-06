@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.shortcuts import redirect
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django_ratelimit.decorators import ratelimit
@@ -17,62 +18,95 @@ from datetime import datetime, timezone as dt_timezone
 from core.models import Organization
 from .models import Plan, Subscription, OneTimeLoginToken
 from accounts.services import create_user_with_email_as_username
+from .utils import price_id_for
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 
 
+def _base_url(request):
+    """Public base URL of the main app (request host in local dev)."""
+    if settings.DEBUG:
+        scheme = 'https' if request.is_secure() else 'http'
+        return f"{scheme}://{request.get_host()}"
+    return settings.MAIN_APP_URL
+
+
+def _create_session(plan_type, *, base_url, cancel_url, organization=None, user=None):
+    """Create a Stripe Checkout session. Raises ValueError for an unknown plan.
+
+    `organization` is passed only by the authenticated in-app view; it binds
+    the purchase to that organization via client_reference_id.
+    """
+    params = {
+        'payment_method_types': ['card'],
+        'line_items': [{'price': price_id_for(plan_type), 'quantity': 1}],
+        'success_url': f'{base_url}/api/stripe/checkout-success/?session_id={{CHECKOUT_SESSION_ID}}',
+        'cancel_url': cancel_url,
+        'metadata': {'plan_type': plan_type},
+    }
+    if plan_type == 'single':
+        params.update(mode='payment', customer_creation='always',
+                      invoice_creation={'enabled': True})
+    else:
+        params.update(mode='subscription', subscription_data={'trial_period_days': 14})
+    if organization is not None:
+        params['client_reference_id'] = str(organization.pk)
+        params['customer_email'] = user.email
+        params['metadata']['user_id'] = str(user.pk)
+    return stripe.checkout.Session.create(**params)
+
+
 @require_POST
-@csrf_exempt  # Required: Called from landing page (different domain)
+@csrf_exempt  # Required: called from the landing page (different domain)
 @ratelimit(key='ip', rate='10/m', method='POST', block=True)
 def create_checkout_session(request):
-    """
-    Create Stripe Checkout session
+    """Public checkout for new customers. Never binds to an existing organization.
 
-    Security: CSRF exemption is necessary because this endpoint is called
-    from the public landing page (different subdomain). Protected by:
-    - Rate limiting (10 requests/minute per IP)
-    - CORS restrictions (only allowed origins)
-    - Stripe API validation
-    - No sensitive data exposure (only creates a Stripe session)
+    CSRF-exempt because the landing page is on another origin. Protected by
+    rate limiting and CORS; it only creates a Stripe session.
     """
     try:
-        data = json.loads(request.body)
-        price_id = data.get('price_id')
-        plan_type = data.get('plan_type')
-
-        if not price_id or not plan_type:
-            return JsonResponse({'error': 'Missing required fields'}, status=400)
-
-        # Build base URL from request for local dev, or use configured domain
-        if settings.DEBUG:
-            scheme = 'https' if request.is_secure() else 'http'
-            base_url = f"{scheme}://{request.get_host()}"
-        else:
-            base_url = settings.MAIN_APP_URL
-
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price': price_id,
-                'quantity': 1,
-            }],
-            mode='subscription',
-            success_url=f'{base_url}/api/stripe/checkout-success/?session_id={{CHECKOUT_SESSION_ID}}',
+        plan_type = json.loads(request.body).get('plan_type')
+        base_url = _base_url(request)
+        session = _create_session(
+            plan_type, base_url=base_url,
             cancel_url=f'{base_url}/landing/signup/?canceled=true',
-            subscription_data={
-                'trial_period_days': 14,
-            },
-            metadata={
-                'plan_type': plan_type,
-            },
         )
-
-        return JsonResponse({'session_id': session.id})
-    except Exception as e:
+    except ValueError:
+        return JsonResponse({'error': 'Unknown plan'}, status=400)
+    except Exception:
         logger.exception('Error creating checkout session')
         return JsonResponse({'error': 'Could not create checkout session. Please try again.'}, status=400)
+    return JsonResponse({'session_id': session.id, 'url': session.url})
+
+
+@login_required
+@require_POST
+def start_checkout(request):
+    """In-app purchase for an existing organization: another round, or a first subscription."""
+    organization = getattr(request, 'organization', None)
+    if not organization or not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, 'Only organization administrators can manage billing.')
+        return redirect('settings')
+
+    plan_type = request.POST.get('plan_type')
+    if plan_type != 'single' and Subscription.objects.filter(organization=organization).exists():
+        messages.error(request, 'This organization already has a subscription.')
+        return redirect('settings')
+
+    base_url = _base_url(request)
+    try:
+        session = _create_session(
+            plan_type, base_url=base_url, cancel_url=f'{base_url}/dashboard/settings/',
+            organization=organization, user=request.user,
+        )
+    except Exception:
+        logger.exception('Error starting in-app checkout')
+        messages.error(request, 'Could not start checkout. Please try again.')
+        return redirect('settings')
+    return redirect(session.url)
 
 
 @require_POST

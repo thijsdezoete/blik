@@ -84,6 +84,7 @@ services:
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
       STRIPE_PRICE_ID_SAAS: ${STRIPE_PRICE_ID_SAAS:-}
       STRIPE_PRICE_ID_ENTERPRISE: ${STRIPE_PRICE_ID_ENTERPRISE:-}
+      STRIPE_PRICE_ID_SINGLE: ${STRIPE_PRICE_ID_SINGLE:-}
     depends_on:
       db:
         condition: service_healthy

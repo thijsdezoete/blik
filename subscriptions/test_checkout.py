@@ -132,6 +132,14 @@ class PublicEndpointTests(TestCase):
         create.assert_not_called()
         self.assertIn('single', logs.output[0])
 
+    def test_a_malformed_or_empty_body_is_a_400(self):
+        for body in ('not json', ''):
+            with patch(CREATE) as create:
+                response = Client().post('/api/stripe/create-checkout-session/',
+                                         data=body, content_type='application/json')
+            self.assertEqual(response.status_code, 400)
+            create.assert_not_called()
+
     def test_unknown_plan_type_is_a_400(self):
         response, create = self.post(Client(), {'plan_type': 'gold'})
         self.assertEqual(response.status_code, 400)

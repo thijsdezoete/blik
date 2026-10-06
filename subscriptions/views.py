@@ -64,6 +64,7 @@ def create_checkout_session(request):
     CSRF-exempt because the landing page is on another origin. Protected by
     rate limiting and CORS; it only creates a Stripe session.
     """
+    plan_type = None
     try:
         plan_type = json.loads(request.body).get('plan_type')
         base_url = _base_url(request)

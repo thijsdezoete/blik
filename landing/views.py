@@ -115,12 +115,10 @@ def portfolio_strategy(request):
 
 
 def signup(request):
-    """Signup page with Stripe checkout integration."""
+    """Signup page. The main app creates the Stripe Checkout session."""
     context = {
-        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
-        'stripe_price_id_saas': settings.STRIPE_PRICE_ID_SAAS,
-        'stripe_price_id_enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
-        # main_app_url, site_name, site_domain, site_protocol now provided by context processor
+        # Every €19 CTA links here with ?plan=single to highlight that card
+        'selected_plan': request.GET.get('plan', ''),
     }
     return render(request, 'landing/signup.html', context)
 

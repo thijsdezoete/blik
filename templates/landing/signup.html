@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Start Your Free Trial - {{ site_name }}</title>
+    <title>Choose Your Plan - {{ site_name }}</title>
 
-    <meta name="description" content="{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.">
+    <meta name="description" content="Pay €{{ plan_single_price }} once for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.">
     <meta name="robots" content="noindex, nofollow">
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
@@ -38,23 +38,38 @@
             });
         })();
     </script>
-
-    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body class="landing-page">
     <div class="signup-container">
         <a href="{% landing_url 'index' %}" class="back-link">← Back to Home</a>
 
         <div class="signup-header">
-            <h1 class="signup-title">Start Your Free Trial</h1>
-            <p class="signup-subtitle">{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
+            <h1 class="signup-title">Choose your plan</h1>
+            <p class="signup-subtitle">Pay once for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.</p>
         </div>
 
         <div class="plans-grid">
+            <div class="plan-card{% if selected_plan == 'single' %} plan-card--selected{% endif %}">
+                <h2 class="plan-name">Single Round</h2>
+                <div class="plan-price">€{{ plan_single_price }}<small> once</small></div>
+                <p class="plan-description">One review round, no subscription</p>
+                <ul class="plan-features">
+                    <li>{{ plan_single_max }} review cycles, one per employee</li>
+                    <li>All questionnaires and reports</li>
+                    <li>Anonymous feedback</li>
+                    <li>Free, unlimited reviewers</li>
+                    <li>Review cycles never expire</li>
+                    <li>Reports stay available</li>
+                </ul>
+                <button class="checkout-btn primary" onclick="startCheckout('single')" id="btn-single">
+                    Pay €{{ plan_single_price }} and start
+                </button>
+            </div>
+
             <div class="plan-card">
-                <h2 class="plan-name">SaaS Plan</h2>
+                <h2 class="plan-name">EU Hosted</h2>
                 <div class="plan-price">€{{ plan_saas_price }}<small>/month</small></div>
-                <p class="plan-description">Perfect for growing teams</p>
+                <p class="plan-description">For teams that review continuously</p>
                 <ul class="plan-features">
                     <li>Up to {{ plan_saas_max }} employees</li>
                     <li>Unlimited review cycles</li>
@@ -67,53 +82,50 @@
                     Start Free Trial
                 </button>
             </div>
+        </div>
 
-            <div class="plan-card">
-                <h2 class="plan-name">Enterprise</h2>
-                <div class="plan-price">€{{ plan_ent_price }}<small>/month</small></div>
-                <p class="plan-description">For larger organizations</p>
-                <ul class="plan-features">
+        <details class="pricing-foldout">
+            <summary>More than {{ plan_saas_max }} employees? Enterprise: €{{ plan_ent_price }}/month for up to {{ plan_ent_max }}</summary>
+            <div class="pricing-foldout-body">
+                <ul class="pricing-features">
+                    <li>Everything in EU Hosted</li>
                     <li>Up to {{ plan_ent_max }} employees</li>
-                    <li>Unlimited review cycles</li>
-                    <li>Anonymous feedback</li>
-                    <li>Trend &amp; benchmark reports</li>
                     <li>Priority support</li>
-                    <li>{{ trial_days }}-day free trial</li>
+                    <li>SLA with uptime commitment</li>
+                    <li>{{ trial_days }}-day free trial, credit card required</li>
                 </ul>
+                <p class="pricing-note"><strong>Need more than {{ plan_ent_max }} employees?</strong> Contact us for custom pricing.</p>
                 <button class="checkout-btn secondary" onclick="startCheckout('enterprise')" id="btn-enterprise">
                     Start Free Trial
                 </button>
             </div>
-        </div>
+        </details>
+
+        <p class="signup-signin">Already have an account? <a href="{{ main_app_url }}/accounts/login/">Sign in</a> and manage your plan in Settings.</p>
 
         <div id="error-message" class="error-message" hidden></div>
     </div>
 
     <script>
-        const stripe = Stripe('{{ stripe_publishable_key }}');
         const mainAppUrl = '{{ main_app_url }}';
 
         async function startCheckout(planType) {
-            const priceId = planType === 'saas' ? '{{ stripe_price_id_saas }}' : '{{ stripe_price_id_enterprise }}';
             const btn = document.getElementById(`btn-${planType}`);
             const errorDiv = document.getElementById('error-message');
+            const label = btn.textContent;
 
-            // Disable buttons
             btn.disabled = true;
             btn.textContent = 'Loading...';
             errorDiv.hidden = true;
 
             try {
-                // Call main app API to create checkout session
+                // The main app creates the Stripe Checkout session and picks the price
                 const response = await fetch(`${mainAppUrl}/api/stripe/create-checkout-session/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        price_id: priceId,
-                        plan_type: planType
-                    })
+                    body: JSON.stringify({plan_type: planType})
                 });
 
                 if (!response.ok) {
@@ -121,23 +133,27 @@
                 }
 
                 const data = await response.json();
-
-                // Redirect to Stripe Checkout
-                const result = await stripe.redirectToCheckout({
-                    sessionId: data.session_id
-                });
-
-                if (result.error) {
-                    throw new Error(result.error.message);
+                if (!data.url) {
+                    throw new Error('Checkout is unavailable right now');
                 }
+
+                window.location.href = data.url;
             } catch (error) {
                 console.error('Error:', error);
                 errorDiv.textContent = `Error: ${error.message}. Please try again or contact support.`;
                 errorDiv.hidden = false;
                 btn.disabled = false;
-                btn.textContent = 'Start Free Trial';
+                btn.textContent = label;
             }
         }
+
+        // Back from Stripe via the back button: the browser restores this page
+        // with the button still disabled. Reload to reset it.
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
     </script>
 </body>
 </html>

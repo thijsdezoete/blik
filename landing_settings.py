@@ -126,11 +126,6 @@ SITE_PROTOCOL = env('SITE_PROTOCOL', default='http')
 SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
 SITE_KEYWORDS = '360 feedback, performance review, open source, self-hosted, anonymous feedback, employee feedback'
 
-# Stripe settings (optional for landing page)
-STRIPE_PUBLISHABLE_KEY = env('STRIPE_PUBLISHABLE_KEY', default='')
-STRIPE_PRICE_ID_SAAS = env('STRIPE_PRICE_ID_SAAS', default='')
-STRIPE_PRICE_ID_ENTERPRISE = env('STRIPE_PRICE_ID_ENTERPRISE', default='')
-
 # Main app URL - used by signup page to make API calls
 MAIN_APP_URL = env('MAIN_APP_URL', default=f'{SITE_PROTOCOL}://app.{SITE_DOMAIN}')
 

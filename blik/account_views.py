@@ -267,7 +267,7 @@ def delete_account(request):
         delete_user_account(user)
         logout(request)
         messages.success(request, 'Your account has been deleted.')
-        return redirect('landing:home')
+        return redirect('landing:index')
     except ValueError as e:
         messages.error(request, str(e))
         return redirect('account_settings')
@@ -306,7 +306,7 @@ def delete_organization(request):
         delete_org_service(org)
         logout(request)
         messages.success(request, 'Organization and all data have been deleted.')
-        return redirect('landing:home')
+        return redirect('landing:index')
     except Exception as e:
         messages.error(request, f'Error deleting organization: {str(e)}')
         return redirect('account_settings')

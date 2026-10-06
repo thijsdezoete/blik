@@ -74,18 +74,18 @@
                     <a href="#architecture" class="btn btn-secondary">See Architecture</a>
                 </div>
 
-                <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">AGPL</div>
-                        <div style="font-size: 0.875rem; opacity: 0.9;">Truly Open Source</div>
+                <div class="open-source-highlights">
+                    <div class="product-centered">
+                        <div class="text-2xl font-bold mb-2">AGPL</div>
+                        <div class="open-source-highlight-caption">Truly Open Source</div>
                     </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Django</div>
-                        <div style="font-size: 0.875rem; opacity: 0.9;">Modern Python</div>
+                    <div class="product-centered">
+                        <div class="text-2xl font-bold mb-2">Django</div>
+                        <div class="open-source-highlight-caption">Modern Python</div>
                     </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Docker</div>
-                        <div style="font-size: 0.875rem; opacity: 0.9;">One Command</div>
+                    <div class="product-centered">
+                        <div class="text-2xl font-bold mb-2">Docker</div>
+                        <div class="open-source-highlight-caption">One Command</div>
                     </div>
                 </div>
             </div>
@@ -95,18 +95,18 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Why Developers Hate Traditional HR Tools</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">And why we built something better</p>
+            <p class="section-intro">And why we built something better</p>
 
-            <div class="features-grid" style="margin-bottom: 3rem;">
+            <div class="features-grid mb-12">
                 <div class="feature-card feature-card-danger">
                     <h3>Commercial HR Platforms</h3>
                     <ul class="comparison-list">
-                        <li>Black box systems with zero transparency</li>
-                        <li>Cannot audit, customize, or extend functionality</li>
-                        <li>Vendor lock-in with proprietary data formats</li>
-                        <li>Sales-driven feature bloat nobody uses</li>
-                        <li>Web 2.0 interfaces from 2010</li>
-                        <li>No API or terrible API with usage limits</li>
+                        <li>Vendor-managed infrastructure</li>
+                        <li>Customization through supported settings and integrations</li>
+                        <li>Export formats and APIs vary by vendor</li>
+                        <li>Broader HR and performance-management modules</li>
+                        <li>Vendor-provided support and product updates</li>
+                        <li>Check API availability and limits for your chosen plan</li>
                     </ul>
                 </div>
 
@@ -124,69 +124,68 @@
             </div>
 
             <div class="code-block">
-                <div style="color: var(--text-tertiary);"># Deploy Blik in three commands</div>
+                <div class="text-tertiary"># Deploy Blik in three commands</div>
                 git clone https://github.com/thijsdezoete/blik.git<br>
                 cd blik<br>
                 docker compose up -d<br>
                 <br>
-                <div style="color: var(--text-tertiary);"># Visit http://localhost:8000/setup/ and you're done</div>
+                <div class="text-tertiary"># Visit http://localhost:8000/setup/ and you're done</div>
             </div>
 
             <!-- Developer-focused Screenshots -->
-            <div style="margin-top: 4rem;">
-                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Clean, Customizable Interface</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem;">
+            <div class="mt-16">
+                <h3 class="product-centered mb-8 text-2xl">Clean, Customizable Interface</h3>
+                <div class="open-source-screenshots">
                     <div>
-                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div class="screenshot-hover-wrapper open-source-screenshot-frame">
                             <picture class="screenshot-layer screenshot-light">
                                 <source srcset="{% static 'img/screenshots/team_desktop_light.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/team_desktop_light.png' %}"
                                      alt="Team Management Interface - Light Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="open-source-screenshot-image">
                             </picture>
                             <picture class="screenshot-layer screenshot-dark">
                                 <source srcset="{% static 'img/screenshots/team_desktop_dark.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/team_desktop_dark.png' %}"
                                      alt="Team Management Interface - Dark Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="open-source-screenshot-image">
                             </picture>
                             <div class="theme-indicator">Hover to toggle theme</div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Team management with granular permissions</p>
+                        <p class="product-centered text-secondary mt-4">Team management with granular permissions</p>
                     </div>
                     <div>
-                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div class="screenshot-hover-wrapper open-source-screenshot-frame">
                             <picture class="screenshot-layer screenshot-light">
                                 <source srcset="{% static 'img/screenshots/cycle_detail_desktop_light.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/cycle_detail_desktop_light.png' %}"
                                      alt="Review Cycle Detail - Light Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="open-source-screenshot-image">
                             </picture>
                             <picture class="screenshot-layer screenshot-dark">
                                 <source srcset="{% static 'img/screenshots/cycle_detail_desktop_dark.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/cycle_detail_desktop_dark.png' %}"
                                      alt="Review Cycle Detail - Dark Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="open-source-screenshot-image">
                             </picture>
                             <div class="theme-indicator">Hover to toggle theme</div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Track invitations and completion status</p>
+                        <p class="product-centered text-secondary mt-4">Track invitations and completion status</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <section id="architecture" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Technical Architecture</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Modern stack with developer-friendly patterns</p>
+            <p class="section-intro">Modern stack with developer-friendly patterns</p>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -215,9 +214,9 @@
                 </div>
             </div>
 
-            <div class="feature-card" style="margin-top: 3rem; padding: 2rem;">
-                <h4 style="text-align: center; margin-bottom: 2rem; font-size: 1.25rem;">System Architecture</h4>
-                <pre style="text-align: left; font-family: monospace; font-size: 0.75rem; line-height: 1.6; overflow-x: auto; color: var(--text-primary);">
+            <div class="feature-card product-architecture-panel">
+                <h4 class="product-centered mb-8 text-xl">System Architecture</h4>
+                <pre class="architecture-diagram">
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         Docker Compose Stack                        │
 │                                                                     │
@@ -285,7 +284,7 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Code Quality and Development Experience</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Built to read, understand, and extend</p>
+            <p class="section-intro">Built to read, understand, and extend</p>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -324,19 +323,19 @@
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title">Dreyfus Model for Technical Growth</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Competency framework that resonates with engineers</p>
+            <p class="section-intro">Competency framework that resonates with engineers</p>
 
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>Why Dreyfus for Developers</h3>
                     <p>Five-stage model from Novice to Expert aligns with how engineers actually develop skills. No corporate HR jargon. Maps to technical career ladders naturally. Based on research, not management fads.</p>
-                    <p style="margin-top: 1rem;"><a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Learn about the Dreyfus Model →</a></p>
+                    <p class="mt-4"><a href="{% landing_url 'dreyfus_model' %}" class="product-link">Learn about the Dreyfus Model →</a></p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Default Questionnaires</h3>
                     <p>Professional Skills: leadership, communication, collaboration, problem-solving. Software Engineering: code quality, architecture, debugging, mentoring. Both use Dreyfus model ratings.</p>
-                    <p style="margin-top: 1rem;"><a href="{% landing_url 'dreyfus_model' %}#framework" style="color: var(--primary); text-decoration: none; font-weight: 500;">See the full framework →</a></p>
+                    <p class="mt-4"><a href="{% landing_url 'dreyfus_model' %}#framework" class="product-link">See the full framework →</a></p>
                 </div>
 
                 <div class="feature-card">
@@ -345,9 +344,9 @@
                 </div>
             </div>
 
-            <div class="feature-card" style="margin-top: 2rem; background: var(--primary-600); color: white; border: 1px solid var(--primary-700);">
-                <h3 style="color: white;">Dreyfus Stages: Novice → Advanced Beginner → Competent → Proficient → Expert</h3>
-                <p style="color: rgba(255,255,255,0.9);">Maps naturally to Junior → Mid-Level → Senior → Staff → Principal engineering levels</p>
+            <div class="feature-card dreyfus-stages-banner mt-8">
+                <h3 class="product-on-primary-title">Dreyfus Stages: Novice → Advanced Beginner → Competent → Proficient → Expert</h3>
+                <p class="product-on-primary-copy">Maps naturally to Junior → Mid-Level → Senior → Staff → Principal engineering levels</p>
             </div>
         </div>
     </section>
@@ -355,7 +354,7 @@
     <section id="contribute" class="section">
         <div class="container">
             <h2 class="section-title">Contribution Opportunities</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Help make Blik better for everyone</p>
+            <p class="section-intro">Help make Blik better for everyone</p>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -374,30 +373,30 @@
 
                 <div class="feature-card">
                     <h3>Advanced Projects</h3>
-                    <p><strong>API Enhancement:</strong> GraphQL support, API rate limiting, extended webhook events<br><br>
+                    <p><strong>API Enhancement:</strong> GraphQL support, extended webhook events<br><br>
                     <strong>AI Enhancement:</strong> Local model support (Llama, Mistral), multi-model comparison<br><br>
                     <strong>Analytics:</strong> Historical trends, team analytics, visualization dashboards</p>
                 </div>
             </div>
 
-            <div class="code-block" style="margin-top: 2rem;">
-                <div style="color: var(--text-tertiary);"># Contributing is straightforward</div>
+            <div class="code-block mt-8">
+                <div class="text-tertiary"># Contributing is straightforward</div>
                 git clone https://github.com/thijsdezoete/blik.git<br>
                 cd blik<br>
-                <div style="color: var(--text-tertiary);"># Make your changes, add tests</div>
+                <div class="text-tertiary"># Make your changes, add tests</div>
                 pytest<br>
-                <div style="color: var(--text-tertiary);"># Open PR with clear description</div>
+                <div class="text-tertiary"># Open PR with clear description</div>
                 git push origin feature/your-improvement<br>
                 <br>
-                <div style="color: var(--text-tertiary);"># AGPL license means your improvements help everyone</div>
+                <div class="text-tertiary"># AGPL license means your improvements help everyone</div>
             </div>
         </div>
     </section>
 
     <section class="section">
         <div class="container">
-            <h2 class="section-title">Customization Examples</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Real ways teams have extended Blik</p>
+            <h2 class="section-title">Ideas for Extending Blik</h2>
+            <p class="section-intro">Possible customizations for self-hosted deployments. These are development ideas, not included integrations.</p>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -406,13 +405,13 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>Slack Integration</h3>
-                    <p>Send review invitations via Slack DM instead of email. Post reminders to team channels. Notify managers when reports ready. Slash command to check review status.</p>
+                    <h3>Contribution Idea: Slack Integration</h3>
+                    <p>A potential contribution could send review invitations and reminders through Slack. There is no shipped Slack or Teams integration.</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>GitHub Integration</h3>
-                    <p>Pull contribution metrics for code review competencies. Link review cycles to promotion processes. Export reports to Markdown for GitHub wikis.</p>
+                    <h3>Contribution Idea: GitHub Integration</h3>
+                    <p>A custom integration could connect code-review context to a review cycle. Blik does not ship a GitHub connector or Markdown report export.</p>
                 </div>
 
                 <div class="feature-card">
@@ -436,7 +435,7 @@
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title">Why AGPL License Matters</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Real open source, not open-core</p>
+            <p class="section-intro">Real open source, not open-core</p>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -455,9 +454,9 @@
                 </div>
             </div>
 
-            <div class="feature-card feature-card-gradient" style="margin-top: 2rem;">
-                <h3 style="color: white;">AGPL TL;DR</h3>
-                <p style="color: rgba(255,255,255,0.9);">Use freely internally. Modify as needed. If you offer it as a service, share your changes. Perfect for protecting community-driven projects.</p>
+            <div class="feature-card feature-card-gradient mt-8">
+                <h3 class="product-on-primary-title">AGPL TL;DR</h3>
+                <p class="product-on-primary-copy">Use freely internally. Modify as needed. If you offer it as a service, share your changes. Perfect for protecting community-driven projects.</p>
             </div>
         </div>
     </section>
@@ -465,47 +464,52 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Roadmap and Community</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Where we're going and how to get involved</p>
+            <p class="section-intro">Where we're going and how to get involved</p>
 
-            <div class="features-grid">
+            <div class="grid-two">
                 <div class="feature-card feature-card-success">
-                    <h3>Available Now</h3>
-                    <p>REST API with Bearer token authentication. Webhook events for real-time integrations. Interactive OpenAPI/Swagger documentation. Full CRUD operations for cycles, reviewees, questionnaires, and reports. Organization-scoped access control.</p>
-                    <a href="{{ api_swagger_url }}" class="btn btn-secondary" style="margin-top: 1rem;" target="_blank">View API Documentation</a>
+                    <h3>Shipped</h3>
+                    <ul>
+                        <li>Structured review cycles and four ready-made questionnaires.</li>
+                        <li>Trend reports, peer benchmarks and percentiles, and perception-gap insights.</li>
+                        <li>GDPR self-service JSON export and deletion tools.</li>
+                        <li>REST API with Bearer token authentication and OpenAPI documentation.</li>
+                        <li>Four HMAC-signed webhook events.</li>
+                        <li>API throttling: 100 requests/hour anonymously and 1,000/hour per token.</li>
+                        <li>Organization-scoped access and managed EU hosting.</li>
+                    </ul>
+                    <a href="{{ api_swagger_url }}" class="btn btn-secondary" target="_blank">View API Documentation</a>
                 </div>
-
                 <div class="feature-card">
-                    <h3>Near-Term (Q1 2025)</h3>
-                    <p>Manager analytics dashboard. PDF report export. LDAP/SSO authentication. Multi-language UI support. Performance optimizations. API rate limiting and usage analytics.</p>
-                </div>
-
-                <div class="feature-card">
-                    <h3>Mid-Term (Q2-Q3 2025)</h3>
-                    <p>Manager analytics dashboard with team insights. Custom competency builder UI. Workflow automation. Integration marketplace. Mobile app (optional).</p>
-                </div>
-
-                <div class="feature-card">
-                    <h3>Long-Term Vision</h3>
-                    <p>Multi-tenant SaaS version (still open source). Plugin architecture for extensions. Team collaboration features. AI coaching suggestions. Open ecosystem of integrations.</p>
+                    <h3>Planned</h3>
+                    <p>These are development directions, not features included in today's product or delivery commitments.</p>
+                    <ul>
+                        <li>PDF report export.</li>
+                        <li>LDAP, SSO, and SAML authentication.</li>
+                        <li>Native HRIS, Slack, and Teams integrations.</li>
+                        <li>Multi-language interface and additional manager analytics.</li>
+                        <li>Usage analytics, workflow automation, and a plugin system.</li>
+                        <li>Native mobile app.</li>
+                    </ul>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 4rem;">
-                <div class="feature-card" style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">GitHub</div>
-                    <div style="color: var(--text-secondary);">Source Code & Issues</div>
+            <div class="open-source-community-grid">
+                <div class="feature-card product-centered">
+                    <div class="text-2xl font-bold product-link-primary mb-2">GitHub</div>
+                    <div class="text-secondary">Source Code & Issues</div>
                 </div>
-                <div class="feature-card" style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Discord</div>
-                    <div style="color: var(--text-secondary);">Community Chat</div>
+                <div class="feature-card product-centered">
+                    <div class="text-2xl font-bold product-link-primary mb-2">Discord</div>
+                    <div class="text-secondary">Community Chat</div>
                 </div>
-                <div class="feature-card" style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Docs</div>
-                    <div style="color: var(--text-secondary);">Documentation Site</div>
+                <div class="feature-card product-centered">
+                    <div class="text-2xl font-bold product-link-primary mb-2">Docs</div>
+                    <div class="text-secondary">Documentation Site</div>
                 </div>
-                <div class="feature-card" style="text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">Weekly</div>
-                    <div style="color: var(--text-secondary);">Release Cadence</div>
+                <div class="feature-card product-centered">
+                    <div class="text-2xl font-bold product-link-primary mb-2">Weekly</div>
+                    <div class="text-secondary">Release Cadence</div>
                 </div>
             </div>
         </div>
@@ -533,12 +537,12 @@
 
                 <details class="faq-item">
                     <summary>Is there a plugin system for extensions?</summary>
-                    <p>Not yet, but it's on the roadmap. Currently, extend by modifying the Django apps directly (it's open source). For custom features, fork and merge in updates from main branch. Plugin architecture planned for 2025 to make extensions cleaner. Until then, Django's app system provides good modularity.</p>
+                    <p>Not yet. A plugin system is planned without a release date. For now, extend the Django apps directly in your fork and merge upstream updates as needed.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What's the performance like at scale?</summary>
-                    <p>Tested with 500 users and 50 concurrent review cycles without issues. Django is fast enough for this use case. PostgreSQL handles the data volume easily. For 1000+ employees, you might want query optimization and caching. Redis for caching is on the roadmap. Most orgs will never hit performance limits.</p>
+                    <p>Runs comfortably on a 1 GB VPS for typical team sizes (512 MB minimum).</p>
                 </details>
 
                 <details class="faq-item">
@@ -548,7 +552,7 @@
 
                 <details class="faq-item">
                     <summary>Is there commercial support available?</summary>
-                    <p>Currently community-supported via GitHub issues. Paid support options are being explored for 2025. For now, the codebase is clean enough that competent Django developers can self-support. Many companies deploy and maintain it internally.</p>
+                    <p>Self-hosted users can use GitHub issues for community support. Hosted SaaS includes email support; Enterprise includes priority support and an SLA. <a href="{% landing_url 'pricing' %}">Compare hosted plans</a> for the current limits and terms.</p>
                 </details>
             </div>
         </div>
@@ -562,13 +566,13 @@
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Star on GitHub</a>
                 <a href="{% landing_url 'index' %}" class="btn btn-secondary">Back to Home</a>
             </div>
-            <div class="code-block" style="margin-top: 2rem; padding: 1.5rem; text-align: center;">
+            <div class="code-block open-source-clone-command mt-8">
                 git clone https://github.com/thijsdezoete/blik.git && cd blik && docker compose up -d
             </div>
 
             <div class="cta-box">
                 <h3>Skip the DevOps? We've Got You Covered</h3>
-                <p>Prefer to focus on code instead of server management? Our EU-hosted version gives you the same open-source codebase, fully managed, for just €49/month.</p>
+                <p>Prefer to focus on code instead of server management? Our EU-hosted version gives you the same open-source codebase, fully managed, for just €{{ plan_saas_price }}/month.</p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary">View Hosted Plans</a>
             </div>
         </div>

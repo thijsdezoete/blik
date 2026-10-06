@@ -2,10 +2,10 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>Lattice Alternative — 360 Feedback Comparison 2026 | Blik360</title>
+    <title>Lattice Alternative — 360 Feedback Comparison {% now "Y" %} | Blik360</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Lattice costs $11/seat/mo ($6,600/yr for 50 people). Blik360 is €49/mo flat or free self-hosted. Compare anonymity, questionnaires, and data control.">
+    <meta name="description" content="Lattice costs $10-32/seat/mo ($6,000-19,200/yr for {{ plan_saas_max }} people). Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare anonymity, questionnaires, and data control.">
     <meta name="keywords" content="Blik vs Lattice, Lattice alternative, 360 feedback comparison, performance review software, self-hosted feedback">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-lattice/">
@@ -13,29 +13,28 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-lattice/">
-    <meta property="og:title" content="Lattice Alternative — 360 Feedback Comparison 2026 | Blik360">
-    <meta property="og:description" content="Lattice costs $11/seat/mo ($6,600/yr for 50 people). Blik360 is €49/mo flat or free self-hosted. Compare anonymity, questionnaires, and data control.">
+    <meta property="og:title" content="Lattice Alternative — 360 Feedback Comparison {% now "Y" %} | Blik360">
+    <meta property="og:description" content="Lattice costs $10-32/seat/mo ($6,000-19,200/yr for {{ plan_saas_max }} people). Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare anonymity, questionnaires, and data control.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Lattice%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Lattice%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Lattice Alternative — 360 Feedback Comparison 2026">
+    <meta property="og:image:alt" content="Lattice Alternative — 360 Feedback Comparison {% now "Y" %}">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-lattice/">
-    <meta name="twitter:title" content="Lattice Alternative — 360 Feedback Comparison 2026 | Blik360">
-    <meta name="twitter:description" content="Lattice costs $11/seat/mo ($6,600/yr for 50 people). Blik360 is €49/mo flat or free self-hosted. Compare anonymity, questionnaires, and data control.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Lattice%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta name="twitter:title" content="Lattice Alternative — 360 Feedback Comparison {% now "Y" %} | Blik360">
+    <meta name="twitter:description" content="Lattice costs $10-32/seat/mo ($6,000-19,200/yr for {{ plan_saas_max }} people). Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare anonymity, questionnaires, and data control.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Lattice%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/vs_lattice.html" headline="Blik vs Lattice - Privacy-First Alternative Comparison" description="Detailed comparison of Blik open source 360 feedback platform vs Lattice enterprise performance management. True anonymity, transparent pricing, and self-hosted control." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Lattice%20Alternative&subtitle=360%20Feedback%20Comparison%202026" %}
+    {% now "Y" as current_year %}
+    {% article_schema "landing/vs_lattice.html" headline="Blik vs Lattice - Performance Feedback Comparison" description="Detailed comparison of Blik open source 360 feedback platform vs Lattice enterprise performance management. Anonymity, transparent pricing, and self-hosted control." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Lattice%20Alternative&subtitle=360%20Feedback%20Comparison%20"|add:current_year %}
 {% endblock %}
 
-{% block extra_head %}
-{% endblock %}
 
 {% block nav_links %}
     <a href="#overview">Overview</a>
@@ -52,8 +51,7 @@
             <div class="hero-content">
                 <h1 class="hero-title">Blik vs Lattice: An Honest Comparison</h1>
                 <p class="hero-subtitle">
-                    Lattice is a comprehensive enterprise platform with goals, OKRs, and performance management. Blik does one thing: anonymous 360 feedback.
-                    If you need the enterprise features, use Lattice. If you just need feedback that actually stays anonymous, Blik is simpler.
+                    Lattice is a comprehensive enterprise platform with performance management, goals and OKRs, and engagement. Blik does one thing: anonymous 360° feedback. If you need the full enterprise suite, Lattice is the natural fit. If you want focused 360° reviews with flat pricing and the option to self-host, Blik is simpler.
                 </p>
                 <div class="hero-cta">
                     <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
@@ -67,69 +65,64 @@
     <section id="overview" class="section section-alt">
         <div class="container">
             <h2 class="section-title">At a Glance</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
-                The fundamental differences between Blik and Lattice
+            <p class="section-intro">
+                How Blik and Lattice compare on the fundamentals
             </p>
 
             <div class="table-container">
-                <table class="comparison-table">
+                <table class="comparison-table comparison-table-detailed">
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Feature</th>
-                            <th style="width: 30%;">Blik</th>
-                            <th style="width: 30%;">Lattice</th>
+                            <th class="comparison-column-feature">Feature</th>
+                            <th class="comparison-column-product">Blik</th>
+                            <th class="comparison-column-product">Lattice</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Deployment Options</strong></td>
-                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
-                            <td>SaaS only<br><small>Their servers, their terms</small></td>
+                            <td>SaaS (€{{ plan_saas_price }}/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Managed hosting</small></td>
                         </tr>
                         <tr>
                             <td><strong>SaaS Pricing</strong></td>
-                            <td>€49/month flat rate<br><small>Unlimited users</small></td>
-                            <td>$11-25/user/month<br><small>+ $4,000 minimum<sup><a href="#source-lattice-pricing" class="citation-link">1</a></sup></small></td>
+                            <td>€{{ plan_saas_price }}/month flat rate<br><small>Up to {{ plan_saas_max }} employees</small></td>
+                            <td>$10-32/user/month<br><small>Performance to all modules; $4,000 annual minimum, billed annually<sup><a href="#source-lattice-pricing" class="citation-link">1</a></sup></small></td>
                         </tr>
                         <tr>
                             <td><strong>Implementation Cost</strong></td>
-                            <td>$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
-                            <td>Not disclosed publicly<br><small>Typical enterprise onboarding fees</small></td>
+                            <td>$0 (docker compose up)<br><small>Running in under 30 minutes with Docker Compose</small></td>
+                            <td>Not disclosed publicly<br><small>Scoped per contract</small></td>
                         </tr>
                         <tr>
-                            <td><strong>True Anonymity</strong></td>
-                            <td>✓ Cryptographically guaranteed<br><small>Admins cannot identify reviewers</small></td>
-                            <td>⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
+                            <td><strong>Anonymity</strong></td>
+                            <td>Token-based access<br><small>Aggregated reporting; configuration matters</small></td>
+                            <td>Hosted review workflows<br><small>Check visibility and confidentiality settings</small></td>
                         </tr>
                         <tr>
                             <td><strong>Mobile Experience</strong></td>
-                            <td>Fully responsive web<br><small>Works on all devices</small></td>
-                            <td>"Clunky, limited"<sup><a href="#source-mobile-reviews" class="citation-link">2</a></sup><br><small>Peer assessments unavailable</small></td>
+                            <td>Responsive web (no native app)<br><small>Works on all devices</small></td>
+                            <td>Native mobile app<br><small>Peer assessments available on mobile</small></td>
                         </tr>
                         <tr>
                             <td><strong>HRIS Integration</strong></td>
-                            <td>Direct data access<br><small>No vendor lock-in</small></td>
-                            <td>⚠ Cannot map ADP fields<sup><a href="#source-integration-issues" class="citation-link">3</a></sup><br><small>Must create custom fields</small></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Calendar Integration</strong></td>
-                            <td>Standard iCal/Outlook<br><small>Works with any calendar</small></td>
-                            <td>Proprietary calendar<sup><a href="#source-calendar-issues" class="citation-link">4</a></sup><br><small>"Can't link to Outlook"</small></td>
+                            <td>REST API + webhooks<br><small>No native connectors</small></td>
+                            <td>Native HRIS connectors<br><small>ADP, Rippling, and more</small></td>
                         </tr>
                         <tr>
                             <td><strong>Navigation Complexity</strong></td>
                             <td>Clean, focused interface<br><small>Minimal clicks</small></td>
-                            <td>"Too many clicks"<sup><a href="#source-navigation-complaints" class="citation-link">5</a></sup><br><small>Features feel buried</small></td>
+                            <td>Full-featured admin console<br><small>Broad module and settings set</small></td>
                         </tr>
                         <tr>
                             <td><strong>Psychological Insights</strong></td>
                             <td>✓ Dreyfus skill mapping<br>✓ Perception gap detection</td>
-                            <td>Basic analytics only</td>
+                            <td>Performance and engagement analytics</td>
                         </tr>
                         <tr>
                             <td><strong>Open Source</strong></td>
                             <td>✓ AGPLv3 license<br><small>Audit the code yourself</small></td>
-                            <td>✗ Proprietary closed-source</td>
+                            <td>✗ Not open source<br><small>Proprietary</small></td>
                         </tr>
                     </tbody>
                 </table>
@@ -142,27 +135,27 @@
         <div class="container">
             <h2 class="section-title">The Real Cost: Modular Pricing vs Flat Rate</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success); margin-bottom: 1rem;">Blik SaaS (Managed)</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">€49<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
-                    <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
-                        <li>Unlimited users</li>
+            <div class="comparison-plan-grid mb-12">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success mb-4">Blik SaaS (Managed)</h3>
+                    <div class="comparison-plan-price">€{{ plan_saas_price }}<span class="comparison-price-period">/month</span></div>
+                    <ul class="comparison-benefits comparison-benefits--muted">
+                        <li>Up to {{ plan_saas_max }} employees</li>
                         <li>All features included</li>
-                        <li>We handle hosting & updates</li>
+                        <li>We handle hosting &amp; updates</li>
                         <li>No setup required</li>
                         <li>Dreyfus mapping included</li>
                         <li>Perception gap analysis included</li>
                     </ul>
-                    <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
-                        50 employees = €588/year
+                    <p class="comparison-plan-total">
+                        {{ plan_saas_max }} employees = €{{ plan_saas_annual }}/year
                     </p>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success); margin-bottom: 1rem;">Blik Open Source (Self-Hosted)</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">$0<span style="font-size: 1rem; font-weight: normal;">/forever</span></div>
-                    <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success mb-4">Blik Open Source (Self-Hosted)</h3>
+                    <div class="comparison-plan-price">€0<span class="comparison-price-period">/forever</span></div>
+                    <ul class="comparison-benefits comparison-benefits--muted">
                         <li>All features (same as SaaS)</li>
                         <li>Your infrastructure</li>
                         <li>Complete data control</li>
@@ -170,91 +163,80 @@
                         <li>docker compose up = done</li>
                         <li>Community support</li>
                     </ul>
-                    <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
+                    <p class="comparison-plan-total">
                         Any size = $0/forever
                     </p>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--danger);">
-                    <h3 style="color: var(--danger); margin-bottom: 1rem;">Lattice Pricing<sup><a href="#source-lattice-pricing" class="citation-link">1</a></sup></h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">$11<span style="font-size: 1rem; font-weight: normal;">/user/month</span></div>
-                    <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
-                        <li>Base package only</li>
+                <div class="feature-card comparison-outline-danger">
+                    <h3 class="comparison-danger mb-4">Lattice Pricing<sup><a href="#source-lattice-pricing" class="citation-link">1</a></sup></h3>
+                    <div class="comparison-plan-price">$10<span class="comparison-price-period">/user/month</span></div>
+                    <ul class="comparison-benefits comparison-benefits--muted">
+                        <li>Performance module</li>
                         <li>$4,000 annual minimum</li>
-                        <li>Add-ons cost extra:
-                            <ul style="margin-left: 1.5rem; font-size: 0.9rem;">
+                        <li>All contracts billed annually</li>
+                        <li>Additional modules:
+                            <ul class="comparison-module-list">
+                                <li>Goals &amp; OKRs: +$8/user</li>
                                 <li>Engagement: +$4/user</li>
                                 <li>Grow: +$4/user</li>
                                 <li>Compensation: +$6/user</li>
                             </ul>
                         </li>
                     </ul>
-                    <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
-                        50 employees = $6,600-15,000/year ($550-1,250/month)
+                    <p class="comparison-plan-total">
+                        {{ plan_saas_max }} employees = $6,000-19,200/year (Performance only → all modules)
                     </p>
                 </div>
             </div>
 
-            <div class="cta-box" style="background: var(--warning-bg); border-left: 4px solid var(--warning);">
-                <h3>Real User Quote</h3>
-                <blockquote style="font-style: italic; margin: 1rem 0; color: var(--text-secondary);">
-                    "As we grew in team size and needed additional features, it became expensive."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">— SelectSoftware Review, Lattice User<sup><a href="#source-user-reviews" class="citation-link">7</a></sup></p>
-            </div>
-
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                <h3 style="margin-bottom: 1.5rem;">Annual Cost Comparison (50 employees)</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+            <div class="comparison-panel mt-12">
+                <h3 class="mb-6">Annual Cost Comparison ({{ plan_saas_max }} employees)</h3>
+                <div class="comparison-cost-grid">
                     <div>
-                        <h4 style="color: var(--success);">Blik</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">€588/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">All features, unlimited reviews</p>
+                        <h4 class="comparison-success">Blik</h4>
+                        <p class="comparison-price comparison-success">€{{ plan_saas_annual }}/year</p>
+                        <p class="comparison-note">All features, unlimited reviews</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--danger);">Lattice (Base)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$6,600/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Performance management only</p>
+                        <h4 class="comparison-danger">Lattice (Performance only)</h4>
+                        <p class="comparison-price comparison-danger">$6,000/year</p>
+                        <p class="comparison-note">At {{ plan_saas_max }} seats ($10/user/month)</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--danger);">Lattice (Full Platform)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$15,000/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">With Engagement + Grow + Compensation</p>
+                        <h4 class="comparison-danger">Lattice (All modules)</h4>
+                        <p class="comparison-price comparison-danger">$19,200/year</p>
+                        <p class="comparison-note">All five modules at {{ plan_saas_max }} seats ($32/user/month)</p>
                     </div>
                 </div>
-                <p style="margin-top: 2rem; text-align: center; font-weight: bold; color: var(--success); font-size: 1.25rem;">
-                    Save €5,800-€13,200 annually with Blik SaaS
+                <p class="comparison-cost-summary">
+                    A {{ plan_saas_max }}-person team pays roughly $6,000–19,200/year for Lattice depending on module selection, versus €{{ plan_saas_annual }}/year for Blik hosted.
                 </p>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
-                <h3 style="margin-bottom: 1.5rem;">The Hidden Cost: Implementation</h3>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 2rem;">
-                    Enterprise SaaS platforms charge massive onboarding fees that aren't disclosed during sales. Here's what users don't see upfront:
+            <div class="comparison-panel comparison-accent-primary mt-12">
+                <h3 class="mb-6">Implementation &amp; Setup</h3>
+                <p class="comparison-prose mb-8">
+                    Blik has no per-seat setup or onboarding fee. Self-host in under 30 minutes with Docker Compose, or use the managed host and start immediately. Lattice's implementation cost is not disclosed publicly and depends on your contract.
                 </p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div class="comparison-setup-grid">
                     <div>
-                        <h4 style="color: var(--success);">Blik (Either Option)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">$0</p>
-                        <ul style="color: var(--text-secondary); margin-top: 1rem; line-height: 2;">
+                        <h4 class="comparison-success">Blik (Either Option)</h4>
+                        <p class="comparison-price comparison-success">€0 license fee</p>
+                        <ul class="comparison-benefits--muted mt-4">
                             <li>docker compose up</li>
-                            <li>Ready in <1 hour</li>
+                            <li>Running in under 30 minutes with Docker Compose</li>
                             <li>No consultants needed</li>
                             <li>No training required</li>
                         </ul>
                     </div>
                     <div>
-                        <h4 style="color: var(--danger);">Enterprise SaaS (Typical)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$50K-200K+</p>
-                        <ul style="color: var(--text-secondary); margin-top: 1rem; line-height: 2;">
-                            <li>6-14 month timeline</li>
-                            <li>Consultant fees</li>
-                            <li>Custom integrations</li>
-                            <li>Training programs</li>
+                        <h4 class="comparison-danger">Lattice</h4>
+                        <p class="comparison-price comparison-price--compact comparison-danger">Not disclosed</p>
+                        <ul class="comparison-benefits--muted mt-4">
+                            <li>No public implementation pricing</li>
+                            <li>Cost depends on your contract</li>
                         </ul>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem; font-style: italic;">
-                            *Workday charges $300K-$800K implementation + requires full-time HRIS admin
-                        </p>
                     </div>
                 </div>
             </div>
@@ -266,11 +248,11 @@
         <div class="container">
             <h2 class="section-title">Feature-by-Feature Comparison</h2>
 
-            <div style="display: grid; gap: 2rem; margin-top: 3rem;">
+            <div class="comparison-stack mt-12">
                 <!-- Navigation & UX -->
                 <div class="comparison-card">
-                    <h3>Navigation & User Experience</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Navigation &amp; User Experience</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
@@ -283,12 +265,11 @@
                         <div class="card-red">
                             <h4>Lattice</h4>
                             <ul>
-                                <li>"Too many clicks for simple tasks"</li>
-                                <li>"Features feel buried"</li>
-                                <li>"Steep learning curve for admins"</li>
-                                <li>"Completed reviews vanish from dashboard"</li>
+                                <li>Full-featured performance platform</li>
+                                <li>Broad set of modules and tools</li>
+                                <li>Configurable for enterprise workflows</li>
+                                <li>More options and settings to manage</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: G2 user reviews</p>
                         </div>
                     </div>
                 </div>
@@ -296,62 +277,57 @@
                 <!-- Mobile Experience -->
                 <div class="comparison-card">
                     <h3>Mobile Experience</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Fully responsive web design</li>
                                 <li>Works on any device/browser</li>
                                 <li>All features available mobile</li>
-                                <li>No separate app needed</li>
+                                <li>No native app (responsive web only)</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>Lattice</h4>
                             <ul>
-                                <li>"Clunky, limited, devoid of real value"</li>
-                                <li>"Peer assessments not available on mobile"</li>
-                                <li>"Only see picture and email"</li>
-                                <li>"Reduced capabilities vs web"</li>
+                                <li>Native mobile app for iOS and Android</li>
+                                <li>Peer assessments available on mobile</li>
+                                <li>Dedicated app experience</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: App Store reviews</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Integration -->
                 <div class="comparison-card">
-                    <h3>API & Integration Quality</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>API &amp; Integration Quality</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
                                 <li>REST API with full CRUD operations</li>
                                 <li>Webhook events for real-time notifications</li>
-                                <li>Bearer token authentication (no usage limits)</li>
+                                <li>Bearer token authentication; 1,000 requests/hour per token</li>
                                 <li>Interactive OpenAPI documentation</li>
                                 <li>Self-hosted = direct database access</li>
-                                <li>No integration fees ever</li>
+                                <li>No integration fees</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>Lattice</h4>
                             <ul>
-                                <li>"Can't map ADP fields to Lattice"</li>
-                                <li>"Must generate custom fields"</li>
-                                <li>"Calendar doesn't sync with Outlook"</li>
-                                <li>"1:1 meetings don't sync to regular calendar"</li>
-                                <li>Integration problems persist</li>
+                                <li>Native HRIS connectors (ADP, Rippling)</li>
+                                <li>Calendar and scheduling integrations</li>
+                                <li>Enterprise integration ecosystem</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Capterra reviews</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Goals & OKRs -->
                 <div class="comparison-card">
-                    <h3>Goals & Performance Tracking</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Goals &amp; Performance Tracking</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
@@ -364,38 +340,35 @@
                         <div class="card-red">
                             <h4>Lattice</h4>
                             <ul>
-                                <li>"Goals and OKRs confuse users"</li>
-                                <li>"SMART goals vs Grow section unclear"</li>
-                                <li>"Can get in the weeds"</li>
-                                <li>"Key complaint in otherwise positive reviews"</li>
+                                <li>Goals and OKR management</li>
+                                <li>Performance and compensation modules</li>
+                                <li>Grow and engagement tools</li>
+                                <li>Part of an all-in-one HR suite</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: G2 reviews</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Reporting -->
                 <div class="comparison-card">
-                    <h3>Analytics & Reporting</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Analytics &amp; Reporting</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
-                                <li>Perception gap detection (unique)</li>
+                                <li>Perception gap detection</li>
                                 <li>Dreyfus competency mapping</li>
                                 <li>Aggregated by reviewer category</li>
-                                <li>Export-friendly formats</li>
+                                <li>Trend and benchmark reports</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>Lattice</h4>
                             <ul>
-                                <li>"Reports not concise enough"</li>
-                                <li>"Exporting data quite challenging"</li>
-                                <li>"Survey analysis extremely limited"</li>
-                                <li>"Basic reporting only"</li>
+                                <li>Broad analytics suite</li>
+                                <li>Benchmarks and trends</li>
+                                <li>Part of the platform's reporting</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: G2 reviews</p>
                         </div>
                     </div>
                 </div>
@@ -403,25 +376,22 @@
                 <!-- Support -->
                 <div class="comparison-card">
                     <h3>Customer Support</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
+                                <li>Direct email support</li>
                                 <li>Open source = community support</li>
                                 <li>Self-hosted = full control</li>
-                                <li>Direct email support</li>
-                                <li>No vendor lock-in</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>Lattice</h4>
                             <ul>
-                                <li>"Cannot talk to anyone when you have issue"</li>
-                                <li>"Impersonal, links to videos/docs"</li>
-                                <li>"Not personalized guidance"</li>
-                                <li>Support quality varies</li>
+                                <li>Dedicated support organization</li>
+                                <li>Enterprise customer success</li>
+                                <li>Onboarding specialists</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Capterra reviews</p>
                         </div>
                     </div>
                 </div>
@@ -432,47 +402,19 @@
     <!-- Privacy & Anonymity -->
     <section id="privacy" class="section">
         <div class="container">
-            <h2 class="section-title">The Anonymity Difference</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                Both platforms promise anonymous feedback. But there's a crucial difference between "we promise not to look" and "it's technically impossible to identify reviewers."
-            </p>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik's Cryptographic Anonymity</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>UUID tokens:</strong> Random, unguessable identifiers</li>
-                        <li><strong>Email separation:</strong> Reviewer emails never linked to responses</li>
-                        <li><strong>Admin-proof:</strong> Even system admins cannot identify reviewers</li>
-                        <li><strong>GDPR compliant:</strong> Built-in data minimization</li>
-                        <li><strong>Open source:</strong> Audit the code yourself</li>
-                    </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
-                        <p style="font-weight: bold;">Technical guarantee: It's impossible to trace feedback to individuals.</p>
-                    </div>
+            <h2 class="section-title">Review Confidentiality</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Blik's review access</h3>
+                    <p>Reviewers use tokenized links and reports aggregate responses by category. Tokens may contain invitation email addresses and are linked to responses, so this is not an anonymity guarantee against database administrators.</p>
+                    <p>Choose invitation methods, access permissions, and reporting thresholds carefully. Free-text comments can also identify a reviewer.</p>
                 </div>
-
-                <div class="feature-card" style="border-left: 4px solid var(--warning);">
-                    <h3 style="color: var(--warning);">Lattice's Platform Anonymity</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Platform promise:</strong> "We won't look at who said what"</li>
-                        <li><strong>Data centralization:</strong> All data stored on Lattice servers</li>
-                        <li><strong>Policy-based:</strong> Trust in company policies</li>
-                        <li><strong>Closed source:</strong> No way to verify claims</li>
-                        <li><strong>Third-party risk:</strong> Lattice staff have access</li>
-                    </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--warning-bg); border-left: 4px solid var(--warning);">
-                        <p style="font-weight: bold;">Policy-based: You must trust the platform and its employees.</p>
-                    </div>
+                <div class="feature-card">
+                    <h3>Evaluate Lattice's settings</h3>
+                    <p>For a hosted review platform, check which roles can see responses, how report thresholds work, and what retention and export terms apply to your contract.</p>
                 </div>
             </div>
-
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
-                <h3>Why This Matters</h3>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                    360° feedback only works when reviewers feel psychologically safe. Research shows that <strong>perceived anonymity isn't enough</strong><sup><a href="#source-anonymity-research" class="citation-link">6</a></sup>—employees are more honest when they know it's <em>technically impossible</em> to identify them. With Blik, you can tell your team: "Even I can't see who wrote what." That's the trust foundation that makes feedback valuable.
-                </p>
-            </div>
+            <p>Explain the process and confidentiality limits to participants before collecting feedback. See <a href="#source-anonymity-research">further reading on 360° feedback</a>.</p>
         </div>
     </section>
 
@@ -481,46 +423,47 @@
         <div class="container">
             <h2 class="section-title">Which Platform Is Right for You?</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success);">Choose Blik If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li>Want <strong>true anonymity</strong> (cryptographically guaranteed)</li>
+            <div class="comparison-plan-grid mt-12">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success">Choose Blik If You:</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li>Want <strong>token-based review access and aggregated reports</strong></li>
                         <li>Need <strong>transparent, flat-rate pricing</strong></li>
                         <li>Prefer <strong>self-hosted</strong> or want data sovereignty</li>
                         <li>Value <strong>open source</strong> and code auditability</li>
                         <li>Want <strong>psychological insights</strong> (Dreyfus, perception gaps)</li>
                         <li>Need a <strong>focused tool</strong> for 360° feedback</li>
                         <li>Are in <strong>regulated industries</strong> (healthcare, finance, legal)</li>
-                        <li>Have <strong>30-500 employees</strong></li>
+                        <li>Do not require <strong>native mobile, SSO, or HRIS connectors</strong>, which Blik does not ship</li>
+                        <li>Have <strong>30-{{ plan_ent_max }} employees</strong></li>
                     </ul>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary comparison-decision-link">Try Blik</a>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--warning);">
-                    <h3 style="color: var(--warning);">Choose Lattice If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                <div class="feature-card comparison-outline-warning">
+                    <h3 class="comparison-warning">Choose Lattice If You:</h3>
+                    <ul class="comparison-benefits mt-6">
                         <li>Want an <strong>all-in-one HR platform</strong> (performance + engagement + goals)</li>
                         <li>Need <strong>extensive integrations</strong> with enterprise tools</li>
                         <li>Prefer <strong>SaaS over self-hosting</strong></li>
-                        <li>Have <strong>budget for $11-25/user/month</strong></li>
+                        <li>Have <strong>budget for $10-32/user/month</strong></li>
                         <li>Want <strong>OKR/goal management</strong> features</li>
-                        <li>Are comfortable with <strong>standard SaaS anonymity</strong></li>
-                        <li>Need <strong>extensive customization</strong> options</li>
-                        <li>Have <strong>dedicated HR tech team</strong></li>
+                        <li>Want <strong>engagement and compensation modules</strong> alongside reviews</li>
+                        <li>Need <strong>native mobile apps</strong> and enterprise support</li>
+                        <li>Have a <strong>dedicated HR tech team</strong></li>
                     </ul>
-                    <a href="https://lattice.com" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Visit Lattice</a>
+                    <a href="https://lattice.com" target="_blank" rel="noopener" class="btn btn-secondary comparison-decision-link">Visit Lattice</a>
                 </div>
             </div>
 
-            <div class="cta-box" style="margin-top: 3rem;">
+            <div class="cta-box mt-12">
                 <h3>Not Sure Yet?</h3>
-                <p style="margin: 1rem 0;">
-                    Blik is open source (AGPLv3). You can deploy it yourself for free, or use our managed hosting for €49/month.
-                    No credit card required to explore the code.
+                <p class="comparison-paragraph">
+                    Blik is open source (AGPLv3). You can deploy it yourself for free, or use our managed hosting for €{{ plan_saas_price }}/month.
+                    {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
-                    <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+                <div class="action-links mt-6">
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
                     <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
                 </div>
             </div>
@@ -530,195 +473,50 @@
     <!-- Final CTA -->
     <section class="section">
         <div class="container">
-            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 0;">
-                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Ready to Try True Anonymous Feedback?</h2>
-                <p style="color: var(--text-secondary); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
-                    Blik gives you the privacy guarantees and transparent pricing that Lattice users wish they had.
-                    Join organizations who value honest feedback over enterprise complexity.
+            <div class="comparison-closing">
+                <h2 class="comparison-closing-title mb-6">Focused 360° Feedback, on Your Terms</h2>
+                <p class="comparison-prose comparison-prose--lead mb-8">
+                    Blik offers flat pricing, structured review cycles, and the option to self-host. Compare its reporting safeguards and feature scope with the broader suite you may need.
                 </p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                    €49/month managed hosting • Open source available on GitHub
+                <p class="comparison-note mt-4">
+                    €{{ plan_saas_price }}/month managed hosting • Open source available on GitHub
                 </p>
             </div>
         </div>
     </section>
 
     <!-- Sources Section -->
-    <section class="section section-alt" style="background: var(--bg-secondary);">
+    <section class="section section-alt comparison-sources-section">
         <div class="container">
-            <h2 class="section-title" style="font-size: 1.5rem;">Sources & References</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.9rem;">
-                All claims on this page are sourced from publicly available information, user reviews, and company pricing pages. Last updated: <time datetime="2025-01-11">January 11, 2025</time>
+            <h2 class="section-title text-2xl">Sources &amp; References</h2>
+            <p class="comparison-note comparison-center mb-8">
+                Competitor pricing claims on this page are cited below. Pricing verified as of October 2026.
             </p>
 
-            <div style="max-width: 900px; margin: 0 auto;">
-                <div style="background: var(--bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
-                    <ol style="line-height: 2; color: var(--text-secondary); padding-left: 1.5rem;">
+            <div class="comparison-content-medium">
+                <div class="comparison-source-panel">
+                    <ol class="comparison-source-list">
                         <li id="source-lattice-pricing">
-                            <strong>Lattice Pricing:</strong> Based on publicly available pricing from vendor website (verified November 11, 2025). Base pricing $11/user/month, $4,000 annual minimum. Module pricing: +$4 Engagement, +$4 Grow, +$6 Compensation (verified from official pricing page). Total can reach $25/user/month with all modules.
-                            <a href="https://lattice.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">Lattice Pricing Page</a>
-                        </li>
-                        <li id="source-mobile-reviews">
-                            <strong>Mobile App Experience:</strong> User quote "Clunky, limited, and devoid of anything that adds real value" from iOS App Store reviews. Multiple users report peer assessments being unavailable on mobile devices.
-                            <a href="https://apps.apple.com/app/lattice/id1254074334" target="_blank" rel="noopener" style="color: var(--primary);">Lattice App Store Reviews</a>
-                        </li>
-                        <li id="source-integration-issues">
-                            <strong>HRIS Integration Problems:</strong> User quote "Can't map existing fields in ADP to Lattice" from Capterra reviews. Multiple users report inability to map custom fields from ADP Workforce Now and Rippling to Lattice system.
-                            <a href="https://www.capterra.com/p/151676/Lattice/#reviews" target="_blank" rel="noopener" style="color: var(--primary);">Lattice Capterra Reviews</a>
-                        </li>
-                        <li id="source-calendar-issues">
-                            <strong>Calendar Integration:</strong> Multiple users report difficulty linking Lattice calendar to Microsoft Outlook and team calendars, as documented in Capterra reviews.
-                            <a href="https://www.capterra.com/p/151676/Lattice/#reviews" target="_blank" rel="noopener" style="color: var(--primary);">Lattice Capterra Reviews</a>
-                        </li>
-                        <li id="source-navigation-complaints">
-                            <strong>Navigation Complexity:</strong> Multiple G2 reviews cite "too many clicks for simple tasks" and "features feel buried" in Lattice interface. Common complaint across user feedback platforms.
-                            <a href="https://www.g2.com/products/lattice-lattice/reviews" target="_blank" rel="noopener" style="color: var(--primary);">Lattice G2 Reviews</a>
+                            <strong>Lattice Pricing:</strong> Published on the vendor pricing page (as of October 2026). Performance $10/seat/month; Goals &amp; OKRs +$8, Engagement +$4, Grow +$4, and Compensation +$6. Performance alone to all five modules totals $10–32/seat/month, or $6,000–19,200/year for 50 seats. All contracts are billed annually, with a $4,000 annual minimum. The upper figure is the sum of listed modules, not a quoted bundle.
+                            <a href="https://lattice.com/pricing" target="_blank" rel="noopener" class="comparison-primary">Lattice Pricing Page</a>
                         </li>
                         <li id="source-anonymity-research">
-                            <strong>Anonymity Effectiveness Research:</strong> Multiple studies confirm that anonymity significantly increases feedback honesty. Harvard Business Review research (2020) found employees are 4.6 times more likely to speak up when responses are anonymous. American Psychological Association study (2020) found 87% of employees feel more comfortable sharing honest feedback anonymously. Research shows 71% of people are more likely to share true feelings when identity is hidden, and 64% of employees provide more candid evaluations when identities are protected. The distinction between technical anonymity (cryptographically guaranteed) and perceived anonymity (policy-based promise) matters: 70% of employees cite lack of confidentiality as a primary reason for not voicing concerns, emphasizing that both actual and perceived anonymity are critical.
-                            <br><small style="color: var(--text-tertiary);">
-                                Sources: Harvard Business Review (2020); American Psychological Association (2020); Cambridge Core: <a href="https://www.cambridge.org/core/journals/industrial-and-organizational-psychology/article/evolution-and-devolution-of-360-feedback/84B3B38380487D6C269AADF4B2230E17" target="_blank" rel="noopener" style="color: var(--primary);">The Evolution and Devolution of 360° Feedback</a>; Additional research documented via HeartCount, PsicoSmart, and IceHRM organizational psychology publications
-                            </small>
-                        </li>
-                        <li id="source-user-reviews">
-                            <strong>User Cost Complaints:</strong> Quote "As we grew in team size and needed additional features, it became expensive" from SelectSoftware Reviews of Lattice performance management software.
-                            <a href="https://selectsoftwarereviews.com/buyer-guide/performance-management-software" target="_blank" rel="noopener" style="color: var(--primary);">SelectSoftware Reviews</a>
+                            <strong>Further reading:</strong> The Cambridge journal <em>Industrial and Organizational Psychology</em> discusses the evolution of 360° feedback:
+                            <a href="https://www.cambridge.org/core/journals/industrial-and-organizational-psychology/article/evolution-and-devolution-of-360-feedback/84B3B38380487D6C269AADF4B2230E17" target="_blank" rel="noopener" class="comparison-primary">The Evolution and Devolution of 360° Feedback (Cambridge Core)</a>
                         </li>
                     </ol>
 
-                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-                        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text);">Research Methodology</h3>
-                        <p style="font-size: 0.875rem; line-height: 1.8; color: var(--text-secondary);">
-                            Competitor information aggregated from multiple independent sources including G2, Capterra, Trustpilot, TrustRadius, SelectSoftware Reviews, App Store reviews, and user-reported data from SaaS purchasing platforms. Pricing verified against public vendor websites where available. User quotes represent actual feedback from verified platform users. All information verified as of November 11, 2025.
-                        </p>
-                        <p style="font-size: 0.875rem; line-height: 1.8; color: var(--text-secondary); margin-top: 1rem;">
-                            <strong>Disclaimer:</strong> Competitor pricing and features change frequently. While we make reasonable efforts to keep comparisons current, we recommend verifying critical details directly with vendors before making purchasing decisions.
+                    <div class="comparison-methodology">
+                        <h3 class="comparison-methodology-title">Research Methodology</h3>
+                        <p class="comparison-prose comparison-prose--small">
+                            Blik facts on this page reflect the open source codebase and product documentation. Competitor pricing is taken from the vendor's published pricing page and dated above. We recommend verifying details directly with vendors before making purchasing decisions.
                         </p>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
-                    <p style="font-size: 0.875rem; color: var(--text-secondary);">
-                        <strong>Written by Thijs de Zoete</strong>, CEO of Tinify<br>
-                        Last updated: <time datetime="2025-01-11">January 11, 2025</time> |
-                        Originally published: <time datetime="2025-01-10">January 10, 2025</time>
-                    </p>
-                </div>
+                {% include "landing/includes/article_metadata.html" with template_path="landing/vs_lattice.html" author="Thijs de Zoete" %}
             </div>
         </div>
     </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<style>
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--bg);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.comparison-table thead {
-    background: var(--bg-secondary);
-}
-
-.comparison-table th,
-.comparison-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-}
-
-.comparison-table th {
-    font-weight: 600;
-    color: var(--text);
-}
-
-.comparison-table td {
-    color: var(--text-secondary);
-}
-
-.highlight-green {
-    background-color: rgba(16, 185, 129, 0.1);
-    font-weight: 500;
-    color: var(--success);
-}
-
-.highlight-red {
-    background-color: rgba(239, 68, 68, 0.1);
-    font-weight: 500;
-    color: var(--danger);
-}
-
-.highlight-yellow {
-    background-color: rgba(245, 158, 11, 0.1);
-    font-weight: 500;
-    color: var(--warning);
-}
-
-.comparison-card {
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 2rem;
-    border: 1px solid var(--border);
-}
-
-.comparison-card h3 {
-    color: var(--text);
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.card-green,
-.card-red {
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-.card-green {
-    background: rgba(16, 185, 129, 0.05);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.card-green h4 {
-    color: var(--success);
-    margin-bottom: 1rem;
-}
-
-.card-green ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-green ul li:before {
-    content: "✓ ";
-    color: var(--success);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-
-.card-red {
-    background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.card-red h4 {
-    color: var(--danger);
-    margin-bottom: 1rem;
-}
-
-.card-red ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-red ul li:before {
-    content: "✗ ";
-    color: var(--danger);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-</style>
 {% endblock %}

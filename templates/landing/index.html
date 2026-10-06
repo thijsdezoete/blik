@@ -2,41 +2,39 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>360° Feedback That Saves €17,000/Year — Free or Hosted | Blik360</title>
+    <title>Open Source 360° Feedback — Self-Hosted or EU Hosted | Blik360</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Run anonymous 360 feedback reviews without per-user fees. Four ready-made questionnaires, radar chart results. Self-host free or EU hosting from €49/mo.">
-    <meta name="keywords" content="open source 360 feedback, self-hosted performance review, anonymous feedback software, 360 degree feedback platform, employee feedback system, peer review software, performance management tool, GDPR compliant feedback">
+    <meta name="description" content="Anonymous 360° feedback with flat pricing: self-host free (AGPL-3.0) or EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. {{ trial_days }}-day trial; credit card required.">
+    <meta name="keywords" content="open source 360 feedback, self-hosted performance review, anonymous feedback software, 360 degree feedback platform, employee feedback system, peer review software, performance management tool, GDPR support tools">
     <meta name="author" content="Thijs de Zoete">
-    <meta name="article:modified_time" content="2025-01-11T00:00:00Z">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
-    <meta property="og:title" content="360° Feedback That Saves €17,000/Year — Free or Hosted | Blik360">
-    <meta property="og:description" content="Run anonymous 360 feedback reviews without per-user fees. Four ready-made questionnaires, radar chart results. Self-host free or EU hosting from €49/mo.">
+    <meta property="og:title" content="Open Source 360° Feedback — Self-Hosted or EU Hosted | Blik360">
+    <meta property="og:description" content="Anonymous 360° feedback with flat pricing: self-host free (AGPL-3.0) or EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. {{ trial_days }}-day trial; credit card required.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360&subtitle=Save%20%E2%82%AC17%2C000%2FYear%20on%20360%20Feedback">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360%C2%B0%20Feedback&subtitle=Self-Hosted%20or%20EU%20Hosted">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Blik360 — 360° Feedback That Saves €17,000/Year">
+    <meta property="og:image:alt" content="Open Source 360° Feedback — Self-Hosted or EU Hosted | Blik360">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
-    <meta name="twitter:title" content="360° Feedback That Saves €17,000/Year — Free or Hosted | Blik360">
-    <meta name="twitter:description" content="Run anonymous 360 feedback reviews without per-user fees. Four ready-made questionnaires, radar chart results. Self-host free or EU hosting from €49/mo.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360&subtitle=Save%20%E2%82%AC17%2C000%2FYear%20on%20360%20Feedback">
+    <meta name="twitter:title" content="Open Source 360° Feedback — Self-Hosted or EU Hosted | Blik360">
+    <meta name="twitter:description" content="Anonymous 360° feedback with flat pricing: self-host free (AGPL-3.0) or EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. {{ trial_days }}-day trial; credit card required.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Open%20Source%20360%C2%B0%20Feedback&subtitle=Self-Hosted%20or%20EU%20Hosted">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/index.html" headline="Open Source 360 Feedback Platform - Self-Hosted & Anonymous" description="Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant. Deploy in 5 minutes with Docker." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360&subtitle=Save%20%E2%82%AC17%2C000%2FYear%20on%20360%20Feedback" %}
+    {% article_schema "landing/index.html" headline="Open Source 360 Feedback Platform - Self-Hosted & Anonymous" description="Open source 360 feedback with four questionnaires and anonymous reviews; running in under 30 minutes with Docker Compose." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360&subtitle=Open%20Source%20360%20Feedback" %}
 {% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -44,7 +42,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "{{ site_name }}",
-        "description": "Open source 360 feedback platform with 4 role-specific questionnaires. Self-hosted, anonymous reviews, GDPR compliant.",
+        "description": "Open source 360 feedback platform with 4 role-specific questionnaires, token-based reviewer access, and GDPR export and deletion tools.",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Any (Web-based)",{% if rating_data %}
         "aggregateRating": {
@@ -65,25 +63,25 @@
             {
                 "@type": "Offer",
                 "name": "EU Hosted SaaS",
-                "price": "49",
+                "price": "{{ plan_saas_price }}",
                 "priceCurrency": "EUR",
                 "billingIncrement": "P1M",
-                "description": "Managed hosting for up to 50 employees with automatic updates and daily backups"
+                "description": "Managed hosting for up to {{ plan_saas_max }} employees with automatic updates and daily backups"
             },
             {
                 "@type": "Offer",
                 "name": "Enterprise",
-                "price": "199",
+                "price": "{{ plan_ent_price }}",
                 "priceCurrency": "EUR",
                 "billingIncrement": "P1M",
-                "description": "Managed hosting for up to 200 employees with priority support and SLA"
+                "description": "Managed hosting for up to {{ plan_ent_max }} employees with priority support and SLA"
             }
         ],
         "featureList": [
             "4 pre-built 360 degree feedback questionnaires",
             "Anonymous token-based reviews",
             "Self-hosted deployment",
-            "GDPR compliant",
+            "GDPR export and deletion tools",
             "Docker deployment",
             "PostgreSQL database",
             "Dreyfus model competency assessment"
@@ -118,7 +116,7 @@
         "@context": "https://schema.org",
         "@type": "Product",
         "name": "{{ site_name }} - Open Source 360 Feedback Platform",
-        "description": "Self-hosted 360 degree feedback software with anonymous reviews, 4 role-specific questionnaires, and GDPR compliance. Deploy in 5 minutes with Docker.",
+        "description": "Open source 360 degree feedback with four questionnaires and anonymous reviews; running in under 30 minutes with Docker Compose.",
         "brand": {
             "@type": "Brand",
             "name": "{{ site_name }}"
@@ -137,34 +135,31 @@
                 "price": "0",
                 "priceCurrency": "EUR",
                 "availability": "https://schema.org/InStock",
-                "url": "{{ site_protocol }}://{{ site_domain }}/",
-                "priceValidUntil": "2026-12-31"
+                "url": "{{ site_protocol }}://{{ site_domain }}/"
             },
             {
                 "@type": "Offer",
                 "name": "EU Hosted",
-                "price": "49.00",
+                "price": "{{ plan_saas_price }}.00",
                 "priceCurrency": "EUR",
                 "availability": "https://schema.org/InStock",
                 "url": "{{ site_protocol }}://{{ site_domain }}/",
-                "priceValidUntil": "2026-12-31",
                 "eligibleQuantity": {
                     "@type": "QuantitativeValue",
-                    "value": "50",
+                    "value": "{{ plan_saas_max }}",
                     "unitText": "employees"
                 }
             },
             {
                 "@type": "Offer",
                 "name": "Enterprise",
-                "price": "199.00",
+                "price": "{{ plan_ent_price }}.00",
                 "priceCurrency": "EUR",
                 "availability": "https://schema.org/InStock",
                 "url": "{{ site_protocol }}://{{ site_domain }}/",
-                "priceValidUntil": "2026-12-31",
                 "eligibleQuantity": {
                     "@type": "QuantitativeValue",
-                    "value": "200",
+                    "value": "{{ plan_ent_max }}",
                     "unitText": "employees"
                 }
             }
@@ -220,7 +215,7 @@
             <div class="hero-content">
                 <h1 class="hero-title">Open Source 360 Feedback Platform</h1>
                 <div class="hero-subtitle">
-                    <p style="margin-bottom: 1rem;"><strong>Self-hosted 360 feedback software with 4 pre-built questionnaires, anonymous reviews, and Docker deployment.</strong> Commercial platforms like Lattice and Culture Amp cost €15,000-18,000 annually for 50-person teams. Blik is open source with zero licensing fees—deploy on your infrastructure in under 5 minutes with Docker Compose.</p>
+                    <p class="mb-4"><strong>Self-hosted 360 feedback software with four pre-built questionnaires, anonymous reviews, and Docker deployment.</strong> Get Blik running in under 30 minutes with Docker Compose, with no license fee.</p>
                 </div>
                 <div class="hero-cta">
                     <a href="#pricing" class="btn btn-primary">Get Started</a>
@@ -233,12 +228,12 @@
     <!-- Name Origin Section -->
     <section class="section">
         <div class="container">
-            <div style="max-width: 700px; margin: 0 auto; text-align: center;">
-                <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 1.5rem;">Why "Blik"?</h2>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem;">
+            <div class="home-story">
+                <h2 class="section-title">Why "Blik"?</h2>
+                <p class="home-story-intro">
                     <strong>Blik</strong> is Dutch for <em>"view"</em> or <em>"perspective"</em>. Blik360 gives you a fresh view on performance—seeing yourself through the eyes of peers, managers, and direct reports.
                 </p>
-                <p style="color: var(--text-secondary); line-height: 1.8;">
+                <p>
                     Fun fact: in Dutch, "blik" also means "can" (as in tin can). <strong>Yes, we can!</strong> Build better feedback systems without vendor lock-in.
                 </p>
             </div>
@@ -249,45 +244,28 @@
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title">Open Source Alternative to Lattice, Culture Amp, and 15Five</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Lattice costs €18K/year for 50 people<sup><a href="#source-pricing" class="citation-link">1</a></sup>. Culture Amp is €15K<sup><a href="#source-pricing" class="citation-link">1</a></sup>. I'm running Blik on a €5/month VPS. The math is simple.</p>
+            <p class="section-intro">Choose a focused 360° feedback tool or a broader performance suite. Self-host Blik on a small EU VPS (≈€10-50/month), or use managed EU hosting.</p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-                <div class="feature-card feature-card-danger">
-                    <h3>Lattice, Culture Amp, 15Five</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;"><strong>Lattice:</strong> €15-30/user/month (~€18,000/year for 50 people)<sup><a href="#source-pricing" class="citation-link">1</a></sup></li>
-                        <li style="margin-bottom: 0.5rem;"><strong>Culture Amp:</strong> €12-25/user/month (~€15,000/year for 50 people)<sup><a href="#source-pricing" class="citation-link">1</a></sup></li>
-                        <li style="margin-bottom: 0.5rem;"><strong>15Five:</strong> €8-15/user/month (~€9,000/year for 50 people)<sup><a href="#source-pricing" class="citation-link">1</a></sup></li>
-                        <li style="margin-bottom: 0.5rem;">Your data on their servers</li>
-                        <li style="margin-bottom: 0.5rem;">Vendor lock-in with proprietary formats</li>
-                        <li style="margin-bottom: 0.5rem;">GDPR compliance complexity</li>
-                        <li>Annual price increases<sup><a href="#source-price-increases" class="citation-link">2</a></sup></li>
-                    </ul>
-                </div>
-
-                <div class="feature-card feature-card-success">
-                    <h3>{{ site_name }} (Open Source)</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">€0 licensing (open source)</li>
-                        <li style="margin-bottom: 0.5rem;">€50-200/year (small VPS hosting)</li>
-                        <li style="margin-bottom: 0.5rem;">Your data on your infrastructure</li>
-                        <li style="margin-bottom: 0.5rem;">PostgreSQL - export anytime</li>
-                        <li style="margin-bottom: 0.5rem;">Complete privacy control</li>
-                        <li style="margin-bottom: 0.5rem;">4 pre-built questionnaires included</li>
-                        <li>No surprise costs ever</li>
-                    </ul>
-                </div>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <caption>50-person comparison, as of October 2026. USD and EUR are shown separately.</caption>
+                    <thead>
+                        <tr><th>Platform</th><th>Annual cost</th><th>Scope</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Blik hosted</td><td>€{{ plan_saas_annual }}</td><td>Up to {{ plan_saas_max }} employees; 360° feedback</td></tr>
+                        <tr><td><a href="https://lattice.com/pricing">Lattice</a></td><td>$6,000–19,200</td><td>Performance alone to all five modules; annual billing, $4,000 minimum</td></tr>
+                        <tr><td><a href="https://www.cultureamp.com/platform/plans-and-pricing">Culture Amp</a></td><td>Quote required</td><td>No public prices; engagement and performance suite</td></tr>
+                        <tr><td><a href="https://www.15five.com/pricing">15Five</a></td><td>$2,400 / $6,600 / $9,600</td><td>Engage / Perform / Total Platform; 360° feedback in Perform and Total Platform</td></tr>
+                    </tbody>
+                </table>
             </div>
-
-            <div class="feature-card" style="background: var(--primary-600); color: white; padding: 2rem; text-align: center; border: 1px solid var(--primary-700);">
-                <h3 style="color: white; margin-bottom: 1rem;">Save €8,800-17,800 EUR Annually vs Lattice & Culture Amp</h3>
-                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">For a 50-person company. Savings scale with team size. No per-user fees, no annual renewals.</p>
-            </div>
-
-            <div class="cta-box">
-                <h3>Don't want the hassle of self-hosting?</h3>
-                <p style="font-size: 1.125rem;">We offer a fully managed EU-hosted version with close to unlimited functionality for just €49/month. No DevOps required.</p>
-                <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View Hosted Plans</a>
+            <p>Compare the feature scope as well as the subscription: Blik has no SSO, native HRIS connectors, or native mobile app.</p>
+            <div class="hero-cta">
+                <a href="{% landing_url 'alternatives' %}" class="btn btn-secondary">All alternatives</a>
+                <a href="{% landing_url 'vs_lattice' %}" class="btn btn-secondary">vs Lattice</a>
+                <a href="{% landing_url 'vs_culture_amp' %}" class="btn btn-secondary">vs Culture Amp</a>
+                <a href="{% landing_url 'vs_15five' %}" class="btn btn-secondary">vs 15Five</a>
             </div>
         </div>
     </section>
@@ -296,7 +274,7 @@
     <section class="section product-showcase">
         <div class="container">
             <h2 class="section-title">See Blik in Action</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Professional 360-degree feedback with rich visualizations and insights</p>
+            <p class="section-intro">Professional 360-degree feedback with rich visualizations and insights</p>
 
             <!-- Carousel for desktop screenshots -->
             <div class="screenshot-carousel">
@@ -407,7 +385,7 @@
 
             <!-- Mobile showcase with phone mockup -->
             <div class="mobile-showcase">
-                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Beautiful on Every Device</h3>
+                <h3 class="home-showcase-heading">Beautiful on Every Device</h3>
                 <div class="phone-mockup">
                     <div class="phone-frame">
                         <div class="phone-notch"></div>
@@ -421,7 +399,7 @@
                         </div>
                     </div>
                 </div>
-                <p style="text-align: center; color: var(--text-secondary); margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <p class="home-showcase-caption">
                     Reviewers provide anonymous feedback from any device with a clean, accessible mobile interface
                 </p>
             </div>
@@ -432,19 +410,19 @@
     <section id="questionnaires" class="section">
         <div class="container">
             <h2 class="section-title">Pre-Built Questionnaires for Every Role</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">Four professional 360° feedback templates ready to use out-of-the-box, or customize to fit your needs</p>
+            <p class="home-questionnaire-intro">Four professional 360° feedback templates ready to use out-of-the-box, or customize to fit your needs</p>
 
-            <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: var(--text-primary); line-height: 1.7;">
-                Blik includes four research-backed 360 degree feedback questionnaires for different team roles and needs. Each performance review template uses proven frameworks like the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus model of skill acquisition</a> (Novice to Expert) and the <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">5 Levels of Agency</a> (measuring proactive problem-solving). Whether you're reviewing software engineers, managers, or measuring employee initiative, these templates give you a structured starting point without having to design questions from scratch.
+            <p class="home-questionnaire-summary">
+                Blik includes four research-backed 360 degree feedback questionnaires for different team roles and needs. Each performance review template uses proven frameworks like the <a href="{% landing_url 'dreyfus_model' %}">Dreyfus model of skill acquisition</a> (Novice to Expert) and the <a href="{% landing_url 'agency_levels' %}">5 Levels of Agency</a> (measuring proactive problem-solving). Whether you're reviewing software engineers, managers, or measuring employee initiative, these templates give you a structured starting point without having to design questions from scratch.
             </p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--primary); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">ALL ROLES</div>
+            <div class="questionnaire-grid">
+                <div class="feature-card questionnaire-card">
+                    <div class="role-badge">ALL ROLES</div>
                     <h3>Professional Skills 360 Review</h3>
-                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Universal competency-based assessment for any professional role</p>
-                    <p style="font-size: 0.875rem;"><strong>8 Core Competency Areas:</strong></p>
-                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <p class="questionnaire-description">Universal competency-based assessment for any professional role</p>
+                    <p class="questionnaire-caption"><strong>8 Core Competency Areas:</strong></p>
+                    <ul class="questionnaire-topics">
                         <li>Problem Solving & Decision Making</li>
                         <li>Communication & Collaboration</li>
                         <li>Initiative & Ownership</li>
@@ -454,15 +432,15 @@
                         <li>Professionalism & Attitude</li>
                         <li>Overall Assessment</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Uses the Dreyfus model of skill acquisition (Novice → Expert) for precise competency assessment.</p>
+                    <p class="questionnaire-footnote">Uses the Dreyfus model of skill acquisition (Novice → Expert) for precise competency assessment.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--insight-skill); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">SOFTWARE ENGINEERS</div>
+                <div class="feature-card questionnaire-card">
+                    <div class="role-badge role-badge--engineering">SOFTWARE ENGINEERS</div>
                     <h3>Software Engineering 360 Review</h3>
-                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Comprehensive technical competency assessment designed for engineering teams</p>
-                    <p style="font-size: 0.875rem;"><strong>10 Engineering Competencies:</strong></p>
-                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <p class="questionnaire-description">Comprehensive technical competency assessment designed for engineering teams</p>
+                    <p class="questionnaire-caption"><strong>10 Engineering Competencies:</strong></p>
+                    <ul class="questionnaire-topics">
                         <li>Industry Fit & Problem Solving</li>
                         <li>Collaboration & Personality</li>
                         <li>Technical Expertise & Skill Level</li>
@@ -474,15 +452,15 @@
                         <li>Strategic Vision & Leadership</li>
                         <li>Overall Assessment</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Evaluates code quality, technical depth, collaboration, and engineering maturity with Dreyfus-based skill ratings.</p>
+                    <p class="questionnaire-footnote">Evaluates code quality, technical depth, collaboration, and engineering maturity with Dreyfus-based skill ratings.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--insight-perception); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">MANAGERS & LEADS</div>
+                <div class="feature-card questionnaire-card">
+                    <div class="role-badge role-badge--leadership">MANAGERS & LEADS</div>
                     <h3>Manager 360 Review</h3>
-                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Leadership effectiveness assessment for managers and team leads</p>
-                    <p style="font-size: 0.875rem;"><strong>7 Leadership Dimensions:</strong></p>
-                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                    <p class="questionnaire-description">Leadership effectiveness assessment for managers and team leads</p>
+                    <p class="questionnaire-caption"><strong>7 Leadership Dimensions:</strong></p>
+                    <ul class="questionnaire-topics">
                         <li>Leadership (Visibility, Trust, Communication)</li>
                         <li>Direction (Goal Setting, Clarity, Autonomy)</li>
                         <li>Expertise & Judgment</li>
@@ -491,55 +469,55 @@
                         <li>Development (Growth Support, Skill Building)</li>
                         <li>Overall Feedback</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Measures management effectiveness, team impact, and people development capabilities.</p>
+                    <p class="questionnaire-footnote">Measures management effectiveness, team impact, and people development capabilities.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--success-600); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">AGENCY & INITIATIVE</div>
-                    <h3>Agency & Initiative Assessment</h3>
-                    <p style="margin-bottom: 1rem; color: var(--text-secondary);">Streamlined assessment focused on measuring the <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">5 Levels of Agency framework</a>—are employees passive problem reporters or proactive problem solvers?</p>
-                    <p style="font-size: 0.875rem;"><strong>4 Essential Areas:</strong></p>
-                    <ul style="font-size: 0.875rem; margin-top: 0.5rem;">
+                <div class="feature-card questionnaire-card">
+                    <div class="role-badge role-badge--universal">UNIVERSAL 360</div>
+                    <h3>360 Degree Feedback</h3>
+                    <p class="questionnaire-description">A compact questionnaire with 12 questions in four sections for a general review cycle.</p>
+                    <p class="questionnaire-caption"><strong>4 Essential Areas:</strong></p>
+                    <ul class="questionnaire-topics">
                         <li>Technical Skills (Problem solving, code quality, expertise)</li>
                         <li>Collaboration (Teamwork, communication, mentoring)</li>
                         <li>Work Approach (Initiative, adaptability, reliability)</li>
                         <li>Overall Feedback (Strengths, improvement areas)</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">Lightweight questionnaire that identifies high-agency employees who drive solutions versus those who just report problems. <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none;">Learn about the Agency Levels framework →</a></p>
+                    <p class="questionnaire-footnote">Use this shorter template for a broad conversation about skills, collaboration, and development.</p>
                 </div>
             </div>
 
-            <div class="cta-box" style="margin-top: 3rem;">
+            <div class="cta-box">
                 <h3>Or Build Your Own</h3>
-                <p style="font-size: 1.125rem;">All questionnaires are customizable. Add questions, remove ones you don't need, change the scales. I built in support for ratings, Likert scales, multiple choice, and free text. Make it work for your team.</p>
+                <p class="home-questionnaire-custom">All questionnaires are customizable. Add questions, remove ones you don't need, change the scales. I built in support for ratings, Likert scales, multiple choice, and free text. Make it work for your team.</p>
             </div>
 
-            <div style="margin-top: 4rem; padding: 3rem; background: var(--primary-600); border: 1px solid var(--primary-700); border-radius: 12px; text-align: center;">
-                <h3 style="color: white; margin-bottom: 2rem; font-size: 1.75rem;">Built on the Dreyfus Model of Skill Acquisition</h3>
-                <div style="max-width: 900px; margin: 0 auto;">
-                    <div style="border-radius: 8px; overflow: hidden; padding: 2rem; background: var(--card-bg);">
+            <div class="home-framework">
+                <h3>Built on the Dreyfus Model of Skill Acquisition</h3>
+                <div class="home-framework-content">
+                    <div class="home-framework-diagram">
                         {% include 'components/dreyfus_model_svg.html' %}
                     </div>
-                    <p style="color: rgba(255, 255, 255, 0.95); margin-top: 2rem; font-size: 1.125rem; line-height: 1.7;">
-                        Our questionnaires use research-backed competency levels: <strong style="color: white;">Novice → Advanced Beginner → Competent → Proficient → Expert</strong>.
+                    <p class="home-framework-description">
+                        Our questionnaires use research-backed competency levels: <strong>Novice → Advanced Beginner → Competent → Proficient → Expert</strong>.
                         This framework maps naturally to career progression and helps identify specific growth areas.
                     </p>
-                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary" style="margin-top: 1.5rem; display: inline-block; background: var(--bg-card); color: var(--primary);">Learn About the Dreyfus Model →</a>
+                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary home-framework-action">Learn About the Dreyfus Model →</a>
                 </div>
             </div>
 
             <!-- Try Assessment CTA -->
-            <div style="margin-top: 3rem; padding: 2.5rem; background: var(--success-600); border: 1px solid var(--success-700); border-radius: 12px; text-align: center;">
-                <div style="max-width: 700px; margin: 0 auto;">
-                    <h3 style="color: white; margin-bottom: 1rem; font-size: 1.75rem;">Discover Your Developer Skill Level</h3>
-                    <p style="color: rgba(255, 255, 255, 0.95); font-size: 1.125rem; line-height: 1.7; margin-bottom: 2rem;">
+            <div class="home-assessment">
+                <div class="home-assessment-content">
+                    <h3>Discover Your Developer Skill Level</h3>
+                    <p class="home-assessment-description">
                         Take our free Developer Skills Assessment to see the Dreyfus and Agency frameworks in action.
                         Get personalized insights across 10 engineering competencies and discover where you stand on your professional journey.
                     </p>
-                    <a href="{% landing_url 'dreyfus_assessment_start' %}" class="btn btn-primary" style="background: var(--bg-card); color: var(--success-600); font-weight: 600; padding: 1rem 2.5rem; font-size: 1.125rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+                    <a href="{% landing_url 'dreyfus_assessment_start' %}" class="btn btn-primary home-assessment-action">
                         Take the Free Assessment →
                     </a>
-                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.875rem; margin-top: 1rem;">
+                    <p class="home-assessment-note">
                         5 minutes • Get instant results • No signup required
                     </p>
                 </div>
@@ -554,7 +532,7 @@
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>Token-Based Anonymous Feedback</h3>
-                    <p>Blik uses cryptographic tokens instead of user accounts for reviewers. Administrators cannot trace feedback to specific individuals—even with database access. Anonymity is enforced by architecture, not configuration settings.</p>
+                    <p>Reviewers use token-based links, and reports aggregate feedback by category with configurable thresholds. Responses retain a token reference, which may link to an invitation email. Confidentiality depends on invitation method, permissions, thresholds, and feedback content—not a guarantee against database administrators identifying reviewers.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Self-Hosted Data Control</h3>
@@ -570,15 +548,15 @@
                 </div>
                 <div class="feature-card">
                     <h3>4 Pre-Built Research-Backed Questionnaires</h3>
-                    <p>Includes Professional Skills, Software Engineering, Manager, and Agency & Initiative assessments. Based on Dreyfus Model (Novice to Expert skill levels) and 5 Levels of Agency framework. Fully customizable or use as-is.</p>
+                    <p>Includes Professional Skills 360 Review, Software Engineering 360 Review, Manager 360 Review, and 360 Degree Feedback. Customize these templates or use them as supplied.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Full REST API & Webhook Support</h3>
-                    <p>Complete REST API with Bearer token authentication. Webhooks for real-time cycle events (created, submitted, completed). No rate limits or integration fees—unlimited API access on self-hosted deployments.</p>
+                    <p>REST API with Bearer token authentication and four HMAC-signed webhook events. Generous limits: 1,000 requests/hour per token; 100/hour for anonymous requests.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>GDPR Compliant Architecture</h3>
-                    <p>Self-hosted deployments are GDPR compliant by default—your server, your jurisdiction. Managed EU hosting runs on Hetzner data centers in Germany for GDPR data residency compliance.</p>
+                    <h3>Tools to Support GDPR Obligations</h3>
+                    <p>Self-hosting offers infrastructure control, and managed hosting runs in the EU. Export and deletion tools support GDPR obligations; your organization remains responsible for lawful processing, configuration, access, retention, and its compliance processes.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Open Data Standards</h3>
@@ -647,11 +625,11 @@
                 <div class="pricing-card pricing-featured">
                     <div class="featured-badge">Managed Service</div>
                     <h3>EU Hosted SaaS</h3>
-                    <div class="price">€49</div>
+                    <div class="price">€{{ plan_saas_price }}</div>
                     <p class="price-desc">per month</p>
                     <ul class="pricing-features">
-                        <li>Hosted in EU (GDPR compliant)</li>
-                        <li>Up to 50 employees</li>
+                        <li>Hosted in EU</li>
+                        <li>Up to {{ plan_saas_max }} employees</li>
                         <li>Automatic updates</li>
                         <li>Daily backups</li>
                         <li>Email support</li>
@@ -662,11 +640,11 @@
                 </div>
                 <div class="pricing-card">
                     <h3>Enterprise</h3>
-                    <div class="price">€199</div>
+                    <div class="price">€{{ plan_ent_price }}</div>
                     <p class="price-desc">per month</p>
                     <ul class="pricing-features">
-                        <li>Hosted in EU (GDPR compliant)</li>
-                        <li>Up to 200 employees</li>
+                        <li>Hosted in EU</li>
+                        <li>Up to {{ plan_ent_max }} employees</li>
                         <li>Automatic updates</li>
                         <li>Daily backups</li>
                         <li>Priority email support</li>
@@ -692,12 +670,12 @@
 
                 <details class="faq-item">
                     <summary>How does Blik ensure reviewer anonymity?</summary>
-                    <p>Blik uses cryptographic tokens embedded in unique URLs for each reviewer. The system architecture makes it technically impossible for administrators to trace feedback to specific individuals—even with direct database access. Unlike platforms with "anonymous mode" toggles, Blik's anonymity is enforced by design: no user accounts, no IP logging for reviewers, and no mapping between tokens and identities stored in the database.</p>
+                    <p>Reviewers use token-based links, and reports aggregate feedback by category with configurable thresholds. Responses retain a token reference, which may link to an invitation email. Confidentiality depends on invitation method, permissions, thresholds, and feedback content; it is not guaranteed against administrators with database access.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What are the system requirements for self-hosting?</summary>
-                    <p><strong>Minimum requirements:</strong> 512MB RAM, 1 CPU core, 2GB storage. <strong>Recommended:</strong> 1GB+ RAM, 2 CPU cores, 10GB storage for production use. Blik runs on any system supporting Docker (Linux, macOS, Windows). Built with Python/Django—compatible with most Linux distributions. The Docker Compose setup includes PostgreSQL database or can connect to external database servers.</p>
+                    <p>Runs comfortably on a 1 GB VPS for typical team sizes (512 MB minimum). Blik runs on systems supporting Docker; the Docker Compose setup includes a PostgreSQL database.</p>
                 </details>
 
                 <details class="faq-item">
@@ -712,12 +690,12 @@
 
                 <details class="faq-item">
                     <summary>Is Blik GDPR compliant?</summary>
-                    <p>If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service.</p>
+                    <p>EU hosting and self-hosting do not automatically establish GDPR compliance. Blik provides export and deletion tools to support your obligations. Your organization remains responsible for lawful processing, configuration, access controls, retention, and compliance processes.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How is Blik different from Lattice, Culture Amp, and 15Five?</summary>
-                    <p><strong>Key differences:</strong> (1) <strong>Open source vs proprietary:</strong> Blik is AGPL-licensed with zero licensing fees; competitors charge per-user subscriptions. (2) <strong>Self-hosted vs SaaS-only:</strong> Blik runs on your infrastructure; competitors require their hosted platforms. (3) <strong>Flat pricing vs per-user:</strong> Blik hosted plans charge €49-199/month regardless of usage; Lattice costs ~€18K/year for 50 people<sup><a href="#source-pricing" class="citation-link">1</a></sup>, Culture Amp ~€15K/year<sup><a href="#source-pricing" class="citation-link">1</a></sup>. (4) <strong>True anonymity:</strong> Blik's token-based system makes feedback technically untraceable; most competitors use "anonymous mode" toggles that admins can disable.</p>
+                    <p>Blik is AGPL-3.0 software you can self-host free, with managed EU hosting from €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. Lattice, Culture Amp, and 15Five offer broader hosted performance-management suites with different modules and pricing. <a href="{% landing_url 'alternatives' %}">Compare features, deployment, and dated vendor prices.</a></p>
                 </details>
 
                 <details class="faq-item">
@@ -787,12 +765,12 @@
 
                 <details class="faq-item">
                     <summary>Is there an API for integrations?</summary>
-                    <p>Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available at <a href="{{ api_swagger_url }}" target="_blank" style="color: var(--primary); text-decoration: underline;">{{ api_swagger_url }}</a>. No usage limits, no integration fees—just standard authentication and full CRUD operations. <a href="{% landing_url 'developers' %}" style="color: var(--primary);">View full API documentation →</a></p>
+                    <p>Blik includes a REST API with Bearer token authentication and four HMAC-signed webhook events. Generous limits: 1,000 requests/hour per token; 100/hour for anonymous requests. <a href="{{ api_swagger_url }}">Open interactive API documentation.</a></p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How do I invite reviewers?</summary>
-                    <p>There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team.</p>
+                    <p>You can share a link that generates reviewer tokens or send email invitations. Email invitations can associate a token with an email address, and responses retain their token reference. Shared links do not support email reminders. Explain your invitation method and confidentiality limits to reviewers.</p>
                 </details>
 
                 <details class="faq-item">
@@ -801,18 +779,18 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>What's the difference between the €49 and €199 hosted plans?</summary>
-                    <p>Just the employee count. The €49 plan is for up to 50 employees, and the €199 plan is for up to 200 employees. Everything else is the same. Bigger company equals bigger bill, but it's still a negligible amount when you have 200+ employees.</p>
+                    <summary>What's the difference between the €{{ plan_saas_price }} and €{{ plan_ent_price }} hosted plans?</summary>
+                    <p>The €{{ plan_saas_price }}/month plan covers up to {{ plan_saas_max }} employees. Enterprise is €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees and adds priority support and an SLA with uptime commitment. Contact us for larger teams.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What happens to my data if I cancel my hosted subscription?</summary>
-                    <p>All data will be removed after 30 days. No exceptions. Make sure you export your data before canceling if you want to keep it.</p>
+                    <p>All data will be removed after 30 days. Make sure you export your data before canceling if you want to keep it.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can I try the hosted version before committing?</summary>
-                    <p>Yes, there is a 14 day trial. Credit card is required to activate the trial though.</p>
+                    <p>{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
                 </details>
             </div>
         </div>
@@ -832,49 +810,7 @@
         </div>
     </section>
 
-    <!-- Sources & References -->
-    <section class="section section-alt" style="background: var(--bg-secondary); padding: 2rem 0;">
-        <div class="container" style="max-width: 900px;">
-            <h2 style="font-size: 1.25rem; text-align: center; margin-bottom: 2rem; color: var(--text);">Sources & References</h2>
-            <div style="background: var(--bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
-                <ol style="line-height: 2; color: var(--text-secondary); padding-left: 1.5rem; font-size: 0.875rem;">
-                    <li id="source-pricing">
-                        <strong>Competitor Pricing:</strong> <strong>Lattice</strong> (verified November 11, 2025): $11/user/month base + modules ($4 Engagement, $4 Grow, $6 Compensation), $4,000 annual minimum. Total can reach $25/user/month with all modules. <strong>15Five</strong> (verified November 11, 2025): $4/user/month (Engage tier), $11/user/month (Perform tier), $16/user/month (Total Platform). <strong>Culture Amp</strong>: Does not publish pricing publicly (requires quote) - estimates of $9-14/user/month with $4,500+ minimums based on user reports from G2 and Capterra reviews. Calculations assume 50 employees at mid-tier pricing. EUR/USD conversion approximate (1 EUR ≈ 1.1 USD).
-                        <br><small style="color: var(--text-tertiary);">
-                            Official Pricing:
-                            <a href="https://lattice.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">Lattice Pricing (Public)</a> •
-                            <a href="https://www.15five.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">15Five Pricing (Public)</a> •
-                            <a href="https://www.cultureamp.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">Culture Amp (Requires Quote)</a> •
-                            User-Reported Costs:
-                            <a href="https://www.g2.com/products/culture-amp/reviews" target="_blank" rel="noopener" style="color: var(--primary);">Culture Amp Reviews (G2)</a> •
-                            <a href="https://www.capterra.com/p/151676/Lattice/#reviews" target="_blank" rel="noopener" style="color: var(--primary);">Lattice Reviews (Capterra)</a>
-                        </small>
-                    </li>
-                    <li id="source-price-increases">
-                        <strong>Price Increases:</strong> Multiple HR software platforms have documented annual price increases. BambooHR legacy customers reported 15-75% price increases in 2024-2025 renewal cycles. Culture Amp customers reported up to 20% increases upon renewal. Workday historically applies CPI-based annual increases.
-                        <br><small style="color: var(--text-tertiary);">
-                            Sources:
-                            <a href="https://www.trustpilot.com/review/bamboohr.com" target="_blank" rel="noopener" style="color: var(--primary);">BambooHR Reviews (Trustpilot)</a> •
-                            <a href="https://www.g2.com/products/culture-amp/reviews" target="_blank" rel="noopener" style="color: var(--primary);">Culture Amp Reviews (G2)</a> •
-                            <a href="https://www.capterra.com/p/151676/Lattice/#reviews" target="_blank" rel="noopener" style="color: var(--primary);">User Reviews (Capterra)</a>
-                        </small>
-                    </li>
-                    <li id="source-deployment">
-                        <strong>Docker Deployment Time:</strong> "Deploy in 5 minutes" based on Docker Compose deployment method documented in repository. Assumes familiarity with Docker, pre-configured environment variables, and stable network connection. Actual deployment time varies based on server specifications and network speed. Complete deployment guide available in repository README.
-                        <br><small style="color: var(--text-tertiary);">
-                            Source: <a href="https://github.com/thijsdezoete/blik#quick-start" target="_blank" rel="noopener" style="color: var(--primary);">Blik Deployment Documentation</a>
-                        </small>
-                    </li>
-                </ol>
-
-                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-                    <p style="font-size: 0.75rem; line-height: 1.6; color: var(--text-secondary); margin: 0;">
-                        <strong style="color: var(--text);">Methodology:</strong> Competitor pricing aggregated from public vendor websites, user reviews (G2, Capterra, Trustpilot, TrustRadius), and SaaS purchasing data (Vendr). All pricing verified as of January 2025. While reasonable efforts are made to maintain accuracy, vendor pricing changes frequently—verify critical details directly with vendors before purchasing decisions.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+    {% include "landing/includes/pricing_sources.html" %}
 
     {% include "landing/includes/article_metadata.html" with template_path="landing/index.html" author="Thijs de Zoete" %}
 {% endblock %}
@@ -899,7 +835,7 @@
                 "name": "How does Blik ensure reviewer anonymity?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is built with anonymity baked in from the start. We use hard-to-guess tokens in URLs, and make it impossible for employers or review administrators to see who answered what. I built this for myself and my team to give them the trust to answer as bluntly and honestly as possible without ever feeling like they're going to get fired for being honest. Even as an admin, you can't trace feedback back to specific people."
+                    "text": "Reviewers use token-based links, and reports aggregate feedback by category with configurable thresholds. Responses retain a token reference, which may link to an invitation email. Confidentiality depends on invitation method, permissions, thresholds, and feedback content; it is not guaranteed against administrators with database access."
                 }
             },
             {
@@ -907,7 +843,7 @@
                 "name": "What are the system requirements for self-hosting?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is a simple app that requires a little bit of compute and a database, which comes built in if you want. While I haven't had a chance to test it with many concurrent users, we expect a VPS with 512MB of RAM and a little bit of storage would suffice. It's built in Python so most operating systems will be able to host the application."
+                    "text": "Runs comfortably on a 1 GB VPS for typical team sizes (512 MB minimum). Blik runs on systems supporting Docker; the Docker Compose setup includes a PostgreSQL database."
                 }
             },
             {
@@ -931,7 +867,7 @@
                 "name": "Is Blik GDPR compliant?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service."
+                    "text": "EU hosting and self-hosting do not automatically establish GDPR compliance. Blik provides export and deletion tools to support your obligations. Your organization remains responsible for lawful processing, configuration, access controls, retention, and compliance processes."
                 }
             },
             {
@@ -939,7 +875,7 @@
                 "name": "How is Blik different from Lattice, Culture Amp, and 15Five?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies compared to tools like Lattice (€18K/year for 50 people) or Culture Amp (€15K/year). Simplicity."
+                    "text": "Blik is AGPL-3.0 software you can self-host free, with managed EU hosting from €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. Lattice, Culture Amp, and 15Five offer broader hosted performance-management suites with different modules and pricing."
                 }
             },
             {
@@ -1051,7 +987,7 @@
                 "name": "Is there an API for integrations?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available. No usage limits, no integration fees—just standard authentication and full CRUD operations."
+                    "text": "Blik includes a REST API with Bearer token authentication and four HMAC-signed webhook events. Generous limits: 1,000 requests/hour per token; 100/hour for anonymous requests. Interactive API documentation is available."
                 }
             },
             {
@@ -1059,7 +995,7 @@
                 "name": "How do I invite reviewers?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is the recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team."
+                    "text": "You can share a link that generates reviewer tokens or send email invitations. Email invitations can associate a token with an email address, and responses retain their token reference. Shared links do not support email reminders. Explain your invitation method and confidentiality limits to reviewers."
                 }
             },
             {
@@ -1072,10 +1008,10 @@
             },
             {
                 "@type": "Question",
-                "name": "What's the difference between the €49 and €199 hosted plans?",
+                "name": "What's the difference between the €{{ plan_saas_price }} and €{{ plan_ent_price }} hosted plans?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Just the employee count. The €49 plan is for up to 50 employees, and the €199 plan is for up to 200 employees. Everything else is the same. Bigger company equals bigger bill, but it's still a negligible amount when you have 200+ employees."
+                    "text": "The €{{ plan_saas_price }}/month plan covers up to {{ plan_saas_max }} employees. Enterprise is €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees and adds priority support and an SLA with uptime commitment. Contact us for larger teams."
                 }
             },
             {
@@ -1083,7 +1019,7 @@
                 "name": "What happens to my data if I cancel my hosted subscription?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "All data will be removed after 30 days. No exceptions. Make sure you export your data before canceling if you want to keep it."
+                    "text": "All data will be removed after 30 days. Make sure you export your data before canceling if you want to keep it."
                 }
             },
             {
@@ -1091,7 +1027,7 @@
                 "name": "Can I try the hosted version before committing?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes, there is a 14 day trial. Credit card is required to activate the trial though."
+                    "text": "{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged."
                 }
             }
         ]

@@ -31,357 +31,6 @@
 <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Developer%20Skills%20Assessment&subtitle=Discover%20Your%20Skill%20Level">
 {% endblock %}
 
-{% block extra_head %}
-<style>
-:root {
-    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-}
-
-.assessment-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-}
-
-.hero-section {
-    text-align: center;
-    padding: 3rem 1rem;
-    background: var(--primary-gradient);
-    border-radius: 1rem;
-    color: white;
-    margin-bottom: 3rem;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
-}
-
-.hero-section h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    margin-bottom: 1rem;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.hero-metrics {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
-}
-
-.hero-metric {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.95rem;
-    opacity: 0.95;
-}
-
-.section-card {
-    background: var(--color-bg-secondary);
-    border-radius: 1rem;
-    padding: 2.5rem;
-    margin-bottom: 2rem;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.section-card.completed {
-    border-color: var(--success-color);
-    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.section-icon {
-    width: 3rem;
-    height: 3rem;
-    background: var(--primary-gradient);
-    border-radius: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    font-weight: 700;
-    flex-shrink: 0;
-}
-
-.section-header h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    margin: 0;
-}
-
-.section-description {
-    color: var(--color-text-muted);
-    margin-bottom: 2rem;
-    padding-left: 4rem;
-}
-
-.question-card {
-    background: var(--color-bg);
-    border-radius: 0.75rem;
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-    border: 2px solid var(--color-border);
-    transition: all 0.3s ease;
-}
-
-.question-card.answered {
-    border-color: var(--success-color);
-    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.05);
-}
-
-.question-label {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-.question-number {
-    display: inline-block;
-    background: var(--primary-gradient);
-    color: white;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 2rem;
-    margin-right: 0.75rem;
-    font-size: 0.9rem;
-    font-weight: 700;
-}
-
-.radio-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.radio-option {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 1rem 1.25rem;
-    background: var(--color-bg-secondary);
-    border: 2px solid var(--color-border);
-    border-radius: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.radio-option:hover {
-    border-color: var(--color-primary);
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
-}
-
-.radio-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-}
-
-.radio-custom {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid var(--color-border);
-    border-radius: 50%;
-    margin-right: 1rem;
-    flex-shrink: 0;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.radio-option input[type="radio"]:checked ~ .radio-custom {
-    border-color: var(--color-primary);
-    background: var(--color-primary);
-}
-
-.radio-custom::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    width: 0.5rem;
-    height: 0.5rem;
-    background: var(--bg-card);
-    border-radius: 50%;
-    transition: transform 0.2s ease;
-}
-
-.radio-option input[type="radio"]:checked ~ .radio-custom::after {
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.radio-label {
-    flex: 1;
-    font-size: 0.95rem;
-    color: var(--color-text);
-    line-height: 1.5;
-}
-
-.radio-option input[type="radio"]:checked ~ .radio-label {
-    font-weight: 600;
-    color: var(--color-primary);
-}
-
-.radio-value {
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    font-weight: 600;
-    margin-left: auto;
-    padding-left: 1rem;
-}
-
-.text-input {
-    width: 100%;
-    padding: 1rem 1.25rem;
-    border: 2px solid var(--color-border);
-    border-radius: 0.75rem;
-    background: var(--color-bg);
-    font-size: 1rem;
-    transition: all 0.2s ease;
-}
-
-.text-input:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.progress-sticky {
-    position: sticky;
-    top: 100px; /* Account for header */
-    background: var(--color-bg);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    z-index: 100;
-    border: 1px solid var(--color-border);
-    backdrop-filter: blur(10px);
-}
-
-.progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.progress-text {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.progress-percentage {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--color-primary);
-}
-
-.progress-bar-container {
-    height: 0.75rem;
-    background: var(--color-bg-secondary);
-    border-radius: 9999px;
-    overflow: hidden;
-    position: relative;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: var(--primary-gradient);
-    border-radius: 9999px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.progress-bar-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-.submit-section {
-    background: var(--color-bg-secondary);
-    border-radius: 1rem;
-    padding: 2rem;
-    text-align: center;
-    margin-top: 3rem;
-}
-
-.submit-button {
-    width: 100%;
-    padding: 1.25rem 2rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: white;
-    background: var(--primary-gradient);
-    border: none;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-}
-
-.submit-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
-}
-
-.submit-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.submit-note {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-}
-
-@media (max-width: 768px) {
-    .section-card {
-        padding: 1.5rem;
-    }
-
-    .section-description {
-        padding-left: 0;
-    }
-
-    .question-card {
-        padding: 1.5rem;
-    }
-
-    .hero-section {
-        padding: 2rem 1rem;
-    }
-}
-</style>
-{% endblock %}
 
 {% block content %}
 <main class="assessment-page">
@@ -390,24 +39,24 @@
         <!-- Hero Section -->
         <div class="hero-section">
             <h1>What's Your Developer Level?</h1>
-            <p style="font-size: 1.2rem; opacity: 0.95; max-width: 600px; margin: 0 auto 0.5rem;">
+            <p class="assessment-intro">
                 Discover where you stand on the Dreyfus Model and your agency level
             </p>
             <div class="hero-metrics">
                 <div class="hero-metric">
-                    <svg style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 20 20">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                     </svg>
                     <span>~8 minutes</span>
                 </div>
                 <div class="hero-metric">
-                    <svg style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 20 20">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                     </svg>
                     <span>{{ total_questions }} questions</span>
                 </div>
                 <div class="hero-metric">
-                    <svg style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 20 20">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                         <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
@@ -422,12 +71,10 @@
                 <span class="progress-text">Your Progress</span>
                 <span class="progress-percentage" id="progressPercentage">0%</span>
             </div>
-            <div class="progress-text" style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">
+            <div class="progress-text progress-count">
                 <span id="progressCurrent">0</span> of {{ total_questions }} questions completed
             </div>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
-            </div>
+            <progress class="assessment-progress" id="progressBar" value="0" max="{{ total_questions }}" aria-label="Questions completed"></progress>
         </div>
 
         <!-- Assessment Form -->
@@ -449,7 +96,7 @@
                     <div class="question-label">
                         <span class="question-number">{{ forloop.counter }}</span>
                         {{ question.question_text }}
-                        {% if question.required %}<span style="color: #ef4444; margin-left: 0.25rem;">*</span>{% endif %}
+                        {% if question.required %}<span class="required-marker">*</span>{% endif %}
                     </div>
 
                     {% if question.question_type == 'rating' %}
@@ -525,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const answered = allQuestions.filter(card => isQuestionAnswered(card)).length;
             const percentage = Math.round((answered / totalQuestions) * 100);
 
-            progressBar.style.width = percentage + '%';
+            progressBar.value = answered;
             progressPercentage.textContent = percentage + '%';
             progressCurrent.textContent = answered;
 
@@ -560,11 +207,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (requiredAnswered >= requiredCount) {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Complete Assessment & See Results →';
-                submitNote.style.display = 'none';
+                submitNote.hidden = true;
             } else {
                 submitButton.disabled = true;
                 submitButton.textContent = `Answer ${requiredCount - requiredAnswered} more question${requiredCount - requiredAnswered !== 1 ? 's' : ''} to continue`;
-                submitNote.style.display = 'block';
+                submitNote.hidden = false;
             }
         } catch(error) {
             console.error('Error in updateProgress:', error);
@@ -615,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission
     form.addEventListener('submit', function(e) {
         submitButton.disabled = true;
-        submitButton.innerHTML = '<span style="opacity: 0.7;">Analyzing your responses...</span>';
+        submitButton.innerHTML = '<span class="submission-status">Analyzing your responses...</span>';
     });
 
     // Keyboard shortcuts

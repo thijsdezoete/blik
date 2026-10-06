@@ -69,7 +69,7 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <a href="{% landing_url 'index' %}" class="logo" style="text-decoration: none; color: inherit;">{{ site_name|default:"Blik" }}</a>
+                <a href="{% landing_url 'index' %}" class="logo">{{ site_name|default:"Blik" }}</a>
                 <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -86,7 +86,7 @@
                         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
-                        <svg class="moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
                     </button>
@@ -103,8 +103,8 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h4>{{ site_name|default:"Blik" }}</h4>
-                    <p>Open source 360-degree feedback platform with true anonymity, transparent pricing, and self-hosted control.</p>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary mt-4" style="display: inline-block;">Get Started</a>
+                    <p>Open source 360-degree feedback with token-based review access, transparent pricing, and self-hosted control.</p>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary footer-signup">Get Started</a>
                 </div>
                 <div class="footer-section">
                     <h4>Product</h4>
@@ -150,7 +150,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 {{ site_name|default:"Blik" }}. Open source under AGPL-3.0 license.</p>
+                <p>&copy; {% now "Y" %} {{ site_name|default:"Blik" }}. Open source under AGPL-3.0 license.</p>
             </div>
         </div>
     </footer>
@@ -188,28 +188,12 @@
 
             // Theme toggle functionality
             const themeToggle = document.querySelector('.theme-toggle');
-            const sunIcon = themeToggle.querySelector('.sun-icon');
-            const moonIcon = themeToggle.querySelector('.moon-icon');
-
-            const updateThemeIcons = () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                if (currentTheme === 'dark') {
-                    sunIcon.style.display = 'block';
-                    moonIcon.style.display = 'none';
-                } else {
-                    sunIcon.style.display = 'none';
-                    moonIcon.style.display = 'block';
-                }
-            };
-
-            updateThemeIcons();
 
             themeToggle.addEventListener('click', function() {
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
-                updateThemeIcons();
             });
         });
 

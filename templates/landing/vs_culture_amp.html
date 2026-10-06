@@ -2,10 +2,10 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>Culture Amp Alternative — 360 Feedback Comparison 2026</title>
+    <title>Culture Amp Alternative — 360 Feedback Comparison {% now "Y" %}</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Culture Amp needs custom pricing and annual contracts. Blik360 is €49/mo flat or free self-hosted. Compare anonymity, data ownership, and cost.">
+    <meta name="description" content="Culture Amp needs custom pricing and annual contracts. Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare anonymity, data ownership, and cost.">
     <meta name="keywords" content="Blik vs Culture Amp, Culture Amp alternative, employee engagement, 360 feedback, performance review software">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-culture-amp/">
@@ -13,32 +13,33 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-culture-amp/">
-    <meta property="og:title" content="Culture Amp Alternative — 360 Feedback Comparison 2026">
-    <meta property="og:description" content="Culture Amp needs custom pricing and annual contracts. Blik360 is €49/mo flat or free self-hosted. Compare anonymity, data ownership, and cost.">
+    <meta property="og:title" content="Culture Amp Alternative — 360 Feedback Comparison {% now "Y" %}">
+    <meta property="og:description" content="Culture Amp needs custom pricing and annual contracts. Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare anonymity, data ownership, and cost.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Culture%20Amp%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Culture%20Amp%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Culture Amp Alternative — 360 Feedback Comparison 2026">
+    <meta property="og:image:alt" content="Culture Amp Alternative — 360 Feedback Comparison {% now "Y" %}">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-culture-amp/">
-    <meta name="twitter:title" content="Culture Amp Alternative — 360 Feedback Comparison 2026">
-    <meta name="twitter:description" content="Culture Amp needs custom pricing and annual contracts. Blik360 is €49/mo flat or free self-hosted. Compare anonymity, data ownership, and cost.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Culture%20Amp%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta name="twitter:title" content="Culture Amp Alternative — 360 Feedback Comparison {% now "Y" %}">
+    <meta name="twitter:description" content="Culture Amp needs custom pricing and annual contracts. Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare anonymity, data ownership, and cost.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Culture%20Amp%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/vs_culture_amp.html" headline="Blik vs Culture Amp - Data Protection and Anonymity Comparison" description="Comparing Blik and Culture Amp: data loss protection, true anonymity, transparent renewal pricing vs. timeout issues and 20% price increases." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Culture%20Amp%20Alternative&subtitle=360%20Feedback%20Comparison%202026" %}
+    {% article_schema "landing/vs_culture_amp.html" headline="Blik vs Culture Amp - Feedback Platform Comparison" description="Comparing flat and quote-based pricing, reporting safeguards, and self-hosted or SaaS deployment." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
+
 
 {% block nav_links %}
     <a href="#overview">Overview</a>
-    <a href="#data-loss">Data Loss</a>
     <a href="#anonymity">Anonymity</a>
     <a href="#pricing">Pricing</a>
+    <a href="#features">Features</a>
     <a href="#decision">Right Choice</a>
 {% endblock %}
 
@@ -49,8 +50,7 @@
             <div class="hero-content">
                 <h1 class="hero-title">Blik vs Culture Amp: An Honest Comparison</h1>
                 <p class="hero-subtitle">
-                    Both platforms deliver employee feedback and engagement surveys. But one guarantees your work won't disappear,
-                    your pricing won't jump 20% at renewal, and your anonymity is cryptographically protected.
+                    Culture Amp is a broad engagement and performance platform with pricing on request. Blik focuses on structured 360° feedback with flat hosted pricing and an open-source self-hosting option.
                 </p>
                 <div class="hero-cta">
                     <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
@@ -64,74 +64,74 @@
     <section id="overview" class="section section-alt">
         <div class="container">
             <h2 class="section-title">At a Glance</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
-                The critical differences between Blik and Culture Amp
+            <p class="section-intro">
+                How Blik and Culture Amp compare on the fundamentals
             </p>
 
             <div class="table-container">
-                <table class="comparison-table">
+                <table class="comparison-table comparison-table-detailed">
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Feature</th>
-                            <th style="width: 30%;">Blik</th>
-                            <th style="width: 30%;">Culture Amp</th>
+                            <th class="comparison-column-feature">Feature</th>
+                            <th class="comparison-column-product">Blik</th>
+                            <th class="comparison-column-product">Culture Amp</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Deployment Options</strong></td>
-                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
-                            <td>SaaS only<br><small>Their servers, their pricing</small></td>
+                            <td>SaaS (€{{ plan_saas_price }}/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Managed hosting</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Work Loss Protection</strong></td>
-                            <td>✓ Auto-save, no timeouts<br><small>Your work is always protected</small></td>
-                            <td>✗ Timeout deletes work<br><small>"An hour of writing, POOF! All lost"</small></td>
+                            <td><strong>Draft Safety</strong></td>
+                            <td>✓ Auto-save and draft recovery<br><small>Work is saved as you type</small></td>
+                            <td>Standard session handling<br><small>Work saved on submit</small></td>
                         </tr>
                         <tr>
-                            <td><strong>SaaS Pricing Stability</strong></td>
-                            <td>€49/month flat rate<br><small>No renewal surprises</small></td>
-                            <td>20% renewal increases<br><small>"Refused relief until we involved VP Finance"</small></td>
+                            <td><strong>Pricing Model</strong></td>
+                            <td>€{{ plan_saas_price }}/month flat rate<br><small>Up to {{ plan_saas_max }} employees</small></td>
+                            <td>Quote-based<br><small>No published pricing; annual billing</small></td>
                         </tr>
                         <tr>
                             <td><strong>Implementation Cost</strong></td>
-                            <td>$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
-                            <td>$1,000-$20,000+<br><small>Plus ongoing consultant fees</small></td>
+                            <td>$0 (docker compose up)<br><small>Running in under 30 minutes with Docker Compose</small></td>
+                            <td>Not published<br><small>Scoped per contract</small></td>
                         </tr>
                         <tr>
-                            <td><strong>True Anonymity</strong></td>
-                            <td>✓ Cryptographically guaranteed<br><small>Technically impossible to trace</small></td>
-                            <td>⚠ "Comments can be traced"<br><small>"Fear of retaliatory actions"</small></td>
+                            <td><strong>Anonymity</strong></td>
+                            <td>Token-based review access<br><small>Aggregated reports; configuration matters</small></td>
+                            <td>Hosted feedback workflows<br><small>Check report visibility and confidentiality settings</small></td>
                         </tr>
                         <tr>
                             <td><strong>HRIS Integration</strong></td>
-                            <td>Direct database access<br><small>Your data, your control</small></td>
-                            <td>"Rippling integration is a joke"<br><small>"Duplicate profiles, terrible data"</small></td>
+                            <td>REST API + webhooks<br><small>No native connectors</small></td>
+                            <td>Native HRIS connectors<br><small>Integrated with HR platforms</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Individual Extensions</strong></td>
-                            <td>Per-user deadline control<br><small>Extend for one person easily</small></td>
-                            <td>Must reopen entire cycle<br><small>"Administrative nightmare"</small></td>
+                            <td><strong>Feature Scope</strong></td>
+                            <td>Open source = verifiable<br><small>Documented features, open roadmap</small></td>
+                            <td>Scoped per plan/contract<br><small>Defined in the engagement</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Promised Features</strong></td>
-                            <td>What we document, we deliver<br><small>Open source = verify yourself</small></td>
-                            <td>9-box grids not supported<br><small>"Build it yourself outside platform"</small></td>
+                            <td><strong>SSO / SAML</strong></td>
+                            <td>Planned (not yet shipped)</td>
+                            <td>Available</td>
                         </tr>
                         <tr>
-                            <td><strong>Calendar Integration</strong></td>
-                            <td>Standard iCal/Outlook<br><small>Works with any calendar</small></td>
-                            <td>No Google Calendar<br><small>"1:1s lose sync"</small></td>
+                            <td><strong>Native Mobile App</strong></td>
+                            <td>Responsive web (no native app)</td>
+                            <td>Native mobile app</td>
                         </tr>
                         <tr>
                             <td><strong>Scalability</strong></td>
-                            <td>Works at any size<br><small>Self-hosted scales with you</small></td>
-                            <td>"Can't support growth"<br><small>"Scaled 100→400, product couldn't keep up"</small></td>
+                            <td>Self-hosted scales with your infrastructure<br><small>PostgreSQL-backed</small></td>
+                            <td>Enterprise-grade platform<br><small>Built for large organizations</small></td>
                         </tr>
                         <tr>
                             <td><strong>Support Model</strong></td>
                             <td>Direct email + community<br><small>Open source transparency</small></td>
-                            <td>1.5-7 hour response times<br><small>"Just download CSV and do it manually"</small></td>
+                            <td>Dedicated support organization<br><small>Enterprise success teams</small></td>
                         </tr>
                     </tbody>
                 </table>
@@ -139,318 +139,173 @@
         </div>
     </section>
 
-    <!-- Data Loss Critical Issue -->
-    <section id="data-loss" class="section">
-        <div class="container">
-            <h2 class="section-title">The Data Loss Problem</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                The most severe UX failure in performance review software: platforms that delete your work without warning.
-            </p>
-
-            <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-bottom: 3rem;">
-                <h3 style="color: var(--danger);">Real Culture Amp User Experience</h3>
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "I hate this platform for one simple reason, it loves to delete your work. Picture this, you spend an hour writing a glorious review for a co-worker. You're finally happy with it and you hit submit! Does it submit though? No. Culture-Amp decides that the submit button should instead <strong>refresh the page (some un-alerted timeout feature), and all your work is lost</strong>."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">— Trustpilot Review, Culture Amp User</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik's Protection</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Auto-save functionality:</strong> Work saved as you type</li>
-                        <li><strong>No silent timeouts:</strong> Session management is transparent</li>
-                        <li><strong>Draft recovery:</strong> Come back and resume anytime</li>
-                        <li><strong>Clear warnings:</strong> If session expires, you're notified before data loss</li>
-                        <li><strong>Browser persistence:</strong> Data cached locally as backup</li>
-                    </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
-                        <p style="font-weight: bold;">Your thoughtful feedback is too valuable to lose. We protect every word.</p>
-                    </div>
-                </div>
-
-                <div class="feature-card" style="border-left: 4px solid var(--danger);">
-                    <h3 style="color: var(--danger);">Culture Amp's Risk</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Silent timeouts:</strong> No warning before session expires</li>
-                        <li><strong>Submit = Refresh:</strong> Submit button can reload page and lose work</li>
-                        <li><strong>No auto-save:</strong> Must manually save or risk losing everything</li>
-                        <li><strong>Hours lost:</strong> Users report losing hour+ of thoughtful feedback</li>
-                        <li><strong>Repeat occurrence:</strong> Happens multiple times per year</li>
-                    </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--danger-bg); border-left: 4px solid var(--danger);">
-                        <p style="font-weight: bold;">One timeout can destroy morale and waste hours of thoughtful work.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
-                <h3>Why This Matters</h3>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                    Performance reviews require deep thought. When employees spend 30-60 minutes crafting thoughtful, constructive feedback only to have it disappear, several things happen: (1) They lose trust in the platform, (2) They rush through rewrites with less thoughtful content, (3) They become resentful of the review process itself. <strong>Data loss is not just a UX bug—it's a fundamental breach of trust that corrupts the entire feedback culture.</strong>
-                </p>
-            </div>
-        </div>
-    </section>
-
     <!-- Anonymity -->
     <section id="anonymity" class="section section-alt">
         <div class="container">
-            <h2 class="section-title">The Anonymity Trust Gap</h2>
-
-            <div class="cta-box" style="background: var(--warning-bg); border-left: 4px solid var(--warning); margin-bottom: 3rem;">
-                <h3 style="color: var(--warning);">Culture Amp Users Don't Trust Anonymity</h3>
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "There are concerns about the anonymity of feedback, with some users feeling that <strong>their comments can be traced back to them, leading to potential retaliatory actions</strong>."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">— Multiple user reviews aggregated</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik's Cryptographic Anonymity</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>UUID tokens:</strong> Random, unguessable identifiers</li>
-                        <li><strong>Email separation:</strong> Reviewer emails never linked to responses</li>
-                        <li><strong>Admin-proof:</strong> Even system admins cannot identify reviewers</li>
-                        <li><strong>Technical guarantee:</strong> Architecture makes tracing impossible</li>
-                        <li><strong>Open source verification:</strong> Audit the anonymity code yourself</li>
-                        <li><strong>GDPR compliant:</strong> Data minimization by design</li>
-                    </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
-                        <p style="font-weight: bold;">Tell your team: "Even I can't see who wrote what." That's true psychological safety.</p>
-                    </div>
+            <h2 class="section-title">Review Confidentiality</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Blik's reporting safeguards</h3>
+                    <p>Reviewers use tokenized links and reports aggregate feedback by category. Responses link to tokens that may contain invitation emails. This is not an anonymity guarantee against database administrators.</p>
+                    <p>Invitation methods, access permissions, thresholds, and identifying comments all affect confidentiality.</p>
                 </div>
-
-                <div class="feature-card" style="border-left: 4px solid var(--warning);">
-                    <h3 style="color: var(--warning);">Culture Amp's Policy-Based Anonymity</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Platform promise:</strong> "We won't reveal who said what"</li>
-                        <li><strong>Closed source:</strong> Can't verify anonymity claims</li>
-                        <li><strong>User fear:</strong> "Comments can be traced back"</li>
-                        <li><strong>Retaliatory concerns:</strong> Employees worry about consequences</li>
-                        <li><strong>Trust required:</strong> Must believe platform and all staff</li>
-                        <li><strong>Data centralization:</strong> All feedback on Culture Amp servers</li>
-                    </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--warning-bg); border-left: 4px solid var(--warning);">
-                        <p style="font-weight: bold;">When employees fear being traced, honest feedback disappears.</p>
-                    </div>
+                <div class="feature-card">
+                    <h3>Evaluate Culture Amp's settings</h3>
+                    <p>Review the visibility rules, report thresholds, retention terms, and administrator access for your chosen workflow. Explain these to participants before collecting feedback.</p>
                 </div>
-            </div>
-
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                <h3>The Honesty Tax</h3>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                    360° feedback only works when reviewers feel safe being honest. Research shows that perceived anonymity isn't enough—employees are more candid when they know it's <strong>technically impossible</strong> to identify them. Culture Amp users explicitly report anonymity concerns. With Blik's cryptographic approach, you eliminate that fear entirely. The difference isn't theoretical—it's the difference between getting honest feedback and getting politically safe platitudes.
-                </p>
             </div>
         </div>
     </section>
 
-    <!-- Pricing & Renewals -->
+    <!-- Pricing Comparison -->
     <section id="pricing" class="section">
         <div class="container">
-            <h2 class="section-title">Pricing Stability vs. Renewal Surprises</h2>
+            <h2 class="section-title">Pricing: Flat vs. Quote-Based</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success); margin-bottom: 1rem;">Blik SaaS (Managed)</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">€49<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
-                    <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
-                        <li>Unlimited users</li>
+            <div class="comparison-plan-grid comparison-plan-grid--compact mb-12">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success mb-4">Blik SaaS (Managed)</h3>
+                    <div class="comparison-plan-price">€{{ plan_saas_price }}<span class="comparison-price-period">/month</span></div>
+                    <ul class="comparison-benefits comparison-benefits--muted">
+                        <li>Up to {{ plan_saas_max }} employees</li>
                         <li>All features included</li>
-                        <li>We handle hosting & updates</li>
+                        <li>We handle hosting &amp; updates</li>
                         <li>No setup required</li>
-                        <li>No surprise renewals</li>
+                        <li>No per-user fees</li>
                     </ul>
-                    <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
-                        50 employees = €588/year
+                    <p class="comparison-plan-total">
+                        {{ plan_saas_max }} employees = €{{ plan_saas_annual }}/year
                     </p>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success); margin-bottom: 1rem;">Blik Open Source (Self-Hosted)</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">$0<span style="font-size: 1rem; font-weight: normal;">/forever</span></div>
-                    <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success mb-4">Blik Open Source (Self-Hosted)</h3>
+                    <div class="comparison-plan-price">€0<span class="comparison-price-period">/forever</span></div>
+                    <ul class="comparison-benefits comparison-benefits--muted">
                         <li>All features (same as SaaS)</li>
                         <li>Your infrastructure</li>
                         <li>Complete data control</li>
-                        <li>No vendor lock-in</li>
                         <li>AGPLv3 license</li>
                     </ul>
-                    <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
+                    <p class="comparison-plan-total">
                         Any size = $0/forever
                     </p>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--danger);">
-                    <h3 style="color: var(--danger); margin-bottom: 1rem;">Culture Amp Pricing</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;">$9-14<span style="font-size: 1rem; font-weight: normal;">/user/month</span></div>
-                    <ul style="text-align: left; color: var(--text-secondary); line-height: 2;">
-                        <li>Per-user fees scale up</li>
-                        <li>$4,500+ annual minimum</li>
-                        <li>20-40% higher than competitors</li>
-                        <li>Implementation: $1K-$20K+</li>
+                <div class="feature-card comparison-outline-danger">
+                    <h3 class="comparison-danger mb-4">Culture Amp Pricing</h3>
+                    <div class="comparison-plan-price">$9-14<span class="comparison-price-period">/user/month</span></div>
+                    <ul class="comparison-benefits comparison-benefits--muted">
+                        <li>User-reported estimate, not published</li>
+                        <li>$4,500+ estimated annual minimum</li>
                         <li>Annual billing required</li>
-                        <li>Renewal increases common</li>
+                        <li>Prices require a sales quote</li>
                     </ul>
-                    <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-weight: bold;">
-                        50 employees = $5,400-8,400/year
+                    <p class="comparison-source-note comparison-source-note--estimate mt-2">
+                        User-reported (G2), not published; not independently reverified. Source-checked October 2026.<sup><a href="#source-culture-amp-pricing" class="citation-link">1</a></sup>
+                    </p>
+                    <p class="comparison-plan-total">
+                        {{ plan_saas_max }} employees ≈ $5,400-8,400/year (user-reported)
                     </p>
                 </div>
             </div>
 
-            <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-bottom: 2rem;">
-                <h3>Real User Renewal Experiences</h3>
-                <blockquote style="font-style: italic; margin: 1rem 0; color: var(--text-secondary);">
-                    "Upon renewal we were informed that our prices would be increasing by <strong>20% after coming off a multi year agreement</strong>."
-                </blockquote>
-                <blockquote style="font-style: italic; margin: 1rem 0; color: var(--text-secondary);">
-                    "Culture Amp refused to provide any kind of relief from renewal uplift <strong>until we involved our VP of Finance</strong>."
-                </blockquote>
-                <blockquote style="font-style: italic; margin: 1rem 0; color: var(--text-secondary);">
-                    "Culture Amp wanted to remove a discount we had on our order form. This <strong>increased our price significantly</strong>. After repeated rounds of negotiations we were able to cut this increase in half."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">— Vendr negotiation reports</p>
-            </div>
-
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                <h3>Annual Cost Comparison (50 employees)</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+            <div class="comparison-panel mt-12">
+                <h3>Annual Cost Comparison ({{ plan_saas_max }} employees)</h3>
+                <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 style="color: var(--success);">Blik</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">€588/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Flat rate, no surprises</p>
+                        <h4 class="comparison-success">Blik</h4>
+                        <p class="comparison-price comparison-success">€{{ plan_saas_annual }}/year</p>
+                        <p class="comparison-note">Flat rate, up to {{ plan_saas_max }} employees</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--danger);">Culture Amp (Base)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$5,400/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Before renewals</p>
-                    </div>
-                    <div>
-                        <h4 style="color: var(--danger);">After 20% Increase</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$6,480/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Common renewal pattern</p>
+                        <h4 class="comparison-danger">Culture Amp (user-reported)</h4>
+                        <p class="comparison-price comparison-danger">$5,400-8,400/year</p>
+                        <p class="comparison-note">Estimate from user reports; not published</p>
                     </div>
                 </div>
-                <p style="margin-top: 2rem; text-align: center; font-weight: bold; color: var(--success); font-size: 1.25rem;">
-                    Blik saves €4,600-€5,500 annually vs Culture Amp
+                <p class="comparison-cost-summary">
+                    A {{ plan_saas_max }}-person team pays roughly $5,400–8,400/year for Culture Amp (user-reported), versus €{{ plan_saas_annual }}/year for Blik hosted.
                 </p>
             </div>
         </div>
     </section>
 
     <!-- Feature Comparison -->
-    <section class="section section-alt">
+    <section id="features" class="section section-alt">
         <div class="container">
-            <h2 class="section-title">Other Key Differences</h2>
+            <h2 class="section-title">Feature Comparison</h2>
 
-            <div style="display: grid; gap: 2rem; margin-top: 3rem;">
+            <div class="comparison-stack mt-12">
                 <!-- Integration Quality -->
                 <div class="comparison-card">
-                    <h3>Integration & API Quality</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Integration &amp; API Quality</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
                                 <li>REST API with full CRUD operations</li>
                                 <li>Webhook events (cycle.created, feedback.submitted, report.generated)</li>
-                                <li>Bearer token authentication, no rate limits</li>
+                                <li>Bearer token authentication, 1,000 requests/hour per token</li>
                                 <li>Self-hosted = direct database access</li>
-                                <li>No integration failures—you control the data</li>
-                                <li>No integration fees, ever</li>
+                                <li>No integration fees</li>
                             </ul>
-                            <a href="{{ api_swagger_url }}" target="_blank" class="btn btn-secondary" style="margin-top: 1rem; display: inline-block;">View API Docs</a>
+                            <a href="{{ api_swagger_url }}" target="_blank" class="btn btn-secondary comparison-inline-link mt-4">View API Docs</a>
                         </div>
                         <div class="card-red">
                             <h4>Culture Amp</h4>
                             <ul>
-                                <li>"Rippling integration is a joke"</li>
-                                <li>"Duplicate profiles, terrible data"</li>
-                                <li>"Doesn't sync perfectly to employee list"</li>
-                                <li>"New starters sometimes not included"</li>
-                                <li>Integration problems remain unresolved</li>
+                                <li>Native HRIS connectors</li>
+                                <li>Integration with HR platforms</li>
+                                <li>Enterprise integration ecosystem</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Software Advice, Capterra reviews</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Review Deadline Flexibility -->
-                <div class="comparison-card">
-                    <h3>Individual Deadline Extensions</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
-                        <div class="card-green">
-                            <h4>Blik</h4>
-                            <ul>
-                                <li>Extend deadlines per individual</li>
-                                <li>Other reviewers unaffected</li>
-                                <li>Simple admin interface</li>
-                                <li>No cycle reopening needed</li>
-                            </ul>
-                        </div>
-                        <div class="card-red">
-                            <h4>Culture Amp</h4>
-                            <ul>
-                                <li>"Must reopen entire review period"</li>
-                                <li>"Changes due dates for everyone"</li>
-                                <li>"Administrative nightmare"</li>
-                                <li>"Source of confusion across organization"</li>
-                            </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Capterra reviews</p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Promised Features -->
+                <!-- Feature Scope -->
                 <div class="comparison-card">
-                    <h3>Feature Delivery vs. Sales Promises</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Feature Scope &amp; Delivery</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
-                                <li>Open source = verify yourself</li>
-                                <li>What we document, we deliver</li>
-                                <li>No sales-engineering gap</li>
-                                <li>Community roadmap visibility</li>
+                                <li>Open source = document and verify yourself</li>
+                                <li>Features are visible in the codebase</li>
+                                <li>Public roadmap on GitHub</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>Culture Amp</h4>
                             <ul>
-                                <li>"Assured 9-box grids would work"</li>
-                                <li>"Not equipped to support this at all"</li>
-                                <li>"Suggestion: build it yourself outside platform"</li>
-                                <li>"Substantial burden on our team"</li>
+                                <li>Feature scope defined per plan and contract</li>
+                                <li>Rollout and customization via professional services</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Capterra reviews</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Scalability -->
                 <div class="comparison-card">
-                    <h3>Growth & Scalability</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Growth &amp; Scalability</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
-                                <li>Self-hosted = scales with your infrastructure</li>
+                                <li>Self-hosted scales with your infrastructure</li>
                                 <li>No per-user pricing penalty</li>
                                 <li>PostgreSQL handles large datasets</li>
-                                <li>Works at 50 or 5,000 employees</li>
+                                <li>Works at any team size you host</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>Culture Amp</h4>
                             <ul>
-                                <li>"Scaled 100→400, product couldn't keep up"</li>
-                                <li>"Not a product that can support growth"</li>
-                                <li>"Caution against using if >100 employees"</li>
-                                <li>Cost scales linearly with headcount</li>
+                                <li>Enterprise platform for large organizations</li>
+                                <li>Scales via a managed infrastructure</li>
+                                <li>Dedicated capacity planning</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Software Advice reviews</p>
                         </div>
                     </div>
                 </div>
@@ -463,46 +318,44 @@
         <div class="container">
             <h2 class="section-title">Which Platform Is Right for You?</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success);">Choose Blik If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li>Cannot risk <strong>data loss</strong> during reviews</li>
-                        <li>Need <strong>cryptographic anonymity</strong> guarantees</li>
-                        <li>Want <strong>pricing stability</strong> (no renewal surprises)</li>
+            <div class="comparison-plan-grid mt-12">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success">Choose Blik If You:</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li>Want <strong>token-based review access and aggregated reports</strong></li>
+                        <li>Want <strong>flat, transparent pricing</strong></li>
                         <li>Prefer <strong>self-hosted</strong> data control</li>
                         <li>Value <strong>open source</strong> verification</li>
-                        <li>Need <strong>individual deadline</strong> flexibility</li>
-                        <li>Want features that <strong>actually work</strong> as promised</li>
-                        <li>Are <strong>growing</strong> (30-500+ employees)</li>
+                        <li>Want focused 360° feedback, not a broader engagement suite</li>
+                        <li>Do not require <strong>native HRIS, SSO, or mobile apps</strong>, which Blik does not ship</li>
+                        <li>Are <strong>growing</strong> (30-{{ plan_ent_max }} employees)</li>
                     </ul>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary comparison-decision-link">Try Blik</a>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--warning);">
-                    <h3 style="color: var(--warning);">Choose Culture Amp If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li>Need <strong>engagement surveys</strong> as primary feature</li>
-                        <li>Want an <strong>all-in-one</strong> engagement platform</li>
-                        <li>Are comfortable with <strong>policy-based anonymity</strong></li>
-                        <li>Can absorb <strong>20% renewal increases</strong></li>
-                        <li>Have <strong>budget for $9-14/user/month</strong></li>
-                        <li>Accept occasional <strong>data loss</strong> as acceptable risk</li>
-                        <li>Can manage <strong>manual CSV exports</strong> for analysis</li>
-                        <li>Have <strong><100 employees</strong> (smaller footprint)</li>
+                <div class="feature-card comparison-outline-warning">
+                    <h3 class="comparison-warning">Choose Culture Amp If You:</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li>Need <strong>engagement surveys</strong> as a primary feature</li>
+                        <li>Want an <strong>all-in-one</strong> engagement and performance platform</li>
+                        <li>Need <strong>native HRIS integrations</strong> and SSO</li>
+                        <li>Prefer a <strong>fully-managed SaaS</strong> (no self-hosting)</li>
+                        <li>Operate at <strong>enterprise scale</strong> with dedicated support</li>
+                        <li>Want <strong>engagement benchmarking</strong> alongside performance reviews</li>
+                        <li>Prefer a <strong>vendor quote</strong> for the required package</li>
                     </ul>
-                    <a href="https://cultureamp.com" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Visit Culture Amp</a>
+                    <a href="https://cultureamp.com" target="_blank" rel="noopener" class="btn btn-secondary comparison-decision-link">Visit Culture Amp</a>
                 </div>
             </div>
 
-            <div class="cta-box" style="margin-top: 3rem;">
+            <div class="cta-box mt-12">
                 <h3>Not Sure Yet?</h3>
-                <p style="margin: 1rem 0;">
-                    Blik is open source (AGPLv3). Deploy it yourself for free, or use our managed hosting for €49/month.
-                    No credit card required to explore the code and see how we protect your data.
+                <p class="comparison-paragraph">
+                    Blik is open source (AGPLv3). Deploy it yourself for free, or use our managed hosting for €{{ plan_saas_price }}/month.
+                    {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
-                    <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+                <div class="action-links mt-6">
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
                     <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
                 </div>
             </div>
@@ -512,130 +365,39 @@
     <!-- Final CTA -->
     <section class="section section-alt">
         <div class="container">
-            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 0;">
-                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Your Work Deserves Protection</h2>
-                <p style="color: var(--text-secondary); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
-                    Don't risk losing hours of thoughtful feedback to timeout bugs. Don't accept anonymity concerns that undermine honest feedback.
-                    Don't face surprise price increases at renewal. Blik protects your work, guarantees anonymity, and maintains transparent pricing.
+            <div class="comparison-closing">
+                <h2 class="comparison-closing-title mb-6">Feedback You Can Trust, Control You Keep</h2>
+                <p class="comparison-prose comparison-prose--lead mb-8">
+                    Blik offers flat hosted pricing and an open-source self-hosting option. Compare its 360° workflow and reporting safeguards with the broader performance and engagement tools you need.
                 </p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                    €49/month managed hosting • Open source available on GitHub
+                <p class="comparison-note mt-4">
+                    €{{ plan_saas_price }}/month managed hosting • Open source available on GitHub
                 </p>
             </div>
         </div>
     </section>
-{% endblock %}
 
-{% block extra_scripts %}
-<style>
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--bg);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.comparison-table thead {
-    background: var(--bg-secondary);
-}
-
-.comparison-table th,
-.comparison-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-}
-
-.comparison-table th {
-    font-weight: 600;
-    color: var(--text);
-}
-
-.comparison-table td {
-    color: var(--text-secondary);
-}
-
-.highlight-green {
-    background-color: rgba(16, 185, 129, 0.1);
-    font-weight: 500;
-    color: var(--success);
-}
-
-.highlight-red {
-    background-color: rgba(239, 68, 68, 0.1);
-    font-weight: 500;
-    color: var(--danger);
-}
-
-.highlight-yellow {
-    background-color: rgba(245, 158, 11, 0.1);
-    font-weight: 500;
-    color: var(--warning);
-}
-
-.comparison-card {
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 2rem;
-    border: 1px solid var(--border);
-}
-
-.comparison-card h3 {
-    color: var(--text);
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.card-green,
-.card-red {
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-.card-green {
-    background: rgba(16, 185, 129, 0.05);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.card-green h4 {
-    color: var(--success);
-    margin-bottom: 1rem;
-}
-
-.card-green ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-green ul li:before {
-    content: "✓ ";
-    color: var(--success);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-
-.card-red {
-    background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.card-red h4 {
-    color: var(--danger);
-    margin-bottom: 1rem;
-}
-
-.card-red ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-red ul li:before {
-    content: "✗ ";
-    color: var(--danger);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-</style>
+    <!-- Sources Section -->
+    <section class="section section-alt comparison-sources-section">
+        <div class="container">
+            <h2 class="section-title text-2xl">Sources &amp; References</h2>
+            <p class="comparison-note comparison-center mb-8">
+                Competitor pricing claims on this page are cited below. Source-checked as of October 2026.
+            </p>
+            <div class="comparison-content-medium">
+                <div class="comparison-source-panel">
+                    <ol class="comparison-source-list">
+                        <li id="source-culture-amp-pricing">
+                            <strong>Culture Amp pricing:</strong> Culture Amp does not publish prices; annual billing and a sales quote are required
+                            (<a href="https://www.cultureamp.com/platform/plans-and-pricing" target="_blank" rel="noopener" class="comparison-primary">Culture Amp plans &amp; pricing</a>).
+                            User-reported figures of $9–14/user/month and $4,500+ annual minimums come from G2 reviews and are not published vendor prices; they were not independently reverified
+                            (<a href="https://www.g2.com/products/culture-amp/reviews" target="_blank" rel="noopener" class="comparison-primary">Culture Amp G2 reviews</a>).
+                        </li>
+                    </ol>
+                </div>
+                {% include "landing/includes/article_metadata.html" with template_path="landing/vs_culture_amp.html" author="Thijs de Zoete" %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

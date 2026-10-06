@@ -2,10 +2,10 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>15Five Alternative — 360 Feedback Comparison 2026 | Blik360</title>
+    <title>15Five Alternative — 360 Feedback Comparison {% now "Y" %} | Blik360</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="15Five charges $4-16/seat/mo with annual billing. Blik360 is €49/mo flat or free self-hosted. Compare feedback features, anonymity, and total cost.">
+    <meta name="description" content="15Five charges $4-16/seat/mo with annual billing. Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare feedback features, anonymity, and total cost.">
     <meta name="keywords" content="Blik vs 15Five, 15Five alternative, continuous feedback, performance review software, check-in software">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/vs-15five/">
@@ -13,31 +13,32 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-15five/">
-    <meta property="og:title" content="15Five Alternative — 360 Feedback Comparison 2026 | Blik360">
-    <meta property="og:description" content="15Five charges $4-16/seat/mo with annual billing. Blik360 is €49/mo flat or free self-hosted. Compare feedback features, anonymity, and total cost.">
+    <meta property="og:title" content="15Five Alternative — 360 Feedback Comparison {% now "Y" %} | Blik360">
+    <meta property="og:description" content="15Five charges $4-16/seat/mo with annual billing. Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare feedback features, anonymity, and total cost.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=15Five%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=15Five%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="15Five Alternative — 360 Feedback Comparison 2026">
+    <meta property="og:image:alt" content="15Five Alternative — 360 Feedback Comparison {% now "Y" %}">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-15five/">
-    <meta name="twitter:title" content="15Five Alternative — 360 Feedback Comparison 2026 | Blik360">
-    <meta name="twitter:description" content="15Five charges $4-16/seat/mo with annual billing. Blik360 is €49/mo flat or free self-hosted. Compare feedback features, anonymity, and total cost.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=15Five%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta name="twitter:title" content="15Five Alternative — 360 Feedback Comparison {% now "Y" %} | Blik360">
+    <meta name="twitter:description" content="15Five charges $4-16/seat/mo with annual billing. Blik360 is €{{ plan_saas_price }}/mo flat or free self-hosted. Compare feedback features, anonymity, and total cost.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=15Five%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/vs_15five.html" headline="Blik vs 15Five - Transparent Pricing vs Billing Traps" description="Comparing Blik and 15Five: transparent pricing vs. aggressive billing, flexible surveys vs. repetitive questions, self-hosted control vs. SaaS lock-in." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
+    {% article_schema "landing/vs_15five.html" headline="Blik vs 15Five - Pricing and Feature Comparison" description="Comparing Blik and 15Five: flat-rate vs per-user pricing, focused 360° reviews vs continuous feedback and OKRs, self-hosted vs SaaS deployment." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
+
 
 {% block nav_links %}
     <a href="#overview">Overview</a>
-    <a href="#billing">Billing</a>
-    <a href="#surveys">Surveys</a>
+    <a href="#billing">Pricing</a>
+    <a href="#surveys">Survey Design</a>
     <a href="#features">Features</a>
     <a href="#decision">Right Choice</a>
 {% endblock %}
@@ -49,9 +50,7 @@
             <div class="hero-content">
                 <h1 class="hero-title">Blik vs 15Five: An Honest Comparison</h1>
                 <p class="hero-subtitle">
-                    Both platforms enable continuous feedback. But one charges immediately for single-day seat additions,
-                    creates survey fatigue after 7 months, and is called "the most dodgy SaaS product" by users.
-                    The other offers transparent flat-rate pricing and flexible surveys.
+                    Both platforms support feedback and performance management, with different models. 15Five is a broad performance platform with weekly check-ins, OKRs, and per-user pricing. Blik is open source, flat-priced, and focused on anonymous 360° feedback. Which fits depends on whether you want a continuous-feedback suite or a dedicated review tool.
                 </p>
                 <div class="hero-cta">
                     <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
@@ -65,74 +64,69 @@
     <section id="overview" class="section section-alt">
         <div class="container">
             <h2 class="section-title">At a Glance</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
-                The critical differences between Blik and 15Five
+            <p class="section-intro">
+                How Blik and 15Five compare on the fundamentals
             </p>
 
             <div class="table-container">
-                <table class="comparison-table">
+                <table class="comparison-table comparison-table-detailed">
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Feature</th>
-                            <th style="width: 30%;">Blik</th>
-                            <th style="width: 30%;">15Five</th>
+                            <th class="comparison-column-feature">Feature</th>
+                            <th class="comparison-column-product">Blik</th>
+                            <th class="comparison-column-product">15Five</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Deployment Options</strong></td>
-                            <td>SaaS (€49/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
-                            <td>SaaS only<br><small>Vendor lock-in</small></td>
+                            <td>SaaS (€{{ plan_saas_price }}/mo) OR<br>Self-hosted (Free)<br><small>You choose what fits</small></td>
+                            <td>SaaS only<br><small>Managed hosting</small></td>
                         </tr>
                         <tr>
                             <td><strong>SaaS Pricing Model</strong></td>
-                            <td>€49/month flat rate<br><small>Unlimited users</small></td>
-                            <td>$4-16/user/month<br><small>Scales with headcount</small></td>
+                            <td>€{{ plan_saas_price }}/month flat rate<br><small>Up to {{ plan_saas_max }} employees</small></td>
+                            <td>$4-16/user/month<br><small>Scales with headcount, billed annually</small></td>
                         </tr>
                         <tr>
                             <td><strong>Implementation Cost</strong></td>
-                            <td>$0 (docker compose up)<br><small>Ready in <1 hour</small></td>
-                            <td>Minimal (SaaS)<br><small>But billing traps await</small></td>
+                            <td>$0 (docker compose up)<br><small>Running in under 30 minutes with Docker Compose</small></td>
+                            <td>Minimal (SaaS)<br><small>Standard onboarding</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Billing for Temporary Adds</strong></td>
-                            <td>No per-user billing<br><small>Add anyone, anytime</small></td>
-                            <td>"Bills immediately for 1 day"<br><small>"Most dodgy SaaS product"</small></td>
+                            <td><strong>Per-User Billing</strong></td>
+                            <td>No per-user billing<br><small>Flat rate for up to {{ plan_saas_max }} employees</small></td>
+                            <td>Priced per user<br><small>Added seats billed per headcount</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Refund Policy</strong></td>
-                            <td>Reasonable cancellation<br><small>Self-hosted = full control</small></td>
-                            <td>"Absolutely no refund"<br><small>"Non-refundable, non-cancellable"</small></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Survey Freshness</strong></td>
+                            <td><strong>Survey Design</strong></td>
                             <td>Flexible questionnaires<br><small>Customize every cycle</small></td>
-                            <td>"Sharp engagement drop after 7 months"<br><small>"Questions become repetitive"</small></td>
+                            <td>Curated question library<br><small>Time-triggered check-ins</small></td>
                         </tr>
                         <tr>
                             <td><strong>Deployment Control</strong></td>
-                            <td>Self-hosted or managed<br><small>Your servers, your rules</small></td>
-                            <td>SaaS only<br><small>"Can't cancel, can't pause"</small></td>
+                            <td>Self-hosted or managed<br><small>Your servers or ours</small></td>
+                            <td>SaaS only<br><small>Managed by vendor</small></td>
                         </tr>
                         <tr>
-                            <td><strong>True Anonymity</strong></td>
-                            <td>✓ Cryptographically guaranteed<br><small>Impossible to trace reviewers</small></td>
-                            <td>⚠ Standard anonymous surveys<br><small>Platform holds all data</small></td>
+                            <td><strong>Anonymity</strong></td>
+                            <td>Token-based review access<br><small>Aggregated reports; configuration matters</small></td>
+                            <td>Hosted review workflows<br><small>Check confidentiality and visibility settings</small></td>
                         </tr>
                         <tr>
                             <td><strong>SSO Access</strong></td>
-                            <td>Standard feature<br><small>No upgrade required</small></td>
-                            <td>$8/user tier only<br><small>Paywall for security</small></td>
+                            <td>Planned (not yet shipped)</td>
+                            <td>Included in higher tiers</td>
                         </tr>
                         <tr>
                             <td><strong>HRIS Connectors</strong></td>
-                            <td>Direct integration<br><small>Your data, your control</small></td>
-                            <td>$540/year for Justworks<br><small>Extra fees for connections</small></td>
+                            <td>REST API + webhooks<br><small>No native connectors</small></td>
+                            <td>HRIS integrations included<br><small>Per vendor pricing page</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Cancellation Process</strong></td>
-                            <td>Self-hosted = cancel anytime<br><small>No vendor lock-in</small></td>
-                            <td>"Cannot unsubscribe via platform"<br><small>"30-day notice period"</small></td>
+                            <td><strong>Native Mobile App</strong></td>
+                            <td>Responsive web (no native app)</td>
+                            <td>Native mobile app</td>
                         </tr>
                     </tbody>
                 </table>
@@ -140,154 +134,118 @@
         </div>
     </section>
 
-    <!-- Billing Practices -->
+    <!-- Pricing & Contracts -->
     <section id="billing" class="section">
         <div class="container">
-            <h2 class="section-title">The Billing Reputation Problem</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                15Five's billing practices generate some of the harshest user reviews across any performance review platform.
+            <h2 class="section-title">Pricing Models &amp; Contracts</h2>
+            <p class="section-intro section-intro--narrow">
+                15Five uses per-user annual tiers; Blik uses a flat monthly rate independent of headcount.
             </p>
 
-            <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-bottom: 3rem;">
-                <h3 style="color: var(--danger);">Real 15Five User Experiences</h3>
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "If you so much as <strong>add a single additional employee for a single day, they will bill you immediately</strong>. If you seek to put a hiatus on using 15Five services, they will NEVER refund or credit or work with you in any way."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— Technology Director, Capterra Review</p>
-
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "In my opinion, <strong>15Five's customer service is among the worst I have experienced from a software company</strong>. They will nickel and dime you and use hidden fine print to wring as much money as they can from you."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— TrustRadius Review</p>
-
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "<strong>The most dodgy SaaS product I've ever subscribed to.</strong> You cannot unsubscribe via the platform. You need to contact support and you will be invoiced another month because you have a '30 days notice period'."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">— Trustpilot Review</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik SaaS: €49/month (Managed)</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Flat rate:</strong> €49/month, unlimited users</li>
-                        <li><strong>No proration traps:</strong> Add/remove users freely</li>
+            <div class="comparison-plan-grid mb-12">
+                <div class="feature-card comparison-accent-success">
+                    <h3 class="comparison-success">Blik SaaS: €{{ plan_saas_price }}/month (Managed)</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li><strong>Flat rate:</strong> €{{ plan_saas_price }}/month, up to {{ plan_saas_max }} employees</li>
+                        <li><strong>No per-user fees:</strong> Add or remove employees freely</li>
                         <li><strong>We handle hosting:</strong> Zero maintenance</li>
-                        <li><strong>No hidden fees:</strong> All features included</li>
+                        <li><strong>All features included:</strong> No per-module pricing</li>
                     </ul>
                 </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik Open Source: $0/forever (Self-Hosted)</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                <div class="feature-card comparison-accent-success">
+                    <h3 class="comparison-success">Blik Open Source: €0 license fee (Self-Hosted)</h3>
+                    <ul class="comparison-benefits mt-6">
                         <li><strong>Free forever:</strong> AGPLv3 license</li>
                         <li><strong>Your infrastructure:</strong> Complete control</li>
-                        <li><strong>No vendor lock-in:</strong> Can't be held hostage</li>
                         <li><strong>Same features:</strong> Nothing held back</li>
                     </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
-                        <p style="font-weight: bold;">Choose SaaS convenience or open source freedom. Both honest.</p>
+                    <div class="cta-box comparison-callout comparison-callout--success">
+                        <p class="font-bold">Choose SaaS convenience or self-hosting. Both include the same features.</p>
                     </div>
                 </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--danger);">
-                    <h3 style="color: var(--danger);">15Five's Billing Practices</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Immediate billing:</strong> Add 1 employee for 1 day = instant charge</li>
-                        <li><strong>No refunds:</strong> "Non-refundable and non-cancellable" in contract</li>
-                        <li><strong>One-way proration:</strong> "Only when it suits their interests"</li>
-                        <li><strong>Auto-renewal:</strong> Charged again without easy cancellation</li>
-                        <li><strong>Hidden cancellation:</strong> Can't unsubscribe via platform</li>
-                        <li><strong>30-day notice:</strong> Extra month charge for cancellation</li>
+                <div class="feature-card comparison-accent-warning">
+                    <h3 class="comparison-warning">15Five Pricing<sup><a href="#source-15five-pricing" class="citation-link">1</a></sup></h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li><strong>Per-user tiers:</strong> Engage $4, Perform $11, Total Platform $16 per user/month</li>
+                        <li><strong>Annual billing:</strong> All tiers billed annually</li>
+                        <li><strong>Optional modules:</strong> Add-ons such as compensation and coaching priced separately</li>
+                        <li><strong>HRIS integrations:</strong> Included in plans</li>
+                        <li><strong>Contracts:</strong> Priced per headcount, billed per vendor terms</li>
                     </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--danger-bg); border-left: 4px solid var(--danger);">
-                        <p style="font-weight: bold;">"Devil-in-the-details fine print" — actual user quote</p>
-                    </div>
+                    <p class="comparison-plan-total">
+                        {{ plan_saas_max }} employees = $2,400-9,600/year depending on tier
+                    </p>
                 </div>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                <h3>The Proration Asymmetry</h3>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                    A user explained: "We know that 15Five can easily prorate their charges based on usage <strong>because they will do so whenever it suits their interests</strong>. However, if you ask them to prorate your usage based on needing to pause 15Five, they will say that it is impossible." This asymmetry—billing you instantly for additions but refusing credits for reductions—represents a fundamental trust violation that colors the entire relationship.
-                </p>
-            </div>
-
-            <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                <h3>Annual Cost Comparison (50 employees)</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+            <div class="comparison-panel mt-12">
+                <h3>Annual Cost Comparison ({{ plan_saas_max }} employees)</h3>
+                <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 style="color: var(--success);">Blik</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">€588/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">All features, unlimited users</p>
+                        <h4 class="comparison-success">Blik</h4>
+                        <p class="comparison-price comparison-success">€{{ plan_saas_annual }}/year</p>
+                        <p class="comparison-note">All features, up to {{ plan_saas_max }} employees</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--danger);">15Five (Engage)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$2,400/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Basic features only</p>
+                        <h4 class="comparison-danger">15Five (Engage)</h4>
+                        <p class="comparison-price comparison-danger">$2,400/year</p>
+                        <p class="comparison-note">Engagement survey plan ($4/user/month)</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--danger);">15Five (Total Platform)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$9,600/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">With Performance + Compensation</p>
+                        <h4 class="comparison-danger">15Five (Total Platform)</h4>
+                        <p class="comparison-price comparison-danger">$9,600/year</p>
+                        <p class="comparison-note">All-in-one plan ($16/user/month)</p>
                     </div>
                 </div>
-                <p style="margin-top: 2rem; text-align: center; font-weight: bold; color: var(--success); font-size: 1.25rem;">
-                    Blik saves €1,600-€8,600 annually vs 15Five
+                <p class="comparison-cost-summary">
+                    A {{ plan_saas_max }}-person team pays $2,400–9,600/year for 15Five depending on tier, versus €{{ plan_saas_annual }}/year for Blik hosted.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- Survey Fatigue -->
+    <!-- Survey Design -->
     <section id="surveys" class="section section-alt">
         <div class="container">
-            <h2 class="section-title">Survey Fatigue & Engagement Drop</h2>
+            <h2 class="section-title">Feedback Survey Design</h2>
 
-            <div class="cta-box" style="background: var(--warning-bg); border-left: 4px solid var(--warning); margin-bottom: 3rem;">
-                <h3 style="color: var(--warning);">The 7-Month Cliff</h3>
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "While you are able to choose from a library of preselected questions for your time-triggered surveys (we did 2x month), <strong>the questions begin to become repetitive over time. This caused a sharp decrease in engagement scores after 7/8 months</strong>."
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">— Small Business User, Capterra (October 2023)</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik's Flexible Approach</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+            <div class="comparison-plan-grid mt-12">
+                <div class="feature-card comparison-accent-success">
+                    <h3 class="comparison-success">Blik's Flexible Approach</h3>
+                    <ul class="comparison-benefits mt-6">
                         <li><strong>Custom questionnaires:</strong> Create new surveys for each cycle</li>
                         <li><strong>6 question types:</strong> Rating, Likert, text, single/multiple choice, scale</li>
                         <li><strong>Weighted scoring:</strong> Prioritize what matters</li>
                         <li><strong>No forced repetition:</strong> Change questions cycle-to-cycle</li>
-                        <li><strong>Psychological insights:</strong> Dreyfus mapping keeps feedback fresh</li>
-                        <li><strong>Focus on 360°:</strong> Deep, meaningful reviews vs. weekly check-ins</li>
+                        <li><strong>Psychological insights:</strong> Dreyfus mapping and perception gaps</li>
+                        <li><strong>Focus on 360°:</strong> Structured, deep reviews</li>
                     </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
-                        <p style="font-weight: bold;">Engagement stays high when questions evolve with your team's needs.</p>
+                    <div class="cta-box comparison-callout comparison-callout--success">
+                        <p class="font-bold">Keep questions fresh by designing each review cycle to fit.</p>
                     </div>
                 </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--warning);">
-                    <h3 style="color: var(--warning);">15Five's Library Approach</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Preselected questions:</strong> Choose from library</li>
-                        <li><strong>Time-triggered:</strong> Same questions repeat on schedule</li>
-                        <li><strong>Engagement drops:</strong> "Sharp decrease after 7-8 months"</li>
-                        <li><strong>Survey fatigue:</strong> Employees stop caring</li>
-                        <li><strong>Can't skip empty weeks:</strong> "Cannot be deleted or skipped"</li>
-                        <li><strong>Workflow interruption:</strong> "Another task when I'm busy"</li>
+                <div class="feature-card comparison-accent-warning">
+                    <h3 class="comparison-warning">15Five's Library Approach</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li><strong>Question library:</strong> Choose from preselected questions</li>
+                        <li><strong>Time-triggered check-ins:</strong> Scheduled on a cadence</li>
+                        <li><strong>Continuous feedback:</strong> Weekly check-ins plus reviews</li>
+                        <li><strong>Engagement surveys:</strong> Built-in survey programs</li>
+                        <li><strong>OKR tracking:</strong> Objectives tied to check-ins</li>
                     </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--warning-bg); border-left: 4px solid var(--warning);">
-                        <p style="font-weight: bold;">Repetitive surveys train employees to auto-pilot through feedback.</p>
+                    <div class="cta-box comparison-callout comparison-callout--warning">
+                        <p class="font-bold">Consistent cadence keeps a steady feedback rhythm for the team.</p>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
-                <h3>The Engagement Trap</h3>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                    Continuous feedback sounds appealing—until questions become predictable. Research shows <strong>survey fatigue sets in when respondents can predict what you're going to ask</strong>. 15Five's time-triggered surveys from a fixed library create exactly this problem. By month 7-8, employees are clicking through without thinking. Blik takes a different approach: <strong>deeper, less frequent reviews with fresh questions</strong> that adapt to your organization's evolving needs. Quality over quantity.
+            <div class="comparison-panel comparison-accent-primary mt-12">
+                <h3>Two Valid Designs</h3>
+                <p class="comparison-prose mt-4">
+                    Continuous feedback and scheduled 360° reviews serve different needs. 15Five's time-triggered check-ins suit teams that want a steady weekly rhythm and OKR-aligned tracking. Blik's custom questionnaires suit teams that run structured review cycles and want to change questions each cycle. Neither is inherently better — the right choice depends on whether your culture prefers frequent lightweight check-ins or periodic in-depth reviews.
                 </p>
             </div>
         </div>
@@ -298,37 +256,36 @@
         <div class="container">
             <h2 class="section-title">Feature-by-Feature Comparison</h2>
 
-            <div style="display: grid; gap: 2rem; margin-top: 3rem;">
-                <!-- Hidden Costs -->
-                <div class="comparison-card">
-                    <h3>Hidden Costs & Add-On Fees</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+            <div class="comparison-stack mt-12">
+                <!-- Pricing & Add-Ons -->
+                    <div class="comparison-card">
+                    <h3>Pricing &amp; Add-Ons</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
-                                <li>€49/month includes everything</li>
-                                <li>No SSO paywall</li>
-                                <li>No HRIS connector fees</li>
+                                <li>€{{ plan_saas_price }}/month includes everything</li>
+                                <li>SSO planned (not yet shipped)</li>
+                                <li>REST API + webhooks (no native connectors)</li>
                                 <li>No per-feature pricing</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>15Five</h4>
                             <ul>
-                                <li>SSO requires $8/user tier</li>
-                                <li>Justworks HRIS: +$540/year</li>
-                                <li>Compensation: +$9/user/month</li>
-                                <li>Kona AI Coaching: +$29/user/month</li>
+                                <li>Per-user tiers billed annually</li>
+                                <li>Optional add-ons (compensation, coaching) priced separately</li>
+                                <li>HRIS integrations included</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Vendr, user reviews</p>
+                            <p class="comparison-source-note mt-4">Source: <a href="https://www.15five.com/pricing" target="_blank" rel="noopener">15Five pricing page</a>, as of October 2026</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Navigation & UX -->
                 <div class="comparison-card">
-                    <h3>Navigation & User Experience</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Navigation &amp; User Experience</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
@@ -341,36 +298,33 @@
                         <div class="card-red">
                             <h4>15Five</h4>
                             <ul>
-                                <li>"Tough to navigate at times"</li>
-                                <li>"Click around to find things"</li>
-                                <li>"OKR tracking feels complicated"</li>
-                                <li>"Software can be slow to load"</li>
+                                <li>Broad performance platform</li>
+                                <li>Many modules: check-ins, OKRs, reviews</li>
+                                <li>More settings and configuration</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Capterra reviews</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Anonymity -->
                 <div class="comparison-card">
-                    <h3>Anonymous Feedback Guarantees</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Review Confidentiality</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
-                                <li>Cryptographically impossible to trace</li>
-                                <li>UUID tokens never linked to emails</li>
-                                <li>Admin-proof architecture</li>
-                                <li>Open source = verify yourself</li>
+                                <li>Token-based review links</li>
+                                <li>Responses link to tokens that may contain an invitation email</li>
+                                <li>Aggregated reports and configurable thresholds</li>
+                                <li>No anonymity guarantee against database administrators</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>15Five</h4>
                             <ul>
-                                <li>Standard SaaS anonymity</li>
-                                <li>Policy-based protection</li>
-                                <li>Must trust platform</li>
-                                <li>Closed source</li>
+                                <li>Hosted feedback workflows</li>
+                                <li>Review visibility and confidentiality settings with the vendor</li>
+                                <li>Check administrator access and retention terms</li>
                             </ul>
                         </div>
                     </div>
@@ -378,26 +332,24 @@
 
                 <!-- Reporting -->
                 <div class="comparison-card">
-                    <h3>Reporting & Analytics</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>Reporting &amp; Analytics</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Dreyfus skill-level mapping</li>
                                 <li>Perception gap detection</li>
+                                <li>Trend and benchmark reports</li>
                                 <li>Aggregated by reviewer category</li>
-                                <li>Export-friendly formats</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>15Five</h4>
                             <ul>
-                                <li>"Limited reporting capabilities"</li>
-                                <li>"Need aggregated company charts"</li>
-                                <li>"Can't combine review cycles easily"</li>
-                                <li>"Requires manual labor for trends"</li>
+                                <li>Company-wide reporting and trend views</li>
+                                <li>Check-in and engagement analytics</li>
+                                <li>Part of the platform's reporting suite</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: G2 reviews</p>
                         </div>
                     </div>
                 </div>
@@ -405,55 +357,49 @@
                 <!-- Support -->
                 <div class="comparison-card">
                     <h3>Customer Support</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Direct email support</li>
                                 <li>Open source community</li>
                                 <li>Self-hosted = full control</li>
-                                <li>No vendor dependency</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>15Five</h4>
                             <ul>
-                                <li>"Wish there was live chat"</li>
-                                <li>"Must email and wait"</li>
-                                <li>"6 account managers in 3 years"</li>
-                                <li>"Company clearly struggling"</li>
+                                <li>Dedicated support organization</li>
+                                <li>Account management and success teams</li>
+                                <li>Onboarding assistance</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Integration -->
                 <div class="comparison-card">
-                    <h3>API & Integration Fees</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <h3>API &amp; Integrations</h3>
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
                                 <li>REST API with full CRUD operations</li>
                                 <li>Webhook events for real-time integrations</li>
-                                <li>Bearer token authentication, unlimited use</li>
+                                <li>Bearer token authentication, 1,000 requests/hour per token</li>
                                 <li>Interactive OpenAPI documentation</li>
                                 <li>Self-hosted = direct database access</li>
-                                <li><strong>€0 integration fees, forever</strong></li>
+                                <li>No integration fees</li>
                             </ul>
-                            <a href="{{ api_swagger_url }}" target="_blank" class="btn btn-secondary" style="margin-top: 1rem; display: inline-block;">View API Docs</a>
+                            <a href="{{ api_swagger_url }}" target="_blank" class="btn btn-secondary comparison-inline-link mt-4">View API Docs</a>
                         </div>
                         <div class="card-red">
                             <h4>15Five</h4>
                             <ul>
-                                <li>"Not too many integrations"</li>
-                                <li><strong>$540/year for Justworks integration</strong></li>
-                                <li>Limited to major platforms only</li>
-                                <li>Integration issues remain unresolved</li>
-                                <li>Hidden fees add up quickly</li>
+                                <li>HRIS integrations included in plans</li>
+                                <li>Integrations with common platforms</li>
+                                <li>Enterprise integration ecosystem</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: Capterra reviews</p>
                         </div>
                     </div>
                 </div>
@@ -466,46 +412,45 @@
         <div class="container">
             <h2 class="section-title">Which Platform Is Right for You?</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success);">Choose Blik If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li>Want <strong>transparent pricing</strong> (no proration traps)</li>
-                        <li>Need <strong>flexible surveys</strong> (avoid 7-month fatigue)</li>
-                        <li>Value <strong>cryptographic anonymity</strong></li>
+            <div class="comparison-plan-grid mt-12">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success">Choose Blik If You:</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li>Want <strong>flat, transparent pricing</strong></li>
+                        <li>Need <strong>flexible custom questionnaires</strong></li>
+                        <li>Want <strong>token-based review access and aggregated reporting</strong></li>
                         <li>Prefer <strong>self-hosted control</strong></li>
-                        <li>Want <strong>no vendor lock-in</strong></li>
+                        <li>Focus on <strong>360° reviews</strong> rather than weekly check-ins</li>
                         <li>Need <strong>psychological insights</strong> (Dreyfus, perception gaps)</li>
-                        <li>Focus on <strong>360° reviews</strong> vs. weekly check-ins</li>
-                        <li>Have <strong>30-500 employees</strong></li>
+                        <li>Do not require <strong>native HRIS, SSO, or mobile apps</strong>, which Blik does not ship</li>
+                        <li>Have <strong>30-{{ plan_ent_max }} employees</strong></li>
                     </ul>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary comparison-decision-link">Try Blik</a>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--warning);">
-                    <h3 style="color: var(--warning);">Choose 15Five If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li>Want <strong>weekly check-ins</strong> as primary model</li>
-                        <li>Need <strong>OKR tracking</strong> features</li>
-                        <li>Prefer <strong>SaaS over self-hosting</strong></li>
-                        <li>Can accept <strong>immediate billing</strong> for temp adds</li>
-                        <li>Are comfortable with <strong>no-refund policies</strong></li>
-                        <li>Accept <strong>survey fatigue</strong> as acceptable</li>
+                <div class="feature-card comparison-outline-warning">
+                    <h3 class="comparison-warning">Choose 15Five If You:</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li>Want <strong>weekly check-ins</strong> as a primary model</li>
+                        <li>Need <strong>OKR tracking</strong> integrated with feedback</li>
+                        <li>Want <strong>continuous feedback</strong> between review cycles</li>
+                        <li>Need <strong>HRIS integrations</strong> and SSO in higher tiers</li>
+                        <li>Prefer a <strong>fully-managed SaaS</strong></li>
+                        <li>Value <strong>native mobile apps</strong></li>
+                        <li>Operate with an <strong>enterprise support</strong> model</li>
                         <li>Have <strong>budget for $4-16/user/month</strong></li>
-                        <li>Don't mind <strong>30-day cancellation</strong> notice</li>
                     </ul>
-                    <a href="https://15five.com" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Visit 15Five</a>
+                    <a href="https://15five.com" target="_blank" rel="noopener" class="btn btn-secondary comparison-decision-link">Visit 15Five</a>
                 </div>
             </div>
 
-            <div class="cta-box" style="margin-top: 3rem;">
+            <div class="cta-box mt-12">
                 <h3>Not Sure Yet?</h3>
-                <p style="margin: 1rem 0;">
-                    Blik is open source (AGPLv3). Deploy it yourself for free and never worry about billing surprises,
-                    or use our managed hosting for €49/month. No credit card required to explore.
+                <p class="comparison-paragraph">
+                    Blik is open source (AGPLv3). Deploy it yourself for free, or use our managed hosting for €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
-                    <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+                <div class="action-links mt-6">
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
                     <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
                 </div>
             </div>
@@ -515,130 +460,37 @@
     <!-- Final CTA -->
     <section class="section">
         <div class="container">
-            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 0;">
-                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">No Billing Games. No Survey Fatigue. Just Honest Feedback.</h2>
-                <p style="color: var(--text-secondary); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
-                    Don't get trapped by aggressive billing practices and repetitive surveys. Blik offers transparent flat-rate pricing,
-                    flexible questionnaires that stay fresh, and true anonymity that builds trust. Join organizations who value honesty over vendor lock-in.
+            <div class="comparison-closing">
+                <h2 class="comparison-closing-title mb-6">Focused 360° Feedback at a Flat Price</h2>
+                <p class="comparison-prose comparison-prose--lead mb-8">
+                    Blik offers flat hosted pricing, customizable questionnaires, and self-hosting. Consider its reporting safeguards and current gaps alongside the requirements for your review process.
                 </p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                    €49/month managed hosting • Open source available on GitHub
+                <p class="comparison-note mt-4">
+                    €{{ plan_saas_price }}/month managed hosting • Open source available on GitHub
                 </p>
             </div>
         </div>
     </section>
-{% endblock %}
 
-{% block extra_scripts %}
-<style>
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--bg);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.comparison-table thead {
-    background: var(--bg-secondary);
-}
-
-.comparison-table th,
-.comparison-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-}
-
-.comparison-table th {
-    font-weight: 600;
-    color: var(--text);
-}
-
-.comparison-table td {
-    color: var(--text-secondary);
-}
-
-.highlight-green {
-    background-color: rgba(16, 185, 129, 0.1);
-    font-weight: 500;
-    color: var(--success);
-}
-
-.highlight-red {
-    background-color: rgba(239, 68, 68, 0.1);
-    font-weight: 500;
-    color: var(--danger);
-}
-
-.highlight-yellow {
-    background-color: rgba(245, 158, 11, 0.1);
-    font-weight: 500;
-    color: var(--warning);
-}
-
-.comparison-card {
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 2rem;
-    border: 1px solid var(--border);
-}
-
-.comparison-card h3 {
-    color: var(--text);
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.card-green,
-.card-red {
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-.card-green {
-    background: rgba(16, 185, 129, 0.05);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.card-green h4 {
-    color: var(--success);
-    margin-bottom: 1rem;
-}
-
-.card-green ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-green ul li:before {
-    content: "✓ ";
-    color: var(--success);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-
-.card-red {
-    background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.card-red h4 {
-    color: var(--danger);
-    margin-bottom: 1rem;
-}
-
-.card-red ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-red ul li:before {
-    content: "✗ ";
-    color: var(--danger);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-</style>
+    <!-- Sources Section -->
+    <section class="section section-alt comparison-sources-section">
+        <div class="container">
+            <h2 class="section-title text-2xl">Sources &amp; References</h2>
+            <p class="comparison-note comparison-center mb-8">
+                Competitor pricing claims on this page are cited below. Pricing verified as of October 2026.
+            </p>
+            <div class="comparison-content-medium">
+                <div class="comparison-source-panel">
+                    <ol class="comparison-source-list">
+                        <li id="source-15five-pricing">
+                            <strong>15Five pricing:</strong> Published on the vendor pricing page (as of October 2026). Engage $4, Perform $11, and Total Platform $16 per user/month, billed annually. At 50 seats that is $2,400, $6,600, or $9,600/year respectively. Perform and Total Platform include 360° feedback; Engage is an engagement-survey plan. HRIS integrations are included.
+                            <a href="https://www.15five.com/pricing" target="_blank" rel="noopener" class="comparison-primary">15Five Pricing Page</a>
+                        </li>
+                    </ol>
+                </div>
+                {% include "landing/includes/article_metadata.html" with template_path="landing/vs_15five.html" author="Thijs de Zoete" %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

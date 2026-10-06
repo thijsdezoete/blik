@@ -48,34 +48,45 @@ See complete guides for:
 
 ## Features
 
-- **Anonymous Feedback** - Token-based access system with no reviewer tracking
+- **Review Access** - Token-based links and category-aggregated reports
 - **Admin Dashboard** - Complete review cycle management interface
-- **Dual Questionnaires** - Professional Skills & Software Engineering templates (Dreyfus model-based)
-- **Analytical Reports** - Statistical analysis with configurable anonymity thresholds
-- **Email Notifications** - SMTP integration for invites and reminders
+- **Four Questionnaires** - Professional Skills, Software Engineering, Manager 360, and 360 Degree Feedback templates
+- **Analytical Reports** - Trends, peer benchmarks, perception gaps, and configurable reporting thresholds
+- **Email Notifications** - SMTP integration for invitations
 - **Setup Wizard** - Interactive first-run setup at `/setup/`
 - **Docker-Ready** - Containerized deployment with SQLite or PostgreSQL
 
 ## How It Works
 
 1. Administrator creates a review cycle and designates a reviewee
-2. System generates unique anonymous tokens for each reviewer relationship
+2. System generates unique access tokens for each reviewer relationship
 3. Reviewers receive email invitations with tokenized access links
 4. Reviewers complete feedback forms accessible only via their token
-5. Responses are stored without attribution to reviewer identity
+5. Responses are stored against tokens, which may contain invitation email addresses
 6. Reports are generated when minimum response thresholds are met
 7. Aggregated results are provided to reviewee and designated administrators
 
 ## Privacy and Security
 
-Blik implements several measures to ensure reviewer anonymity:
+Blik supports confidential review workflows, but tokenized access is not an anonymity guarantee against database administrators:
 
-- Token-based access without user authentication for reviewers
-- Configurable minimum response thresholds before displaying results
-- Separation of feedback by rater category to prevent identification
-- No storage of token-to-reviewer mappings in standard operation
-- Rate limiting on token validation to prevent enumeration
-- Administrative access does not expose individual response attribution
+- Reviewers use tokenized links rather than authenticated user accounts.
+- Reports aggregate feedback by rater category and support minimum response thresholds.
+- Responses reference reviewer tokens; tokens may store invitation email addresses.
+- Invitation methods, permissions, thresholds, and identifying free-text comments affect confidentiality.
+- Export and deletion tools support GDPR obligations; organizations remain responsible for lawful processing, retention, and access controls.
+
+### Landing-site content
+
+Marketing templates in `templates/landing/` run under both the main application and the DB-less `landing_settings` deployment.
+
+- `landing/context_processors.py:PRICING` supplies hosted prices, employee caps, annual equivalents, and trial length to both deployments. Keep it aligned with `subscriptions/fixtures/plans.json` and the checkout trial configuration; do not duplicate these values in page copy.
+- Hosted plans cap active reviewees, not organization members. Trial copy must state that a credit card is required.
+- Competitor prices retain their source currency, source link, and actual verification date. Do not turn verification dates into dynamic current-year labels.
+- `templates/landing/roi_calculator.html` documents its conversion and package assumptions. It uses published Blik tiers, and shows contact pricing rather than inventing a price or savings above the largest tier.
+- All landing layout, utilities, page components, and carousel styles live in `static/css/landing.css`, loaded once by the landing base and standalone page templates. Keep page-specific rules scoped to their components so they do not affect other landing pages. Shared application and SVG diagram styles remain in `static/css/main.css`, which is also loaded by reports.
+- Keep presentation out of template `style` attributes, embedded style blocks, and JavaScript style writes. Use component classes, `hidden` for visibility, and native progress values. The landing base owns mobile-menu and theme handlers; child pages must not register duplicate handlers.
+- Refresh checks: run `python manage.py check`, `DJANGO_SETTINGS_MODULE=landing_settings python manage.py check`, and `python manage.py test accounts subscriptions landing`. Render both deployments, parse JSON-LD, inspect the sitemap, and exercise calculator tier/minimum boundaries in a browser.
 
 ## Advanced Configuration
 

@@ -6,7 +6,7 @@
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="How anonymous is it? Can I migrate from Lattice? Is it GDPR compliant? How long does setup take? Answers teams ask before switching.">
-    <meta name="keywords" content="360 feedback faq, self-hosted performance review questions, anonymous feedback how it works, GDPR compliant HR software, open source 360 questions">
+    <meta name="keywords" content="360 feedback faq, self-hosted performance review questions, anonymous feedback how it works, GDPR support tools, open source 360 questions">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'faq' %}">
 
@@ -54,7 +54,7 @@
                 "name": "How does Blik ensure reviewer anonymity?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is built with anonymity baked in from the start. We use hard-to-guess tokens in URLs, and make it impossible for employers or review administrators to see who answered what. Even as an admin, you can't trace feedback back to specific people."
+                    "text": "Reviewers use token-based links, and reports aggregate feedback by category with configurable thresholds. Responses retain a token reference, which may link to an invitation email. Confidentiality depends on invitation method, permissions, thresholds, and feedback content; it is not guaranteed against administrators with database access."
                 }
             },
             {
@@ -62,7 +62,7 @@
                 "name": "Is Blik GDPR compliant?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service."
+                    "text": "EU hosting and self-hosting do not automatically establish GDPR compliance. Blik provides export and deletion tools to support your obligations. Your organization remains responsible for lawful processing, configuration, access controls, retention, and compliance processes."
                 }
             },
             {
@@ -70,7 +70,7 @@
                 "name": "How much does Blik cost?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Self-hosting is free forever under AGPL license. Managed hosting is €49/month for up to 50 employees, or €199/month for up to 200 employees. No per-user fees, no hidden costs, cancel anytime."
+                    "text": "Self-hosting is free forever under AGPL license. Managed hosting is €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime."
                 }
             },
             {
@@ -86,7 +86,7 @@
                 "name": "What questionnaires are included in Blik?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik includes 4 pre-built questionnaires: Professional Skills 360 (8 competencies), Software Engineering 360 (10 technical skills), Manager 360 (7 leadership dimensions), and Quick 360 (12 questions). You can also create custom questionnaires with Likert scales, multiple choice, and free text responses."
+                    "text": "Blik includes four templates: Professional Skills 360 Review (27 questions in 8 sections), Software Engineering 360 Review (35 questions in 10 sections), Manager 360 Review (17 questions in 7 sections), and 360 Degree Feedback (12 questions in 4 sections). You can also create custom questionnaires."
                 }
             }
         ]
@@ -109,7 +109,7 @@
             <div class="hero-content">
                 <h1 class="hero-title">Frequently Asked Questions</h1>
                 <p class="hero-subtitle">
-                    Everything you need to know about Blik. If your question isn't answered here, reach out on <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" style="color: white; text-decoration: underline;">GitHub</a>.
+                    Everything you need to know about Blik. If your question isn't answered here, reach out on <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="faq-hero-link">GitHub</a>.
                 </p>
             </div>
         </div>
@@ -127,12 +127,12 @@
 
                 <details class="faq-item">
                     <summary>How does Blik ensure reviewer anonymity?</summary>
-                    <p>Blik is built with anonymity baked in from the start. We use hard-to-guess tokens in URLs, and make it impossible for employers or review administrators to see who answered what. I built this for myself and my team to give them the trust to answer as bluntly and honestly as possible without ever feeling like they're going to get fired for being honest. Even as an admin, you can't trace feedback back to specific people.</p>
+                    <p>Reviewers use token-based links, and reports aggregate feedback by category with configurable thresholds. Responses retain a token reference, which may link to an invitation email. Confidentiality depends on invitation method, permissions, thresholds, and feedback content; it is not guaranteed against administrators with database access.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What questionnaires does Blik include?</summary>
-                    <p>There are currently 4 default questionnaires: <strong>Professional Skills 360</strong> (8 core competencies with Dreyfus model scoring), <strong>Software Engineering 360</strong> (10 technical competencies for developers), <strong>Manager 360</strong> (7 leadership dimensions), and <strong>Quick 360</strong> (12 questions across 4 areas). You can also create your own questionnaires with no restrictions.</p>
+                    <p>Four templates are included: <strong>Professional Skills 360 Review</strong> (27 questions in 8 sections), <strong>Software Engineering 360 Review</strong> (35 questions in 10 sections), <strong>Manager 360 Review</strong> (17 questions in 7 sections), and <strong>360 Degree Feedback</strong> (12 questions in 4 sections). You can also create your own questionnaires.</p>
                 </details>
 
                 <details class="faq-item">
@@ -167,7 +167,7 @@
 
                 <details class="faq-item">
                     <summary>How do I invite reviewers?</summary>
-                    <p>There are two ways to invite reviewers. You can share a URL which generates unique tokens and ensures maximum anonymity. This is recommended method. Or you can send invites via email, which will randomly assign tokens. The trade off is that with invite links, you can't send email reminders. So pick the method that works best for your team.</p>
+                    <p>You can share a link that generates reviewer tokens or send email invitations. Email invitations can associate a token with an email address, and responses retain their token reference. Shared links do not support email reminders. Explain your invitation method and confidentiality limits to reviewers.</p>
                 </details>
             </div>
         </div>
@@ -180,12 +180,12 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>What are the system requirements for self-hosting?</summary>
-                    <p>Blik is a simple app that requires a little bit of compute and a database, which comes built in if you want. While I haven't had a chance to test it with many concurrent users, we expect a VPS with 512MB of RAM and a little bit of storage would suffice. It's built in Python so most operating systems will be able to host the application.</p>
+                    <p>Runs comfortably on a 1 GB VPS for typical team sizes (512 MB minimum).</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Is Blik GDPR compliant?</summary>
-                    <p>If you self host, you're definitely GDPR compliant. The hosted version of Blik is as close to GDPR compliance as we can get. We're hosted on Hetzner inside the EU. Our data policies can be found in our terms of service.</p>
+                    <p>EU hosting and self-hosting do not automatically establish GDPR compliance. Blik provides export and deletion tools to support your obligations. Your organization remains responsible for lawful processing, configuration, access controls, retention, and compliance processes.</p>
                 </details>
 
                 <details class="faq-item">
@@ -200,7 +200,7 @@
 
                 <details class="faq-item">
                     <summary>Is there an API for integrations?</summary>
-                    <p>Yes! Blik includes a full REST API with Bearer token authentication. You can programmatically manage review cycles, reviewees, questionnaires, and reports. The API also supports webhooks for real-time event notifications (cycle created, feedback submitted, report generated). Interactive OpenAPI documentation is available at your instance's /api/swagger/ endpoint. No usage limits, no integration fees—just standard authentication and full CRUD operations. <a href="{% landing_url 'developers' %}" style="color: var(--primary);">View full API documentation →</a></p>
+                    <p>Blik includes a REST API with Bearer token authentication to manage review cycles, reviewees, questionnaires, and reports, plus four HMAC-signed webhook events. Generous limits: 1,000 requests/hour per token; 100/hour for anonymous requests. <a href="{{ api_swagger_url }}" class="product-link-primary">Open interactive API documentation →</a></p>
                 </details>
 
                 <details class="faq-item">
@@ -238,32 +238,32 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>How much does Blik cost?</summary>
-                    <p>Self-hosting is free forever under AGPL license. Managed hosting is €49/month for up to 50 employees, or €199/month for up to 200 employees. No per-user fees, no hidden costs, cancel anytime. <a href="{% landing_url 'pricing' %}" style="color: var(--primary);">See full pricing details →</a></p>
+                    <p>Self-hosting is free forever under AGPL license. Managed hosting is €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime. <a href="{% landing_url 'pricing' %}" class="product-link-primary">See full pricing details →</a></p>
                 </details>
 
                 <details class="faq-item">
-                    <summary>What's the difference between the €49 and €199 hosted plans?</summary>
-                    <p>Just the employee count. The €49 plan is for up to 50 employees, and the €199 plan is for up to 200 employees. Everything else is the same. Bigger company equals bigger bill, but it's still a negligible amount when you have 200+ employees.</p>
+                    <summary>What's the difference between the €{{ plan_saas_price }} and €{{ plan_ent_price }} hosted plans?</summary>
+                    <p>The €{{ plan_saas_price }}/month plan covers up to {{ plan_saas_max }} employees. Enterprise is €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees and adds priority support and an SLA with uptime commitment. Contact us for larger teams.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Are there any hidden costs?</summary>
-                    <p>None. €49 is €49. No setup fees, no per-user charges, no feature restrictions, no surprise renewal increases. The only way your bill goes up is if you grow past 50 employees and need the larger plan.</p>
+                    <p>None. €{{ plan_saas_price }} is €{{ plan_saas_price }}. No setup fees, no per-user charges, no feature restrictions, no surprise renewal increases. The only way your bill goes up is if you grow past {{ plan_saas_max }} employees and need the larger plan.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can I try the hosted version before committing?</summary>
-                    <p>Yes, there is a 14 day trial. Credit card is required to activate the trial though.</p>
+                    <p>{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>What happens to my data if I cancel my hosted subscription?</summary>
-                    <p>All data will be removed after 30 days. No exceptions. Make sure you export your data before canceling if you want to keep it.</p>
+                    <p>All data will be removed after 30 days. Make sure you export your data before canceling if you want to keep it.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How is Blik different from Lattice, Culture Amp, and 15Five?</summary>
-                    <p>Blik is different in a few ways. We are self-hosted and open source. If you want free, you got it. Our hosted version is quite different. We charge a flat fee without restrictions with the exception of employee count. If you're a bigger company, you pay a bit more. It's still a negligible amount for large companies compared to tools like Lattice (€18K/year for 50 people) or Culture Amp (€15K/year). Simplicity.</p>
+                    <p>Blik is a focused, open-source 360° feedback tool with self-hosting and flat hosted plans. Lattice, Culture Amp, and 15Five offer broader hosted performance suites. Compare the deployment model, feature set, and published contract terms that fit your team. <a href="{% landing_url 'alternatives' %}">See dated pricing and feature comparisons.</a></p>
                 </details>
 
                 <details class="faq-item">
@@ -310,12 +310,12 @@
     <!-- CTA Section -->
     <section class="section section-alt">
         <div class="container">
-            <div class="cta-box" style="text-align: center;">
-                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Still Have Questions?</h2>
-                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
+            <div class="cta-box product-centered">
+                <h2 class="faq-contact-title">Still Have Questions?</h2>
+                <p class="faq-contact-copy">
                     Check out our documentation on GitHub or start a discussion. The community is friendly and I respond quickly.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <div class="action-links">
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">GitHub Documentation</a>
                     <a href="{% landing_url 'developers' %}" class="btn btn-secondary">API Docs</a>
                 </div>

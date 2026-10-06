@@ -14,6 +14,16 @@ from django.urls import reverse, NoReverseMatch
 from .git_metadata import get_repository_metadata
 
 
+PRICING = {
+    "plan_saas_price": "49",
+    "plan_saas_max": 50,
+    "plan_ent_price": "199",
+    "plan_ent_max": 200,
+    "plan_saas_annual": "588",
+    "plan_ent_annual": "2388",
+    "trial_days": 14,
+}
+
 def _get_api_path_by_name(url_name):
     """
     Extract URL path from api/urls.py by reading the file as plain text.
@@ -109,6 +119,7 @@ def url_namespace(request):
         site_protocol = 'https'
 
     return {
+        **PRICING,
         'landing_ns': '' if is_standalone else 'landing:',
         'main_app_url': main_app_url,
         'api_swagger_url': api_swagger_url,

@@ -2,10 +2,10 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>Blik360 Pricing — Free Self-Hosted | EU Hosted from €49/mo</title>
+    <title>Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="No per-user fees. Self-host unlimited users free, or EU hosting from €49/mo (50 employees). Save €8,000-17,000/yr vs Lattice or Culture Amp.">
+    <meta name="description" content="Self-host free, or choose EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. Flat plan pricing and a {{ trial_days }}-day trial; credit card required.">
     <meta name="keywords" content="360 feedback pricing, performance review cost, self-hosted free, open source HR software pricing, Lattice alternative cost, Culture Amp pricing comparison">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
@@ -13,25 +13,25 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
-    <meta property="og:title" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €49/mo">
-    <meta property="og:description" content="No per-user fees. Self-host unlimited users free, or EU hosting from €49/mo (50 employees). Save €8,000-17,000/yr vs Lattice or Culture Amp.">
+    <meta property="og:title" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo">
+    <meta property="og:description" content="Self-host free, or choose EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. Flat plan pricing and a {{ trial_days }}-day trial; credit card required.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC49%2Fmo">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €49/mo">
+    <meta property="og:image:alt" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
-    <meta name="twitter:title" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €49/mo">
-    <meta name="twitter:description" content="No per-user fees. Self-host unlimited users free, or EU hosting from €49/mo (50 employees). Save €8,000-17,000/yr vs Lattice or Culture Amp.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC49%2Fmo">
+    <meta name="twitter:title" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo">
+    <meta name="twitter:description" content="Self-host free, or choose EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. Flat plan pricing and a {{ trial_days }}-day trial; credit card required.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/pricing.html" headline="Pricing - Self-Hosted Free or EU Hosted from €49/month" description="Blik pricing: Free self-hosted forever, or €49/month for 50 employees (EU hosted). Save €17,000/year vs Lattice. No per-user fees, no surprises, cancel anytime." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC49%2Fmo" %}
+    {% article_schema "landing/pricing.html" headline="Pricing - Self-Hosted Free or EU Hosted" description="Blik pricing: Free via self-hosted open source (AGPL-3.0), or flat-rate EU hosted plans with no per-user fees." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC"|add:plan_saas_price|add:"%2Fmo" %}
 {% endblock %}
 
 {% block extra_head %}
@@ -78,20 +78,20 @@
             {
                 "@type": "Offer",
                 "name": "EU Hosted SaaS - Small Team",
-                "price": "49",
+                "price": "{{ plan_saas_price }}",
                 "priceCurrency": "EUR",
                 "billingIncrement": "P1M",
-                "description": "Managed hosting for up to 50 employees. EU servers, automatic updates, daily backups.",
+                "description": "Managed hosting for up to {{ plan_saas_max }} employees. EU servers, automatic updates, daily backups.",
                 "availability": "https://schema.org/InStock",
                 "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'signup' %}"
             },
             {
                 "@type": "Offer",
                 "name": "EU Hosted SaaS - Enterprise",
-                "price": "199",
+                "price": "{{ plan_ent_price }}",
                 "priceCurrency": "EUR",
                 "billingIncrement": "P1M",
-                "description": "Managed hosting for up to 200 employees. Priority support, SLA, dedicated onboarding.",
+                "description": "Managed hosting for up to {{ plan_ent_max }} employees. Priority support, SLA, dedicated onboarding.",
                 "availability": "https://schema.org/InStock",
                 "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'signup' %}"
             }
@@ -112,10 +112,10 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Pricing That Makes Sense</h1>
+                <h1 class="hero-title">Simple, Flat Pricing</h1>
                 <p class="hero-subtitle">
-                    Free forever if you self-host. €49-199/month if you want us to handle the infrastructure.
-                    No per-user fees. No surprise costs. No annual renewals that mysteriously cost 20% more.
+                    Self-host free, or choose managed EU hosting: €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees.
+                    Monthly billing, clear employee limits, and cancellation anytime.
                 </p>
             </div>
         </div>
@@ -126,90 +126,85 @@
         <div class="container">
             <h2 class="section-title">Choose What Works for You</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto 3rem;">
+            <div class="hosting-plans">
                 <!-- Self-Hosted -->
-                <div class="feature-card feature-card-success" style="position: relative;">
-                    <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--success); color: white; padding: 0.25rem 1rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600; white-space: nowrap;">
+                <div class="feature-card feature-card-success hosting-self">
+                    <div class="hosting-badge">
                         MOST POPULAR
                     </div>
-                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem; margin-top: 1rem;">Self-Hosted</h3>
-                    <div style="font-size: 3rem; font-weight: bold; color: var(--success); margin-bottom: 1rem;">€0</div>
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Free forever</p>
+                    <h3>Self-Hosted</h3>
+                    <div class="hosting-price hosting-price--self">€0</div>
+                    <p class="hosting-summary">Free forever</p>
 
-                    <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
-                        <li style="margin-bottom: 0.75rem;">✓ Unlimited employees</li>
-                        <li style="margin-bottom: 0.75rem;">✓ All features included</li>
-                        <li style="margin-bottom: 0.75rem;">✓ 4 pre-built questionnaires</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Full API access</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Complete data control</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Your infrastructure</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Docker deployment</li>
-                        <li style="margin-bottom: 0.75rem;">✓ PostgreSQL or SQLite</li>
-                        <li style="margin-bottom: 0.75rem;">✓ AGPL-3.0 license</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Community support</li>
+                    <ul class="hosting-features">
+                        <li>✓ Unlimited employees</li>
+                        <li>✓ All features included</li>
+                        <li>✓ 4 pre-built questionnaires</li>
+                        <li>✓ Full API access</li>
+                        <li>✓ Complete data control</li>
+                        <li>✓ Your infrastructure</li>
+                        <li>✓ Docker deployment</li>
+                        <li>✓ PostgreSQL or SQLite</li>
+                        <li>✓ AGPL-3.0 license</li>
+                        <li>✓ Community support</li>
                     </ul>
 
-                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
-                        <strong>Your costs:</strong> Just hosting (€5-50/month VPS) + your time for setup and maintenance.
+                    <p class="hosting-note">
+                        <strong>Your costs:</strong> a small EU VPS (≈€10-50/month), plus your time for setup and maintenance.
                     </p>
 
-                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" style="display: block; text-align: center;" target="_blank" rel="noopener">Get Started on GitHub</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary hosting-action" target="_blank" rel="noopener">Get Started on GitHub</a>
                 </div>
 
                 <!-- Hosted - Small Team -->
                 <div class="feature-card">
-                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">EU Hosted - Small</h3>
-                    <div style="font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">€49</div>
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">per month</p>
+                    <h3>EU Hosted - Small</h3>
+                    <div class="hosting-price">€{{ plan_saas_price }}</div>
+                    <p class="hosting-summary">per month</p>
 
-                    <p style="font-weight: 600; margin-bottom: 1rem;">Up to 50 employees</p>
+                    <p class="hosting-limit">Up to {{ plan_saas_max }} employees</p>
 
-                    <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
-                        <li style="margin-bottom: 0.75rem;">✓ Everything in Self-Hosted</li>
-                        <li style="margin-bottom: 0.75rem;">✓ EU servers (Hetzner, Germany)</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Automatic updates</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Daily backups</li>
-                        <li style="margin-bottom: 0.75rem;">✓ 99% uptime target</li>
-                        <li style="margin-bottom: 0.75rem;">✓ SSL certificates included</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Email support</li>
-                        <li style="margin-bottom: 0.75rem;">✓ GDPR compliant</li>
-                        <li style="margin-bottom: 0.75rem;">✓ 14-day free trial</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Cancel anytime</li>
+                    <ul class="hosting-features">
+                        <li>✓ Everything in Self-Hosted</li>
+                        <li>✓ EU servers (Hetzner, Germany)</li>
+                        <li>✓ Automatic updates</li>
+                        <li>✓ Daily backups</li>
+                        <li>✓ SSL certificates included</li>
+                        <li>✓ Email support</li>
+                        <li>✓ GDPR export and deletion tools</li>
+                        <li>✓ {{ trial_days }}-day free trial</li>
+                        <li>✓ Cancel anytime</li>
                     </ul>
 
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: block; text-align: center;">Start Free Trial</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary hosting-action">Start Free Trial</a>
                 </div>
 
                 <!-- Hosted - Enterprise -->
                 <div class="feature-card">
-                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">EU Hosted - Enterprise</h3>
-                    <div style="font-size: 3rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">€199</div>
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">per month</p>
+                    <h3>EU Hosted - Enterprise</h3>
+                    <div class="hosting-price">€{{ plan_ent_price }}</div>
+                    <p class="hosting-summary">per month</p>
 
-                    <p style="font-weight: 600; margin-bottom: 1rem;">Up to 200 employees</p>
+                    <p class="hosting-limit">Up to {{ plan_ent_max }} employees</p>
 
-                    <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
-                        <li style="margin-bottom: 0.75rem;">✓ Everything in Small plan</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Priority support</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Dedicated onboarding</li>
-                        <li style="margin-bottom: 0.75rem;">✓ SLA agreement</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Custom questionnaire design</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Weekly backups to your S3</li>
-                        <li style="margin-bottom: 0.75rem;">✓ Custom domain setup</li>
-                        <li style="margin-bottom: 0.75rem;">✓ SSO integration (coming soon)</li>
+                    <ul class="hosting-features">
+                        <li>✓ Everything in Small plan</li>
+                        <li>✓ Priority support</li>
+                        <li>✓ SLA with uptime commitment (Enterprise)</li>
+                        <li>✓ Custom domain setup</li>
                     </ul>
 
-                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
-                        <strong>Need more than 200 employees?</strong> Contact us for custom pricing.
+                    <p class="hosting-note">
+                        <strong>Need more than {{ plan_ent_max }} employees?</strong> Contact us for custom pricing.
                     </p>
 
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: block; text-align: center;">Start Free Trial</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary hosting-action">Start Free Trial</a>
                 </div>
             </div>
 
-            <div class="cta-box" style="text-align: center;">
-                <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">All hosted plans include 14-day free trial. No credit card required upfront.</p>
-                <p style="color: var(--text-secondary); font-size: 0.9375rem;">Cancel anytime. Data export available. 30-day data retention after cancellation.</p>
+            <div class="cta-box">
+                <p class="hosting-trial">{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
+                <p class="hosting-retention">Cancel anytime. Data export available. 30-day data retention after cancellation.</p>
             </div>
         </div>
     </section>
@@ -218,65 +213,58 @@
     <section id="comparison" class="section">
         <div class="container">
             <h2 class="section-title">How Blik Compares to Enterprise Tools</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                The math is simple. Commercial platforms charge per user. We don't. For a 50-person company, you'll save €8,800-17,800 annually.
+            <p class="section-intro section-intro--narrow">
+                For 50 employees, compare Blik's €{{ plan_saas_annual }}/year hosted plan with each vendor's package. Vendor prices remain in USD; no cross-currency savings are claimed.
             </p>
 
-            <div class="table-container" style="overflow-x: auto;">
-                <table class="comparison-table" style="width: 100%; min-width: 700px;">
+            <div class="table-container">
+                <table class="comparison-table hosting-comparison">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">Provider</th>
-                            <th style="width: 25%;">Cost for 50 Employees</th>
-                            <th style="width: 25%;">Annual Cost</th>
-                            <th style="width: 25%;">Notes</th>
+                            <th>Provider</th>
+                            <th>Cost for 50 Employees</th>
+                            <th>Annual Cost</th>
+                            <th>Notes</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Lattice</strong></td>
-                            <td class="highlight-red">€15-30/user/month</td>
-                            <td class="highlight-red">€9,000-18,000</td>
-                            <td><small>Per-user pricing, annual contracts</small></td>
+                            <td><strong><a href="https://lattice.com/pricing">Lattice</a></strong></td>
+                            <td>$10–32/seat/month</td>
+                            <td>$6,000–19,200</td>
+                            <td><small>Performance alone to all five modules; annual billing, $4,000 minimum; as of October 2026</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Culture Amp</strong></td>
-                            <td class="highlight-red">€12-25/user/month</td>
-                            <td class="highlight-red">€7,200-15,000</td>
-                            <td><small>Module-based pricing, complex tiers</small></td>
+                            <td><strong><a href="https://www.cultureamp.com/platform/plans-and-pricing">Culture Amp</a></strong></td>
+                            <td>Quote required</td>
+                            <td>Not published</td>
+                            <td><small>Products and service tier priced by quote; annual billing; as of October 2026</small></td>
                         </tr>
                         <tr>
-                            <td><strong>15Five</strong></td>
-                            <td class="highlight-red">€8-15/user/month</td>
-                            <td class="highlight-red">€4,800-9,000</td>
-                            <td><small>Per-user fees, feature restrictions</small></td>
+                            <td><strong><a href="https://www.15five.com/pricing">15Five</a></strong></td>
+                            <td>$4/$11/$16 per user/month</td>
+                            <td>$2,400/$6,600/$9,600</td>
+                            <td><small>Engage/Perform/Total Platform; 360° feedback in Perform and Total Platform; annual billing; as of October 2026</small></td>
                         </tr>
-                        <tr style="background: var(--success-bg);">
+                        <tr class="hosting-comparison-blik">
                             <td><strong>Blik (Hosted)</strong></td>
-                            <td class="highlight-green">€49/month flat</td>
-                            <td class="highlight-green">€588</td>
-                            <td><small>No per-user fees, all features</small></td>
+                            <td class="highlight-green">€{{ plan_saas_price }}/month flat</td>
+                            <td class="highlight-green">€{{ plan_saas_annual }}</td>
+                            <td><small>Up to {{ plan_saas_max }} employees, flat monthly billing</small></td>
                         </tr>
-                        <tr style="background: var(--success-bg);">
+                        <tr class="hosting-comparison-blik">
                             <td><strong>Blik (Self-Hosted)</strong></td>
-                            <td class="highlight-green">€5-50/month VPS</td>
-                            <td class="highlight-green">€60-600</td>
+                            <td class="highlight-green">a small EU VPS (≈€10-50/month)</td>
+                            <td class="highlight-green">€0 license + infrastructure</td>
                             <td><small>Free software, hosting costs only</small></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="feature-card" style="background: var(--primary-600); color: white; text-align: center; margin-top: 3rem; border: 1px solid var(--primary-700);">
-                <h3 style="color: white; font-size: 1.75rem; margin-bottom: 1rem;">Save €8,800-17,400 Per Year</h3>
-                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem; max-width: 700px; margin: 0 auto;">
-                    For a 50-person company switching from Lattice or Culture Amp to Blik hosted.
-                    Savings scale with team size. At 100 employees, you're saving €17,000-35,000 annually.
-                </p>
-            </div>
 
-            <div style="margin-top: 3rem; text-align: center;">
-                <a href="{% landing_url 'vs_lattice' %}" class="btn btn-secondary" style="margin: 0.5rem;">See Detailed Comparison →</a>
+            <div class="hosting-comparison-link">
+                <a href="{% landing_url 'vs_lattice' %}" class="btn btn-secondary">See Detailed Comparison →</a>
             </div>
         </div>
     </section>
@@ -288,22 +276,22 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>Why is self-hosting free?</summary>
-                    <p>Blik is open source under AGPL-3.0 license. I built this because I was tired of paying €15,000/year for features I didn't need<sup><a href="#source-competitor-costs" class="citation-link">1</a></sup>. If you can host it yourself, you should be able to use it for free. The hosted plans exist for teams that want the software without the DevOps overhead.</p>
+                    <p>Blik is open source under the AGPL-3.0 license. Self-hosting has no software license fee. Hosted plans cover managed EU infrastructure, updates, backups, and support.</p>
                 </details>
 
                 <details class="faq-item">
-                    <summary>What's the catch with €49/month?</summary>
-                    <p>No catch. It's a flat €49/month for up to 50 employees, all features included. I wanted pricing that doesn't require a spreadsheet to calculate. If you grow past 50 employees, you move to the €199/month tier for up to 200 employees. That's it.</p>
+                    <summary>What's the catch with €{{ plan_saas_price }}/month?</summary>
+                    <p>No catch. It's a flat €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, all features included. I wanted pricing that doesn't require a spreadsheet to calculate. If you grow past {{ plan_saas_max }} employees, you move to the €{{ plan_ent_price }}/month tier for up to {{ plan_ent_max }} employees. That's it.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Are there any hidden costs?</summary>
-                    <p>None. €49 is €49. No setup fees, no per-user charges, no feature restrictions, no surprise renewal increases. The only way your bill goes up is if you grow past 50 employees and need the larger plan.</p>
+                    <p>None. €{{ plan_saas_price }} is €{{ plan_saas_price }}. No setup fees, no per-user charges, no feature restrictions, no surprise renewal increases. The only way your bill goes up is if you grow past {{ plan_saas_max }} employees and need the larger plan.</p>
                 </details>
 
                 <details class="faq-item">
-                    <summary>What happens if I go over 50 employees on the €49 plan?</summary>
-                    <p>Nothing immediate. We're not going to shut you down at employee #51. When you're ready, you can upgrade to the €199 plan which covers up to 200 employees. We'll send you a reminder when you're approaching the limit.</p>
+                    <summary>What happens if I go over {{ plan_saas_max }} employees on the €{{ plan_saas_price }} plan?</summary>
+                    <p>The plan covers up to {{ plan_saas_max }} active employees receiving reviews; team members are not capped. Contact us about the €{{ plan_ent_price }}/month Enterprise plan for up to {{ plan_ent_max }} employees, or custom pricing for larger teams. In-app plan changes are not available.</p>
                 </details>
 
                 <details class="faq-item">
@@ -323,12 +311,12 @@
 
                 <details class="faq-item">
                     <summary>Is there a refund policy?</summary>
-                    <p>14-day free trial means you can try before you pay. After that, if you cancel, you're billed for the current month and that's it. No refunds on partial months, but you keep access until the end of your billing period.</p>
+                    <p>{{ trial_days }}-day free trial means you can try before you pay. After that, if you cancel, you're billed for the current month and that's it. No refunds on partial months, but you keep access until the end of your billing period.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How does pricing compare to building this in-house?</summary>
-                    <p>A junior developer for 2-3 months would cost you more than 5 years of Blik hosting. Plus you'd own the maintenance burden forever. Self-hosting Blik costs you maybe 4 hours of DevOps time for initial setup, then it just runs.</p>
+                    <p>Self-hosting lets you use the existing open-source application rather than build your own. Get it running in under 30 minutes with Docker Compose, then allow time for configuration, backups, and ongoing maintenance.</p>
                 </details>
             </div>
         </div>
@@ -337,41 +325,20 @@
     <!-- CTA Section -->
     <section class="section">
         <div class="container">
-            <div class="cta-box" style="text-align: center;">
-                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Ready to Save Thousands on Performance Reviews?</h2>
-                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
-                    Start with self-hosting (free forever) or try our managed hosting with a 14-day free trial.
+            <div class="cta-box">
+                <h2 class="cta-heading">Simple, flat pricing. Try it free for {{ trial_days }} days.</h2>
+                <p class="cta-description">
+                    Self-host free, or choose managed hosting. {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <div class="action-links">
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Self-Host (Free)</a>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted (14-Day Trial)</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted ({{ trial_days }}-Day Trial)</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sources & References -->
-    <section class="section section-alt" style="background: var(--bg-secondary); padding: 2rem 0;">
-        <div class="container" style="max-width: 900px;">
-            <h2 style="font-size: 1.25rem; text-align: center; margin-bottom: 2rem; color: var(--text);">Sources & References</h2>
-            <div style="background: var(--bg); padding: 2rem; border-radius: 8px; border: 1px solid var(--border);">
-                <ol style="line-height: 2; color: var(--text-secondary); padding-left: 1.5rem; font-size: 0.875rem;">
-                    <li id="source-competitor-costs">
-                        <strong>Competitor Costs:</strong> €15,000/year figure based on user-reported Culture Amp costs for mid-sized organizations. <strong>Note:</strong> Culture Amp does not publish pricing publicly (requires sales quote) - estimates of $9-14/user/month with $4,500-$8,400+ annual minimums based on G2 and Capterra user reports. Full platform with modules reaches $15,000/year for 50-person teams. <strong>Lattice</strong> (verified November 11, 2025): $11/user/month base + modules ($4-6 each), reaching $25/user/month maximum with all modules, $4,000 annual minimum = $6,600-$15,000/year for 50 employees depending on modules.
-                        <br><small style="color: var(--text-tertiary);">
-                            Sources: <a href="https://lattice.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">Lattice Pricing (Public)</a> • <a href="https://www.cultureamp.com/pricing" target="_blank" rel="noopener" style="color: var(--primary);">Culture Amp (Requires Quote)</a> • <a href="https://www.g2.com/products/culture-amp/reviews" target="_blank" rel="noopener" style="color: var(--primary);">User-Reported Costs (G2)</a>
-                        </small>
-                    </li>
-                </ol>
-
-                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-                    <p style="font-size: 0.75rem; line-height: 1.6; color: var(--text-secondary); margin: 0;">
-                        <strong style="color: var(--text);">Pricing Calculation:</strong> The "Save €17,000/year" claim compares Blik's €588/year hosted plan (€49/month × 12) against Lattice's full platform cost of approximately €18,000/year for 50 employees ($11/user base + $6/user compensation module = $17/user/month × 50 = $850/month = $10,200/year + $4,000 minimum = ~€13,000-18,000 depending on modules). Actual savings vary based on team size and competitor modules selected.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+    {% include "landing/includes/pricing_sources.html" %}
 
     {% include "landing/includes/article_metadata.html" with template_path="landing/pricing.html" %}
 {% endblock %}

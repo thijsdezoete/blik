@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Start Your Free Trial - {{ site_name }}</title>
 
-    <meta name="description" content="Start your 14-day free trial of {{ site_name }}. No credit card required.">
+    <meta name="description" content="{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.">
     <meta name="robots" content="noindex, nofollow">
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%234f46e5'/><circle cx='50' cy='50' r='25' fill='none' stroke='white' stroke-width='3'/></svg>">
@@ -47,21 +47,21 @@
 
         <div class="signup-header">
             <h1 class="signup-title">Start Your Free Trial</h1>
-            <p class="signup-subtitle">14-day free trial included. No credit card required upfront.</p>
+            <p class="signup-subtitle">{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
         </div>
 
         <div class="plans-grid">
             <div class="plan-card">
                 <h2 class="plan-name">SaaS Plan</h2>
-                <div class="plan-price">€49<small>/month</small></div>
+                <div class="plan-price">€{{ plan_saas_price }}<small>/month</small></div>
                 <p class="plan-description">Perfect for growing teams</p>
                 <ul class="plan-features">
-                    <li>Up to 50 employees</li>
+                    <li>Up to {{ plan_saas_max }} employees</li>
                     <li>Unlimited review cycles</li>
                     <li>Anonymous feedback</li>
-                    <li>PDF reports</li>
+                    <li>Trend &amp; benchmark reports</li>
                     <li>Email support</li>
-                    <li>14-day free trial</li>
+                    <li>{{ trial_days }}-day free trial</li>
                 </ul>
                 <button class="checkout-btn primary" onclick="startCheckout('saas')" id="btn-saas">
                     Start Free Trial
@@ -70,15 +70,15 @@
 
             <div class="plan-card">
                 <h2 class="plan-name">Enterprise</h2>
-                <div class="plan-price">€199<small>/month</small></div>
+                <div class="plan-price">€{{ plan_ent_price }}<small>/month</small></div>
                 <p class="plan-description">For larger organizations</p>
                 <ul class="plan-features">
-                    <li>Up to 200 employees</li>
+                    <li>Up to {{ plan_ent_max }} employees</li>
                     <li>Unlimited review cycles</li>
                     <li>Anonymous feedback</li>
-                    <li>PDF reports</li>
+                    <li>Trend &amp; benchmark reports</li>
                     <li>Priority support</li>
-                    <li>14-day free trial</li>
+                    <li>{{ trial_days }}-day free trial</li>
                 </ul>
                 <button class="checkout-btn secondary" onclick="startCheckout('enterprise')" id="btn-enterprise">
                     Start Free Trial
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <div id="error-message" class="error-message"></div>
+        <div id="error-message" class="error-message" hidden></div>
     </div>
 
     <script>
@@ -101,7 +101,7 @@
             // Disable buttons
             btn.disabled = true;
             btn.textContent = 'Loading...';
-            errorDiv.style.display = 'none';
+            errorDiv.hidden = true;
 
             try {
                 // Call main app API to create checkout session
@@ -133,7 +133,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 errorDiv.textContent = `Error: ${error.message}. Please try again or contact support.`;
-                errorDiv.style.display = 'block';
+                errorDiv.hidden = false;
                 btn.disabled = false;
                 btn.textContent = 'Start Free Trial';
             }

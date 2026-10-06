@@ -38,12 +38,12 @@
         })();
     </script>
 </head>
-<body class="landing-page">
+<body class="landing-page assessment-unavailable-page">
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="logo"><a href="{% landing_url 'index' %}" style="text-decoration: none; color: inherit;">Blik</a></h1>
+                <h1 class="logo"><a href="{% landing_url 'index' %}" class="error-logo-link">Blik</a></h1>
                 <nav class="nav">
                     <a href="{% landing_url 'index' %}">Home</a>
                     <a href="{% landing_url 'people_analytics' %}">People Analytics</a>
@@ -85,74 +85,5 @@
         </div>
     </section>
 
-    <style>
-        .error-section {
-            min-height: calc(100vh - 80px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem 0;
-        }
-
-        .error-content {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .error-icon {
-            margin: 0 auto 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .error-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .error-description {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-
-        .error-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .error-icon svg {
-                width: 80px;
-                height: 80px;
-            }
-
-            .error-title {
-                font-size: 2rem;
-            }
-
-            .error-description {
-                font-size: 1rem;
-            }
-
-            .error-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .error-actions .btn {
-                width: 100%;
-                max-width: 300px;
-            }
-        }
-    </style>
 </body>
 </html>

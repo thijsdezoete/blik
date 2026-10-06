@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=block");
+
 /* Blik - Centralized CSS System
  * Shadcn-inspired design system with zero noise, maximum signal
  */
@@ -2204,3 +2206,172 @@ body.setup-page {
     }
 }
 
+
+/* Shared framework diagrams are used by landing pages and feedback reports.
+ * Keep sizing and typography here so both consumers receive identical SVGs.
+ */
+.framework-diagram {
+    width: 100%;
+    height: auto;
+    fill: none;
+    stroke: none;
+}
+.framework-diagram--outlined {
+    fill-rule: evenodd;
+    clip-rule: evenodd;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-miterlimit: 1.5;
+}
+.framework-diagram .framework-diagram-layers { isolation: isolate; }
+.framework-diagram .framework-diagram-blend { mix-blend-mode: normal; }
+.framework-diagram .framework-diagram-caption {
+    font: 20px sans-serif;
+    white-space: pre;
+}
+.framework-diagram .framework-diagram-label {
+    font: bold 20px sans-serif;
+    white-space: pre;
+}
+.framework-diagram .framework-diagram-title {
+    font: bold 25px sans-serif;
+    white-space: pre;
+}
+.agency-model :is(.framework-diagram-caption, .framework-diagram-label, .framework-diagram-title) {
+    font-family: Roboto, sans-serif;
+}
+
+/* Highlight current level based on data-current-level attribute */
+.agency-model g[id*="sy_1"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.agency-model g[id*="sy_2"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.agency-model g[id*="sy_3"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.agency-model g[id*="sy_4"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.agency-model g[id*="sy_5"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+
+/* Level 5 (Problem Resolution) - sy_1 */
+.agency-model[data-current-level="5"] g[id*="sy_1"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.agency-model[data-current-level="5"] #g-root-tx_problemr_144916zvft5vo-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Level 4 (Solution Recommendation) - sy_2 */
+.agency-model[data-current-level="4"] g[id*="sy_2"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.agency-model[data-current-level="4"] #g-root-tx_solution_1hfpjkbvft4aq-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Level 3 (Solution Exploration) - sy_3 */
+.agency-model[data-current-level="3"] g[id*="sy_3"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.agency-model[data-current-level="3"] #g-root-tx_solution_1uqjkujvft5vk-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Level 2 (Cause Analysis) - sy_4 */
+.agency-model[data-current-level="2"] g[id*="sy_4"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.agency-model[data-current-level="2"] #g-root-tx_causeana_590zvvft5ae-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Level 1 (Problem Identification) - sy_5 */
+.agency-model[data-current-level="1"] g[id*="sy_5"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.agency-model[data-current-level="1"] #g-root-tx_problemi_hvwkejvft630-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* When no level is selected, show all at full opacity */
+.agency-model:not([data-current-level]) g[id*="sy_"] {
+    opacity: 1;
+}
+
+/* Highlight current stage based on data-current-stage attribute */
+.dreyfus-model g[id*="cp_1"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.dreyfus-model g[id*="cp_2"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.dreyfus-model g[id*="cp_3"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.dreyfus-model g[id*="cp_4"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+.dreyfus-model g[id*="cp_5"] { opacity: 0.3; transition: opacity 0.3s, filter 0.3s; }
+
+/* Novice - cp_1 */
+.dreyfus-model[data-current-stage="Novice"] g[id*="cp_1"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.dreyfus-model[data-current-stage="Novice"] #g-root-tx_novice_hwjayzz18d8s-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Advanced Beginner - cp_2 */
+.dreyfus-model[data-current-stage="Advanced Beginner"] g[id*="cp_2"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.dreyfus-model[data-current-stage="Advanced Beginner"] #g-root-tx_advanced_59ah7z18fly-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Competent - cp_3 */
+.dreyfus-model[data-current-stage="Competent"] g[id*="cp_3"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.dreyfus-model[data-current-stage="Competent"] #g-root-tx_competen_1hfpt1nz18em8-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Proficient - cp_4 */
+.dreyfus-model[data-current-stage="Proficient"] g[id*="cp_4"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.dreyfus-model[data-current-stage="Proficient"] #g-root-tx_proficie_144vrrfz18d1e-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* Expert - cp_5 */
+.dreyfus-model[data-current-stage="Expert"] g[id*="cp_5"] {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+.dreyfus-model[data-current-stage="Expert"] #g-root-tx_expert_hxs957z18ff0-fill text {
+    font-weight: bold;
+    fill: var(--primary-color, #3b82f6);
+}
+
+/* When no stage is selected, show all at full opacity */
+.dreyfus-model:not([data-current-stage]) g[id*="cp_"],
+.dreyfus-model[data-current-stage=""] g[id*="cp_"] {
+    opacity: 1;
+}
+
+.pm-success-fill { fill: var(--success); }
+.pm-warning-fill { fill: var(--warning); }
+.pm-neutral-fill { fill: var(--text-secondary); }
+.pm-text-secondary { fill: var(--text-secondary); }
+.pm-text-primary { fill: var(--text-primary); }
+.pm-stroke-light { stroke: var(--border); stroke-opacity: 0.6; }
+.pm-success-stroke { stroke: var(--success); stroke-opacity: 0.4; }
+.pm-warning-stroke { stroke: var(--warning); stroke-opacity: 0.3; }
+.pm-neutral-stroke { stroke: var(--border); stroke-opacity: 0.3; }

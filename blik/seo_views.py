@@ -35,16 +35,15 @@ def sitemap(request):
     is_standalone = getattr(settings, 'ROOT_URLCONF', '') == 'landing_urls'
     prefix = '' if is_standalone else '/landing'
 
-    # URLs to exclude from sitemap (non-page endpoints)
+    # URLs to exclude from sitemap (non-page endpoints and noindex pages)
     exclude_names = {
-        'og_image', 'robots', 'sitemap',
+        'og_image', 'robots', 'sitemap', 'signup',
         'dreyfus_assessment_submit', 'dreyfus_capture_email',
     }
 
     # Priority overrides (default is 0.8)
     priority_config = {
         'index': 1.0,
-        'signup': 0.9,
         'hr_managers': 0.9,
         'developers': 0.9,
         'open_source': 0.9,
@@ -67,7 +66,6 @@ def sitemap(request):
     # Changefreq overrides (default is monthly)
     changefreq_config = {
         'index': 'weekly',
-        'signup': 'weekly',
         'dreyfus_assessment_start': 'weekly',
         'privacy_policy': 'yearly',
         'terms': 'yearly',

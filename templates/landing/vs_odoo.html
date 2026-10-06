@@ -2,7 +2,7 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>Odoo HR Alternative — 360 Feedback Comparison 2026</title>
+    <title>Odoo HR Alternative — 360 Feedback Comparison {% now "Y" %}</title>
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="Odoo bundles feedback into its ERP. Blik360 does one thing well: anonymous 360 reviews with four research-backed questionnaires.">
@@ -13,26 +13,27 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/vs-odoo/">
-    <meta property="og:title" content="Odoo HR Alternative — 360 Feedback Comparison 2026">
+    <meta property="og:title" content="Odoo HR Alternative — 360 Feedback Comparison {% now "Y" %}">
     <meta property="og:description" content="Odoo bundles feedback into its ERP. Blik360 does one thing well: anonymous 360 reviews with four research-backed questionnaires.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Odoo%20HR%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Odoo%20HR%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Odoo HR Alternative — 360 Feedback Comparison 2026">
+    <meta property="og:image:alt" content="Odoo HR Alternative — 360 Feedback Comparison {% now "Y" %}">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/vs-odoo/">
-    <meta name="twitter:title" content="Odoo HR Alternative — 360 Feedback Comparison 2026">
+    <meta name="twitter:title" content="Odoo HR Alternative — 360 Feedback Comparison {% now "Y" %}">
     <meta name="twitter:description" content="Odoo bundles feedback into its ERP. Blik360 does one thing well: anonymous 360 reviews with four research-backed questionnaires.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Odoo%20HR%20Alternative&subtitle=360%20Feedback%20Comparison%202026">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Odoo%20HR%20Alternative&subtitle=360%20Feedback%20Comparison%20{% now "Y" %}">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/vs_odoo.html" headline="Blik vs Odoo HR - No ERP Bloat, No Bugs" description="Comparing Blik and Odoo HR: focused 360° feedback tool vs. ERP bloat with bugs, steep learning curve, and zero accountability." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
+    {% article_schema "landing/vs_odoo.html" headline="Blik vs Odoo HR - Focused 360° Feedback vs Full ERP" description="Comparing Blik and Odoo HR: a focused open-source 360° feedback tool vs a full ERP suite with HR and performance management." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
 {% endblock %}
+
 
 {% block nav_links %}
     <a href="#overview">Overview</a>
@@ -49,9 +50,9 @@
             <div class="hero-content">
                 <h1 class="hero-title">Blik vs Odoo HR: An Honest Comparison</h1>
                 <p class="hero-subtitle">
-                    Both platforms are open source. But one forces you to buy an entire ERP just to do HR, comes "full of bugs,"
-                    has a "steep learning curve," and offers "zero accountability." The other does one thing brilliantly: 360° feedback.
-                    No bloat, no bugs, no technical debt.
+                    Odoo is a full ERP that includes HR and performance management alongside sales, inventory, and accounting.
+                    Blik is a focused, open-source 360° feedback tool. If you need reviews only, Blik does that with four
+                    research-backed questionnaires; if you want an integrated business suite, Odoo is the broader platform.
                 </p>
                 <div class="hero-cta">
                     <a href="#decision" class="btn btn-primary">See Which Fits Your Needs</a>
@@ -65,69 +66,64 @@
     <section id="overview" class="section section-alt">
         <div class="container">
             <h2 class="section-title">At a Glance</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">
+            <p class="section-intro">
                 The critical differences between Blik and Odoo HR
             </p>
 
             <div class="table-container">
-                <table class="comparison-table">
+                <table class="comparison-table comparison-table-detailed">
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Feature</th>
-                            <th style="width: 30%;">Blik</th>
-                            <th style="width: 30%;">Odoo HR</th>
+                            <th class="comparison-column-feature">Feature</th>
+                            <th class="comparison-column-product">Blik</th>
+                            <th class="comparison-column-product">Odoo HR</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>System Scope</strong></td>
-                            <td class="highlight-green">360° feedback only<br><small>Does one thing brilliantly</small></td>
-                            <td class="highlight-red">Full ERP suite<br><small>Buy 50 modules to use HR</small></td>
+                            <td class="highlight-green">360° feedback only<br><small>Focused single-purpose tool</small></td>
+                            <td class="highlight-red">Full ERP suite<br><small>HR is one module among many</small></td>
                         </tr>
                         <tr>
                             <td><strong>Setup Complexity</strong></td>
-                            <td class="highlight-green">5 minutes (docker compose up)<br><small>Ready immediately</small></td>
-                            <td class="highlight-red">"Requires technical knowledge"<br><small>Hours to days configuration</small></td>
+                            <td class="highlight-green">Docker Compose<br><small>Running in under 30 minutes with Docker Compose</small></td>
+                            <td class="highlight-yellow">Broader setup<br><small>Modules need configuration</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Software Quality</strong></td>
-                            <td class="highlight-green">Purpose-built, tested<br><small>Focused codebase</small></td>
-                            <td class="highlight-red">"Full of bugs"<br><small>"Even the standard HR module"</small></td>
+                            <td><strong>Codebase scope</strong></td>
+                            <td class="highlight-green">Small, focused codebase<br><small>Purpose-built for 360° feedback</small></td>
+                            <td class="highlight-yellow">Large, modular codebase<br><small>Wide feature coverage</small></td>
                         </tr>
                         <tr>
                             <td><strong>Learning Curve</strong></td>
-                            <td class="highlight-green">< 1 hour onboarding<br><small>Intuitive single-purpose tool</small></td>
-                            <td class="highlight-red">"Steep learning curve"<br><small>"Many options" creates confusion</small></td>
+                            <td class="highlight-green">Minimal onboarding<br><small>Single-purpose interface</small></td>
+                            <td class="highlight-yellow">Broad feature set<br><small>More to learn when using many modules</small></td>
                         </tr>
                         <tr>
                             <td><strong>Version Upgrades</strong></td>
-                            <td class="highlight-green">Smooth updates<br><small>Minimal breaking changes</small></td>
-                            <td class="highlight-red">"Customizations break on upgrade"<br><small>"Additional effort" required</small></td>
+                            <td class="highlight-green">Simple updates<br><small>No custom modules needed</small></td>
+                            <td class="highlight-yellow">Upgrades can need work<br><small>Custom modules may require attention</small></td>
                         </tr>
                         <tr>
                             <td><strong>Customer Support</strong></td>
-                            <td class="highlight-green">Direct support<br><small>Responsive team</small></td>
-                            <td class="highlight-red">"Zero accountability"<br><small>"Ignored our complaints"</small></td>
+                            <td class="highlight-green">Direct email support<br><small>Open source community</small></td>
+                            <td class="highlight-yellow">Vendor and partner support<br><small>Support plans available</small></td>
                         </tr>
                         <tr>
-                            <td><strong>Integration Complexity</strong></td>
-                            <td class="highlight-green">REST API, clean<br><small>Works with existing tools</small></td>
-                            <td class="highlight-red">"Integration issues"<br><small>"Requires additional development"</small></td>
+                            <td><strong>Integration approach</strong></td>
+                            <td>REST API + webhooks<br><small>Custom integration; no native HRIS connectors</small></td>
+                            <td>Integrated Odoo apps<br><small>Check external API access for your selected plan</small></td>
                         </tr>
                         <tr>
                             <td><strong>Performance</strong></td>
-                            <td class="highlight-green">Lightweight, fast<br><small>< 1GB RAM typical</small></td>
-                            <td class="highlight-red">"Performance slowdowns"<br><small>"Large data volumes" cause issues</small></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Error Messages</strong></td>
-                            <td class="highlight-green">Clear, actionable<br><small>User-friendly feedback</small></td>
-                            <td class="highlight-red">"Confusing Python errors"<br><small>Technical messages for users</small></td>
+                            <td class="highlight-green">Lightweight<br><small>< 1GB RAM typical</small></td>
+                            <td class="highlight-yellow">Heavier footprint<br><small>Full ERP with many services</small></td>
                         </tr>
                         <tr>
                             <td><strong>Open Source Model</strong></td>
                             <td class="highlight-green">AGPLv3, fully open<br><small>All features included</small></td>
-                            <td class="highlight-yellow">LGPLv3 + Proprietary<br><small>Enterprise features paywalled</small></td>
+                            <td class="highlight-yellow">Community + Enterprise<br><small>Some features in paid edition</small></td>
                         </tr>
                     </tbody>
                 </table>
@@ -138,75 +134,50 @@
     <!-- Complexity Problem -->
     <section id="complexity" class="section">
         <div class="container">
-            <h2 class="section-title">The Complexity Problem</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                Odoo's all-in-one approach creates systemic problems: bugs accumulate, upgrades break customizations, and Python errors confuse end users.
+            <h2 class="section-title">Focused vs All-in-One</h2>
+            <p class="section-intro section-intro--narrow">
+                The two products solve different problems. Odoo is an integrated business suite; Blik is a single-purpose
+                360° feedback tool. The right choice depends on whether you need the wider platform.
             </p>
 
-            <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-bottom: 3rem;">
-                <h3 style="color: var(--danger);">Real Odoo User Experiences</h3>
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "<strong>Even the standard HR module was full of bugs.</strong>"
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— Verified User</p>
-
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "<strong>Lack of expertise, zero accountability, and no customer support. Every promised deadline was missed, and they completely ignored our complaints.</strong>"
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">— User Review</p>
-
-                <blockquote style="font-style: italic; margin: 1.5rem 0; color: var(--text); font-size: 1.125rem; line-height: 1.8;">
-                    "<strong>When we want to upgrade Odoo to a new version, previous customizations may not be compatible, causing additional effort.</strong>"
-                </blockquote>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">— Enterprise User</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik: Focused Excellence</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Single purpose:</strong> 360° feedback only</li>
-                        <li><strong>Clean codebase:</strong> No legacy baggage</li>
-                        <li><strong>Tested thoroughly:</strong> Purpose-built quality</li>
-                        <li><strong>Fast performance:</strong> Lightweight by design</li>
-                        <li><strong>Simple updates:</strong> No breaking customizations</li>
+            <div class="comparison-plan-grid">
+                <div class="feature-card comparison-accent-success">
+                    <h3 class="comparison-success">Blik: Focused 360° Feedback</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li><strong>Single purpose:</strong> 360° multi-rater feedback</li>
+                        <li><strong>Four questionnaires:</strong> software engineering, manager, professional, quick</li>
+                        <li><strong>Feedback access:</strong> token-based invitations and category-aggregated reports</li>
+                        <li><strong>Automated analytics:</strong> Dreyfus skill levels, perception gaps</li>
+                        <li><strong>Lightweight to run:</strong> typical use fits a small VPS</li>
                     </ul>
+                    <p class="comparison-note mt-4">
+                        <strong>What Blik doesn't cover:</strong> no ERP modules, no SSO/SAML, no native HRIS
+                        connectors, and no native mobile app (it uses responsive web design).
+                    </p>
                 </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success);">Blik: Easy to Use</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>5-minute setup:</strong> Docker compose up</li>
-                        <li><strong>Quick onboarding:</strong> < 1 hour training</li>
-                        <li><strong>Clear interface:</strong> No confusion</li>
-                        <li><strong>Helpful errors:</strong> User-friendly messages</li>
-                        <li><strong>Direct support:</strong> Responsive team</li>
+                <div class="feature-card comparison-accent-primary">
+                    <h3 class="comparison-primary">Odoo: Integrated Business Suite</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li><strong>Full ERP:</strong> sales, inventory, accounting, manufacturing, HR</li>
+                        <li><strong>HR & appraisals:</strong> available within the wider suite</li>
+                        <li><strong>Modular:</strong> enable only the apps you need</li>
+                        <li><strong>Open-source Community</strong> plus paid Enterprise edition</li>
+                        <li><strong>One vendor:</strong> a single system for many business processes</li>
                     </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--success-bg); border-left: 4px solid var(--success);">
-                        <p style="font-weight: bold;">One tool, one purpose, done right.</p>
-                    </div>
-                </div>
-
-                <div class="feature-card" style="border-left: 4px solid var(--danger);">
-                    <h3 style="color: var(--danger);">Odoo: ERP Complexity</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li><strong>Full of bugs:</strong> "Even the standard HR module"</li>
-                        <li><strong>Steep learning curve:</strong> "Many options" overwhelm</li>
-                        <li><strong>Complex setup:</strong> "Requires technical knowledge"</li>
-                        <li><strong>Upgrade pain:</strong> "Customizations break"</li>
-                        <li><strong>Performance issues:</strong> "Slowdowns with large data"</li>
-                        <li><strong>Python errors:</strong> "Confusing" for end users</li>
-                    </ul>
-                    <div class="cta-box" style="margin-top: 1.5rem; background: var(--danger-bg); border-left: 4px solid var(--danger);">
-                        <p style="font-weight: bold;">"Zero accountability, no customer support"</p>
-                    </div>
+                    <p class="comparison-note mt-4">
+                        If your business needs an integrated ERP with HR included, Odoo is worth evaluating for its connected apps and shared business workflows.
+                    </p>
                 </div>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
+            <div class="comparison-panel mt-12">
                 <h3>The Scope Trade-off</h3>
-                <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                    If you need a full ERP—sales, inventory, accounting, HR, manufacturing—then Odoo makes sense. It's an integrated ecosystem. But if you <strong>just need performance reviews</strong>, you're signing up for enormous complexity you don't need. Blik does 360° feedback brilliantly without dragging in 50 modules, version upgrade headaches, and confusing Python error messages.
+                <p class="comparison-prose mt-4">
+                    If you need a full ERP — sales, inventory, accounting, HR, manufacturing — Odoo makes sense as an
+                    integrated ecosystem. If you just need performance reviews, Blik covers that in a focused tool
+                    without the wider platform, with a REST API and webhooks for custom integrations. Both are
+                    legitimate depending on the scope of what you're building.
                 </p>
             </div>
         </div>
@@ -216,17 +187,18 @@
     <section id="features" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Feature-by-Feature Comparison</h2>
+            <p>Blik's confidentiality depends on invitation method, permissions, reporting thresholds, and response content. Reviewer email addresses can be stored with invitation tokens linked to responses; category-aggregated reporting is not an administrator-proof anonymity guarantee.</p>
 
-            <div style="display: grid; gap: 2rem; margin-top: 3rem;">
+            <div class="comparison-stack mt-12">
                 <!-- 360 Feedback -->
                 <div class="comparison-card">
                     <h3>360° Feedback & Anonymity</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Native core feature</li>
-                                <li>Cryptographically anonymous</li>
+                                <li>Token-based access and category-aggregated reports</li>
                                 <li>Multi-rater (peer, manager, self)</li>
                                 <li>4 research-backed questionnaires</li>
                             </ul>
@@ -234,10 +206,10 @@
                         <div class="card-red">
                             <h4>Odoo HR</h4>
                             <ul>
-                                <li>Enterprise-only add-on</li>
-                                <li>Named reviews only</li>
-                                <li>Manager-focused appraisals</li>
-                                <li>Basic templates</li>
+                                <li>Appraisals within the HR suite</li>
+                                <li>Confirm 360° feedback features for your edition</li>
+                                <li>Check reviewer visibility and reporting settings</li>
+                                <li>Configure the appraisal workflow around your HR processes</li>
                             </ul>
                         </div>
                     </div>
@@ -246,7 +218,7 @@
                 <!-- Analytics -->
                 <div class="comparison-card">
                     <h3>Performance Analytics</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
@@ -259,10 +231,9 @@
                         <div class="card-red">
                             <h4>Odoo HR</h4>
                             <ul>
-                                <li>Basic KPI dashboards</li>
-                                <li>Manual setup required</li>
-                                <li>No automated insights</li>
-                                <li>Generic business intelligence</li>
+                                <li>Reporting across business and HR apps</li>
+                                <li>Evaluate appraisal reports in your selected edition</li>
+                                <li>Confirm the metrics and configuration your team needs</li>
                             </ul>
                         </div>
                     </div>
@@ -271,25 +242,24 @@
                 <!-- Setup & Maintenance -->
                 <div class="comparison-card">
                     <h3>Setup & Maintenance</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
-                                <li>5-minute Docker setup</li>
+                                <li>Docker Compose setup</li>
                                 <li>Simple environment variables</li>
-                                <li>Automated updates</li>
-                                <li>Minimal resource usage (< 1GB)</li>
+                                <li>Self-hosted operators manage updates</li>
+                                <li>Runs comfortably on a 1 GB VPS for typical team sizes (512 MB minimum)</li>
                             </ul>
                         </div>
                         <div class="card-red">
                             <h4>Odoo HR</h4>
                             <ul>
-                                <li>"Requires technical knowledge"</li>
-                                <li>Complex module dependencies</li>
-                                <li>"Customizations break on upgrade"</li>
-                                <li>Heavy resource usage (2GB+ typical)</li>
+                                <li>Module-based configuration</li>
+                                <li>Larger deployment: database, services, and optional add-ons</li>
+                                <li>Custom modules may need review on major upgrades</li>
+                                <li>Heavier resource footprint (full ERP)</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
                         </div>
                     </div>
                 </div>
@@ -297,11 +267,11 @@
                 <!-- Learning Curve -->
                 <div class="comparison-card">
                     <h3>User Experience & Training</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
-                                <li>< 1 hour onboarding</li>
+                                <li>Dedicated review-cycle workflow</li>
                                 <li>Clean, focused interface</li>
                                 <li>Clear error messages</li>
                                 <li>Single-purpose simplicity</li>
@@ -310,12 +280,11 @@
                         <div class="card-red">
                             <h4>Odoo HR</h4>
                             <ul>
-                                <li>"Steep learning curve"</li>
-                                <li>"Many options" create confusion</li>
-                                <li>"Confusing Python error messages"</li>
-                                <li>Days to weeks training</li>
+                                <li>Broad feature set to learn</li>
+                                <li>Many screens and options across modules</li>
+                                <li>Admin-level settings can be technical</li>
+                                <li>Training often worthwhile for wider usage</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
                         </div>
                     </div>
                 </div>
@@ -323,7 +292,7 @@
                 <!-- Integration -->
                 <div class="comparison-card">
                     <h3>API & Integration</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
@@ -331,19 +300,17 @@
                                 <li>Webhook events</li>
                                 <li>Bearer token auth</li>
                                 <li>Interactive OpenAPI docs</li>
-                                <li>Works with existing HR tools</li>
+                                <li>Custom integration with existing HR tools</li>
                             </ul>
-                            <a href="{{ api_swagger_url }}" target="_blank" class="btn btn-secondary" style="margin-top: 1rem; display: inline-block;">View API Docs</a>
+                            <a href="{{ api_swagger_url }}" target="_blank" class="btn btn-secondary comparison-inline-link mt-4">View API Docs</a>
                         </div>
                         <div class="card-red">
                             <h4>Odoo HR</h4>
                             <ul>
-                                <li>"Integration issues with other systems"</li>
-                                <li>"Sometimes requires additional development"</li>
-                                <li>Self-contained ecosystem preference</li>
-                                <li>Complex if not using Odoo stack</li>
+                                <li>Well-integrated within the Odoo ecosystem</li>
+                                <li>External integrations may need development</li>
+                                <li>Works best when the whole stack is Odoo</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
                         </div>
                     </div>
                 </div>
@@ -351,7 +318,7 @@
                 <!-- Support -->
                 <div class="comparison-card">
                     <h3>Customer Support</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                    <div class="grid-two mt-6">
                         <div class="card-green">
                             <h4>Blik</h4>
                             <ul>
@@ -364,12 +331,10 @@
                         <div class="card-red">
                             <h4>Odoo HR</h4>
                             <ul>
-                                <li>"Zero accountability"</li>
-                                <li>"Completely ignored our complaints"</li>
-                                <li>"Every promised deadline was missed"</li>
-                                <li>"Lack of expertise"</li>
+                                <li>Support via vendor and certified partners</li>
+                                <li>Documentation and community resources</li>
+                                <li>Enterprise support plans available</li>
                             </ul>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">Source: User reviews</p>
                         </div>
                     </div>
                 </div>
@@ -382,41 +347,41 @@
         <div class="container">
             <h2 class="section-title">Cost Comparison</h2>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                <h3>Annual Cost (50 employees)</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 1.5rem;">
+            <div class="comparison-panel mt-12">
+                <h3>Annual Cost ({{ plan_saas_max }} employees)</h3>
+                <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 style="color: var(--success);">Blik (Managed)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">€588/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">All features, unlimited users</p>
+                        <h4 class="comparison-success">Blik (Managed)</h4>
+                        <p class="comparison-price comparison-success">€{{ plan_saas_annual }}/year</p>
+                        <p class="comparison-note">All features, up to {{ plan_saas_max }} employees</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--success);">Blik (Self-Hosted)</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--success);">$0/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Free forever, AGPLv3</p>
+                        <h4 class="comparison-success">Blik (Self-Hosted)</h4>
+                        <p class="comparison-price comparison-success">€0/year</p>
+                        <p class="comparison-note">Free forever, AGPLv3</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--warning);">Odoo Community</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--warning);">Free*</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">*But no 360° feedback included</p>
+                        <h4 class="comparison-warning">Odoo Community</h4>
+                        <p>Free</p>
+                        <p>Check Community modules against your appraisal requirements</p>
                     </div>
                     <div>
-                        <h4 style="color: var(--danger);">Odoo Enterprise</h4>
-                        <p style="font-size: 2rem; font-weight: bold; color: var(--danger);">$1,200+/year</p>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Per-user licensing, add-ons extra</p>
+                        <h4 class="comparison-danger">Odoo Enterprise</h4>
+                        <p class="comparison-price comparison-danger">Region-based</p>
+                        <p class="comparison-note">Per-user pricing varies by region, billing period, and discounts. See the <a href="https://www.odoo.com/pricing" target="_blank" rel="noopener">current vendor pricing</a>; source checked October 2026.</p>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px; border-left: 4px solid var(--primary);">
-                <h3>The Hidden Costs of Odoo</h3>
-                <ul style="color: var(--text-secondary); line-height: 2; margin-top: 1rem;">
-                    <li><strong>Setup time:</strong> Hours to days vs. 5 minutes</li>
-                    <li><strong>Training costs:</strong> Days-to-weeks onboarding vs. < 1 hour</li>
-                    <li><strong>Customization risk:</strong> "Breaks on upgrade" creates ongoing costs</li>
-                    <li><strong>Technical support:</strong> Often requires consultants</li>
-                    <li><strong>Performance overhead:</strong> Heavy resource requirements</li>
-                    <li><strong>Integration development:</strong> "Requires additional development"</li>
+            <div class="comparison-panel comparison-accent-primary mt-12">
+                <h3>What to Consider</h3>
+                <ul class="comparison-benefits--muted mt-4">
+                    <li><strong>Setup scope:</strong> Configuring modules is part of the initial work</li>
+                    <li><strong>Learning:</strong> A broad suite has more to learn than a single-purpose tool</li>
+                    <li><strong>Upgrades:</strong> Custom modules should be tested on major version changes</li>
+                    <li><strong>Support:</strong> Vendor and partner plans are available</li>
+                    <li><strong>Resources:</strong> A full ERP typically needs a larger deployment</li>
+                    <li><strong>Integration:</strong> Deeply integrating external systems can require development</li>
                 </ul>
             </div>
         </div>
@@ -427,46 +392,46 @@
         <div class="container">
             <h2 class="section-title">Which Platform Is Right for You?</h2>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border: 2px solid var(--success);">
-                    <h3 style="color: var(--success);">Choose Blik If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
-                        <li>Want <strong>360° feedback done right</strong></li>
-                        <li>Need <strong>cryptographic anonymity</strong></li>
-                        <li>Value <strong>quick setup</strong> (5 minutes)</li>
-                        <li>Prefer <strong>focused tools</strong> over ERP bloat</li>
-                        <li>Want <strong>no bugs, no complexity</strong></li>
+            <div class="comparison-plan-grid mt-12">
+                <div class="feature-card comparison-outline-success">
+                    <h3 class="comparison-success">Choose Blik If You:</h3>
+                    <ul class="comparison-benefits mt-6">
+                        <li>Want <strong>360° feedback</strong> as a focused, single-purpose tool</li>
+                        <li>Want <strong>category-aggregated feedback reports</strong></li>
+                        <li>Value <strong>quick setup</strong> with Docker Compose</li>
+                        <li>Prefer <strong>a dedicated review tool</strong> alongside existing systems</li>
                         <li>Already have other systems (HRIS, payroll, etc.)</li>
-                        <li>Need <strong>psychological insights</strong> (Dreyfus, perception gaps)</li>
-                        <li>Have <strong>30-500 employees</strong></li>
+                        <li>Want <strong>psychological insights</strong> (Dreyfus, perception gaps)</li>
+                        <li>Have <strong>30-{{ plan_ent_max }} employees</strong></li>
+                        <li>Want to <strong>self-host</strong> or use flat-rate EU hosting</li>
                     </ul>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Try Blik</a>
+                    <a href="{% landing_url 'signup' %}" class="btn btn-primary comparison-decision-link">Try Blik</a>
                 </div>
 
-                <div class="feature-card" style="border: 2px solid var(--warning);">
-                    <h3 style="color: var(--warning);">Choose Odoo If You:</h3>
-                    <ul style="text-align: left; margin-top: 1.5rem; line-height: 2;">
+                <div class="feature-card comparison-outline-warning">
+                    <h3 class="comparison-warning">Choose Odoo If You:</h3>
+                    <ul class="comparison-benefits mt-6">
                         <li>Need a <strong>complete ERP system</strong></li>
                         <li>Want <strong>sales, inventory, accounting</strong> integrated</li>
-                        <li>Can accept <strong>steep learning curve</strong></li>
-                        <li>Have <strong>technical resources</strong> for setup</li>
+                        <li>Value an <strong>all-in-one platform</strong> for many business processes</li>
+                        <li>Have <strong>technical resources</strong> for a broader deployment</li>
                         <li>Are willing to pay for <strong>Enterprise features</strong></li>
-                        <li>Can tolerate <strong>"full of bugs"</strong> experience</li>
-                        <li>Accept <strong>"customizations break on upgrade"</strong></li>
-                        <li>Don't need true <strong>360° anonymous feedback</strong></li>
+                        <li>Want <strong>connected workflows</strong> across business modules</li>
+                        <li>Prefer <strong>appraisals within your HR suite</strong></li>
+                        <li>Prefer one vendor for <strong>business + HR software</strong></li>
                     </ul>
-                    <a href="https://www.odoo.com" target="_blank" rel="noopener" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Visit Odoo</a>
+                    <a href="https://www.odoo.com" target="_blank" rel="noopener" class="btn btn-secondary comparison-decision-link">Visit Odoo</a>
                 </div>
             </div>
 
-            <div class="cta-box" style="margin-top: 3rem;">
+            <div class="cta-box mt-12">
                 <h3>Not Sure Yet?</h3>
-                <p style="margin: 1rem 0;">
-                    Blik is open source (AGPLv3). Deploy it yourself for free and never drag in 50 ERP modules you don't need,
-                    or use our managed hosting for €49/month. No credit card required to explore.
+                <p class="comparison-paragraph">
+                    Blik is open source (AGPL-3.0). Self-host free or choose managed hosting for €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees.
+                    {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
-                    <a href="https://github.com/TaylorDiego/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
+                <div class="action-links mt-6">
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
                     <a href="{% landing_url 'index' %}" class="btn btn-primary">Learn More About Blik</a>
                 </div>
             </div>
@@ -476,131 +441,19 @@
     <!-- Final CTA -->
     <section class="section">
         <div class="container">
-            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 0;">
-                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">No ERP Bloat. No Bugs. Just Brilliant Feedback.</h2>
-                <p style="color: var(--text-secondary); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
-                    Don't buy an entire ERP just to do performance reviews. Blik does one thing brilliantly: 360° feedback
-                    with cryptographic anonymity, automated insights, and zero complexity. Join organizations who value
-                    focused tools over bloated systems.
+            <div class="comparison-closing">
+                <h2 class="comparison-closing-title mb-6">Focused 360° Feedback, Open Source</h2>
+                <p class="comparison-prose comparison-prose--lead mb-8">
+                    If performance reviews are what you need, you don't have to adopt a full ERP to run them. Blik is a
+                    dedicated 360° feedback tool with token-based access, category-aggregated reports, automated insights, and self-hosted or
+                    flat-rate EU hosting.
                 </p>
                 <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Get Started with Blik</a>
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary);">
-                    €49/month managed hosting • Open source available on GitHub
+                <p class="comparison-note mt-4">
+                    €{{ plan_saas_price }}/month managed hosting • Open source available on GitHub
                 </p>
             </div>
         </div>
     </section>
 {% endblock %}
 
-{% block extra_scripts %}
-<style>
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--bg);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.comparison-table thead {
-    background: var(--bg-secondary);
-}
-
-.comparison-table th,
-.comparison-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-}
-
-.comparison-table th {
-    font-weight: 600;
-    color: var(--text);
-}
-
-.comparison-table td {
-    color: var(--text-secondary);
-}
-
-.highlight-green {
-    background-color: rgba(16, 185, 129, 0.1);
-    font-weight: 500;
-    color: var(--success);
-}
-
-.highlight-red {
-    background-color: rgba(239, 68, 68, 0.1);
-    font-weight: 500;
-    color: var(--danger);
-}
-
-.highlight-yellow {
-    background-color: rgba(245, 158, 11, 0.1);
-    font-weight: 500;
-    color: var(--warning);
-}
-
-.comparison-card {
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 2rem;
-    border: 1px solid var(--border);
-}
-
-.comparison-card h3 {
-    color: var(--text);
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.card-green,
-.card-red {
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-.card-green {
-    background: rgba(16, 185, 129, 0.05);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.card-green h4 {
-    color: var(--success);
-    margin-bottom: 1rem;
-}
-
-.card-green ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-green ul li:before {
-    content: "✓ ";
-    color: var(--success);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-
-.card-red {
-    background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.card-red h4 {
-    color: var(--danger);
-    margin-bottom: 1rem;
-}
-
-.card-red ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-red ul li:before {
-    content: "✗ ";
-    color: var(--danger);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-</style>
-{% endblock %}

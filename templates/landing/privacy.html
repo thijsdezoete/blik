@@ -3,8 +3,8 @@
 
 {% block meta %}
     <title>Air-Gapped 360 Feedback for Professional Services | Blik</title>
-    <meta name="description" content="Self-hosted 360 feedback for consulting, legal, healthcare, and financial services. Client confidentiality protected. Air-gapped deployment. GDPR, ISO 27001, SOC 2 compliance ready. No cloud dependencies.">
-    <meta name="keywords" content="professional services performance review, air-gapped feedback system, confidential 360 review, compliance-ready HR software, self-hosted employee feedback, secure performance management">
+    <meta name="description" content="Self-hosted 360 feedback for professional services. Token-based access, category-aggregated reports, and GDPR export and deletion tools. Your organization controls deployment and compliance processes.">
+    <meta name="keywords" content="professional services performance review, air-gapped feedback system, confidential 360 review, GDPR support tools, self-hosted employee feedback, secure performance management">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'privacy' %}">
 
@@ -12,7 +12,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'privacy' %}">
     <meta property="og:title" content="Air-Gapped 360 Feedback for Professional Services">
-    <meta property="og:description" content="Client confidentiality protected. Compliance-ready. No cloud dependencies.">
+    <meta property="og:description" content="Self-hosted feedback with token-based access and GDPR support tools. Configure confidentiality and compliance processes for your organization.">
     <meta property="og:site_name" content="{{ site_name }}">
     <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
     <meta property="og:image:width" content="1200">
@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'privacy' %}">
     <meta name="twitter:title" content="Air-Gapped 360 Feedback for Professional Services">
-    <meta name="twitter:description" content="Client confidentiality protected. Compliance-ready. No cloud dependencies.">
+    <meta name="twitter:description" content="Self-hosted feedback with token-based access and GDPR support tools. Configure confidentiality and compliance processes for your organization.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}">
 {% endblock %}
 
@@ -33,7 +33,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "{{ site_name }}",
-        "description": "Self-hosted 360 feedback for consulting, legal, healthcare, and financial services. Client confidentiality protected. Air-gapped deployment. GDPR, ISO 27001, SOC 2 compliance ready. No cloud dependencies.",
+        "description": "Self-hosted 360 feedback for professional services. Token-based access, category-aggregated reports, and GDPR export and deletion tools. Your organization controls deployment and compliance processes.",
         "applicationCategory": "BusinessApplication",
         "operatingSystem": "Any (Web-based)",
         "audience": {
@@ -91,18 +91,18 @@
                     <a href="#security" class="btn btn-secondary">See Security Architecture</a>
                 </div>
 
-                <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">100%</div>
-                        <div style="font-size: 0.875rem; opacity: 0.9;">On-Premises</div>
+                <div class="audience-hero-stats">
+                    <div class="audience-stat">
+                        <div class="audience-stat-value">100%</div>
+                        <div class="audience-stat-label">On-Premises</div>
                     </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Zero</div>
-                        <div style="font-size: 0.875rem; opacity: 0.9;">Cloud Dependencies</div>
+                    <div class="audience-stat">
+                        <div class="audience-stat-value">Zero</div>
+                        <div class="audience-stat-label">Cloud Dependencies</div>
                     </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">ISO</div>
-                        <div style="font-size: 0.875rem; opacity: 0.9;">Compliance Ready</div>
+                    <div class="audience-stat">
+                        <div class="audience-stat-value">Open</div>
+                        <div class="audience-stat-label">Source Code</div>
                     </div>
                 </div>
             </div>
@@ -112,29 +112,29 @@
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title">Why Cloud-Based Tools Are Unacceptable for Your Firm</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Client contracts and compliance requirements demand better</p>
+            <p class="section-intro">Client contracts and compliance requirements demand better</p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+            <div class="audience-card-grid">
                 <div class="feature-card feature-card-danger">
                     <h3>Cloud HR Platforms</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">Client data potentially exposed in shared database</li>
-                        <li style="margin-bottom: 0.5rem;">Third-party access to employee information</li>
-                        <li style="margin-bottom: 0.5rem;">Cannot meet air-gapped requirements</li>
-                        <li style="margin-bottom: 0.5rem;">Vendor security breaches affect your firm</li>
-                        <li style="margin-bottom: 0.5rem;">Unknown subprocessors and data locations</li>
+                    <ul class="audience-list">
+                        <li class="mb-2">Client data potentially exposed in shared database</li>
+                        <li class="mb-2">Third-party access to employee information</li>
+                        <li class="mb-2">Cannot meet air-gapped requirements</li>
+                        <li class="mb-2">Vendor security breaches affect your firm</li>
+                        <li class="mb-2">Unknown subprocessors and data locations</li>
                         <li>Contractual prohibition on cloud services</li>
                     </ul>
                 </div>
 
                 <div class="feature-card feature-card-success">
                     <h3>Blik Air-Gapped</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">Deploy behind your firewall, no external access</li>
-                        <li style="margin-bottom: 0.5rem;">Zero third-party data sharing by design</li>
-                        <li style="margin-bottom: 0.5rem;">Fully functional without internet connection</li>
-                        <li style="margin-bottom: 0.5rem;">Your infrastructure, your security controls</li>
-                        <li style="margin-bottom: 0.5rem;">No subprocessors, no external dependencies</li>
+                    <ul class="audience-list">
+                        <li class="mb-2">Deploy behind your firewall, no external access</li>
+                        <li class="mb-2">Zero third-party data sharing by design</li>
+                        <li class="mb-2">Fully functional without internet connection</li>
+                        <li class="mb-2">Your infrastructure, your security controls</li>
+                        <li class="mb-2">No subprocessors, no external dependencies</li>
                         <li>Meets strictest client requirements</li>
                     </ul>
                 </div>
@@ -145,7 +145,7 @@
     <section id="security" class="section">
         <div class="container">
             <h2 class="section-title">Security Architecture for Professional Services</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Designed for firms with the highest confidentiality requirements</p>
+            <p class="section-intro">Designed for firms with the highest confidentiality requirements</p>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -164,13 +164,13 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>Reviewer Anonymity Guaranteed</h3>
-                    <p>Technical architecture prevents identity tracking. Token-based access with no authentication logs. Configurable minimum response thresholds. Protects both reviewers and reviewees in sensitive firm environments.</p>
+                    <h3>Reporting Confidentiality</h3>
+                    <p>Token-based access and category-aggregated reports support confidentiality. Responses retain a token reference that may link to an invitation email. Invitation method, permissions, thresholds, and feedback content affect confidentiality; it is not a guarantee against identification by database administrators.</p>
                 </div>
 
                 <div class="feature-card">
-                    <h3>Compliance Documentation</h3>
-                    <p>Includes templates for ISO 27001, SOC 2, and GDPR documentation. Security control descriptions ready for compliance frameworks. Data processing documentation for client audits. Privacy impact assessment materials provided.</p>
+                    <h3>Compliance Assessment</h3>
+                    <p>Open source code lets your team inspect the implementation. Export and deletion tools support GDPR obligations; your organization must assess requirements, configure controls, and maintain its own compliance processes.</p>
                 </div>
 
                 <div class="feature-card">
@@ -180,96 +180,95 @@
             </div>
 
             <!-- Security in Action Screenshots -->
-            <div style="margin-top: 4rem;">
-                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Secure, Professional Interface</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem;">
+            <div class="mt-16">
+                <h3 class="audience-showcase-title">Secure, Professional Interface</h3>
+                <div class="audience-screenshot-grid">
                     <div>
-                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div class="screenshot-hover-wrapper audience-screenshot-frame">
                             <picture class="screenshot-layer screenshot-light">
                                 <source srcset="{% static 'img/screenshots/cycle_detail_desktop_light.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/cycle_detail_desktop_light.png' %}"
                                      alt="Review Cycle Tracking - Light Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="audience-screenshot-image">
                             </picture>
                             <picture class="screenshot-layer screenshot-dark">
                                 <source srcset="{% static 'img/screenshots/cycle_detail_desktop_dark.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/cycle_detail_desktop_dark.png' %}"
                                      alt="Review Cycle Tracking - Dark Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="audience-screenshot-image">
                             </picture>
                             <div class="theme-indicator">Hover to toggle theme</div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Anonymous invitation links ensure reviewer identities are never tracked or stored</p>
+                        <p class="audience-screenshot-caption">Token-based invitation links provide reviewer access; emailed invitations may associate a token with an email address</p>
                     </div>
                     <div>
-                        <div class="screenshot-hover-wrapper" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div class="screenshot-hover-wrapper audience-screenshot-frame">
                             <picture class="screenshot-layer screenshot-light">
                                 <source srcset="{% static 'img/screenshots/report_charts_desktop_light.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/report_charts_desktop_light.png' %}"
                                      alt="Anonymous Feedback Reports - Light Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="audience-screenshot-image">
                             </picture>
                             <picture class="screenshot-layer screenshot-dark">
                                 <source srcset="{% static 'img/screenshots/report_charts_desktop_dark.webp' %}" type="image/webp">
                                 <img src="{% static 'img/screenshots/report_charts_desktop_dark.png' %}"
                                      alt="Anonymous Feedback Reports - Dark Theme"
                                      loading="lazy"
-                                     style="width: 100%; height: auto; display: block;">
+                                     class="audience-screenshot-image">
                             </picture>
                             <div class="theme-indicator">Hover to toggle theme</div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Professional reports with anonymity protection built-in</p>
+                        <p class="audience-screenshot-caption">Professional reports with anonymity protection built-in</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <section id="industries" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Built for Your Industry</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Trusted by firms with the highest confidentiality standards</p>
+            <p class="section-intro">Built for teams of 30-{{ plan_ent_max }} employees that need control over feedback data</p>
 
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>Law Firms</h3>
-                    <p><strong>Requirements Met:</strong> Attorney-client privilege protection, ABA ethics compliance, conflict check isolation, partner compensation confidentiality, client audit requirements met.</p>
-                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Air-gapped deployment behind firm firewall. Internal SMTP only. Managed by firm IT. Review cycles for attorneys, paralegals, support staff.</p>
+                    <p><strong>Assess Your Requirements:</strong> Attorney-client privilege, professional ethics, and client confidentiality depend on your firm's policies and deployment controls; self-hosting alone does not establish compliance.</p>
+                    <p class="mt-4"><strong>Typical Setup:</strong> Air-gapped deployment behind firm firewall. Internal SMTP only. Managed by firm IT. Review cycles for attorneys, paralegals, support staff.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Healthcare & Life Sciences</h3>
-                    <p><strong>Requirements Met:</strong> HIPAA compliance readiness, patient data separation, clinical confidentiality, FDA validation support, protected health information isolation.</p>
-                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Deployed in healthcare network. No PHI stored in system. Clinical and administrative staff reviews. Integration with internal directories.</p>
+                    <p><strong>Assess Your Requirements:</strong> Review healthcare privacy obligations with your compliance team. Self-hosting is not a HIPAA certification or a guarantee of patient data separation.</p>
+                    <p class="mt-4"><strong>Deployment Considerations:</strong> Limit feedback to relevant staff competencies, instruct reviewers not to include patient data, and configure access and retention for your setting.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Financial Services</h3>
-                    <p><strong>Requirements Met:</strong> FCA/SEC examination readiness, client confidentiality, Chinese Wall compliance, market abuse prevention, audit trail requirements.</p>
-                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Segregated network deployment. Compliance-approved configuration. Detailed audit logs. Support for multiple legal entities within one firm.</p>
+                    <p><strong>Assess Your Requirements:</strong> Evaluate regulatory, confidentiality, access, and recordkeeping obligations before using feedback software in your firm.</p>
+                    <p class="mt-4"><strong>Deployment Considerations:</strong> Have your compliance team assess network placement, permissions, retention, and recordkeeping requirements.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Management Consulting</h3>
-                    <p><strong>Requirements Met:</strong> Client confidentiality agreements, conflict of interest controls, engagement team isolation, proprietary methodology protection, NDA compliance.</p>
-                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Project-based review cycles. Partner and consultant assessments. Integration with resource management. Protected behind VPN.</p>
+                    <p><strong>Assess Your Requirements:</strong> Your organization must manage client confidentiality agreements, conflicts of interest, access boundaries, and retention.</p>
+                    <p class="mt-4"><strong>Typical Setup:</strong> Project-based review cycles. Partner and consultant assessments. Integration with resource management. Protected behind VPN.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Accounting & Tax</h3>
-                    <p><strong>Requirements Met:</strong> Client privilege protection, professional standards compliance, quality control requirements, peer review preparation, ethics standards.</p>
-                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Separate staff and partner reviews. Technical competency assessments. Annual review cycles aligned with promotion timelines. Audit-ready documentation.</p>
+                    <p><strong>Assess Your Requirements:</strong> Your organization is responsible for professional standards, client privilege, quality controls, and review documentation.</p>
+                    <p class="mt-4"><strong>Typical Setup:</strong> Separate staff and partner reviews, technical competency assessments, and annual review cycles aligned with promotion timelines. Maintain your own supporting documentation.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Government Contractors</h3>
-                    <p><strong>Requirements Met:</strong> Classified information isolation, ITAR/EAR compliance, government security standards, FedRAMP-equivalent controls, audit requirements.</p>
-                    <p style="margin-top: 1rem;"><strong>Typical Setup:</strong> Deployed on classified networks. No external connectivity. Government-approved encryption. Complete access control logging.</p>
+                    <p><strong>Assess Your Requirements:</strong> Self-hosting does not establish ITAR/EAR compliance, FedRAMP authorization, or suitability for classified information.</p>
+                    <p class="mt-4"><strong>Deployment Review:</strong> Obtain approval from your security and compliance teams before selecting a network or handling sensitive information.</p>
                 </div>
             </div>
         </div>
@@ -278,34 +277,34 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Deployment Options for Maximum Security</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Three deployment modes to match your security requirements</p>
+            <p class="section-intro">Three deployment modes to match your security requirements</p>
 
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>Air-Gapped (Highest Security)</h3>
                     <p><strong>Setup:</strong> Internal server, no internet access, manual report generation</p>
-                    <p style="margin-top: 1rem;"><strong>Best For:</strong> Law firms, defense contractors, highly regulated industries</p>
-                    <p style="margin-top: 1rem;"><strong>Features:</strong> Complete isolation, no external dependencies, passes strictest client audits</p>
+                    <p class="mt-4"><strong>Best For:</strong> Law firms, defense contractors, highly regulated industries</p>
+                    <p class="mt-4"><strong>Features:</strong> Complete isolation, no external dependencies, passes strictest client audits</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Firewall-Protected (High Security)</h3>
                     <p><strong>Setup:</strong> Internal server with restricted outbound access for email</p>
-                    <p style="margin-top: 1rem;"><strong>Best For:</strong> Healthcare, financial services, mid-size professional firms</p>
-                    <p style="margin-top: 1rem;"><strong>Features:</strong> Controlled external access, email invitations work</p>
+                    <p class="mt-4"><strong>Best For:</strong> Healthcare, financial services, mid-size professional firms</p>
+                    <p class="mt-4"><strong>Features:</strong> Controlled external access, email invitations work</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Private VPN (Moderate Security)</h3>
                     <p><strong>Setup:</strong> Cloud server accessible only via firm VPN</p>
-                    <p style="margin-top: 1rem;"><strong>Best For:</strong> Consulting firms, accounting firms with remote teams</p>
-                    <p style="margin-top: 1rem;"><strong>Features:</strong> Remote access for distributed teams, still fully isolated from public internet</p>
+                    <p class="mt-4"><strong>Best For:</strong> Consulting firms, accounting firms with remote teams</p>
+                    <p class="mt-4"><strong>Features:</strong> Remote access for distributed teams, still fully isolated from public internet</p>
                 </div>
             </div>
 
-            <div class="feature-card" style="margin-top: 3rem; background: var(--primary-600); color: white; padding: 2rem; text-align: center; border: 1px solid var(--primary-700);">
-                <h3 style="color: white; margin-bottom: 1rem;">All Deployment Modes Share Core Benefits</h3>
-                <p style="color: rgba(255,255,255,0.95);">Self-hosted infrastructure • No third-party access • Open source auditability • Your security controls • Client requirement compliance</p>
+            <div class="feature-card audience-highlight mt-12">
+                <h3 class="audience-highlight-title">All Deployment Modes Share Core Benefits</h3>
+                <p class="audience-highlight-copy">Self-hosted infrastructure • Open source auditability • Your deployment controls • Your compliance assessment</p>
             </div>
         </div>
     </section>
@@ -313,7 +312,7 @@
     <section id="compliance" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Compliance Framework Support</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Documentation and controls for major compliance standards</p>
+            <p class="section-intro">Self-hosting does not confer certification or automatic compliance. Your organization must assess applicable requirements and implement appropriate controls.</p>
 
             <div class="table-wrapper">
                 <table class="table">
@@ -321,52 +320,52 @@
                         <tr>
                             <th>Compliance Standard</th>
                             <th>Blik Support</th>
-                            <th>Key Controls Satisfied</th>
+                            <th>Organization Responsibilities</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>ISO 27001</strong></td>
-                            <td style="color: var(--success); font-weight: 600;">✓ Documentation Provided</td>
-                            <td>Access control, encryption, audit logging, data classification, incident response</td>
+                            <td>Source code available for assessment</td>
+                            <td>Define and maintain your information security management system</td>
                         </tr>
                         <tr>
                             <td><strong>SOC 2</strong></td>
-                            <td style="color: var(--success); font-weight: 600;">✓ Control Templates</td>
-                            <td>Security, availability, confidentiality, privacy, processing integrity</td>
+                            <td>Source code available for assessment</td>
+                            <td>Assess controls and obtain independent assurance where required</td>
                         </tr>
                         <tr>
                             <td><strong>GDPR</strong></td>
-                            <td style="color: var(--success); font-weight: 600;">✓ Fully Compliant</td>
-                            <td>Data residency, subject rights, privacy by design, DPA not required</td>
+                            <td>Export and deletion tools</td>
+                            <td>Lawful processing, access controls, retention, processor agreements, and data subject request handling</td>
                         </tr>
                         <tr>
                             <td><strong>HIPAA</strong></td>
-                            <td style="color: var(--success); font-weight: 600;">✓ BAA Template</td>
-                            <td>Access controls, audit logs, encryption, PHI separation guidance</td>
+                            <td>Deployment must be assessed</td>
+                            <td>Determine suitability, required safeguards, and contractual obligations before use</td>
                         </tr>
                         <tr>
                             <td><strong>FedRAMP</strong></td>
-                            <td style="color: var(--success); font-weight: 600;">✓ Control Mapping</td>
-                            <td>Self-hosting enables government cloud requirements</td>
+                            <td>No authorization implied by self-hosting</td>
+                            <td>Assess applicable authorization and security requirements independently</td>
                         </tr>
                         <tr>
                             <td><strong>PCI DSS</strong></td>
-                            <td style="color: var(--success); font-weight: 600;">✓ Network Isolation</td>
-                            <td>Segmentation, access control, encryption, no cardholder data stored</td>
+                            <td>Deployment must be assessed</td>
+                            <td>Do not put payment card data in review content; assess scope and required controls</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="feature-card" style="margin-top: 2rem;">
+            <div class="feature-card mt-8">
                 <h3>Compliance Resources</h3>
-                <p style="margin-bottom: 1rem;">Essential compliance framework documentation:</p>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 0.5rem;"><a href="https://www.iso.org/isoiec-27001-information-security.html" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">ISO 27001</a> - Information security management</li>
-                    <li style="margin-bottom: 0.5rem;"><a href="https://www.aicpa.org/interestareas/frc/assuranceadvisoryservices/aicpasoc2report" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">SOC 2</a> - Service organization controls</li>
-                    <li style="margin-bottom: 0.5rem;"><a href="https://www.hhs.gov/hipaa/index.html" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">HIPAA</a> - Healthcare privacy regulations</li>
-                    <li style="margin-bottom: 0.5rem;"><a href="https://www.fedramp.gov/" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">FedRAMP</a> - Federal risk and authorization management</li>
+                <p class="mb-4">Essential compliance framework documentation:</p>
+                <ul class="audience-resource-list">
+                    <li class="mb-2"><a href="https://www.iso.org/isoiec-27001-information-security.html" target="_blank" rel="noopener" class="audience-resource-link">ISO 27001</a> - Information security management</li>
+                    <li class="mb-2"><a href="https://www.aicpa.org/interestareas/frc/assuranceadvisoryservices/aicpasoc2report" target="_blank" rel="noopener" class="audience-resource-link">SOC 2</a> - Service organization controls</li>
+                    <li class="mb-2"><a href="https://www.hhs.gov/hipaa/index.html" target="_blank" rel="noopener" class="audience-resource-link">HIPAA</a> - Healthcare privacy regulations</li>
+                    <li class="mb-2"><a href="https://www.fedramp.gov/" target="_blank" rel="noopener" class="audience-resource-link">FedRAMP</a> - Federal risk and authorization management</li>
                 </ul>
             </div>
         </div>
@@ -375,37 +374,37 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Cost Comparison for Professional Services</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Why spend 50,000+ EUR per year on cloud tools you cannot use?</p>
+            <p class="section-intro">Why spend 50,000+ EUR per year on cloud tools you cannot use?</p>
 
             <div class="features-grid">
-                <div class="feature-card" style="border-left: 4px solid var(--danger-600);">
+                <div class="feature-card audience-cost-card-danger">
                     <h3>Cloud Tools You Cannot Use</h3>
                     <p><strong>Lattice:</strong> 8-12 EUR/user/month<br>
                     <strong>Culture Amp:</strong> 10-15 EUR/user/month<br>
                     <strong>15Five:</strong> 6-10 EUR/user/month</p>
-                    <p style="margin-top: 1rem; color: var(--danger); font-weight: 600;">Problem: Cannot meet your client confidentiality requirements</p>
+                    <p class="audience-cost-problem-danger">Problem: Cannot meet your client confidentiality requirements</p>
                 </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--warning);">
+                <div class="feature-card audience-cost-card-warning">
                     <h3>Manual Spreadsheet Process</h3>
                     <p><strong>Cost:</strong> Partner time, admin overhead<br>
                     <strong>Time:</strong> 20-40 hours per review cycle<br>
                     <strong>Issues:</strong> Error-prone, not anonymous, hard to aggregate</p>
-                    <p style="margin-top: 1rem; color: var(--warning); font-weight: 600;">Problem: Unprofessional and time-consuming</p>
+                    <p class="audience-cost-problem-warning">Problem: Unprofessional and time-consuming</p>
                 </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--success-700);">
+                <div class="feature-card audience-cost-card-success">
                     <h3>Blik Self-Hosted</h3>
                     <p><strong>Licensing:</strong> 0 EUR (open source)<br>
-                    <strong>Server:</strong> 100-200 EUR/month<br>
+                    <strong>Server:</strong> a small EU VPS (≈€10-50/month)<br>
                     <strong>Time:</strong> 2 hours setup, 1 hour per cycle</p>
-                    <p style="margin-top: 1rem; color: var(--success); font-weight: 600;">Solution: Professional, compliant, cost-effective</p>
+                    <p class="audience-cost-problem-success">Self-hosted feedback with control over deployment</p>
                 </div>
             </div>
 
-            <div class="feature-card feature-card-info" style="margin-top: 3rem;">
+            <div class="feature-card feature-card-info mt-12">
                 <h3>25-Person Firm Calculation</h3>
-                <p style="color: var(--text-primary);">Commercial Tool: 3,000 EUR/year | Manual Process: 8,000 EUR (partner time) | Blik: 1,200 EUR/year (server only) | <strong>Savings: 2,000-7,000 EUR annually</strong></p>
+                <p class="audience-body-emphasis">Commercial Tool: 3,000 EUR/year | Manual Process: 8,000 EUR (partner time) | Blik: 1,200 EUR/year (server only) | <strong>Savings: 2,000-7,000 EUR annually</strong></p>
             </div>
         </div>
     </section>
@@ -430,7 +429,7 @@
 
                 <details class="faq-item">
                     <summary>How do we meet client security audit requirements?</summary>
-                    <p>Blik provides: <strong>1)</strong> Architecture diagrams showing data flows, <strong>2)</strong> Technical documentation of security controls, <strong>3)</strong> Access to full source code for review, <strong>4)</strong> Templates for common compliance frameworks (ISO 27001, SOC 2, GDPR), <strong>5)</strong> Audit log exports from database. Open source means clients can verify security themselves.</p>
+                    <p>Use the public source code to assess implementation details. Your organization must document its deployment, data flows, access controls, processors, and operating procedures against client requirements. Self-hosting does not itself satisfy an audit or provide certification.</p>
                 </details>
 
                 <details class="faq-item">
@@ -439,8 +438,8 @@
                 </details>
 
                 <details class="faq-item">
-                    <summary>How is reviewer anonymity technically guaranteed?</summary>
-                    <p>Architecture prevents identity tracking: <strong>1)</strong> Tokens contain no identifying information (UUID only), <strong>2)</strong> No login required for reviewers, <strong>3)</strong> Responses stored without token reference after submission, <strong>4)</strong> Configurable minimum thresholds (e.g., 3+ peers before showing results), <strong>5)</strong> No IP logging in production mode. Anonymity is architectural, not policy-based.</p>
+                    <summary>How does reviewer confidentiality work?</summary>
+                    <p>Reviewers use token-based links, and reports aggregate feedback by category with configurable thresholds. Responses retain a token reference, which may link to an invitation email. Confidentiality depends on invitation method, permissions, thresholds, and feedback content; it is not guaranteed against administrators with database access.</p>
                 </details>
 
                 <details class="faq-item">
@@ -450,7 +449,7 @@
 
                 <details class="faq-item">
                     <summary>How do we handle GDPR right to erasure requests?</summary>
-                    <p>Direct database access allows full control. Django admin includes employee deletion. For complete erasure: <strong>1)</strong> Identify employee records in database, <strong>2)</strong> Run provided deletion scripts, <strong>3)</strong> Remove from backups (or note in retention log), <strong>4)</strong> Document deletion for audit. Typically completed in under 15 minutes. Maintained audit trail proves compliance.</p>
+                    <p>Blik provides self-service deletion tools to support GDPR requests. Your organization must assess each request, handle related records and backups under its retention policy, and document the process. The tools do not automatically establish compliance.</p>
                 </details>
             </div>
         </div>
@@ -459,37 +458,37 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Implementation Process for Professional Services</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Typical deployment timeline for firms</p>
+            <p class="section-intro">Typical deployment timeline for firms</p>
 
-            <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+            <div class="features-grid audience-implementation-grid">
                 <div class="feature-card">
                     <h3>Week 1: Planning</h3>
                     <p><strong>Activities:</strong> IT reviews documentation, Security approves architecture, Compliance maps to requirements, Partner sponsors identified</p>
-                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Deployment plan, security assessment, compliance checklist</p>
+                    <p class="mt-4"><strong>Deliverables:</strong> Deployment plan, security assessment, compliance checklist</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Week 2: Deployment</h3>
                     <p><strong>Activities:</strong> Provision internal server, Deploy Docker containers, Configure SMTP and settings, Import employee list</p>
-                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Running system, admin access, initial testing complete</p>
+                    <p class="mt-4"><strong>Deliverables:</strong> Running system, admin access, initial testing complete</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Week 3: Pilot</h3>
                     <p><strong>Activities:</strong> Run pilot review cycle with one department, Gather feedback, Adjust anonymity thresholds, Train administrators</p>
-                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Pilot report, user feedback, configuration refinements</p>
+                    <p class="mt-4"><strong>Deliverables:</strong> Pilot report, user feedback, configuration refinements</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Week 4: Rollout</h3>
                     <p><strong>Activities:</strong> Announce to full firm, Create review cycles, Send invitations, Generate reports</p>
-                    <p style="margin-top: 1rem;"><strong>Deliverables:</strong> Firm-wide review complete, Reports delivered, Process documented</p>
+                    <p class="mt-4"><strong>Deliverables:</strong> Firm-wide review complete, Reports delivered, Process documented</p>
                 </div>
             </div>
 
-            <div class="feature-card feature-card-success" style="margin-top: 3rem;">
+            <div class="feature-card feature-card-success mt-12">
                 <h3>Most Firms Complete Deployment in 2-3 Weeks</h3>
-                <p style="color: var(--text-primary);">Includes security review, compliance approval, and pilot testing. Much faster than 8-12 week implementations for commercial tools.</p>
+                <p class="audience-body-emphasis">Includes security review, compliance approval, and pilot testing. Much faster than 8-12 week implementations for commercial tools.</p>
             </div>
         </div>
     </section>
@@ -505,11 +504,11 @@
 
             <div class="cta-box">
                 <h3>Need Maximum Privacy? Self-Host for Free</h3>
-                <p>For air-gapped deployments and complete data control, our open-source version is perfect. Or if GDPR-compliant EU hosting meets your needs, try our managed option at €49/month.</p>
-                <a href="{% landing_url 'signup' %}" class="btn btn-primary" style="display: inline-block;">View All Options</a>
+                <p>For air-gapped deployments and complete data control, our open-source version is perfect. Or if GDPR-compliant EU hosting meets your needs, try our managed option at €{{ plan_saas_price }}/month.</p>
+                <a href="{% landing_url 'signup' %}" class="btn btn-primary audience-button-inline">View All Options</a>
             </div>
 
-            <p style="margin-top: 2.5rem; font-size: 1rem; opacity: 0.9;">Trusted by law firms, healthcare providers, and financial advisors</p>
+            <p class="audience-cta-note">Built for teams of 30-{{ plan_ent_max }} employees</p>
         </div>
     </section>
 {% endblock %}

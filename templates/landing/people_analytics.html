@@ -31,7 +31,6 @@
 {% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
 
     <!-- JSON-LD Structured Data for SEO -->
     <script type="application/ld+json">
@@ -61,9 +60,9 @@
             "applicationCategory": "BusinessApplication",
             "featureList": [
                 "Professional Skills 360 Review - 8 core competencies with Dreyfus model",
-                "Software Engineering 360 - 10 technical competencies for developers",
+                "Software Engineering 360 Review - 10 technical competencies for developers",
                 "Manager 360 Review - 7 leadership dimensions with upward feedback",
-                "Quick 360 Degree Feedback - 12 questions across 4 core areas",
+                "360 Degree Feedback - 12 questions across 4 core areas",
                 "Automated perception gap detection",
                 "Dreyfus skill level calculation (Novice to Expert)",
                 "Peer benchmark comparison",
@@ -85,7 +84,7 @@
                 "position": 1,
                 "item": {
                     "@type": "CreativeWork",
-                    "name": "360 Degree Feedback (Simple)",
+                    "name": "360 Degree Feedback",
                     "description": "Quick, lightweight feedback template - 12 questions across 4 sections for fast feedback cycles",
                     "keywords": "360 feedback, quick assessment, entry-level review"
                 }
@@ -95,7 +94,7 @@
                 "position": 2,
                 "item": {
                     "@type": "CreativeWork",
-                    "name": "Professional Skills 360",
+                    "name": "Professional Skills 360 Review",
                     "description": "Universal competency assessment with 27 questions across 8 areas using Dreyfus model",
                     "keywords": "professional skills, competency assessment, dreyfus model, skill acquisition"
                 }
@@ -105,7 +104,7 @@
                 "position": 3,
                 "item": {
                     "@type": "CreativeWork",
-                    "name": "Software Engineering 360",
+                    "name": "Software Engineering 360 Review",
                     "description": "Technical assessment with 35 questions evaluating code quality, pragmatism, and mentorship",
                     "keywords": "software engineering, technical skills, code quality, developer assessment"
                 }
@@ -138,7 +137,7 @@
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">People Analytics Without the PhD</h1>
-                <p class="hero-subtitle">Role-specific 360 feedback questionnaires that generate actionable insights automatically. Professional skills, software engineering, and management assessments built on proven competency frameworks. <a href="{% landing_url 'index' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Open source alternative to Lattice & Culture Amp →</a></p>
+                <p class="hero-subtitle">Role-specific 360 feedback questionnaires that generate actionable insights automatically. Professional skills, software engineering, and management assessments built on proven competency frameworks. <a href="{% landing_url 'index' %}" class="audience-framework-link">Open source alternative to Lattice & Culture Amp →</a></p>
                 <div class="hero-cta">
                     <a href="#questionnaires" class="btn btn-primary">Explore Questionnaires</a>
                     <a href="{% landing_url 'index' %}#pricing" class="btn btn-secondary">See Pricing</a>
@@ -151,106 +150,106 @@
     <section id="questionnaires" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Four Questionnaires for Every Role</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Pre-built templates designed for specific roles and competencies. Use as-is or customize to your needs.</p>
+            <p class="section-intro">Pre-built templates designed for specific roles and competencies. Use as-is or customize to your needs.</p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+            <div class="audience-card-grid">
                 <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--success-600); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">QUICK START</div>
+                    <div class="questionnaire-badge questionnaire-badge-quick">QUICK START</div>
                     <h3>360 Degree Feedback</h3>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Universal • 12 questions • 4 sections</div>
+                    <div class="questionnaire-meta">Universal • 12 questions • 4 sections</div>
                     <p>Quick, lightweight feedback template for any role. Covers technical skills, collaboration, work approach, and overall assessment.</p>
-                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                    <div class="questionnaire-summary">
                         <strong>Best for:</strong> Fast feedback cycles, entry-level roles, general assessments
                     </div>
                 </div>
 
                 <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--primary); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">ALL ROLES</div>
+                    <div class="questionnaire-badge questionnaire-badge-general">ALL ROLES</div>
                     <h3>Professional Skills 360</h3>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Universal • 27 questions • 8 competency areas</div>
-                    <p>Comprehensive assessment based on the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus model</a> of skill acquisition. Works for all professional roles across your organization.</p>
-                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                    <div class="questionnaire-meta">Universal • 27 questions • 8 competency areas</div>
+                    <p>Comprehensive assessment based on the <a href="{% landing_url 'dreyfus_model' %}" class="audience-framework-link">Dreyfus model</a> of skill acquisition. Works for all professional roles across your organization.</p>
+                    <div class="questionnaire-summary">
                         <strong>Competencies:</strong> Problem solving, communication, initiative, adaptability, quality, leadership, professionalism
                     </div>
                 </div>
 
                 <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--insight-skill); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">SOFTWARE ENGINEERS</div>
+                    <div class="questionnaire-badge questionnaire-badge-engineering">SOFTWARE ENGINEERS</div>
                     <h3>Software Engineering 360</h3>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Technical • 35 questions • 10 competency areas</div>
-                    <p>Deep technical assessment with <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus skill levels</a>. Evaluates code quality, pragmatism, mentorship, and engineering maturity.</p>
-                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                    <div class="questionnaire-meta">Technical • 35 questions • 10 competency areas</div>
+                    <p>Deep technical assessment with <a href="{% landing_url 'dreyfus_model' %}" class="audience-framework-link">Dreyfus skill levels</a>. Evaluates code quality, pragmatism, mentorship, and engineering maturity.</p>
+                    <div class="questionnaire-summary">
                         <strong>Focus areas:</strong> Technical expertise, best practices, knowledge sharing, growth potential, strategic vision
                     </div>
                 </div>
 
                 <div class="feature-card">
-                    <div style="display: inline-block; padding: 0.25rem 0.75rem; background: var(--insight-perception); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem;">MANAGERS & LEADS</div>
+                    <div class="questionnaire-badge questionnaire-badge-management">MANAGERS & LEADS</div>
                     <h3>Manager 360 Review</h3>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">Leadership • 17 questions • 7 competency areas</div>
+                    <div class="questionnaire-meta">Leadership • 17 questions • 7 competency areas</div>
                     <p>Leadership-specific assessment measuring people development, team impact, and direction-setting capabilities.</p>
-                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+                    <div class="questionnaire-summary">
                         <strong>Focus areas:</strong> Leadership, direction, expertise, impact, feedback, recognition, development
                     </div>
                 </div>
             </div>
 
             <!-- Questionnaire Comparison Table -->
-            <div style="margin-top: 4rem;">
-                <h3 style="text-align: center; font-size: 1.5rem; margin-bottom: 2rem;">Choose the Right Questionnaire</h3>
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden;">
+            <div class="mt-16">
+                <h3 class="audience-showcase-title">Choose the Right Questionnaire</h3>
+                <div class="questionnaire-table-scroll">
+                    <table class="questionnaire-table">
                         <thead>
-                            <tr style="background: var(--bg-light);">
-                                <th style="padding: 1rem; text-align: left; border-bottom: 2px solid var(--border);">Feature</th>
-                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">360 Degree</th>
-                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Professional Skills</th>
-                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Software Engineering</th>
-                                <th style="padding: 1rem; text-align: center; border-bottom: 2px solid var(--border);">Manager</th>
+                            <tr class="questionnaire-table-heading">
+                                <th class="questionnaire-table-label-heading">Feature</th>
+                                <th class="questionnaire-table-value-heading">360 Degree</th>
+                                <th class="questionnaire-table-value-heading">Professional Skills</th>
+                                <th class="questionnaire-table-value-heading">Software Engineering</th>
+                                <th class="questionnaire-table-value-heading">Manager</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Questions</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">12</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">27</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">35</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">17</td>
+                                <td class="questionnaire-table-label">Questions</td>
+                                <td class="questionnaire-table-value">12</td>
+                                <td class="questionnaire-table-value">27</td>
+                                <td class="questionnaire-table-value">35</td>
+                                <td class="questionnaire-table-value">17</td>
                             </tr>
                             <tr>
-                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Sections</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">4</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">8</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">10</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">7</td>
+                                <td class="questionnaire-table-label">Sections</td>
+                                <td class="questionnaire-table-value">4</td>
+                                <td class="questionnaire-table-value">8</td>
+                                <td class="questionnaire-table-value">10</td>
+                                <td class="questionnaire-table-value">7</td>
                             </tr>
                             <tr>
-                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Dreyfus Skill Levels</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">—</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">✓</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">✓</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">—</td>
+                                <td class="questionnaire-table-label">Dreyfus Skill Levels</td>
+                                <td class="questionnaire-table-value">—</td>
+                                <td class="questionnaire-table-value">✓</td>
+                                <td class="questionnaire-table-value">✓</td>
+                                <td class="questionnaire-table-value">—</td>
                             </tr>
                             <tr>
-                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Best For</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">Quick cycles, entry-level</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">All professional roles</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">Engineers, developers</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.875rem;">Managers, team leads</td>
+                                <td class="questionnaire-table-label">Best For</td>
+                                <td class="questionnaire-table-value text-sm">Quick cycles, entry-level</td>
+                                <td class="questionnaire-table-value text-sm">All professional roles</td>
+                                <td class="questionnaire-table-value text-sm">Engineers, developers</td>
+                                <td class="questionnaire-table-value text-sm">Managers, team leads</td>
                             </tr>
                             <tr>
-                                <td style="padding: 1rem; border-bottom: 1px solid var(--border); font-weight: 500;">Time to Complete</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~5 min</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~12 min</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~15 min</td>
-                                <td style="padding: 1rem; text-align: center; border-bottom: 1px solid var(--border);">~8 min</td>
+                                <td class="questionnaire-table-label">Time to Complete</td>
+                                <td class="questionnaire-table-value">~5 min</td>
+                                <td class="questionnaire-table-value">~12 min</td>
+                                <td class="questionnaire-table-value">~15 min</td>
+                                <td class="questionnaire-table-value">~8 min</td>
                             </tr>
                             <tr>
-                                <td style="padding: 1rem; font-weight: 500;">Perception Gap Analysis</td>
-                                <td style="padding: 1rem; text-align: center;">✓</td>
-                                <td style="padding: 1rem; text-align: center;">✓</td>
-                                <td style="padding: 1rem; text-align: center;">✓</td>
-                                <td style="padding: 1rem; text-align: center;">✓</td>
+                                <td class="questionnaire-table-label questionnaire-table-final">Perception Gap Analysis</td>
+                                <td class="questionnaire-table-value questionnaire-table-final">✓</td>
+                                <td class="questionnaire-table-value questionnaire-table-final">✓</td>
+                                <td class="questionnaire-table-value questionnaire-table-final">✓</td>
+                                <td class="questionnaire-table-value questionnaire-table-final">✓</td>
                             </tr>
                         </tbody>
                     </table>
@@ -258,10 +257,10 @@
             </div>
 
             <!-- CTA after comparison -->
-            <div class="cta-box" style="margin-top: 3rem;">
+            <div class="cta-box mt-12">
                 <h3>Ready to Get Started?</h3>
-                <p style="font-size: 1.125rem; margin-bottom: 1.5rem;">Deploy Blik in 5 minutes with Docker or use our managed hosting. All four questionnaires included.</p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <p class="audience-cta-description">Get running in under 30 minutes with Docker Compose, or use our managed hosting. All four questionnaires included.</p>
+                <div class="action-links">
                     <a href="{% landing_url 'index' %}#pricing" class="btn btn-primary">View Pricing</a>
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
                 </div>
@@ -273,7 +272,7 @@
     <section id="insights" class="section">
         <div class="container">
             <h2 class="section-title">Insights Generated Automatically</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">No data science degree required. Reports analyze responses and surface actionable insights without manual work.</p>
+            <p class="section-intro">No data science degree required. Reports analyze responses and surface actionable insights without manual work.</p>
 
             <div class="features-grid">
                 <div class="feature-card">
@@ -283,7 +282,7 @@
 
                 <div class="feature-card">
                     <h3>Skill Level Assessment</h3>
-                    <p>For engineering and professional skills questionnaires, reports calculate <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus skill levels</a> (Novice → Expert) based on competency ratings.</p>
+                    <p>For engineering and professional skills questionnaires, reports calculate <a href="{% landing_url 'dreyfus_model' %}" class="audience-framework-link">Dreyfus skill levels</a> (Novice → Expert) based on competency ratings.</p>
                 </div>
 
                 <div class="feature-card">
@@ -308,9 +307,9 @@
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title">Professional Skills Assessment</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Universal competency framework applicable to all roles. Automatically calculates <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus skill levels</a> and <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">agency stages</a> with actionable development paths.</p>
+            <p class="section-intro">Universal competency framework applicable to all roles. Automatically calculates <a href="{% landing_url 'dreyfus_model' %}" class="audience-framework-link">Dreyfus skill levels</a> and <a href="{% landing_url 'agency_levels' %}" class="audience-framework-link">agency stages</a> with actionable development paths.</p>
 
-            <div style="max-width: 1100px; margin: 0 auto;">
+            <div class="audience-report-content">
                 <!-- Carousel for Professional Skills screenshots -->
                 <div class="screenshot-carousel">
                     <div class="carousel-container">
@@ -437,29 +436,29 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem;">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">8 Core Competencies</h3>
-                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Problem Solving & Decision Making</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Communication & Collaboration</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Initiative & Ownership</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Adaptability & Learning</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Quality & Excellence</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Leadership & Influence</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Professionalism & Attitude</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Assessment</li>
+                <div class="mt-8">
+                    <h3 class="audience-competency-title">8 Core Competencies</h3>
+                    <ul class="audience-competency-list">
+                        <li class="audience-competency-item">Problem Solving & Decision Making</li>
+                        <li class="audience-competency-item">Communication & Collaboration</li>
+                        <li class="audience-competency-item">Initiative & Ownership</li>
+                        <li class="audience-competency-item">Adaptability & Learning</li>
+                        <li class="audience-competency-item">Quality & Excellence</li>
+                        <li class="audience-competency-item">Leadership & Influence</li>
+                        <li class="audience-competency-item">Professionalism & Attitude</li>
+                        <li class="audience-competency-item">Overall Assessment</li>
                     </ul>
                 </div>
 
-                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
-                    <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Actionable Development Insights</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">The Professional Skills questionnaire automatically generates concrete development recommendations based on your feedback:</p>
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ Your current <strong>Dreyfus skill stage</strong> (Novice → Expert) calculated from 13 weighted questions</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ Your <strong>agency level</strong> (Directed → Self-Driven) showing initiative and autonomy progression</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Specific requirements</strong> to reach the next stage with practical, observable behaviors</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Quick action items</strong> you can start this week to demonstrate next-level competencies</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Long-term development goals</strong> aligned with your career progression</li>
+                <div class="audience-insight-panel">
+                    <h3 class="audience-insight-title">Actionable Development Insights</h3>
+                    <p class="audience-insight-description">The Professional Skills questionnaire automatically generates concrete development recommendations based on your feedback:</p>
+                    <ul class="audience-insight-list">
+                        <li class="audience-competency-item">✓ Your current <strong>Dreyfus skill stage</strong> (Novice → Expert) calculated from 13 weighted questions</li>
+                        <li class="audience-competency-item">✓ Your <strong>agency level</strong> (Directed → Self-Driven) showing initiative and autonomy progression</li>
+                        <li class="audience-competency-item">✓ <strong>Specific requirements</strong> to reach the next stage with practical, observable behaviors</li>
+                        <li class="audience-competency-item">✓ <strong>Quick action items</strong> you can start this week to demonstrate next-level competencies</li>
+                        <li class="audience-competency-item">✓ <strong>Long-term development goals</strong> aligned with your career progression</li>
                     </ul>
                 </div>
             </div>
@@ -470,9 +469,9 @@
     <section id="reports" class="section">
         <div class="container">
             <h2 class="section-title">Software Engineering Deep Dive</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Technical assessment measuring code quality, pragmatism, and mentorship. Calculates <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus technical skill levels</a> and <a href="{% landing_url 'agency_levels' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">engineering agency</a> with concrete development guidance.</p>
+            <p class="section-intro">Technical assessment measuring code quality, pragmatism, and mentorship. Calculates <a href="{% landing_url 'dreyfus_model' %}" class="audience-framework-link">Dreyfus technical skill levels</a> and <a href="{% landing_url 'agency_levels' %}" class="audience-framework-link">engineering agency</a> with concrete development guidance.</p>
 
-            <div style="max-width: 1100px; margin: 0 auto;">
+            <div class="audience-report-content">
                 <!-- Carousel for Software Engineering screenshots -->
                 <div class="screenshot-carousel">
                     <div class="carousel-container">
@@ -599,31 +598,31 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem;">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">10 Technical Competencies</h3>
-                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Industry Fit & Problem Solving</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Collaboration & Personality</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Technical Expertise & Skill Level</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Motivation & Passion</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Maturity & Best Practices</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Pragmatism & Execution</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Knowledge Sharing & Mentorship</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Growth Potential & Adaptability</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Strategic Vision & Leadership</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Assessment</li>
+                <div class="mt-8">
+                    <h3 class="audience-competency-title">10 Technical Competencies</h3>
+                    <ul class="audience-competency-list audience-competency-list-technical">
+                        <li class="audience-competency-item">Industry Fit & Problem Solving</li>
+                        <li class="audience-competency-item">Collaboration & Personality</li>
+                        <li class="audience-competency-item">Technical Expertise & Skill Level</li>
+                        <li class="audience-competency-item">Motivation & Passion</li>
+                        <li class="audience-competency-item">Maturity & Best Practices</li>
+                        <li class="audience-competency-item">Pragmatism & Execution</li>
+                        <li class="audience-competency-item">Knowledge Sharing & Mentorship</li>
+                        <li class="audience-competency-item">Growth Potential & Adaptability</li>
+                        <li class="audience-competency-item">Strategic Vision & Leadership</li>
+                        <li class="audience-competency-item">Overall Assessment</li>
                     </ul>
                 </div>
 
-                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
-                    <h3 style="font-size: 1.125rem; margin-bottom: 1rem;">Engineering-Specific Development Insights</h3>
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">The Software Engineering questionnaire provides targeted technical development recommendations:</p>
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Technical skill level</strong> (Novice → Expert) calculated from 19 weighted questions including code quality, best practices, and mentorship</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Engineering agency</strong> measuring initiative in refactoring, technical ownership, curiosity, and team vision alignment</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Practical next steps</strong> like "Independently solve standard problems" or "Propose system improvements before issues arise"</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Technical action items</strong> such as "Review and refactor one legacy module this sprint" or "Lead next architectural decision discussion"</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">✓ <strong>Career progression guidance</strong> showing the path from IC to technical leadership roles</li>
+                <div class="audience-insight-panel">
+                    <h3 class="audience-insight-title">Engineering-Specific Development Insights</h3>
+                    <p class="audience-insight-description">The Software Engineering questionnaire provides targeted technical development recommendations:</p>
+                    <ul class="audience-insight-list">
+                        <li class="audience-competency-item">✓ <strong>Technical skill level</strong> (Novice → Expert) calculated from 19 weighted questions including code quality, best practices, and mentorship</li>
+                        <li class="audience-competency-item">✓ <strong>Engineering agency</strong> measuring initiative in refactoring, technical ownership, curiosity, and team vision alignment</li>
+                        <li class="audience-competency-item">✓ <strong>Practical next steps</strong> like "Independently solve standard problems" or "Propose system improvements before issues arise"</li>
+                        <li class="audience-competency-item">✓ <strong>Technical action items</strong> such as "Review and refactor one legacy module this sprint" or "Lead next architectural decision discussion"</li>
+                        <li class="audience-competency-item">✓ <strong>Career progression guidance</strong> showing the path from IC to technical leadership roles</li>
                     </ul>
                 </div>
             </div>
@@ -633,17 +632,17 @@
     <!-- Try Assessment CTA -->
     <section class="section">
         <div class="container">
-            <div style="max-width: 900px; margin: 0 auto; padding: 3rem; background: linear-gradient(135deg, var(--primary-600) 0%, var(--success-600) 100%); border-radius: 16px; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);">
-                <h2 style="color: white; margin-bottom: 1rem; font-size: 2rem; font-weight: 700;">
+            <div class="audience-assessment-cta">
+                <h2 class="audience-assessment-title">
                     Experience the Dreyfus Assessment Yourself
                 </h2>
-                <p style="color: rgba(255, 255, 255, 0.95); font-size: 1.125rem; line-height: 1.7; margin-bottom: 2rem; max-width: 650px; margin-left: auto; margin-right: auto;">
+                <p class="audience-assessment-description">
                     See exactly what these reports look like with real data. Take our free Developer Skills Assessment to discover your competency levels across 10 engineering areas, complete with Dreyfus skill stages and Agency insights.
                 </p>
-                <a href="{% landing_url 'dreyfus_assessment_start' %}" class="btn btn-primary" style="background: var(--bg-card); color: var(--primary-600); font-weight: 600; padding: 1rem 2.5rem; font-size: 1.125rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); border: none;">
+                <a href="{% landing_url 'dreyfus_assessment_start' %}" class="btn btn-primary audience-assessment-button">
                     Take the Free Assessment →
                 </a>
-                <p style="color: rgba(255, 255, 255, 0.85); font-size: 0.9375rem; margin-top: 1.25rem; font-weight: 500;">
+                <p class="audience-assessment-note">
                     5-minute assessment • Instant personalized report • No signup required
                 </p>
             </div>
@@ -654,9 +653,9 @@
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title">Manager Leadership Assessment</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Leadership evaluation measuring people development, team impact, and direction-setting effectiveness.</p>
+            <p class="section-intro">Leadership evaluation measuring people development, team impact, and direction-setting effectiveness.</p>
 
-            <div style="max-width: 1100px; margin: 0 auto;">
+            <div class="audience-report-content">
                 <!-- Carousel for Manager screenshots -->
                 <div class="screenshot-carousel">
                     <div class="carousel-container">
@@ -745,18 +744,18 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem;">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">7 Leadership Competencies</h3>
-                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Leadership (visibility, trust, communication)</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Direction (goals, clarity, problem-solving)</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Expertise & Judgment</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Impact (performance, results focus)</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Feedback & Recognition</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Development (growth support, mentoring)</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Feedback</li>
+                <div class="mt-8">
+                    <h3 class="audience-competency-title">7 Leadership Competencies</h3>
+                    <ul class="audience-competency-list">
+                        <li class="audience-competency-item">Leadership (visibility, trust, communication)</li>
+                        <li class="audience-competency-item">Direction (goals, clarity, problem-solving)</li>
+                        <li class="audience-competency-item">Expertise & Judgment</li>
+                        <li class="audience-competency-item">Impact (performance, results focus)</li>
+                        <li class="audience-competency-item">Feedback & Recognition</li>
+                        <li class="audience-competency-item">Development (growth support, mentoring)</li>
+                        <li class="audience-competency-item">Overall Feedback</li>
                     </ul>
-                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                    <div class="audience-insight-panel audience-insight-panel-compact">
                         <strong>Direct Report Feedback:</strong> Includes dedicated feedback from team members managed by the reviewee, providing critical upward feedback perspective.
                     </div>
                 </div>
@@ -767,10 +766,10 @@
     <!-- Simple 360 Degree Feedback Section -->
     <section class="section">
         <div class="container">
-            <h2 class="section-title">360 Degree Feedback (Simple)</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Lightweight feedback template for quick assessments. 12 questions across 4 core areas.</p>
+            <h2 class="section-title">360 Degree Feedback</h2>
+            <p class="section-intro">Lightweight feedback template for quick assessments. 12 questions across 4 core areas.</p>
 
-            <div style="max-width: 1100px; margin: 0 auto;">
+            <div class="audience-report-content">
                 <!-- Carousel for Simple 360 screenshots -->
                 <div class="screenshot-carousel">
                     <div class="carousel-container">
@@ -859,15 +858,15 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem;">
-                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">4 Core Sections</h3>
-                    <ul style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Technical Skills</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Collaboration</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Work Approach</li>
-                        <li style="padding: 0.5rem 0; color: var(--text-primary);">Overall Feedback</li>
+                <div class="mt-8">
+                    <h3 class="audience-competency-title">4 Core Sections</h3>
+                    <ul class="audience-competency-list">
+                        <li class="audience-competency-item">Technical Skills</li>
+                        <li class="audience-competency-item">Collaboration</li>
+                        <li class="audience-competency-item">Work Approach</li>
+                        <li class="audience-competency-item">Overall Feedback</li>
                     </ul>
-                    <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-light); border-radius: 8px;">
+                    <div class="audience-insight-panel audience-insight-panel-compact">
                         <strong>Best for:</strong> Fast feedback cycles, entry-level roles, or when you need quick insights without extensive competency frameworks.
                     </div>
                 </div>
@@ -879,41 +878,41 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Why Role-Specific Matters</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                Unlike generic tools like <a href="{% landing_url 'vs_15five' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">15Five</a>, <a href="{% landing_url 'vs_culture_amp' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Culture Amp</a>, and Lattice that use one-size-fits-all questionnaires, Blik provides targeted assessments for different roles and career levels.
+            <p class="audience-role-intro">
+                Unlike generic tools like <a href="{% landing_url 'vs_15five' %}" class="audience-framework-link">15Five</a>, <a href="{% landing_url 'vs_culture_amp' %}" class="audience-framework-link">Culture Amp</a>, and Lattice that use one-size-fits-all questionnaires, Blik provides targeted assessments for different roles and career levels.
             </p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem;">
+            <div class="audience-card-grid mt-8">
                 <div class="feature-card feature-card-danger">
                     <h3>Generic 360 Feedback</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">One-size-fits-all questions miss role nuances</li>
-                        <li style="margin-bottom: 0.5rem;">Technical teams get asked about "communication"</li>
-                        <li style="margin-bottom: 0.5rem;">Managers assessed on individual contributor skills</li>
-                        <li style="margin-bottom: 0.5rem;">No skill progression frameworks</li>
-                        <li style="margin-bottom: 0.5rem;">Vague insights requiring manual interpretation</li>
+                    <ul class="audience-list">
+                        <li class="mb-2">One-size-fits-all questions miss role nuances</li>
+                        <li class="mb-2">Technical teams get asked about "communication"</li>
+                        <li class="mb-2">Managers assessed on individual contributor skills</li>
+                        <li class="mb-2">No skill progression frameworks</li>
+                        <li class="mb-2">Vague insights requiring manual interpretation</li>
                         <li>Low actionability for performance conversations</li>
                     </ul>
                 </div>
 
                 <div class="feature-card feature-card-success">
                     <h3>Role-Specific Questionnaires</h3>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.5rem;">Questions tailored to actual job competencies</li>
-                        <li style="margin-bottom: 0.5rem;">Engineers assessed on code quality and mentorship</li>
-                        <li style="margin-bottom: 0.5rem;">Managers evaluated on people development</li>
-                        <li style="margin-bottom: 0.5rem;"><a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus model</a> tracks skill progression</li>
-                        <li style="margin-bottom: 0.5rem;">Automated insights highlight patterns</li>
+                    <ul class="audience-list">
+                        <li class="mb-2">Questions tailored to actual job competencies</li>
+                        <li class="mb-2">Engineers assessed on code quality and mentorship</li>
+                        <li class="mb-2">Managers evaluated on people development</li>
+                        <li class="mb-2"><a href="{% landing_url 'dreyfus_model' %}" class="audience-framework-link">Dreyfus model</a> tracks skill progression</li>
+                        <li class="mb-2">Automated insights highlight patterns</li>
                         <li>Concrete development priorities generated</li>
                     </ul>
                 </div>
             </div>
 
-            <div style="margin-top: 2rem; text-align: center;">
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Learn more about our competency frameworks:</p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary" style="font-size: 0.9375rem;">The Dreyfus Model →</a>
-                    <a href="{% landing_url 'agency_levels' %}" class="btn btn-secondary" style="font-size: 0.9375rem;">5 Levels of Agency →</a>
+            <div class="audience-frameworks">
+                <p class="audience-insight-description">Learn more about our competency frameworks:</p>
+                <div class="action-links">
+                    <a href="{% landing_url 'dreyfus_model' %}" class="btn btn-secondary audience-framework-button">The Dreyfus Model →</a>
+                    <a href="{% landing_url 'agency_levels' %}" class="btn btn-secondary audience-framework-button">5 Levels of Agency →</a>
                 </div>
             </div>
         </div>
@@ -926,7 +925,7 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>What's the difference between the four questionnaires? How do I choose which one to use?</summary>
-                    <p>Each one has its own strength and purpose. The <strong>Manager 360</strong> is tailored toward evaluating management—how they support teams and develop people. The <strong>Engineering questionnaire</strong> focuses more on skill and team dynamics, code quality, that sort of thing. The <strong>Agency questionnaire</strong> is a short test you can send to everyone to get a feel for the level of agency in your company or team. And the <strong>Professional Skills questionnaire</strong> is more of an all-round business questionnaire. Pick based on what role you're assessing and how deep you want to go.</p>
+                    <p>Each one has its own strength and purpose. The <strong>360 Degree Feedback</strong> is a quick, universal assessment for any role. The <strong>Professional Skills 360 Review</strong> is more of an all-round business questionnaire built on the Dreyfus model. The <strong>Software Engineering 360 Review</strong> focuses on technical skill, team dynamics, and code quality. And the <strong>Manager 360 Review</strong> is tailored toward evaluating management—how they support teams and develop people. Pick based on what role you're assessing and how deep you want to go.</p>
                 </details>
 
                 <details class="faq-item">
@@ -946,7 +945,7 @@
 
                 <details class="faq-item">
                     <summary>How does Blik protect reviewer anonymity in the reports?</summary>
-                    <p>We take anonymity very seriously. It's impossible for anyone using the system to identify a reviewer—excluding writing style for open questions of course. Reviews use unique tokens with no connection to who submitted them. If fewer than 3 people respond in a category, we hide those responses entirely. There's no technical way to trace feedback back to someone. It's anonymity by design.</p>
+                    <p>Reports aggregate feedback by category and use configurable response thresholds. Responses retain token references, and a token may carry an invitation email. Confidentiality depends on invitation method, access permissions, thresholds, and feedback content. Small groups or recognizable writing can reveal a reviewer; this is not a guarantee against identification by database administrators.</p>
                 </details>
 
                 <details class="faq-item">
@@ -966,7 +965,7 @@
 
                 <details class="faq-item">
                     <summary>How does the Dreyfus skill level calculation work?</summary>
-                    <p>For questionnaires using Dreyfus-based ratings, the system automatically calculates your skill level (Novice → Advanced Beginner → Competent → Proficient → Expert) based on average scores. The calculation maps rating scores to the five Dreyfus stages—a research-backed framework for how people progress from beginners to experts. Learn more about the <a href="{% landing_url 'dreyfus_model' %}" style="color: var(--primary); text-decoration: none; font-weight: 500;">Dreyfus Model of Skill Acquisition</a>.</p>
+                    <p>For questionnaires using Dreyfus-based ratings, the system automatically calculates your skill level (Novice → Advanced Beginner → Competent → Proficient → Expert) based on average scores. The calculation maps rating scores to the five Dreyfus stages—a research-backed framework for how people progress from beginners to experts. Learn more about the <a href="{% landing_url 'dreyfus_model' %}" class="audience-framework-link">Dreyfus Model of Skill Acquisition</a>.</p>
                 </details>
 
                 <details class="faq-item">
@@ -981,11 +980,11 @@
     <section class="section section-alt">
         <div class="container">
             <div class="cta-box">
-                <h2 style="font-size: 2rem; margin-bottom: 1rem;">Get Started with Role-Specific Feedback</h2>
-                <p style="font-size: 1.125rem; margin-bottom: 2rem; color: var(--text-secondary);">
-                    Self-hosted starting at €0. Managed hosting from €49/month for up to 50 employees.
+                <h2 class="audience-cta-title">Get Started with Role-Specific Feedback</h2>
+                <p class="audience-cta-pricing">
+                    Self-hosted starting at €0. Managed hosting from €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <div class="action-links">
                     <a href="{% landing_url 'index' %}#pricing" class="btn btn-primary">See Pricing</a>
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
                 </div>
@@ -1006,7 +1005,7 @@
                 "name": "What's the difference between the four questionnaires? How do I choose which one to use?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Each one has its own strength and purpose. The Manager 360 is tailored toward evaluating management—how they support teams and develop people. The Engineering questionnaire focuses more on skill and team dynamics, code quality. The Agency questionnaire is a short test you can send to everyone to get a feel for the level of agency in your company or team. And the Professional Skills questionnaire is more of an all-round business questionnaire. Pick based on what role you're assessing and how deep you want to go."
+                    "text": "Each one has its own strength and purpose. The 360 Degree Feedback is a quick, universal assessment for any role. The Professional Skills 360 Review is more of an all-round business questionnaire built on the Dreyfus model. The Software Engineering 360 Review focuses on technical skill, team dynamics, and code quality. And the Manager 360 Review is tailored toward evaluating management—how they support teams and develop people. Pick based on what role you're assessing and how deep you want to go."
                 }
             },
             {
@@ -1038,7 +1037,7 @@
                 "name": "How does Blik protect reviewer anonymity in the reports?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "We take anonymity very seriously. It's impossible for anyone using the system to identify a reviewer—excluding writing style for open questions of course. Reviews use unique tokens with no connection to who submitted them. If fewer than 3 people respond in a category, we hide those responses entirely. There's no technical way to trace feedback back to someone. It's anonymity by design."
+                    "text": "Reports aggregate feedback by category and use configurable response thresholds. Responses retain token references, and a token may carry an invitation email. Confidentiality depends on invitation method, access permissions, thresholds, and feedback content. Small groups or recognizable writing can reveal a reviewer; this is not a guarantee against identification by database administrators."
                 }
             },
             {

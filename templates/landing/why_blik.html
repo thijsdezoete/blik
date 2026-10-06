@@ -5,7 +5,7 @@
     <title>Why Blik - The Privacy-First 360° Feedback Platform | {{ site_name }}</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Blik solves the three broken promises of SaaS performance platforms: true anonymity, transparent pricing, and data sovereignty. See why organizations choose Blik.">
+    <meta name="description" content="Blik is an open-source 360° feedback platform with transparent flat pricing and data sovereignty. See what sets it apart.">
     <meta name="keywords" content="why Blik, performance review software, 360 feedback, self-hosted feedback, anonymous reviews, GDPR compliant">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/why-blik/">
@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/why-blik/">
     <meta property="og:title" content="Why Blik - Performance Reviews Done Right">
-    <meta property="og:description" content="True anonymity, transparent pricing, and data control. The three things SaaS platforms promise but don't deliver.">
+    <meta property="og:description" content="Open-source 360° feedback, flat hosted pricing, and control over deployment. Compare Blik's approach and current limitations.">
     <meta property="og:site_name" content="{{ site_name }}">
     <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Why%20Blik&subtitle=Performance%20Reviews%20Done%20Right">
     <meta property="og:image:width" content="1200">
@@ -26,15 +26,15 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/why-blik/">
     <meta name="twitter:title" content="Why Blik - Performance Reviews Done Right">
-    <meta name="twitter:description" content="True anonymity, transparent pricing, and data control. The three things SaaS platforms promise but don't deliver.">
+    <meta name="twitter:description" content="Open-source 360° feedback, flat hosted pricing, and control over deployment. Compare Blik's approach and current limitations.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Why%20Blik&subtitle=Performance%20Reviews%20Done%20Right">
 {% endblock %}
 
+
 {% block nav_links %}
-    <a href="#broken-promises">The Problem</a>
-    <a href="#solution">Our Solution</a>
-    <a href="#unique">What's Unique</a>
-    <a href="#who">Who It's For</a>
+    <a href="#pricing">Flat vs Per-User</a>
+    <a href="#open-source">Open Source</a>
+    <a href="#anonymity">Anonymity</a>
 {% endblock %}
 
 {% block content %}
@@ -42,371 +42,210 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 class="hero-title">Why Blik Exists</h1>
+                <h1 class="hero-title">Why Blik</h1>
                 <p class="hero-subtitle">
-                    SaaS performance platforms make three promises: anonymous feedback, predictable pricing, and data security.
-                    Then they delete your work, surprise you with 20% renewals, and lock you into vendor dependencies.
-                    <strong>We built Blik to actually keep those promises.</strong>
+                    Blik focuses on structured 360° feedback, with flat hosted pricing, open-source deployment, and token-based review access. Here is how those choices work and what to consider before adopting it.
                 </p>
                 <div class="hero-cta">
                     <a href="{% landing_url 'signup' %}" class="btn btn-primary">Try Blik</a>
-                    <a href="https://github.com/TaylorDiego/blik" target="_blank" class="btn btn-secondary">View on GitHub</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary">View on GitHub</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- The Three Broken Promises -->
-    <section id="broken-promises" class="section section-alt">
+    <!-- Section 1: Flat vs Per-User Pricing -->
+    <section id="pricing" class="section section-alt">
         <div class="container">
-            <h2 class="section-title">The Three Broken Promises of SaaS Performance Platforms</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                After analyzing hundreds of user reviews across Lattice, Culture Amp, 15Five, and others, we found the same three failures repeated everywhere.
+            <h2 class="section-title">Flat Pricing vs. Per-User Pricing</h2>
+            <p class="section-intro section-intro--narrow">
+                Many performance platforms charge per user per month, sell modules on top, and impose annual minimums. Blik charges one flat rate per tier, with every feature included.
             </p>
 
-            <div style="display: grid; gap: 2rem;">
-                <!-- Promise 1: Anonymity -->
-                <div class="feature-card" style="border-left: 4px solid var(--danger);">
-                    <h3 style="color: var(--danger); font-size: 1.75rem;">❌ Promise #1: "Your Feedback Is Anonymous"</h3>
-                    <p style="color: var(--text-secondary); margin: 1.5rem 0; line-height: 1.8;">
-                        <strong>What they promise:</strong> Anonymous surveys where reviewers can speak honestly without fear.
-                    </p>
-                    <p style="color: var(--text-secondary); margin: 1.5rem 0; line-height: 1.8;">
-                        <strong>What users experience:</strong> "There are concerns about the anonymity of feedback, with some users feeling that their comments can be traced back to them, leading to potential retaliatory actions." (Culture Amp users)
-                    </p>
-                    <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-top: 1.5rem;">
-                        <p><strong>The Problem:</strong> Policy-based anonymity requires trusting the platform, its employees, and its security. When employees <em>fear</em> being traced, honest feedback disappears—even if the platform never actually looks.</p>
-                    </div>
-                </div>
-
-                <!-- Promise 2: Pricing -->
-                <div class="feature-card" style="border-left: 4px solid var(--danger);">
-                    <h3 style="color: var(--danger); font-size: 1.75rem;">❌ Promise #2: "Transparent, Predictable Pricing"</h3>
-                    <p style="color: var(--text-secondary); margin: 1.5rem 0; line-height: 1.8;">
-                        <strong>What they promise:</strong> Simple per-user pricing that scales with your team.
-                    </p>
-                    <p style="color: var(--text-secondary); margin: 1.5rem 0; line-height: 1.8;">
-                        <strong>What users experience:</strong> "If you add a single employee for a single day, they will bill you immediately. Absolutely no refund." (15Five) • "20% renewal increase after multi-year agreement. Refused relief until we involved VP of Finance." (Culture Amp) • "$11/user becomes $25/user with necessary modules." (Lattice)
-                    </p>
-                    <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-top: 1.5rem;">
-                        <p><strong>The Problem:</strong> Per-user pricing creates perverse incentives. Platforms bill immediately for adds but refuse credits for reductions. Renewal prices jump 15-20%. Module costs compound. What looks like $9/user becomes $120-160/user/year.</p>
-                    </div>
-                </div>
-
-                <!-- Promise 3: Data Control -->
-                <div class="feature-card" style="border-left: 4px solid var(--danger);">
-                    <h3 style="color: var(--danger); font-size: 1.75rem;">❌ Promise #3: "Your Data Is Secure"</h3>
-                    <p style="color: var(--text-secondary); margin: 1.5rem 0; line-height: 1.8;">
-                        <strong>What they promise:</strong> Enterprise-grade security for your sensitive performance data.
-                    </p>
-                    <p style="color: var(--text-secondary); margin: 1.5rem 0; line-height: 1.8;">
-                        <strong>What users experience:</strong> "An hour of writing, hit submit, page refreshes—all work lost." (Culture Amp) • "Rippling integration creates duplicate profiles and terrible data." (Culture Amp) • "Can't map ADP fields, must create custom fields." (Lattice)
-                    </p>
-                    <div class="cta-box" style="background: var(--danger-bg); border-left: 4px solid var(--danger); margin-top: 1.5rem;">
-                        <p><strong>The Problem:</strong> When your data lives on vendor servers with closed-source code, you can't verify security claims. Integration failures corrupt data. Timeouts delete work. You have no control, no visibility, no recourse.</p>
-                    </div>
-                </div>
+            <h3 class="comparison-center mb-6">Blik pricing</h3>
+            <div class="table-container comparison-content-medium">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Price</th>
+                            <th>Scope</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Self-Hosted</strong></td>
+                            <td>€0 (AGPL-3.0)</td>
+                            <td>Unlimited employees</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hosted SaaS</strong></td>
+                            <td>€{{ plan_saas_price }}/month (€{{ plan_saas_annual }}/year)</td>
+                            <td>Up to {{ plan_saas_max }} employees</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise</strong></td>
+                            <td>€{{ plan_ent_price }}/month (€{{ plan_ent_annual }}/year)</td>
+                            <td>Up to {{ plan_ent_max }} employees</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <h3 class="comparison-subheading">How competitors price for a 50-person team</h3>
+            <div class="table-container content-wide">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Pricing</th>
+                            <th>Annual cost at 50 seats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Blik (hosted)</strong></td>
+                            <td>Flat: €{{ plan_saas_price }}/month up to {{ plan_saas_max }} employees</td>
+                            <td>€{{ plan_saas_annual }}/year flat</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lattice</strong></td>
+                            <td>$10–32 per seat/month (Performance $10 to all five modules $32)</td>
+                            <td>$6,000–19,200/yr; $4,000 annual minimum; annual billing only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>15Five</strong></td>
+                            <td>Engage $4 / Perform $11 / Total Platform $16 per user/month</td>
+                            <td>$2,400 / $6,600 / $9,600/yr; annual billing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Culture Amp</strong></td>
+                            <td>Quote-based; no published prices</td>
+                            <td>Quote required; annual billing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Small Improvements</strong></td>
+                            <td>Launch $3 / Grow $6 / Elevate $9 per user/month</td>
+                            <td>$1,800–5,400/yr; 20–30 seat minimums; annual billing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Engagedly</strong></td>
+                            <td>Performance Suite $5–8 per user/month</td>
+                            <td>$7,500/yr ($7,500 annual minimum binds); annual billing</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="cta-box comparison-summary-callout">
+                A 50-person team pays roughly $6,000–19,200/yr for Lattice, or about $7,500/yr for Engagedly, versus €{{ plan_saas_annual }}/year flat for Blik hosted — or €0 if you self-host.
+            </div>
+
+            <p class="comparison-note comparison-center mt-8">
+                Vendor prices verified as of October 2026: <a href="https://lattice.com/pricing" target="_blank" rel="noopener">Lattice</a> ·
+                <a href="https://www.15five.com/pricing" target="_blank" rel="noopener">15Five</a> ·
+                <a href="https://www.cultureamp.com/platform/plans-and-pricing" target="_blank" rel="noopener">Culture Amp</a> ·
+                <a href="https://www.small-improvements.com/pricing/" target="_blank" rel="noopener">Small Improvements</a> ·
+                <a href="https://engagedly.com/pricing/" target="_blank" rel="noopener">Engagedly</a>.
+                Blik prices are in EUR; vendor prices above are in USD. Figures are not subtracted across currencies.
+            </p>
         </div>
     </section>
 
-    <!-- How Blik Solves This -->
-    <section id="solution" class="section">
+    <!-- Section 2: Open Source & No Lock-In -->
+    <section id="open-source" class="section">
         <div class="container">
-            <h2 class="section-title">How Blik Actually Delivers on These Promises</h2>
-
-            <div style="display: grid; gap: 2rem; margin-top: 3rem;">
-                <!-- Solution 1: Cryptographic Anonymity -->
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success); font-size: 1.75rem;">✓ Cryptographic Anonymity (Not Policy-Based)</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
-                        <div>
-                            <h4 style="color: var(--text); margin-bottom: 1rem;">The Technical Approach</h4>
-                            <ul style="color: var(--text-secondary); line-height: 2;">
-                                <li><strong>UUID tokens:</strong> Random, unguessable identifiers</li>
-                                <li><strong>Email separation:</strong> Reviewer emails never linked to responses</li>
-                                <li><strong>Database architecture:</strong> Token-response mapping stored separately from content</li>
-                                <li><strong>Admin-proof:</strong> Even system admins cannot identify reviewers</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 style="color: var(--text); margin-bottom: 1rem;">Why This Matters</h4>
-                            <p style="color: var(--text-secondary); line-height: 1.8;">
-                                You can tell your team: <strong>"Even I can't see who wrote what."</strong> That's not a policy—it's a technical guarantee. Open source means they can verify it themselves. This eliminates fear, which is the prerequisite for honest feedback.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="cta-box" style="background: var(--success-bg); border-left: 4px solid var(--success); margin-top: 1.5rem;">
-                        <p style="font-weight: bold;">Psychological safety isn't about trust—it's about technical impossibility. We architected Blik so tracing reviewers is impossible.</p>
-                    </div>
-                </div>
-
-                <!-- Solution 2: Transparent Pricing -->
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success); font-size: 1.75rem;">✓ Flat-Rate Pricing (No Per-User Games)</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
-                        <div>
-                            <h4 style="color: var(--text); margin-bottom: 1rem;">The Pricing Model</h4>
-                            <ul style="color: var(--text-secondary); line-height: 2;">
-                                <li><strong>€49/month:</strong> Managed hosting, unlimited users</li>
-                                <li><strong>$0/month:</strong> Self-hosted, open source (AGPLv3)</li>
-                                <li><strong>No modules:</strong> All features included</li>
-                                <li><strong>No surprises:</strong> No auto-renewals, no proration traps</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 style="color: var(--text); margin-bottom: 1rem;">Why This Matters</h4>
-                            <p style="color: var(--text-secondary); line-height: 1.8;">
-                                Per-user pricing creates vendor-customer misalignment. We want you to succeed and grow—not pay more when you do. Self-hosted option means you're never locked in. No billing games, no renewal surprises.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="cta-box" style="background: var(--success-bg); border-left: 4px solid var(--success); margin-top: 1.5rem;">
-                        <p style="font-weight: bold;">Blik SaaS: 50 or 500 employees? €588/year. Blik Open Source: Any size? $0/forever.</p>
-                    </div>
-
-                    <!-- Total Cost of Ownership Table -->
-                    <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                        <h4 style="margin-bottom: 1.5rem;">Total Cost of Ownership (3 Years, 100 Employees)</h4>
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <thead>
-                                    <tr style="background: var(--bg); border-bottom: 2px solid var(--border);">
-                                        <th style="padding: 1rem; text-align: left;">Cost Component</th>
-                                        <th style="padding: 1rem; text-align: right;">Blik SaaS</th>
-                                        <th style="padding: 1rem; text-align: right;">Blik Open Source</th>
-                                        <th style="padding: 1rem; text-align: right;">Typical SaaS Platform</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 1rem;">Software License (3 years)</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">€1,764</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$36,000-72,000</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 1rem;">Implementation/Setup</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$50,000-200,000</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 1rem;">Integration Fees</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$10,000-30,000</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 1rem;">Training Programs</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$5,000-15,000</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 1rem;">Ongoing Consulting</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$15,000-60,000</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--border);">
-                                        <td style="padding: 1rem;">Full-time HRIS Admin</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--success); font-weight: bold;">$0</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--warning);">~$30K/year*</td>
-                                        <td style="padding: 1rem; text-align: right; color: var(--danger);">$240,000-360,000</td>
-                                    </tr>
-                                    <tr style="background: var(--bg); font-weight: bold; font-size: 1.1rem;">
-                                        <td style="padding: 1.5rem;">Total 3-Year TCO</td>
-                                        <td style="padding: 1.5rem; text-align: right; color: var(--success);">~€1,764</td>
-                                        <td style="padding: 1.5rem; text-align: right; color: var(--success);">~$90K*</td>
-                                        <td style="padding: 1.5rem; text-align: right; color: var(--danger);">$356K-$737K</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary); font-style: italic;">
-                            *Open source infrastructure costs assume partial HRIS admin time for maintenance (~30% FTE). SaaS platforms often require dedicated full-time HRIS admins.
-                        </p>
-                        <p style="margin-top: 1.5rem; padding: 1rem; background: var(--success-bg); border-radius: 4px; border-left: 4px solid var(--success);">
-                            <strong>Key insight:</strong> Implementation and ongoing consulting fees often exceed software license costs by 2-3x. Blik eliminates these entirely with docker compose deployment and intuitive UX.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Solution 3: Data Sovereignty -->
-                <div class="feature-card" style="border-left: 4px solid var(--success);">
-                    <h3 style="color: var(--success); font-size: 1.75rem;">✓ Self-Hosted Control (No Vendor Dependency)</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
-                        <div>
-                            <h4 style="color: var(--text); margin-bottom: 1rem;">The Architecture</h4>
-                            <ul style="color: var(--text-secondary); line-height: 2;">
-                                <li><strong>Docker deployment:</strong> One command setup</li>
-                                <li><strong>Your database:</strong> PostgreSQL on your servers</li>
-                                <li><strong>Your SMTP:</strong> Use any email provider</li>
-                                <li><strong>Open source:</strong> Audit every line of code</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 style="color: var(--text); margin-bottom: 1rem;">Why This Matters</h4>
-                            <p style="color: var(--text-secondary); line-height: 1.8;">
-                                Regulated industries (healthcare, finance, legal) can't send performance data to third-party SaaS. EU GDPR compliance is complex with external vendors. Self-hosted = your data never leaves your infrastructure.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="cta-box" style="background: var(--success-bg); border-left: 4px solid var(--success); margin-top: 1.5rem;">
-                        <p style="font-weight: bold;">Your servers. Your data. Your SMTP. Your compliance. Zero vendor dependency.</p>
-                    </div>
-
-                    <!-- Vendor Lock-in Comparison -->
-                    <div style="margin-top: 2rem; padding: 2rem; background: var(--bg-secondary); border-radius: 8px;">
-                        <h4 style="margin-bottom: 1.5rem;">"Easy to Leave" vs. Vendor Lock-in</h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                            <div>
-                                <h5 style="color: var(--success); margin-bottom: 1rem;">✓ With Blik</h5>
-                                <ul style="color: var(--text-secondary); line-height: 2;">
-                                    <li><strong>SaaS option:</strong> Cancel anytime, no notice period</li>
-                                    <li><strong>Open source option:</strong> Never need to cancel—you own it</li>
-                                    <li><strong>Data export:</strong> Standard formats, full access</li>
-                                    <li><strong>No contracts:</strong> Month-to-month or free forever</li>
-                                    <li><strong>Can't be held hostage:</strong> Self-hosting = ultimate freedom</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h5 style="color: var(--danger); margin-bottom: 1rem;">✗ With Typical SaaS</h5>
-                                <ul style="color: var(--text-secondary); line-height: 2;">
-                                    <li><strong>60-90 day notice:</strong> Miss it = locked in another year (Workday)</li>
-                                    <li><strong>Auto-renewal traps:</strong> "Whatever's in your current deal"</li>
-                                    <li><strong>Legacy plan sunsets:</strong> Forced 15-75% increases (BambooHR)</li>
-                                    <li><strong>Multi-year contracts:</strong> Still get 20% renewal increases (Culture Amp)</li>
-                                    <li><strong>Data hostage:</strong> Export fees, format restrictions</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <p style="margin-top: 1.5rem; padding: 1rem; background: var(--primary-bg); border-radius: 4px; border-left: 4px solid var(--primary);">
-                            <strong>Real user quote:</strong> "BambooHR forced a 15% charge increase with no benefit. This will make the platform not worth the cost and I will need to look for a new HRIS." When vendors control your deployment, they control your budget.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- What Makes Blik Unique -->
-    <section id="unique" class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">What Makes Blik Unique</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
-                Beyond solving the three broken promises, Blik delivers psychological insights competitors don't offer.
+            <h2 class="section-title">Open Source, No Lock-In</h2>
+            <p class="section-intro section-intro--narrow">
+                Blik is AGPL-3.0 and the code is public on GitHub. You can self-host it, audit every line, and keep your data on your own infrastructure.
             </p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="features-grid">
                 <div class="feature-card">
-                    <h3>Dreyfus Skill-Level Mapping</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                        Automatically classify competency levels (Novice → Advanced Beginner → Competent → Proficient → Expert) based on feedback patterns. See where team members are on their skill journey—not just raw scores.
+                    <h3>Your data, your servers</h3>
+                    <p class="comparison-prose comparison-no-bottom">
+                        Self-hosting keeps performance feedback on infrastructure you control. It runs on a small EU VPS (≈€10-50/month) and gets you up and running in under 30 minutes with Docker Compose.
                     </p>
                 </div>
-
                 <div class="feature-card">
-                    <h3>Perception Gap Detection</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                        Identify when self-assessment diverges from peer feedback. Highlight imposter syndrome (underrating) and overconfidence (overrating). Actionable insights for coaching conversations.
+                    <h3>GDPR export &amp; delete</h3>
+                    <p class="comparison-prose comparison-no-bottom">
+                        Self-service JSON data export and account deletion are built in. Review the exported fields and your retention obligations before moving or deleting records.
                     </p>
                 </div>
-
                 <div class="feature-card">
-                    <h3>Flexible Questionnaires</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                        6 question types with weighted scoring. Create custom surveys for each cycle to avoid the "engagement drop after 7 months" problem plaguing platforms with fixed question libraries.
+                    <h3>Monthly hosted plans</h3>
+                    <p class="comparison-prose comparison-no-bottom">
+                        Hosted plans are month-to-month. {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                     </p>
                 </div>
             </div>
 
-            <div style="margin-top: 3rem; padding: 2rem; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);">
-                <h3 style="margin-bottom: 1.5rem;">Blik vs. The Competition</h3>
-                <div style="display: grid; gap: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="color: var(--success); font-weight: bold; font-size: 1.5rem;">✓</span>
-                        <p style="color: var(--text-secondary); margin: 0;">
-                            <strong>vs. Lattice:</strong> True anonymity, flat pricing, no navigation complexity, works on mobile
-                            <a href="{% landing_url 'vs_lattice' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
-                        </p>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="color: var(--success); font-weight: bold; font-size: 1.5rem;">✓</span>
-                        <p style="color: var(--text-secondary); margin: 0;">
-                            <strong>vs. Culture Amp:</strong> No data loss, no 20% renewals, cryptographic anonymity, HRIS that works
-                            <a href="{% landing_url 'vs_culture_amp' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
-                        </p>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="color: var(--success); font-weight: bold; font-size: 1.5rem;">✓</span>
-                        <p style="color: var(--text-secondary); margin: 0;">
-                            <strong>vs. 15Five:</strong> No billing traps, no survey fatigue, no "dodgy SaaS" practices
-                            <a href="{% landing_url 'vs_15five' %}" style="margin-left: 0.5rem; color: var(--primary);">Compare →</a>
-                        </p>
-                    </div>
-                </div>
+            <div class="comparison-panel mt-12">
+                <h3 class="mb-6">Blik's honest gaps</h3>
+                <p class="comparison-prose mb-6">
+                    No product fits every team. Here is what Blik does not yet offer, so you can decide whether it matters for you:
+                </p>
+                <ul class="comparison-benefits--muted">
+                    <li><strong>No SSO / SAML / LDAP:</strong> planned, not yet shipped.</li>
+                    <li><strong>No native HRIS connectors:</strong> integrations are done through the REST API and webhooks rather than pre-built adapters.</li>
+                    <li><strong>No mobile app:</strong> Blik works in a mobile browser, but there is no dedicated native app.</li>
+                </ul>
             </div>
         </div>
     </section>
 
-    <!-- Who Blik Is For -->
-    <section id="who" class="section">
+    <!-- Section 3: Anonymity by Design -->
+    <section id="anonymity" class="section section-alt">
         <div class="container">
-            <h2 class="section-title">Who Blik Is For</h2>
+            <h2 class="section-title">Anonymity by Design</h2>
+            <p class="section-intro section-intro--narrow">
+                Blik uses token-based access and category-aggregated reports. Confidentiality depends on the invitation method, access permissions, response thresholds, and what reviewers write.
+            </p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="border-left: 4px solid var(--primary);">
-                    <h3 style="color: var(--primary);">Regulated Industries</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                        Healthcare, finance, legal—anywhere HIPAA, SOC 2, or GDPR compliance requires data sovereignty. Self-hosted means sensitive performance data never leaves your infrastructure.
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Token-based responses</h3>
+                    <p class="comparison-prose comparison-no-bottom">
+                        Reviewers open a tokenized link rather than create an account. Responses are linked to reviewer tokens, which may also contain an invitation email address.
                     </p>
-                    <a href="{% landing_url 'privacy' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">Learn About Privacy-First →</a>
                 </div>
+                <div class="feature-card">
+                    <h3>Reporting safeguards</h3>
+                    <p class="comparison-prose comparison-no-bottom">
+                        Report thresholds can limit small-group disclosure. This is not a guarantee against identification by someone with database access or from identifying comments.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3>Open source, auditable</h3>
+                    <p class="comparison-prose comparison-no-bottom">
+                        The <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">AGPL-3.0 source</a> lets your technical team inspect token storage, report generation, and permissions before deployment.
+                    </p>
+                </div>
+            </div>
 
-                <div class="feature-card" style="border-left: 4px solid var(--primary);">
-                    <h3 style="color: var(--primary);">Growing Tech Companies</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                        30-500 employees who need professional 360° feedback but refuse to pay $6K-15K/year for features you don't need. Dreyfus mapping resonates with engineering teams.
-                    </p>
-                    <a href="{% landing_url 'open_source' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">For Developers →</a>
-                </div>
-
-                <div class="feature-card" style="border-left: 4px solid var(--primary);">
-                    <h3 style="color: var(--primary);">European Organizations</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                        GDPR compliance built-in, not bolted on. Data minimization by design. No US-based SaaS vendor holding your employee data. Full transparency through open source.
-                    </p>
-                    <a href="{% landing_url 'eu_tech' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">For EU Companies →</a>
-                </div>
-
-                <div class="feature-card" style="border-left: 4px solid var(--primary);">
-                    <h3 style="color: var(--primary);">HR Teams Burned by SaaS</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
-                        Experienced data loss, surprise renewals, or billing traps. Want transparent pricing, reliable software, and vendor alignment. Value simplicity over feature bloat.
-                    </p>
-                    <a href="{% landing_url 'hr_managers' %}" class="btn btn-secondary" style="margin-top: 1.5rem; width: 100%;">For HR Teams →</a>
-                </div>
+            <div class="cta-box comparison-callout-spacing">
+                <p class="font-semibold comparison-flush">
+                    Tell reviewers how invitations and reports work, who has access, and the limits of confidentiality before collecting feedback.
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Final CTA -->
-    <section class="section section-alt">
+    <section class="section">
         <div class="container">
-            <div style="max-width: 800px; margin: 0 auto; text-align: center; padding: 3rem 0;">
-                <h2 style="font-size: 2rem; margin-bottom: 1.5rem;">Performance Reviews Done Right</h2>
-                <p style="color: var(--text-secondary); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
-                    Blik delivers what SaaS platforms promise but don't deliver: cryptographic anonymity, transparent pricing, and data sovereignty.
-                    Plus psychological insights (Dreyfus mapping, perception gaps) that help teams actually grow.
+            <div class="comparison-closing">
+                <h2 class="comparison-closing-title mb-6">Try Blik</h2>
+                <p class="comparison-prose comparison-prose--lead mb-8">
+                    Self-host free at any size, or choose managed EU hosting with clear employee limits. Review the source, reporting safeguards, and current feature gaps to decide whether Blik fits.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <div class="action-links">
                     <a href="{% landing_url 'signup' %}" class="btn btn-primary btn-lg">Start with Managed Hosting</a>
-                    <a href="https://github.com/TaylorDiego/blik" target="_blank" class="btn btn-secondary btn-lg">Deploy Self-Hosted (Free)</a>
+                    <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">Deploy Self-Hosted (Free)</a>
                 </div>
-                <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary);">
-                    €49/month managed • Open source AGPLv3 • No credit card required to explore
+                <p class="comparison-note mt-6">
+                    €{{ plan_saas_price }}/month managed for up to {{ plan_saas_max }} employees • Open source AGPL-3.0 • Self-host free
                 </p>
             </div>
         </div>

@@ -5,8 +5,8 @@
     <title>360° Feedback for Growing Teams — No IT Required | Blik360</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Professional 360 feedback for HR managers at companies with 30-50 employees. Anonymous reviews, GDPR compliant, no IT burden. From €49/mo.">
-    <meta name="keywords" content="360 feedback HR, performance review software, employee feedback, HR tools, anonymous feedback, GDPR compliant HR">
+    <meta name="description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_saas_price }}/mo.">
+    <meta name="keywords" content="360 feedback HR, performance review software, employee feedback, HR tools, anonymous feedback, GDPR support tools">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
 
@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
     <meta property="og:title" content="360° Feedback for Growing Teams — No IT Required | Blik360">
-    <meta property="og:description" content="Professional 360 feedback for HR managers at companies with 30-50 employees. Anonymous reviews, GDPR compliant, no IT burden. From €49/mo.">
+    <meta property="og:description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_saas_price }}/mo.">
     <meta property="og:site_name" content="{{ site_name }}">
     <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=360%C2%B0%20Feedback&subtitle=No%20IT%20Required">
     <meta property="og:image:width" content="1200">
@@ -26,13 +26,10 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
     <meta name="twitter:title" content="360° Feedback for Growing Teams — No IT Required | Blik360">
-    <meta name="twitter:description" content="Professional 360 feedback for HR managers at companies with 30-50 employees. Anonymous reviews, GDPR compliant, no IT burden. From €49/mo.">
+    <meta name="twitter:description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_saas_price }}/mo.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=360%C2%B0%20Feedback&subtitle=No%20IT%20Required">
 {% endblock %}
 
-{% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/landing-carousel.css' %}">
-{% endblock %}
 
 {% block nav_links %}
     <a href="#how-it-works">How It Works</a>
@@ -48,7 +45,7 @@
         <div class="container">
             <div class="hero-content">
                 <h1 class="hero-title">Professional 360° Feedback for Growing Teams</h1>
-                <p class="hero-subtitle">Trusted by HR managers to deliver anonymous, insightful performance reviews. GDPR compliant, easy to deploy, and built for teams of 30-50 employees.</p>
+                <p class="hero-subtitle">Anonymous 360° feedback with trend, benchmark, and perception-gap reports. Built for teams of 30-{{ plan_ent_max }} employees, with self-hosting or managed EU hosting.</p>
                 <div class="hero-cta">
                     <a href="#pricing" class="btn btn-primary">See Pricing Options</a>
                     <a href="#how-it-works" class="btn btn-secondary">How It Works</a>
@@ -60,10 +57,10 @@
     <!-- Trust Section -->
     <section class="section">
         <div class="container">
-            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
-                <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 2rem;">Built for HR Managers Who Value Employee Trust</h2>
-                <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.125rem;">
-                    360-degree feedback only works when employees feel safe being honest. Blik is designed from the ground up to guarantee <strong>true anonymity</strong>, giving your team the confidence to provide genuine, constructive feedback.
+            <div class="audience-trust">
+                <h2 class="section-title audience-trust-title">Built for HR Managers Who Value Employee Trust</h2>
+                <p class="audience-trust-copy">
+                    360-degree feedback works best when employees understand how their responses are handled. Blik uses <strong>token-based access and category-aggregated reports</strong>. Explain the invitation method, access permissions, response thresholds, and limits of confidentiality before collecting feedback.
                 </p>
             </div>
         </div>
@@ -73,29 +70,29 @@
     <section id="how-it-works" class="section section-alt">
         <div class="container">
             <h2 class="section-title">How It Works</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Simple, straightforward process from setup to insights</p>
+            <p class="section-intro">Simple, straightforward process from setup to insights</p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+            <div class="audience-card-grid">
                 <div class="feature-card">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">1</div>
+                    <div class="audience-step-number">1</div>
                     <h3>Quick Setup</h3>
-                    <p>Choose between our hosted solution (€49/month) or share the open-source option with your IT team. Either way, you'll be ready in under an hour.</p>
+                    <p>Choose between our hosted solution (€{{ plan_saas_price }}/month) or share the open-source option with your IT team. Either way, you'll be running in under 30 minutes with Docker Compose.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">2</div>
+                    <div class="audience-step-number">2</div>
                     <h3>Create Review Cycles</h3>
                     <p>Select employees to review, choose peers/managers/reports as reviewers, and send anonymous invite links. Pre-built questionnaires included.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">3</div>
+                    <div class="audience-step-number">3</div>
                     <h3>Collect Feedback</h3>
-                    <p>Reviewers answer via anonymous links—no logins, no tracking. Progress is saved automatically so they can complete on their schedule.</p>
+                    <p>Reviewers answer via token-based links without a login. Progress is saved automatically so they can complete on their schedule.</p>
                 </div>
 
                 <div class="feature-card">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">4</div>
+                    <div class="audience-step-number">4</div>
                     <h3>Professional Reports</h3>
                     <p>Rich, visual reports show aggregated feedback by category (peers, managers, reports). Built-in privacy thresholds protect anonymity.</p>
                 </div>
@@ -111,7 +108,7 @@
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>True Employee Trust</h3>
-                    <p>Anonymous token system ensures reviewers can't be identified—even by admins. Honest feedback thrives when employees feel genuinely safe.</p>
+                    <p>Reports group feedback by category. Responses retain a token reference, and emailed invitations may associate that token with an email address. Reporting confidentiality is not a guarantee against identification by database administrators.</p>
                 </div>
 
                 <div class="feature-card">
@@ -120,18 +117,18 @@
                 </div>
 
                 <div class="feature-card">
-                    <h3>GDPR Compliant</h3>
-                    <p>Hosted in EU data centers (Hetzner) with full GDPR compliance. Perfect for European companies with strict data requirements.</p>
+                    <h3>GDPR Support Tools</h3>
+                    <p>EU hosting and export and deletion tools support GDPR obligations. Your organization remains responsible for lawful processing, configuration, access controls, retention, and compliance processes.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Ready-to-Use Templates</h3>
-                    <p>Four pre-built 360° questionnaires for different roles: general professional skills, software engineers, and managers. Covering leadership, technical skills, communication, and more. Customize as needed or use out-of-the-box.</p>
+                    <p>Four pre-built 360° questionnaires for different roles: the 360 Degree Feedback (quick, universal), Professional Skills 360 Review (all professional roles), Software Engineering 360 Review (engineers), and Manager 360 Review (managers). Covering leadership, technical skills, communication, and more. Customize as needed or use out-of-the-box.</p>
                 </div>
 
                 <div class="feature-card">
                     <h3>Affordable & Transparent</h3>
-                    <p>€49/month for up to 50 employees. No per-user pricing, no surprise fees. Or self-host for free with unlimited usage.</p>
+                    <p>€{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. No per-user pricing, no surprise fees. Or self-host for free with unlimited usage.</p>
                 </div>
 
                 <div class="feature-card">
@@ -146,7 +143,7 @@
     <section id="reporting" class="section section-alt product-showcase">
         <div class="container">
             <h2 class="section-title">Professional Reports That Drive Growth</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">Rich visualizations and actionable insights from 360-degree feedback</p>
+            <p class="section-intro">Rich visualizations and actionable insights from 360-degree feedback</p>
 
             <!-- Carousel for desktop screenshots -->
             <div class="screenshot-carousel">
@@ -219,7 +216,7 @@
 
             <!-- Mobile showcase -->
             <div class="mobile-showcase">
-                <h3 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">Works Beautifully on Mobile</h3>
+                <h3 class="audience-showcase-title">Works Beautifully on Mobile</h3>
                 <div class="phone-mockup">
                     <div class="phone-frame">
                         <div class="phone-notch"></div>
@@ -233,7 +230,7 @@
                         </div>
                     </div>
                 </div>
-                <p style="text-align: center; color: var(--text-secondary); margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <p class="audience-mobile-caption">
                     Reviewers complete feedback on any device—desktop, tablet, or phone
                 </p>
             </div>
@@ -244,39 +241,38 @@
     <section class="section">
         <div class="container">
             <h2 class="section-title">Honest Pricing Without the SaaS Markup</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem;">For a team of 40 employees</p>
+            <p class="section-intro">For a team of {{ plan_saas_max }} employees</p>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <div class="audience-card-grid mb-12">
                 <div class="feature-card feature-card-danger">
-                    <h3>Typical SaaS Tools</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); margin: 1.5rem 0;">€5,000-12,000</div>
-                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">per year</p>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.75rem;">Per-user pricing (€10-25/user/month)</li>
-                        <li style="margin-bottom: 0.75rem;">Your data on their servers</li>
-                        <li style="margin-bottom: 0.75rem;">Vendor lock-in</li>
-                        <li style="margin-bottom: 0.75rem;">Annual price increases</li>
-                        <li>Limited customization</li>
+                    <h3>Lattice (Performance to all five modules)</h3>
+                    <div class="audience-price">$6,000-19,200</div>
+                    <p class="audience-price-period">per year at {{ plan_saas_max }} seats — <a href="https://lattice.com/pricing" target="_blank" rel="noopener" class="audience-link">lattice.com/pricing</a>, as of October 2026</p>
+                    <ul class="audience-list">
+                        <li class="audience-list-item-spaced">Performance $10, Goals &amp; OKRs $8, Engagement $4, Compensation +$6, Grow +$4 per seat/month</li>
+                        <li class="audience-list-item-spaced">$4,000 annual minimum, annual billing</li>
+                        <li class="audience-list-item-spaced">Per-seat pricing scales with headcount</li>
+                        <li>Culture Amp publishes no prices (quote-based)</li>
                     </ul>
                 </div>
 
                 <div class="feature-card feature-card-success">
                     <h3>Blik Hosted</h3>
-                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary); margin: 1.5rem 0;">€588</div>
-                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;">per year (€49/month)</p>
-                    <ul style="list-style: none; padding: 0; color: var(--text-primary);">
-                        <li style="margin-bottom: 0.75rem;">Flat monthly rate (up to 50 employees)</li>
-                        <li style="margin-bottom: 0.75rem;">EU-hosted, GDPR compliant</li>
-                        <li style="margin-bottom: 0.75rem;">Export data anytime</li>
-                        <li style="margin-bottom: 0.75rem;">Predictable pricing</li>
+                    <div class="audience-price">€{{ plan_saas_annual }}</div>
+                    <p class="audience-price-period">per year (€{{ plan_saas_price }}/month), flat up to {{ plan_saas_max }} employees</p>
+                    <ul class="audience-list">
+                        <li class="audience-list-item-spaced">Flat monthly rate (up to {{ plan_saas_max }} employees)</li>
+                        <li class="audience-list-item-spaced">EU-hosted with export and deletion tools</li>
+                        <li class="audience-list-item-spaced">Export data anytime</li>
+                        <li class="audience-list-item-spaced">Predictable pricing</li>
                         <li>Full feature access</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="feature-card" style="background: var(--primary-600); color: white; padding: 2rem; text-align: center; border: 1px solid var(--primary-700);">
-                <h3 style="color: white; margin-bottom: 1rem;">Save €4,400-11,400 Annually</h3>
-                <p style="color: rgba(255,255,255,0.95); font-size: 1.125rem;">With pricing this clear, you can invest savings back into your team</p>
+            <div class="feature-card audience-highlight">
+                <h3 class="audience-highlight-title">Flat, per-user-free pricing</h3>
+                <p class="audience-highlight-copy audience-highlight-copy-large">A {{ plan_saas_max }}-employee team pays ~$6,000-19,200/yr for Lattice versus a flat €{{ plan_saas_annual }}/yr for Blik hosted.</p>
             </div>
         </div>
     </section>
@@ -289,17 +285,17 @@
                 <div class="pricing-card pricing-featured">
                     <div class="featured-badge">Recommended for HR</div>
                     <h3>EU Hosted</h3>
-                    <div class="price">€49</div>
+                    <div class="price">€{{ plan_saas_price }}</div>
                     <p class="price-desc">per month</p>
                     <ul class="pricing-features">
-                        <li>Perfect for 30-50 employees</li>
+                        <li>Perfect for 30-{{ plan_saas_max }} employees</li>
                         <li>No IT setup required</li>
-                        <li>Hosted in EU (GDPR compliant)</li>
+                        <li>Hosted in EU</li>
                         <li>Automatic updates</li>
                         <li>Daily backups</li>
                         <li>Email support</li>
                         <li>Custom domain included</li>
-                        <li>14-day free trial</li>
+                        <li>{{ trial_days }}-day free trial</li>
                     </ul>
                     <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
                 </div>
@@ -320,10 +316,10 @@
                 </div>
             </div>
 
-            <div class="cta-box" style="margin-top: 3rem;">
+            <div class="cta-box mt-12">
                 <h3>Working with your IT team?</h3>
-                <p style="font-size: 1.125rem;">Share our open-source page with them. It has all the technical details they need for self-hosted deployment.</p>
-                <a href="{% landing_url 'open_source' %}" class="btn btn-secondary" style="display: inline-block;">View Technical Docs</a>
+                <p class="text-lg">Share our open-source page with them. It has all the technical details they need for self-hosted deployment.</p>
+                <a href="{% landing_url 'open_source' %}" class="btn btn-secondary audience-button-inline">View Technical Docs</a>
             </div>
         </div>
     </section>
@@ -334,23 +330,23 @@
             <h2 class="section-title">Common Questions from HR Managers</h2>
             <div class="faq-grid">
                 <details class="faq-item">
-                    <summary>How is anonymity guaranteed?</summary>
-                    <p>Blik uses cryptographically secure anonymous tokens. When you send review invites, reviewers receive unique URLs with no identifying information. Even as an admin, you cannot trace feedback back to individuals. The system is architecturally designed to make de-anonymization impossible.</p>
+                    <summary>How does reviewer confidentiality work?</summary>
+                    <p>Reviewers use token-based links, and reports aggregate feedback by category with configurable thresholds. Responses retain a token reference, which may link to an invitation email. Confidentiality depends on invitation method, permissions, thresholds, and feedback content; it is not guaranteed against administrators with database access.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Do I need IT support to get started?</summary>
-                    <p>Not for our hosted solution. You sign up, create your organization, and start sending review invites—no technical skills needed. If you prefer self-hosting, you'll need your IT team to handle deployment (it takes about 30 minutes with Docker).</p>
+                    <p>Not for our hosted solution. You sign up, create your organization, and start sending review invites—no technical skills needed. If you prefer self-hosting, you'll need your IT team to handle deployment (you'll be running in under 30 minutes with Docker Compose).</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Is it really GDPR compliant?</summary>
-                    <p>Yes. Our hosted version runs on EU servers (Hetzner in Germany). All data stays in the EU. For complete control, self-hosting on your own infrastructure gives you 100% GDPR compliance with zero third-party involvement.</p>
+                    <p>EU hosting and self-hosting do not automatically establish GDPR compliance. Blik provides export and deletion tools to support your obligations. Your organization remains responsible for lawful processing, configuration, access controls, retention, and compliance processes.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Can I customize the questionnaires?</summary>
-                    <p>Absolutely. We include 4 pre-built 360° questionnaires for different roles (general professional skills, software engineers, and managers) that work great out-of-the-box. You can also create custom questionnaires with rating scales, multiple choice, and free text questions organized into sections.</p>
+                    <p>Absolutely. We include 4 pre-built 360° questionnaires for different roles (the 360 Degree Feedback, Professional Skills 360 Review, Software Engineering 360 Review, and Manager 360 Review) that work great out-of-the-box. You can also create custom questionnaires with rating scales, multiple choice, and free text questions organized into sections.</p>
                 </details>
 
                 <details class="faq-item">
@@ -360,7 +356,7 @@
 
                 <details class="faq-item">
                     <summary>How long does setup take?</summary>
-                    <p>For hosted: 10-15 minutes to create your account and organization. For self-hosted: your IT team needs about 30 minutes to deploy with Docker. Either way, you'll be running your first review cycle the same day.</p>
+                    <p>For hosted: 10-15 minutes to create your account and organization. For self-hosted: running in under 30 minutes with Docker Compose. Either way, you'll be running your first review cycle the same day.</p>
                 </details>
 
                 <details class="faq-item">
@@ -370,12 +366,12 @@
 
                 <details class="faq-item">
                     <summary>What if we outgrow the 50-employee limit?</summary>
-                    <p>Our €199/month Enterprise plan covers up to 200 employees. For larger teams, you can self-host for free with unlimited users, or contact us for custom hosted pricing.</p>
+                    <p>Our €{{ plan_ent_price }}/month Enterprise plan covers up to {{ plan_ent_max }} employees. For larger teams, you can self-host for free with no user limits, or contact us for custom hosted pricing.</p>
                 </details>
 
                 <details class="faq-item">
                     <summary>How do reports protect anonymity?</summary>
-                    <p>Reports aggregate feedback by category (peers, managers, direct reports). Data is only shown if the minimum response threshold is met. Self-assessments are shown separately since they're not anonymous. All text comments are grouped by category without attribution.</p>
+                    <p>Reports aggregate feedback by category (peers, managers, direct reports) and apply configurable thresholds where applicable. Self-assessments and manager feedback may be identifiable. Small groups and recognizable text can reveal reviewers, so choose thresholds and report access carefully.</p>
                 </details>
 
                 <details class="faq-item">
@@ -390,7 +386,7 @@
 
                 <details class="faq-item">
                     <summary>What's included in the free trial?</summary>
-                    <p>14 days of full access to the hosted version—all features, no limitations. You'll need a credit card to start, but you can cancel anytime during the trial without being charged.</p>
+                    <p>{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
                 </details>
             </div>
         </div>
@@ -401,7 +397,7 @@
         <div class="container">
             <div class="cta-content">
                 <h2>Ready to Build Trust Through Better Feedback?</h2>
-                <p>Start your 14-day free trial or share the self-hosted option with your IT team.</p>
+                <p>Start your {{ trial_days }}-day free trial or share the self-hosted option with your IT team.</p>
                 <div class="cta-buttons">
                     <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
                     <a href="{% landing_url 'open_source' %}" class="btn btn-secondary">View Self-Hosted Option</a>
@@ -413,60 +409,7 @@
 
 {% block extra_scripts %}
     <script>
-        // Mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.mobile-menu-toggle');
-            const nav = document.querySelector('.nav');
-
-            if (menuToggle && nav) {
-                menuToggle.addEventListener('click', function() {
-                    const isExpanded = nav.classList.contains('active');
-                    nav.classList.toggle('active');
-                    menuToggle.setAttribute('aria-expanded', !isExpanded);
-                });
-
-                const navLinks = nav.querySelectorAll('a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    });
-                });
-
-                document.addEventListener('click', function(event) {
-                    if (!nav.contains(event.target) && !menuToggle.contains(event.target)) {
-                        nav.classList.remove('active');
-                        menuToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-
-            // Theme toggle functionality
-            const themeToggle = document.querySelector('.theme-toggle');
-            const sunIcon = themeToggle.querySelector('.sun-icon');
-            const moonIcon = themeToggle.querySelector('.moon-icon');
-
-            const updateThemeIcons = () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                if (currentTheme === 'dark') {
-                    sunIcon.style.display = 'block';
-                    moonIcon.style.display = 'none';
-                } else {
-                    sunIcon.style.display = 'none';
-                    moonIcon.style.display = 'block';
-                }
-            };
-
-            updateThemeIcons();
-
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeIcons();
-            });
-
             // Screenshot Carousel functionality
             const slides = document.querySelectorAll('.carousel-slide');
             const dots = document.querySelectorAll('.carousel-dot');

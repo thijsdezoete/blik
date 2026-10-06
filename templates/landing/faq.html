@@ -70,7 +70,7 @@
                 "name": "How much does Blik cost?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Self-hosting is free forever under AGPL license. Managed hosting is €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime."
+                    "text": "Self-hosting is free forever under AGPL license. A single hosted review round is €{{ plan_single_price }} once for up to {{ plan_single_max }} employees, with no subscription. Managed hosting subscriptions are €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime."
                 }
             },
             {
@@ -238,7 +238,12 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>How much does Blik cost?</summary>
-                    <p>Self-hosting is free forever under AGPL license. Managed hosting is €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime. <a href="{% landing_url 'pricing' %}" class="product-link-primary">See full pricing details →</a></p>
+                    <p>Self-hosting is free forever under AGPL license. A single hosted review round is €{{ plan_single_price }} once for up to {{ plan_single_max }} employees, with no subscription. Managed hosting subscriptions are €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime. <a href="{% landing_url 'pricing' %}" class="product-link-primary">See full pricing details →</a></p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I pay for one review round without a subscription?</summary>
+                    <p>Yes. The Single Round is €{{ plan_single_price }} once and covers a hosted feedback round for up to {{ plan_single_max }} employees, with no subscription and no charge for reviewers. Review cycles don't expire, reports stay available, and you can start a subscription later from Settings inside your account. <a href="{% landing_url 'one_time_360_review' %}" class="product-link-primary">See what's included →</a></p>
                 </details>
 
                 <details class="faq-item">

@@ -15,6 +15,8 @@ from .git_metadata import get_repository_metadata
 
 
 PRICING = {
+    "plan_single_price": "19",
+    "plan_single_max": 10,
     "plan_saas_price": "49",
     "plan_saas_max": 50,
     "plan_ent_price": "199",

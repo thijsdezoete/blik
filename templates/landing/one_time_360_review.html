@@ -1,0 +1,384 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>One-Time 360° Review — €{{ plan_single_price }} Once, No Subscription | Blik360</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Run one 360° feedback round for up to {{ plan_single_max }} employees for €{{ plan_single_price }}. Ready-to-use questionnaires, individual reports, free reviewers. No subscription.">
+    <meta name="keywords" content="one-time 360 review, 360 feedback without subscription, pay once 360 feedback, single 360 review round, 360 feedback small team">
+    <meta name="author" content="Blik">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'one_time_360_review' %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'one_time_360_review' %}">
+    <meta property="og:title" content="One-Time 360° Review — €{{ plan_single_price }} Once, No Subscription">
+    <meta property="og:description" content="Run one 360° feedback round for up to {{ plan_single_max }} employees for €{{ plan_single_price }}. Ready-to-use questionnaires, individual reports, free reviewers. No subscription.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=One-Time%20360%C2%B0%20Review&subtitle=%E2%82%AC{{ plan_single_price }}%20once%20%7C%20No%20subscription">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="One-Time 360° Review — €{{ plan_single_price }} Once, No Subscription">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'one_time_360_review' %}">
+    <meta name="twitter:title" content="One-Time 360° Review — €{{ plan_single_price }} Once, No Subscription">
+    <meta name="twitter:description" content="Run one 360° feedback round for up to {{ plan_single_max }} employees for €{{ plan_single_price }}. Ready-to-use questionnaires, individual reports, free reviewers. No subscription.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=One-Time%20360%C2%B0%20Review&subtitle=%E2%82%AC{{ plan_single_price }}%20once%20%7C%20No%20subscription">
+{% endblock %}
+
+{% block structured_data %}
+    {% article_schema "landing/one_time_360_review.html" headline="One-Time 360 Review - Pay Once, No Subscription" description="One hosted 360-degree feedback round paid once: ready-to-use questionnaires, individual reports, free reviewers, no subscription." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" %}
+{% endblock %}
+
+{% block extra_head %}
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ site_protocol }}://{{ site_domain }}/"
+        },{
+            "@type": "ListItem",
+            "position": 2,
+            "name": "One-Time 360 Review",
+            "item": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'one_time_360_review' %}"
+        }]
+    }
+    </script>
+
+    <!-- Offer Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "{{ site_name }} Single Round",
+        "description": "One hosted 360-degree feedback round for up to {{ plan_single_max }} employees, with ready-to-use questionnaires and individual reports. One-time payment, no subscription.",
+        "brand": {
+            "@type": "Brand",
+            "name": "{{ site_name }}"
+        },
+        "offers": {
+            "@type": "Offer",
+            "name": "Single Round",
+            "price": "{{ plan_single_price }}",
+            "priceCurrency": "EUR",
+            "description": "{{ plan_single_max }} review cycles on the hosted product. One-time payment, no subscription, no charge for reviewers.",
+            "availability": "https://schema.org/InStock",
+            "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'one_time_360_review' %}"
+        }
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#included">What's included</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#faq">FAQ</a>
+    <a href="{% landing_url 'pricing' %}">Pricing</a>
+{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Your team's next 360° review. €{{ plan_single_price }} once.</h1>
+                <div class="hero-subtitle">
+                    <p class="mb-4">A complete feedback round for up to {{ plan_single_max }} employees, with ready-to-use questionnaires and individual reports.</p>
+                    <p>No subscription. No charge for reviewers. Pay again when you're ready for your next round.</p>
+                </div>
+                <div class="hero-cta">
+                    <a href="{% landing_url 'signup' %}?plan=single" class="btn btn-primary">Start a review round</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What's Included -->
+    <section id="included" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">What's Included</h2>
+            <div class="features-grid features-grid--three">
+                <div class="feature-card">
+                    <h3>{{ plan_single_max }} review cycles</h3>
+                    <p>One review cycle is one employee reviewed with one questionnaire: invitations, anonymous responses, and the report. One purchase covers a round for up to {{ plan_single_max }} employees.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Ready-to-use questionnaires</h3>
+                    <p>Four questionnaires are included: Professional Skills, Software Engineering, Manager, and a short general 360. You can also build your own.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Individual reports</h3>
+                    <p>Every employee gets a report that compares their self-assessment with peers, managers, and direct reports, and points out strengths and gaps.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Free, unlimited reviewers</h3>
+                    <p>Invite as many reviewers as each review needs. Reviewers open a personal link and answer; they don't pay and don't need an account.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Hosted in the EU, nothing to install</h3>
+                    <p>We run the servers and send the invitation and reminder emails. You sign in and start.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Reports stay available</h3>
+                    <p>When the round is done, your reports are still there. Review cycles you haven't used don't expire.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="section">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="audience-card-grid">
+                <div class="feature-card">
+                    <div class="audience-step-number">1</div>
+                    <h3>Pay €{{ plan_single_price }}</h3>
+                    <p>Pay once by card. Your account is created right after payment and you get an invoice from Stripe.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="audience-step-number">2</div>
+                    <h3>Add people and invite reviewers</h3>
+                    <p>Add the employees you want reviewed, pick a questionnaire, and invite their peers, managers, and direct reports by email or link.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="audience-step-number">3</div>
+                    <h3>Read the reports</h3>
+                    <p>Each review closes when its reviewers are done, or when you close it. The report is ready immediately and stays in your account.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Which Option Fits -->
+    <section id="compare" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Single Round, Subscription, or Self-Hosted?</h2>
+            <p class="section-intro section-intro--narrow">All three are the same product. They differ in who runs it and how you pay.</p>
+
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Single Round</th>
+                            <th>EU Hosted subscription</th>
+                            <th>Self-Hosted</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Price</strong></td>
+                            <td class="highlight-green">€{{ plan_single_price }} once</td>
+                            <td>€{{ plan_saas_price }} per month</td>
+                            <td>€0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Review cycles</strong></td>
+                            <td>{{ plan_single_max }} per purchase</td>
+                            <td>Unlimited</td>
+                            <td>Unlimited</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Team size</strong></td>
+                            <td>Up to {{ plan_single_max }} employees per round</td>
+                            <td>Up to {{ plan_saas_max }} employees ({{ plan_ent_max }} on Enterprise)</td>
+                            <td>Unlimited</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Commitment</strong></td>
+                            <td>None; pay again when you want another round</td>
+                            <td>Monthly; cancel anytime</td>
+                            <td>None</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Trial</strong></td>
+                            <td>No trial; one payment</td>
+                            <td>{{ trial_days }}-day free trial, credit card required</td>
+                            <td>Not applicable</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hosting and email</strong></td>
+                            <td>Managed by us, in the EU</td>
+                            <td>Managed by us, in the EU</td>
+                            <td>Your servers, your mail provider</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fits when</strong></td>
+                            <td>You run feedback once or twice a year, or want to try a real round with a small team</td>
+                            <td>You review continuously or have more than {{ plan_single_max }} people</td>
+                            <td>You have someone to run a server and want full control</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="hosting-comparison-link">
+                <a href="{% landing_url 'pricing' %}" class="btn btn-secondary">See All Pricing Details →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section">
+        <div class="container">
+            <h2 class="section-title">Questions About the Single Round</h2>
+            <div class="faq-grid">
+                <details class="faq-item">
+                    <summary>What do I get for €{{ plan_single_price }}?</summary>
+                    <p>One purchase gives you {{ plan_single_max }} review cycles. A review cycle is one employee reviewed with one questionnaire: invitations, anonymous responses, and an individual report. That covers a feedback round for up to {{ plan_single_max }} employees.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do the review cycles expire?</summary>
+                    <p>No. Unused review cycles stay on your account until you use them. Deleting a review cycle does not give it back.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens when the round is finished?</summary>
+                    <p>Nothing is taken away. Review cycles that are still running finish normally, and every report stays available in your account. To start new review cycles after you have used all {{ plan_single_max }}, buy another round.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I buy another round later?</summary>
+                    <p>Yes. Each purchase adds {{ plan_single_max }} review cycles to the same account, and you can buy the next round from Settings inside your account. There is no subscription and nothing renews on its own.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do reviewers pay or need an account?</summary>
+                    <p>No. Reviewers are free and unlimited. They open a personal link, answer the questionnaire, and are done.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I switch to a subscription later?</summary>
+                    <p>Yes. A subscription is started from Settings inside your account, and your unused review cycles stay on the account. Subscriptions start with a {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do I get an invoice?</summary>
+                    <p>Yes. Payment is by card through Stripe, and you get an invoice from Stripe for the purchase.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I get a refund?</summary>
+                    <p>Unused rounds are refunded on request within 14 days of purchase. See the <a href="{% landing_url 'terms' %}">terms</a> for how to reach us.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What if I have more than {{ plan_single_max }} employees?</summary>
+                    <p>Buy more than one round, or choose the EU Hosted subscription: €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees with unlimited review cycles. <a href="{% landing_url 'pricing' %}">Compare the plans.</a></p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready for your next review round?</h2>
+                <p>€{{ plan_single_price }} once for up to {{ plan_single_max }} employees. No subscription, no charge for reviewers.</p>
+                <div class="cta-buttons">
+                    <a href="{% landing_url 'signup' %}?plan=single" class="btn btn-primary">Start a review round</a>
+                    <a href="{% landing_url 'pricing' %}" class="btn btn-secondary">Compare All Plans</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include "landing/includes/article_metadata.html" with template_path="landing/one_time_360_review.html" %}
+{% endblock %}
+
+{% block extra_scripts %}
+    <!-- FAQ Schema JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What do I get for €{{ plan_single_price }}?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "One purchase gives you {{ plan_single_max }} review cycles. A review cycle is one employee reviewed with one questionnaire: invitations, anonymous responses, and an individual report. That covers a feedback round for up to {{ plan_single_max }} employees."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do the review cycles expire?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No. Unused review cycles stay on your account until you use them. Deleting a review cycle does not give it back."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What happens when the round is finished?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Nothing is taken away. Review cycles that are still running finish normally, and every report stays available in your account. To start new review cycles after you have used all {{ plan_single_max }}, buy another round."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I buy another round later?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Each purchase adds {{ plan_single_max }} review cycles to the same account, and you can buy the next round from Settings inside your account. There is no subscription and nothing renews on its own."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do reviewers pay or need an account?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No. Reviewers are free and unlimited. They open a personal link, answer the questionnaire, and are done."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I switch to a subscription later?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. A subscription is started from Settings inside your account, and your unused review cycles stay on the account. Subscriptions start with a {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do I get an invoice?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Payment is by card through Stripe, and you get an invoice from Stripe for the purchase."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I get a refund?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Unused rounds are refunded on request within 14 days of purchase."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What if I have more than {{ plan_single_max }} employees?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Buy more than one round, or choose the EU Hosted subscription: €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees with unlimited review cycles."
+                }
+            }
+        ]
+    }
+    </script>
+{% endblock %}

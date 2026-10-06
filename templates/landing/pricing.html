@@ -2,10 +2,10 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo</title>
+    <title>Blik360 Pricing — Self-Host Free, €{{ plan_single_price }} Once, or €{{ plan_saas_price }}/mo</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Self-host free, or choose EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. Flat plan pricing and a {{ trial_days }}-day trial; credit card required.">
+    <meta name="description" content="Self-host free, pay €{{ plan_single_price }} once for a hosted review round of up to {{ plan_single_max }} employees, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
     <meta name="keywords" content="360 feedback pricing, performance review cost, self-hosted free, open source HR software pricing, Lattice alternative cost, Culture Amp pricing comparison">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
@@ -13,25 +13,25 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
-    <meta property="og:title" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo">
-    <meta property="og:description" content="Self-host free, or choose EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. Flat plan pricing and a {{ trial_days }}-day trial; credit card required.">
+    <meta property="og:title" content="Blik360 Pricing — Self-Host Free, €{{ plan_single_price }} Once, or €{{ plan_saas_price }}/mo">
+    <meta property="og:description" content="Self-host free, pay €{{ plan_single_price }} once for a hosted review round of up to {{ plan_single_max }} employees, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
     <meta property="og:site_name" content="{{ site_name }}">
-    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20%E2%82%AC{{ plan_single_price }}%20once%20%7C%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:alt" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo">
+    <meta property="og:image:alt" content="Blik360 Pricing — Self-Host Free, €{{ plan_single_price }} Once, or €{{ plan_saas_price }}/mo">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
-    <meta name="twitter:title" content="Blik360 Pricing — Free Self-Hosted | EU Hosted from €{{ plan_saas_price }}/mo">
-    <meta name="twitter:description" content="Self-host free, or choose EU hosting from €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees. Flat plan pricing and a {{ trial_days }}-day trial; credit card required.">
-    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
+    <meta name="twitter:title" content="Blik360 Pricing — Self-Host Free, €{{ plan_single_price }} Once, or €{{ plan_saas_price }}/mo">
+    <meta name="twitter:description" content="Self-host free, pay €{{ plan_single_price }} once for a hosted review round of up to {{ plan_single_max }} employees, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
+    <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20%E2%82%AC{{ plan_single_price }}%20once%20%7C%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/pricing.html" headline="Pricing - Self-Hosted Free or EU Hosted" description="Blik pricing: Free via self-hosted open source (AGPL-3.0), or flat-rate EU hosted plans with no per-user fees." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20EU%20from%20%E2%82%AC"|add:plan_saas_price|add:"%2Fmo" %}
+    {% article_schema "landing/pricing.html" headline="Pricing - Self-Hosted Free, Single Round, or EU Hosted" description="Blik pricing: free self-hosted open source (AGPL-3.0), a one-time hosted review round, or flat-rate EU hosted plans with no per-user fees." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20%E2%82%AC"|add:plan_single_price|add:"%20once%20%7C%20%E2%82%AC"|add:plan_saas_price|add:"%2Fmo" %}
 {% endblock %}
 
 {% block extra_head %}
@@ -77,6 +77,15 @@
             },
             {
                 "@type": "Offer",
+                "name": "Single Round",
+                "price": "{{ plan_single_price }}",
+                "priceCurrency": "EUR",
+                "description": "One hosted review round for up to {{ plan_single_max }} employees. One-time payment, no subscription.",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'one_time_360_review' %}"
+            },
+            {
+                "@type": "Offer",
                 "name": "EU Hosted SaaS - Small Team",
                 "price": "{{ plan_saas_price }}",
                 "priceCurrency": "EUR",
@@ -114,8 +123,8 @@
             <div class="hero-content">
                 <h1 class="hero-title">Simple, Flat Pricing</h1>
                 <p class="hero-subtitle">
-                    Self-host free, or choose managed EU hosting: €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees.
-                    Monthly billing, clear employee limits, and cancellation anytime.
+                    Self-host free, pay €{{ plan_single_price }} once for a single hosted review round, or subscribe to managed EU hosting from €{{ plan_saas_price }}/month.
+                    No per-user fees, clear limits, and no long-term contract.
                 </p>
             </div>
         </div>
@@ -126,85 +135,11 @@
         <div class="container">
             <h2 class="section-title">Choose What Works for You</h2>
 
-            <div class="hosting-plans">
-                <!-- Self-Hosted -->
-                <div class="feature-card feature-card-success hosting-self">
-                    <div class="hosting-badge">
-                        MOST POPULAR
-                    </div>
-                    <h3>Self-Hosted</h3>
-                    <div class="hosting-price hosting-price--self">€0</div>
-                    <p class="hosting-summary">Free forever</p>
+            {% include "landing/includes/pricing_plans.html" %}
 
-                    <ul class="hosting-features">
-                        <li>✓ Unlimited employees</li>
-                        <li>✓ All features included</li>
-                        <li>✓ 4 pre-built questionnaires</li>
-                        <li>✓ Full API access</li>
-                        <li>✓ Complete data control</li>
-                        <li>✓ Your infrastructure</li>
-                        <li>✓ Docker deployment</li>
-                        <li>✓ PostgreSQL or SQLite</li>
-                        <li>✓ AGPL-3.0 license</li>
-                        <li>✓ Community support</li>
-                    </ul>
-
-                    <p class="hosting-note">
-                        <strong>Your costs:</strong> a small EU VPS (≈€10-50/month), plus your time for setup and maintenance.
-                    </p>
-
-                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary hosting-action" target="_blank" rel="noopener">Get Started on GitHub</a>
-                </div>
-
-                <!-- Hosted - Small Team -->
-                <div class="feature-card">
-                    <h3>EU Hosted - Small</h3>
-                    <div class="hosting-price">€{{ plan_saas_price }}</div>
-                    <p class="hosting-summary">per month</p>
-
-                    <p class="hosting-limit">Up to {{ plan_saas_max }} employees</p>
-
-                    <ul class="hosting-features">
-                        <li>✓ Everything in Self-Hosted</li>
-                        <li>✓ EU servers (Hetzner, Germany)</li>
-                        <li>✓ Automatic updates</li>
-                        <li>✓ Daily backups</li>
-                        <li>✓ SSL certificates included</li>
-                        <li>✓ Email support</li>
-                        <li>✓ GDPR export and deletion tools</li>
-                        <li>✓ {{ trial_days }}-day free trial</li>
-                        <li>✓ Cancel anytime</li>
-                    </ul>
-
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary hosting-action">Start Free Trial</a>
-                </div>
-
-                <!-- Hosted - Enterprise -->
-                <div class="feature-card">
-                    <h3>EU Hosted - Enterprise</h3>
-                    <div class="hosting-price">€{{ plan_ent_price }}</div>
-                    <p class="hosting-summary">per month</p>
-
-                    <p class="hosting-limit">Up to {{ plan_ent_max }} employees</p>
-
-                    <ul class="hosting-features">
-                        <li>✓ Everything in Small plan</li>
-                        <li>✓ Priority support</li>
-                        <li>✓ SLA with uptime commitment (Enterprise)</li>
-                        <li>✓ Custom domain setup</li>
-                    </ul>
-
-                    <p class="hosting-note">
-                        <strong>Need more than {{ plan_ent_max }} employees?</strong> Contact us for custom pricing.
-                    </p>
-
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary hosting-action">Start Free Trial</a>
-                </div>
-            </div>
-
-            <div class="cta-box">
-                <p class="hosting-trial">{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
-                <p class="hosting-retention">Cancel anytime. Data export available. 30-day data retention after cancellation.</p>
+            <div class="cta-box mt-12">
+                <p class="hosting-trial">Subscriptions: {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
+                <p class="hosting-retention">Single Round: one payment, no trial, reports stay available. Subscriptions: cancel anytime, data export available, 30-day data retention after cancellation.</p>
             </div>
         </div>
     </section>
@@ -275,6 +210,16 @@
             <h2 class="section-title">Pricing Questions</h2>
             <div class="faq-grid">
                 <details class="faq-item">
+                    <summary>What does the €{{ plan_single_price }} Single Round include?</summary>
+                    <p>{{ plan_single_max }} review cycles on the hosted product. One review cycle is one employee reviewed with one questionnaire, including invitations, anonymous responses, and the report. All questionnaires and reports are included and reviewers are free. Review cycles don't expire and reports stay available. <a href="{% landing_url 'one_time_360_review' %}">Full details.</a></p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Should I pick the Single Round or a subscription?</summary>
+                    <p>Pick the Single Round if you run feedback once or twice a year for up to {{ plan_single_max }} people at a time: you pay €{{ plan_single_price }} per round and nothing in between. Pick a subscription if you review continuously or have more people: €{{ plan_saas_price }}/month covers up to {{ plan_saas_max }} employees with unlimited review cycles. You can start a subscription later from Settings inside your account.</p>
+                </details>
+
+                <details class="faq-item">
                     <summary>Why is self-hosting free?</summary>
                     <p>Blik is open source under the AGPL-3.0 license. Self-hosting has no software license fee. Hosted plans cover managed EU infrastructure, updates, backups, and support.</p>
                 </details>
@@ -311,7 +256,7 @@
 
                 <details class="faq-item">
                     <summary>Is there a refund policy?</summary>
-                    <p>{{ trial_days }}-day free trial means you can try before you pay. After that, if you cancel, you're billed for the current month and that's it. No refunds on partial months, but you keep access until the end of your billing period.</p>
+                    <p>{{ trial_days }}-day free trial means you can try before you pay. After that, if you cancel, you're billed for the current month and that's it. No refunds on partial months, but you keep access until the end of your billing period. For the Single Round, unused rounds are refunded on request within 14 days of purchase.</p>
                 </details>
 
                 <details class="faq-item">
@@ -326,13 +271,14 @@
     <section class="section">
         <div class="container">
             <div class="cta-box">
-                <h2 class="cta-heading">Simple, flat pricing. Try it free for {{ trial_days }} days.</h2>
+                <h2 class="cta-heading">Simple, flat pricing. Pay once, subscribe, or self-host.</h2>
                 <p class="cta-description">
-                    Self-host free, or choose managed hosting. {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
+                    Run a single hosted round for €{{ plan_single_price }}, or try a subscription with a {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                 </p>
                 <div class="action-links">
-                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Self-Host (Free)</a>
+                    <a href="{% landing_url 'signup' %}?plan=single" class="btn btn-primary">Start a review round</a>
                     <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted ({{ trial_days }}-Day Trial)</a>
+                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Self-Host (Free)</a>
                 </div>
             </div>
         </div>

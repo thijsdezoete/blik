@@ -115,12 +115,11 @@ def portfolio_strategy(request):
 
 
 def signup(request):
-    """Signup page with Stripe checkout integration."""
+    """Signup page. The main app creates the Stripe Checkout session."""
     context = {
-        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
-        'stripe_price_id_saas': settings.STRIPE_PRICE_ID_SAAS,
-        'stripe_price_id_enterprise': settings.STRIPE_PRICE_ID_ENTERPRISE,
-        # main_app_url, site_name, site_domain, site_protocol now provided by context processor
+        # Every €19 CTA links here with ?plan=single to highlight that card
+        'selected_plan': request.GET.get('plan', '')
+        if request.GET.get('plan') in ('single', 'enterprise') else '',
     }
     return render(request, 'landing/signup.html', context)
 
@@ -184,6 +183,11 @@ def about(request):
 def pricing(request):
     """Pricing page - transparent, indexed pricing information."""
     return render(request, 'landing/pricing.html')
+
+
+def one_time_360_review(request):
+    """Single Round page: one hosted review round, paid once."""
+    return render(request, 'landing/one_time_360_review.html')
 
 
 def faq(request):

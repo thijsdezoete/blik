@@ -5,7 +5,7 @@
     <title>360° Feedback for Growing Teams — No IT Required | Blik360</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_saas_price }}/mo.">
+    <meta name="description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_single_price }} per round or €{{ plan_saas_price }}/mo.">
     <meta name="keywords" content="360 feedback HR, performance review software, employee feedback, HR tools, anonymous feedback, GDPR support tools">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
     <meta property="og:title" content="360° Feedback for Growing Teams — No IT Required | Blik360">
-    <meta property="og:description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_saas_price }}/mo.">
+    <meta property="og:description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_single_price }} per round or €{{ plan_saas_price }}/mo.">
     <meta property="og:site_name" content="{{ site_name }}">
     <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=360%C2%B0%20Feedback&subtitle=No%20IT%20Required">
     <meta property="og:image:width" content="1200">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}/hr-managers/">
     <meta name="twitter:title" content="360° Feedback for Growing Teams — No IT Required | Blik360">
-    <meta name="twitter:description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_saas_price }}/mo.">
+    <meta name="twitter:description" content="Professional 360 feedback for HR managers at companies with 30-{{ plan_saas_max }} employees. Category-aggregated reports, GDPR support tools, managed EU hosting. From €{{ plan_single_price }} per round or €{{ plan_saas_price }}/mo.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=360%C2%B0%20Feedback&subtitle=No%20IT%20Required">
 {% endblock %}
 
@@ -76,7 +76,7 @@
                 <div class="feature-card">
                     <div class="audience-step-number">1</div>
                     <h3>Quick Setup</h3>
-                    <p>Choose between our hosted solution (€{{ plan_saas_price }}/month) or share the open-source option with your IT team. Either way, you'll be running in under 30 minutes with Docker Compose.</p>
+                    <p>Choose our hosted solution (€{{ plan_single_price }} for a single round, or €{{ plan_saas_price }}/month) or share the open-source option with your IT team. Either way, you'll be running in under 30 minutes with Docker Compose.</p>
                 </div>
 
                 <div class="feature-card">
@@ -281,40 +281,7 @@
     <section id="pricing" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Choose What Works for Your Team</h2>
-            <div class="pricing-grid">
-                <div class="pricing-card pricing-featured">
-                    <div class="featured-badge">Recommended for HR</div>
-                    <h3>EU Hosted</h3>
-                    <div class="price">€{{ plan_saas_price }}</div>
-                    <p class="price-desc">per month</p>
-                    <ul class="pricing-features">
-                        <li>Perfect for 30-{{ plan_saas_max }} employees</li>
-                        <li>No IT setup required</li>
-                        <li>Hosted in EU</li>
-                        <li>Automatic updates</li>
-                        <li>Daily backups</li>
-                        <li>Email support</li>
-                        <li>Custom domain included</li>
-                        <li>{{ trial_days }}-day free trial</li>
-                    </ul>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
-                </div>
-                <div class="pricing-card">
-                    <h3>Self-Hosted</h3>
-                    <div class="price">Free</div>
-                    <p class="price-desc">Forever</p>
-                    <ul class="pricing-features">
-                        <li>Unlimited employees</li>
-                        <li>All features included</li>
-                        <li>Open source (AGPL license)</li>
-                        <li>Deploy on your infrastructure</li>
-                        <li>Full data ownership</li>
-                        <li>Community support</li>
-                        <li>One-time IT setup needed</li>
-                    </ul>
-                    <a href="{% landing_url 'open_source' %}" class="btn btn-secondary">For Your IT Team</a>
-                </div>
-            </div>
+            {% include "landing/includes/pricing_plans.html" %}
 
             <div class="cta-box mt-12">
                 <h3>Working with your IT team?</h3>
@@ -382,6 +349,11 @@
                 <details class="faq-item">
                     <summary>Do you offer training or support?</summary>
                     <p>The system is intuitive enough that most HR managers don't need training. We provide email support for hosted customers and comprehensive documentation. For self-hosted installations, your IT team can access community support on GitHub.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can we run a pilot round without a subscription?</summary>
+                    <p>Yes. The Single Round is €{{ plan_single_price }} once for a hosted feedback round of up to {{ plan_single_max }} employees, with no subscription and no charge for reviewers. Reports stay available afterwards, and you can start a subscription later from Settings inside your account. <a href="{% landing_url 'one_time_360_review' %}">See what's included.</a></p>
                 </details>
 
                 <details class="faq-item">

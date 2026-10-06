@@ -81,6 +81,7 @@ Blik supports confidential review workflows, but tokenized access is not an anon
 Marketing templates in `templates/landing/` run under both the main application and the DB-less `landing_settings` deployment.
 
 - `landing/context_processors.py:PRICING` supplies hosted prices, employee caps, annual equivalents, and trial length to both deployments. Keep it aligned with `subscriptions/fixtures/plans.json` and the checkout trial configuration; do not duplicate these values in page copy.
+- `plan_single_price` and `plan_single_max` in the same dict describe the one-time Single Round. Keep them aligned with the Stripe price behind `STRIPE_PRICE_ID_SINGLE` and with the 10 review-cycle credits the main app grants per purchase.
 - Hosted plans cap active reviewees, not organization members. Trial copy must state that a credit card is required.
 - Competitor prices retain their source currency, source link, and actual verification date. Do not turn verification dates into dynamic current-year labels.
 - `templates/landing/roi_calculator.html` documents its conversion and package assumptions. It uses published Blik tiers, and shows contact pricing rather than inventing a price or savings above the largest tier.

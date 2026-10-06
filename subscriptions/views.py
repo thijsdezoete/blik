@@ -7,18 +7,14 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.contrib.auth.models import User
 from django.utils import timezone
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django_ratelimit.decorators import ratelimit
-from datetime import datetime, timezone as dt_timezone
-from core.models import Organization
-from .models import Plan, Subscription, OneTimeLoginToken
+from .models import Subscription, OneTimeLoginToken
 from .fulfilment import _period, _ts, fulfil_checkout
-from accounts.services import create_user_with_email_as_username
 from .utils import price_id_for
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -149,7 +145,7 @@ def stripe_webhook(request):
         if event['type'] == 'checkout.session.completed':
             logger.info(f"[STRIPE WEBHOOK] Processing checkout.session.completed")
             session = event['data']['object']
-            handle_checkout_session_completed(session)
+            fulfil_checkout(session)
             logger.info(f"[STRIPE WEBHOOK] ✓ Successfully processed checkout.session.completed")
 
         elif event['type'] == 'customer.subscription.updated':
@@ -172,115 +168,14 @@ def stripe_webhook(request):
         else:
             logger.warning(f"[STRIPE WEBHOOK] Unhandled event type: {event['type']}")
 
-    except Exception as e:
-        logger.error(f"[STRIPE WEBHOOK] ✗ Error processing event {event['type']}: {str(e)}")
-        logger.exception(e)
-        # Still return 200 to prevent Stripe from retrying
-        return HttpResponse(status=200)
+    except Exception:
+        logger.exception("[STRIPE WEBHOOK] ✗ Error processing event %s", event['type'])
+        # 500 so Stripe retries. Every handler is idempotent, and a failed
+        # fulfilment leaves nothing behind.
+        return HttpResponse(status=500)
 
     logger.info(f"[STRIPE WEBHOOK] ✓ Webhook processing complete")
     return HttpResponse(status=200)
-
-
-def handle_checkout_session_completed(session):
-    """
-    Handle successful checkout - create organization and user
-    This is the PRIMARY registration path for new customers
-    """
-    # Extract metadata from checkout session
-    customer_email = session['customer_details']['email']
-    customer_name = session['customer_details']['name']
-    plan_type = session['metadata'].get('plan_type')  # 'saas' or 'enterprise'
-
-    # Get Stripe subscription details
-    stripe_customer_id = session['customer']
-    stripe_subscription_id = session['subscription']
-
-    # Check if subscription already exists (idempotency)
-    if Subscription.objects.filter(stripe_subscription_id=stripe_subscription_id).exists():
-        logger.info("Subscription %s already exists, skipping creation", stripe_subscription_id)
-        return
-
-    stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id).to_dict()
-
-    # Get or create plan
-    try:
-        plan = Plan.objects.get(plan_type=plan_type)
-    except Plan.DoesNotExist:
-        logger.error("Plan type %r not found. Please create plans in admin.", plan_type)
-        return
-
-    # Check if user already exists
-    existing_user = User.objects.filter(email=customer_email).first()
-    if existing_user:
-        logger.warning("User %s already exists. Linking to existing user.", customer_email)
-        user = existing_user
-        password = None  # Don't generate new password for existing user
-    else:
-        # Create admin user with random password (will be sent via email)
-        try:
-            user, password = create_user_with_email_as_username(
-                email=customer_email,
-                password=None,  # Generate random password
-                is_staff=True,  # Organization admin can manage their org
-                is_active=True
-            )
-            # password now contains the generated password for the welcome email
-        except ValueError as e:
-            logger.error("Could not create user: %s", e)
-            return HttpResponse(status=400)
-
-    # Create organization
-    org = Organization.objects.create(
-        name=customer_name,
-        email=customer_email
-    )
-
-    # Create user profile
-    from accounts.models import UserProfile
-    UserProfile.objects.create(
-        user=user,
-        organization=org,
-        can_create_cycles_for_others=True
-    )
-
-    # Assign organization admin permissions (Django permission system)
-    from accounts.permissions import assign_organization_admin
-    assign_organization_admin(user)
-
-    current_start, current_end = _period(stripe_subscription)
-
-    Subscription.objects.create(
-        organization=org,
-        plan=plan,
-        stripe_customer_id=stripe_customer_id,
-        stripe_subscription_id=stripe_subscription_id,
-        status=stripe_subscription.get('status', 'trialing'),
-        current_period_start=_ts(current_start),
-        current_period_end=_ts(current_end),
-        trial_start=_ts(stripe_subscription.get('trial_start')),
-        trial_end=_ts(stripe_subscription.get('trial_end')),
-    )
-
-    # Create one-time login token for auto-login
-    from .models import OneTimeLoginToken
-    from datetime import timedelta
-
-    login_token = OneTimeLoginToken.objects.create(
-        user=user,
-        expires_at=timezone.now() + timedelta(hours=1)
-    )
-
-    # Send welcome email (only if new user with password)
-    if password:
-        from core.email import send_welcome_email
-        try:
-            send_welcome_email(user, org, password=password)
-        except Exception as e:
-            # Log error but don't fail the signup
-            logger.exception("Failed to send welcome email to %s", user.email)
-
-    logger.info("Created organization %r for %s", org.name, user.email)
 
 
 def handle_subscription_updated(stripe_subscription):
@@ -325,107 +220,71 @@ def handle_payment_failed(invoice):
 
 
 def checkout_success(request):
-    """
-    Handle Stripe checkout success redirect.
-    Wait for webhook to create account, then redirect to auto-login.
-    """
-
+    """Stripe's success redirect. Fulfil (or confirm) the purchase, then route the buyer."""
     session_id = request.GET.get('session_id')
-    logger.info(f"[CHECKOUT SUCCESS] Received session_id: {session_id}")
-
     if not session_id:
-        logger.warning("[CHECKOUT SUCCESS] No session_id provided, redirecting to login")
         return redirect('login')
 
     try:
-        # Retrieve the session to get customer email
         session = stripe.checkout.Session.retrieve(session_id).to_dict()
-        customer_email = session['customer_details']['email']
-        logger.info(f"[CHECKOUT SUCCESS] Customer email: {customer_email}")
-        logger.info(f"[CHECKOUT SUCCESS] Session status: {session.get('status')}")
-        logger.info(f"[CHECKOUT SUCCESS] Payment status: {session.get('payment_status')}")
-
-        # Poll for the user to be created (webhook might still be processing)
-        import time
-        max_attempts = 10
-        for attempt in range(max_attempts):
-            logger.info(f"[CHECKOUT SUCCESS] Poll attempt {attempt + 1}/{max_attempts}")
-            user = User.objects.filter(email=customer_email).first()
-            if user:
-                logger.info(f"[CHECKOUT SUCCESS] User found: {user.username}")
-                # Get the latest login token for this user
-                token = OneTimeLoginToken.objects.filter(
-                    user=user,
-                    used=False,
-                    expires_at__gt=timezone.now()
-                ).order_by('-created_at').first()
-
-                if token:
-                    logger.info(f"[CHECKOUT SUCCESS] Login token found, redirecting to auto-login")
-                    return redirect('subscriptions:auto_login', token=token.token)
-                else:
-                    logger.warning(f"[CHECKOUT SUCCESS] User exists but no valid login token found")
-
-            if attempt < max_attempts - 1:
-                time.sleep(1)  # Wait 1 second before retrying
-
-        # If we get here, webhook didn't fire - create user manually as fallback
-        logger.warning(f"[CHECKOUT SUCCESS] Webhook timeout - creating user manually for {customer_email}")
-
-        try:
-            # Manually trigger the user creation (same as webhook would do)
-            handle_checkout_session_completed(session)
-            logger.info(f"[CHECKOUT SUCCESS] User created manually, retrying login token lookup")
-
-            # Try one more time to get the user and token
-            user = User.objects.filter(email=customer_email).first()
-            if user:
-                token = OneTimeLoginToken.objects.filter(
-                    user=user,
-                    used=False,
-                    expires_at__gt=timezone.now()
-                ).order_by('-created_at').first()
-
-                if token:
-                    logger.info(f"[CHECKOUT SUCCESS] Manual creation successful, redirecting to auto-login")
-                    return redirect('subscriptions:auto_login', token=token.token)
-
-        except Exception as e:
-            logger.error(f"[CHECKOUT SUCCESS] Failed to create user manually: {e}")
-            import traceback
-            logger.error(traceback.format_exc())
-
-        # If still no success, redirect to login
-        logger.error(f"[CHECKOUT SUCCESS] All attempts failed for {customer_email}")
+    except Exception:
+        logger.exception("[CHECKOUT SUCCESS] Could not retrieve session %s", session_id)
         return redirect('login')
 
-    except Exception as e:
-        logger.error(f"[CHECKOUT SUCCESS] Error: {e}")
-        logger.exception(e)
+    try:
+        # Same idempotent call the webhook makes; whichever runs first does the work.
+        fulfilment = fulfil_checkout(session)
+    except Exception:
+        logger.exception("[CHECKOUT SUCCESS] Fulfilment failed for %s", session_id)
+        messages.info(request, "Payment received. We're finishing your setup; "
+                               "you'll get an email shortly.")
         return redirect('login')
+
+    if fulfilment is None:
+        return redirect('login')
+
+    signed_in = request.user.is_authenticated
+
+    if fulfilment.outcome == 'fulfilled' and fulfilment.user_created:
+        # Only this checkout's own token. Never looked up by email.
+        token = OneTimeLoginToken.objects.filter(
+            fulfilment=fulfilment, used=False, expires_at__gt=timezone.now(),
+        ).first()
+        if token and (not signed_in or request.user == fulfilment.user):
+            return redirect('subscriptions:auto_login', token=token.token)
+
+    if fulfilment.outcome == 'fulfilled':
+        messages.success(request, 'Payment received. Your purchase has been added to your account.')
+        return redirect('admin_dashboard' if signed_in else 'login')
+
+    if fulfilment.outcome == 'rejected_existing_account':
+        messages.error(request, 'This email address already has an account. The new subscription '
+                                'was cancelled and nothing was charged. Sign in and choose a plan '
+                                'under Settings.')
+    else:
+        messages.error(request, 'This organization already has a subscription. The new one was '
+                                'cancelled and nothing was charged.')
+    return redirect('settings' if signed_in else 'login')
 
 
 def auto_login(request, token):
-    """Auto-login user with one-time token"""
-    try:
-        login_token = OneTimeLoginToken.objects.get(
-            token=token,
-            used=False,
-            expires_at__gt=timezone.now()
-        )
-
-        # Mark token as used
-        login_token.used = True
-        login_token.save()
-
-        # Log the user in
-        login(request, login_token.user, backend='django.contrib.auth.backends.ModelBackend')
-
-        # Redirect to setup wizard for onboarding
-        return redirect('setup_organization')
-
-    except OneTimeLoginToken.DoesNotExist:
+    """Log in with a one-time token. Single use; never replaces another user's session."""
+    login_token = OneTimeLoginToken.objects.filter(token=token).select_related('user').first()
+    if login_token is None:
         return redirect('login')
+
+    if request.user.is_authenticated and request.user != login_token.user:
+        return redirect('admin_dashboard')
+
+    # Conditional update: of two simultaneous requests, exactly one consumes it.
+    consumed = OneTimeLoginToken.objects.filter(
+        pk=login_token.pk, used=False, expires_at__gt=timezone.now(),
+    ).update(used=True)
+    if consumed != 1:
+        return redirect('login')
+
+    login(request, login_token.user, backend='django.contrib.auth.backends.ModelBackend')
+    return redirect('setup_organization')
 
 
 @login_required

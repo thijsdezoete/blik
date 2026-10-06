@@ -20,7 +20,7 @@ def _event():
     return stripe.Event.construct_from({
         'id': 'evt_1', 'type': 'checkout.session.completed',
         'data': {'object': {
-            'id': 'cs_1', 'customer': 'cus_1', 'subscription': 'sub_1',
+            'id': 'cs_1', 'mode': 'subscription', 'customer': 'cus_1', 'subscription': 'sub_1',
             'status': 'complete', 'payment_status': 'paid',
             'customer_details': {'email': 'buyer@example.com', 'name': 'Buyer Inc'},
             'metadata': {'plan_type': 'saas'},

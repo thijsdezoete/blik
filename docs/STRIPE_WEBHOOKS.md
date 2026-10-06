@@ -95,6 +95,19 @@ When a customer completes checkout, the webhook handler:
 - Verify SMTP settings in Organization admin panel
 - Check logs for email sending errors
 
+### Failed deliveries are retried
+
+The webhook returns HTTP 500 when processing an event fails, so Stripe retries
+it with backoff for up to three days. Fulfilment is idempotent: a retried or
+duplicated `checkout.session.completed` grants its purchase once. A delivery
+that keeps failing shows as failed in the Stripe dashboard; check the app logs
+for `[STRIPE WEBHOOK] ✗ Error processing event`.
+
+Checkout accepts cards only, so `checkout.session.completed` is the only
+event needed for one-time purchases. Enabling a delayed payment method (SEPA
+debit, bank transfer) would also require handling
+`checkout.session.async_payment_succeeded`.
+
 ## Testing Webhooks
 
 ### Trigger test events with Stripe CLI:

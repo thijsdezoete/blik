@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -85,6 +88,6 @@ class OrganizationMiddleware:
                     # Fallback for superadmin users without profiles
                     request.organization = Organization.objects.first()
             except Exception as e:
-                print(f"Error getting organization for user {request.user}: {e}")
+                logger.exception("Error getting organization for user %s", request.user)
 
         return self.get_response(request)

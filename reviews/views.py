@@ -273,10 +273,10 @@ def submit_feedback(request, token):
                     if organization and organization.auto_send_report_email:
                         email_stats = send_report_ready_notification(report)
                         if email_stats.get('errors'):
-                            print(f"Errors sending report email for cycle {cycle.id}: {email_stats['errors']}")
+                            logger.error("Errors sending report email for cycle %s: %s", cycle.id, email_stats['errors'])
                 except Exception as e:
                     # Log error but don't fail the submission
-                    print(f"Error auto-generating report for cycle {cycle.id}: {e}")
+                    logger.exception("Error auto-generating report for cycle %s", cycle.id)
 
         return JsonResponse({'success': True, 'redirect': f'/feedback/{token}/complete/'})
 

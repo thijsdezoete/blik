@@ -1918,12 +1918,12 @@ def remove_reviewer_token(request, cycle_uuid, token_id):
                     if organization and organization.auto_send_report_email:
                         email_stats = send_report_ready_notification(report, request)
                         if email_stats.get('errors'):
-                            print(f"Errors sending report email for cycle {cycle.id}: {email_stats['errors']}")
+                            logger.error("Errors sending report email for cycle %s: %s", cycle.id, email_stats['errors'])
 
                     messages.success(request, 'Cycle automatically closed and report generated (all remaining reviewers completed).')
                 except Exception as e:
                     # Log error but don't fail the removal
-                    print(f"Error auto-generating report for cycle {cycle.id}: {e}")
+                    logger.exception("Error auto-generating report for cycle %s", cycle.id)
                     messages.warning(request, f'Cycle closed but error generating report: {str(e)}')
 
     except ReviewerToken.DoesNotExist:
@@ -2059,13 +2059,10 @@ def settings_view(request):
     try:
         from subscriptions.models import Subscription
         subscription = organization.subscription
-        print(f"DEBUG: Found subscription for {organization.name}: {subscription.plan.name} - {subscription.status}")
-    except (Subscription.DoesNotExist, AttributeError) as e:
-        print(f"DEBUG: No subscription for {organization.name}: {type(e).__name__}")
-    except Exception as e:
-        print(f"DEBUG: Error getting subscription: {type(e).__name__}: {e}")
-
-    print(f"DEBUG: Passing subscription to template: {subscription}")
+    except (Subscription.DoesNotExist, AttributeError):
+        pass
+    except Exception:
+        logger.exception("Error getting subscription for %s", organization.name)
 
     # Check if current user has organization admin permission
     is_org_admin = request.user.has_perm('accounts.can_manage_organization')

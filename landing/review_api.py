@@ -4,6 +4,9 @@ Utility to fetch product review data from main app API.
 The landing container runs separately without database access,
 so it fetches review data via HTTP from the main app's API endpoint.
 """
+import logging
+
+logger = logging.getLogger(__name__)
 import requests
 from django.conf import settings
 
@@ -36,5 +39,5 @@ def get_review_data_from_api():
         return None
     except (requests.RequestException, ValueError, KeyError) as e:
         # Log the error but don't break the page
-        print(f"Warning: Could not fetch review data from API: {e}")
+        logger.warning("Could not fetch review data from API: %s", e)
         return None

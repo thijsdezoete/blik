@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -151,7 +154,7 @@ def signup_view(request):
             from core.email import send_welcome_email
             send_welcome_email(user, invitation.organization)
         except Exception as e:
-            print(f"Failed to send welcome email to {user.email}: {e}")
+            logger.exception("Failed to send welcome email to %s", user.email)
 
         # Clear session
         del request.session['invitation_token']
@@ -196,7 +199,7 @@ def forgot_password_view(request):
                     from core.email import send_password_reset_email
                     send_password_reset_email(user, token)
                 except Exception as e:
-                    print(f"Failed to send password reset email to {email}: {e}")
+                    logger.exception("Failed to send password reset email to %s", email)
             except User.DoesNotExist:
                 # Don't reveal if email exists - security best practice
                 pass

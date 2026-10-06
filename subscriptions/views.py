@@ -79,8 +79,6 @@ def create_checkout_session(request):
 @csrf_exempt
 def stripe_webhook(request):
     """Handle Stripe webhook events"""
-    import logging
-    logger = logging.getLogger(__name__)
 
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
@@ -177,7 +175,7 @@ def handle_checkout_session_completed(session):
 
     # Check if subscription already exists (idempotency)
     if Subscription.objects.filter(stripe_subscription_id=stripe_subscription_id).exists():
-        print(f"Subscription {stripe_subscription_id} already exists, skipping creation")
+        logger.info("Subscription %s already exists, skipping creation", stripe_subscription_id)
         return
 
     stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id).to_dict()
@@ -186,13 +184,13 @@ def handle_checkout_session_completed(session):
     try:
         plan = Plan.objects.get(plan_type=plan_type)
     except Plan.DoesNotExist:
-        print(f"ERROR: Plan type '{plan_type}' not found. Please create plans in admin.")
+        logger.error("Plan type %r not found. Please create plans in admin.", plan_type)
         return
 
     # Check if user already exists
     existing_user = User.objects.filter(email=customer_email).first()
     if existing_user:
-        print(f"WARNING: User {customer_email} already exists. Linking to existing user.")
+        logger.warning("User %s already exists. Linking to existing user.", customer_email)
         user = existing_user
         password = None  # Don't generate new password for existing user
     else:
@@ -206,7 +204,7 @@ def handle_checkout_session_completed(session):
             )
             # password now contains the generated password for the welcome email
         except ValueError as e:
-            print(f"ERROR: Could not create user: {e}")
+            logger.error("Could not create user: %s", e)
             return HttpResponse(status=400)
 
     # Create organization
@@ -257,9 +255,9 @@ def handle_checkout_session_completed(session):
             send_welcome_email(user, org, password=password)
         except Exception as e:
             # Log error but don't fail the signup
-            print(f"Failed to send welcome email to {user.email}: {e}")
+            logger.exception("Failed to send welcome email to %s", user.email)
 
-    print(f"Created organization '{org.name}' with auto-login token: {login_token.token}")
+    logger.info("Created organization %r for %s", org.name, user.email)
 
 
 def handle_subscription_updated(stripe_subscription):
@@ -308,8 +306,6 @@ def checkout_success(request):
     Handle Stripe checkout success redirect.
     Wait for webhook to create account, then redirect to auto-login.
     """
-    import logging
-    logger = logging.getLogger(__name__)
 
     session_id = request.GET.get('session_id')
     logger.info(f"[CHECKOUT SUCCESS] Received session_id: {session_id}")
@@ -433,5 +429,5 @@ def billing_portal(request):
         return redirect(session.url)
 
     except Exception as e:
-        print(f"Error creating billing portal session: {e}")
+        logger.exception("Error creating billing portal session")
         return redirect('settings')

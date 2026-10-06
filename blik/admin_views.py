@@ -1278,7 +1278,7 @@ def review_cycle_list(request):
 @login_required
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
-    from subscriptions.utils import NoCycleCredits, cycle_credits
+    from subscriptions.utils import NoCycleCredits, billing_context, cycle_credits
     if request.method == 'POST':
         creation_mode = request.POST.get('creation_mode', 'single')
         questionnaire_id = request.POST.get('questionnaire')
@@ -1461,6 +1461,7 @@ def review_cycle_create(request):
         'reviewees': reviewees,
         'questionnaires': questionnaires,
         'can_create_for_others': hasattr(request.user, 'profile') and request.user.profile.can_create_cycles_for_others,
+        **billing_context(org, request.user),
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)

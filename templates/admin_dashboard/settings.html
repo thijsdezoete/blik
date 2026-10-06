@@ -244,6 +244,27 @@
             </div>
             {% endif %}
 
+            {% if round_credits is not None or can_start_subscription %}
+            <!-- Review rounds -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Review Rounds</h2>
+                </div>
+                <div class="card-body">
+                    {% if round_credits is not None %}
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">Review cycles remaining</label>
+                        <p style="margin: 0; font-size: 1.25rem; font-weight: 600;">{{ round_credits }}</p>
+                        {% if cycle_credits is None %}
+                        <p style="margin: 0.25rem 0 0; font-size: 0.8125rem; color: #64748b;">Not used while your subscription is active.</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% include "admin_dashboard/partials/billing_actions.html" %}
+                </div>
+            </div>
+            {% endif %}
+
         <!-- Email Settings -->
         <div class="card">
             <div class="card-header">

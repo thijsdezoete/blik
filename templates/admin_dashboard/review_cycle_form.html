@@ -9,6 +9,19 @@
 </div>
 
 <div style="max-width: 700px;">
+    {% if cycle_credits is not None %}
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-body">
+            {% if cycle_credits == 0 %}
+            <p style="margin: 0 0 1rem; font-weight: 600;">You have no review cycles left.</p>
+            <p style="margin: 0 0 1rem; font-size: 0.875rem; color: #64748b;">Cycles in progress continue and your reports stay available. To start a new cycle, buy another round or start a subscription.</p>
+            {% include "admin_dashboard/partials/billing_actions.html" %}
+            {% else %}
+            <p style="margin: 0; font-size: 0.875rem;">Review cycles remaining: <strong>{{ cycle_credits }}</strong>. Each cycle you create uses one.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
     <form method="post" id="cycleForm">
         {% csrf_token %}
 
@@ -180,7 +193,9 @@
         </div>
 
         <div style="display: flex; gap: 1rem;">
+            {% if cycle_credits != 0 %}
             <button type="submit" class="btn btn-primary" id="submitBtn">Create Review Cycle</button>
+            {% endif %}
             <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
@@ -206,13 +221,13 @@ function toggleRevieweeSelect() {
     if (mode === 'bulk') {
         revieweeGroup.style.display = 'none';
         revieweeSelect.removeAttribute('required');
-        submitBtn.textContent = 'Create Cycles (no emails yet)';
+        if (submitBtn) submitBtn.textContent = 'Create Cycles (no emails yet)';
         inviteSection.style.display = 'none'; // Hide invite section for bulk mode
         if (bulkNote) bulkNote.style.display = 'block';
     } else {
         revieweeGroup.style.display = 'block';
         revieweeSelect.setAttribute('required', 'required');
-        submitBtn.textContent = 'Create Review Cycle';
+        if (submitBtn) submitBtn.textContent = 'Create Review Cycle';
         inviteSection.style.display = 'block'; // Show invite section for single mode
         if (bulkNote) bulkNote.style.display = 'none';
     }

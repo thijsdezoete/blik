@@ -1,0 +1,24 @@
+{# Buy-a-round and start-a-subscription buttons. Context: is_org_admin, can_start_subscription, HAS_STRIPE_CONFIGURED, plan_single_price #}
+{% if is_org_admin and HAS_STRIPE_CONFIGURED %}
+<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <form method="post" action="{% url 'subscriptions:start_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="plan_type" value="single">
+        <button type="submit" class="btn btn-primary">Buy another round{% if plan_single_price %} (€{{ plan_single_price }}){% endif %}</button>
+    </form>
+    {% if can_start_subscription %}
+    <form method="post" action="{% url 'subscriptions:start_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="plan_type" value="saas">
+        <button type="submit" class="btn btn-secondary">Start EU Hosted subscription</button>
+    </form>
+    <form method="post" action="{% url 'subscriptions:start_checkout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="plan_type" value="enterprise">
+        <button type="submit" class="btn btn-secondary">Start Enterprise subscription</button>
+    </form>
+    {% endif %}
+</div>
+{% else %}
+<p style="margin: 0; font-size: 0.875rem; color: #64748b;">Ask an organization administrator to buy another round.</p>
+{% endif %}

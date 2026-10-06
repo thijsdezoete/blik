@@ -89,3 +89,33 @@ class SendRevieweeNotificationsTests(TestCase):
         )
         self.assertIn('https://public.example.com/', rendered)
         self.assertNotIn('proxy.internal', rendered)
+
+
+class SendSelfAssessmentInviteTests(TestCase):
+    """GitHub #20: the per-reviewer "Send Invite" button on a self-assessment
+    token said "No pending invitations to send" because the view ignored
+    token_id and the service always excluded the self category."""
+
+    def setUp(self):
+        self.org = OrganizationFactory()
+        self.reviewee = RevieweeFactory(organization=self.org, email='reviewee@example.com')
+        self.cycle = ReviewCycleFactory(
+            reviewee=self.reviewee,
+            questionnaire=QuestionnaireFactory(organization=self.org),
+            created_by=UserFactory(),
+        )
+        self.token = ReviewerTokenFactory(
+            cycle=self.cycle, category='self', reviewer_email=self.reviewee.email,
+        )
+
+    @patch('reviews.services.send_email')
+    def test_explicit_token_id_sends_self_assessment_email(self, mock_send_email):
+        stats = send_reviewer_invitations(self.cycle, token_ids=[self.token.id])
+
+        self.assertEqual(stats['sent'], 1)
+        kwargs = mock_send_email.call_args.kwargs
+        self.assertEqual(kwargs['recipient_list'], ['reviewee@example.com'])
+        self.assertIn('Self-Assessment', kwargs['subject'])
+        self.assertIn(f'/feedback/{self.token.token}/', kwargs['message'])
+        self.token.refresh_from_db()
+        self.assertIsNotNone(self.token.invitation_sent_at)

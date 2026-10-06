@@ -80,16 +80,17 @@ def send_reviewer_invitations(cycle, token_ids=None):
         'errors': []
     }
 
-    # Get tokens to send invitations for (exclude 'self' category since
-    # reviewees already receive a dedicated self-assessment email via
-    # send_reviewee_notifications)
-    tokens = cycle.tokens.filter(reviewer_email__isnull=False).exclude(category='self')
+    tokens = cycle.tokens.filter(reviewer_email__isnull=False)
 
     if token_ids:
         tokens = tokens.filter(id__in=token_ids)
     else:
-        # Only send to tokens that haven't been sent yet and aren't completed
-        tokens = tokens.filter(invitation_sent_at__isnull=True, completed_at__isnull=True)
+        # Bulk send: skip 'self' (the reviewee already gets a dedicated
+        # self-assessment email from send_reviewee_notifications), and only
+        # tokens that haven't been sent yet and aren't completed.
+        tokens = tokens.exclude(category='self').filter(
+            invitation_sent_at__isnull=True, completed_at__isnull=True,
+        )
 
     for token in tokens:
         try:
@@ -104,12 +105,20 @@ def send_reviewer_invitations(cycle, token_ids=None):
                 'questionnaire_name': cycle.questionnaire.name,
             }
 
-            html_message = render_to_string('emails/reviewer_invitation.html', context)
-            text_message = render_to_string('emails/reviewer_invitation.txt', context)
+            if token.category == 'self':
+                context.update(reviewee=cycle.reviewee, cycle=cycle, self_assessment_url=feedback_url)
+                subject = f'Complete Your Self-Assessment: {cycle.questionnaire.name}'
+                template = 'emails/reviewee_self_assessment'
+            else:
+                subject = f'360 Feedback Request: {cycle.reviewee.name}'
+                template = 'emails/reviewer_invitation'
+
+            html_message = render_to_string(f'{template}.html', context)
+            text_message = render_to_string(f'{template}.txt', context)
 
             # Send email
             send_email(
-                subject=f'360 Feedback Request: {cycle.reviewee.name}',
+                subject=subject,
                 message=text_message,
                 recipient_list=[token.reviewer_email],
                 html_message=html_message,

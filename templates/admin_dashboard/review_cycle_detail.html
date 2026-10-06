@@ -225,7 +225,7 @@
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Self Assessment</div>
                     <a href="{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}" target="_blank" id="invite-self" style="font-size: 0.875rem; color: var(--primary); text-decoration: none; background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto; transition: background 0.2s;">
-                        {{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}
+                        {{ SITE_URL }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_self %}
                         <svg style="display: inline-block; width: 14px; height: 14px; margin-left: 4px; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </a>
                 </div>
@@ -239,7 +239,7 @@
             <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Peer Review</div>
-                    <code id="invite-peer" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_peer %}</code>
+                    <code id="invite-peer" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ SITE_URL }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_peer %}</code>
                 </div>
                 <button onclick="copyInvitationLink('peer')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link
@@ -251,7 +251,7 @@
             <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Manager Review</div>
-                    <code id="invite-manager" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_manager %}</code>
+                    <code id="invite-manager" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ SITE_URL }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_manager %}</code>
                 </div>
                 <button onclick="copyInvitationLink('manager')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link
@@ -263,7 +263,7 @@
             <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 6px;">
                 <div style="flex: 1;">
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">Direct Report Review</div>
-                    <code id="invite-direct_report" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ request.scheme }}://{{ request.get_host }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_direct_report %}</code>
+                    <code id="invite-direct_report" style="font-size: 0.875rem; color: var(--text-secondary); background: var(--bg-card); padding: 0.5rem; border-radius: 4px; display: block; overflow-x: auto;">{{ SITE_URL }}{% url 'reviews:claim_token' invitation_token=cycle.invitation_token_direct_report %}</code>
                 </div>
                 <button onclick="copyInvitationLink('direct_report')" class="btn btn-sm btn-secondary" style="white-space: nowrap;">
                     Copy Link

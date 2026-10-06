@@ -4,6 +4,12 @@ Context processors for making settings available in templates.
 from django.conf import settings
 
 
+def site_settings(request):
+    """Public base URL for links shown in the UI (never request.get_host(),
+    which is the internal proxy hostname behind nginx/docker)."""
+    return {'SITE_URL': settings.SITE_URL}
+
+
 def stripe_settings(request):
     """
     Make Stripe configuration available in templates.

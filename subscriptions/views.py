@@ -93,9 +93,10 @@ def stripe_webhook(request):
     logger.info(f"[STRIPE WEBHOOK] Webhook secret length: {len(settings.STRIPE_WEBHOOK_SECRET) if settings.STRIPE_WEBHOOK_SECRET else 0}")
 
     try:
+        # ponytail: .to_dict() because StripeObject stopped being a dict in stripe>=8
         event = stripe.Webhook.construct_event(
             payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
+        ).to_dict()
         logger.info(f"[STRIPE WEBHOOK] ✓ Signature verification successful")
         logger.info(f"[STRIPE WEBHOOK] Event type: {event['type']}")
         logger.info(f"[STRIPE WEBHOOK] Event ID: {event.get('id', 'N/A')}")
@@ -146,6 +147,20 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
+def _period(sub):
+    """(start, end) timestamps. Newer Stripe API versions keep them on the
+    subscription item; fall back to the old top-level fields, then trial dates."""
+    item = (sub.get('items') or {}).get('data') or [{}]
+    item = item[0]
+    start = item.get('current_period_start') or sub.get('current_period_start') or sub.get('trial_start') or sub.get('created')
+    end = item.get('current_period_end') or sub.get('current_period_end') or sub.get('trial_end')
+    return start, end
+
+
+def _ts(value):
+    return datetime.fromtimestamp(value, tz=dt_timezone.utc) if value else None
+
+
 def handle_checkout_session_completed(session):
     """
     Handle successful checkout - create organization and user
@@ -165,7 +180,7 @@ def handle_checkout_session_completed(session):
         print(f"Subscription {stripe_subscription_id} already exists, skipping creation")
         return
 
-    stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
+    stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id).to_dict()
 
     # Get or create plan
     try:
@@ -212,24 +227,18 @@ def handle_checkout_session_completed(session):
     from accounts.permissions import assign_organization_admin
     assign_organization_admin(user)
 
-    # Create subscription
-    # For trial subscriptions, use trial dates as current period
-    # For active subscriptions, use billing period dates
-    sub_dict = dict(stripe_subscription)
-
-    current_start = sub_dict.get('current_period_start') or sub_dict.get('trial_start') or sub_dict.get('created')
-    current_end = sub_dict.get('current_period_end') or sub_dict.get('trial_end')
+    current_start, current_end = _period(stripe_subscription)
 
     Subscription.objects.create(
         organization=org,
         plan=plan,
         stripe_customer_id=stripe_customer_id,
         stripe_subscription_id=stripe_subscription_id,
-        status=sub_dict.get('status', 'trialing'),
-        current_period_start=datetime.fromtimestamp(current_start, tz=dt_timezone.utc),
-        current_period_end=datetime.fromtimestamp(current_end, tz=dt_timezone.utc),
-        trial_start=datetime.fromtimestamp(sub_dict['trial_start'], tz=dt_timezone.utc) if sub_dict.get('trial_start') else None,
-        trial_end=datetime.fromtimestamp(sub_dict['trial_end'], tz=dt_timezone.utc) if sub_dict.get('trial_end') else None,
+        status=stripe_subscription.get('status', 'trialing'),
+        current_period_start=_ts(current_start),
+        current_period_end=_ts(current_end),
+        trial_start=_ts(stripe_subscription.get('trial_start')),
+        trial_end=_ts(stripe_subscription.get('trial_end')),
     )
 
     # Create one-time login token for auto-login
@@ -259,10 +268,11 @@ def handle_subscription_updated(stripe_subscription):
         subscription = Subscription.objects.get(
             stripe_subscription_id=stripe_subscription['id']
         )
+        start, end = _period(stripe_subscription)
         subscription.status = stripe_subscription['status']
-        subscription.current_period_start = datetime.fromtimestamp(stripe_subscription['current_period_start'], tz=timezone.utc)
-        subscription.current_period_end = datetime.fromtimestamp(stripe_subscription['current_period_end'], tz=timezone.utc)
-        subscription.cancel_at_period_end = stripe_subscription['cancel_at_period_end']
+        subscription.current_period_start = _ts(start)
+        subscription.current_period_end = _ts(end)
+        subscription.cancel_at_period_end = stripe_subscription.get('cancel_at_period_end', False)
         subscription.save()
     except Subscription.DoesNotExist:
         pass
@@ -310,7 +320,7 @@ def checkout_success(request):
 
     try:
         # Retrieve the session to get customer email
-        session = stripe.checkout.Session.retrieve(session_id)
+        session = stripe.checkout.Session.retrieve(session_id).to_dict()
         customer_email = session['customer_details']['email']
         logger.info(f"[CHECKOUT SUCCESS] Customer email: {customer_email}")
         logger.info(f"[CHECKOUT SUCCESS] Session status: {session.get('status')}")
@@ -417,7 +427,7 @@ def billing_portal(request):
         # Create billing portal session
         session = stripe.billing_portal.Session.create(
             customer=subscription.stripe_customer_id,
-            return_url=f"{request.scheme}://{request.get_host()}/dashboard/settings/",
+            return_url=f"{settings.SITE_URL}/dashboard/settings/",
         )
 
         return redirect(session.url)

@@ -7,11 +7,7 @@ from reviews.models import ReviewerToken
 def send_feedback_invitation(token, reviewer_email=None):
     """Send feedback invitation email for a reviewer token"""
 
-    feedback_url = f"{settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost:8000'}/feedback/{token.token}/"
-
-    # Use http in development, https in production
-    protocol = 'http' if settings.DEBUG else 'https'
-    full_url = f"{protocol}://{feedback_url}"
+    full_url = f"{settings.SITE_URL}/feedback/{token.token}/"
 
     context = {
         'reviewee_name': token.cycle.reviewee.name,

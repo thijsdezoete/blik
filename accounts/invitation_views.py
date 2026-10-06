@@ -2,6 +2,7 @@
 Views for organization invitations
 """
 from datetime import timedelta
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -63,9 +64,7 @@ def send_invitation(request):
         )
 
         # Build invitation URL
-        invite_url = request.build_absolute_uri(
-            reverse('accept_invitation', kwargs={'token': invitation.token})
-        )
+        invite_url = settings.SITE_URL + reverse('accept_invitation', kwargs={'token': invitation.token})
 
         # Send invitation email
         try:

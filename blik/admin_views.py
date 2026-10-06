@@ -1758,8 +1758,8 @@ def send_invitations(request, cycle_uuid):
     cycle = get_cycle_or_404(request, cycle_uuid)
 
     if request.method == 'POST':
-        # Send invitations
-        stats = send_reviewer_invitations(cycle)
+        token_id = request.POST.get('token_id')
+        stats = send_reviewer_invitations(cycle, token_ids=[token_id] if token_id else None)
 
         if stats['errors']:
             for error in stats['errors']:
@@ -1828,9 +1828,7 @@ def send_individual_reminder(request, cycle_uuid, token_id):
             return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
         # Build feedback URL
-        feedback_url = request.build_absolute_uri(
-            f'/feedback/{token.token}/'
-        )
+        feedback_url = f'{settings.SITE_URL}/feedback/{token.token}/'
 
         # Render email
         context = {

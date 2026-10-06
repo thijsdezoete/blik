@@ -91,3 +91,14 @@ class SetupOrganizationCommandTests(TestCase):
 
         org = Organization.objects.get(id=1)
         self.assertEqual(org.smtp_port, 587)
+
+    def test_subsequent_run_with_smtp_password_env_saves(self):
+        """smtp_password is a property over smtp_password_encrypted; naming
+        the property in update_fields raised ValueError and crash-looped
+        the container on every start (prod outage 2026-10-06)."""
+        self._run(ORGANIZATION_NAME='Acme Corp')
+
+        self._run(EMAIL_HOST_PASSWORD='s3cret')
+
+        org = Organization.objects.get(id=1)
+        self.assertEqual(org.smtp_password, 's3cret')

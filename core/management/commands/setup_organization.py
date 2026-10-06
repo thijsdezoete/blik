@@ -93,7 +93,7 @@ class Command(BaseCommand):
 
             if os.environ.get('EMAIL_HOST_PASSWORD'):
                 org.smtp_password = os.environ['EMAIL_HOST_PASSWORD']
-                updated_fields.append('smtp_password')
+                updated_fields.append('smtp_password_encrypted')
 
             if os.environ.get('EMAIL_USE_TLS'):
                 org.smtp_use_tls = os.environ['EMAIL_USE_TLS'].lower() in ('true', '1', 'yes')

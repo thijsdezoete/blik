@@ -102,9 +102,44 @@ class ResolveAccountTests(FulfilmentTestCase):
     def test_in_app_subscription_for_a_subscribed_organization_is_rejected(self):
         org, user = self.existing_account('admin@example.com')
         subscribe(org, status='canceled')
-        session = subscription_session(client_reference_id=str(org.pk))
+        session = subscription_session(client_reference_id=str(org.pk),
+                                       metadata={'plan_type': 'saas', 'user_id': str(user.pk)})
         self.assertEqual(resolve_checkout_account(session).rejection,
                          'rejected_duplicate_subscription')
+
+    def username_only_match(self):
+        org = OrganizationFactory()
+        user = UserFactory(username='buyer@example.com', email='other@example.com')
+        UserProfileFactory(user=user, organization=org)
+        return org, user
+
+    def test_existing_user_matched_by_username_is_reused(self):
+        org, user = self.username_only_match()
+        before = (User.objects.count(), Organization.objects.count())
+        account = resolve_checkout_account(checkout_session())
+        self.assertEqual((account.user, account.organization), (user, org))
+        self.assertFalse(account.user_created)
+        self.assertEqual((User.objects.count(), Organization.objects.count()), before)
+
+    def test_reference_without_a_member_is_ignored(self):
+        org, _ = self.existing_account('admin@example.com')
+        session = checkout_session(client_reference_id=str(org.pk),
+                                   metadata={'plan_type': 'single'})
+        account = resolve_checkout_account(session)
+        self.assertNotEqual(account.organization, org)
+        self.assertTrue(account.user_created)
+
+    def test_reference_with_a_member_of_another_organization_is_ignored(self):
+        org, _ = self.existing_account('admin@example.com')
+        _, outsider = self.existing_account('outsider@example.com')
+        for n, user_id in enumerate((str(outsider.pk), 'abc', '999999')):
+            session = checkout_session(
+                client_reference_id=str(org.pk),
+                customer_details={'email': f'new{n}@example.com', 'name': 'New'},
+                metadata={'plan_type': 'single', 'user_id': user_id})
+            account = resolve_checkout_account(session)
+            self.assertNotEqual(account.organization, org)
+            self.assertTrue(account.user_created)
 
 
 class FulfilRoundTests(FulfilmentTestCase):
@@ -187,6 +222,15 @@ class FulfilRoundTests(FulfilmentTestCase):
         self.assertEqual(len(calls), 2)
         self.assertEqual(cycle_credits(fulfilment.organization), 10)
 
+    def test_username_only_match_buys_a_round_without_a_token(self):
+        org = OrganizationFactory()
+        user = UserFactory(username='buyer@example.com', email='other@example.com')
+        UserProfileFactory(user=user, organization=org)
+        fulfilment = fulfil_checkout(checkout_session())
+        self.assertEqual(fulfilment.outcome, 'fulfilled')
+        self.assertEqual(cycle_credits(org), 10)
+        self.assertFalse(OneTimeLoginToken.objects.exists())
+
     def test_canceled_subscriber_who_buys_a_round_can_work_again(self):
         org, _ = self.existing_account()
         subscribe(org, status='canceled')
@@ -254,7 +298,8 @@ class FulfilSubscriptionTests(FulfilmentTestCase):
     def test_in_app_checkout_for_a_subscribed_organization_is_rejected_and_cancelled(self):
         org, user = self.existing_account('admin@example.com')
         original = subscribe(org)
-        session = subscription_session(client_reference_id=str(org.pk))
+        session = subscription_session(client_reference_id=str(org.pk),
+                                       metadata={'plan_type': 'saas', 'user_id': str(user.pk)})
         with patch(RETRIEVE, return_value=stripe_subscription()), patch(CANCEL) as cancel:
             fulfilment = fulfil_checkout(session)
         self.assertEqual(fulfilment.outcome, 'rejected_duplicate_subscription')
@@ -262,6 +307,14 @@ class FulfilSubscriptionTests(FulfilmentTestCase):
         original.refresh_from_db()
         self.assertEqual(original.stripe_subscription_id, f'sub_{org.pk}')
         self.assertEqual(Subscription.objects.count(), 1)
+
+    def test_reference_without_a_member_never_gives_the_organization_a_subscription(self):
+        org, _ = self.existing_account('admin@example.com')
+        grant(org, 3)
+        session = subscription_session(client_reference_id=str(org.pk))
+        with patch(RETRIEVE, return_value=stripe_subscription()):
+            fulfil_checkout(session)
+        self.assertFalse(Subscription.objects.filter(organization=org).exists())
 
     def test_missing_plan_row_raises_so_the_event_is_retried(self):
         Plan.objects.all().delete()

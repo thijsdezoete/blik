@@ -62,6 +62,13 @@ class StartCheckoutTests(TestCase):
         self.assertEqual(params['line_items'][0]['price'], 'price_single')
         self.assertEqual(params['payment_method_types'], ['card'])
 
+    def test_superuser_without_a_profile_does_not_reach_stripe(self):
+        root = UserFactory(is_superuser=True, is_staff=True)
+        self.client.force_login(root)
+        response, create = self.start('single')
+        create.assert_not_called()
+        self.assertRedirects(response, reverse('settings'), fetch_redirect_response=False)
+
     def test_upgrading_starts_a_subscription_with_the_trial(self):
         _, create = self.start('saas')
         params = create.call_args.kwargs

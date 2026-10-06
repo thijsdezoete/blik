@@ -88,7 +88,9 @@ def create_checkout_session(request):
 def start_checkout(request):
     """In-app purchase for an existing organization: another round, or a first subscription."""
     organization = getattr(request, 'organization', None)
-    if not organization or not request.user.has_perm('accounts.can_manage_organization'):
+    profile = getattr(request.user, 'profile', None)
+    if (not organization or profile is None or profile.organization_id != organization.pk
+            or not request.user.has_perm('accounts.can_manage_organization')):
         messages.error(request, 'Only organization administrators can manage billing.')
         return redirect('settings')
 

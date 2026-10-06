@@ -11,6 +11,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.utils import timezone
 
 from accounts.models import UserProfile
@@ -66,22 +67,29 @@ def resolve_checkout_account(session):
     """
     is_subscription = session['mode'] == 'subscription'
 
-    # In-app: only the authenticated start_checkout view sets client_reference_id.
+    # In-app: start_checkout sets client_reference_id and metadata.user_id. A
+    # Payment Link visitor can set client_reference_id from the URL, but not
+    # metadata, so the reference only counts when metadata names a member of
+    # that same organization.
     organization_id = session.get('client_reference_id')
-    if organization_id:
-        organization = Organization.objects.select_for_update().get(pk=organization_id)
-        user_id = (session.get('metadata') or {}).get('user_id')
-        account = Account(organization=organization,
-                          user=User.objects.filter(pk=user_id).first() if user_id else None)
-        if is_subscription and Subscription.objects.filter(organization=organization).exists():
-            account.rejection = 'rejected_duplicate_subscription'
-        return account
+    user_id = (session.get('metadata') or {}).get('user_id')
+    if organization_id and user_id:
+        profile = (UserProfile.objects.filter(user_id=user_id).first()
+                   if str(user_id).isdigit() else None)
+        if profile is not None and str(profile.organization_id) == str(organization_id):
+            organization = Organization.objects.select_for_update().get(pk=profile.organization_id)
+            account = Account(organization=organization, user=profile.user)
+            if is_subscription and Subscription.objects.filter(organization=organization).exists():
+                account.rejection = 'rejected_duplicate_subscription'
+            return account
 
     # Anonymous: all we have is the email typed into Stripe Checkout.
     details = session['customer_details']
     email = details['email']
     name = details.get('name') or email
-    user = User.objects.filter(email__iexact=email).order_by('date_joined').first()
+    user = User.objects.filter(
+        Q(email__iexact=email) | Q(username__iexact=email)
+    ).order_by('date_joined').first()
 
     if user is None:
         user, password = create_user_with_email_as_username(

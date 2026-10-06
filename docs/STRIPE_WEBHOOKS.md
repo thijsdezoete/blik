@@ -101,7 +101,9 @@ The webhook returns HTTP 500 when processing an event fails, so Stripe retries
 it with backoff for up to three days. Fulfilment is idempotent: a retried or
 duplicated `checkout.session.completed` grants its purchase once. A delivery
 that keeps failing shows as failed in the Stripe dashboard; check the app logs
-for `[STRIPE WEBHOOK] ✗ Error processing event`.
+for `[STRIPE WEBHOOK] ✗ Error processing event`. If deliveries keep failing for
+several days Stripe can disable the endpoint and emails the account owner, so a
+failing delivery should be investigated, not ignored.
 
 Checkout accepts cards only, so `checkout.session.completed` is the only
 event needed for one-time purchases. Enabling a delayed payment method (SEPA

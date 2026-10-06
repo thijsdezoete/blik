@@ -95,3 +95,10 @@ class CheckoutFulfilmentAdmin(admin.ModelAdmin):
     list_filter = ['outcome', 'user_created']
     search_fields = ['stripe_session_id', 'organization__name', 'user__email']
     readonly_fields = ['stripe_session_id', 'outcome', 'organization', 'user', 'user_created', 'created_at', 'updated_at']
+
+    # The row is the idempotency key: deleting one makes its paid session fulfillable again.
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

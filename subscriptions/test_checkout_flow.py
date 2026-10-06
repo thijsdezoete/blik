@@ -91,6 +91,15 @@ class CheckoutFlowTests(TestCase):
         self.assertRedirects(response, reverse('login'), fetch_redirect_response=False)
         self.assertIsNone(signed_in_user_id(self.client))
 
+    def test_auto_login_refuses_an_expired_token_itself(self):
+        post_webhook(self.client, checkout_session())
+        url = self.token_url()
+        OneTimeLoginToken.objects.update(expires_at=timezone.now() - timedelta(minutes=1))
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('login'), fetch_redirect_response=False)
+        self.assertIsNone(signed_in_user_id(self.client))
+        self.assertFalse(OneTimeLoginToken.objects.get().used)
+
     def test_a_signed_in_user_is_never_switched_to_the_new_account(self):
         other = UserFactory()
         UserProfileFactory(user=other, organization=OrganizationFactory())

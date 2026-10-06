@@ -142,6 +142,15 @@ class ResolveAccountTests(FulfilmentTestCase):
             self.assertTrue(account.user_created)
 
 
+class IncompleteSessionTests(FulfilmentTestCase):
+    def test_a_session_that_is_not_complete_is_ignored(self):
+        with patch(RETRIEVE) as retrieve:
+            result = fulfil_checkout(subscription_session(status='open', subscription=None))
+        self.assertIsNone(result)
+        retrieve.assert_not_called()
+        self.assertFalse(CheckoutFulfilment.objects.exists())
+
+
 class FulfilRoundTests(FulfilmentTestCase):
     def test_new_buyer_gets_ten_credits_and_a_token_bound_to_the_checkout(self):
         fulfilment = fulfil_checkout(checkout_session())
@@ -260,11 +269,32 @@ class FulfilSubscriptionTests(FulfilmentTestCase):
         self.assertEqual(fulfilment.outcome, 'rejected_existing_account')
         cancel.assert_called_once_with('sub_1')
         original.refresh_from_db()
-        self.assertEqual(original.stripe_subscription_id, f'sub_{org.pk}')
-        self.assertEqual(original.stripe_customer_id, f'cus_{org.pk}')
+        self.assertEqual(original.stripe_subscription_id, f'sub_org{org.pk}')
+        self.assertEqual(original.stripe_customer_id, f'cus_org{org.pk}')
         self.assertEqual(Subscription.objects.count(), 1)
         self.assertFalse(OneTimeLoginToken.objects.exists())
         self.assertEqual(self.send_email.call_args.kwargs['recipient_list'], [user.email])
+
+    def test_replaying_a_session_fulfilled_before_fulfilment_rows_existed_cancels_nothing(self):
+        org, _ = self.existing_account()
+        original = subscribe(org)
+        Subscription.objects.filter(pk=original.pk).update(
+            stripe_customer_id='cus_1', stripe_subscription_id='sub_1')
+        original.refresh_from_db()
+        with patch(RETRIEVE, return_value=stripe_subscription()), patch(CANCEL) as cancel:
+            fulfilment = fulfil_checkout(subscription_session())
+            again = fulfil_checkout(subscription_session())
+        cancel.assert_not_called()
+        original.refresh_from_db()
+        self.assertEqual((original.status, original.stripe_subscription_id,
+                          original.stripe_customer_id), ('active', 'sub_1', 'cus_1'))
+        self.assertEqual(Subscription.objects.count(), 1)
+        self.assertEqual(fulfilment.outcome, 'fulfilled')
+        self.assertEqual(fulfilment.organization, org)
+        self.assertFalse(fulfilment.user_created)
+        self.assertEqual(again.pk, fulfilment.pk)
+        self.assertFalse(OneTimeLoginToken.objects.exists())
+        self.send_email.assert_not_called()
 
     def test_rejection_is_not_cancelled_twice_when_already_canceled(self):
         self.existing_account()
@@ -305,7 +335,7 @@ class FulfilSubscriptionTests(FulfilmentTestCase):
         self.assertEqual(fulfilment.outcome, 'rejected_duplicate_subscription')
         cancel.assert_called_once_with('sub_1')
         original.refresh_from_db()
-        self.assertEqual(original.stripe_subscription_id, f'sub_{org.pk}')
+        self.assertEqual(original.stripe_subscription_id, f'sub_org{org.pk}')
         self.assertEqual(Subscription.objects.count(), 1)
 
     def test_reference_without_a_member_never_gives_the_organization_a_subscription(self):

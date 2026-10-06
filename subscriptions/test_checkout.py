@@ -124,6 +124,14 @@ class PublicEndpointTests(TestCase):
         _, create = self.post(client, {'plan_type': 'saas'})
         self.assertNotIn('client_reference_id', create.call_args.kwargs)
 
+    @override_settings(STRIPE_PRICE_ID_SINGLE='')
+    def test_a_known_plan_without_a_configured_price_is_logged_as_an_error(self):
+        with self.assertLogs('subscriptions.views', level='ERROR') as logs:
+            response, create = self.post(Client(), {'plan_type': 'single'})
+        self.assertEqual(response.status_code, 400)
+        create.assert_not_called()
+        self.assertIn('single', logs.output[0])
+
     def test_unknown_plan_type_is_a_400(self):
         response, create = self.post(Client(), {'plan_type': 'gold'})
         self.assertEqual(response.status_code, 400)

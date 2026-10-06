@@ -1,9 +1,10 @@
 from django.contrib.admin.sites import site
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import RequestFactory, TestCase
 
 from accounts.factories import RevieweeFactory
 from core.factories import OrganizationFactory, UserFactory
-from subscriptions.models import RoundPurchase
+from subscriptions.models import CheckoutFulfilment, RoundPurchase
 from subscriptions.testing import grant, subscribe
 from subscriptions.utils import (
     NoCycleCredits, billing_context, check_employee_limit, consume_cycle_credits,
@@ -155,6 +156,30 @@ class HostedAndStatusTests(TestCase):
         grant(canceled)
         self.assertFalse(billing_context(canceled, user)['can_start_subscription'])
         self.assertFalse(billing_context(OrganizationFactory(), user)['can_start_subscription'])
+
+    def test_billing_context_can_buy_round_unless_a_subscription_is_active(self):
+        user = UserFactory()
+        bought = OrganizationFactory()
+        grant(bought)
+        self.assertTrue(billing_context(bought, user)['can_buy_round'])
+        canceled = OrganizationFactory()
+        subscribe(canceled, status='canceled')
+        self.assertTrue(billing_context(canceled, user)['can_buy_round'])
+        active = OrganizationFactory()
+        subscribe(active)
+        self.assertFalse(billing_context(active, user)['can_buy_round'])
+        leftover = OrganizationFactory()
+        subscribe(leftover)
+        grant(leftover, 3)
+        self.assertFalse(billing_context(leftover, user)['can_buy_round'])
+        self.assertFalse(billing_context(OrganizationFactory(), user)['can_buy_round'])
+
+    def test_checkout_fulfilments_cannot_be_added_or_deleted_in_admin(self):
+        model_admin = site._registry[CheckoutFulfilment]
+        request = RequestFactory().get('/')
+        request.user = User.objects.create_superuser('root', 'root@example.com', 'x')
+        self.assertFalse(model_admin.has_add_permission(request))
+        self.assertFalse(model_admin.has_delete_permission(request))
 
     def test_round_purchases_cannot_be_deleted_in_admin(self):
         self.assertFalse(site._registry[RoundPurchase].has_delete_permission(request=None))

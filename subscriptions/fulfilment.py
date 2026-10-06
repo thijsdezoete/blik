@@ -122,6 +122,17 @@ def _fulfil(session, plan_type, stripe_subscription):
         # until the first one commits, then lands here.
         return fulfilment, False, None
 
+    # A subscription session fulfilled before CheckoutFulfilment existed has no
+    # row, but its Subscription is on file. Replaying it must not look like a
+    # second subscription and cancel the customer's live one.
+    if stripe_subscription is not None:
+        known = Subscription.objects.filter(
+            stripe_subscription_id=session['subscription']).first()
+        if known is not None:
+            fulfilment.organization = known.organization
+            fulfilment.save()
+            return fulfilment, False, None
+
     account = resolve_checkout_account(session)
 
     if account.rejection:
@@ -192,6 +203,10 @@ def fulfil_checkout(session):
     plan_type = (session.get('metadata') or {}).get('plan_type')
     if plan_type not in PLAN_TYPES:
         logger.warning("Ignoring checkout session %s: no known plan_type", session.get('id'))
+        return None
+
+    if session.get('status') != 'complete':
+        logger.warning("Ignoring checkout session %s: not complete", session.get('id'))
         return None
 
     is_subscription = session['mode'] == 'subscription'

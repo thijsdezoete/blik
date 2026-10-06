@@ -72,6 +72,8 @@ def create_checkout_session(request):
             cancel_url=f'{base_url}/landing/signup/?canceled=true',
         )
     except ValueError:
+        if plan_type in ('saas', 'enterprise', 'single'):
+            logger.error('Checkout for plan %r failed: its Stripe price setting is empty', plan_type)
         return JsonResponse({'error': 'Unknown plan'}, status=400)
     except Exception:
         logger.exception('Error creating checkout session')

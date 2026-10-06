@@ -138,6 +138,7 @@ def billing_context(organization, user):
         'is_hosted': hosted,
         'round_credits': purchased_credits(organization),
         'cycle_credits': cycle_credits(organization),
+        'can_buy_round': hosted and entitlement(organization) != 'subscription',
         'can_start_subscription': hosted and not Subscription.objects.filter(
             organization=organization).exists(),
         'is_org_admin': user.has_perm('accounts.can_manage_organization'),

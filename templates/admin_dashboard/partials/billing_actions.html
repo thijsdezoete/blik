@@ -1,10 +1,10 @@
-{# Buy-a-round and start-a-subscription buttons. Admins without Stripe get nothing; non-admins get a hint. Context: is_org_admin, can_start_subscription, HAS_STRIPE_CONFIGURED, plan_single_price #}
-{% if is_org_admin and HAS_STRIPE_CONFIGURED %}
+{# Buy-a-round and start-a-subscription buttons. Admins without Stripe get nothing; non-admins get a hint. Context: is_org_admin, can_buy_round, can_start_subscription, round_credits, HAS_STRIPE_CONFIGURED, plan_single_price #}
+{% if is_org_admin and HAS_STRIPE_CONFIGURED and can_buy_round %}
 <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
     <form method="post" action="{% url 'subscriptions:start_checkout' %}">
         {% csrf_token %}
         <input type="hidden" name="plan_type" value="single">
-        <button type="submit" class="btn btn-primary">Buy another round{% if plan_single_price %} (€{{ plan_single_price }}){% endif %}</button>
+        <button type="submit" class="btn btn-primary">{% if round_credits is None %}Buy a round{% else %}Buy another round{% endif %}{% if plan_single_price %} (€{{ plan_single_price }}){% endif %}</button>
     </form>
     {% if can_start_subscription %}
     <form method="post" action="{% url 'subscriptions:start_checkout' %}">

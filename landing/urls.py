@@ -28,6 +28,7 @@ urlpatterns = [
     path('why-blik/', views.why_blik, name='why_blik'),
     path('people-analytics/', views.people_analytics, name='people_analytics'),
     path('pricing/', views.pricing, name='pricing'),
+    path('one-time-360-review/', views.one_time_360_review, name='one_time_360_review'),
     path('faq/', views.faq, name='faq'),
     path('alternatives/', views.alternatives, name='alternatives'),
     path('free-360-feedback-tools/', views.free_360_tools, name='free_360_tools'),

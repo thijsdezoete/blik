@@ -186,6 +186,11 @@ def pricing(request):
     return render(request, 'landing/pricing.html')
 
 
+def one_time_360_review(request):
+    """Single Round page: one hosted review round, paid once."""
+    return render(request, 'landing/one_time_360_review.html')
+
+
 def faq(request):
     """FAQ hub page - comprehensive frequently asked questions."""
     return render(request, 'landing/faq.html')

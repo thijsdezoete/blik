@@ -365,7 +365,7 @@ def reviewee_create(request):
                     return redirect('reviewee_list')
 
             # Check employee limit
-            allowed, error_message = check_employee_limit(request)
+            allowed, error_message = check_employee_limit(organization)
             if not allowed:
                 messages.error(request, error_message)
                 return redirect('reviewee_list')

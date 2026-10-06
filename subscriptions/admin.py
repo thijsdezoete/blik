@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
-from .models import Plan, Subscription, OneTimeLoginToken
+from .models import Plan, Subscription, OneTimeLoginToken, CheckoutFulfilment, RoundPurchase
 
 
 @admin.register(Plan)
@@ -75,3 +75,23 @@ class OneTimeLoginTokenAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Tokens should be created through the application, not admin
         return False
+
+
+@admin.register(RoundPurchase)
+class RoundPurchaseAdmin(admin.ModelAdmin):
+    list_display = ['organization', 'cycles_remaining', 'fulfilment', 'created_at']
+    search_fields = ['organization__name', 'fulfilment__stripe_session_id']
+    readonly_fields = ['fulfilment', 'created_at', 'updated_at']
+
+    def has_delete_permission(self, request, obj=None):
+        # Deleting an organization's last purchase would turn it into an
+        # unlimited self-hosted organization. Refund by setting the balance to 0.
+        return False
+
+
+@admin.register(CheckoutFulfilment)
+class CheckoutFulfilmentAdmin(admin.ModelAdmin):
+    list_display = ['stripe_session_id', 'outcome', 'organization', 'user', 'user_created', 'created_at']
+    list_filter = ['outcome', 'user_created']
+    search_fields = ['stripe_session_id', 'organization__name', 'user__email']
+    readonly_fields = ['stripe_session_id', 'outcome', 'organization', 'user', 'user_created', 'created_at', 'updated_at']

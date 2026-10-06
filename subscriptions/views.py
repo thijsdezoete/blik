@@ -35,9 +35,13 @@ def _create_session(plan_type, *, base_url, cancel_url, organization=None, user=
 
     `organization` is passed only by the authenticated in-app view; it binds
     the purchase to that organization via client_reference_id.
+
+    No `payment_method_types`: Stripe API versions from 2026-09-30 reject it,
+    and the methods offered come from the Stripe Dashboard settings. Some of
+    those settle later (bank debits), which is why the webhook also handles
+    checkout.session.async_payment_succeeded.
     """
     params = {
-        'payment_method_types': ['card'],
         'line_items': [{'price': price_id_for(plan_type), 'quantity': 1}],
         'success_url': f'{base_url}/api/stripe/checkout-success/?session_id={{CHECKOUT_SESSION_ID}}',
         'cancel_url': cancel_url,
@@ -145,11 +149,15 @@ def stripe_webhook(request):
 
     # Handle the event
     try:
-        if event['type'] == 'checkout.session.completed':
-            logger.info(f"[STRIPE WEBHOOK] Processing checkout.session.completed")
+        # async_payment_succeeded is the "now it is paid" event for payment
+        # methods that settle after the session completes. fulfil_checkout is
+        # idempotent and ignores unpaid sessions, so both events go through it.
+        if event['type'] in ('checkout.session.completed',
+                             'checkout.session.async_payment_succeeded'):
+            logger.info("[STRIPE WEBHOOK] Processing %s", event['type'])
             session = event['data']['object']
             fulfil_checkout(session)
-            logger.info(f"[STRIPE WEBHOOK] ✓ Successfully processed checkout.session.completed")
+            logger.info("[STRIPE WEBHOOK] ✓ Successfully processed %s", event['type'])
 
         elif event['type'] == 'customer.subscription.updated':
             logger.info(f"[STRIPE WEBHOOK] Processing customer.subscription.updated")
@@ -244,6 +252,9 @@ def checkout_success(request):
         return redirect('login')
 
     if fulfilment is None:
+        if session.get('status') == 'complete' and session.get('payment_status') == 'unpaid':
+            messages.info(request, "Your payment is being processed. You'll get an email "
+                                   "as soon as it arrives and your account is ready.")
         return redirect('login')
 
     signed_in = request.user.is_authenticated

@@ -60,6 +60,7 @@ When a customer completes checkout, the webhook handler:
    - URL: `https://yourdomain.com/api/stripe/webhook/`
    - Events to listen for:
      - `checkout.session.completed`
+     - `checkout.session.async_payment_succeeded`
      - `customer.subscription.updated`
      - `customer.subscription.deleted`
      - `invoice.payment_failed`
@@ -105,10 +106,13 @@ for `[STRIPE WEBHOOK] ✗ Error processing event`. If deliveries keep failing fo
 several days Stripe can disable the endpoint and emails the account owner, so a
 failing delivery should be investigated, not ignored.
 
-Checkout accepts cards only, so `checkout.session.completed` is the only
-event needed for one-time purchases. Enabling a delayed payment method (SEPA
-debit, bank transfer) would also require handling
-`checkout.session.async_payment_succeeded`.
+Which payment methods Checkout offers is set in the Stripe Dashboard
+(Settings → Payment methods), not in code. Cards settle at once and arrive as
+`checkout.session.completed`. Methods that settle later (SEPA debit, bank
+transfer) complete the session unpaid and send
+`checkout.session.async_payment_succeeded` when the money arrives; a one-time
+purchase is granted on that event. Subscribe the endpoint to it if any delayed
+method is enabled.
 
 ## Testing Webhooks
 

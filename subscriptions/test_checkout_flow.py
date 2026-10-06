@@ -14,9 +14,9 @@ from subscriptions.testing import checkout_session
 from subscriptions.utils import cycle_credits
 
 
-def post_webhook(client, session):
+def post_webhook(client, session, event_type='checkout.session.completed'):
     event = stripe.Event.construct_from(
-        {'id': 'evt_1', 'type': 'checkout.session.completed', 'data': {'object': session}},
+        {'id': 'evt_1', 'type': event_type, 'data': {'object': session}},
         'sk_test',
     )
     with patch('subscriptions.views.stripe.Webhook.construct_event', return_value=event):
@@ -137,6 +137,26 @@ class CheckoutFlowTests(TestCase):
         self.assertEqual(post_webhook(self.client, checkout_session()).status_code, 200)
         self.assertEqual(self.send_email.call_count, 1)
         self.assertEqual(RoundPurchase.objects.count(), 1)
+
+    def test_a_delayed_payment_is_fulfilled_when_it_succeeds(self):
+        # Bank debits and transfers complete the session before the money arrives.
+        pending = checkout_session(payment_status='unpaid')
+        self.assertEqual(post_webhook(self.client, pending).status_code, 200)
+        self.assertFalse(CheckoutFulfilment.objects.exists())
+        self.assertFalse(User.objects.filter(email='buyer@example.com').exists())
+
+        response = post_webhook(self.client, checkout_session(),
+                                event_type='checkout.session.async_payment_succeeded')
+        self.assertEqual(response.status_code, 200)
+        user = User.objects.get(email='buyer@example.com')
+        self.assertEqual(RoundPurchase.objects.count(), 1)
+        self.assertEqual(cycle_credits(user.profile.organization), 10)
+
+    def test_the_success_page_grants_nothing_while_a_payment_is_pending(self):
+        response = open_success_page(self.client, checkout_session(payment_status='unpaid'))
+        self.assertRedirects(response, reverse('login'), fetch_redirect_response=False)
+        self.assertFalse(CheckoutFulfilment.objects.exists())
+        self.assertIsNone(signed_in_user_id(self.client))
 
     def test_a_session_from_elsewhere_is_acknowledged_and_ignored(self):
         response = post_webhook(self.client, checkout_session(metadata={}))

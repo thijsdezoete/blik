@@ -60,7 +60,9 @@ class StartCheckoutTests(TestCase):
         self.assertEqual(params['client_reference_id'], str(self.org.pk))
         self.assertEqual(params['metadata'], {'plan_type': 'single', 'user_id': str(self.admin.pk)})
         self.assertEqual(params['line_items'][0]['price'], 'price_single')
-        self.assertEqual(params['payment_method_types'], ['card'])
+        # Stripe API versions from 2026-09-30 reject this parameter; payment
+        # methods come from the Stripe Dashboard settings instead.
+        self.assertNotIn('payment_method_types', params)
 
     def test_superuser_without_a_profile_does_not_reach_stripe(self):
         root = UserFactory(is_superuser=True, is_staff=True)

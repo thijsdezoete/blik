@@ -12,7 +12,10 @@ dependencies = [
     "gunicorn>=21.2.0",
     "whitenoise>=6.6.0",
     "pillow>=10.0.0",
-    "stripe>=7.0.0",
+    # Pinned on purpose. Each stripe-python release fixes the Stripe API version it
+    # talks to; an unpinned rebuild picked up 16.0.0 (API 2026-09-30) and broke
+    # checkout in production. Upgrade deliberately and test a real checkout.
+    "stripe==15.0.1",
     "django-cors-headers>=4.3.0",
     "django-allauth>=0.63.0",
     "PyJWT>=2.8.0",

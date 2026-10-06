@@ -485,12 +485,17 @@ def quick_cycle_create(request, reviewee_id):
         return redirect('reviewee_list')
 
     # Create the cycle
-    cycle = ReviewCycle.objects.create(
-        reviewee=reviewee,
-        questionnaire=questionnaire,
-        created_by=request.user,
-        status='active'
-    )
+    from subscriptions.utils import NoCycleCredits
+    try:
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=request.user,
+            status='active'
+        )
+    except NoCycleCredits as e:
+        messages.error(request, str(e))
+        return redirect('reviewee_list')
 
     # Get the cycle to copy from
     if source_cycle_uuid:
@@ -1273,6 +1278,7 @@ def review_cycle_list(request):
 @login_required
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
+    from subscriptions.utils import NoCycleCredits, cycle_credits
     if request.method == 'POST':
         creation_mode = request.POST.get('creation_mode', 'single')
         questionnaire_id = request.POST.get('questionnaire')
@@ -1298,6 +1304,12 @@ def review_cycle_create(request):
                 # follow-up bulk_send_invitations page. This prevents the
                 # request from stalling on SMTP and avoids surprise blasts.
                 reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
+
+                # Refuse the whole batch up front so the message can say how
+                # many credits it needs; the model gate still backs this up.
+                credits = cycle_credits(org)
+                if credits is not None and reviewees.count() > credits:
+                    raise NoCycleCredits(needed=reviewees.count(), available=credits)
 
                 with transaction.atomic():
                     for reviewee in reviewees:
@@ -1417,6 +1429,9 @@ def review_cycle_create(request):
                     # Redirect to invitations page to add reviewers
                     return redirect('manage_invitations', cycle_uuid=cycle.uuid)
 
+        except NoCycleCredits as e:
+            messages.error(request, str(e))
+            return redirect('review_cycle_create')
         except Exception as e:
             messages.error(request, f'Error creating review cycle: {str(e)}')
             return redirect('review_cycle_create')

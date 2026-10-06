@@ -6,6 +6,7 @@ organization scoping and permission checks.
 """
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from django.db.models import Count, Q
 from django.utils import timezone
@@ -317,6 +318,13 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         elif self.action in ["update", "partial_update", "destroy"]:
             return [IsOrganizationMember(), CanManageOrganization()]
         return [IsOrganizationMember()]
+
+    def perform_create(self, serializer):
+        from subscriptions.utils import NoCycleCredits
+        try:
+            serializer.save()
+        except NoCycleCredits as e:
+            raise ValidationError({'detail': str(e)})
 
     @extend_schema(
         tags=["cycles"],

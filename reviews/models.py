@@ -1,5 +1,5 @@
 import uuid
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from core.models import TimeStampedModel
 from core.managers import ReviewCycleManager, ReviewerTokenManager, ResponseManager
@@ -68,17 +68,27 @@ class ReviewCycle(TimeStampedModel):
         return f"{self.reviewee.name} - {self.created_at.strftime('%Y-%m-%d')}"
 
     def save(self, *args, **kwargs):
-        """Auto-generate invitation tokens for all categories on creation"""
-        if not self.pk:  # New instance
-            if not self.invitation_token_self:
-                self.invitation_token_self = uuid.uuid4()
-            if not self.invitation_token_peer:
-                self.invitation_token_peer = uuid.uuid4()
-            if not self.invitation_token_manager:
-                self.invitation_token_manager = uuid.uuid4()
-            if not self.invitation_token_direct_report:
-                self.invitation_token_direct_report = uuid.uuid4()
-        super().save(*args, **kwargs)
+        """On creation: generate invitation tokens and pay for the cycle."""
+        if self.pk:
+            super().save(*args, **kwargs)
+            return
+
+        if not self.invitation_token_self:
+            self.invitation_token_self = uuid.uuid4()
+        if not self.invitation_token_peer:
+            self.invitation_token_peer = uuid.uuid4()
+        if not self.invitation_token_manager:
+            self.invitation_token_manager = uuid.uuid4()
+        if not self.invitation_token_direct_report:
+            self.invitation_token_direct_report = uuid.uuid4()
+
+        # Every creation path goes through here, so this is the only place the
+        # single-round credit is charged. One transaction: a failed insert
+        # gives the credit back. Imported lazily; subscriptions imports accounts.
+        from subscriptions.utils import consume_cycle_credits
+        with transaction.atomic():
+            consume_cycle_credits(self.reviewee.organization)
+            super().save(*args, **kwargs)
 
     def get_invitation_token(self, category):
         """Get the invitation token for a specific category"""

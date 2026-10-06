@@ -13,6 +13,7 @@ from django.db import transaction
 from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from subscriptions.utils import NoCycleCredits
 
 
 def validate_import_data(data):
@@ -445,6 +446,9 @@ def import_review_cycles(organization, cycles_data, questionnaire_map, conflict_
             result['created'] += 1
             result['imported_cycles'].append(cycle)  # Track for report attachment
 
+        except NoCycleCredits:
+            # Not a per-row problem: abort the import so nothing is half-imported.
+            raise
         except Exception as e:
             result['errors'].append(f"Failed to import review cycle: {str(e)}")
 
@@ -665,6 +669,9 @@ def import_reports(organization, reports_data, questionnaire_map, conflict_resol
             )
             result['created'] += 1
 
+        except NoCycleCredits:
+            # Not a per-row problem: abort the import so nothing is half-imported.
+            raise
         except Exception as e:
             result['errors'].append(f"Failed to import report: {str(e)}")
 

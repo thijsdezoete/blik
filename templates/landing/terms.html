@@ -33,8 +33,8 @@
             <h3>2. Hosted Service (Paid SaaS)</h3>
             <p>We host and manage everything for you.</p>
             <ul>
-                <li><strong>Pricing:</strong> €{{ plan_saas_price }}/month (up to {{ plan_saas_max }} employees) or €{{ plan_ent_price }}/month (up to {{ plan_ent_max }} employees)</li>
-                <li><strong>Billing:</strong> Monthly via Stripe. Cancel anytime.</li>
+                <li><strong>Pricing:</strong> €{{ plan_single_price }} once for a single review round ({{ plan_single_max }} review cycles), or a subscription at €{{ plan_saas_price }}/month (up to {{ plan_saas_max }} employees) or €{{ plan_ent_price }}/month (up to {{ plan_ent_max }} employees)</li>
+                <li><strong>Billing:</strong> Via Stripe. A single review round is a one-time payment; subscriptions are billed monthly and can be cancelled anytime.</li>
                 <li><strong>Location:</strong> EU servers</li>
             </ul>
 
@@ -78,6 +78,7 @@
                 <li><strong>Cancel anytime:</strong> No long-term contracts</li>
                 <li><strong>Prorated refunds:</strong> If we terminate for our reasons</li>
                 <li><strong>No refunds:</strong> For violations of terms or voluntary cancellation</li>
+                <li><strong>Single review rounds:</strong> Unused rounds are refunded on request within 14 days of purchase</li>
                 <li><strong>Data export:</strong> 30 days after cancellation, then permanent deletion</li>
             </ul>
 
@@ -123,7 +124,7 @@
             <p>Or open an issue on <a href="https://github.com/thijsdezoete/blik" target="_blank" rel="noopener">GitHub</a></p>
 
             <div class="legal-summary">
-                <p><strong>Bottom line:</strong> We try our best to keep things running, but no guarantees. Use it responsibly. Self-host = AGPL license. Hosted = pay monthly, cancel anytime.</p>
+                <p><strong>Bottom line:</strong> We try our best to keep things running, but no guarantees. Use it responsibly. Self-host = AGPL license. Hosted = pay once per review round, or monthly with cancel anytime.</p>
             </div>
         </div>
     </section>

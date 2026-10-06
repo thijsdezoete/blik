@@ -15,7 +15,7 @@ from accounts.import_service import (
     validate_import_data,
     generate_import_preview
 )
-from accounts.permissions import can_delete_organization_required
+from accounts.permissions import can_delete_organization_required, can_manage_organization_required
 from subscriptions.services import cancel_subscription, reactivate_subscription
 from subscriptions.models import Subscription
 
@@ -85,6 +85,7 @@ def reactivate_subscription_view(request):
 
 
 @login_required
+@can_manage_organization_required
 def export_data(request):
     """Export all organization data as JSON."""
     org = request.organization

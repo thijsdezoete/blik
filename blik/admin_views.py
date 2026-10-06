@@ -16,7 +16,7 @@ from django.http import HttpResponseRedirect
 from datetime import timedelta
 
 from accounts.models import Reviewee, UserProfile, OrganizationInvitation
-from accounts.permissions import can_view_all_reports, visible_cycles
+from accounts.permissions import can_manage_organization_required, can_view_all_reports, visible_cycles
 from reviews.models import ReviewCycle, ReviewerToken
 from reviews.services import assign_tokens_to_emails, send_reviewer_invitations
 from questionnaires.models import Questionnaire
@@ -1965,6 +1965,7 @@ def send_report_email(request, cycle_uuid):
 
 
 @login_required
+@can_manage_organization_required
 def settings_view(request):
     """Organization and SMTP settings page"""
     # Use the organization from the middleware (set based on user's profile)
@@ -2684,6 +2685,7 @@ def product_review_reject(request, review_id):
 # =============================================================================
 
 @login_required
+@can_manage_organization_required
 def create_api_token(request):
     """Create a new API token"""
     if request.method != 'POST':
@@ -2723,6 +2725,7 @@ def create_api_token(request):
 
 
 @login_required
+@can_manage_organization_required
 def update_api_token(request, token_id):
     """Update an existing API token"""
     if request.method != 'POST':
@@ -2757,6 +2760,7 @@ def update_api_token(request, token_id):
 
 
 @login_required
+@can_manage_organization_required
 def delete_api_token(request, token_id):
     """Delete (revoke) an API token"""
     if request.method != 'POST':
@@ -2788,6 +2792,7 @@ def delete_api_token(request, token_id):
 
 
 @login_required
+@can_manage_organization_required
 def create_webhook(request):
     """Create a new webhook endpoint"""
     if request.method != 'POST':
@@ -2827,6 +2832,7 @@ def create_webhook(request):
 
 
 @login_required
+@can_manage_organization_required
 def update_webhook(request, webhook_id):
     """Update an existing webhook endpoint"""
     if request.method != 'POST':
@@ -2862,6 +2868,7 @@ def update_webhook(request, webhook_id):
 
 
 @login_required
+@can_manage_organization_required
 def delete_webhook(request, webhook_id):
     """Delete a webhook endpoint"""
     if request.method != 'POST':

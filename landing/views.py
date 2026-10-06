@@ -118,7 +118,8 @@ def signup(request):
     """Signup page. The main app creates the Stripe Checkout session."""
     context = {
         # Every €19 CTA links here with ?plan=single to highlight that card
-        'selected_plan': request.GET.get('plan', ''),
+        'selected_plan': request.GET.get('plan', '')
+        if request.GET.get('plan') in ('single', 'enterprise') else '',
     }
     return render(request, 'landing/signup.html', context)
 

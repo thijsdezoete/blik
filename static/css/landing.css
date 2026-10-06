@@ -333,6 +333,15 @@
     }
 }
 
+/* Six-item grid (one-time page): two rows of three from 960px up. After the
+   five-item rule above so it wins. */
+@media (min-width: 960px) {
+    .landing-page .features-grid.features-grid--three {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+}
+
 @media (min-width: 769px) and (max-width: 1023px) {
     .landing-page .features-grid {
         /* 2 columns on tablets, better than 3-2 split */
@@ -507,6 +516,7 @@
 }
 
 .landing-page .pricing-more {
+    color: var(--primary);
     display: block;
     margin-top: 1rem;
     text-align: center;
@@ -544,6 +554,11 @@
 
 .landing-page .pricing-foldout-body .pricing-features {
     margin-bottom: 1.5rem;
+}
+
+/* Under a call-to-action box the fold-out matches the box's width. */
+.landing-page .cta-box + .pricing-foldout {
+    max-width: none;
 }
 
 /* Next to a button inside a fold-out, the "Learn more" link sits inline. */
@@ -1191,6 +1206,10 @@
     text-align: center;
     color: var(--text-secondary);
     margin-top: 24px;
+}
+
+.signup-signin a {
+    color: var(--primary);
 }
 
 /* Mobile Responsive */

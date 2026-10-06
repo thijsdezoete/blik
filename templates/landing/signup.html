@@ -48,20 +48,22 @@
             <p class="signup-subtitle">Pay once for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.</p>
         </div>
 
+        <div id="error-message" class="error-message" role="alert" hidden></div>
+
         <div class="plans-grid">
             <div class="plan-card{% if selected_plan == 'single' %} plan-card--selected{% endif %}">
                 <h2 class="plan-name">Single Round</h2>
                 <div class="plan-price">€{{ plan_single_price }}<small> once</small></div>
                 <p class="plan-description">One review round, no subscription</p>
                 <ul class="plan-features">
-                    <li>{{ plan_single_max }} review cycles, one per employee</li>
+                    <li>{{ plan_single_max }} review cycles, one employee per cycle</li>
                     <li>All questionnaires and reports</li>
                     <li>Anonymous feedback</li>
                     <li>Free, unlimited reviewers</li>
                     <li>Review cycles never expire</li>
                     <li>Reports stay available</li>
                 </ul>
-                <button class="checkout-btn primary" onclick="startCheckout('single')" id="btn-single">
+                <button class="checkout-btn primary" autocomplete="off" onclick="startCheckout('single')" id="btn-single">
                     Pay €{{ plan_single_price }} and start
                 </button>
             </div>
@@ -76,15 +78,15 @@
                     <li>Anonymous feedback</li>
                     <li>Trend &amp; benchmark reports</li>
                     <li>Email support</li>
-                    <li>{{ trial_days }}-day free trial</li>
+                    <li>{{ trial_days }}-day free trial, credit card required</li>
                 </ul>
-                <button class="checkout-btn primary" onclick="startCheckout('saas')" id="btn-saas">
+                <button class="checkout-btn primary" autocomplete="off" onclick="startCheckout('saas')" id="btn-saas">
                     Start Free Trial
                 </button>
             </div>
         </div>
 
-        <details class="pricing-foldout">
+        <details class="pricing-foldout"{% if selected_plan == 'enterprise' %} open{% endif %}>
             <summary>More than {{ plan_saas_max }} employees? Enterprise: €{{ plan_ent_price }}/month for up to {{ plan_ent_max }}</summary>
             <div class="pricing-foldout-body">
                 <ul class="pricing-features">
@@ -95,15 +97,13 @@
                     <li>{{ trial_days }}-day free trial, credit card required</li>
                 </ul>
                 <p class="pricing-note"><strong>Need more than {{ plan_ent_max }} employees?</strong> Contact us for custom pricing.</p>
-                <button class="checkout-btn secondary" onclick="startCheckout('enterprise')" id="btn-enterprise">
+                <button class="checkout-btn secondary" autocomplete="off" onclick="startCheckout('enterprise')" id="btn-enterprise">
                     Start Free Trial
                 </button>
             </div>
         </details>
 
         <p class="signup-signin">Already have an account? <a href="{{ main_app_url }}/accounts/login/">Sign in</a> and manage your plan in Settings.</p>
-
-        <div id="error-message" class="error-message" hidden></div>
     </div>
 
     <script>
@@ -132,7 +132,7 @@
                     throw new Error('Failed to create checkout session');
                 }
 
-                const data = await response.json();
+                const data = await response.json().catch(() => ({}));
                 if (!data.url) {
                     throw new Error('Checkout is unavailable right now');
                 }

@@ -10,11 +10,11 @@
     Choose how Blik will send emails for review invitations and notifications.
 </p>
 
-{% if has_subscription %}
+{% if is_hosted %}
 <div class="info-card">
     <h3>✨ Recommended: Use Blik's Email Service</h3>
     <p>
-        As a SaaS customer, you can use Blik's managed email service. All emails will be sent reliably with no configuration needed.
+        As a hosted customer, you can use Blik's managed email service. All emails will be sent reliably with no configuration needed.
         You can always switch to your own SMTP server later in settings.
     </p>
     <form method="post" style="margin: 0;">

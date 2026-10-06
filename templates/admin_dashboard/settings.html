@@ -253,7 +253,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="section" value="email">
                 <div class="card-body">
-                    {% if subscription %}
+                    {% if is_hosted %}
                     <div class="alert alert-info" style="margin-bottom: 1rem; padding: 12px; font-size: 0.875rem;">
                         <strong>✨ Using Blik's Email Service?</strong>
                         <p style="margin: 8px 0 0 0;">
@@ -273,7 +273,7 @@
                                 value="{{ organization.smtp_host }}"
                                 {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
                                 {% if locked_fields.smtp_host %}disabled readonly{% endif %}
-                                placeholder="{% if subscription %}Optional{% else %}smtp.gmail.com{% endif %}"
+                                placeholder="{% if is_hosted %}Optional{% else %}smtp.gmail.com{% endif %}"
                             >
                             {% if locked_fields.smtp_host %}<small class="form-text" style="color: var(--text-muted, #6b7280); font-size: 0.75rem;">Managed by <code>{{ locked_fields.smtp_host }}</code> in the environment</small>{% endif %}
                         </div>

@@ -1983,6 +1983,7 @@ def send_report_email(request, cycle_uuid):
 @can_manage_organization_required
 def settings_view(request):
     """Organization and SMTP settings page"""
+    from subscriptions.utils import billing_context
     # Use the organization from the middleware (set based on user's profile)
     organization = request.organization
 
@@ -2107,6 +2108,7 @@ def settings_view(request):
         'new_token': new_token,
         'new_token_name': new_token_name,
         'locked_fields': locked,
+        **billing_context(organization, request.user),
     }
 
     return render(request, 'admin_dashboard/settings.html', context)

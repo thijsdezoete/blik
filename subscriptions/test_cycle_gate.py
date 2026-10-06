@@ -66,8 +66,7 @@ class ModelGateTests(CycleGateBase):
     def test_failed_insert_gives_the_credit_back(self):
         grant(self.org, 2)
         with self.assertRaises(IntegrityError):
-            with transaction.atomic():
-                ReviewCycle.objects.create(reviewee=self.reviewee, questionnaire=None)
+            ReviewCycle.objects.create(reviewee=self.reviewee, questionnaire=None)
         self.assertEqual(cycle_credits(self.org), 2)
 
     def test_subscription_and_self_hosted_organizations_are_not_charged(self):

@@ -281,40 +281,7 @@
     <section id="pricing" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Choose What Works for Your Team</h2>
-            <div class="pricing-grid">
-                <div class="pricing-card pricing-featured">
-                    <div class="featured-badge">Recommended for HR</div>
-                    <h3>EU Hosted</h3>
-                    <div class="price">€{{ plan_saas_price }}</div>
-                    <p class="price-desc">per month</p>
-                    <ul class="pricing-features">
-                        <li>Perfect for 30-{{ plan_saas_max }} employees</li>
-                        <li>No IT setup required</li>
-                        <li>Hosted in EU</li>
-                        <li>Automatic updates</li>
-                        <li>Daily backups</li>
-                        <li>Email support</li>
-                        <li>Custom domain included</li>
-                        <li>{{ trial_days }}-day free trial</li>
-                    </ul>
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary">Start Free Trial</a>
-                </div>
-                <div class="pricing-card">
-                    <h3>Self-Hosted</h3>
-                    <div class="price">Free</div>
-                    <p class="price-desc">Forever</p>
-                    <ul class="pricing-features">
-                        <li>Unlimited employees</li>
-                        <li>All features included</li>
-                        <li>Open source (AGPL license)</li>
-                        <li>Deploy on your infrastructure</li>
-                        <li>Full data ownership</li>
-                        <li>Community support</li>
-                        <li>One-time IT setup needed</li>
-                    </ul>
-                    <a href="{% landing_url 'open_source' %}" class="btn btn-secondary">For Your IT Team</a>
-                </div>
-            </div>
+            {% include "landing/includes/pricing_plans.html" %}
 
             <div class="cta-box mt-12">
                 <h3>Working with your IT team?</h3>

@@ -419,20 +419,14 @@
     line-height: 1.6;
 }
 
-/* Pricing Grid */
+/* Pricing Grid: three plan cards in a row. The single-column breakpoint
+   lives after the fold-out rules below. */
 .landing-page .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2rem;
     max-width: 1100px;
     margin: 0 auto;
-}
-
-@media (max-width: 640px) {
-    .landing-page .pricing-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
 }
 
 .landing-page .pricing-card {
@@ -504,6 +498,73 @@
     color: var(--success);
     font-weight: 700;
     margin-right: 0.5rem;
+}
+
+.landing-page .pricing-note {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+}
+
+.landing-page .pricing-more {
+    display: block;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9375rem;
+}
+
+/* Fold-out component. Used for Enterprise under the plan cards and for the
+   Single Round under the comparison pages' closing call to action. Native
+   <details>: the browser's disclosure marker and keyboard handling are kept
+   on purpose. */
+.landing-page .pricing-foldout {
+    max-width: 1100px;
+    margin: 2rem auto 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.landing-page .pricing-foldout summary {
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.landing-page .pricing-foldout summary:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 12px;
+}
+
+.landing-page .pricing-foldout-body {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.landing-page .pricing-foldout-body .pricing-features {
+    margin-bottom: 1.5rem;
+}
+
+/* Next to a button inside a fold-out, the "Learn more" link sits inline. */
+.landing-page .pricing-foldout-body .pricing-more {
+    display: inline-block;
+    margin: 0 0 0 1rem;
+}
+
+/* One centred column below 960px. An explicit breakpoint (instead of
+   auto-fit) avoids two cards with one orphan underneath on tablets.
+   Must stay after the base rules above so its max-width wins. */
+@media (max-width: 960px) {
+    .landing-page .pricing-grid,
+    .landing-page .pricing-grid + .pricing-foldout {
+        max-width: 480px;
+    }
+
+    .landing-page .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 /* FAQ Grid */
@@ -5239,85 +5300,6 @@
 }
 
 /* ==================== Pricing ==================== */
-
-/* Hosted and self-hosted plan comparison. */
-.landing-page .hosting-plans {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto 3rem;
-}
-
-.landing-page .hosting-self {
-    position: relative;
-}
-
-.landing-page .hosting-badge {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--success);
-    color: white;
-    padding: 0.25rem 1rem;
-    border-radius: 12px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.landing-page .hosting-plans h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.landing-page .hosting-self h3 {
-    margin-top: 1rem;
-}
-
-.landing-page .hosting-price {
-    font-size: 3rem;
-    font-weight: bold;
-    color: var(--primary);
-    margin-bottom: 0.5rem;
-}
-
-.landing-page .hosting-price--self {
-    color: var(--success);
-    margin-bottom: 1rem;
-}
-
-.landing-page .hosting-plans .hosting-summary {
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
-}
-
-.landing-page .hosting-plans .hosting-limit {
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-.landing-page .hosting-features {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 2rem;
-}
-
-.landing-page .hosting-features li {
-    margin-bottom: 0.75rem;
-}
-
-.landing-page .hosting-plans .hosting-note {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    margin-bottom: 1.5rem;
-}
-
-.landing-page .hosting-action {
-    display: block;
-    text-align: center;
-}
 
 .landing-page .cta-box .hosting-trial {
     font-size: 1.125rem;

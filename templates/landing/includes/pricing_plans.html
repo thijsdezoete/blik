@@ -1,0 +1,72 @@
+{% load landing_tags %}
+{# Plan cards shared by the home, pricing and HR pages. Prices come from landing/context_processors.py:PRICING. #}
+<div class="pricing-grid">
+    <div class="pricing-card">
+        <h3>Self-Hosted</h3>
+        <div class="price">€0</div>
+        <p class="price-desc">Free forever</p>
+        <ul class="pricing-features">
+            <li>Unlimited employees</li>
+            <li>Unlimited review cycles</li>
+            <li>All features included</li>
+            <li>4 pre-built questionnaires</li>
+            <li>Full API access</li>
+            <li>Your infrastructure, your data</li>
+            <li>AGPL-3.0 license</li>
+            <li>Community support</li>
+        </ul>
+        <p class="pricing-note"><strong>Your costs:</strong> a small EU VPS (≈€10-50/month), plus your time for setup and maintenance.</p>
+        <a href="https://github.com/thijsdezoete/blik" class="btn btn-secondary" target="_blank" rel="noopener">Get It on GitHub</a>
+    </div>
+
+    <div class="pricing-card pricing-featured">
+        <div class="featured-badge">No subscription</div>
+        <h3>Single Round</h3>
+        <div class="price">€{{ plan_single_price }}</div>
+        <p class="price-desc">once</p>
+        <ul class="pricing-features">
+            <li>Up to {{ plan_single_max }} employees</li>
+            <li>All questionnaires and reports</li>
+            <li>Free, unlimited reviewers</li>
+            <li>Hosted in EU, nothing to install</li>
+            <li>Invitation emails handled for you</li>
+            <li>Reports stay available</li>
+            <li>Pay again only for your next round</li>
+        </ul>
+        <a href="{% landing_url 'signup' %}?plan=single" class="btn btn-primary">Start a review round</a>
+        <a href="{% landing_url 'one_time_360_review' %}" class="pricing-more">Learn more</a>
+    </div>
+
+    <div class="pricing-card">
+        <h3>EU Hosted</h3>
+        <div class="price">€{{ plan_saas_price }}</div>
+        <p class="price-desc">per month</p>
+        <ul class="pricing-features">
+            <li>Up to {{ plan_saas_max }} employees</li>
+            <li>Unlimited review cycles</li>
+            <li>Hosted in EU (Hetzner, Germany)</li>
+            <li>Automatic updates</li>
+            <li>Daily backups</li>
+            <li>Email support</li>
+            <li>{{ trial_days }}-day free trial, credit card required</li>
+            <li>Cancel anytime</li>
+        </ul>
+        <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Start Free Trial</a>
+    </div>
+</div>
+
+<details class="pricing-foldout">
+    <summary>More than {{ plan_saas_max }} employees? Enterprise: €{{ plan_ent_price }}/month for up to {{ plan_ent_max }}</summary>
+    <div class="pricing-foldout-body">
+        <ul class="pricing-features">
+            <li>Everything in EU Hosted</li>
+            <li>Up to {{ plan_ent_max }} employees</li>
+            <li>Priority support</li>
+            <li>SLA with uptime commitment</li>
+            <li>Custom domain setup</li>
+            <li>{{ trial_days }}-day free trial, credit card required</li>
+        </ul>
+        <p class="pricing-note"><strong>Need more than {{ plan_ent_max }} employees?</strong> Contact us for custom pricing.</p>
+        <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Start Free Trial</a>
+    </div>
+</details>

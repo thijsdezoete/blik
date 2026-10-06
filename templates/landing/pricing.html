@@ -126,85 +126,11 @@
         <div class="container">
             <h2 class="section-title">Choose What Works for You</h2>
 
-            <div class="hosting-plans">
-                <!-- Self-Hosted -->
-                <div class="feature-card feature-card-success hosting-self">
-                    <div class="hosting-badge">
-                        MOST POPULAR
-                    </div>
-                    <h3>Self-Hosted</h3>
-                    <div class="hosting-price hosting-price--self">€0</div>
-                    <p class="hosting-summary">Free forever</p>
+            {% include "landing/includes/pricing_plans.html" %}
 
-                    <ul class="hosting-features">
-                        <li>✓ Unlimited employees</li>
-                        <li>✓ All features included</li>
-                        <li>✓ 4 pre-built questionnaires</li>
-                        <li>✓ Full API access</li>
-                        <li>✓ Complete data control</li>
-                        <li>✓ Your infrastructure</li>
-                        <li>✓ Docker deployment</li>
-                        <li>✓ PostgreSQL or SQLite</li>
-                        <li>✓ AGPL-3.0 license</li>
-                        <li>✓ Community support</li>
-                    </ul>
-
-                    <p class="hosting-note">
-                        <strong>Your costs:</strong> a small EU VPS (≈€10-50/month), plus your time for setup and maintenance.
-                    </p>
-
-                    <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary hosting-action" target="_blank" rel="noopener">Get Started on GitHub</a>
-                </div>
-
-                <!-- Hosted - Small Team -->
-                <div class="feature-card">
-                    <h3>EU Hosted - Small</h3>
-                    <div class="hosting-price">€{{ plan_saas_price }}</div>
-                    <p class="hosting-summary">per month</p>
-
-                    <p class="hosting-limit">Up to {{ plan_saas_max }} employees</p>
-
-                    <ul class="hosting-features">
-                        <li>✓ Everything in Self-Hosted</li>
-                        <li>✓ EU servers (Hetzner, Germany)</li>
-                        <li>✓ Automatic updates</li>
-                        <li>✓ Daily backups</li>
-                        <li>✓ SSL certificates included</li>
-                        <li>✓ Email support</li>
-                        <li>✓ GDPR export and deletion tools</li>
-                        <li>✓ {{ trial_days }}-day free trial</li>
-                        <li>✓ Cancel anytime</li>
-                    </ul>
-
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary hosting-action">Start Free Trial</a>
-                </div>
-
-                <!-- Hosted - Enterprise -->
-                <div class="feature-card">
-                    <h3>EU Hosted - Enterprise</h3>
-                    <div class="hosting-price">€{{ plan_ent_price }}</div>
-                    <p class="hosting-summary">per month</p>
-
-                    <p class="hosting-limit">Up to {{ plan_ent_max }} employees</p>
-
-                    <ul class="hosting-features">
-                        <li>✓ Everything in Small plan</li>
-                        <li>✓ Priority support</li>
-                        <li>✓ SLA with uptime commitment (Enterprise)</li>
-                        <li>✓ Custom domain setup</li>
-                    </ul>
-
-                    <p class="hosting-note">
-                        <strong>Need more than {{ plan_ent_max }} employees?</strong> Contact us for custom pricing.
-                    </p>
-
-                    <a href="{% landing_url 'signup' %}" class="btn btn-primary hosting-action">Start Free Trial</a>
-                </div>
-            </div>
-
-            <div class="cta-box">
-                <p class="hosting-trial">{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
-                <p class="hosting-retention">Cancel anytime. Data export available. 30-day data retention after cancellation.</p>
+            <div class="cta-box mt-12">
+                <p class="hosting-trial">Subscriptions: {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
+                <p class="hosting-retention">Single Round: one payment, no trial, reports stay available. Subscriptions: cancel anytime, data export available, 30-day data retention after cancellation.</p>
             </div>
         </div>
     </section>

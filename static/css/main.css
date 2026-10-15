@@ -1733,7 +1733,9 @@ body.setup-page {
 
 .form-check {
     display: flex;
-    align-items: center;
+    /* Top, not centre: with a help text under the label, centring pushes the
+       box down to the middle of the whole block instead of the first line. */
+    align-items: flex-start;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
 }
@@ -1741,6 +1743,10 @@ body.setup-page {
 .form-check-input {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
+    /* Centres the box on the x-height of the label's first line, level with
+       the bar of an "e". */
+    margin-top: 0.3rem;
     cursor: pointer;
     border: 1px solid var(--border);
     border-radius: 3px;

@@ -1,3 +1,10 @@
+# Its own project name, so a test run cannot replace the containers of the
+# development stack: both files sit in the same directory and would
+# otherwise share the directory-derived name — same containers, same
+# image. Running the suite then left the dev stack talking to the test
+# database, and building either one broke the other.
+name: blik-test
+
 services:
   db:
     image: postgres:15-alpine

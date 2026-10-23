@@ -116,6 +116,68 @@
             </div>
         </div>
 
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title" style="margin: 0;">Feedback Categories</h2>
+            </div>
+            <div class="card-body">
+                <p style="color: #64748b; margin-bottom: 1.5rem;">
+                    Who gives feedback in this cycle. Categories you clear are left out
+                    of the invitation email and the report.
+                </p>
+
+                <input type="hidden" name="categories_submitted" value="1">
+
+                <div class="form-check">
+                    <input type="checkbox" id="includeSelf" name="include_self"
+                           class="form-check-input category-toggle" data-category="self" checked>
+                    <label for="includeSelf" style="display: inline; font-weight: normal;">
+                        Self assessment
+                        <small style="display: block; color: var(--text-secondary);">
+                            The reviewee rates themselves
+                        </small>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="includeManager" name="include_manager"
+                           class="form-check-input category-toggle" data-category="manager" checked>
+                    <label for="includeManager" style="display: inline; font-weight: normal;">
+                        Manager review
+                        <small style="display: block; color: var(--text-secondary);">
+                            Direct manager or supervisor
+                        </small>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="includePeer" name="include_peer"
+                           class="form-check-input category-toggle" data-category="peer" checked>
+                    <label for="includePeer" style="display: inline; font-weight: normal;">
+                        Peer review
+                        <small style="display: block; color: var(--text-secondary);">
+                            Colleagues at the same level
+                        </small>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="includeDirectReport" name="include_direct_report"
+                           class="form-check-input category-toggle" data-category="direct_report" checked>
+                    <label for="includeDirectReport" style="display: inline; font-weight: normal;">
+                        Direct report review
+                        <small style="display: block; color: var(--text-secondary);">
+                            People who report to this reviewee
+                        </small>
+                    </label>
+                </div>
+
+                <div id="noCategoryWarning" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: 6px; color: #92400e; font-size: 0.875rem;">
+                    Select at least one category.
+                </div>
+            </div>
+        </div>
+
         <div class="card" style="margin-bottom: 1.5rem;" id="inviteSection">
             <div class="card-header" style="cursor: pointer;" onclick="toggleInviteForm()">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -130,7 +192,7 @@
                     Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines.
                 </p>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
+                <div class="form-group category-emails" data-category="self" style="margin-bottom: 1.5rem;">
                     <label class="form-label">Self Assessment</label>
                     <textarea
                         name="self_emails"
@@ -144,7 +206,7 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
+                <div class="form-group category-emails" data-category="manager" style="margin-bottom: 1.5rem;">
                     <label class="form-label">Manager/Supervisor</label>
                     <textarea
                         name="manager_emails"
@@ -157,7 +219,7 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
+                <div class="form-group category-emails" data-category="peer" style="margin-bottom: 1.5rem;">
                     <label class="form-label">Peers</label>
                     <textarea
                         name="peer_emails"
@@ -170,7 +232,7 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
+                <div class="form-group category-emails" data-category="direct_report" style="margin-bottom: 1.5rem;">
                     <label class="form-label">Direct Reports</label>
                     <textarea
                         name="direct_report_emails"
@@ -304,6 +366,39 @@ document.addEventListener('DOMContentLoaded', function() {
         questionnaireSelect.addEventListener('change', updateQuestionnaireDetails);
         updateQuestionnaireDetails();
     }
+
+    // Keep the reviewer email fields in step with the selected categories:
+    // a field for a category the cycle skips would be ignored server-side.
+    const toggles = document.querySelectorAll('.category-toggle');
+
+    function syncCategoryFields() {
+        let anySelected = false;
+
+        toggles.forEach(function (toggle) {
+            const field = document.querySelector(
+                '.category-emails[data-category="' + toggle.dataset.category + '"]');
+            if (field) {
+                field.hidden = !toggle.checked;
+            }
+            if (toggle.checked) {
+                anySelected = true;
+            }
+        });
+
+        const warning = document.getElementById('noCategoryWarning');
+        if (warning) {
+            warning.style.display = anySelected ? 'none' : 'block';
+        }
+        const submit = document.querySelector('button[type="submit"]');
+        if (submit) {
+            submit.disabled = !anySelected;
+        }
+    }
+
+    toggles.forEach(function (toggle) {
+        toggle.addEventListener('change', syncCategoryFields);
+    });
+    syncCategoryFields();
 });
 </script>
 

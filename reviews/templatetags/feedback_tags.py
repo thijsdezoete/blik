@@ -1,5 +1,7 @@
 from django import template
 
+from reviews.models import CATEGORY_ORDER
+
 register = template.Library()
 
 
@@ -112,7 +114,7 @@ def sort_categories(categories):
     if not categories:
         return []
 
-    category_order = ['self', 'peer', 'manager', 'direct_report']
+    category_order = CATEGORY_ORDER
     result = []
 
     # Add categories in standard order

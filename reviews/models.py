@@ -7,6 +7,11 @@ from accounts.models import Reviewee
 from questionnaires.models import Questionnaire, Question
 
 
+# The order feedback categories are collected, displayed and reported in.
+# Single source for the places that used to spell the list out themselves.
+CATEGORY_ORDER = ('self', 'peer', 'manager', 'direct_report')
+
+
 class ReviewCycle(TimeStampedModel):
     """360 feedback review cycle for a reviewee"""
 
@@ -52,6 +57,13 @@ class ReviewCycle(TimeStampedModel):
         """Get organization through reviewee relationship"""
         return self.reviewee.organization
 
+    # Which categories this cycle collects feedback for. All four by default,
+    # which is what every cycle did before these flags existed.
+    include_self = models.BooleanField(default=True, verbose_name='Self assessment')
+    include_peer = models.BooleanField(default=True, verbose_name='Peer review')
+    include_manager = models.BooleanField(default=True, verbose_name='Manager review')
+    include_direct_report = models.BooleanField(default=True, verbose_name='Direct report review')
+
     # Secure invitation tokens per category (non-enumerable)
     invitation_token_self = models.UUIDField(unique=True, db_index=True, null=True, blank=True)
     invitation_token_peer = models.UUIDField(unique=True, db_index=True, null=True, blank=True)
@@ -89,6 +101,15 @@ class ReviewCycle(TimeStampedModel):
         with transaction.atomic():
             consume_cycle_credits(self.reviewee.organization)
             super().save(*args, **kwargs)
+
+    @property
+    def active_categories(self):
+        """The categories this cycle collects, in report order."""
+        return [c for c in CATEGORY_ORDER if getattr(self, f'include_{c}')]
+
+    def collects(self, category):
+        """Whether this cycle collects feedback for a category."""
+        return category in self.active_categories
 
     def get_invitation_token(self, category):
         """Get the invitation token for a specific category"""

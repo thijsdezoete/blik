@@ -5,7 +5,7 @@ from django.conf import settings
 from django.urls import reverse
 from core.email import send_email
 from .models import Report
-from reviews.models import Response, ReviewCycle
+from reviews.models import CATEGORY_ORDER, Response, ReviewCycle
 from core.models import Organization
 from statistics import mean, stdev, median
 import copy
@@ -237,7 +237,7 @@ def _calculate_insights(report_data):
     # Calculate section-level averages
     # Ensure 'self' is always listed first
     section_summary = {}
-    category_order = ['self', 'peer', 'manager', 'direct_report']
+    category_order = CATEGORY_ORDER
 
     for section_title, categories in section_averages.items():
         section_summary[section_title] = {}
@@ -549,7 +549,7 @@ def generate_report(cycle):
 
         for question_id, question_data in section_data['questions'].items():
             # Ensure 'self' category is always first in output
-            category_order = ['self', 'peer', 'manager', 'direct_report']
+            category_order = CATEGORY_ORDER
             ordered_categories = {}
 
             # Add categories in order (self first)

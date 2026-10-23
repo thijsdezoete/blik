@@ -36,6 +36,14 @@ def claim_token(request, invitation_token):
             'error': 'Invalid or expired invitation link.'
         }, status=404)
 
+    # The token exists for every category, but the cycle may not collect this
+    # one — a link from an earlier mail must not reopen a category since
+    # dropped, otherwise the report gains answers it does not report on.
+    if not cycle.collects(category):
+        return render(request, 'reviews/claim_error.html', {
+            'error': 'This feedback cycle no longer collects this kind of review.'
+        }, status=404)
+
     # If coming from redirect page (has force_claim param), skip localStorage check
     if request.GET.get('force_claim'):
         # Get available tokens (not claimed, not completed, and NOT assigned to an email)

@@ -564,7 +564,7 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         tokens = cycle.tokens.all()
 
         by_category = {}
-        for category in ["self", "peer", "manager", "direct_report"]:
+        for category in cycle.active_categories:
             cat_tokens = [t for t in tokens if t.category == category]
             by_category[category] = {
                 "total": len(cat_tokens),

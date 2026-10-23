@@ -50,7 +50,7 @@ from reports.dreyfus_service import (
 )
 from reports.models import Report
 from reports.services import generate_report, send_report_ready_notification
-from reviews.models import ReviewCycle, ReviewerToken
+from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.services import (
     assign_tokens_to_emails,
     send_reminder_emails,
@@ -506,19 +506,8 @@ def quick_cycle_create(request, reviewee_id):
         messages.error(request, 'Invalid questionnaire selected.')
         return redirect('reviewee_list')
 
-    # Create the cycle
-    try:
-        cycle = ReviewCycle.objects.create(
-            reviewee=reviewee,
-            questionnaire=questionnaire,
-            created_by=request.user,
-            status='active'
-        )
-    except NoCycleCredits as e:
-        messages.error(request, str(e))
-        return redirect('reviewee_list')
-
-    # Get the cycle to copy from
+    # Pick the cycle to copy from before creating the new one, so its feedback
+    # categories can be carried over along with its token structure.
     if source_cycle_uuid:
         # Copy from specific cycle if provided
         try:
@@ -527,7 +516,27 @@ def quick_cycle_create(request, reviewee_id):
             previous_cycle = None
     else:
         # Otherwise, get the most recent previous cycle for this reviewee
-        previous_cycle = reviewee.review_cycles.exclude(id=cycle.id).order_by('-created_at').first()
+        previous_cycle = reviewee.review_cycles.order_by('-created_at').first()
+
+    category_flags = {}
+    if previous_cycle:
+        category_flags = {
+            f'include_{category}': previous_cycle.collects(category)
+            for category in CATEGORY_ORDER
+        }
+
+    # Create the cycle
+    try:
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=request.user,
+            status='active',
+            **category_flags
+        )
+    except NoCycleCredits as e:
+        messages.error(request, str(e))
+        return redirect('reviewee_list')
 
     total_tokens = 0
     email_invited_count = 0
@@ -572,6 +581,8 @@ def quick_cycle_create(request, reviewee_id):
         ]
 
         for category, count in token_distribution:
+            if not cycle.collects(category):
+                continue
             for _ in range(count):
                 ReviewerToken.objects.create(
                     cycle=cycle,
@@ -1350,6 +1361,23 @@ def review_cycle_list(request):
     return render(request, 'admin_dashboard/review_cycle_list.html', context)
 
 
+def selected_category_flags(request):
+    """Read the category checkboxes as include_* flags for ReviewCycle.
+
+    An unchecked box is absent from the POST, so "all four cleared" and "a
+    client that predates the checkboxes" look identical. The form sends a
+    hidden marker to tell them apart; without it this returns {} and the
+    model defaults apply — all four, the way every cycle worked before.
+    """
+    if request.POST.get('categories_submitted') != '1':
+        return {}
+
+    return {
+        f'include_{category}': request.POST.get(f'include_{category}') == 'on'
+        for category in CATEGORY_ORDER
+    }
+
+
 @login_required
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
@@ -1359,6 +1387,11 @@ def review_cycle_create(request):
 
         if not questionnaire_id:
             messages.error(request, 'Questionnaire is required.')
+            return redirect('review_cycle_create')
+
+        category_flags = selected_category_flags(request)
+        if category_flags and not any(category_flags.values()):
+            messages.error(request, 'Select at least one feedback category.')
             return redirect('review_cycle_create')
 
         try:
@@ -1393,7 +1426,8 @@ def review_cycle_create(request):
                             reviewee=reviewee,
                             questionnaire=questionnaire,
                             created_by=request.user,
-                            status='active'
+                            status='active',
+                            **category_flags
                         )
                         created_cycles.append(cycle)
 
@@ -1424,7 +1458,8 @@ def review_cycle_create(request):
                     reviewee=reviewee,
                     questionnaire=questionnaire,
                     created_by=request.user,
-                    status='active'
+                    status='active',
+                    **category_flags
                 )
 
                 # Send notification emails to reviewee. Defer to after the
@@ -1440,6 +1475,12 @@ def review_cycle_create(request):
                 has_emails = False
 
                 for category_code, category_display in ReviewerToken.CATEGORY_CHOICES:
+                    if not cycle.collects(category_code):
+                        # The field is hidden for categories this cycle skips;
+                        # a stale or hand-made POST must not reinstate them.
+                        email_assignments[category_code] = []
+                        continue
+
                     emails_data = request.POST.get(f'{category_code}_emails', '').strip()
                     if emails_data:
                         emails = re.split(r'[,\n]+', emails_data)
@@ -1767,6 +1808,12 @@ def assign_invitations(request, cycle_uuid):
         email_assignments = {}
 
         for category_code, category_display in ReviewerToken.CATEGORY_CHOICES:
+            if not cycle.collects(category_code):
+                # The form hides these; a stale page or hand-made POST must not
+                # assign reviewers to a category this cycle does not collect.
+                email_assignments[category_code] = []
+                continue
+
             emails_data = request.POST.get(f'{category_code}_emails', '').strip()
             if emails_data:
                 emails = re.split(r'[,\n]+', emails_data)

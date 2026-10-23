@@ -7,7 +7,7 @@ with organization scoping and anonymity preservation.
 from rest_framework import serializers
 from django.db.models import Count, Q
 from accounts.models import Reviewee
-from reviews.models import ReviewCycle, ReviewerToken, Response
+from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken, Response
 from questionnaires.models import Questionnaire, QuestionSection, Question
 from reports.models import Report
 from .models import APIToken, WebhookEndpoint, WebhookDelivery
@@ -218,6 +218,7 @@ class ReviewCycleSerializer(serializers.ModelSerializer):
     questionnaire = serializers.UUIDField(source="questionnaire.uuid", read_only=True)
     questionnaire_detail = QuestionnaireListSerializer(source="questionnaire", read_only=True)
     tokens = ReviewerTokenSerializer(many=True, read_only=True)
+    categories = serializers.SerializerMethodField()
     completion_stats = serializers.SerializerMethodField()
 
     class Meta:
@@ -234,8 +235,13 @@ class ReviewCycleSerializer(serializers.ModelSerializer):
             "updated_at",
             "tokens",
             "completion_stats",
+            "categories",
         ]
         read_only_fields = ["uuid", "created_at", "updated_at", "created_by"]
+
+    def get_categories(self, obj):
+        """The feedback categories this cycle collects, in report order."""
+        return obj.active_categories
 
     def get_completion_stats(self, obj):
         """Calculate completion statistics."""
@@ -306,7 +312,18 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewCycle
-        fields = ["uuid", "reviewee", "questionnaire", "reviewer_emails", "send_invitations", "tokens"]
+        fields = [
+            "uuid",
+            "reviewee",
+            "questionnaire",
+            "reviewer_emails",
+            "send_invitations",
+            "tokens",
+            "include_self",
+            "include_peer",
+            "include_manager",
+            "include_direct_report",
+        ]
         read_only_fields = ["uuid", "tokens"]
 
     def __init__(self, *args, **kwargs):
@@ -322,7 +339,7 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
 
     def validate_reviewer_emails(self, value):
         """Validate reviewer email structure."""
-        valid_categories = ["self", "peer", "manager", "direct_report"]
+        valid_categories = list(CATEGORY_ORDER)
         for category in value.keys():
             if category not in valid_categories:
                 raise serializers.ValidationError(
@@ -365,8 +382,12 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
         if reviewer_emails:
             created_tokens = []
 
-            # Create tokens for each category and email
+            # Create tokens for each category and email, skipping the
+            # categories this cycle does not collect.
             for category, emails in reviewer_emails.items():
+                if not cycle.collects(category):
+                    continue
+
                 for email in emails:
                     token = ReviewerToken.objects.create(
                         cycle=cycle,

@@ -45,6 +45,7 @@
         <form method="post" action="{% url 'assign_invitations' cycle.uuid %}" id="inviteForm">
             {% csrf_token %}
 
+            {% if cycle.include_self %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">Self Assessment</label>
                 {% if not user.profile.can_create_cycles_for_others %}
@@ -71,7 +72,9 @@
                 </div>
                 {% endif %}
             </div>
+            {% endif %}
 
+            {% if cycle.include_manager %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">Manager/Supervisor</label>
                 <textarea
@@ -84,7 +87,9 @@
                     Direct manager or supervisor
                 </div>
             </div>
+            {% endif %}
 
+            {% if cycle.include_peer %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">Peers</label>
                 <textarea
@@ -97,7 +102,9 @@
                     Colleagues at the same level
                 </div>
             </div>
+            {% endif %}
 
+            {% if cycle.include_direct_report %}
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label class="form-label">Direct Reports</label>
                 <textarea
@@ -110,6 +117,7 @@
                     People who report to this reviewee
                 </div>
             </div>
+            {% endif %}
 
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                 <button type="submit" name="action" value="assign" class="btn btn-primary">

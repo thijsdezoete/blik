@@ -223,7 +223,22 @@ def send_reviewee_notifications(cycle, request=None):
     # Always use SITE_DOMAIN for consistent URLs across all email contexts
     base_url = f"{settings.SITE_PROTOCOL}://{settings.SITE_DOMAIN}"
 
-    # 1. Send self-assessment email
+    # 1. Send the self-assessment email, unless this cycle skips self review
+    if cycle.collects('self'):
+        send_assessment_email(cycle, base_url, stats)
+
+    # 2. Send the links the reviewee shares with everyone else. Self is not
+    # among them: the reviewee got their own link above.
+    link_categories = [c for c in cycle.active_categories if c != 'self']
+
+    if link_categories:
+        send_invitation_links_email(cycle, base_url, link_categories, stats)
+
+    return stats
+
+
+def send_assessment_email(cycle, base_url, stats):
+    """Send the reviewee their own self-assessment link. Records into `stats`."""
     try:
         self_assessment_url = f"{base_url}{reverse('reviews:claim_token', kwargs={'invitation_token': cycle.invitation_token_self})}"
 
@@ -248,19 +263,20 @@ def send_reviewee_notifications(cycle, request=None):
     except Exception as e:
         stats['errors'].append(f"Failed to send self-assessment email: {str(e)}")
 
-    # 2. Send invitation links email
-    try:
-        peer_url = f"{base_url}{reverse('reviews:claim_token', kwargs={'invitation_token': cycle.invitation_token_peer})}"
-        manager_url = f"{base_url}{reverse('reviews:claim_token', kwargs={'invitation_token': cycle.invitation_token_manager})}"
-        direct_report_url = f"{base_url}{reverse('reviews:claim_token', kwargs={'invitation_token': cycle.invitation_token_direct_report})}"
 
+def send_invitation_links_email(cycle, base_url, categories, stats):
+    """Send the reviewee the links to share, one per category. Records into `stats`."""
+    try:
         context = {
             'reviewee': cycle.reviewee,
             'cycle': cycle,
-            'peer_url': peer_url,
-            'manager_url': manager_url,
-            'direct_report_url': direct_report_url,
         }
+        for category in categories:
+            token = cycle.get_invitation_token(category)
+            context[f'{category}_url'] = (
+                f"{base_url}"
+                f"{reverse('reviews:claim_token', kwargs={'invitation_token': token})}"
+            )
 
         html_message = render_to_string('emails/reviewee_invitation_links.html', context)
         text_message = render_to_string('emails/reviewee_invitation_links.txt', context)
@@ -276,8 +292,6 @@ def send_reviewee_notifications(cycle, request=None):
 
     except Exception as e:
         stats['errors'].append(f"Failed to send invitation links email: {str(e)}")
-
-    return stats
 
 
 def send_close_check_emails(dry_run=False):

@@ -1027,6 +1027,8 @@ def questionnaire_edit(request, questionnaire_id):
             if question_id and question_text:
                 try:
                     question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
+                    previous_type = question.question_type
+                    previous_config = question.config
 
                     # Update basic fields
                     question.question_text = question_text
@@ -1095,6 +1097,12 @@ def questionnaire_edit(request, questionnaire_id):
                             # Use defaults if parsing fails
                             config = {'min': 1, 'max': 100, 'step': 1}
                             messages.warning(request, 'Invalid scale values. Using defaults (1-100, step 1).')
+
+                    # The dialog shows neither the Dreyfus weights nor the labels of a rating scale, so keep them
+                    if 'dreyfus_mapping' in previous_config:
+                        config['dreyfus_mapping'] = previous_config['dreyfus_mapping']
+                    if question_type == previous_type == 'rating' and 'labels' in previous_config:
+                        config['labels'] = previous_config['labels']
 
                     question.config = config
                     question.save()

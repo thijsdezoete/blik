@@ -189,6 +189,9 @@ LANGUAGES = [
     ('en', 'English'),
     ('de', 'Deutsch (Sie)'),
     ('de-informal', 'Deutsch (Du)'),
+    # Partial interface translations; missing messages fall back to English.
+    ('fr', 'Français'),
+    ('it', 'Italiano'),
 ]
 
 LOCALE_PATHS = [BASE_DIR / 'locale']

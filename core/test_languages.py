@@ -48,7 +48,7 @@ class RequestLanguageTests(TestCase):
 
     def test_an_unsupported_or_missing_browser_language_falls_back_to_the_organization(self):
         organization = OrganizationFactory(default_language='de')
-        self.assertEqual(request_language(self.request('fr'), organization=organization), 'de')
+        self.assertEqual(request_language(self.request('es'), organization=organization), 'de')
         self.assertEqual(request_language(self.request(), organization=organization), 'de')
 
 

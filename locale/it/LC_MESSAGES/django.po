@@ -1,0 +1,6783 @@
+# Partial Italian interface translations for Blik.
+# Reused from Chris Maugino (maugino): https://github.com/thijsdezoete/blik/pull/23
+# Source commit: f4f6d16803f187e4e94233f964f6db6573314f83
+# Only exact source-message matches are retained; missing translations use English.
+# The original Italian translations were machine-translated and need native-speaker review.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Blik\n"
+"Report-Msgid-Bugs-To: https://github.com/thijsdezoete/blik/issues\n"
+"POT-Creation-Date: 2026-10-27 20:16+0000\n"
+"PO-Revision-Date: 2026-10-27 20:17+0000\n"
+"Last-Translator: Chris Maugino <maugino@gmail.com>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "GDPR: Soft delete (anonymize identifiable data)"
+msgstr ""
+
+#, python-format
+msgid "Error anonymizing %(name)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Successfully anonymized %(count)s reviewee(s). Personal data removed, review cycles preserved."
+msgstr ""
+
+msgid "GDPR: Hard delete (complete removal with all data)"
+msgstr ""
+
+#, python-format
+msgid "Error deleting %(name)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Successfully deleted %(count)s reviewee(s) and %(cycles)s review cycle(s) with all related data."
+msgstr ""
+
+msgid "GDPR: Full anonymization (reviewee + reviewer emails)"
+msgstr ""
+
+#, python-format
+msgid "Error in full anonymization for %(name)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Successfully fully anonymized %(count)s reviewee(s) including reviewer emails."
+msgstr ""
+
+msgid "Show GDPR data summary"
+msgstr ""
+
+#, python-format
+msgid "Reviewee %(name)s: %(cycles)s cycles, %(tokens)s tokens, %(responses)s responses, %(reports)s reports"
+msgstr ""
+
+#, python-format
+msgid "Error getting summary for %(name)s: %(error)s"
+msgstr ""
+
+msgid "GDPR: Soft delete users (anonymize identifiable data)"
+msgstr ""
+
+#, python-format
+msgid "Error anonymizing user %(username)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Successfully anonymized %(count)s user(s). Personal data removed, profiles preserved."
+msgstr ""
+
+msgid "GDPR: Hard delete users (complete removal)"
+msgstr ""
+
+#, python-format
+msgid "Error deleting user %(username)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Successfully deleted %(count)s user(s) and their profiles."
+msgstr ""
+
+#, python-format
+msgid "User %(username)s: Created %(cycles)s review cycles"
+msgstr ""
+
+msgid "Accepted"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+#, python-format
+msgid "Expires in %(hours)s hours"
+msgstr ""
+
+#, python-format
+msgid "Pending (%(days)s days)"
+msgstr ""
+
+msgid "Status"
+msgstr "Stato"
+
+#, python-format
+msgid "Accepted on %(date)s"
+msgstr ""
+
+#, python-format
+msgid "EXPIRED on %(date)s"
+msgstr ""
+
+#, python-format
+msgid "Expires on %(date)s (%(days)s days, %(hours)s hours remaining)"
+msgstr ""
+
+msgid "Invitation Expiration"
+msgstr ""
+
+msgid "Accounts"
+msgstr ""
+
+msgid "First name"
+msgstr "Nome"
+
+msgid "Last name"
+msgstr "Cognome"
+
+msgid "Email address"
+msgstr "Indirizzo e-mail"
+
+msgid "Browser language"
+msgstr ""
+
+msgid "This email address is already in use."
+msgstr "Questo indirizzo e-mail è già in uso."
+
+msgid "Enter your email address"
+msgstr ""
+
+msgid "New Password"
+msgstr "Nuova password"
+
+msgid "New password"
+msgstr ""
+
+msgid "Confirm Password"
+msgstr "Conferma password"
+
+msgid "Confirm new password"
+msgstr ""
+
+msgid "Passwords do not match."
+msgstr "Le password non coincidono."
+
+msgid "Import data must be a JSON object"
+msgstr ""
+
+#, python-format
+msgid "Missing required top-level key: '%(key)s'"
+msgstr ""
+
+#, python-format
+msgid "'%(key)s' must be an object"
+msgstr ""
+
+#, python-format
+msgid "Organization missing required field: '%(field)s'"
+msgstr ""
+
+#, python-format
+msgid "Organization missing '%(field)s' field"
+msgstr ""
+
+#, python-format
+msgid "'%(key)s' must be an array"
+msgstr ""
+
+#, python-format
+msgid "User at index %(index)s must be an object"
+msgstr ""
+
+#, python-format
+msgid "User at index %(index)s missing required field: '%(field)s'"
+msgstr ""
+
+#, python-format
+msgid "Reviewee at index %(index)s must be an object"
+msgstr ""
+
+#, python-format
+msgid "Reviewee at index %(index)s missing required field: '%(field)s'"
+msgstr ""
+
+#, python-format
+msgid "Questionnaire at index %(index)s must be an object"
+msgstr ""
+
+#, python-format
+msgid "Questionnaire at index %(index)s missing '%(field)s'"
+msgstr ""
+
+#, python-format
+msgid "Questionnaire at index %(index)s missing '%(field)s' (empty questionnaire)"
+msgstr ""
+
+#, python-format
+msgid "Questionnaire at index %(index)s '%(field)s' must be an array"
+msgstr ""
+
+#, python-format
+msgid "Questionnaire %(index)s section %(section)s missing '%(field)s'"
+msgstr ""
+
+#, python-format
+msgid "Questionnaire %(index)s section %(section)s '%(field)s' must be an array"
+msgstr ""
+
+#, python-format
+msgid "Review cycle at index %(index)s must be an object"
+msgstr ""
+
+#, python-format
+msgid "Review cycle at index %(index)s missing '%(field)s'"
+msgstr ""
+
+#, python-format
+msgid "Report at index %(index)s must be an object"
+msgstr ""
+
+#, python-format
+msgid "Report at index %(index)s missing '%(field)s'"
+msgstr ""
+
+#, python-format
+msgid "Report at index %(index)s missing '%(field)s' (empty report)"
+msgstr ""
+
+msgid "Unknown"
+msgstr ""
+
+msgid "Not specified"
+msgstr ""
+
+msgid "Unnamed"
+msgstr ""
+
+#, python-format
+msgid "Created duplicate reviewee: %(name)s with email %(email)s (original: %(original)s)"
+msgstr ""
+
+#, python-format
+msgid "Failed to import reviewee %(reviewee)s: %(error)s"
+msgstr ""
+
+msgid "unknown"
+msgstr ""
+
+#, python-format
+msgid "%(name)s (imported)"
+msgstr ""
+
+#, python-format
+msgid "Created duplicate questionnaire: %(name)s (original: %(original)s)"
+msgstr ""
+
+#, python-format
+msgid "Failed to import questionnaire %(questionnaire)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Reviewee '%(name)s' not found - skipping cycle"
+msgstr ""
+
+#, python-format
+msgid "Questionnaire '%(name)s' not found - skipping cycle"
+msgstr ""
+
+#, python-format
+msgid "Skipped %(count)s responses for cycle - response import requires UUID-based question matching"
+msgstr ""
+
+#, python-format
+msgid "Failed to import review cycle: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Username '%(username)s' belongs to another organization - skipped"
+msgstr ""
+
+#, python-format
+msgid "Email '%(email)s' is already used by another user - skipped user %(username)s"
+msgstr ""
+
+#, python-format
+msgid "Created user with modified username: %(username)s (original: %(original)s)"
+msgstr ""
+
+#, python-format
+msgid "User '%(username)s' created with random password. They will need to use password reset to access their account."
+msgstr ""
+
+#, python-format
+msgid "Failed to import user %(username)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Reviewee '%(name)s' not found for report - skipping"
+msgstr ""
+
+#, python-format
+msgid "No questionnaire found for report (reviewee: %(name)s) - skipping"
+msgstr ""
+
+#, python-format
+msgid "Failed to import report: %(error)s"
+msgstr ""
+
+msgid "Skipped cycle import: requires both reviewees and questionnaires to be imported"
+msgstr ""
+
+msgid "Reviewees"
+msgstr ""
+
+msgid "Questionnaires"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "Cycles"
+msgstr ""
+
+msgid "Reports"
+msgstr ""
+
+#, python-format
+msgid "%(count)s created"
+msgstr ""
+
+#, python-format
+msgid "%(count)s updated"
+msgstr ""
+
+#, python-format
+msgid "%(count)s skipped"
+msgstr ""
+
+msgid "No data imported"
+msgstr ""
+
+#, python-format
+msgid "Import failed with errors: %(errors)s"
+msgstr ""
+
+msgid "No organization found."
+msgstr ""
+
+msgid "Email address is required."
+msgstr ""
+
+#, python-format
+msgid "Invitation already sent to %(email)s"
+msgstr ""
+
+#, python-format
+msgid "Invitation to join %(organization)s on Blik"
+msgstr ""
+
+#, python-format
+msgid "Invitation sent to %(email)s"
+msgstr ""
+
+#, python-format
+msgid "Failed to send invitation: %(error)s"
+msgstr ""
+
+msgid "This invitation has expired or been used."
+msgstr ""
+
+#, python-format
+msgid "Your account is already linked to %(organization)s. Please contact support for multi-organization access."
+msgstr ""
+
+#, python-format
+msgid "Welcome to %(organization)s! Please log in."
+msgstr ""
+
+#, python-format
+msgid "Welcome! Create your account to join %(organization)s"
+msgstr ""
+
+msgid "user"
+msgstr ""
+
+msgid "organization"
+msgstr ""
+
+msgid "If False, user can only create cycles for themselves"
+msgstr ""
+
+msgid "can create cycles for others"
+msgstr ""
+
+msgid "Whether user has seen the welcome modal"
+msgstr ""
+
+msgid "has seen welcome"
+msgstr ""
+
+msgid "Language of the dashboard and of emails to this user. Empty: the browser language."
+msgstr ""
+
+msgid "language"
+msgstr ""
+
+msgid "user profile"
+msgstr ""
+
+msgid "user profiles"
+msgstr ""
+
+msgid "email"
+msgstr ""
+
+msgid "token"
+msgstr ""
+
+msgid "invited by"
+msgstr ""
+
+msgid "accepted at"
+msgstr ""
+
+msgid "expires at"
+msgstr ""
+
+msgid "invitation"
+msgstr ""
+
+msgid "invitations"
+msgstr ""
+
+#, python-format
+msgid "Invite %(email)s to %(organization)s"
+msgstr ""
+
+msgid "used at"
+msgstr ""
+
+msgid "password reset token"
+msgstr ""
+
+msgid "password reset tokens"
+msgstr ""
+
+#, python-format
+msgid "Password reset for %(email)s"
+msgstr ""
+
+msgid "Public identifier for API and URL usage (non-enumerable)"
+msgstr ""
+
+msgid "UUID"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
+msgid "department"
+msgstr ""
+
+msgid "Language of emails to this person. Empty: the organization's default language."
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+msgid "reviewee"
+msgstr ""
+
+msgid "reviewees"
+msgstr ""
+
+msgid "Authentication required"
+msgstr ""
+
+msgid "You do not have permission to perform this action. Only organization administrators can access this feature."
+msgstr ""
+
+msgid "You do not have permission to manage organization settings."
+msgstr ""
+
+msgid "Only organization administrators can delete the organization."
+msgstr ""
+
+msgid "You do not have permission to create or edit questionnaires."
+msgstr ""
+
+msgid "Cannot delete the last admin user. Delete the organization instead."
+msgstr ""
+
+msgid "Email is required"
+msgstr ""
+
+#, python-format
+msgid "User with email %(email)s already exists"
+msgstr ""
+
+msgid "Please use the signup page to create an account."
+msgstr ""
+
+msgid "Invalid signup link. Please use your invitation email."
+msgstr ""
+
+msgid "This invitation has expired."
+msgstr ""
+
+msgid "Invalid invitation."
+msgstr ""
+
+#, python-format
+msgid "You must use the invited email: %(email)s"
+msgstr ""
+
+#, python-format
+msgid "Welcome to %(organization)s!"
+msgstr ""
+
+msgid "If an account with that email exists, we've sent password reset instructions."
+msgstr ""
+
+msgid "Invalid or expired password reset link."
+msgstr ""
+
+msgid "This password reset link has expired. Please request a new one."
+msgstr ""
+
+msgid "Your password has been reset successfully. Please log in."
+msgstr ""
+
+msgid "Profile not found. Please contact support."
+msgstr ""
+
+msgid "Your profile has been updated successfully."
+msgstr ""
+
+msgid "Basic Info"
+msgstr ""
+
+msgid "Token"
+msgstr ""
+
+msgid "Permissions"
+msgstr "Autorizzazioni"
+
+msgid "Stats"
+msgstr ""
+
+msgid "Events"
+msgstr ""
+
+msgid "Security"
+msgstr ""
+
+msgid "Delivery Info"
+msgstr ""
+
+msgid "Payload"
+msgstr ""
+
+msgid "Response"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+msgid "API"
+msgstr ""
+
+msgid "created by"
+msgstr ""
+
+#, python-brace-format
+msgid "Permissions as JSON: {example}"
+msgstr ""
+
+msgid "permissions"
+msgstr ""
+
+msgid "last used at"
+msgstr ""
+
+msgid "rate limit"
+msgstr ""
+
+msgid "API Token"
+msgstr ""
+
+msgid "API Tokens"
+msgstr ""
+
+msgid "URL"
+msgstr ""
+
+#, python-brace-format
+msgid "List of event types to subscribe to: {example}"
+msgstr ""
+
+msgid "events"
+msgstr ""
+
+msgid "secret"
+msgstr ""
+
+msgid "last triggered at"
+msgstr ""
+
+msgid "success count"
+msgstr ""
+
+msgid "failure count"
+msgstr ""
+
+msgid "Webhook Endpoint"
+msgstr ""
+
+msgid "Webhook Endpoints"
+msgstr ""
+
+msgid "ID"
+msgstr ""
+
+msgid "Public UUID for this delivery (non-enumerable)"
+msgstr ""
+
+msgid "delivery ID"
+msgstr ""
+
+msgid "endpoint"
+msgstr ""
+
+msgid "event type"
+msgstr ""
+
+msgid "payload"
+msgstr ""
+
+msgid "created at"
+msgstr ""
+
+msgid "delivered at"
+msgstr ""
+
+msgid "status code"
+msgstr ""
+
+msgid "response body"
+msgstr ""
+
+msgid "error message"
+msgstr ""
+
+msgid "attempt count"
+msgstr ""
+
+msgid "Webhook Delivery"
+msgstr ""
+
+msgid "Webhook Deliveries"
+msgstr ""
+
+msgid "Organization not found."
+msgstr ""
+
+msgid "Subscription will be canceled at the end of the current billing period."
+msgstr ""
+
+msgid "No active subscription found."
+msgstr ""
+
+#, python-format
+msgid "Error canceling subscription: %(error)s"
+msgstr ""
+
+msgid "Subscription reactivated successfully."
+msgstr ""
+
+msgid "No subscription found."
+msgstr ""
+
+#, python-format
+msgid "Error reactivating subscription: %(error)s"
+msgstr ""
+
+msgid "Organization not found"
+msgstr ""
+
+msgid "Export failed. Please try again."
+msgstr ""
+
+msgid "Only organization administrators can import data"
+msgstr ""
+
+msgid "No file uploaded"
+msgstr ""
+
+#, python-format
+msgid "File too large (max %(size)sMB)"
+msgstr ""
+
+msgid "Only JSON files are allowed"
+msgstr ""
+
+msgid "Invalid JSON format. Please check your file."
+msgstr ""
+
+msgid "Preview failed. Please try again."
+msgstr ""
+
+#, python-format
+msgid "Invalid JSON format: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Import completed successfully: %(summary)s"
+msgstr ""
+
+#, python-format
+msgid "... and %(count)s more warnings"
+msgstr ""
+
+msgid "Import failed"
+msgstr ""
+
+#, python-format
+msgid "Import failed: %(error)s"
+msgstr ""
+
+msgid "Invalid password. Account deletion canceled."
+msgstr ""
+
+msgid "Your account has been deleted."
+msgstr ""
+
+#, python-format
+msgid "Error deleting account: %(error)s"
+msgstr ""
+
+msgid "Invalid password. Organization deletion canceled."
+msgstr ""
+
+msgid "Organization name does not match. Deletion canceled."
+msgstr ""
+
+msgid "Organization and all data have been deleted."
+msgstr ""
+
+#, python-format
+msgid "Error deleting organization: %(error)s"
+msgstr ""
+
+msgid "Something went wrong."
+msgstr ""
+
+msgid "You do not have permission to manage user permissions."
+msgstr ""
+
+msgid "Invalid request: missing required fields."
+msgstr ""
+
+msgid "You cannot modify your own permissions."
+msgstr ""
+
+msgid "Cannot modify permissions for super admins."
+msgstr ""
+
+msgid "Cannot demote the last organization administrator."
+msgstr ""
+
+#, python-format
+msgid "Successfully promoted %(username)s to Organization Admin."
+msgstr ""
+
+#, python-format
+msgid "Successfully updated %(username)s to Member role."
+msgstr ""
+
+#, python-format
+msgid "%(username)s can now create review cycles for others."
+msgstr ""
+
+#, python-format
+msgid "%(username)s can now view all reports."
+msgstr ""
+
+#, python-format
+msgid "Error updating permissions: %(error)s"
+msgstr ""
+
+msgid "No organization found. Please run setup first."
+msgstr ""
+
+msgid "You can only create a reviewee profile for yourself."
+msgstr ""
+
+#, python-format
+msgid "Reviewee \"%(name)s\" created successfully."
+msgstr ""
+
+#, python-format
+msgid "Error creating reviewee: %(error)s"
+msgstr ""
+
+msgid "Name and email are required."
+msgstr ""
+
+msgid "You do not have permission to edit reviewees. Only organization administrators can access this feature."
+msgstr ""
+
+#, python-format
+msgid "Reviewee \"%(name)s\" updated successfully."
+msgstr ""
+
+#, python-format
+msgid "Error updating reviewee: %(error)s"
+msgstr ""
+
+msgid "You do not have permission to delete reviewees. Only organization administrators can access this feature."
+msgstr ""
+
+#, python-format
+msgid "Reviewee \"%(name)s\" deactivated."
+msgstr ""
+
+msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
+msgstr ""
+
+msgid "Questionnaire is required."
+msgstr ""
+
+msgid "Invalid questionnaire selected."
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Copied %(count)s reviewer(s) from previous cycle. %(sent)s email invitation(s) sent."
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\" with %(count)s reviewer token(s). Go to the cycle details to assign reviewers and send invitations."
+msgstr ""
+
+msgid "Pair with a more senior teammate on a challenging problem this sprint"
+msgstr ""
+
+msgid "Document one decision you made and why — share it for review"
+msgstr ""
+
+msgid "Pick a weak area from the feedback and book focused practice time"
+msgstr ""
+
+msgid "Questionnaire name is required."
+msgstr ""
+
+#, python-format
+msgid "Questionnaire \"%(name)s\" created successfully."
+msgstr ""
+
+#, python-format
+msgid "Error creating questionnaire: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "This questionnaire is already translated into %(language)s. Empty that translation first to make %(language)s its source language."
+msgstr ""
+
+#, python-format
+msgid "Questionnaire \"%(name)s\" updated successfully."
+msgstr ""
+
+#, python-format
+msgid "Error updating questionnaire: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Section \"%(title)s\" added."
+msgstr ""
+
+#, python-format
+msgid "Error adding section: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Section \"%(title)s\" updated successfully."
+msgstr ""
+
+msgid "Section not found."
+msgstr ""
+
+#, python-format
+msgid "Error updating section: %(error)s"
+msgstr ""
+
+msgid "Invalid weight values. Scoring disabled for this question."
+msgstr ""
+
+msgid "Invalid scale values. Using defaults (1-100, step 1)."
+msgstr ""
+
+msgid "Question added successfully."
+msgstr ""
+
+msgid "Error adding question. Please try again."
+msgstr ""
+
+#, python-format
+msgid "Section \"%(title)s\" deleted."
+msgstr ""
+
+#, python-format
+msgid "Error deleting section: %(error)s"
+msgstr ""
+
+msgid "Question deleted."
+msgstr ""
+
+#, python-format
+msgid "Error deleting question: %(error)s"
+msgstr ""
+
+msgid "Question updated successfully."
+msgstr ""
+
+msgid "Error updating question. Please try again."
+msgstr ""
+
+msgid "Dreyfus/Agency configuration updated successfully."
+msgstr ""
+
+msgid "Question not found."
+msgstr ""
+
+#, python-format
+msgid "Error updating Dreyfus configuration: %(error)s"
+msgstr ""
+
+msgid "Translation saved."
+msgstr ""
+
+#, python-format
+msgid "Questionnaire \"%(name)s\" archived. It is used by %(count)s review cycle(s) and cannot be deleted."
+msgstr ""
+
+#, python-format
+msgid "Questionnaire \"%(name)s\" is now in use and was archived instead of deleted."
+msgstr ""
+
+#, python-format
+msgid "Questionnaire \"%(name)s\" deleted."
+msgstr ""
+
+#, python-format
+msgid "Questionnaire \"%(name)s\" restored."
+msgstr ""
+
+msgid "Question not found"
+msgstr ""
+
+msgid "Internal server error"
+msgstr ""
+
+msgid "Select at least one feedback category."
+msgstr ""
+
+#, python-format
+msgid "Created %(count)s review cycles. No invitations have been sent yet."
+msgstr ""
+
+msgid "Reviewee is required for single cycle creation."
+msgstr ""
+
+#, python-format
+msgid "Invalid email skipped in %(category)s: %(email)s"
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. Invitation emails are being sent."
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails."
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\". Notification emails are being sent to the reviewee."
+msgstr ""
+
+#, python-format
+msgid "Error creating review cycle: %(error)s"
+msgstr ""
+
+msgid "No pending cycles to send invitations for."
+msgstr ""
+
+#, python-format
+msgid "Invitations are being sent for %(count)s review cycle(s)."
+msgstr ""
+
+#, python-format
+msgid "Report generated successfully for %(name)s."
+msgstr ""
+
+msgid "Notification email sent."
+msgstr ""
+
+#, python-format
+msgid "(Email errors: %(errors)s)"
+msgstr ""
+
+#, python-format
+msgid "Error generating report: %(error)s"
+msgstr ""
+
+msgid "This cycle is already completed."
+msgstr ""
+
+msgid "Cannot close cycle: No reviews have been completed yet."
+msgstr ""
+
+#, python-format
+msgid "Cycle closed and report generated for %(name)s."
+msgstr ""
+
+#, python-format
+msgid "Cycle closed but error generating report: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Successfully invited %(assigned)s reviewer(s) and sent %(sent)s email(s)."
+msgstr ""
+
+#, python-format
+msgid "Successfully assigned %(assigned)s email(s). Invitations will be sent separately."
+msgstr ""
+
+#, python-format
+msgid "Successfully assigned %(assigned)s email(s). No invitations sent yet."
+msgstr ""
+
+#, python-format
+msgid "Successfully sent %(sent)s invitation email(s)."
+msgstr ""
+
+msgid "No pending invitations to send."
+msgstr ""
+
+#, python-format
+msgid "Successfully sent %(sent)s reminder(s)."
+msgstr ""
+
+msgid "No pending reminders to send."
+msgstr ""
+
+msgid "Cannot send reminder: no email assigned to this reviewer."
+msgstr ""
+
+msgid "Cannot send reminder: invitation not sent yet."
+msgstr ""
+
+msgid "This reviewer has already completed their feedback."
+msgstr ""
+
+msgid "Reminder sent to reviewer."
+msgstr ""
+
+msgid "Reviewer token not found."
+msgstr ""
+
+#, python-format
+msgid "Error sending reminder: %(error)s"
+msgstr ""
+
+msgid "You do not have permission to remove reviewers."
+msgstr ""
+
+msgid "Cannot remove: reviewer has already started or completed their feedback."
+msgstr ""
+
+msgid "unclaimed token"
+msgstr ""
+
+#, python-format
+msgid "Removed %(category)s reviewer (%(email)s) from cycle."
+msgstr ""
+
+msgid "Cycle automatically closed and report generated (all remaining reviewers completed)."
+msgstr ""
+
+#, python-format
+msgid "Error removing reviewer: %(error)s"
+msgstr ""
+
+msgid "No report found for this cycle. Please generate the report first."
+msgstr ""
+
+#, python-format
+msgid "Report email sent to %(name)s at %(email)s."
+msgstr ""
+
+#, python-format
+msgid "Failed to send email: %(error)s"
+msgstr ""
+
+msgid "Failed to send email."
+msgstr ""
+
+msgid "You do not have permission to modify organization settings."
+msgstr ""
+
+msgid "Organization details updated successfully."
+msgstr ""
+
+msgid "Registration settings updated successfully."
+msgstr ""
+
+msgid "Report settings updated successfully."
+msgstr ""
+
+msgid "Email settings updated successfully."
+msgstr ""
+
+#, python-format
+msgid "Some settings are managed by environment variables and were not changed: %(fields)s"
+msgstr ""
+
+#, python-format
+msgid "Error updating settings: %(error)s"
+msgstr ""
+
+msgid "You do not have permission to access GDPR management."
+msgstr ""
+
+msgid "You do not have permission to delete users."
+msgstr ""
+
+msgid "You cannot delete your own account."
+msgstr ""
+
+msgid "Cannot delete super admin accounts."
+msgstr ""
+
+#, python-format
+msgid "User %(username)s has been permanently deleted."
+msgstr ""
+
+#, python-format
+msgid "User %(username)s has been anonymized."
+msgstr ""
+
+#, python-format
+msgid "Error deleting user: %(error)s"
+msgstr ""
+
+msgid "You do not have permission to delete reviewees."
+msgstr ""
+
+#, python-format
+msgid "Reviewee %(name)s and all associated reviewer emails have been anonymized. %(count)s reviewer email(s) anonymized."
+msgstr ""
+
+#, python-format
+msgid "Reviewee %(name)s has been permanently deleted along with %(count)s review cycle(s) and all associated data."
+msgstr ""
+
+#, python-format
+msgid "Reviewee %(name)s has been anonymized. %(count)s review cycle(s) preserved."
+msgstr ""
+
+#, python-format
+msgid "Error deleting reviewee: %(error)s"
+msgstr ""
+
+msgid "You do not have permission to create product reviews."
+msgstr ""
+
+msgid "Please fill in all required fields."
+msgstr ""
+
+msgid "Invalid rating value."
+msgstr ""
+
+#, python-format
+msgid "Product review from \"%(name)s\" created successfully."
+msgstr ""
+
+msgid "You do not have permission to edit product reviews."
+msgstr ""
+
+msgid "Product review updated successfully."
+msgstr ""
+
+msgid "You do not have permission to delete product reviews."
+msgstr ""
+
+#, python-format
+msgid "Product review from \"%(name)s\" has been deleted."
+msgstr ""
+
+msgid "Please select a rating."
+msgstr ""
+
+msgid "Your review has been updated and is pending approval. Thank you!"
+msgstr ""
+
+msgid "Thank you for your review! It will be published after approval."
+msgstr ""
+
+msgid "You do not have permission to approve reviews."
+msgstr ""
+
+#, python-format
+msgid "Review from \"%(name)s\" approved successfully."
+msgstr ""
+
+msgid "You do not have permission to reject reviews."
+msgstr ""
+
+#, python-format
+msgid "Review from \"%(name)s\" rejected."
+msgstr ""
+
+msgid "Permission denied."
+msgstr ""
+
+#, python-format
+msgid "Error creating API token: %(error)s"
+msgstr ""
+
+msgid "API token updated successfully."
+msgstr ""
+
+msgid "API token not found."
+msgstr ""
+
+#, python-format
+msgid "Error updating API token: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "API token \"%(name)s\" revoked successfully."
+msgstr ""
+
+#, python-format
+msgid "Error revoking API token: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Webhook \"%(name)s\" created successfully."
+msgstr ""
+
+#, python-format
+msgid "Error creating webhook: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Webhook \"%(name)s\" updated successfully."
+msgstr ""
+
+msgid "Webhook not found."
+msgstr ""
+
+#, python-format
+msgid "Error updating webhook: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Webhook \"%(name)s\" deleted successfully."
+msgstr ""
+
+#, python-format
+msgid "Error deleting webhook: %(error)s"
+msgstr ""
+
+msgid "You do not have permission to create organizations."
+msgstr ""
+
+msgid "Organization name is required."
+msgstr ""
+
+msgid "Admin email is required."
+msgstr ""
+
+#, python-format
+msgid "Organization \"%(name)s\" already exists."
+msgstr ""
+
+#, python-format
+msgid "User with email %(email)s already belongs to organization: %(organization)s"
+msgstr ""
+
+#, python-format
+msgid "Failed to create user: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Organization \"%(name)s\" created successfully. Login credentials sent to %(email)s."
+msgstr ""
+
+#, python-format
+msgid "Failed to send welcome email: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Failed to create organization: %(error)s"
+msgstr ""
+
+msgid "Enter a new SMTP password or leave blank to keep the existing one"
+msgstr ""
+
+msgid "SMTP password"
+msgstr ""
+
+msgid "Basic Information"
+msgstr ""
+
+msgid "Email Settings"
+msgstr ""
+
+msgid "Core"
+msgstr ""
+
+#, python-format
+msgid "Reset your %(site_name)s password"
+msgstr ""
+
+msgid "The Power of 360 Feedback"
+msgstr ""
+
+msgid "Research shows that <strong>360-degree feedback increases self-awareness by up to 30%</strong> and significantly improves leadership effectiveness."
+msgstr ""
+
+#, python-format
+msgid "Welcome to %(site_name)s - Your Account is Ready"
+msgstr ""
+
+msgid "Email address for the administrator"
+msgstr "Indirizzo e-mail dell'amministratore"
+
+msgid "Password must be at least 8 characters"
+msgstr "La password deve contenere almeno 8 caratteri"
+
+msgid "Enter the same password again for verification"
+msgstr "Inserisca nuovamente la stessa password per verificarla"
+
+msgid "This email is already registered."
+msgstr "Questo indirizzo e-mail è già registrato."
+
+msgid "Your organization or company name"
+msgstr "Nome dell'organizzazione o dell'azienda"
+
+msgid "Main contact email for your organization"
+msgstr "Indirizzo e-mail di contatto principale dell'organizzazione"
+
+msgid "SMTP Host"
+msgstr "Host SMTP"
+
+msgid "Your SMTP server hostname"
+msgstr "Nome host del server SMTP"
+
+msgid "SMTP Port"
+msgstr "Porta SMTP"
+
+msgid "Common ports: 587 (TLS), 465 (SSL), 25 (Plain)"
+msgstr "Porte comuni: 587 (TLS), 465 (SSL), 25 (non crittografata)"
+
+msgid "SMTP Username"
+msgstr "Nome utente SMTP"
+
+msgid "Username for SMTP authentication (usually your email)"
+msgstr "Nome utente per l'autenticazione SMTP (di solito il Suo indirizzo e-mail)"
+
+msgid "SMTP Password"
+msgstr "Password SMTP"
+
+msgid "Password or app-specific password for SMTP"
+msgstr "Password o password specifica per l'applicazione per SMTP"
+
+msgid "Use TLS"
+msgstr "Usi TLS"
+
+msgid "Enable TLS encryption (recommended for port 587)"
+msgstr "Abilita la crittografia TLS (consigliata per la porta 587)"
+
+msgid "From Email Address"
+msgstr "Indirizzo e-mail del mittente"
+
+msgid "Email address that appears as sender"
+msgstr "Indirizzo e-mail visualizzato come mittente"
+
+msgid "Skip email setup (configure later)"
+msgstr "Salta la configurazione e-mail (da completare in seguito)"
+
+msgid "You can configure email settings later in the admin panel"
+msgstr "Può configurare le impostazioni e-mail in seguito nel pannello di amministrazione"
+
+msgid "SMTP Host is required when not skipping email setup."
+msgstr "L'host SMTP è obbligatorio se non si salta la configurazione e-mail."
+
+msgid "SMTP Port is required when not skipping email setup."
+msgstr "La porta SMTP è obbligatoria se non si salta la configurazione e-mail."
+
+msgid "From Email is required when not skipping email setup."
+msgstr "L'indirizzo e-mail del mittente è obbligatorio se non si salta la configurazione e-mail."
+
+msgid "updated at"
+msgstr ""
+
+msgid "SMTP host"
+msgstr ""
+
+msgid "SMTP port"
+msgstr ""
+
+msgid "SMTP username"
+msgstr ""
+
+msgid "encrypted SMTP password"
+msgstr ""
+
+msgid "use TLS"
+msgstr ""
+
+msgid "from address"
+msgstr ""
+
+msgid "Minimum number of responses required to show results (for anonymity). Set to 1 for small teams."
+msgstr ""
+
+msgid "minimum responses for anonymity"
+msgstr ""
+
+msgid "Automatically send email to reviewee when their report is generated"
+msgstr ""
+
+msgid "automatically send report email"
+msgstr ""
+
+msgid "Allow new users to register for this organization"
+msgstr ""
+
+msgid "allow user registration"
+msgstr ""
+
+msgid "By default, new users can create cycles for others (not just themselves)"
+msgstr ""
+
+msgid "new users can create cycles for others"
+msgstr ""
+
+msgid "Language of emails and feedback forms, unless a person has their own"
+msgstr ""
+
+msgid "default language"
+msgstr ""
+
+msgid "organizations"
+msgstr ""
+
+msgid "Short title for the fact (e.g., \"The Power of 360 Feedback\")"
+msgstr ""
+
+msgid "title"
+msgstr ""
+
+msgid "The fact content. Can include HTML tags like <strong> for emphasis."
+msgstr ""
+
+msgid "content"
+msgstr ""
+
+msgid "Only active facts will be shown in emails"
+msgstr ""
+
+msgid "Optional ordering (lower numbers shown first when not randomizing)"
+msgstr ""
+
+msgid "display order"
+msgstr ""
+
+msgid "Welcome Email Fact"
+msgstr ""
+
+msgid "Welcome Email Facts"
+msgstr ""
+
+msgid "applied at"
+msgstr ""
+
+msgid "success"
+msgstr ""
+
+msgid "error"
+msgstr ""
+
+msgid "upgrade step"
+msgstr ""
+
+msgid "upgrade steps"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "FAILED"
+msgstr ""
+
+#, python-format
+msgid "Admin account \"%(email)s\" created successfully!"
+msgstr ""
+
+#, python-format
+msgid "Organization \"%(name)s\" configured successfully!"
+msgstr ""
+
+msgid "No organization found. Please complete organization setup first."
+msgstr ""
+
+msgid "Using Blik's managed email service. All set!"
+msgstr ""
+
+msgid "Email settings configured successfully!"
+msgstr ""
+
+msgid "Email setup skipped. You can configure it later in the admin panel."
+msgstr ""
+
+msgid "Default questionnaires loaded successfully!"
+msgstr ""
+
+#, python-format
+msgid "Could not load default questionnaires: %(error)s"
+msgstr ""
+
+msgid "Demo data generated successfully! Created 15 reviewees with diverse review cycles in various states. Check the dashboard to explore."
+msgstr ""
+
+#, python-format
+msgid "Failed to generate demo data: %(error)s"
+msgstr ""
+
+msgid "Notifications"
+msgstr ""
+
+#, python-format
+msgid "360 Feedback Request for %(name)s"
+msgstr ""
+
+msgid "Review Content"
+msgstr ""
+
+msgid "Reviewer Information"
+msgstr ""
+
+msgid "Status & Publishing"
+msgstr ""
+
+msgid "Organization & Metadata"
+msgstr ""
+
+msgid "Timestamps"
+msgstr ""
+
+msgctxt "product review"
+msgid "Rating"
+msgstr ""
+
+#, python-format
+msgid "%(count)s review(s) approved."
+msgstr ""
+
+msgid "Approve selected reviews"
+msgstr ""
+
+#, python-format
+msgid "%(count)s review(s) rejected."
+msgstr ""
+
+msgid "Reject selected reviews"
+msgstr ""
+
+#, python-format
+msgid "%(count)s review(s) marked as featured."
+msgstr ""
+
+msgid "Mark as featured"
+msgstr ""
+
+msgid "Product Reviews"
+msgstr ""
+
+msgid "Pending Review"
+msgstr ""
+
+msgid "Approved"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Organization this review belongs to"
+msgstr ""
+
+msgid "Rating from 1-5 stars"
+msgstr ""
+
+msgid "rating"
+msgstr ""
+
+msgid "Short title/headline for the review"
+msgstr ""
+
+msgid "review title"
+msgstr ""
+
+msgid "Full review text from the customer"
+msgstr ""
+
+msgid "review text"
+msgstr ""
+
+msgid "Name of the person giving the review"
+msgstr ""
+
+msgid "reviewer name"
+msgstr ""
+
+msgid "Job title of the reviewer (e.g., \"HR Manager\")"
+msgstr ""
+
+msgid "reviewer title"
+msgstr ""
+
+msgid "Company/organization the reviewer works for"
+msgstr ""
+
+msgid "company"
+msgstr ""
+
+msgid "Email address of the reviewer (not shown publicly)"
+msgstr ""
+
+msgid "reviewer email"
+msgstr ""
+
+msgid "Verified as actual customer/subscriber"
+msgstr ""
+
+msgid "verified customer"
+msgstr ""
+
+msgid "Review approval status"
+msgstr ""
+
+msgid "status"
+msgstr ""
+
+msgid "Active reviews can be displayed publicly"
+msgstr ""
+
+msgid "Featured reviews are highlighted on landing pages"
+msgstr ""
+
+msgid "featured"
+msgstr ""
+
+msgid "Date the review was published (shown in JSON-LD)"
+msgstr ""
+
+msgid "published date"
+msgstr ""
+
+msgid "Where the review came from (e.g., \"Email Survey\", \"G2\", \"Direct\")"
+msgstr ""
+
+msgid "source"
+msgstr ""
+
+msgid "Internal notes about this review (not shown publicly)"
+msgstr ""
+
+msgid "internal notes"
+msgstr ""
+
+msgid "Product Review"
+msgstr ""
+
+msgid "Question"
+msgstr ""
+
+msgid "Strongly Disagree"
+msgstr ""
+
+msgid "Disagree"
+msgstr ""
+
+msgid "Neutral"
+msgstr ""
+
+msgid "Agree"
+msgstr ""
+
+msgid "Strongly Agree"
+msgstr ""
+
+msgid "description"
+msgstr ""
+
+msgid "default"
+msgstr ""
+
+msgid "source language"
+msgstr ""
+
+msgid "template key"
+msgstr ""
+
+msgid "questionnaire"
+msgstr ""
+
+msgid "questionnaires"
+msgstr ""
+
+msgid "Dreyfus (Skill + Agency)"
+msgstr ""
+
+msgid "Dreyfus (Skill)"
+msgstr ""
+
+msgid "Dreyfus (Agency)"
+msgstr ""
+
+msgid "Standard 360"
+msgstr ""
+
+msgid "sort order"
+msgstr ""
+
+msgid "section"
+msgstr ""
+
+msgid "sections"
+msgstr ""
+
+msgid "Rating Scale"
+msgstr ""
+
+msgid "Likert Scale"
+msgstr ""
+
+msgid "Free Text"
+msgstr ""
+
+msgid "Single Choice"
+msgstr ""
+
+msgid "Multiple Choice"
+msgstr ""
+
+msgid "Numeric Scale"
+msgstr ""
+
+msgid "question text"
+msgstr ""
+
+msgid "question type"
+msgstr ""
+
+msgid "configuration"
+msgstr ""
+
+msgid "labels"
+msgstr ""
+
+msgid "action items"
+msgstr ""
+
+msgid "required"
+msgstr ""
+
+msgid "question"
+msgstr ""
+
+msgid "questions"
+msgstr ""
+
+msgid "label"
+msgstr ""
+
+msgid "weight"
+msgstr ""
+
+msgid "answer option"
+msgstr ""
+
+msgid "answer options"
+msgstr ""
+
+msgid "source checksums"
+msgstr ""
+
+msgid "questionnaire translation"
+msgstr ""
+
+msgid "questionnaire translations"
+msgstr ""
+
+msgid "section translation"
+msgstr ""
+
+msgid "section translations"
+msgstr ""
+
+msgid "question translation"
+msgstr ""
+
+msgid "question translations"
+msgstr ""
+
+msgid "answer option translation"
+msgstr ""
+
+msgid "answer option translations"
+msgstr ""
+
+msgid "Name"
+msgstr "Nome"
+
+msgid "Description"
+msgstr ""
+
+msgid "Section title"
+msgstr ""
+
+msgid "Section description"
+msgstr ""
+
+msgid "Action item"
+msgstr ""
+
+msgid "Answer option"
+msgstr ""
+
+msgid "Label of the lowest value"
+msgstr ""
+
+msgid "Label of the highest value"
+msgstr ""
+
+#, python-format
+msgid "Label of rating %(value)s"
+msgstr ""
+
+#, python-format
+msgid "The translation of \"%(text)s\" is longer than %(max_length)s characters."
+msgstr ""
+
+msgid "No expiry"
+msgstr ""
+
+#, python-format
+msgid "Expires in %(days)s days"
+msgstr ""
+
+#, python-format
+msgid "Valid (%(days)s days)"
+msgstr ""
+
+msgid "Token Status"
+msgstr ""
+
+msgid "No expiration set"
+msgstr ""
+
+msgid "Token Expiration"
+msgstr ""
+
+msgid "Novice"
+msgstr ""
+
+msgid "Rigid rule follower"
+msgstr ""
+
+msgid "Follows rules rigidly, needs detailed instructions and close guidance"
+msgstr ""
+
+msgid "Requires step-by-step instructions"
+msgstr ""
+
+msgid "Follows rules without understanding context"
+msgstr ""
+
+msgid "Needs close supervision"
+msgstr ""
+
+msgid "Limited ability to recognize patterns"
+msgstr ""
+
+msgid "Task-focused rather than goal-focused"
+msgstr ""
+
+msgid "Asks for detailed procedures"
+msgstr ""
+
+msgid "Struggles with unexpected situations"
+msgstr ""
+
+msgid "Focuses on individual steps"
+msgstr ""
+
+msgid "Needs explicit direction for each task"
+msgstr ""
+
+msgid "Advanced Beginner"
+msgstr ""
+
+msgid "Recognizes patterns, needs guidelines"
+msgstr ""
+
+msgid "Can handle simple tasks independently, recognizes recurring patterns"
+msgstr ""
+
+msgid "Recognizes situational patterns"
+msgstr ""
+
+msgid "Handles routine tasks independently"
+msgstr ""
+
+msgid "Needs guidelines for non-standard situations"
+msgstr ""
+
+msgid "Starts to see similarities across problems"
+msgstr ""
+
+msgid "Still struggles with complex decisions"
+msgstr ""
+
+msgid "Can work independently on familiar tasks"
+msgstr ""
+
+msgid "Asks for guidance on edge cases"
+msgstr ""
+
+msgid "Identifies when something looks wrong"
+msgstr ""
+
+msgid "Follows established patterns"
+msgstr ""
+
+msgid "Competent"
+msgstr ""
+
+msgid "Develops mental models, takes responsibility"
+msgstr ""
+
+msgid "Plans deliberately, solves standard problems, takes ownership"
+msgstr ""
+
+msgid "Creates mental models of the domain"
+msgstr ""
+
+msgid "Plans work deliberately"
+msgstr ""
+
+msgid "Takes responsibility for outcomes"
+msgstr ""
+
+msgid "Solves standard problems independently"
+msgstr ""
+
+msgid "Makes conscious, reasoned decisions"
+msgstr ""
+
+msgid "Troubleshoots problems systematically"
+msgstr ""
+
+msgid "Prioritizes and plans work"
+msgstr ""
+
+msgid "Takes ownership of results"
+msgstr ""
+
+msgid "Follows through on commitments"
+msgstr ""
+
+msgid "Proficient"
+msgstr ""
+
+msgid "Sees the big picture, learns from others"
+msgstr ""
+
+msgid "Sees the big picture, recognizes patterns quickly, handles complexity"
+msgstr ""
+
+msgid "Sees the big picture and context"
+msgstr ""
+
+msgid "Recognizes patterns and deviations quickly"
+msgstr ""
+
+msgid "Learns from others experiences"
+msgstr ""
+
+msgid "Handles complex situations effectively"
+msgstr ""
+
+msgid "Knows when to break the rules"
+msgstr ""
+
+msgid "Quickly identifies root causes"
+msgstr ""
+
+msgid "Anticipates problems before they occur"
+msgstr ""
+
+msgid "Adapts approaches to context"
+msgstr ""
+
+msgid "Mentors less experienced team members"
+msgstr ""
+
+msgid "Expert"
+msgstr ""
+
+msgid "Intuitive, creates new approaches"
+msgstr ""
+
+msgid "Works from intuition, creates novel solutions, recognized authority"
+msgstr ""
+
+msgid "Works from intuition and deep understanding"
+msgstr ""
+
+msgid "Creates new approaches and solutions"
+msgstr ""
+
+msgid "Recognized as domain authority"
+msgstr ""
+
+msgid "Sees possibilities others miss"
+msgstr ""
+
+msgid "Operates at a transcendent level"
+msgstr ""
+
+msgid "Solves problems others cannot"
+msgstr ""
+
+msgid "Innovates and creates best practices"
+msgstr ""
+
+msgid "Trusted for most difficult challenges"
+msgstr ""
+
+msgid "Shapes the direction of the field"
+msgstr ""
+
+msgid "Directed"
+msgstr ""
+
+msgid "Waits for explicit instructions and direction"
+msgstr ""
+
+msgid "Assisted"
+msgstr "Con supporto"
+
+msgid "Takes initiative when prompted or guided"
+msgstr ""
+
+msgid "Independent"
+msgstr "Autonomo"
+
+msgid "Proactively identifies and addresses problems"
+msgstr ""
+
+msgid "Proactive"
+msgstr "Proattivo"
+
+msgid "Regularly proposes improvements and drives change"
+msgstr ""
+
+msgid "Self-Driven"
+msgstr "Autodiretto"
+
+msgid "Self-directed achiever who consistently improves systems"
+msgstr ""
+
+msgid "Developing Contributor"
+msgstr ""
+
+msgid "Building foundational skills and learning to work independently"
+msgstr ""
+
+msgid "Early in career or role"
+msgstr ""
+
+msgid "Requires guidance and support"
+msgstr ""
+
+msgid "Building fundamental capabilities"
+msgstr ""
+
+msgid "Needs structured development"
+msgstr ""
+
+msgid "Focus on building core skills through deliberate practice and seeking guidance. Work on taking more initiative on familiar tasks."
+msgstr ""
+
+msgid "Hungry Learner"
+msgstr ""
+
+msgid "High initiative but developing expertise - eager to learn and contribute"
+msgstr ""
+
+msgid "Strong drive and motivation"
+msgstr ""
+
+msgid "Seeks opportunities to grow"
+msgstr ""
+
+msgid "May overcommit without experience"
+msgstr ""
+
+msgid "Benefits from mentorship"
+msgstr ""
+
+msgid "Channel your energy into deliberate skill development. Seek mentorship from experts. Balance enthusiasm with building depth."
+msgstr ""
+
+msgid "Specialist"
+msgstr ""
+
+msgid "Deep expertise but waits for direction - valuable contributor when engaged"
+msgstr ""
+
+msgid "Strong technical capabilities"
+msgstr ""
+
+msgid "Reliable when given clear objectives"
+msgstr ""
+
+msgid "Prefers depth over breadth"
+msgstr ""
+
+msgid "May need encouragement to lead"
+msgstr ""
+
+msgid "Build confidence in taking initiative. Start with small ownership opportunities. Share your expertise proactively."
+msgstr ""
+
+msgid "Force Multiplier"
+msgstr ""
+
+msgid "High skill and high initiative - drives team success and innovation"
+msgstr ""
+
+msgid "Combines expertise with initiative"
+msgstr ""
+
+msgid "Mentors and elevates others"
+msgstr ""
+
+msgid "Drives meaningful improvements"
+msgstr ""
+
+msgid "Trusted for complex challenges"
+msgstr ""
+
+msgid "Continue expanding your impact. Focus on strategic initiatives and developing others. Consider broader leadership roles."
+msgstr ""
+
+msgid "Build foundational skills through deliberate practice and close guidance from experienced mentors."
+msgstr ""
+
+msgid "Develop deeper pattern recognition and start building mental models of your domain."
+msgstr ""
+
+msgid "Expand your perspective to see the bigger picture and learn from diverse experiences."
+msgstr ""
+
+msgid "Deepen intuition through extensive practice and begin creating novel approaches."
+msgstr ""
+
+msgid "Continue innovating and sharing your expertise to advance the field."
+msgstr ""
+
+msgid "Seek feedback on your work early and often"
+msgstr ""
+
+msgid "Study examples of good work in your domain"
+msgstr ""
+
+msgid "Practice deliberate problem-solving with guidance"
+msgstr ""
+
+msgid "Take ownership of a complete project or feature"
+msgstr ""
+
+msgid "Learn from colleagues at different skill levels"
+msgstr ""
+
+msgid "Document your decision-making process"
+msgstr ""
+
+msgid "Mentor someone less experienced"
+msgstr ""
+
+msgid "Share your knowledge through documentation or talks"
+msgstr ""
+
+msgid "Tackle a novel problem in your domain"
+msgstr ""
+
+msgid "Structured learning programs or courses"
+msgstr ""
+
+msgid "Regular mentorship sessions"
+msgstr ""
+
+msgid "Code reviews and pair programming"
+msgstr ""
+
+msgid "Cross-functional projects"
+msgstr ""
+
+msgid "Technical leadership opportunities"
+msgstr ""
+
+msgid "Industry conferences and communities"
+msgstr ""
+
+msgid "Research and innovation projects"
+msgstr ""
+
+msgid "Teaching and mentoring opportunities"
+msgstr ""
+
+msgid "Speaking at conferences or writing articles"
+msgstr ""
+
+msgid "Take more initiative on projects - your skills are ready for more ownership"
+msgstr ""
+
+msgid "Focus on deepening your technical expertise to match your initiative"
+msgstr ""
+
+msgid "Continue deepening expertise and innovating"
+msgstr ""
+
+#, python-format
+msgid "Develop capabilities of a %(stage)s: %(description)s"
+msgstr ""
+
+msgid "Build experience across diverse situations"
+msgstr ""
+
+msgid "Continuously reflect on your practice and learning"
+msgstr ""
+
+msgid "Recognize recurring patterns in your work"
+msgstr ""
+
+msgid "Handle routine tasks independently"
+msgstr ""
+
+msgid "Build situational awareness beyond just following rules"
+msgstr ""
+
+msgid "Develop mental models of how things work"
+msgstr ""
+
+msgid "Take responsibility for outcomes, not just tasks"
+msgstr ""
+
+msgid "Plan and prioritize work deliberately"
+msgstr ""
+
+msgid "See the big picture and system context"
+msgstr ""
+
+msgid "Learn from others' experiences, not just your own"
+msgstr ""
+
+msgid "Recognize patterns and deviations quickly"
+msgstr ""
+
+msgid "Trust your intuition based on deep experience"
+msgstr ""
+
+msgid "Create novel approaches and solutions"
+msgstr ""
+
+msgid "Become a recognized authority in your domain"
+msgstr ""
+
+msgid "Continue developing expertise"
+msgstr ""
+
+msgid "review cycle"
+msgstr ""
+
+msgid "Secure token for reviewee access to their report"
+msgstr ""
+
+msgid "access token"
+msgstr ""
+
+msgid "report data"
+msgstr ""
+
+msgid "generated at"
+msgstr ""
+
+msgid "available"
+msgstr ""
+
+msgid "access token expires"
+msgstr ""
+
+msgid "Expiration date for access token"
+msgstr ""
+
+msgid "last accessed"
+msgstr ""
+
+msgid "Last time report was accessed"
+msgstr ""
+
+msgid "access count"
+msgstr ""
+
+msgid "Number of times report has been accessed"
+msgstr ""
+
+msgid "report"
+msgstr ""
+
+msgid "reports"
+msgstr ""
+
+#, python-format
+msgid "Report for %(cycle)s"
+msgstr ""
+
+msgid "Improved"
+msgstr ""
+
+msgid "Slightly improved"
+msgstr ""
+
+msgid "Stable"
+msgstr ""
+
+msgid "Slightly declined"
+msgstr ""
+
+msgid "Declined"
+msgstr ""
+
+#, python-format
+msgid "Self-assessment (%(self)s) significantly lower than others' perception (%(others)s)"
+msgstr ""
+
+msgid "Strong performance but may undervalue own contributions"
+msgstr ""
+
+#, python-format
+msgid "Self-assessment (%(self)s) higher than others' perception (%(others)s)"
+msgstr ""
+
+msgid "Opportunity to align self-perception with team feedback"
+msgstr ""
+
+msgid "Outstanding (4.5+)"
+msgstr ""
+
+msgid "Excellent (4.0-4.4)"
+msgstr ""
+
+msgid "Strong (3.5-3.9)"
+msgstr ""
+
+msgid "Developing (3.0-3.4)"
+msgstr ""
+
+msgid "Needs Support (below 3.0)"
+msgstr ""
+
+msgid "Outstanding"
+msgstr ""
+
+msgid "Excellent"
+msgstr ""
+
+msgid "Strong"
+msgstr ""
+
+msgid "Developing"
+msgstr ""
+
+msgid "Needs Support"
+msgstr ""
+
+#, python-format
+msgid "Insufficient responses (minimum %(count)s required)"
+msgstr ""
+
+#, python-format
+msgid "No email address for reviewee %(name)s"
+msgstr ""
+
+msgid "Report does not have an access token"
+msgstr ""
+
+msgid "Your 360 Feedback Report is Ready!"
+msgstr ""
+
+#, python-format
+msgid "Failed to send report ready email: %(error)s"
+msgstr ""
+
+msgid "This report link has expired. Please contact your administrator for a new link."
+msgstr ""
+
+#, python-format
+msgid "Token %(token)s generated. Copy feedback URL and send to reviewer manually: %(url)s"
+msgstr ""
+
+#, python-format
+msgid "Error with token %(token)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Generated %(count)s feedback URLs. Copy and send manually."
+msgstr ""
+
+msgid "Generate feedback URLs for selected tokens"
+msgstr ""
+
+msgid "View Report"
+msgstr "Visualizzi il report"
+
+msgid "Report"
+msgstr ""
+
+#. Translators: admin app holding review cycles, reviewer tokens and responses (not product reviews)
+msgid "Reviews"
+msgstr ""
+
+msgid "Active"
+msgstr "Attivo"
+
+msgid "Completed"
+msgstr "Completato"
+
+msgid "When the close check-in email was sent to the reviewee"
+msgstr ""
+
+msgid "close check sent at"
+msgstr ""
+
+msgid "Self assessment"
+msgstr ""
+
+msgid "Peer review"
+msgstr ""
+
+msgid "Manager review"
+msgstr ""
+
+msgid "Direct report review"
+msgstr ""
+
+msgid "self assessment invitation token"
+msgstr ""
+
+msgid "peer review invitation token"
+msgstr ""
+
+msgid "manager review invitation token"
+msgstr ""
+
+msgid "direct report review invitation token"
+msgstr ""
+
+msgid "review cycles"
+msgstr ""
+
+msgid "Self Assessment"
+msgstr ""
+
+msgid "Peer Review"
+msgstr ""
+
+msgid "Manager Review"
+msgstr ""
+
+msgid "Direct Report Review"
+msgstr ""
+
+msgid "feedback category"
+msgstr ""
+
+msgid "Email to send invitation to (not stored with responses for anonymity)"
+msgstr ""
+
+msgid "invitation sent at"
+msgstr ""
+
+msgid "When the last reminder email was sent to this reviewer"
+msgstr ""
+
+msgid "last reminder sent at"
+msgstr ""
+
+msgid "When someone claimed this token by clicking the invitation link"
+msgstr ""
+
+msgid "claimed at"
+msgstr ""
+
+msgid "completed at"
+msgstr ""
+
+msgid "Language of the form and of emails to this reviewer. Empty until the form is first opened."
+msgstr ""
+
+msgid "reviewer token"
+msgstr ""
+
+msgid "reviewer tokens"
+msgstr ""
+
+msgid "answer data"
+msgstr ""
+
+msgid "response"
+msgstr ""
+
+msgid "responses"
+msgstr ""
+
+#, python-format
+msgid "Not enough tokens for %(category)s: need %(needed)s, have %(available)s"
+msgstr ""
+
+#, python-format
+msgid "Complete Your Self-Assessment: %(questionnaire)s"
+msgstr ""
+
+#, python-format
+msgid "360 Feedback Request: %(name)s"
+msgstr ""
+
+#, python-format
+msgid "Failed to send to %(email)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Reminder: 360 Feedback Request for %(name)s"
+msgstr ""
+
+#, python-format
+msgid "Failed to send reminder to %(email)s: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Failed to send self-assessment email: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Share Your 360 Feedback Links: %(questionnaire)s"
+msgstr ""
+
+#, python-format
+msgid "Failed to send invitation links email: %(error)s"
+msgstr ""
+
+#, python-format
+msgid "Review Check-In: %(questionnaire)s"
+msgstr ""
+
+msgid "Self"
+msgstr ""
+
+msgid "Peer"
+msgstr ""
+
+msgid "Manager"
+msgstr ""
+
+msgid "Direct Report"
+msgstr "Collaboratore diretto"
+
+msgid "Invalid or expired invitation link."
+msgstr ""
+
+msgid "This feedback cycle no longer collects this kind of review."
+msgstr ""
+
+msgid "This review cycle has been closed. Feedback can no longer be submitted."
+msgstr ""
+
+msgid "Feedback already submitted"
+msgstr ""
+
+#, python-format
+msgid "Question \"%(question)s\" is required"
+msgstr ""
+
+#, python-format
+msgid "Invalid option for question \"%(question)s\""
+msgstr ""
+
+#, python-format
+msgid "Rating must be between %(min)s and %(max)s"
+msgstr ""
+
+msgid "Invalid rating value"
+msgstr ""
+
+#, python-format
+msgid "Scale value must be between %(min)s and %(max)s"
+msgstr ""
+
+msgid "Invalid scale value"
+msgstr ""
+
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+msgid "Used"
+msgstr ""
+
+#, python-format
+msgid "Expires in %(minutes)s min"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Token was used and is no longer valid"
+msgstr ""
+
+#, python-format
+msgid "Expires on %(date)s (%(hours)s hours, %(minutes)s minutes remaining)"
+msgstr ""
+
+#, python-format
+msgid "Expires on %(date)s (%(days)s days remaining)"
+msgstr ""
+
+msgid "Subscriptions"
+msgstr ""
+
+msgid "You already have a Blik360 account"
+msgstr ""
+
+msgid "EU SaaS"
+msgstr ""
+
+msgid "Enterprise"
+msgstr ""
+
+msgid "plan type"
+msgstr ""
+
+msgid "monthly price"
+msgstr ""
+
+msgid "maximum employees"
+msgstr ""
+
+msgid "Maximum total: reviewees + team members combined"
+msgstr ""
+
+msgid "Stripe price ID"
+msgstr ""
+
+msgid "features"
+msgstr ""
+
+msgid "plan"
+msgstr ""
+
+msgid "plans"
+msgstr ""
+
+#, python-format
+msgid "%(name)s (€%(price)s/mo)"
+msgstr ""
+
+msgid "Trial"
+msgstr ""
+
+msgid "Past Due"
+msgstr ""
+
+msgid "Canceled"
+msgstr ""
+
+msgid "Unpaid"
+msgstr ""
+
+msgid "Stripe customer ID"
+msgstr ""
+
+msgid "Stripe subscription ID"
+msgstr ""
+
+msgid "current period start"
+msgstr ""
+
+msgid "current period end"
+msgstr ""
+
+msgid "cancel at period end"
+msgstr ""
+
+msgid "canceled at"
+msgstr ""
+
+msgid "trial start"
+msgstr ""
+
+msgid "trial end"
+msgstr ""
+
+msgid "subscription"
+msgstr ""
+
+msgid "subscriptions"
+msgstr ""
+
+msgid "Fulfilled"
+msgstr ""
+
+msgid "Rejected: email already has an account"
+msgstr ""
+
+msgid "Rejected: organization already subscribed"
+msgstr ""
+
+msgid "Stripe session ID"
+msgstr ""
+
+msgid "outcome"
+msgstr ""
+
+msgid "user created"
+msgstr ""
+
+msgid "checkout fulfilment"
+msgstr ""
+
+msgid "checkout fulfilments"
+msgstr ""
+
+msgid "review cycles remaining"
+msgstr ""
+
+msgid "round purchase"
+msgstr ""
+
+msgid "round purchases"
+msgstr ""
+
+#, python-format
+msgid "%(organization)s: %(count)s credit(s) left"
+msgstr ""
+
+msgid "used"
+msgstr ""
+
+msgid "one-time login token"
+msgstr ""
+
+msgid "one-time login tokens"
+msgstr ""
+
+#, python-format
+msgid "Login token for %(email)s"
+msgstr ""
+
+#, python-format
+msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy another round or start a subscription under Settings."
+msgstr ""
+
+msgid "Your subscription is not active. Please update your payment information."
+msgstr ""
+
+#, python-format
+msgid "You've reached your plan limit of %(max_employees)s reviewees. Please upgrade your plan."
+msgstr ""
+
+msgid "Unknown plan"
+msgstr ""
+
+msgid "Could not create checkout session. Please try again."
+msgstr ""
+
+msgid "Only organization administrators can manage billing."
+msgstr ""
+
+msgid "This organization already has a subscription."
+msgstr ""
+
+msgid "Could not start checkout. Please try again."
+msgstr ""
+
+msgid "Payment received. We're finishing your setup; you'll get an email shortly."
+msgstr ""
+
+msgid "Your payment is being processed. You'll get an email as soon as it arrives and your account is ready."
+msgstr ""
+
+msgid "Payment received. Your purchase has been added to your account."
+msgstr ""
+
+msgid "This email address already has an account. The new subscription was cancelled and nothing was charged. Sign in and choose a plan under Settings."
+msgstr ""
+
+msgid "This organization already has a subscription. The new one was cancelled and nothing was charged."
+msgstr ""
+
+msgid "Forgot Password - Blik 360 Feedback"
+msgstr ""
+
+msgid "Forgot Password"
+msgstr "Password dimenticata"
+
+msgid "Enter your email to receive a password reset link"
+msgstr "Inserisca il Suo indirizzo e-mail per ricevere il link di reimpostazione della password"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Send Reset Link"
+msgstr "Invii il link di reimpostazione"
+
+msgid "Back to Login"
+msgstr "Torni all'accesso"
+
+msgid "Login - Blik 360 Feedback"
+msgstr ""
+
+msgid "Welcome Back"
+msgstr "Felice di rivederLa"
+
+msgid "Sign in to your account"
+msgstr "Acceda al Suo account"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Sign In"
+msgstr "Acceda"
+
+msgid "Forgot your password?"
+msgstr "Ha dimenticato la password?"
+
+msgid "My Profile"
+msgstr "Il mio profilo"
+
+msgid "Welcome to Blik"
+msgstr "Le diamo il benvenuto in Blik"
+
+msgid "Your 360-degree feedback platform"
+msgstr "La piattaforma di feedback a 360°"
+
+msgid "How Blik helps you:"
+msgstr "Come Blik può aiutarLa:"
+
+msgid "Gather comprehensive feedback from peers, managers, and direct reports"
+msgstr "Raccogliere feedback completo da colleghi, responsabili e collaboratori"
+
+msgid "Maintain complete anonymity for honest, constructive input"
+msgstr "Garantire il completo anonimato per favorire contributi sinceri e costruttivi"
+
+msgid "Generate actionable insights to drive professional growth"
+msgstr "Ottenere indicazioni concrete per favorire la crescita professionale"
+
+msgid "Getting started is simple:"
+msgstr "Iniziare è semplice:"
+
+msgid "Add reviewees"
+msgstr "Aggiunga le persone da valutare"
+
+msgid "People who will receive 360° feedback"
+msgstr "Persone che riceveranno feedback a 360°"
+
+msgid "Create a review cycle"
+msgstr "Crei un ciclo di valutazione"
+
+msgid "Choose a questionnaire and invite reviewers"
+msgstr "Scelga un questionario e inviti i valutatori"
+
+msgid "Share anonymous invite links"
+msgstr "Condivida link di invito anonimi"
+
+msgid "Copy links and share directly, or optionally send via email"
+msgstr "Copi i link e li condivida direttamente oppure li invii tramite e-mail"
+
+msgid "Review the report"
+msgstr "Esamini il report"
+
+msgid "View aggregated insights and share with reviewees"
+msgstr "Consulti i risultati aggregati e li condivida con le persone valutate"
+
+msgctxt "dismiss dialog"
+msgid "Close"
+msgstr ""
+
+msgid "Get Started"
+msgstr "Cominci"
+
+msgid "Personal Information"
+msgstr "Informazioni personali"
+
+msgid "First Name"
+msgstr "Nome"
+
+msgid "Last Name"
+msgstr "Cognome"
+
+msgid "Language"
+msgstr "Lingua"
+
+msgid "Used for the dashboard and for emails to you."
+msgstr ""
+
+msgid "Username"
+msgstr "Nome utente"
+
+msgid "Username cannot be changed"
+msgstr "Il nome utente non può essere modificato"
+
+msgid "Update Profile"
+msgstr "Aggiorni il profilo"
+
+msgid "Organization"
+msgstr "Organizzazione"
+
+msgid "Can create cycles for others"
+msgstr "Può creare cicli per altre persone"
+
+msgid "Self cycles only"
+msgstr "Solo cicli personali"
+
+#, python-format
+msgid "Member since %(joined)s"
+msgstr ""
+
+msgid "View Welcome Guide"
+msgstr "Consulti la guida introduttiva"
+
+msgid "My Review Cycles"
+msgstr "I miei cicli di valutazione"
+
+#, python-format
+msgid "Created %(created)s by %(creator)s"
+msgstr ""
+
+#, python-format
+msgid "Created %(created)s"
+msgstr ""
+
+msgid "Responses:"
+msgstr "Risposte:"
+
+#, python-format
+msgid "Total: %(total)s"
+msgstr "Totale: %(total)s"
+
+msgid "Report available when cycle is completed"
+msgstr "Il report sarà disponibile al completamento del ciclo"
+
+msgid "No report generated yet"
+msgstr "Non è ancora stato generato alcun report"
+
+msgctxt "cycle status"
+msgid "Active"
+msgstr ""
+
+msgctxt "cycle status"
+msgid "Completed"
+msgstr ""
+
+msgid "No review cycles found for your account."
+msgstr "Non è stato trovato alcun ciclo di valutazione per il Suo account."
+
+msgid "Review cycles will appear here when they're created for your email address."
+msgstr "I cicli di valutazione appariranno qui quando verranno creati per il Suo indirizzo e-mail."
+
+msgid "Register - Blik 360 Feedback"
+msgstr ""
+
+msgid "Create Account"
+msgstr "Crei un account"
+
+#, python-format
+msgid "Join %(name)s"
+msgstr ""
+
+msgid "Create your account"
+msgstr "Crei il Suo account"
+
+msgid "Use your invited email address"
+msgstr "Utilizzi l'indirizzo e-mail a cui è stato inviato l'invito"
+
+msgid "At least 8 characters"
+msgstr "Almeno 8 caratteri"
+
+msgid "Re-enter your password"
+msgstr "Inserisca nuovamente la password"
+
+#, python-format
+msgid "Already have an account? <a href=\"%(login_url)s\">Sign in</a>"
+msgstr "Ha già un account? <a href=\"%(login_url)s\">Acceda</a>"
+
+msgid "Reset Password - Blik 360 Feedback"
+msgstr ""
+
+msgid "Set New Password"
+msgstr "Imposta una nuova password"
+
+msgid "Enter your new password below"
+msgstr "Inserisca qui sotto la Sua nuova password"
+
+msgid "Password must be at least 8 characters and not too common."
+msgstr "La password deve contenere almeno 8 caratteri e non essere troppo comune."
+
+msgid "Reset Password"
+msgstr "Reimposti la password"
+
+msgid "Admin Dashboard"
+msgstr "Dashboard di amministrazione"
+
+msgid "Toggle menu"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "Team"
+msgstr ""
+
+msgctxt "product reviews"
+msgid "Reviews"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Create Org"
+msgstr ""
+
+msgid "Admin"
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Logout"
+msgstr ""
+
+msgid "Toggle theme"
+msgstr "Cambi tema"
+
+msgid "Send Bulk Invitations"
+msgstr ""
+
+msgid "Send invitations"
+msgstr ""
+
+msgid "Review the cycles you just created, then send invitation emails."
+msgstr ""
+
+msgid "Back to cycles"
+msgstr ""
+
+msgid "No emails have been sent yet."
+msgstr ""
+
+msgid "Review the list below and click <em>Send invitations now</em> to notify every reviewee."
+msgstr ""
+
+msgid "You can also skip for now and send individual invitations later from the cycles list."
+msgstr ""
+
+msgid "Reviewee"
+msgstr ""
+
+msgid "Questionnaire"
+msgstr "Questionario"
+
+msgid "Created"
+msgstr ""
+
+#, python-format
+msgid "Send invitations for all %(counter)s reviewee"
+msgid_plural "Send invitations for all %(counter)s reviewees"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Skip — I'll send later"
+msgstr ""
+
+#, python-format
+msgid "No pending bulk invitations. If you just created cycles, they're already in the <a href=\"%(cycles_url)s\">cycles list</a>."
+msgstr ""
+
+msgid "Skip for now"
+msgstr ""
+
+msgid "Manage 360-degree feedback and review cycles"
+msgstr ""
+
+msgid "Active Reviewees"
+msgstr ""
+
+msgid "Active Cycles"
+msgstr ""
+
+msgid "Completed Cycles"
+msgstr ""
+
+msgid "Pending Reviews"
+msgstr ""
+
+msgid "Share Your Experience with Blik"
+msgstr ""
+
+msgid "Enjoying Blik? Take 2 minutes to share your feedback and help other teams discover us."
+msgstr ""
+
+msgid "Submit a Review"
+msgstr ""
+
+msgid "Subscription & Limits"
+msgstr ""
+
+msgid "Plan"
+msgstr ""
+
+#, python-format
+msgid "Renews %(renewal_date)s"
+msgstr ""
+
+#, python-format
+msgid "%(remaining)s remaining"
+msgstr ""
+
+msgid "Team Members"
+msgstr ""
+
+msgid "Unlimited"
+msgstr ""
+
+msgid "Approaching Limit:"
+msgstr ""
+
+#, python-format
+msgid "You're nearing your plan limit of %(max_employees)s reviewees. Contact us to upgrade your plan."
+msgstr ""
+
+msgid "Quick Actions"
+msgstr ""
+
+msgid "New Review Cycle"
+msgstr ""
+
+msgid "Add Reviewee"
+msgstr ""
+
+msgid "All Cycles"
+msgstr ""
+
+msgid "Progress"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "Recent Review Cycles"
+msgstr ""
+
+msgid "View All"
+msgstr ""
+
+msgid "No review cycles yet"
+msgstr ""
+
+msgid "Create your first review cycle to get started"
+msgstr ""
+
+msgid "Create Review Cycle"
+msgstr ""
+
+msgid "Share Your Experience"
+msgstr ""
+
+msgid "Help us improve by sharing your feedback"
+msgstr ""
+
+msgid "Reviewing as:"
+msgstr ""
+
+msgid "How would you rate Blik?"
+msgstr ""
+
+msgid "Select your rating..."
+msgstr ""
+
+msgid "Excellent - Exceeded expectations"
+msgstr ""
+
+msgid "Good - Met expectations"
+msgstr ""
+
+msgid "Average - Room for improvement"
+msgstr ""
+
+msgid "Below Average - Needs work"
+msgstr ""
+
+msgid "Poor - Major issues"
+msgstr ""
+
+msgid "Review Headline (Optional)"
+msgstr ""
+
+msgid "e.g., Great tool for 360 feedback"
+msgstr ""
+
+msgid "A short, catchy summary of your experience"
+msgstr ""
+
+msgid "Your Review (Optional)"
+msgstr ""
+
+msgid "Tell us about your experience with Blik..."
+msgstr ""
+
+msgid "Share what you liked, disliked, or found helpful"
+msgstr ""
+
+msgid "Note:"
+msgstr ""
+
+msgid "Your review will be submitted for approval before being published."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Submit Review"
+msgstr ""
+
+msgid "GDPR Data Management"
+msgstr ""
+
+msgid "Manage personal data and handle deletion requests"
+msgstr ""
+
+msgid "GDPR Compliance Information"
+msgstr ""
+
+msgid "<strong>Soft Delete (Anonymization):</strong> Removes personal identifiable information while preserving data structure for analytics. Recommended for most cases."
+msgstr ""
+
+msgid "<strong>Hard Delete (Complete Removal):</strong> Permanently removes all data including related records. Use only when legally required or explicitly requested."
+msgstr ""
+
+#, python-format
+msgid "Reviewees (%(count)s)"
+msgstr ""
+
+msgid "Department"
+msgstr ""
+
+msgid "Responses"
+msgstr ""
+
+msgid "Inactive"
+msgstr ""
+
+msgid "Delete Data"
+msgstr ""
+
+msgid "Data"
+msgstr ""
+
+#, python-format
+msgid "%(cycles)s cycles, %(responses)s responses"
+msgstr ""
+
+msgid "No reviewees found"
+msgstr ""
+
+msgid "Items per page:"
+msgstr ""
+
+msgid "First"
+msgstr ""
+
+msgid "Previous"
+msgstr "Precedente"
+
+#, python-format
+msgid "Page %(num)s of %(total)s"
+msgstr ""
+
+msgid "Next"
+msgstr "Successivo"
+
+msgid "Last"
+msgstr ""
+
+msgid "Delete Reviewee Data"
+msgstr ""
+
+#, python-format
+msgid "Delete or anonymize data for <strong id=\"%(name_id)s\"></strong>"
+msgstr ""
+
+msgid "Affected Data"
+msgstr ""
+
+#, python-format
+msgid "<span id=\"%(count_id)s\"></span> review cycle(s)"
+msgstr ""
+
+#, python-format
+msgid "<span id=\"%(count_id)s\"></span> feedback response(s)"
+msgstr ""
+
+msgid "Associated reports and tokens"
+msgstr ""
+
+msgid "Deletion Type"
+msgstr ""
+
+msgid "Soft Delete (Anonymization) - Recommended"
+msgstr ""
+
+msgid "Anonymizes name, email, and department. Preserves review cycles, responses, and reports for analytics."
+msgstr ""
+
+msgid "Full Anonymization"
+msgstr ""
+
+msgid "Anonymizes reviewee AND all reviewer emails in their cycles. Maximum privacy protection."
+msgstr ""
+
+msgid "Hard Delete (Complete Removal)"
+msgstr ""
+
+msgid "Permanently deletes ALL data including review cycles, responses, and reports. Cannot be undone."
+msgstr ""
+
+#, python-format
+msgid "Users (%(count)s)"
+msgstr ""
+
+msgid "Joined"
+msgstr ""
+
+msgid "Created Cycles"
+msgstr ""
+
+msgid "You"
+msgstr ""
+
+msgid "No users found"
+msgstr ""
+
+msgid "Delete User Data"
+msgstr ""
+
+#, python-format
+msgid "Delete or anonymize data for user <strong id=\"%(name_id)s\"></strong>"
+msgstr ""
+
+msgid "User account and profile"
+msgstr ""
+
+#, python-format
+msgid "<span id=\"%(count_id)s\"></span> created review cycle(s)"
+msgstr ""
+
+msgid "Login history and security logs"
+msgstr ""
+
+msgid "Anonymizes username, email, and name. Preserves profile structure and created cycles remain intact."
+msgstr ""
+
+msgid "Permanently deletes user account and profile. Created cycles are preserved but creator reference is removed. Cannot be undone."
+msgstr ""
+
+#, python-format
+msgid "Invite Reviewers - %(name)s"
+msgstr ""
+
+msgid "Invite Reviewers"
+msgstr ""
+
+msgid "Invitation Status"
+msgstr ""
+
+msgid "Invited"
+msgstr ""
+
+msgid "Emails Sent"
+msgstr ""
+
+msgid "Invite Reviewers by Email"
+msgstr ""
+
+msgid "Enter email addresses for each reviewer category. The system will generate anonymous tokens and send invitations. Separate multiple emails with commas or newlines."
+msgstr ""
+
+msgid "Your email is automatically assigned for self-assessment"
+msgstr ""
+
+msgid "Usually the reviewee's own email"
+msgstr ""
+
+msgid "Manager/Supervisor"
+msgstr ""
+
+msgid "Direct manager or supervisor"
+msgstr ""
+
+msgid "Peers"
+msgstr ""
+
+msgid "Colleagues at the same level"
+msgstr ""
+
+msgid "Direct Reports"
+msgstr ""
+
+msgid "People who report to this reviewee"
+msgstr ""
+
+#, python-format
+msgid "Organization default (%(language)s)"
+msgstr ""
+
+msgid "Language of the invitations and reminders to the reviewers above, and of their form"
+msgstr ""
+
+msgid "Save & Send Invitations"
+msgstr ""
+
+msgid "Save Without Sending"
+msgstr ""
+
+msgid "Reviewer Response Status"
+msgstr ""
+
+msgid "Privacy Notice"
+msgstr ""
+
+msgid "Email addresses are never displayed to protect reviewer anonymity. Only response status is shown."
+msgstr ""
+
+msgid "Reviewer"
+msgstr ""
+
+msgid "Response Status"
+msgstr ""
+
+msgid "Invited by email"
+msgstr ""
+
+msgid "Via invite link"
+msgstr ""
+
+msgid "Awaiting claim"
+msgstr ""
+
+#, python-format
+msgid "Sent %(date)s"
+msgstr ""
+
+msgid "Ready to send"
+msgstr ""
+
+#, python-format
+msgid "Completed %(date)s"
+msgstr ""
+
+msgid "In Progress"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+#, python-format
+msgid "Reminder sent %(date)s"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s pending invitation"
+msgid_plural "%(counter)s pending invitations"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Send email invitations to reviewers who haven't received one yet"
+msgstr ""
+
+msgid "Send Pending Invitations"
+msgstr ""
+
+msgid "Back to Cycle Details"
+msgstr ""
+
+msgid "Buy a round"
+msgstr ""
+
+msgid "Buy another round"
+msgstr ""
+
+msgid "Start EU Hosted subscription"
+msgstr ""
+
+msgid "Start Enterprise subscription"
+msgstr ""
+
+msgid "Ask an organization administrator to buy another round."
+msgstr ""
+
+#, python-brace-format
+msgid "{name} stands for the first name of the person reviewed."
+msgstr ""
+
+msgid "Add option"
+msgstr ""
+
+#, python-format
+msgid "Type: %(type)s"
+msgstr ""
+
+#, python-format
+msgid "Scale: %(min)s-%(max)s"
+msgstr ""
+
+#, python-format
+msgid "%(count)s-point scale"
+msgstr ""
+
+msgid "Configure Dreyfus/Agency weights and action items"
+msgstr ""
+
+msgid "Dreyfus/Agency"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete this question?"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s text missing"
+msgid_plural "%(counter)s texts missing"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(counter)s outdated"
+msgid_plural "%(counter)s outdated"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Fully translated"
+msgstr ""
+
+msgid "Delete Product Review"
+msgstr ""
+
+msgid "Confirm deletion of this review"
+msgstr ""
+
+msgid "Are you sure?"
+msgstr ""
+
+msgid "This will deactivate the review. It will no longer appear in listings or be included in aggregate ratings."
+msgstr ""
+
+msgid "Review Details"
+msgstr ""
+
+msgid "Reviewer:"
+msgstr ""
+
+msgid "Rating:"
+msgstr ""
+
+msgid "Title:"
+msgstr ""
+
+msgid "Status:"
+msgstr ""
+
+msgid "Published:"
+msgstr ""
+
+msgid "Delete Review"
+msgstr ""
+
+#, python-format
+msgid "Product Review - %(name)s"
+msgstr ""
+
+#, python-format
+msgid "Review from %(name)s"
+msgstr ""
+
+msgid "Back to List"
+msgstr ""
+
+#, python-format
+msgid "by <strong>%(name)s</strong>"
+msgstr ""
+
+#, python-format
+msgid "at %(company)s"
+msgstr ""
+
+msgid "Review Text"
+msgstr ""
+
+msgid "Verification"
+msgstr ""
+
+msgid "Verified Customer"
+msgstr ""
+
+msgid "Not Verified"
+msgstr ""
+
+msgid "Featured"
+msgstr ""
+
+msgid "Not Featured"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
+msgid "Not Published"
+msgstr ""
+
+msgid "Reviewer Details"
+msgstr ""
+
+msgctxt "job title"
+msgid "Title"
+msgstr ""
+
+msgid "Company"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Internal Notes"
+msgstr ""
+
+msgid "Last Updated"
+msgstr ""
+
+msgid "Published Review"
+msgstr ""
+
+msgid "This review is approved and active. It will be included in aggregate ratings on landing pages and in JSON-LD structured data for SEO."
+msgstr ""
+
+msgid "Create Product Review"
+msgstr ""
+
+msgid "Edit Product Review"
+msgstr ""
+
+msgid "Add a new customer review"
+msgstr ""
+
+msgid "Update review details"
+msgstr ""
+
+msgid "Select rating..."
+msgstr ""
+
+msgid "5 - Excellent"
+msgstr ""
+
+msgid "4 - Good"
+msgstr ""
+
+msgid "3 - Average"
+msgstr ""
+
+msgid "2 - Poor"
+msgstr ""
+
+msgid "1 - Very Poor"
+msgstr ""
+
+msgid "Review Title"
+msgstr ""
+
+msgid "Short headline for the review (max 200 characters)"
+msgstr ""
+
+msgid "Full review text from the customer..."
+msgstr ""
+
+msgid "The complete review content"
+msgstr ""
+
+msgid "Reviewer Name"
+msgstr ""
+
+msgid "e.g., Jane Smith"
+msgstr ""
+
+msgid "Reviewer Title"
+msgstr ""
+
+msgid "e.g., HR Manager"
+msgstr ""
+
+msgid "Job title (optional)"
+msgstr ""
+
+msgid "e.g., Acme Corp"
+msgstr ""
+
+msgid "Company name (optional)"
+msgstr ""
+
+msgid "Reviewer Email"
+msgstr ""
+
+msgid "e.g., jane@example.com"
+msgstr ""
+
+msgid "Email address (not shown publicly, for verification only)"
+msgstr ""
+
+msgid "Only approved reviews appear in JSON-LD structured data"
+msgstr ""
+
+msgid "Mark this reviewer as a verified customer/subscriber"
+msgstr ""
+
+msgid "Featured Review"
+msgstr ""
+
+msgid "Highlight this review on landing pages"
+msgstr ""
+
+msgid "Metadata"
+msgstr ""
+
+msgid "e.g., Email Survey, G2, Direct Contact"
+msgstr ""
+
+msgid "Where this review came from (optional)"
+msgstr ""
+
+msgid "Internal notes (not shown publicly)..."
+msgstr ""
+
+msgid "Private notes for internal reference only"
+msgstr ""
+
+msgid "Create Review"
+msgstr ""
+
+msgid "Edit Review"
+msgstr ""
+
+msgid "Manage customer feedback and testimonials"
+msgstr ""
+
+#, python-format
+msgid "Average Rating: %(avg)s★ from %(counter)s approved review"
+msgid_plural "Average Rating: %(avg)s★ from %(counter)s approved reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Add Review"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Clear Filter"
+msgstr ""
+
+msgid "Total Reviews"
+msgstr ""
+
+msgid "Average Rating"
+msgstr ""
+
+msgctxt "product review"
+msgid "Reviewer"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+#, python-format
+msgid "Page %(num)s of %(total)s (%(items)s total)"
+msgstr ""
+
+#, python-format
+msgid "%(num)s per page"
+msgstr ""
+
+msgid "No product reviews yet"
+msgstr ""
+
+msgid "Add your first customer review to start building social proof"
+msgstr ""
+
+msgid "Archive Questionnaire"
+msgstr ""
+
+msgid "Delete Questionnaire"
+msgstr ""
+
+msgid "This questionnaire is in use and cannot be deleted."
+msgstr ""
+
+msgid "Are you sure you want to delete this questionnaire?"
+msgstr ""
+
+#, python-format
+msgid "In use by %(counter)s review cycle."
+msgid_plural "In use by %(counter)s review cycles."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Deleting it would leave those cycles and their reports without the questions their answers refer to. It will be archived instead: removed from every selection list, kept for the existing reports. You can restore it later."
+msgstr ""
+
+msgid "<strong>Warning:</strong> No review cycle uses this questionnaire, so it will be deleted for good, along with its sections and questions. This cannot be undone."
+msgstr ""
+
+msgid "Name:"
+msgstr ""
+
+msgid "Description:"
+msgstr ""
+
+msgid "Used in cycles:"
+msgstr ""
+
+msgid "Edit Questionnaire"
+msgstr ""
+
+msgid "Create Questionnaire"
+msgstr ""
+
+#, python-format
+msgid "Edit questionnaire \"%(name)s\""
+msgstr ""
+
+msgid "Create a new feedback questionnaire"
+msgstr ""
+
+msgid "Questionnaire Name"
+msgstr ""
+
+msgid "360-Degree Performance Review"
+msgstr ""
+
+msgid "Description (Optional)"
+msgstr ""
+
+msgid "Comprehensive feedback covering leadership, communication, and technical skills"
+msgstr ""
+
+msgid "The language the questionnaire is written in. Translations into other languages are made from its texts."
+msgstr ""
+
+msgid "Set as default questionnaire"
+msgstr ""
+
+msgid "Update Information"
+msgstr ""
+
+msgid "Preview"
+msgstr ""
+
+msgid "Translations"
+msgstr ""
+
+msgid "Translate"
+msgstr ""
+
+msgid "Edit Section"
+msgstr ""
+
+msgid "Section Title"
+msgstr ""
+
+msgid "e.g., Technical Skills"
+msgstr ""
+
+msgid "Brief description of what this section covers"
+msgstr ""
+
+msgid "Save Changes"
+msgstr ""
+
+msgid "Dreyfus/Agency Configuration"
+msgstr ""
+
+msgid "Dreyfus Model Weights"
+msgstr ""
+
+msgid "Configure how this question contributes to the Dreyfus skill and agency dimensions. Higher weights (up to 2.0) indicate stronger impact on that dimension."
+msgstr ""
+
+msgid "Skill Weight"
+msgstr ""
+
+msgctxt "weight level"
+msgid "None"
+msgstr ""
+
+msgid "Low (0.5)"
+msgstr ""
+
+msgid "Medium (1.0)"
+msgstr ""
+
+msgid "High (1.5)"
+msgstr ""
+
+msgid "Very High (2.0)"
+msgstr ""
+
+msgid "Agency Weight"
+msgstr ""
+
+msgid "Personalized Action Items"
+msgstr ""
+
+msgid "Add Action Item"
+msgstr ""
+
+msgid "Define action items that will appear in development plans when this question scores below a threshold."
+msgstr ""
+
+msgid "Save Configuration"
+msgstr ""
+
+msgid "Edit Question"
+msgstr ""
+
+msgid "Question Text"
+msgstr ""
+
+msgid "Question Type"
+msgstr ""
+
+msgid "Rating Scale (1-5)"
+msgstr ""
+
+msgid "Single Choice (Dropdown)"
+msgstr ""
+
+msgid "Multiple Choice (Checkboxes)"
+msgstr ""
+
+msgid "Rating labels"
+msgstr ""
+
+msgid "Likert Scale Items"
+msgstr ""
+
+msgid "Scale Configuration"
+msgstr ""
+
+msgid "Min"
+msgstr ""
+
+msgid "Max"
+msgstr ""
+
+msgctxt "scale increment"
+msgid "Step"
+msgstr ""
+
+msgid "Min Label (Optional)"
+msgstr ""
+
+msgid "e.g., Not at all"
+msgstr ""
+
+msgid "Max Label (Optional)"
+msgstr ""
+
+msgid "e.g., Extremely"
+msgstr ""
+
+msgid "Choices"
+msgstr ""
+
+msgid "Enable numeric scoring for analytics"
+msgstr ""
+
+msgid "Required question"
+msgstr ""
+
+msgid "Sections and Questions"
+msgstr ""
+
+msgid "Delete section and all its questions?"
+msgstr ""
+
+msgid "Delete Section"
+msgstr ""
+
+msgid "No questions in this section yet."
+msgstr ""
+
+msgid "Add Question to This Section"
+msgstr ""
+
+#, python-brace-format
+msgid "How effectively does {name} communicate complex ideas?"
+msgstr ""
+
+msgid "Default 5-point scale provided. Customize or use 3-point, 7-point, etc."
+msgstr ""
+
+msgid "Creates a slider or numeric input for precise measurement (e.g., 1-100 scale)."
+msgstr ""
+
+msgid "When enabled, this question will contribute to section scores and charts"
+msgstr ""
+
+msgid "Learn more about scoring"
+msgstr ""
+
+msgid "Dreyfus/Agency Configuration (Optional)"
+msgstr ""
+
+msgid "Model Weights"
+msgstr ""
+
+msgid "Set how this question contributes to Dreyfus skill and agency dimensions"
+msgstr ""
+
+msgid "None (0)"
+msgstr ""
+
+msgid "Action Items"
+msgstr "Azioni da intraprendere"
+
+msgid "Add"
+msgstr ""
+
+msgid "Define action items for development plans when this question scores low"
+msgstr ""
+
+msgid "Add Question"
+msgstr ""
+
+#, python-format
+msgid "Action Item #%(number)s"
+msgstr ""
+
+msgid "e.g., Practice pair programming with senior developers"
+msgstr ""
+
+msgid "Threshold"
+msgstr ""
+
+msgid "Stages (optional)"
+msgstr ""
+
+msgid "Question Scoring Guide"
+msgstr ""
+
+msgid "How Question Types Are Scored"
+msgstr ""
+
+msgid "Scoring Method"
+msgstr ""
+
+msgid "Automatically scored 1-5"
+msgstr ""
+
+msgid "Position-based (1st option=1, 2nd=2, etc.)"
+msgstr ""
+
+msgid "Not scored (qualitative only)"
+msgstr ""
+
+msgid "Optional weighted scoring"
+msgstr ""
+
+msgid "What is Weighted Scoring?"
+msgstr ""
+
+msgid "Weighted scoring lets you assign numeric values to each choice option. This allows choice-based questions to contribute to:"
+msgstr ""
+
+msgid "Section averages and overall scores"
+msgstr ""
+
+msgid "Performance charts and visualizations"
+msgstr ""
+
+msgid "Insights & analytics (strengths/development areas)"
+msgstr ""
+
+msgid "Comparisons across review cycles"
+msgstr ""
+
+msgid "How It Works"
+msgstr ""
+
+msgid "User selects ONE option. Score = weight of selected option."
+msgstr ""
+
+msgid "Example:"
+msgstr ""
+
+msgid "How would you rate their communication?"
+msgstr ""
+
+msgid "Excellent Communication"
+msgstr ""
+
+msgid "Good Communication"
+msgstr ""
+
+msgid "Average Communication"
+msgstr ""
+
+msgid "Needs Improvement"
+msgstr ""
+
+msgid "Poor Communication"
+msgstr ""
+
+msgid "If user selects \"Good\" → Score: 4"
+msgstr ""
+
+msgid "User selects MULTIPLE options. Score = sum of selected option weights."
+msgstr ""
+
+msgid "Which leadership qualities do they demonstrate?"
+msgstr ""
+
+msgid "Strategic thinking"
+msgstr ""
+
+msgid "Team motivation"
+msgstr ""
+
+msgid "Clear communication"
+msgstr ""
+
+msgid "Delegation"
+msgstr ""
+
+msgid "Time management"
+msgstr ""
+
+msgid "If user selects \"Strategic thinking\" + \"Clear communication\" + \"Team motivation\"<br> → Score: 5 + 4 + 5 = 14 (rewards demonstrating more qualities)"
+msgstr ""
+
+msgid "Multiple choice uses SUM (not average) to reward selecting more positive attributes. This makes it ideal for competency checklists where more is better."
+msgstr ""
+
+msgid "Best Practices"
+msgstr ""
+
+msgid "Use consistent scales:"
+msgstr ""
+
+msgid "Stick to 1-5 or 1-10 throughout your questionnaire"
+msgstr ""
+
+msgid "Higher = Better:"
+msgstr ""
+
+msgid "Assign higher weights to more positive/desirable options"
+msgstr ""
+
+msgid "Frequency questions:"
+msgstr ""
+
+msgid "Daily=5, Weekly=4, Monthly=3, Rarely=2, Never=1"
+msgstr ""
+
+msgid "Competency checklists:"
+msgstr ""
+
+msgid "Weight by importance/difficulty level, or set all weights to 1 to simply count how many competencies were selected"
+msgstr ""
+
+msgid "Equal weighting:"
+msgstr ""
+
+msgid "For multiple choice questions where all options are equally valuable, set all weights to 1. This creates a simple counter (3 selections = score of 3)"
+msgstr ""
+
+msgid "Skip scoring when:"
+msgstr ""
+
+msgid "Choices are purely categorical (e.g., department names, roles)"
+msgstr ""
+
+msgid "Tip:"
+msgstr ""
+
+msgid "You can leave scoring disabled for simple multiple choice questions. Enable it only when you need numeric analytics for that specific question."
+msgstr ""
+
+msgid "Got it!"
+msgstr ""
+
+msgid "No sections yet. Add a section to start building your questionnaire."
+msgstr ""
+
+msgid "Add Section"
+msgstr ""
+
+msgid "Leadership & Management"
+msgstr ""
+
+msgid "Section Description (Optional)"
+msgstr ""
+
+msgid "Questions about leadership style, decision-making, and team management"
+msgstr ""
+
+msgid "Option"
+msgstr ""
+
+msgid "Weight"
+msgstr ""
+
+msgid "Move up"
+msgstr ""
+
+msgid "Move down"
+msgstr ""
+
+msgid "Remove option"
+msgstr ""
+
+msgid "Request failed."
+msgstr ""
+
+msgid "Saving..."
+msgstr ""
+
+msgid "Failed to update question."
+msgstr ""
+
+msgid "Adding..."
+msgstr ""
+
+msgid "Question list container not found."
+msgstr ""
+
+msgid "Failed to add question."
+msgstr ""
+
+msgid "No action items configured. Click \"+ Add Action Item\" to create one."
+msgstr ""
+
+#, python-format
+msgid "Stage %(stage)s"
+msgstr ""
+
+msgid "Action Item Text"
+msgstr ""
+
+msgid "Threshold Score"
+msgstr ""
+
+msgid "Show if score &lt; this value"
+msgstr ""
+
+msgid "Relevant Stages (Optional)"
+msgstr ""
+
+msgid "Leave unchecked for all stages"
+msgstr ""
+
+msgid "Manage 360-degree feedback questionnaires"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "Preview Questions"
+msgstr ""
+
+msgid "Sample Report"
+msgstr ""
+
+msgid "Archive"
+msgstr ""
+
+msgid "Questions"
+msgstr ""
+
+msgid "Used in Cycles"
+msgstr ""
+
+msgid "Archived"
+msgstr ""
+
+msgid "Not offered when creating a cycle. Kept because existing reports refer to them."
+msgstr ""
+
+#, python-format
+msgid "Used in %(counter)s cycle"
+msgid_plural "Used in %(counter)s cycles"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Restore"
+msgstr ""
+
+msgid "No questionnaires yet"
+msgstr ""
+
+msgid "Load the default questionnaire or create a custom one"
+msgstr ""
+
+msgid "An administrator has not set up a questionnaire yet"
+msgstr ""
+
+#, python-format
+msgid "Preview: %(name)s"
+msgstr ""
+
+msgid "Preview language"
+msgstr ""
+
+msgid "Rating scale:"
+msgstr "Scala di valutazione:"
+
+msgid "1 (Strongly Disagree) to 5 (Strongly Agree)"
+msgstr ""
+
+msgid "1 (Needs Improvement) to 5 (Exceptional)"
+msgstr ""
+
+msgid "1 (Never) to 5 (Always)"
+msgstr ""
+
+#, python-format
+msgid "1 to %(max)s"
+msgstr ""
+
+msgid "Likert scale options:"
+msgstr "Opzioni della scala Likert:"
+
+msgid "Options:"
+msgstr ""
+
+msgid "Open-ended text response"
+msgstr "Risposta testuale aperta"
+
+msgid "No questions in this section"
+msgstr ""
+
+msgid "No sections yet"
+msgstr ""
+
+msgid "This questionnaire doesn't have any sections or questions yet."
+msgstr ""
+
+#, python-format
+msgid "Sample Report — %(name)s"
+msgstr ""
+
+msgid "Back to Questionnaires"
+msgstr ""
+
+msgid "This is a sample with synthetic data"
+msgstr ""
+
+msgid "Scores are generated deterministically from the questionnaire's structure to preview what a finished report will look like. No real responses are shown. Run a cycle to see real results."
+msgstr ""
+
+msgid "Overall Performance"
+msgstr "Prestazioni complessive"
+
+msgid "Aggregated across peer, manager, and direct-report feedback."
+msgstr ""
+
+msgid "Performance Overview"
+msgstr "Panoramica delle prestazioni"
+
+msgid "Visual comparison across all competency areas"
+msgstr ""
+
+msgid "Self vs Others Comparison"
+msgstr "Confronto tra autovalutazione e valutazioni altrui"
+
+msgid "How the reviewee's self-assessment would compare to others' feedback (sorted by gap size)"
+msgstr ""
+
+msgid "Section-Level Performance"
+msgstr "Prestazioni per area"
+
+msgid "Performance breakdown by competency area"
+msgstr "Dettaglio delle prestazioni per area di competenza"
+
+msgid "Overall score (excluding self-assessment)"
+msgstr "Punteggio complessivo (esclusa l'autovalutazione)"
+
+#, python-format
+msgid "Translate %(name)s into %(language)s"
+msgstr ""
+
+#, python-format
+msgid "Translate into %(language)s"
+msgstr ""
+
+msgid "Back to Editor"
+msgstr ""
+
+msgid "Missing"
+msgstr ""
+
+msgid "Outdated"
+msgstr ""
+
+msgid "Still correct"
+msgstr ""
+
+msgid "Save Translation"
+msgstr ""
+
+msgid "Submit Your Review"
+msgstr ""
+
+msgid "You've already submitted a review"
+msgstr ""
+
+#, python-format
+msgid "You submitted a %(rating)s-star review on %(date)s."
+msgstr ""
+
+msgid "Your review has been approved and is live!"
+msgstr ""
+
+msgid "Your review is pending approval."
+msgstr ""
+
+msgid "Your review was not approved."
+msgstr ""
+
+msgid "You can update your review below."
+msgstr ""
+
+msgid "Review Headline"
+msgstr ""
+
+msgid "e.g., Great tool for 360 feedback, Easy to use, Saved us time"
+msgstr ""
+
+msgid "Your Review"
+msgstr ""
+
+msgid "Tell us about your experience with Blik. What do you like? What could be improved? How has it helped your team?"
+msgstr ""
+
+msgid "Share details about what you liked, disliked, or found helpful"
+msgstr ""
+
+#, python-format
+msgid "<strong>Note:</strong> Your review will be submitted for approval before being published. We may contact you at %(email)s if we have any questions."
+msgstr ""
+
+msgid "Update Review"
+msgstr ""
+
+msgid "Why we ask for reviews"
+msgstr ""
+
+msgid "Your feedback helps us improve Blik for everyone"
+msgstr ""
+
+msgid "Reviews help other teams decide if Blik is right for them"
+msgstr ""
+
+msgid "Verified customer reviews improve our search visibility"
+msgstr ""
+
+msgid "We read every review and use them to prioritize features"
+msgstr ""
+
+#, python-format
+msgid "Review Cycle: %(name)s"
+msgstr ""
+
+msgid "Questionnaire:"
+msgstr ""
+
+#, python-format
+msgid "Created on %(date)s"
+msgstr ""
+
+msgid "API Identifiers"
+msgstr ""
+
+msgid "Cycle UUID:"
+msgstr ""
+
+msgid "Copy"
+msgstr ""
+
+msgid "Reviewee UUID:"
+msgstr ""
+
+msgid "Report Available"
+msgstr ""
+
+#, python-format
+msgid "The 360-degree feedback report for <strong>%(name)s</strong> has been generated and is ready to view."
+msgstr ""
+
+msgid "Report Access Token"
+msgstr ""
+
+#, python-format
+msgid "Expired on %(date)s at %(time)s"
+msgstr ""
+
+#, python-format
+msgid "Expires in %(until)s (%(date)s at %(time)s)"
+msgstr ""
+
+#, python-format
+msgid "Last accessed %(since)s ago"
+msgstr ""
+
+#, python-format
+msgid "Viewed %(counter)s time"
+msgid_plural "Viewed %(counter)s times"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "View Report (Admin)"
+msgstr ""
+
+msgid "View Report (Reviewee View)"
+msgstr ""
+
+#, python-format
+msgid "Send Report to %(name)s"
+msgstr ""
+
+msgid "Regenerate Report"
+msgstr "Rigeneri il report"
+
+msgid "Review Completion Details"
+msgstr ""
+
+#, python-format
+msgid "%(completed_tokens)s of %(total_tokens)s completed (%(rate)s%%)"
+msgstr ""
+
+msgid "Total Reviewers"
+msgstr ""
+
+msgid "Completion Rate"
+msgstr ""
+
+#, python-format
+msgid "%(completed_tokens)s of %(claimed_tokens)s in progress (%(rate)s%%)"
+msgstr ""
+
+#, python-format
+msgid "%(completed_tokens)s of %(total_tokens)s total (%(rate)s%%)"
+msgstr ""
+
+msgid "Invitation Links"
+msgstr ""
+
+msgid "Alternative to email invites"
+msgstr ""
+
+msgid "Share these links with reviewers. Each link will randomly assign an available token from the category. Reviewers can bookmark their feedback link or return later - progress is saved automatically."
+msgstr ""
+
+msgid "Copy Link"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s reviewer"
+msgid_plural "%(counter)s reviewers"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Send Invite"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Send Reminder"
+msgstr ""
+
+msgid "Send invitation emails to all reviewers who have been assigned but not sent invites yet"
+msgstr ""
+
+msgid "Send All Pending Invites"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s unfinished review"
+msgid_plural "%(counter)s unfinished reviews"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Send reminder emails to all reviewers who have been sent invitations but haven't completed their feedback yet"
+msgstr ""
+
+msgid "Remind All Pending Reviewers"
+msgstr ""
+
+msgid "No reviewers invited yet."
+msgstr ""
+
+msgid "Invite reviewers"
+msgstr ""
+
+msgid "Manage Invitations"
+msgstr ""
+
+#, python-format
+msgid "Send Pending Invites (%(pending_invites)s)"
+msgstr ""
+
+#, python-format
+msgid "Send Reminders (%(count)s)"
+msgstr ""
+
+msgid "Generate Report"
+msgstr ""
+
+msgid "Edit in Django Admin"
+msgstr ""
+
+msgid "Close Cycle & Generate Report"
+msgstr ""
+
+msgid "Additional Actions"
+msgstr ""
+
+msgid "Confirm Action"
+msgstr ""
+
+#, python-format
+msgid "Failed to copy. URL: %(url)s"
+msgstr ""
+
+msgid "Invitation link copied to clipboard"
+msgstr ""
+
+msgid "Link copied to clipboard"
+msgstr ""
+
+msgid "UUID copied to clipboard"
+msgstr ""
+
+msgid "Are you sure you want to remove this reviewer from the cycle?"
+msgstr ""
+
+msgid "Set up a new 360-degree feedback review cycle"
+msgstr ""
+
+msgid "You have no review cycles left."
+msgstr ""
+
+msgid "Cycles in progress continue and your reports stay available. To start a new cycle, buy another round or start a subscription."
+msgstr ""
+
+#, python-format
+msgid "Review cycles remaining: <strong>%(cycle_credits)s</strong>. Each cycle you create uses one."
+msgstr ""
+
+msgid "Creation Mode"
+msgstr ""
+
+msgid "Single Reviewee"
+msgstr ""
+
+msgid "Create cycle for one person"
+msgstr ""
+
+msgid "Bulk Create"
+msgstr ""
+
+msgid "Create for all active reviewees"
+msgstr ""
+
+msgid "Bulk creation does not send any emails. You'll review the new cycles and send invitations in the next step."
+msgstr ""
+
+msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
+msgstr ""
+
+msgid "Select a reviewee..."
+msgstr ""
+
+msgid "Person who will receive 360-degree feedback"
+msgstr ""
+
+msgid "Select a questionnaire..."
+msgstr ""
+
+msgid "Questions that reviewers will answer"
+msgstr ""
+
+msgid "Report type:"
+msgstr ""
+
+msgid "Preview sample report"
+msgstr ""
+
+msgid "Feedback Categories"
+msgstr ""
+
+msgid "Who gives feedback in this cycle. Categories you clear are left out of the invitation email and the report."
+msgstr ""
+
+msgid "The reviewee rates themselves"
+msgstr ""
+
+msgid "Select at least one category."
+msgstr ""
+
+msgid "Invite Reviewers (Optional)"
+msgstr ""
+
+msgid "Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines."
+msgstr ""
+
+msgid "Usually the reviewee's own email (auto-filled when reviewee selected)"
+msgstr ""
+
+msgid "Send invitation emails immediately after creating cycle"
+msgstr ""
+
+msgid "Create Cycles (no emails yet)"
+msgstr ""
+
+msgid "Review Cycles"
+msgstr ""
+
+msgid "Manage 360-degree feedback review cycles"
+msgstr ""
+
+msgid "Show API Identifiers"
+msgstr ""
+
+#, python-format
+msgid "%(completed)s / %(total)s responses"
+msgstr ""
+
+msgid "New Cycle"
+msgstr ""
+
+msgid "Select different questionnaire"
+msgstr ""
+
+msgid "Select Questionnaire"
+msgstr ""
+
+msgid "Quick create (button action)"
+msgstr ""
+
+msgid "Quick create"
+msgstr ""
+
+#, python-format
+msgid "Page %(number)s of %(num_pages)s"
+msgstr ""
+
+msgid "Create your first review cycle to start collecting feedback"
+msgstr ""
+
+#, python-format
+msgid "Use these UUIDs when accessing the REST API for <strong id=\"%(name_id)s\"></strong>"
+msgstr ""
+
+msgid "Close"
+msgstr "Chiuda"
+
+msgid "Cycle UUID"
+msgstr ""
+
+msgid "Reviewee UUID"
+msgstr ""
+
+msgid "Delete Reviewee"
+msgstr ""
+
+msgid "Are you sure you want to deactivate this reviewee?"
+msgstr ""
+
+msgid "<strong>Warning:</strong> This will deactivate the reviewee. Their past review cycles will remain accessible, but they will not appear in active lists."
+msgstr ""
+
+msgid "Email:"
+msgstr "E-mail:"
+
+msgid "Department:"
+msgstr ""
+
+msgid "Deactivate Reviewee"
+msgstr ""
+
+msgid "Edit Reviewee"
+msgstr ""
+
+msgid "Create Reviewee"
+msgstr ""
+
+#, python-format
+msgid "Update information for %(name)s"
+msgstr ""
+
+msgid "Add a new person who will receive 360-degree feedback"
+msgstr ""
+
+msgid "John Doe"
+msgstr ""
+
+msgid "john.doe@company.com"
+msgstr ""
+
+msgid "Department (Optional)"
+msgstr ""
+
+msgid "Engineering, Marketing, etc."
+msgstr ""
+
+msgid "Language of the emails to this person and of their self-assessment."
+msgstr ""
+
+msgid "Update Reviewee"
+msgstr ""
+
+msgid "Manage people who receive 360-degree feedback"
+msgstr ""
+
+#, python-format
+msgid "%(current)s / %(max)s reviewees (%(remaining)s remaining)"
+msgstr ""
+
+msgid "Add Myself"
+msgstr ""
+
+msgid "Self-assessment minus the average of other reviewers, latest completed report"
+msgstr ""
+
+msgid "Self vs others"
+msgstr ""
+
+msgid "Sort by largest gap"
+msgstr ""
+
+msgid "Rates self higher than others"
+msgstr ""
+
+msgid "Rates self lower than others"
+msgstr ""
+
+msgid "Same as others"
+msgstr ""
+
+msgid "View Cycle"
+msgstr ""
+
+msgid "✓ = Quick create (button action)"
+msgstr ""
+
+msgid "No reviewees yet"
+msgstr ""
+
+msgid "Add your first reviewee to start creating review cycles"
+msgstr ""
+
+msgid "Add yourself as a reviewee to start receiving feedback"
+msgstr ""
+
+#, python-format
+msgid "Send Reminders - %(name)s"
+msgstr ""
+
+msgid "Send Reminders"
+msgstr ""
+
+msgid "Send reminder emails for pending reviews in this cycle"
+msgstr ""
+
+msgid "Review Cycle Details"
+msgstr ""
+
+msgid "Reviewee:"
+msgstr ""
+
+msgid "Pending Reviews:"
+msgstr ""
+
+msgid "Pending Reviewer Tokens"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Review Link"
+msgstr ""
+
+msgid "Send Reminder Emails"
+msgstr ""
+
+msgid "Instructions:"
+msgstr ""
+
+msgid "Enter one email address per line (or comma-separated)"
+msgstr ""
+
+#, python-format
+msgid "The number of emails must match the number of pending tokens (%(count)s)"
+msgstr ""
+
+msgid "Emails will be sent in the order shown in the table above"
+msgstr ""
+
+msgid "Each email will contain a unique anonymous review link"
+msgstr ""
+
+#, python-format
+msgid "Reviewer Email Addresses (%(count)s required)"
+msgstr ""
+
+#, python-format
+msgid "Enter %(count)s email address(es), one per line"
+msgstr ""
+
+#, python-format
+msgid "Send %(count)s Reminder(s)"
+msgstr ""
+
+msgid "All reviews completed"
+msgstr ""
+
+msgid "There are no pending reviews for this cycle."
+msgstr ""
+
+msgid "Back to Cycle"
+msgstr "Torni al ciclo"
+
+msgid "Organization configuration and preferences"
+msgstr ""
+
+msgid "View-only mode:"
+msgstr ""
+
+msgid "Only organization administrators can modify these settings."
+msgstr ""
+
+#, python-format
+msgid "Managed by <code>%(env_var)s</code> in the environment"
+msgstr ""
+
+msgid "Contact Email"
+msgstr ""
+
+msgid "Default Language"
+msgstr ""
+
+msgid "Emails and feedback forms use this language unless a person has their own."
+msgstr ""
+
+msgid "Report Settings"
+msgstr ""
+
+msgid "Minimum Responses for Anonymity"
+msgstr ""
+
+msgid "Minimum responses required to display results. Set to 1 for small teams, 3+ for larger teams. Self-assessments always shown."
+msgstr ""
+
+msgid "Automatically send report email when generated"
+msgstr ""
+
+msgid "When enabled, reviewees automatically receive an email with a link to their report when all feedback is collected."
+msgstr ""
+
+msgid "User Registration"
+msgstr ""
+
+msgid "Allow user registration"
+msgstr ""
+
+msgid "When enabled, new users can register at /accounts/register/"
+msgstr ""
+
+msgid "New users can create cycles for others"
+msgstr ""
+
+msgid "If disabled, new users can only create cycles for themselves"
+msgstr ""
+
+msgid "Subscription & Billing"
+msgstr ""
+
+#, python-format
+msgid "€%(price)s/month"
+msgstr ""
+
+msgid "Trial Ends"
+msgstr ""
+
+msgid "Max Employees"
+msgstr ""
+
+msgid "Current Period"
+msgstr ""
+
+msgid "Subscription Canceling:"
+msgstr ""
+
+#, python-format
+msgid "Ends %(end_date)s"
+msgstr ""
+
+msgid "Manage Billing"
+msgstr ""
+
+msgid "Review Rounds"
+msgstr ""
+
+msgid "Review cycles remaining"
+msgstr ""
+
+msgid "Not used while your subscription is active."
+msgstr ""
+
+msgid "Email (SMTP) Settings"
+msgstr ""
+
+msgid "Using Blik's Email Service?"
+msgstr ""
+
+msgid "Leave all fields empty to use our managed email service. Fill in to use your own SMTP."
+msgstr ""
+
+msgid "Host"
+msgstr ""
+
+msgid "Optional"
+msgstr ""
+
+msgid "Port"
+msgstr ""
+
+msgid "Leave blank to keep current"
+msgstr ""
+
+msgid "From Address"
+msgstr ""
+
+msgid "Use TLS encryption (port 587)"
+msgstr ""
+
+msgid "API Configuration"
+msgstr ""
+
+msgid "API Access"
+msgstr ""
+
+msgid "Generate tokens for plugin integrations"
+msgstr ""
+
+msgid "API Docs"
+msgstr ""
+
+msgid "Last used:"
+msgstr ""
+
+#, python-format
+msgid "%(since)s ago"
+msgstr ""
+
+msgid "Never"
+msgstr ""
+
+msgid "Revoke"
+msgstr ""
+
+msgid "No API tokens created yet"
+msgstr ""
+
+msgid "Create New Token"
+msgstr ""
+
+msgid "Webhooks"
+msgstr ""
+
+msgid "Receive event notifications for cycle creation, completion, etc."
+msgstr ""
+
+msgid "Events:"
+msgstr ""
+
+msgid "Success:"
+msgstr ""
+
+msgid "Failed:"
+msgstr ""
+
+msgid "No webhooks configured"
+msgstr ""
+
+msgid "Add Webhook"
+msgstr ""
+
+msgid "Account & Data Management"
+msgstr ""
+
+msgid "Export Organization Data"
+msgstr ""
+
+msgid "Download all data in JSON format (GDPR compliant)."
+msgstr ""
+
+msgid "Download Export"
+msgstr ""
+
+msgid "Import Organization Data"
+msgstr ""
+
+msgid "Upload a previously exported JSON file to import data."
+msgstr ""
+
+msgid "Import Data"
+msgstr ""
+
+msgid "Subscription"
+msgstr ""
+
+#, python-format
+msgid "Scheduled to cancel on %(end_date)s."
+msgstr ""
+
+msgid "Reactivate"
+msgstr ""
+
+#, python-format
+msgid "Cancel subscription. Access until %(end_date)s."
+msgstr ""
+
+msgid "Cancel subscription? You'll retain access until end of billing period."
+msgstr ""
+
+msgid "Cancel Subscription"
+msgstr ""
+
+msgid "Delete Account"
+msgstr ""
+
+msgid "Last admin. Delete organization or add another admin first."
+msgstr ""
+
+msgid "Permanently delete your account. Cannot be undone."
+msgstr ""
+
+msgid "Delete Organization"
+msgstr ""
+
+#, python-format
+msgid "Permanently delete %(name)s and all data. Cannot be undone."
+msgstr ""
+
+msgid "This will permanently delete your account. This action cannot be undone."
+msgstr ""
+
+msgid "Confirm your password:"
+msgstr ""
+
+#, python-format
+msgid "This will permanently delete <strong>%(name)s</strong> and all data including users, reviewees, cycles, and reports. This action cannot be undone."
+msgstr ""
+
+msgid "Type the organization name to confirm:"
+msgstr ""
+
+msgid "Upload a previously exported JSON file to restore or merge data into your organization."
+msgstr ""
+
+msgid "Select Import File:"
+msgstr ""
+
+msgid "Maximum file size: 50MB"
+msgstr ""
+
+msgid "Preview Import"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid "Import Preview"
+msgstr ""
+
+msgid "Validation Errors:"
+msgstr ""
+
+msgid "Warnings:"
+msgstr ""
+
+msgid "Continue to Import Options"
+msgstr ""
+
+msgid "Conflict Resolution:"
+msgstr ""
+
+msgid "Skip Existing Items"
+msgstr ""
+
+msgid "Overwrite Existing Items"
+msgstr ""
+
+msgid "Create Duplicates"
+msgstr ""
+
+msgid "How to handle items that already exist in your organization"
+msgstr ""
+
+msgid "Data to Import:"
+msgstr ""
+
+msgid "Users will be created with random passwords"
+msgstr ""
+
+msgid "Attaches to imported cycles, or creates new cycles if needed"
+msgstr ""
+
+msgid "Import Information:"
+msgstr ""
+
+msgid "All import operations are atomic - if any error occurs, no changes will be made"
+msgstr ""
+
+msgid "Reviewer anonymity is preserved - no reviewer email addresses are restored"
+msgstr ""
+
+msgid "Response data may be skipped if question matching fails"
+msgstr ""
+
+msgid "Reports attach to imported cycles, or create new cycles if importing separately"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Confirm Import"
+msgstr ""
+
+#, python-format
+msgid "%(sections)s sections, %(questions)s questions"
+msgstr ""
+
+msgid "Please select a file to import"
+msgstr ""
+
+msgid "Error:"
+msgstr ""
+
+msgid "Failed to preview import"
+msgstr ""
+
+msgid "Error previewing import:"
+msgstr ""
+
+msgid "Organization:"
+msgstr "Organizzazione:"
+
+msgid "Questionnaires:"
+msgstr ""
+
+msgid "Create API Token"
+msgstr ""
+
+msgid "Edit API Token"
+msgstr ""
+
+msgid "Create Webhook"
+msgstr ""
+
+msgid "Edit Webhook"
+msgstr ""
+
+msgid "Copied!"
+msgstr ""
+
+msgid "Failed to copy to clipboard. Please select and copy manually."
+msgstr ""
+
+msgid "Token Name"
+msgstr ""
+
+msgid "e.g. Slack Integration"
+msgstr ""
+
+msgid "Descriptive name to identify this token"
+msgstr ""
+
+msgid "Rate Limit (requests/hour)"
+msgstr ""
+
+msgid "Maximum API requests per hour"
+msgstr ""
+
+msgid "Inactive tokens cannot be used for API requests"
+msgstr ""
+
+msgid "Save Token"
+msgstr ""
+
+msgid "API Token Created Successfully!"
+msgstr ""
+
+msgid "Save this token now - it won't be shown again!"
+msgstr ""
+
+msgid "Store it securely. You'll need it to authenticate API requests."
+msgstr ""
+
+msgid "Your API Token"
+msgstr ""
+
+msgid "Click \"Copy\" to copy the token to your clipboard"
+msgstr ""
+
+msgid "Example Usage:"
+msgstr ""
+
+msgid "I've Saved It"
+msgstr ""
+
+msgid "Revoke API Token"
+msgstr ""
+
+#, python-format
+msgid "Are you sure you want to revoke the API token \"<strong id=\"%(name_id)s\"></strong>\"?"
+msgstr ""
+
+msgid "Warning:"
+msgstr ""
+
+msgid "This will immediately break any integrations using this token. This action cannot be undone."
+msgstr ""
+
+msgid "Revoke Token"
+msgstr ""
+
+msgid "Delete Webhook"
+msgstr ""
+
+#, python-format
+msgid "Are you sure you want to delete the webhook \"<strong id=\"%(name_id)s\"></strong>\"?"
+msgstr ""
+
+msgid "This will stop all event notifications to this endpoint. This action cannot be undone."
+msgstr ""
+
+msgid "Webhook Name"
+msgstr ""
+
+msgid "e.g. Slack Notifications"
+msgstr ""
+
+msgid "Descriptive name for this webhook"
+msgstr ""
+
+msgid "Webhook URL"
+msgstr ""
+
+msgid "POST requests will be sent to this URL"
+msgstr ""
+
+msgid "Events to Subscribe"
+msgstr ""
+
+msgid "Cycle Created"
+msgstr ""
+
+msgid "Cycle Completed"
+msgstr ""
+
+msgid "Feedback Submitted"
+msgstr "Feedback inviato"
+
+msgid "Report Generated"
+msgstr ""
+
+msgid "Select which events trigger this webhook"
+msgstr ""
+
+msgid "Inactive webhooks will not receive events"
+msgstr ""
+
+msgid "Save Webhook"
+msgstr ""
+
+msgid "Team Management"
+msgstr ""
+
+msgid "Manage users and send invitations"
+msgstr ""
+
+#, python-format
+msgid "%(count)s team members (unlimited)"
+msgstr ""
+
+msgid "Invite User"
+msgstr ""
+
+msgid "Send Invitation"
+msgstr ""
+
+msgid "Email Address"
+msgstr ""
+
+msgid "The user will receive an email with instructions to join"
+msgstr ""
+
+msgid "Language of the invitation email"
+msgstr ""
+
+#, python-format
+msgid "Active Users (%(count)s)"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Super Admin"
+msgstr ""
+
+msgid "Organization Admin"
+msgstr ""
+
+msgid "Member"
+msgstr ""
+
+msgid "Can manage cycles"
+msgstr ""
+
+msgid "Self-only"
+msgstr ""
+
+msgid "All reports"
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
+msgid "Manage Permissions"
+msgstr ""
+
+#, python-format
+msgid "Pending Invitations (%(count)s)"
+msgstr ""
+
+msgid "Invited By"
+msgstr ""
+
+msgid "Sent"
+msgstr ""
+
+msgid "Expires"
+msgstr ""
+
+msgid "No pending invitations"
+msgstr ""
+
+msgid "Manage User Permissions"
+msgstr ""
+
+#, python-format
+msgid "Update permissions for <strong id=\"%(username_id)s\"></strong>"
+msgstr ""
+
+msgid "Can invite members, manage organization settings, and delete organization"
+msgstr ""
+
+msgid "Regular team member with limited permissions"
+msgstr ""
+
+msgid "Additional Permissions"
+msgstr ""
+
+msgid "Can create review cycles for others"
+msgstr ""
+
+msgid "Without this, user can only create cycles for themselves"
+msgstr ""
+
+msgid "Can view all reports and cycles"
+msgstr ""
+
+msgid "Without this, user only sees the reports and cycles they are the subject of."
+msgstr ""
+
+msgid "Organization Admins always have this."
+msgstr ""
+
+msgid "Update Permissions"
+msgstr ""
+
+msgid "Blik 360 Feedback"
+msgstr ""
+
+msgid "Suggesting a preferred"
+msgstr ""
+
+msgid "solution with justification"
+msgstr ""
+
+msgid "Solution Recommendation"
+msgstr ""
+
+msgid "Solution Exploration"
+msgstr ""
+
+msgid "Recognizing and stating a"
+msgstr ""
+
+msgid "problem"
+msgstr ""
+
+msgid "Implementing and resolving"
+msgstr ""
+
+msgid "the identified problem"
+msgstr ""
+
+msgid "Proposing possible"
+msgstr ""
+
+msgid "solutions to the problem"
+msgstr ""
+
+msgid "Cause Analysis"
+msgstr ""
+
+msgid "Identifying potential causes"
+msgstr ""
+
+msgid "of the problem"
+msgstr ""
+
+msgid "Problem Resolution"
+msgstr ""
+
+msgid "Problem Identification"
+msgstr ""
+
+msgid "Levels of Work Agency"
+msgstr ""
+
+msgid "Dreyfus Model of Skill Acquisition"
+msgstr ""
+
+msgid "Advanced"
+msgstr ""
+
+msgid "Beginner"
+msgstr ""
+
+msgid "Rigid rule"
+msgstr ""
+
+msgid "follower"
+msgstr ""
+
+msgid "Recognizes"
+msgstr ""
+
+msgid "patterns, needs"
+msgstr ""
+
+msgid "guidelines"
+msgstr ""
+
+msgid "Develops"
+msgstr ""
+
+msgid "mental models,"
+msgstr ""
+
+msgid "takes"
+msgstr ""
+
+msgid "responsibility"
+msgstr ""
+
+msgid "Sees the big"
+msgstr ""
+
+msgid "picture, learns"
+msgstr ""
+
+msgid "from others"
+msgstr ""
+
+msgid "Intuitive,"
+msgstr ""
+
+msgid "creates new"
+msgstr ""
+
+msgid "approaches"
+msgstr ""
+
+msgid "Hungry"
+msgstr ""
+
+msgid "Learner"
+msgstr ""
+
+msgid "Growing"
+msgstr ""
+
+msgid "Adv. Beginner"
+msgstr ""
+
+msgid "Solid"
+msgstr ""
+
+msgid "Performer"
+msgstr ""
+
+msgid "Force"
+msgstr ""
+
+msgid "Multiplier"
+msgstr ""
+
+msgid "Elite"
+msgstr ""
+
+msgid "Low"
+msgstr ""
+
+msgid "Struggling"
+msgstr ""
+
+msgid "Junior"
+msgstr ""
+
+msgid "Disengaged"
+msgstr ""
+
+msgid "Mid-Level"
+msgstr ""
+
+msgid "Brilliant"
+msgstr ""
+
+msgid "Passenger"
+msgstr ""
+
+msgid "Senior"
+msgstr ""
+
+msgid "Technical Skill (Dreyfus Model)"
+msgstr ""
+
+msgid "Agency Level"
+msgstr ""
+
+msgctxt "agency level"
+msgid "High"
+msgstr ""
+
+msgid "Level 4-5"
+msgstr ""
+
+msgctxt "agency level"
+msgid "Low"
+msgstr ""
+
+msgid "Level 1-2"
+msgstr ""
+
+msgid "Force Multipliers"
+msgstr ""
+
+msgid "High Skill + High Agency"
+msgstr ""
+
+msgid "Hire • Promote • Clone"
+msgstr ""
+
+msgid "Hungry Learners"
+msgstr ""
+
+msgid "Low Skill + High Agency"
+msgstr ""
+
+msgid "Best Junior Hire"
+msgstr ""
+
+msgid "Brilliant Passengers"
+msgstr ""
+
+msgid "High Skill + Low Agency"
+msgstr ""
+
+msgid "Coach on Ownership"
+msgstr ""
+
+msgid "Low Performers"
+msgstr ""
+
+msgid "Low Skill + Low Agency"
+msgstr ""
+
+msgid "3-Month PIP or Exit"
+msgstr ""
+
+msgid "Level 1"
+msgstr ""
+
+msgid "Level 5"
+msgstr ""
+
+msgid "Review Check-In"
+msgstr ""
+
+#, python-format
+msgid "Hi <strong>%(name)s</strong>,"
+msgstr ""
+
+#, python-format
+msgid "<strong>%(counter)s</strong> review has been completed for your <strong>%(questionnaire_name)s</strong> cycle."
+msgid_plural "<strong>%(counter)s</strong> reviews have been completed for your <strong>%(questionnaire_name)s</strong> cycle."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "If everyone has submitted their feedback, you can close the cycle and generate your report from your dashboard."
+msgstr ""
+
+msgid "Your cycle will stay open until you manually close it, so additional reviewers can still submit feedback via the invite link."
+msgstr ""
+
+msgid "This is an automated email from your feedback system."
+msgstr ""
+
+#, python-format
+msgid "Hi %(name)s,"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s review has been completed for your %(questionnaire_name)s cycle."
+msgid_plural "%(counter)s reviews have been completed for your %(questionnaire_name)s cycle."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "If everyone has submitted their feedback, you can close the cycle and generate your report from your dashboard:"
+msgstr ""
+
+msgid "Best regards,"
+msgstr ""
+
+msgid "Your Feedback Team"
+msgstr ""
+
+#, python-format
+msgid "You started a new subscription with %(email)s, but this address already has a Blik360 account. We cancelled the new subscription and nothing was charged."
+msgstr ""
+
+#, python-format
+msgid "To choose a plan for your existing organization, sign in at %(site_url)s and open Settings."
+msgstr ""
+
+msgid "Reset Your Password"
+msgstr ""
+
+msgid "Hi there,"
+msgstr ""
+
+#, python-format
+msgid "We received a request to reset your password for your %(site_name)s account. Click the button below to set a new password:"
+msgstr ""
+
+msgid "<strong>This link will expire in 1 hour.</strong> If you didn't request a password reset, you can safely ignore this email."
+msgstr ""
+
+msgid "If the button doesn't work, copy and paste this link into your browser:"
+msgstr ""
+
+#, python-format
+msgid "The %(site_name)s Team"
+msgstr ""
+
+#, python-format
+msgid "This email was sent to %(email)s because a password reset was requested for this account."
+msgstr ""
+
+#, python-format
+msgid "We received a request to reset your password for your %(site_name)s account."
+msgstr ""
+
+msgid "Click the link below to set a new password:"
+msgstr ""
+
+msgid "This link will expire in 1 hour. If you didn't request a password reset, you can safely ignore this email."
+msgstr ""
+
+msgid "Your Report is Ready!"
+msgstr ""
+
+msgid "Your 360-degree feedback report is now ready!"
+msgstr ""
+
+msgid "View Your Report"
+msgstr ""
+
+msgid "Report Summary"
+msgstr ""
+
+#, python-format
+msgid "This report contains feedback from <strong>%(response_count)s reviewer(s)</strong> across different categories."
+msgstr ""
+
+msgid "The report includes:"
+msgstr ""
+
+msgid "Overall performance insights"
+msgstr ""
+
+msgid "Strength areas and development opportunities"
+msgstr ""
+
+msgid "Perception gap analysis (if applicable)"
+msgstr ""
+
+msgid "Detailed feedback by competency area"
+msgstr ""
+
+msgid "Privacy:"
+msgstr ""
+
+msgid "Your report is completely confidential and accessible only through the secure link above."
+msgstr ""
+
+msgid "View your report here:"
+msgstr ""
+
+#, python-format
+msgid "This report contains feedback from %(response_count)s reviewer(s) across different categories."
+msgstr ""
+
+msgid "Share Your Review Links"
+msgstr ""
+
+msgid "Your 360-degree feedback cycle has been created. Please share the following invitation links with your reviewers:"
+msgstr ""
+
+msgid "Peer Reviews"
+msgstr ""
+
+msgid "Share this link with your colleagues/peers. Each person who clicks will get their own unique review link."
+msgstr ""
+
+msgid "Share this link with your manager."
+msgstr ""
+
+msgid "Direct Report Reviews"
+msgstr ""
+
+msgid "Share this link with your direct reports. Each person who clicks will get their own unique review link."
+msgstr ""
+
+msgid "Important:"
+msgstr ""
+
+msgid "Each link can be shared with multiple people"
+msgstr ""
+
+msgid "Reviewers remain anonymous"
+msgstr ""
+
+msgid "They can save their progress and return later"
+msgstr ""
+
+msgid "PEER REVIEWS:"
+msgstr ""
+
+msgid "MANAGER REVIEW:"
+msgstr ""
+
+msgid "DIRECT REPORT REVIEWS:"
+msgstr ""
+
+msgid "360° Feedback Cycle Started"
+msgstr ""
+
+msgid "A new 360-degree feedback cycle has been created for you!"
+msgstr ""
+
+msgid "Please complete your <strong>self-assessment</strong> by clicking the button below:"
+msgstr ""
+
+msgid "Complete Self-Assessment"
+msgstr ""
+
+msgid "This is your opportunity to reflect on your own performance before receiving feedback from others."
+msgstr ""
+
+msgid "Please complete your self-assessment by clicking the link below:"
+msgstr ""
+
+msgid "360 Feedback Request"
+msgstr ""
+
+msgid "Hello,"
+msgstr ""
+
+#, python-format
+msgid "You have been invited to provide <strong>%(category)s</strong> feedback for <strong>%(reviewee_name)s</strong>."
+msgstr ""
+
+#, python-format
+msgid "Your feedback is anonymous and will help %(reviewee_name)s grow professionally."
+msgstr ""
+
+msgid "Start Your Review"
+msgstr ""
+
+msgid "You can save your progress and return to complete it later - just bookmark the link above."
+msgstr ""
+
+msgid "Thank you for your participation."
+msgstr ""
+
+msgid "This is an automated message from the Blik 360 Feedback System."
+msgstr ""
+
+#, python-format
+msgid "360 Feedback Request for %(reviewee_name)s"
+msgstr ""
+
+#, python-format
+msgid "You have been invited to provide %(category)s feedback for %(reviewee_name)s."
+msgstr ""
+
+msgid "Click the link below to start your review:"
+msgstr ""
+
+#, python-format
+msgid "This questionnaire covers: %(questionnaire_name)s"
+msgstr ""
+
+msgid "Reminder: Feedback Request"
+msgstr ""
+
+#, python-format
+msgid "This is a friendly reminder that you have a pending <strong>%(category)s</strong> feedback request for <strong>%(reviewee_name)s</strong>."
+msgstr ""
+
+#, python-format
+msgid "Your feedback is important and will help %(reviewee_name)s grow professionally. If you've already started, you can continue where you left off."
+msgstr ""
+
+msgid "Continue Your Review"
+msgstr ""
+
+msgid "Your progress is saved automatically, so you can complete the review at your convenience."
+msgstr ""
+
+msgid "Thank you for your time."
+msgstr ""
+
+msgid "This is an automated reminder from the Blik 360 Feedback System."
+msgstr ""
+
+#, python-format
+msgid "Reminder: Feedback Request for %(reviewee_name)s"
+msgstr ""
+
+#, python-format
+msgid "This is a friendly reminder that you have a pending %(category)s feedback request for %(reviewee_name)s."
+msgstr ""
+
+msgid "Click the link below to continue your review:"
+msgstr ""
+
+msgid "You're Invited!"
+msgstr ""
+
+#, python-format
+msgid "You've been invited to join <strong>%(organization)s</strong> on Blik 360 Feedback Platform."
+msgstr ""
+
+msgid "Accept Invitation"
+msgstr ""
+
+msgid "This invitation will expire in 7 days."
+msgstr ""
+
+#, python-format
+msgid "%(organization)s Team"
+msgstr ""
+
+#, python-format
+msgid "You've been invited to join %(organization)s on Blik 360 Feedback Platform."
+msgstr ""
+
+msgid "Click the link below to accept this invitation and create your account:"
+msgstr ""
+
+#, python-format
+msgid "Welcome to %(site_name)s"
+msgstr ""
+
+#, python-format
+msgid "Hello %(username)s,"
+msgstr ""
+
+#, python-format
+msgid "Your %(site_name)s account has been created and is ready to use. You can now start creating 360-degree feedback cycles for your organization."
+msgstr ""
+
+msgid "Your Login Credentials"
+msgstr ""
+
+msgid "Password:"
+msgstr ""
+
+msgid "Login to Dashboard"
+msgstr ""
+
+msgid "Please change your password after your first login for security."
+msgstr ""
+
+msgid "Getting Started"
+msgstr ""
+
+msgid "Login to your dashboard using the credentials above"
+msgstr ""
+
+msgid "Add reviewees (employees) to your organization"
+msgstr ""
+
+msgid "Create a review cycle and invite reviewers"
+msgstr ""
+
+msgid "Monitor progress and generate reports"
+msgstr ""
+
+msgid "If you have any questions, please don't hesitate to reach out to our support team."
+msgstr ""
+
+#, python-format
+msgid "This email was sent to %(email)s because an account was created for your organization."
+msgstr ""
+
+msgid "YOUR LOGIN CREDENTIALS"
+msgstr ""
+
+msgid "Login URL:"
+msgstr ""
+
+msgid "IMPORTANT:"
+msgstr ""
+
+msgid "GETTING STARTED"
+msgstr ""
+
+#, python-format
+msgid "Welcome to %(org_name)s!"
+msgstr ""
+
+msgid "Your account has been successfully created. You're all set to start your feedback journey."
+msgstr ""
+
+msgid "Log In to Dashboard"
+msgstr ""
+
+msgid "Complete your profile"
+msgstr ""
+
+msgid "Participate in feedback cycles as they're created"
+msgstr ""
+
+msgid "Track your development over time"
+msgstr ""
+
+msgid "If you have any questions, your team admin is here to help."
+msgstr ""
+
+msgid "While you're here, here's something interesting about feedback and growth:"
+msgstr ""
+
+msgid "Blik uses the Dreyfus Model as a framework for understanding skill development—from Novice to Expert. We believe it's a powerful tool for tracking your growth journey."
+msgstr ""
+
+msgid "Learn more"
+msgstr ""
+
+#, python-format
+msgid "The %(org_name)s Team"
+msgstr ""
+
+#, python-format
+msgid "This email was sent to %(email)s because you were invited to join %(org_name)s."
+msgstr ""
+
+#, python-format
+msgid "Log in to your dashboard: %(login_url)s"
+msgstr ""
+
+#, python-format
+msgid "Blik uses the Dreyfus Model as a framework for understanding skill development—from Novice to Expert. We believe it's a powerful tool for tracking your growth journey. Learn more: %(dreyfus_url)s"
+msgstr ""
+
+msgid "Blik - 360 Feedback System"
+msgstr "Blik - Sistema di feedback a 360°"
+
+msgid "360 Feedback & Performance Review System"
+msgstr "Sistema di feedback a 360° e valutazione delle prestazioni"
+
+msgid "System Running"
+msgstr "Sistema in funzione"
+
+msgid "Setup Complete"
+msgstr "Configurazione completata"
+
+msgid "Django application is running"
+msgstr "L'applicazione Django è in esecuzione"
+
+msgid "Database connected successfully"
+msgstr "Connessione al database riuscita"
+
+msgid "Static files configured"
+msgstr "File statici configurati"
+
+msgid "Ready for development"
+msgstr "Pronto per lo sviluppo"
+
+msgid "Django Admin"
+msgstr "Amministrazione Django"
+
+msgid "Version 0.1.0 (Pre-Alpha)"
+msgstr "Versione 0.1.0 (pre-alpha)"
+
+msgid "Self-hosted | Open Source | Privacy-First"
+msgstr "Self-hosted | Open source | Privacy al primo posto"
+
+msgid "360 Degree Feedback Request"
+msgstr ""
+
+#, python-format
+msgid "Your feedback is completely anonymous and will be aggregated with other responses to help %(reviewee_name)s with their professional development."
+msgstr ""
+
+msgid "Complete Feedback"
+msgstr ""
+
+msgid "This is a secure, one-time link that only you can use."
+msgstr ""
+
+msgid "If the button above doesn't work, copy and paste this URL into your browser:"
+msgstr ""
+
+msgid "Thank you for taking the time to provide thoughtful feedback."
+msgstr ""
+
+msgid "Blik Feedback System"
+msgstr ""
+
+msgid "Please complete the feedback questionnaire at:"
+msgstr ""
+
+msgid "Your Development Path"
+msgstr "Il Suo percorso di sviluppo"
+
+msgid "Skill Level"
+msgstr "Livello di competenza"
+
+msgid "Learn more about the Dreyfus Model"
+msgstr "Maggiori informazioni sul modello di Dreyfus"
+
+msgid "Agency & Initiative"
+msgstr "Autonomia e iniziativa"
+
+msgid "Learn more about Agency Levels"
+msgstr "Maggiori informazioni sui livelli di autonomia"
+
+#, python-format
+msgid "Level %(level)s/5.0"
+msgstr "Livello %(level)s/5,0"
+
+#, python-format
+msgid "To Reach %(stage)s"
+msgstr ""
+
+#, python-format
+msgid "To Reach Level %(level)s:"
+msgstr "Per raggiungere il livello %(level)s:"
+
+msgid "When reporting problems, investigate root causes"
+msgstr "Quando segnala un problema, ne indaghi le cause alla radice"
+
+msgid "Respond to guidance with thoughtful analysis"
+msgstr "Risponda alle indicazioni con un'analisi ponderata"
+
+msgid "Ask clarifying questions before escalating"
+msgstr "Ponga domande di chiarimento prima di procedere con un'escalation"
+
+msgid "Research multiple solution options before asking for help"
+msgstr "Esamini diverse possibili soluzioni prima di chiedere aiuto"
+
+msgid "Take ownership of problems you discover"
+msgstr "Si assuma la responsabilità dei problemi che individua"
+
+msgid "Present tradeoffs of different approaches"
+msgstr "Esponga vantaggi e svantaggi dei diversi approcci"
+
+msgid "Make clear recommendations backed by reasoning"
+msgstr "Formuli raccomandazioni chiare e motivate"
+
+msgid "Proactively identify improvements before issues arise"
+msgstr "Individui proattivamente possibili miglioramenti prima che emergano problemi"
+
+msgid "Build confidence in decision-making through successful recommendations"
+msgstr "Rafforzi la fiducia nelle Sue capacità decisionali formulando raccomandazioni efficaci"
+
+msgid "Execute solutions autonomously within your domain"
+msgstr "Attui soluzioni in autonomia nell'ambito di Sua competenza"
+
+msgid "Inform stakeholders after implementing fixes"
+msgstr "Informi le parti interessate dopo aver attuato le correzioni"
+
+msgid "Drive systemic improvements, not just point solutions"
+msgstr "Promuova miglioramenti sistemici, non solo soluzioni puntuali"
+
+msgid "Next time you spot an issue, spend 10 minutes investigating before reporting"
+msgstr "La prossima volta che individua un problema, dedichi 10 minuti a esaminarlo prima di segnalarlo"
+
+msgid "When given a task, propose at least one way to approach it"
+msgstr "Quando Le viene assegnato un compito, proponga almeno un modo per affrontarlo"
+
+msgid "When facing a problem, list 2-3 possible solutions before asking for help"
+msgstr "Di fronte a un problema, elenchi 2-3 possibili soluzioni prima di chiedere aiuto"
+
+msgid "Volunteer to own a small problem end-to-end this sprint"
+msgstr "Si proponga di gestire integralmente un problema di piccola entità in questo sprint"
+
+msgid "Present your next problem-solution with a specific recommendation and why"
+msgstr "Presenti la prossima soluzione a un problema con una raccomandazione specifica e le relative motivazioni"
+
+msgid "Identify one process improvement opportunity this week"
+msgstr "Individui questa settimana un'opportunità per migliorare un processo"
+
+msgid "Fix the next issue you discover without asking permission (inform after)"
+msgstr "Risolva il prossimo problema che individua senza chiedere autorizzazione (e informi in seguito)"
+
+msgid "Document your decision-making process for others to learn from"
+msgstr "Documenti il Suo processo decisionale affinché gli altri possano trarne insegnamento"
+
+msgid "Learn more about the Performance Matrix"
+msgstr "Maggiori informazioni sulla matrice delle prestazioni"
+
+msgid "Question Format:"
+msgstr "Formato della domanda:"
+
+msgid "Rating scale (1-5):"
+msgstr "Scala di valutazione (1-5):"
+
+msgid "Rating scale: 1 to 5"
+msgstr ""
+
+msgid "Single choice (select one):"
+msgstr "Scelta singola (selezioni un'opzione):"
+
+msgid "Multiple choice (select all that apply):"
+msgstr "Scelta multipla (selezioni tutte le opzioni pertinenti):"
+
+#, python-format
+msgid "Scale: %(min)s to %(max)s"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s response"
+msgid_plural "%(counter)s responses"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(counter)s answer could not be matched to an option, because the question changed after it was given."
+msgid_plural "%(counter)s answers could not be matched to an option, because the question changed after they were given."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Strong consensus: %(pct)s%% positive (%(positive)s of %(total)s respondents)"
+msgstr ""
+
+#, python-format
+msgid "Mostly positive: %(pct)s%% (%(positive)s of %(total)s respondents)"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s respondent"
+msgid_plural "%(counter)s respondents"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "weighted avg"
+msgstr "media ponderata"
+
+#, python-format
+msgid "%(selected)s of %(counter)s respondent"
+msgid_plural "%(selected)s of %(counter)s respondents"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Based on feedback from peers, managers, and direct reports"
+msgstr "Sulla base dei feedback di colleghi, responsabili e collaboratori diretti"
+
+#, python-format
+msgid "Compared to %(date)s"
+msgstr ""
+
+msgid "Self-assessment:"
+msgstr "Autovalutazione:"
+
+msgid "Your self-assessment:"
+msgstr "La Sua autovalutazione:"
+
+#, python-format
+msgid "(+%(gap)s compared to others)"
+msgstr ""
+
+#, python-format
+msgid "(%(gap)s compared to others)"
+msgstr ""
+
+msgid "Blind Spot: Better Than Self-Perception"
+msgstr ""
+
+msgid "Blind Spot: You're Better Than You Think"
+msgstr ""
+
+msgid "Calibration Opportunity"
+msgstr "Opportunità di riallineamento"
+
+msgctxt "severity"
+msgid "high"
+msgstr ""
+
+msgctxt "severity"
+msgid "moderate"
+msgstr ""
+
+msgid "Self-assessment"
+msgstr "Autovalutazione"
+
+msgid "You see yourself"
+msgstr "Come si vede"
+
+msgid "Others' assessment"
+msgstr "Valutazione degli altri"
+
+msgid "Others see you"
+msgstr "Come La vedono gli altri"
+
+msgid "Action:"
+msgstr "Azione:"
+
+msgid "Consider acknowledging your strengths more openly. Your team already recognizes your capabilities."
+msgstr "Valuti di riconoscere più apertamente i Suoi punti di forza. Il Suo team ne riconosce già le capacità."
+
+msgid "Seek specific feedback on areas where you rated yourself highly to understand others' perspectives."
+msgstr "Richieda feedback specifici sugli ambiti in cui si è valutato positivamente, per comprendere il punto di vista degli altri."
+
+msgid "Key Strengths"
+msgstr "Punti di forza principali"
+
+msgid "Others' avg:"
+msgstr "Media degli altri:"
+
+msgid "Self:"
+msgstr "Autovalutazione:"
+
+msgid "Gap:"
+msgstr "Scostamento:"
+
+msgid "Development Opportunities"
+msgstr "Opportunità di sviluppo"
+
+msgid "high priority"
+msgstr ""
+
+msgid "medium priority"
+msgstr ""
+
+msgid "Visual comparison of performance across all competency areas"
+msgstr "Confronto visivo delle prestazioni in tutte le aree di competenza"
+
+msgid "Visual comparison of your performance across all competency areas"
+msgstr "Confronto visivo delle Sue prestazioni in tutte le aree di competenza"
+
+msgid "How self-assessment compares to others' feedback (sorted by gap size)"
+msgstr "Confronto tra autovalutazione e feedback altrui (ordinato per entità dello scostamento)"
+
+msgid "How your self-assessment compares to others' feedback (sorted by gap size)"
+msgstr "Confronto tra la Sua autovalutazione e il feedback altrui (ordinato per entità dello scostamento)"
+
+#, python-format
+msgid "Comparison vs %(count)s peers"
+msgstr ""
+
+#, python-format
+msgid "Top performer - %(percentile)sth percentile"
+msgstr "Tra i migliori: %(percentile)s° percentile"
+
+msgid "Org median:"
+msgstr ""
+
+msgid "This score:"
+msgstr ""
+
+msgid "Above median"
+msgstr "Sopra la mediana"
+
+msgid "Below median"
+msgstr "Sotto la mediana"
+
+msgid "Strong performance"
+msgstr "Prestazioni elevate"
+
+#, python-format
+msgid "Top %(top)s%% in organization"
+msgstr ""
+
+#, python-format
+msgid "You scored %(score)s/5.0, higher than %(percentile)s%% of peers"
+msgstr ""
+
+msgid "Privacy Notice:"
+msgstr "Informativa sulla privacy:"
+
+msgid "All responses are anonymous and aggregated. Individual reviewers cannot be identified."
+msgstr ""
+
+#, python-format
+msgid "Results are only shown when there are at least %(counter)s response per category to protect anonymity."
+msgid_plural "Results are only shown when there are at least %(counter)s responses per category to protect anonymity."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Detailed Feedback"
+msgstr "Feedback dettagliato"
+
+msgid "If you have questions about this report, please contact your manager or HR department."
+msgstr "Per eventuali domande su questo report, contatti il Suo responsabile o l'ufficio Risorse umane."
+
+msgid "Access Denied"
+msgstr "Accesso negato"
+
+msgid "You don't have permission to view this report. Please check your email for the correct access link, or contact your administrator."
+msgstr "Non dispone dell'autorizzazione per visualizzare questo report. Verifichi di aver ricevuto il link di accesso corretto via e-mail oppure contatti l'amministratore."
+
+msgid "Go Home"
+msgstr "Torni alla pagina iniziale"
+
+msgid "Feedback Report"
+msgstr "Report di feedback"
+
+msgid "360 Feedback Report"
+msgstr "Report di feedback a 360°"
+
+msgid "Toggle Theme"
+msgstr "Cambi tema"
+
+msgid "Review Date"
+msgstr "Data della valutazione"
+
+msgid "Total Responses"
+msgstr "Risposte totali"
+
+msgid "Overall Rating"
+msgstr "Valutazione complessiva"
+
+msgid "Report Not Ready"
+msgstr "Report non disponibile"
+
+msgid "Your 360 feedback report is not yet available. This could be because:"
+msgstr "Il Suo report di feedback a 360° non è ancora disponibile. Le cause potrebbero essere:"
+
+msgid "The review cycle is still active and waiting for responses"
+msgstr "Il ciclo di valutazione è ancora attivo e in attesa di risposte"
+
+msgid "The report has not been generated yet"
+msgstr "Il report non è ancora stato generato"
+
+msgid "There are not enough responses to generate a report"
+msgstr "Non ci sono ancora abbastanza risposte per generare un report"
+
+msgid "Please check back later or contact your administrator for more information."
+msgstr "Riprovi più tardi oppure contatti l'amministratore per ulteriori informazioni."
+
+msgid "Unable to Claim Token"
+msgstr "Impossibile acquisire il token"
+
+msgid "Unable to Access Review"
+msgstr "Impossibile accedere alla valutazione"
+
+msgid "If you believe this is an error, please contact your administrator."
+msgstr "Se ritiene che si tratti di un errore, contatti l'amministratore."
+
+msgid "Loading Review..."
+msgstr "Caricamento della valutazione..."
+
+msgid "Checking for existing review..."
+msgstr "Verifica di una valutazione esistente..."
+
+msgid "Please wait while we locate your feedback session."
+msgstr "Attenda mentre individuiamo la Sua sessione di feedback."
+
+#, python-format
+msgid "Thank you for completing the 360 degree feedback for %(name)s."
+msgstr ""
+
+msgid "Your anonymous feedback has been recorded and will contribute to their performance review."
+msgstr "Il Suo feedback anonimo è stato registrato e contribuirà alla valutazione delle prestazioni della persona interessata."
+
+msgid "You may now close this window."
+msgstr "Ora può chiudere questa finestra."
+
+msgid "Feedback"
+msgstr ""
+
+msgid "360 Feedback"
+msgstr "Feedback a 360°"
+
+#, python-format
+msgid "Step 1 of %(total)s"
+msgstr ""
+
+msgid "Did not observe"
+msgstr ""
+
+msgid "Share your thoughts..."
+msgstr "Condivida le Sue osservazioni..."
+
+msgid "Select an option"
+msgstr "Selezioni un'opzione"
+
+msgid "Submit Feedback"
+msgstr "Invii il feedback"
+
+msgid "Create Admin Account - Blik Setup"
+msgstr ""
+
+msgid "Create your administrator account"
+msgstr "Crei il Suo account amministratore"
+
+msgid "Create Administrator Account"
+msgstr "Crei un account amministratore"
+
+msgid "This account will have full access to configure and manage your Blik instance."
+msgstr "Questo account avrà accesso completo per configurare e gestire la Sua istanza Blik."
+
+msgid "Create Account & Continue"
+msgstr "Crei un account e continui"
+
+msgid "Setup Wizard - Blik"
+msgstr ""
+
+msgid "Blik Setup Wizard"
+msgstr "Procedura guidata di configurazione di Blik"
+
+msgid "Let's get your 360 feedback system ready"
+msgstr "Prepariamo il Suo sistema di feedback a 360°"
+
+#, python-format
+msgid "Step %(step)s of %(total_steps)s"
+msgstr ""
+
+msgid "Setup Complete - Blik"
+msgstr ""
+
+msgid "Your Blik instance is ready to use!"
+msgstr "La Sua istanza Blik è pronta per l'uso!"
+
+msgid "Setup Complete!"
+msgstr "Configurazione completata!"
+
+msgid "Congratulations! Your Blik 360-degree feedback system is now configured and ready to use."
+msgstr "Congratulazioni! Il Suo sistema Blik di feedback a 360° è configurato e pronto all'uso."
+
+msgid "Configuration Summary"
+msgstr "Riepilogo della configurazione"
+
+msgid "Administrator:"
+msgstr "Amministratore:"
+
+msgid "Email Configured:"
+msgstr "E-mail configurata:"
+
+#, python-format
+msgid "Yes (%(host)s)"
+msgstr ""
+
+msgid "Not yet configured"
+msgstr "Non ancora configurato"
+
+msgid "Next Steps"
+msgstr "Passaggi successivi"
+
+msgid "Access admin dashboard:"
+msgstr "Acceda alla dashboard di amministrazione:"
+
+#, python-format
+msgid "<a href=\"%(dashboard_url)s\" target=\"_blank\">Go to Admin Dashboard</a> to manage reviewees, questionnaires, and review cycles"
+msgstr ""
+
+msgid "Create your first reviewee:"
+msgstr "Crei la prima scheda di una persona da valutare:"
+
+msgid "Add people who will receive 360-degree feedback from the dashboard"
+msgstr "Aggiunga dalla dashboard le persone che riceveranno feedback a 360°"
+
+msgid "Start a review cycle:"
+msgstr "Avvii un ciclo di valutazione:"
+
+msgid "Create a new review cycle and send invitations to reviewers"
+msgstr "Crei un nuovo ciclo di valutazione e invii gli inviti ai valutatori"
+
+msgid "Want to explore first?"
+msgstr "Desidera prima esplorare il sistema?"
+
+msgid "Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens."
+msgstr "Generi dati di prova per esplorare il sistema senza modificare i dati di produzione. Verranno create persone di esempio da valutare e un ciclo di valutazione con i relativi token."
+
+msgid "Generate Test Data"
+msgstr "Generi dati di prova"
+
+msgid "Go to Admin Dashboard"
+msgstr "Vada alla dashboard di amministrazione"
+
+#, python-format
+msgid "Need help? Check out the <a href=\"%(docs_url)s\">documentation</a> or <a href=\"%(issues_url)s\">report an issue</a>."
+msgstr ""
+
+msgid "Email Configuration - Blik Setup"
+msgstr ""
+
+msgid "Configure email settings for sending invitations"
+msgstr "Configuri le impostazioni e-mail per l'invio degli inviti"
+
+msgid "Email Configuration"
+msgstr "Configurazione e-mail"
+
+msgid "Choose how Blik will send emails for review invitations and notifications."
+msgstr "Scelga come Blik invierà le e-mail di invito alla valutazione e le notifiche."
+
+msgid "Recommended: Use Blik's Email Service"
+msgstr "Consigliato: utilizzi il servizio e-mail di Blik"
+
+msgid "As a hosted customer, you can use Blik's managed email service. All emails will be sent reliably with no configuration needed. You can always switch to your own SMTP server later in settings."
+msgstr ""
+
+msgid "Use Blik's Email Service (Recommended)"
+msgstr "Utilizzi il servizio e-mail di Blik (consigliato)"
+
+msgid "— or configure your own SMTP server below —"
+msgstr ""
+
+msgid "Complete Setup"
+msgstr "Completi la configurazione"
+
+msgid "Organization Setup - Blik Setup"
+msgstr ""
+
+msgid "Configure your organization details"
+msgstr "Configuri i dati della Sua organizzazione"
+
+msgid "Organization Details"
+msgstr "Dati dell'organizzazione"
+
+msgid "Tell us about your organization. This information will be used in emails and reports."
+msgstr "Ci descriva la Sua organizzazione. Queste informazioni verranno utilizzate nelle e-mail e nei report."
+
+msgid "Your organization's name (e.g., \"Acme Corporation\")"
+msgstr ""
+
+msgid "Continue to Email Setup"
+msgstr "Continui alla configurazione e-mail"
+
+msgid "Create Organization"
+msgstr ""
+
+msgid "Create a new organization without a payment plan for testing"
+msgstr ""
+
+msgid "New Organization Details"
+msgstr ""
+
+msgid "Organization Name"
+msgstr ""
+
+msgid "e.g. Acme Corp"
+msgstr ""
+
+msgid "The name of the organization to create"
+msgstr ""
+
+msgid "Admin Email"
+msgstr ""
+
+msgid "An invitation will be sent to this email address. The user will be set up as the organization administrator."
+msgstr ""
+
+msgid "Create Organization & Send Invitation"
+msgstr ""
+
+msgid "Recent Organizations"
+msgstr ""
+
+msgctxt "organization status"
+msgid "Active"
+msgstr ""
+
+msgctxt "organization status"
+msgid "Inactive"
+msgstr ""

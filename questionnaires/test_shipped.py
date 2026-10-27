@@ -184,9 +184,12 @@ class TemplateCatalogueTest(TestCase):
 class ShippedCatalogTest(TestCase):
     """The compiled catalogues in locale/, as the upgrade reads them."""
 
-    def test_the_upgrade_translates_every_text_of_every_template(self):
+    def test_the_upgrade_translates_every_text_of_every_template_into_german(self):
         call_command('upgrade', stdout=StringIO())
 
         for template in Questionnaire.objects.templates():
-            for state in get_language_states(template):
+            states = {state.code: state for state in get_language_states(template)}
+            # French and Italian currently ship interface translations only.
+            for language in ('de', 'de-informal'):
+                state = states[language]
                 self.assertEqual((state.missing, state.outdated), (0, 0), f'{template.name}, {state.code}')

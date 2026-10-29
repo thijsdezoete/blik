@@ -192,6 +192,8 @@ def delete_organization(organization):
     # The cascade stops at UserProfile, so the users go separately. Otherwise their emails stay taken.
     user_ids = list(organization.users.values_list('user_id', flat=True))
     with transaction.atomic():
+        # Cycles protect their questionnaire, so they go before the organization's questionnaires
+        ReviewCycle.objects.filter(reviewee__organization=organization).delete()
         organization.delete()
         User.objects.filter(pk__in=user_ids).delete()
 

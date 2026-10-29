@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone as dt_timezone
 
 import stripe
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import IntegrityError, transaction
 from django.db.models import Q
@@ -18,6 +17,7 @@ from django.utils import translation
 from django.utils.translation import gettext as _
 
 from core.languages import user_language
+from core.url import get_absolute_url
 
 from accounts.models import UserProfile
 from accounts.permissions import assign_organization_admin
@@ -188,7 +188,7 @@ def _send_emails(fulfilment, account):
                     subject=_('You already have a Blik360 account'),
                     message=render_to_string('emails/existing_account.txt', {
                         'user': account.user,
-                        'site_url': settings.SITE_URL,
+                        'login_url': get_absolute_url('login'),
                     }),
                     recipient_list=[account.user.email],
                 )

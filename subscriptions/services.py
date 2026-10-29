@@ -46,8 +46,12 @@ def cancel_subscription_immediately(subscription):
     if not subscription.stripe_subscription_id:
         raise ValueError("No Stripe subscription ID found")
 
-    # Cancel immediately in Stripe
-    stripe.Subscription.delete(subscription.stripe_subscription_id)
+    # Cancel immediately in Stripe. A subscription Stripe no longer has is cancelled already.
+    try:
+        stripe.Subscription.delete(subscription.stripe_subscription_id)
+    except stripe.InvalidRequestError as e:
+        if e.code != 'resource_missing':
+            raise
 
     # Update local subscription
     subscription.status = 'canceled'

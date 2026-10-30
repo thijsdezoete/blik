@@ -25,6 +25,10 @@ PRICING = {
     "plan_ent_annual": "2388",
     "trial_days": 14,
 }
+# Worked example for the Single Round packs: 40 employees = 4 packs = €76.
+PRICING["plan_single_example"] = 40
+PRICING["plan_single_example_packs"] = -(-PRICING["plan_single_example"] // PRICING["plan_single_max"])
+PRICING["plan_single_example_total"] = str(PRICING["plan_single_example_packs"] * int(PRICING["plan_single_price"]))
 
 def _get_api_path_by_name(url_name):
     """

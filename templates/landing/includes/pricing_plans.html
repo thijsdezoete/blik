@@ -23,9 +23,10 @@
         <div class="featured-badge">No subscription</div>
         <h3>Single Round</h3>
         <div class="price">€{{ plan_single_price }}</div>
-        <p class="price-desc">once</p>
+        <p class="price-desc">per {{ plan_single_max }} employees, once</p>
         <ul class="pricing-features">
-            <li>Up to {{ plan_single_max }} employees</li>
+            <li>{{ plan_single_max }} employees per pack</li>
+            <li>More people? Buy more packs</li>
             <li>All questionnaires and reports</li>
             <li>Free, unlimited reviewers</li>
             <li>Hosted in EU, nothing to install</li>

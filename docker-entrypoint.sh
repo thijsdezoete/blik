@@ -82,11 +82,16 @@ fi
 echo "========================================="
 echo ""
 
-# Set up cron for daily tasks (send_cycle_reminders)
-# Pass environment variables to cron by dumping them to a file
-env | grep -E '^(DATABASE_|SECRET_KEY|SITE_|ALLOWED_HOSTS|DEBUG|EMAIL_|ENCRYPTION_KEY|DJANGO_|PYTHONUNBUFFERED|PATH)' > /app/.env.cron 2>/dev/null || true
-echo "0 9 * * * cd /app && export \$(cat /app/.env.cron | xargs) && python manage.py send_cycle_reminders >> /var/log/cron.log 2>&1" | crontab -
+# Set up cron for the daily email tasks
+# Cron starts jobs with an empty environment, so pass the whole container environment, quoted
+export -p | sed 's/^declare -x /export /' > /app/.env.cron
+chmod 600 /app/.env.cron
+crontab - <<'EOF'
+0 9 * * * . /app/.env.cron && cd /app && python manage.py send_cycle_reminders >> /var/log/cron.log 2>&1
+5 9 * * * . /app/.env.cron && cd /app && python manage.py send_trial_reminders >> /var/log/cron.log 2>&1
+10 9 * * * . /app/.env.cron && cd /app && python manage.py send_lifecycle_emails >> /var/log/cron.log 2>&1
+EOF
 service cron start
-echo "Cron started (send_cycle_reminders daily at 09:00 UTC)"
+echo "Cron started (cycle reminders, trial reminders and lifecycle emails daily from 09:00 UTC)"
 
 exec "$@"

@@ -1,4 +1,6 @@
 """Shared builders for subscriptions tests."""
+from unittest.mock import patch
+
 from django.utils import timezone
 
 from .models import Plan, RoundPurchase, Subscription
@@ -51,3 +53,11 @@ STRIPE_SUBSCRIPTION = {
     'items': {'data': [{'current_period_start': 1_700_000_000,
                         'current_period_end': 1_701_209_600}]},
 }
+
+
+def patch_line_items(test, quantity=1):
+    """Stripe's line items for single-round sessions, for the rest of the test."""
+    patcher = patch('subscriptions.fulfilment.stripe.checkout.Session.list_line_items',
+                    return_value={'data': [{'quantity': quantity}]})
+    test.line_items = patcher.start()
+    test.addCleanup(patcher.stop)

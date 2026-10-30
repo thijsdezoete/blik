@@ -7,7 +7,7 @@
 <div class="page-header">
     <div>
         <h1>{% trans 'Create Organization' %}</h1>
-        <p class="page-description">{% trans 'Create a new organization without a payment plan for testing' %}</p>
+        <p class="page-description">{% trans 'Create an organization without a payment, for testing or for a customer you invoice yourself.' %}</p>
     </div>
 </div>
 
@@ -34,7 +34,7 @@
                     <small class="form-text">{% trans 'The name of the organization to create' %}</small>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0;">
+                <div class="form-group"{% if not billing_enabled %} style="margin-bottom: 0;"{% endif %}>
                     <label class="form-label" for="admin_email">{% trans 'Admin Email' %}</label>
                     <input
                         type="email"
@@ -46,6 +46,14 @@
                     >
                     <small class="form-text">{% trans 'An invitation will be sent to this email address. The user will be set up as the organization administrator.' %}</small>
                 </div>
+
+                {% if billing_enabled %}
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="credits">{% trans 'Review credits' %}</label>
+                    <input type="number" id="credits" name="credits" class="form-control" min="0" max="{{ max_credits }}" step="1" placeholder="0" style="max-width: 10rem; display: block;">
+                    <small class="form-text">{% trans 'Leave empty for an account without limits. With credits, the account works like a Single Round customer: one credit is one review cycle, and the admin can buy more on the Billing page.' %}</small>
+                </div>
+                {% endif %}
             </div>
         </div>
 
@@ -61,18 +69,19 @@
             <h2 class="card-title">{% trans 'Recent Organizations' %}</h2>
         </div>
         <div class="card-body">
-            <div class="table-container">
-                <table class="data-table">
+            <div class="table-wrapper">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>{% trans 'Name' %}</th>
                             <th>{% trans 'Email' %}</th>
                             <th>{% trans 'Active' context 'organization status' %}</th>
+                            {% if billing_enabled %}<th>{% trans 'Billing' %}</th>{% endif %}
                             <th>{% trans 'Created' %}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for org in recent_orgs %}
+                        {% for org, billing in recent_orgs %}
                         <tr>
                             <td>{{ org.name }}</td>
                             <td>{{ org.email }}</td>
@@ -80,9 +89,10 @@
                                 {% if org.is_active %}
                                 <span class="badge badge-success">{% trans 'Active' context 'organization status' %}</span>
                                 {% else %}
-                                <span class="badge badge-danger">{% trans 'Inactive' context 'organization status' %}</span>
+                                <span class="badge badge-secondary">{% trans 'Inactive' context 'organization status' %}</span>
                                 {% endif %}
                             </td>
+                            {% if billing_enabled %}<td>{{ billing }}</td>{% endif %}
                             <td>{{ org.created_at|date:"Y-m-d H:i" }}</td>
                         </tr>
                         {% endfor %}
@@ -94,27 +104,4 @@
     {% endif %}
 </div>
 
-<style>
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 0.25rem;
-}
-
-.badge-success {
-    background-color: #10b981;
-    color: white;
-}
-
-.badge-danger {
-    background-color: #ef4444;
-    color: white;
-}
-</style>
 {% endblock %}

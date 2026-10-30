@@ -77,6 +77,7 @@ from subscriptions.models import Subscription
 from subscriptions.utils import (
     NoCycleCredits,
     billing_context,
+    can_see_billing,
     check_employee_limit,
     cycle_credits,
     get_subscription_status,
@@ -1827,6 +1828,8 @@ def review_cycle_create(request):
 
         except NoCycleCredits as e:
             messages.error(request, str(e))
+            if can_see_billing(org, request.user):
+                return redirect(f"{reverse('billing')}?reviews={e.needed - e.available}")
             return redirect('review_cycle_create')
         except Exception as e:
             messages.error(request, _('Error creating review cycle: %(error)s') % {'error': str(e)})
@@ -2473,15 +2476,6 @@ def settings_view(request):
         except Exception as e:
             messages.error(request, _('Error updating settings: %(error)s') % {'error': str(e)})
 
-    # Get subscription information if exists
-    subscription = None
-    try:
-        subscription = organization.subscription
-    except (Subscription.DoesNotExist, AttributeError):
-        pass
-    except Exception:
-        logger.exception("Error getting subscription for %s", organization.name)
-
     # Check if current user has organization admin permission
     is_org_admin = request.user.has_perm('accounts.can_manage_organization')
 
@@ -2499,7 +2493,6 @@ def settings_view(request):
 
     context = {
         'organization': organization,
-        'subscription': subscription,
         'is_org_admin': is_org_admin,
         'admin_count': admin_count,
         'is_last_admin': is_org_admin and admin_count == 1,

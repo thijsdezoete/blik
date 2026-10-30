@@ -17,7 +17,8 @@ from subscriptions.models import (
     CheckoutFulfilment, OneTimeLoginToken, Plan, RoundPurchase, Subscription,
 )
 from subscriptions.testing import (
-    STRIPE_SUBSCRIPTION, checkout_session, grant, subscribe, subscription_session,
+    STRIPE_SUBSCRIPTION, checkout_session, grant, patch_line_items, subscribe,
+    subscription_session,
 )
 from subscriptions.utils import check_employee_limit, cycle_credits, entitlement
 
@@ -35,6 +36,7 @@ class FulfilmentTestCase(TestCase):
         self.send_email = patcher.start()
         self.addCleanup(patcher.stop)
         Plan.objects.create(name='EU SaaS', plan_type='saas', price_monthly=49, max_employees=50)
+        patch_line_items(self)
 
     def existing_account(self, email='buyer@example.com'):
         org = OrganizationFactory()
@@ -101,11 +103,18 @@ class ResolveAccountTests(FulfilmentTestCase):
 
     def test_in_app_subscription_for_a_subscribed_organization_is_rejected(self):
         org, user = self.existing_account('admin@example.com')
-        subscribe(org, status='canceled')
+        subscribe(org, status='past_due')
         session = subscription_session(client_reference_id=str(org.pk),
                                        metadata={'plan_type': 'saas', 'user_id': str(user.pk)})
         self.assertEqual(resolve_checkout_account(session).rejection,
                          'rejected_duplicate_subscription')
+
+    def test_in_app_subscription_after_a_canceled_one_is_accepted(self):
+        org, user = self.existing_account('admin@example.com')
+        subscribe(org, status='canceled')
+        session = subscription_session(client_reference_id=str(org.pk),
+                                       metadata={'plan_type': 'saas', 'user_id': str(user.pk)})
+        self.assertIsNone(resolve_checkout_account(session).rejection)
 
     def username_only_match(self):
         org = OrganizationFactory()
@@ -167,6 +176,17 @@ class FulfilRoundTests(FulfilmentTestCase):
         self.assertEqual(RoundPurchase.objects.count(), 1)
         self.assertEqual(cycle_credits(first.organization), 10)
         self.assertEqual(self.send_email.call_count, 1)
+
+    def test_each_pack_bought_grants_ten_credits(self):
+        patch_line_items(self, quantity=4)
+        fulfilment = fulfil_checkout(checkout_session())
+        self.assertEqual(cycle_credits(fulfilment.organization), 40)
+
+    def test_the_first_purchase_remembers_the_stripe_customer(self):
+        fulfilment = fulfil_checkout(checkout_session(customer='cus_first'))
+        fulfil_checkout(checkout_session(id='cs_2', customer='cus_other'))
+        fulfilment.organization.refresh_from_db()
+        self.assertEqual(fulfilment.organization.stripe_customer_id, 'cus_first')
 
     def test_unpaid_session_writes_nothing(self):
         self.assertIsNone(fulfil_checkout(checkout_session(payment_status='unpaid')))
@@ -337,6 +357,21 @@ class FulfilSubscriptionTests(FulfilmentTestCase):
         original.refresh_from_db()
         self.assertEqual(original.stripe_subscription_id, f'sub_org{org.pk}')
         self.assertEqual(Subscription.objects.count(), 1)
+
+    def test_a_canceled_subscriber_subscribing_again_reuses_its_row(self):
+        org, user = self.existing_account('admin@example.com')
+        old = subscribe(org, status='canceled')
+        Subscription.objects.filter(pk=old.pk).update(canceled_at=old.current_period_end, cancel_at_period_end=True)
+        session = subscription_session(client_reference_id=str(org.pk),
+                                       metadata={'plan_type': 'saas', 'user_id': str(user.pk)})
+        with patch(RETRIEVE, return_value=stripe_subscription(status='active')):
+            fulfilment = fulfil_checkout(session)
+        self.assertEqual(fulfilment.outcome, 'fulfilled')
+        subscription = Subscription.objects.get(organization=org)
+        self.assertEqual(subscription.pk, old.pk)
+        self.assertEqual((subscription.stripe_subscription_id, subscription.status), ('sub_1', 'active'))
+        self.assertIsNone(subscription.canceled_at)
+        self.assertFalse(subscription.cancel_at_period_end)
 
     def test_reference_without_a_member_never_gives_the_organization_a_subscription(self):
         org, _ = self.existing_account('admin@example.com')

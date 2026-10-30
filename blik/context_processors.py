@@ -24,3 +24,21 @@ def stripe_settings(request):
             or settings.STRIPE_PRICE_ID_SINGLE
         ),
     }
+
+
+def billing(request):
+    """The billing nav link, and a banner while the subscription needs the admin's action."""
+    from subscriptions.models import Subscription
+    from subscriptions.utils import can_see_billing, entitlement
+
+    user = getattr(request, 'user', None)
+    organization = getattr(request, 'organization', None)
+    # ponytail: a few small queries on every dashboard page; cache per request if it ever shows up in profiles
+    if not (user and user.is_authenticated and can_see_billing(organization, user)):
+        return {}
+    unpaid = Subscription.objects.filter(organization=organization, status__in=('past_due', 'unpaid')).exists()
+    return {
+        'show_billing': True,
+        # A failed payment also counts as lapsed, so check it first: Stripe is still retrying.
+        'billing_problem': 'unpaid' if unpaid else 'lapsed' if entitlement(organization) == 'lapsed' else None,
+    }

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 19:54+0000\n"
+"POT-Creation-Date: 2026-10-30 13:55+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1357,6 +1357,13 @@ msgstr "Der Webhook „%(name)s“ wurde gelöscht."
 msgid "Error deleting webhook: %(error)s"
 msgstr "Fehler beim Löschen des Webhooks: %(error)s"
 
+#, python-format
+msgid "%(count)s credits left"
+msgstr "Noch %(count)s Feedbackrunden"
+
+msgid "Free, no limits"
+msgstr "Kostenlos, ohne Limit"
+
 msgid "You do not have permission to create organizations."
 msgstr "Keine Berechtigung, Organisationen zu erstellen."
 
@@ -1365,6 +1372,10 @@ msgstr "Der Name der Organisation ist erforderlich."
 
 msgid "Admin email is required."
 msgstr "Die Admin-E-Mail-Adresse ist erforderlich."
+
+#, python-format
+msgid "Review credits must be a number from 0 to %(max)s."
+msgstr "Feedbackrunden: eine Zahl zwischen 0 und %(max)s eingeben."
 
 #, python-format
 msgid "Organization \"%(name)s\" already exists."
@@ -1534,6 +1545,9 @@ msgstr "Der feedbacknehmenden Person automatisch eine E-Mail senden, sobald ihr 
 
 msgid "automatically send report email"
 msgstr "Berichts-E-Mail automatisch senden"
+
+msgid "Stripe customer ID"
+msgstr "Stripe-Kunden-ID"
 
 msgid "Allow new users to register for this organization"
 msgstr "Neuen Benutzer:innen die Registrierung für diese Organisation erlauben"
@@ -2966,9 +2980,6 @@ msgstr "Gekündigt"
 msgid "Unpaid"
 msgstr "Unbezahlt"
 
-msgid "Stripe customer ID"
-msgstr "Stripe-Kunden-ID"
-
 msgid "Stripe subscription ID"
 msgstr "Stripe-Abonnement-ID"
 
@@ -3053,8 +3064,29 @@ msgid "Login token for %(email)s"
 msgstr "Anmeldetoken für %(email)s"
 
 #, python-format
-msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy another round or start a subscription under Settings."
-msgstr "Dafür werden %(needed)s Feedbackrunde(n) benötigt, Ihr Guthaben reicht für %(available)s. Kaufen Sie ein weiteres Paket oder schließen Sie unter Einstellungen ein Abonnement ab."
+msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy more on the Billing page, or start a subscription there."
+msgstr "Dafür werden %(needed)s Feedbackrunde(n) benötigt, das Guthaben reicht für %(available)s. Weitere Pakete oder ein Abonnement gibt es auf der Seite Abrechnung."
+
+msgid "The card was declined: not enough funds."
+msgstr "Die Karte wurde abgelehnt: nicht genügend Deckung."
+
+msgid "The card has expired."
+msgstr "Die Karte ist abgelaufen."
+
+msgid "The card was declined by the bank."
+msgstr "Die Karte wurde von der Bank abgelehnt."
+
+msgid "The card was reported lost."
+msgstr "Die Karte wurde als verloren gemeldet."
+
+msgid "The card was reported stolen."
+msgstr "Die Karte wurde als gestohlen gemeldet."
+
+msgid "The security code (CVC) is wrong."
+msgstr "Der Sicherheitscode (CVC) ist falsch."
+
+msgid "The bank asks you to confirm the payment."
+msgstr "Die Bank verlangt eine Bestätigung der Zahlung."
 
 msgid "Your subscription is not active. Please update your payment information."
 msgstr "Ihr Abonnement ist nicht aktiv. Bitte aktualisieren Sie Ihre Zahlungsdaten."
@@ -3075,6 +3107,10 @@ msgstr "Nur Organisations-Admins können die Abrechnung verwalten."
 msgid "This organization already has a subscription."
 msgstr "Diese Organisation hat bereits ein Abonnement."
 
+#, python-format
+msgid "Enter a number of reviews from 1 to %(max)s."
+msgstr "Eine Anzahl Feedbackrunden zwischen 1 und %(max)s eingeben."
+
 msgid "Could not start checkout. Please try again."
 msgstr "Der Bezahlvorgang konnte nicht gestartet werden. Bitte erneut versuchen."
 
@@ -3092,6 +3128,19 @@ msgstr "Für diese E-Mail-Adresse gibt es bereits ein Konto. Das neue Abonnement
 
 msgid "This organization already has a subscription. The new one was cancelled and nothing was charged."
 msgstr "Diese Organisation hat bereits ein Abonnement. Das neue wurde storniert, es wurde nichts berechnet."
+
+#, python-format
+msgid "Your plan is now %(plan)s."
+msgstr "Der Tarif ist jetzt %(plan)s."
+
+msgid "Could not change the plan. Please try again, or contact us."
+msgstr "Der Tarif konnte nicht geändert werden. Bitte erneut versuchen oder Kontakt aufnehmen."
+
+msgid "There are no billing details yet. They are made with your first purchase."
+msgstr "Noch keine Rechnungsdaten vorhanden. Sie werden beim ersten Kauf angelegt."
+
+msgid "Could not open the billing portal. Please try again."
+msgstr "Das Abrechnungsportal konnte nicht geöffnet werden. Bitte erneut versuchen."
 
 msgid "Forgot Password - Blik 360 Feedback"
 msgstr "Passwort vergessen - Blik 360 Feedback"
@@ -3345,6 +3394,9 @@ msgstr "Team"
 msgid "Settings"
 msgstr "Einstellungen"
 
+msgid "Billing"
+msgstr "Abrechnung"
+
 msgid "Platform"
 msgstr "Plattform"
 
@@ -3366,6 +3418,241 @@ msgstr "Abmelden"
 
 msgid "Toggle theme"
 msgstr "Farbschema wechseln"
+
+msgid "Your subscription has ended. You cannot add reviewees or start review cycles."
+msgstr "Das Abonnement ist beendet. Neue Feedbacknehmende und Feedbackrunden sind nicht möglich."
+
+msgid "Your last payment failed. Update your payment method to keep your subscription."
+msgstr "Die letzte Zahlung ist fehlgeschlagen. Zahlungsmethode aktualisieren, um das Abonnement zu behalten."
+
+msgid "Go to Billing"
+msgstr "Zur Abrechnung"
+
+msgid "Your plan, payments and invoices"
+msgstr "Tarif, Zahlungen und Rechnungen"
+
+msgid "Live payment details are not available right now. Try again in a few minutes."
+msgstr "Aktuelle Zahlungsdaten sind gerade nicht verfügbar. Bitte in einigen Minuten erneut versuchen."
+
+#, python-format
+msgid "€%(price)s/month, excluding VAT"
+msgstr "%(price)s €/Monat zzgl. MwSt."
+
+#, python-format
+msgid "Your subscription ended on %(date)s. You can start a new one below."
+msgstr "Das Abonnement endete am %(date)s. Unten lässt sich ein neues starten."
+
+msgid "Your last payment failed."
+msgstr "Die letzte Zahlung ist fehlgeschlagen."
+
+#, python-format
+msgid "We try again on %(date)s."
+msgstr "Nächster Versuch am %(date)s."
+
+msgid "We do not try again. Update your payment method to pay the open invoice."
+msgstr "Es folgt kein weiterer Versuch. Zahlungsmethode aktualisieren, um die offene Rechnung zu bezahlen."
+
+msgid "Update payment method"
+msgstr "Zahlungsmethode aktualisieren"
+
+#, python-format
+msgid "Your subscription ends on %(date)s."
+msgstr "Das Abonnement endet am %(date)s."
+
+msgid "Reactivate subscription"
+msgstr "Abonnement wieder aktivieren"
+
+#, python-format
+msgid "Your trial ends on %(date)s."
+msgstr "Die Testphase endet am %(date)s."
+
+msgid "Then your first invoice is:"
+msgstr "Danach beträgt die erste Rechnung:"
+
+#, python-format
+msgid "Next invoice on %(date)s:"
+msgstr "Nächste Rechnung am %(date)s:"
+
+#, python-format
+msgid "Next invoice on %(date)s."
+msgstr "Nächste Rechnung am %(date)s."
+
+#, python-format
+msgid "%(brand)s card ending in %(last4)s, valid until %(month)s/%(year)s"
+msgstr "%(brand)s-Karte mit den Endziffern %(last4)s, gültig bis %(month)s/%(year)s"
+
+msgid "This card expires before your next invoice. Add a new card to avoid a failed payment."
+msgstr "Diese Karte läuft vor der nächsten Rechnung ab. Eine neue Karte hinterlegen, damit die Zahlung nicht fehlschlägt."
+
+msgid "No payment method on file."
+msgstr "Keine Zahlungsmethode hinterlegt."
+
+msgid "Change payment method"
+msgstr "Zahlungsmethode ändern"
+
+msgid "You pay per round. There is no subscription."
+msgstr "Bezahlung pro Paket, ohne Abonnement."
+
+msgid "Usage"
+msgstr "Verwendung"
+
+msgid "Active reviewees"
+msgstr "Aktive Feedbacknehmende"
+
+#, python-format
+msgid "%(count)s of %(max)s"
+msgstr "%(count)s von %(max)s"
+
+msgid "Review credits left"
+msgstr "Verbleibende Feedbackrunden"
+
+msgid "Not used while your subscription is active."
+msgstr "Wird bei aktivem Abonnement nicht verwendet."
+
+msgid "One credit is one reviewee with one questionnaire."
+msgstr "Eine Feedbackrunde ist eine feedbacknehmende Person mit einem Fragebogen."
+
+msgid "Plan"
+msgstr "Tarif"
+
+#, python-format
+msgid "Switch to %(name)s: €%(price)s/month, up to %(max)s reviewees"
+msgstr "Zu %(name)s wechseln: %(price)s €/Monat, bis zu %(max)s Feedbacknehmende"
+
+msgid "Start EU Hosted subscription"
+msgstr "Abonnement „EU Hosted“ starten"
+
+msgid "Start Enterprise subscription"
+msgstr "Abonnement „Enterprise“ starten"
+
+msgid "Buy review credits"
+msgstr "Feedbackrunden kaufen"
+
+#, python-format
+msgid "%(packs)s × €%(price)s per pack = €%(total)s, excluding VAT"
+msgstr "%(packs)s × %(price)s € pro Paket = %(total)s € zzgl. MwSt."
+
+msgid "How many reviews do you need?"
+msgstr "Wie viele Feedbackrunden werden benötigt?"
+
+#, python-format
+msgid "Credits come in packs of %(per_pack)s. One credit is one reviewee with one questionnaire. Credits do not expire."
+msgstr "Feedbackrunden gibt es in Paketen zu %(per_pack)s. Eine Feedbackrunde ist eine feedbacknehmende Person mit einem Fragebogen. Sie verfallen nicht."
+
+msgid "Buy credits"
+msgstr "Feedbackrunden kaufen"
+
+msgid "Invoices"
+msgstr "Rechnungen"
+
+msgid "Edit billing details"
+msgstr "Rechnungsdaten bearbeiten"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Number"
+msgstr "Nummer"
+
+msgid "Amount"
+msgstr "Betrag"
+
+msgid "Paid"
+msgstr "Bezahlt"
+
+msgid "Open"
+msgstr "Offen"
+
+msgid "Void"
+msgstr "Storniert"
+
+msgid "Not paid"
+msgstr "Nicht bezahlt"
+
+msgid "Pay"
+msgstr "Bezahlen"
+
+msgid "View"
+msgstr "Ansehen"
+
+msgid "No invoices yet."
+msgstr "Noch keine Rechnungen."
+
+msgid "Invoices are sent by Thijs de Zoete Holding BV, trading as Blik360, the Netherlands. Prices are excluding VAT."
+msgstr "Rechnungsstellerin ist die Thijs de Zoete Holding BV, handelnd als Blik360, Niederlande. Alle Preise zzgl. MwSt."
+
+#, python-format
+msgid "Companies in the Netherlands pay 21%% VAT."
+msgstr "Unternehmen in den Niederlanden zahlen 21 %% MwSt."
+
+msgid "Companies in another EU country with a valid VAT number: VAT reverse charged."
+msgstr "Unternehmen in einem anderen EU-Land mit gültiger USt-IdNr.: Steuerschuldnerschaft des Leistungsempfängers (Reverse Charge)."
+
+msgid "Companies outside the EU: no VAT."
+msgstr "Unternehmen außerhalb der EU: keine MwSt."
+
+msgid "To change the company name, address or VAT number on new invoices, use \"Edit billing details\"."
+msgstr "Firmenname, Adresse oder USt-IdNr. für neue Rechnungen lassen sich unter „Rechnungsdaten bearbeiten“ ändern."
+
+msgid "Cancel subscription"
+msgstr "Abonnement kündigen"
+
+msgid "What happens when I cancel?"
+msgstr "Was passiert bei einer Kündigung?"
+
+#, python-format
+msgid "You keep full access until %(date)s. You pay nothing more."
+msgstr "Der volle Zugriff bleibt bis zum %(date)s. Danach fallen keine Kosten mehr an."
+
+msgid "After that, you cannot add reviewees or start review cycles. Reports stay available."
+msgstr "Danach sind keine neuen Feedbacknehmenden und Feedbackrunden möglich. Berichte bleiben verfügbar."
+
+#, python-format
+msgid "%(days)s days after the end, we delete your data."
+msgstr "%(days)s Tage nach dem Ende werden alle Daten gelöscht."
+
+msgid "Export your data first"
+msgstr "Vorher die Daten exportieren"
+
+msgid "Questions?"
+msgstr "Fragen?"
+
+msgid "Send us an email about billing, invoices or your plan:"
+msgstr "Fragen zu Abrechnung, Rechnungen oder Tarif per E-Mail an:"
+
+msgid "Change plan"
+msgstr "Tarif ändern"
+
+#, python-format
+msgid "Switch to %(name)s"
+msgstr "Zu %(name)s wechseln"
+
+#, python-format
+msgid "You are on %(name)s now."
+msgstr "Aktueller Tarif: %(name)s."
+
+#, python-format
+msgid "€%(price)s/month, excluding VAT, for up to %(max)s active reviewees."
+msgstr "%(price)s €/Monat zzgl. MwSt., für bis zu %(max)s aktive Feedbacknehmende."
+
+#, python-format
+msgid "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewee first."
+msgid_plural "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewees first."
+msgstr[0] "Dieser Tarif erlaubt %(max)s aktive Feedbacknehmende. Vorher %(count)s feedbacknehmende Person deaktivieren."
+msgstr[1] "Dieser Tarif erlaubt %(max)s aktive Feedbacknehmende. Vorher %(count)s Feedbacknehmende deaktivieren."
+
+msgid "Go to Reviewees"
+msgstr "Zu den Feedbacknehmenden"
+
+#, python-format
+msgid "The change starts now. Your next invoice, on %(date)s, is"
+msgstr "Die Änderung gilt sofort. Die nächste Rechnung am %(date)s beträgt"
+
+msgid "It includes the price difference for the rest of this month."
+msgstr "Sie enthält die Preisdifferenz für den Rest des Monats."
+
+msgid "Back"
+msgstr "Zurück"
 
 msgid "Send Bulk Invitations"
 msgstr "Sammeleinladungen senden"
@@ -3437,9 +3724,6 @@ msgstr "Bewertung abgeben"
 msgid "Subscription & Limits"
 msgstr "Abonnement & Limits"
 
-msgid "Plan"
-msgstr "Tarif"
-
 #, python-format
 msgid "Renews %(renewal_date)s"
 msgstr "Verlängert sich am %(renewal_date)s"
@@ -3478,9 +3762,6 @@ msgstr "Fortschritt"
 
 msgid "Actions"
 msgstr "Aktionen"
-
-msgid "View"
-msgstr "Ansehen"
 
 msgid "Recent Review Cycles"
 msgstr "Neueste Feedbackrunden"
@@ -3820,14 +4101,12 @@ msgstr "Paket kaufen"
 msgid "Buy another round"
 msgstr "Weiteres Paket kaufen"
 
-msgid "Start EU Hosted subscription"
-msgstr "Abonnement „EU Hosted“ starten"
-
-msgid "Start Enterprise subscription"
-msgstr "Abonnement „Enterprise“ starten"
-
 msgid "Ask an organization administrator to buy another round."
 msgstr "Weitere Pakete können nur Organisations-Admins kaufen."
+
+#, python-format
+msgid "€%(amount)s"
+msgstr "%(amount)s €"
 
 msgid "Move section up"
 msgstr "Abschnitt nach oben verschieben"
@@ -3949,9 +4228,6 @@ msgstr "Dieser Fragebogen hat noch keine Abschnitte oder Fragen."
 
 msgid "Archived"
 msgstr "Archiviert"
-
-msgid "Usage"
-msgstr "Verwendung"
 
 msgid "The default choice when no other questionnaire is selected."
 msgstr "Die Standardauswahl, wenn kein anderer Fragebogen ausgewählt wird."
@@ -5541,40 +5817,8 @@ msgstr "Neue Benutzer:innen dürfen Feedbackrunden für andere anlegen"
 msgid "If disabled, new users can only create cycles for themselves"
 msgstr "Wenn deaktiviert, können neue Benutzer:innen nur Feedbackrunden für sich selbst anlegen"
 
-msgid "Subscription & Billing"
-msgstr "Abonnement & Abrechnung"
-
-#, python-format
-msgid "€%(price)s/month"
-msgstr "%(price)s €/Monat"
-
-msgid "Trial Ends"
-msgstr "Testphase endet"
-
-msgid "Max Employees"
-msgstr "Max. Beschäftigte"
-
-msgid "Current Period"
-msgstr "Aktueller Abrechnungszeitraum"
-
-msgid "Subscription Canceling:"
-msgstr "Abonnement wird gekündigt:"
-
-#, python-format
-msgid "Ends %(end_date)s"
-msgstr "Endet am %(end_date)s"
-
-msgid "Manage Billing"
-msgstr "Abrechnung verwalten"
-
-msgid "Review Rounds"
-msgstr "Feedbackrunden"
-
-msgid "Review cycles remaining"
-msgstr "Verbleibende Feedbackrunden"
-
-msgid "Not used while your subscription is active."
-msgstr "Wird bei aktivem Abonnement nicht verwendet."
+msgid "Your plan, payment method, invoices and review credits."
+msgstr "Tarif, Zahlungsmethode, Rechnungen und Feedbackrunden."
 
 msgid "Email (SMTP) Settings"
 msgstr "E-Mail-Einstellungen (SMTP)"
@@ -5676,26 +5920,6 @@ msgstr "Eine zuvor exportierte JSON-Datei hochladen, um Daten zu importieren."
 msgid "Import Data"
 msgstr "Daten importieren"
 
-msgid "Subscription"
-msgstr "Abonnement"
-
-#, python-format
-msgid "Scheduled to cancel on %(end_date)s."
-msgstr "Kündigung zum %(end_date)s vorgemerkt."
-
-msgid "Reactivate"
-msgstr "Reaktivieren"
-
-#, python-format
-msgid "Cancel subscription. Access until %(end_date)s."
-msgstr "Abonnement kündigen. Zugriff bis %(end_date)s."
-
-msgid "Cancel subscription? You'll retain access until end of billing period."
-msgstr "Abonnement kündigen? Der Zugriff bleibt bis zum Ende des Abrechnungszeitraums bestehen."
-
-msgid "Cancel Subscription"
-msgstr "Abonnement kündigen"
-
 msgid "Delete Account"
 msgstr "Konto löschen"
 
@@ -5790,9 +6014,6 @@ msgstr "Antworten werden unter Umständen übersprungen, wenn sich Fragen nicht 
 
 msgid "Reports attach to imported cycles, or create new cycles if importing separately"
 msgstr "Berichte werden importierten Feedbackrunden zugeordnet oder legen beim separaten Import neue Feedbackrunden an"
-
-msgid "Back"
-msgstr "Zurück"
 
 msgid "Confirm Import"
 msgstr "Import bestätigen"
@@ -7974,8 +8195,8 @@ msgstr "Weiter zur E-Mail-Einrichtung"
 msgid "Create Organization"
 msgstr "Organisation anlegen"
 
-msgid "Create a new organization without a payment plan for testing"
-msgstr "Neue Organisation ohne Bezahltarif zum Testen anlegen"
+msgid "Create an organization without a payment, for testing or for a customer you invoice yourself."
+msgstr "Organisation ohne Zahlung anlegen, zum Testen oder für Kunden mit eigener Rechnung."
 
 msgid "New Organization Details"
 msgstr "Angaben zur neuen Organisation"
@@ -7994,6 +8215,12 @@ msgstr "Admin-E-Mail"
 
 msgid "An invitation will be sent to this email address. The user will be set up as the organization administrator."
 msgstr "An diese E-Mail-Adresse wird eine Einladung gesendet. Die Person wird als Admin der Organisation eingerichtet."
+
+msgid "Review credits"
+msgstr "Feedbackrunden"
+
+msgid "Leave empty for an account without limits. With credits, the account works like a Single Round customer: one credit is one review cycle, and the admin can buy more on the Billing page."
+msgstr "Leer lassen für ein Konto ohne Limit. Mit Feedbackrunden funktioniert das Konto wie bei einer einmaligen Runde: eine Feedbackrunde ist eine feedbacknehmende Person mit einem Fragebogen, weitere sind auf der Seite Abrechnung erhältlich."
 
 msgid "Create Organization & Send Invitation"
 msgstr "Organisation anlegen & Einladung senden"

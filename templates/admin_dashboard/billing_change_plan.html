@@ -1,0 +1,41 @@
+{% extends "admin_dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Change plan' %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{% blocktrans trimmed with name=plan.name %}Switch to {{ name }}{% endblocktrans %}</h1>
+        <p class="page-description">{% blocktrans trimmed with name=subscription.plan.name %}You are on {{ name }} now.{% endblocktrans %}</p>
+    </div>
+</div>
+
+<div class="card" style="max-width: 640px;">
+    <div class="card-body" style="display: grid; gap: 1rem;">
+        <p style="margin: 0;">
+            {% blocktrans trimmed with price=plan.price_monthly max=plan.max_employees %}€{{ price }}/month, excluding VAT, for up to {{ max }} active reviewees.{% endblocktrans %}
+        </p>
+
+        {% if over_limit %}
+        <div class="alert alert-error" style="margin: 0;"><div>
+            {% blocktrans trimmed count count=over_limit with max=plan.max_employees %}This plan allows {{ max }} active reviewees. Deactivate {{ count }} reviewee first.{% plural %}This plan allows {{ max }} active reviewees. Deactivate {{ count }} reviewees first.{% endblocktrans %}
+            <a href="{% url 'reviewee_list' %}">{% trans 'Go to Reviewees' %}</a>
+        </div></div>
+        {% else %}
+        {% if next_invoice %}
+        <p style="margin: 0;">
+            {% blocktrans trimmed with date=next_invoice.date|date:'DATE_FORMAT' %}The change starts now. Your next invoice, on {{ date }}, is{% endblocktrans %}
+            <strong>{% include "admin_dashboard/partials/money.html" with money=next_invoice.total %}</strong>.
+            {% if subscription.status == 'active' %}{% trans 'It includes the price difference for the rest of this month.' %}{% endif %}
+        </p>
+        {% endif %}
+        <form method="post" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">{% blocktrans trimmed with name=plan.name %}Switch to {{ name }}{% endblocktrans %}</button>
+            <a href="{% url 'billing' %}" class="btn btn-secondary">{% trans 'Back' %}</a>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

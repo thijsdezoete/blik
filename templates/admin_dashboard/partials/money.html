@@ -1,0 +1,1 @@
+{% load i18n %}{% if money.currency == 'EUR' %}{% blocktrans trimmed with amount=money.amount|floatformat:2 %}€{{ amount }}{% endblocktrans %}{% else %}{{ money.currency }} {{ money.amount|floatformat:2 }}{% endif %}

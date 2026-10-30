@@ -86,3 +86,36 @@ def reactivate_subscription(subscription):
     emails.notify_change(before, subscription)
 
     return subscription
+
+
+def plan_change_items(subscription, plan):
+    """The subscription items that move it to `plan`, for both the preview and the change."""
+    from .utils import price_id_for
+    stripe_sub = stripe.Subscription.retrieve(subscription.stripe_subscription_id)
+    item = stripe_sub['items']['data'][0]
+    return [{'id': item['id'], 'price': price_id_for(plan.plan_type)}]
+
+
+def preview_plan_change(subscription, plan):
+    """Stripe's next invoice after moving to `plan`, with the price difference for this period."""
+    return stripe.Invoice.create_preview(
+        subscription=subscription.stripe_subscription_id,
+        subscription_details={'items': plan_change_items(subscription, plan),
+                              'proration_behavior': 'create_prorations'},
+    )
+
+
+def change_plan(subscription, plan):
+    """Move the subscription to `plan` now; the price difference goes on the next invoice."""
+    stripe.Subscription.modify(
+        subscription.stripe_subscription_id,
+        items=plan_change_items(subscription, plan),
+        proration_behavior='create_prorations',
+    )
+
+    # Update local subscription. The webhook then sees no change, so the email goes out here.
+    before = emails.snapshot(subscription)
+    subscription.plan = plan
+    subscription.save()
+    emails.notify_change(before, subscription)
+    return subscription

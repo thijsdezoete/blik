@@ -83,9 +83,14 @@ also moves them, so branches that touched the same catalogue conflict.
 `locale/de_Informal/`, only holds the texts that address the reader. For every other text it falls
 back to `de` (`core/languages.py`).
 
-- Where it sounds natural, write without addressing the reader, in the infinitive or passive:
-  "Alle Pflichtfragen beantworten", "Feedback absenden". Such a text needs no entry in
+- In the interface, where space is short, write without addressing the reader, in the infinitive
+  or passive: "Alle Pflichtfragen beantworten", "Feedback absenden". Such a text needs no entry in
   `de_Informal`.
+- Emails speak to one person, so they address the reader. Subjects, headings and running text say
+  *Sie* or *du*: "Ihr Bericht ist fertig", "Bitte ändern Sie dieses Passwort nach Ihrer ersten
+  Anmeldung." Only buttons and the steps of a checklist stay short and impersonal: "Bericht
+  öffnen". Keep a sentence impersonal where *Sie* could also mean "they": "Jeder Link lässt sich
+  mit mehreren Personen teilen. Feedbackgebende bleiben anonym."
 - A text that addresses the reader gets both forms:
 
   | `de` | `de_Informal` |
@@ -110,6 +115,8 @@ Use the same term throughout:
 | English | German | Notes |
 |---|---|---|
 | Review cycle, cycle | Feedbackrunde | |
+| Test cycle (on yourself) | Proberunde | not "Testrunde", which reads like part of the trial |
+| Trial | Testphase | |
 | Review (what a reviewer gives) | Feedback | neuter, plural Feedbacks |
 | Reviewee | feedbacknehmende Person | plural Feedbacknehmende |
 | Reviewer | feedbackgebende Person | plural Feedbackgebende |

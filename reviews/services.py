@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 from core.email import send_email
 from core.languages import recipient_language
 from core.url import get_absolute_url
+from notifications.log import send_logged
 from datetime import timedelta
 from django.db.models import F, Q
 from questionnaires.models import Question
@@ -424,7 +425,8 @@ def send_close_check_emails(dry_run=False):
                 html_message = render_to_string('emails/cycle_close_check.html', context)
                 text_message = render_to_string('emails/cycle_close_check.txt', context)
 
-                send_email(
+                send_logged(
+                    cycle.reviewee.organization, 'cycle_close_check',
                     subject=_('Check your feedback cycle: %(questionnaire)s') % {'questionnaire': questionnaire.name},
                     message=text_message,
                     recipient_list=[cycle.reviewee.email],

@@ -12,6 +12,7 @@ Usage:
 """
 from django.core.management.base import BaseCommand
 
+from notifications.log import record_run
 from subscriptions.emails import send_trial_reminders
 
 
@@ -36,6 +37,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Reminders due: {stats['eligible']}")
 
         if not dry_run:
+            record_run('send_trial_reminders', stats['sent'], stats['errors'])
             self.stdout.write(f"Reminders sent: {stats['sent']}")
 
         for error in stats['errors']:

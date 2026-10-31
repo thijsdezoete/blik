@@ -1,6 +1,7 @@
 """Account and organization management services."""
 import json
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext as _
@@ -188,7 +189,13 @@ def delete_organization(organization):
     # - ReviewCycles -> ReviewerTokens -> Responses
     # - Reports
     # - Subscription
-    organization.delete()
+    # The cascade stops at UserProfile, so the users go separately. Otherwise their emails stay taken.
+    user_ids = list(organization.users.values_list('user_id', flat=True))
+    with transaction.atomic():
+        # Cycles protect their questionnaire, so they go before the organization's questionnaires
+        ReviewCycle.objects.filter(reviewee__organization=organization).delete()
+        organization.delete()
+        User.objects.filter(pk__in=user_ids).delete()
 
     return True
 

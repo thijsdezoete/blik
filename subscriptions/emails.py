@@ -13,9 +13,9 @@ from django.utils.formats import date_format
 from django.utils.translation import gettext as _, ngettext
 
 from accounts.models import Reviewee, UserProfile
-from core.email import send_email
 from core.languages import recipient_language, user_language
 from core.url import get_absolute_url
+from notifications.log import send_logged
 from reviews.models import ReviewCycle, ReviewerToken
 from .utils import billing_enabled
 
@@ -68,7 +68,8 @@ def _send(subscription, template, subject, context, dates):
             for name, value in dates.items():
                 full_context[name] = date_format(timezone.localtime(value), 'DATE_FORMAT') if value else None
 
-            sent += send_email(
+            sent += send_logged(
+                organization, template,
                 subject=subject(full_context),
                 message=render_to_string(f'emails/{template}.txt', full_context),
                 recipient_list=[email],
@@ -316,3 +317,20 @@ def send_trial_reminders(dry_run=False, now=None):
         stats['sent'] += 1
 
     return stats
+
+
+def next_trial_reminder(subscription, now=None):
+    """When the next trial reminder is due, or None. The first send_trial_reminders run after that time sends it.
+
+    Follows send_trial_reminders: no reminder for a trial that is canceled at its end, and the 1-day
+    reminder replaces a 3-day reminder that is still unsent when a day or less is left.
+    """
+    now = now or timezone.now()
+    end = subscription.trial_end
+    if subscription.status != 'trialing' or subscription.cancel_at_period_end or not end or end <= now:
+        return None
+    if not subscription.trial_reminder_3_days_sent_at and end - now > timedelta(days=1):
+        return end - timedelta(days=3)
+    if not subscription.trial_reminder_1_day_sent_at:
+        return end - timedelta(days=1)
+    return None

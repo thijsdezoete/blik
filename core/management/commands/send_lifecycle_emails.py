@@ -12,6 +12,7 @@ Usage:
 from django.core.management.base import BaseCommand
 
 from notifications import lifecycle
+from notifications.log import record_run
 
 
 # (label, selector, sender). A selector returns the objects due today; sender(*object) sends one email.
@@ -40,6 +41,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING('DRY RUN -- no emails will be sent\n'))
 
         errors = []
+        total_sent = 0
         for label, select, send in EMAILS:
             due = select()
             sent = 0
@@ -51,7 +53,11 @@ class Command(BaseCommand):
                     except Exception as e:
                         errors.append(f'{label} for {args[0]!r}: {e}')
 
+            total_sent += sent
             self.stdout.write(f'{label}: {len(due)} due' + ('' if dry_run else f', {sent} sent'))
+
+        if not dry_run:
+            record_run('send_lifecycle_emails', total_sent, errors)
 
         for error in errors:
             self.stderr.write(self.style.ERROR(f'  {error}'))

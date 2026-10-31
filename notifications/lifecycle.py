@@ -18,7 +18,6 @@ from django.utils import timezone, translation
 from django.utils.translation import gettext as _
 
 from accounts.models import UserProfile
-from core.email import send_email
 from core.languages import user_language
 from core.models import Organization
 from core.url import get_absolute_url
@@ -26,6 +25,8 @@ from reports.models import Report
 from reports.services import self_vs_others_gap
 from reviews.models import ReviewCycle, ReviewerToken
 from reviews.services import reviewee_language
+
+from .log import send_logged
 from subscriptions.utils import entitlement
 
 from .models import SentEmail
@@ -172,7 +173,8 @@ def _once(kind, obj, send):
 
 def _send(template, subject, recipient, context, organization):
     context = {'site_name': settings.SITE_NAME, **context}
-    send_email(
+    send_logged(
+        organization, template,
         subject=subject,
         message=render_to_string(f'emails/{template}.txt', context),
         recipient_list=[recipient],

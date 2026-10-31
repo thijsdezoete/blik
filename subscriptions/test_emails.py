@@ -13,7 +13,8 @@ from subscriptions import services, views
 from reports.models import Report
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
 from subscriptions.emails import (
-    _usage, billing_recipients, change_email, next_step, send_cancellation_email, send_trial_reminders, snapshot,
+    _usage, billing_recipients, change_email, next_step, next_trial_reminder, send_cancellation_email,
+    send_trial_reminders, snapshot,
     trial_ending_subject, trial_ending_template,
 )
 from subscriptions.fulfilment import fulfil_checkout
@@ -157,12 +158,45 @@ class TrialReminderTests(SubscriptionEmailTestCase):
     def test_a_failed_send_is_not_recorded(self):
         self.ends_in(timedelta(days=2))
 
-        with patch('subscriptions.emails.send_email', side_effect=OSError('smtp down')):
+        with patch('notifications.log.send_email', side_effect=OSError('smtp down')):
             stats = send_trial_reminders(now=self.now)
 
         self.assertEqual((stats['sent'], len(stats['errors'])), (0, 1))
         self.subscription.refresh_from_db()
         self.assertIsNone(self.subscription.trial_reminder_3_days_sent_at)
+
+
+class NextTrialReminderTests(SubscriptionEmailTestCase):
+    ends_in = TrialReminderTests.ends_in
+
+    def setUp(self):
+        super().setUp()
+        self.now = timezone.now()
+
+    def test_three_days_before_the_end_then_one_day_before(self):
+        self.ends_in(timedelta(days=5))
+        self.assertEqual(next_trial_reminder(self.subscription, self.now), self.now + timedelta(days=2))
+
+        self.ends_in(timedelta(days=5), trial_reminder_3_days_sent_at=self.now)
+        self.assertEqual(next_trial_reminder(self.subscription, self.now), self.now + timedelta(days=4))
+
+    def test_the_one_day_reminder_replaces_an_unsent_three_day_one(self):
+        self.ends_in(timedelta(hours=20))
+        self.assertEqual(next_trial_reminder(self.subscription, self.now), self.now - timedelta(hours=4))
+
+    def test_none_when_both_went_out_or_nothing_will_be_charged(self):
+        self.ends_in(timedelta(hours=20), trial_reminder_1_day_sent_at=self.now)
+        self.assertIsNone(next_trial_reminder(self.subscription, self.now))
+
+        self.ends_in(timedelta(days=5), trial_reminder_1_day_sent_at=None, cancel_at_period_end=True)
+        self.assertIsNone(next_trial_reminder(self.subscription, self.now))
+
+    def test_the_reminder_goes_out_on_the_first_run_after_the_due_time(self):
+        self.ends_in(timedelta(days=5))
+        due = next_trial_reminder(self.subscription, self.now)
+
+        self.assertEqual(send_trial_reminders(now=due - timedelta(minutes=1))['sent'], 0)
+        self.assertEqual(send_trial_reminders(now=due + timedelta(minutes=1))['sent'], 1)
 
 
 class UsageTests(SubscriptionEmailTestCase):
@@ -332,7 +366,7 @@ class WebhookEmailTests(SubscriptionEmailTestCase):
         self.assertEqual(self.subscription.status, 'canceled')
 
     def test_a_failing_email_does_not_fail_the_webhook(self):
-        with patch('subscriptions.emails.send_email', side_effect=OSError('smtp down')):
+        with patch('notifications.log.send_email', side_effect=OSError('smtp down')):
             views.handle_subscription_updated(self.stripe_object(cancel_at_period_end=True))
 
         self.subscription.refresh_from_db()

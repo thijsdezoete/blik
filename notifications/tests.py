@@ -30,6 +30,11 @@ class SendLoggedTests(TestCase):
 
         self.assertEqual(EmailLog.objects.get().error, 'smtp down')
 
+    def test_the_log_goes_with_the_organization(self):
+        send_logged(self.org, 'welcome', **EMAIL)
+        self.org.delete()
+        self.assertFalse(EmailLog.objects.exists())
+
 
 class CronRunAdminTests(TestCase):
     def test_lists_only_runs_that_tried_to_send(self):

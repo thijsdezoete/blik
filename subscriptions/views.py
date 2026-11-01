@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.shortcuts import redirect, render
 from django.contrib import messages
+from django.db import transaction
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import gettext as _
@@ -23,6 +24,7 @@ from .services import change_plan, preview_plan_change
 from .utils import (
     CREDITS_PER_PACK, MAX_PACKS, SUPPORT_EMAIL, can_see_billing, cycle_credits,
     get_subscription_status, packs_for, price_id_for, purchased_credits, reviewees_over_limit,
+    stripe_customer_id,
 )
 from core.url import get_absolute_url
 
@@ -53,7 +55,7 @@ def _create_session(plan_type, *, base_url, cancel_url, organization=None, user=
     those settle later (bank debits), which is why the webhook also handles
     checkout.session.async_payment_succeeded.
     """
-    customer_id = organization.stripe_customer_id if organization is not None else ''
+    customer_id = stripe_customer_id(organization) if organization is not None else ''
     params = {
         'line_items': [{'price': price_id_for(plan_type), 'quantity': quantity}],
         'success_url': f'{base_url}/api/stripe/checkout-success/?session_id={{CHECKOUT_SESSION_ID}}',
@@ -228,17 +230,19 @@ def _plan_for(stripe_subscription):
 def handle_subscription_updated(stripe_subscription):
     """Update subscription status and plan, and email the customer about the change."""
     try:
-        subscription = Subscription.objects.get(
-            stripe_subscription_id=stripe_subscription['id']
-        )
-        before = emails.snapshot(subscription)
-        start, end = _period(stripe_subscription)
-        subscription.status = stripe_subscription['status']
-        subscription.current_period_start = _ts(start)
-        subscription.current_period_end = _ts(end)
-        subscription.cancel_at_period_end = stripe_subscription.get('cancel_at_period_end', False)
-        subscription.plan = _plan_for(stripe_subscription) or subscription.plan
-        subscription.save()
+        # Locked: a plan change in the app holds this row until it has saved the new plan (see change_plan).
+        with transaction.atomic():
+            subscription = Subscription.objects.select_for_update().get(
+                stripe_subscription_id=stripe_subscription['id']
+            )
+            before = emails.snapshot(subscription)
+            start, end = _period(stripe_subscription)
+            subscription.status = stripe_subscription['status']
+            subscription.current_period_start = _ts(start)
+            subscription.current_period_end = _ts(end)
+            subscription.cancel_at_period_end = stripe_subscription.get('cancel_at_period_end', False)
+            subscription.plan = _plan_for(stripe_subscription) or subscription.plan
+            subscription.save()
         emails.notify_change(before, subscription)
     except Subscription.DoesNotExist:
         pass
@@ -431,8 +435,7 @@ def change_plan_view(request, plan_type):
 def billing_portal(request):
     """Stripe's portal for the card, billing details (VAT ID) and invoices."""
     organization = _billing_organization(request)
-    customer_id = organization.stripe_customer_id or getattr(
-        Subscription.objects.filter(organization=organization).first(), 'stripe_customer_id', '')
+    customer_id = stripe_customer_id(organization)
     if not customer_id:
         messages.error(request, _('There are no billing details yet. They are made with your first purchase.'))
         return redirect('billing')

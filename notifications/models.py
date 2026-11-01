@@ -47,10 +47,11 @@ class EmailLog(models.Model):
     """One email to a customer: an organization's admins or reviewees. Never to a reviewer.
 
     Only for looking up what went out. SentEmail is what makes an email go out once.
+    Deleted with the organization: the recipients are personal data.
     """
 
     organization = models.ForeignKey(
-        'core.Organization', on_delete=models.SET_NULL, null=True, blank=True,
+        'core.Organization', on_delete=models.CASCADE, null=True, blank=True,
         related_name='email_log', verbose_name=_('organization'),
     )
     kind = models.CharField(_('kind'), max_length=60)

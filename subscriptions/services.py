@@ -1,6 +1,7 @@
 """Subscription management services."""
 import stripe
 from django.conf import settings
+from django.db import transaction
 from django.utils import timezone
 from . import emails
 from .models import Subscription
@@ -110,16 +111,21 @@ def preview_plan_change(subscription, plan):
 
 
 def change_plan(subscription, plan):
-    """Move the subscription to `plan` now; the price difference goes on the next invoice."""
-    stripe.Subscription.modify(
-        subscription.stripe_subscription_id,
-        items=plan_change_items(subscription, plan),
-        proration_behavior='create_prorations',
-    )
+    """Move the subscription to `plan` now; the price difference goes on the next invoice.
 
-    # Update local subscription. The webhook then sees no change, so the email goes out here.
-    before = emails.snapshot(subscription)
-    subscription.plan = plan
-    subscription.save()
+    The row stays locked from before the change in Stripe until it is saved here, so the webhook for this
+    change waits, then sees the new plan already and sends no second email. Only the plan is saved: the
+    caller's copy may be older than what a webhook wrote.
+    """
+    with transaction.atomic():
+        subscription = Subscription.objects.select_for_update().get(pk=subscription.pk)
+        before = emails.snapshot(subscription)
+        stripe.Subscription.modify(
+            subscription.stripe_subscription_id,
+            items=plan_change_items(subscription, plan),
+            proration_behavior='create_prorations',
+        )
+        subscription.plan = plan
+        subscription.save(update_fields=['plan', 'updated_at'])
     emails.notify_change(before, subscription)
     return subscription

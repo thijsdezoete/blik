@@ -7,7 +7,7 @@ from decimal import Decimal
 import stripe
 
 from .fulfilment import _ts
-from .utils import payment_error_text
+from .utils import payment_error_text, stripe_customer_id
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +39,18 @@ def _invoices(customer_id):
     ]
 
 
+def _payment_error(invoice):
+    """Why the invoice's newest payment failed. Not the customer's newest payment: that can be a round purchase."""
+    payments = ((invoice or {}).get('payments') or {}).get('data') or []
+    intent_id = payments[0]['payment'].get('payment_intent') if payments else None
+    if not intent_id:
+        return None
+    return payment_error_text(stripe.PaymentIntent.retrieve(intent_id).to_dict().get('last_payment_error'))
+
+
 def live_details(organization, subscription):
     """Card, payment failure, next invoice and invoice list, or None when Stripe cannot be reached."""
-    customer_id = organization.stripe_customer_id or (subscription.stripe_customer_id if subscription else '')
+    customer_id = stripe_customer_id(organization)
     details = {'invoices': [], 'card': None, 'payment_error': None, 'next_attempt': None, 'upcoming': None}
     if not customer_id:
         return details
@@ -50,8 +59,10 @@ def live_details(organization, subscription):
         if subscription is None or subscription.status == 'canceled':
             return details
 
+        # .to_dict(): StripeObject has no .get(). payment.payment_intent would be a 5th expand level, Stripe allows 4.
         stripe_sub = stripe.Subscription.retrieve(
-            subscription.stripe_subscription_id, expand=['default_payment_method', 'latest_invoice'])
+            subscription.stripe_subscription_id,
+            expand=['default_payment_method', 'latest_invoice.payments']).to_dict()
         method = stripe_sub['default_payment_method']
         if method and method['type'] == 'card':
             card = method['card']
@@ -64,9 +75,7 @@ def live_details(organization, subscription):
         if subscription.status in ('past_due', 'unpaid'):
             invoice = stripe_sub['latest_invoice']
             details['next_attempt'] = _ts(invoice['next_payment_attempt']) if invoice else None
-            intents = stripe.PaymentIntent.list(customer=customer_id, limit=1)['data']
-            if intents:
-                details['payment_error'] = payment_error_text(intents[0]['last_payment_error'])
+            details['payment_error'] = _payment_error(invoice)
         elif not subscription.cancel_at_period_end:
             preview = stripe.Invoice.create_preview(subscription=subscription.stripe_subscription_id)
             details['upcoming'] = {

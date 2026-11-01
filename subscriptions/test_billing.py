@@ -1,6 +1,8 @@
 from datetime import datetime, timezone as dt_timezone
 from unittest.mock import MagicMock, patch
 
+import stripe
+
 from django.test import Client, RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
@@ -8,8 +10,9 @@ from accounts.factories import RevieweeFactory, UserProfileFactory
 from accounts.permissions import assign_organization_admin
 from blik.context_processors import billing as billing_context_processor
 from core.factories import OrganizationFactory, UserFactory
-from subscriptions.billing import card_expires_before
-from subscriptions.models import Plan
+from subscriptions.billing import card_expires_before, live_details
+from subscriptions.models import Plan, Subscription
+from subscriptions.services import change_plan
 from subscriptions.testing import grant, subscribe
 from subscriptions.utils import can_see_billing, packs_for, payment_error_text, reviewees_over_limit
 
@@ -58,6 +61,9 @@ class PacksTests(SimpleTestCase):
 
     def test_at_least_one_pack(self):
         self.assertEqual(packs_for(0), 1)
+
+    def test_a_huge_number_does_not_overflow(self):
+        self.assertEqual(packs_for(10 ** 400), 10 ** 399)
 
 
 class PaymentErrorTests(SimpleTestCase):
@@ -129,6 +135,12 @@ class CheckoutCustomerTests(TestCase):
         self.assertNotIn('customer_email', params)
         self.assertNotIn('customer_creation', params)
 
+    def test_a_subscriber_without_a_backfilled_customer_reuses_the_subscriptions_one(self):
+        subscribe(self.org, status='canceled')
+        params = self.start()
+        self.assertEqual(params['customer'], f'cus_org{self.org.pk}')
+        self.assertNotIn('customer_creation', params)
+
     def test_without_a_customer_stripe_makes_one(self):
         params = self.start()
         self.assertEqual(params['customer_creation'], 'always')
@@ -169,3 +181,40 @@ class BannerTests(TestCase):
     def test_nothing_while_everything_is_paid(self):
         subscribe(self.org, status='active')
         self.assertIsNone(self.problem())
+
+
+def stripe_object(data):
+    """A real StripeObject, as stripe-python returns: indexing works, .get() does not."""
+    return stripe.StripeObject.construct_from(data, 'sk_test_x')
+
+
+@override_settings(**BILLING)
+class FailedPaymentTests(TestCase):
+    def test_the_error_comes_from_the_failed_invoice_not_the_newest_payment(self):
+        org = OrganizationFactory()
+        subscription = subscribe(org, status='past_due')
+        stripe_sub = stripe_object({
+            'default_payment_method': None,
+            'latest_invoice': {'next_payment_attempt': None,
+                               'payments': {'data': [{'payment': {'payment_intent': 'pi_invoice'}}]}},
+        })
+        intent = stripe_object({'last_payment_error': {'code': 'card_declined', 'decline_code': 'insufficient_funds'}})
+        with patch('subscriptions.billing.stripe.Invoice.list', return_value=stripe_object({'data': []})), \
+                patch('subscriptions.billing.stripe.Subscription.retrieve', return_value=stripe_sub), \
+                patch('subscriptions.billing.stripe.PaymentIntent.retrieve', return_value=intent) as retrieve:
+            details = live_details(org, subscription)
+        retrieve.assert_called_once_with('pi_invoice')
+        self.assertEqual(details['payment_error'], 'The card was declined: not enough funds.')
+
+
+@override_settings(**BILLING)
+class ChangePlanTests(TestCase):
+    def test_a_stale_copy_does_not_undo_what_a_webhook_saved(self):
+        org = OrganizationFactory()
+        stale = subscribe(org, status='active')
+        big = Plan.objects.create(name='Big', plan_type='enterprise', price_monthly=99, max_employees=50)
+        Subscription.objects.filter(pk=stale.pk).update(status='past_due')
+        with patch('subscriptions.services.stripe'):
+            change_plan(stale, big)
+        saved = Subscription.objects.get(pk=stale.pk)
+        self.assertEqual((saved.plan, saved.status), (big, 'past_due'))

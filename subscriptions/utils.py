@@ -1,5 +1,3 @@
-import math
-
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Sum
@@ -71,6 +69,14 @@ def can_see_billing(organization, user):
 SUPPORT_EMAIL = 'thijs@mail.blik360.com'
 
 
+def stripe_customer_id(organization):
+    """The organization's Stripe customer, or ''. Subscribers from before the billing page have it only on
+    their subscription until backfill_stripe_customers runs."""
+    return organization.stripe_customer_id or (
+        Subscription.objects.filter(organization=organization)
+        .values_list('stripe_customer_id', flat=True).first() or '')
+
+
 # One round purchase (€19) grants this many review-cycle credits.
 CREDITS_PER_PACK = 10
 # ponytail: a sanity cap on one checkout, not a business rule; raise it when someone hits it
@@ -79,7 +85,7 @@ MAX_PACKS = 100
 
 def packs_for(reviews):
     """Packs to buy for this many reviews: always at least one."""
-    return max(1, math.ceil(reviews / CREDITS_PER_PACK))
+    return max(1, -(-reviews // CREDITS_PER_PACK))  # integer ceil: a float overflows on huge input
 
 
 def reviewees_over_limit(organization, plan):

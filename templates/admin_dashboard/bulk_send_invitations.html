@@ -33,7 +33,7 @@
 
 {% if derived_from_chart and unplaced_count %}
 <div class="alert alert-info" style="margin-bottom: 1.5rem;">
-    <strong>{{ unplaced_count }} reviewee{{ unplaced_count|pluralize }} aren't on any org-chart team yet</strong> — their cycles were created but have no reviewers. You can open each one and add reviewers manually, or
+    <strong>{{ unplaced_count }} reviewee{{ unplaced_count|pluralize }} aren't on any org-chart unit yet</strong> — their cycles were created but have no reviewers. You can open each one and add reviewers manually, or
     <a href="{% url 'org_chart' %}">build out the org chart</a> and re-run.
 </div>
 {% endif %}

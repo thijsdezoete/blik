@@ -183,18 +183,13 @@ class Reviewee(TimeStampedModel):
         return f"{self.name} ({self.email})"
 
 
-class Team(TimeStampedModel):
+class OrgUnit(TimeStampedModel):
     """
-    A team / pyramid in the org chart.
+    A unit in the org chart: a department, a professor's area, a team.
 
-    Each team renders as a two-tier pyramid: a single "manager row" at the top
-    (row 0) with `shape.manager_cols` slots, and one or more "member rows"
-    below, each described by an entry in `shape.member_rows`.
-
-    A person can be a member of multiple teams (and can simultaneously be a
-    manager of some teams and a member of others). This is what lets the org
-    chart capture "VP of Eng is a member of Leadership AND a manager of
-    Engineering" — one person, two memberships across two teams.
+    A unit has a manager row (row 0) and a member row (row 1). Units stack:
+    when the manager of unit B is a member of unit A, B shows under A. So a
+    person can manage one unit and be a member of another.
     """
     uuid = models.UUIDField(
         default=uuid.uuid4,
@@ -205,86 +200,58 @@ class Team(TimeStampedModel):
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
-        related_name='teams',
+        related_name='org_units',
     )
     name = models.CharField(max_length=255)
     display_order = models.IntegerField(default=0)
-    # Grid shape: {"manager_cols": 3, "member_rows": [{"cols": 3}, {"cols": 5}]}
-    shape = models.JSONField(default=dict)
 
     objects = OrganizationManager()
 
     class Meta:
-        db_table = 'teams'
+        db_table = 'org_units'
         ordering = ['display_order', 'name']
         unique_together = ['organization', 'name']
 
     def __str__(self):
         return self.name
 
-    def default_shape(self):
-        """Minimal valid shape used when the stored one is empty."""
-        return {'manager_cols': 1, 'member_rows': [{'cols': 3}]}
 
-    def effective_shape(self):
-        s = self.shape or {}
-        if not s.get('manager_cols') or not s.get('member_rows'):
-            return self.default_shape()
-        return s
-
-    def slot_fits(self, row, col):
-        """Return True if (row, col) is a valid slot in this team's shape."""
-        s = self.effective_shape()
-        try:
-            row = int(row)
-            col = int(col)
-        except (TypeError, ValueError):
-            return False
-        if row == 0:
-            return 0 <= col < int(s['manager_cols'])
-        member_rows = s.get('member_rows') or []
-        member_idx = row - 1
-        if 0 <= member_idx < len(member_rows):
-            return 0 <= col < int(member_rows[member_idx].get('cols', 0))
-        return False
-
-
-class TeamMembership(TimeStampedModel):
+class OrgUnitMembership(TimeStampedModel):
     """
-    Occupancy of a single slot in a team's pyramid.
+    One person in a unit. `col` is the position in the row.
 
-    `role` is derived from `row` (row 0 = manager, row > 0 = member) but is
-    stored denormalized so queries like "all teams where Alice is a manager"
+    `role` is derived from `row` (row 0 = manager, row 1 = member) but is
+    stored denormalized so queries like "all units where Alice is a manager"
     don't require expression indexes or per-row arithmetic.
     """
     MANAGER = 'manager'
     MEMBER = 'member'
     ROLE_CHOICES = [(MANAGER, 'Manager'), (MEMBER, 'Member')]
 
-    team = models.ForeignKey(
-        Team,
+    unit = models.ForeignKey(
+        OrgUnit,
         on_delete=models.CASCADE,
         related_name='memberships',
     )
     reviewee = models.ForeignKey(
         Reviewee,
         on_delete=models.CASCADE,
-        related_name='team_memberships',
+        related_name='unit_memberships',
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     row = models.IntegerField()
     col = models.IntegerField()
 
     class Meta:
-        db_table = 'team_memberships'
-        ordering = ['team_id', 'row', 'col']
+        db_table = 'org_unit_memberships'
+        ordering = ['unit_id', 'row', 'col']
         unique_together = [
-            ('team', 'reviewee'),   # one slot per person per team
-            ('team', 'row', 'col'),  # one person per slot
+            ('unit', 'reviewee'),   # one slot per person per unit
+            ('unit', 'row', 'col'),  # one person per slot
         ]
 
     def __str__(self):
-        return f'{self.reviewee.name} @ {self.team.name} r{self.row}c{self.col} ({self.role})'
+        return f'{self.reviewee.name} @ {self.unit.name} r{self.row}c{self.col} ({self.role})'
 
     def save(self, *args, **kwargs):
         # Role is mechanically derived from row; enforce it here so the two

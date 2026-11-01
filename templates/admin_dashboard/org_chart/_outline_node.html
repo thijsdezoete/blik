@@ -1,0 +1,20 @@
+{% load i18n %}{% with unit=node.unit %}
+<li class="oc-branch" data-unit-uuid="{{ unit.uuid }}" data-unit-name="{{ unit.name }}" data-key="row-{{ unit.uuid }}">
+    <div class="oc-row" draggable="true" title="{% trans 'Drag onto another unit to place it below that unit' %}">
+        <button type="button" class="oc-toggle" aria-expanded="false" aria-label="{% trans 'Show or hide' %}: {{ unit.name }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <span class="oc-row-name">{{ unit.name }}</span>
+        <span class="oc-row-manager">{% for p in node.managers %}{{ p.reviewee.name }}{% if not forloop.last %}, {% endif %}{% empty %}{% trans 'No manager yet' %}{% endfor %}</span>
+        <span class="oc-row-count">{% blocktrans count counter=node.members|length %}{{ counter }} member{% plural %}{{ counter }} members{% endblocktrans %}{% if node.children %} · {% blocktrans count counter=node.children|length %}{{ counter }} unit{% plural %}{{ counter }} units{% endblocktrans %}{% endif %}</span>
+        {% include "admin_dashboard/org_chart/_unit_menu.html" with prefix="o" %}
+    </div>
+    <div class="oc-row-detail" hidden>
+        <div class="oc-row-zones">
+            <div><p class="oc-role">{% trans 'Manager' %}</p>{% include "admin_dashboard/org_chart/_people.html" with people=node.managers role="manager" %}</div>
+            <div><p class="oc-role">{% trans 'Members' %}</p>{% include "admin_dashboard/org_chart/_people.html" with people=node.members role="member" %}</div>
+        </div>
+        {% if node.children %}<ul class="oc-outline">{% for node in node.children %}{% include "admin_dashboard/org_chart/_outline_node.html" %}{% endfor %}</ul>{% endif %}
+    </div>
+</li>
+{% endwith %}

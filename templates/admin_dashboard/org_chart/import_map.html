@@ -1,0 +1,78 @@
+{% extends "admin_dashboard/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans 'Import CSV' %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/org_chart.css' %}">{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{% trans 'Import CSV' %}</h1>
+        <p>{% blocktrans trimmed count counter=row_count with filename=filename %}{{ filename }} · {{ counter }} person{% plural %}{{ filename }} · {{ counter }} people{% endblocktrans %}</p>
+    </div>
+</div>
+
+{% if errors %}
+<div class="alert alert-error" role="alert">
+    <strong>{% trans 'The file cannot be imported yet.' %}</strong>
+    <ul class="oc-import-errors">{% for error in errors %}<li>{{ error }}</li>{% endfor %}{% if more_errors %}<li>{% blocktrans count counter=more_errors %}And {{ counter }} more error.{% plural %}And {{ counter }} more errors.{% endblocktrans %}</li>{% endif %}</ul>
+</div>
+{% endif %}
+
+<form method="post" class="card">
+    {% csrf_token %}
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">{% trans 'Which column is which?' %}</h2>
+            <p class="help-text">{% trans 'Blik guessed from the column names. Check the choices against the first rows below.' %}</p>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="oc-import-fields">
+            {% for field, label, selected in fields %}
+            <div class="form-group">
+                <label class="form-label" for="map-{{ field }}">{{ label }}</label>
+                <select class="form-control" id="map-{{ field }}" name="{{ field }}" data-map-field="{{ label }}">
+                    <option value="">{% trans 'Not in the file' %}</option>
+                    {% for header in headers %}<option value="{{ forloop.counter0 }}"{% if selected == forloop.counter0 %} selected{% endif %}>{{ header|default:'—' }}</option>{% endfor %}
+                </select>
+                {% if field == 'name' %}<p class="help-text">{% trans 'Or choose first and last name.' %}</p>
+                {% elif field == 'manager' %}<p class="help-text">{% trans 'Each manager gets a unit with the people who report to them.' %}</p>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <h3 class="oc-role">{% trans 'First rows' %}</h3>
+        <div class="table-wrapper" role="region" aria-label="{% trans 'First rows of the file' %}" tabindex="0">
+            <table class="table oc-import-preview">
+                <thead><tr>{% for header in headers %}<th scope="col" data-col="{{ forloop.counter0 }}">{{ header|default:'—' }}<span class="badge badge-info" hidden></span></th>{% endfor %}</tr></thead>
+                <tbody>{% for row in preview %}<tr>{% for cell in row %}<td data-col="{{ forloop.counter0 }}">{{ cell }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer oc-import-footer">
+        {% if has_units %}<p class="help-text">{% trans 'This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit.' %}</p>{% endif %}
+        <a href="{% url 'org_chart' %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
+        <button type="submit" class="btn btn-primary">{% trans 'Import' %}</button>
+    </div>
+</form>
+
+<script>
+    // Label each preview column with the field it is mapped to.
+    (() => {
+        const selects = document.querySelectorAll('[data-map-field]');
+        const update = () => {
+            const labels = {};
+            selects.forEach(s => { if (s.value !== '') (labels[s.value] = labels[s.value] || []).push(s.dataset.mapField); });
+            document.querySelectorAll('.oc-import-preview [data-col]').forEach(cell => {
+                const mapped = labels[cell.dataset.col];
+                cell.classList.toggle('oc-mapped', !!mapped);
+                const badge = cell.querySelector('.badge');
+                if (badge) { badge.hidden = !mapped; badge.textContent = mapped ? mapped.join(', ') : ''; }
+            });
+        };
+        selects.forEach(s => s.addEventListener('change', update));
+        update();
+    })();
+</script>
+{% endblock %}

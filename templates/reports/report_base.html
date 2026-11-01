@@ -90,7 +90,7 @@
             </div>
         </div>
 
-        {% if is_admin_view %}
+        {% if is_admin_view and not is_manager_view %}
         <div class="actions">
             <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">{% trans 'Back to Cycle' %}</a>
             <a href="{% url 'reports:regenerate_report' cycle.uuid %}" class="btn btn-primary">{% trans 'Regenerate Report' %}</a>

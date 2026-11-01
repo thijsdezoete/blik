@@ -16,8 +16,8 @@ from django.test import TestCase
 
 from accounts.factories import (
     RevieweeFactory,
-    TeamFactory,
-    TeamMembershipFactory,
+    OrgUnitFactory,
+    OrgUnitMembershipFactory,
 )
 from core.factories import OrganizationFactory
 from reviews.services import derive_reviewers
@@ -30,14 +30,14 @@ class DeriveReviewersTests(TestCase):
     def _make_reviewee(self, name):
         return RevieweeFactory(organization=self.org, name=name)
 
-    def _add(self, team, reviewee, row, col):
-        return TeamMembershipFactory(
-            team=team, reviewee=reviewee, row=row, col=col)
+    def _add(self, unit, reviewee, row, col):
+        return OrgUnitMembershipFactory(
+            unit=unit, reviewee=reviewee, row=row, col=col)
 
     def _uuids(self, people):
         return sorted(str(p.uuid) for p in people)
 
-    def test_solo_reviewee_not_in_any_team(self):
+    def test_solo_reviewee_not_in_any_unit(self):
         alice = self._make_reviewee('Alice')
         result = derive_reviewers(alice)
         self.assertEqual([p.uuid for p in result['self']], [alice.uuid])
@@ -52,11 +52,11 @@ class DeriveReviewersTests(TestCase):
         alice = self._make_reviewee('Alice')
         bob = self._make_reviewee('Bob')
 
-        team = TeamFactory(organization=self.org, name='Leadership')
-        self._add(team, ceo, row=0, col=0)
-        self._add(team, cfo, row=0, col=1)
-        self._add(team, alice, row=1, col=0)
-        self._add(team, bob, row=1, col=1)
+        unit = OrgUnitFactory(organization=self.org, name='Leadership')
+        self._add(unit, ceo, row=0, col=0)
+        self._add(unit, cfo, row=0, col=1)
+        self._add(unit, alice, row=1, col=0)
+        self._add(unit, bob, row=1, col=1)
 
         # From a member's perspective
         result = derive_reviewers(alice)
@@ -74,8 +74,8 @@ class DeriveReviewersTests(TestCase):
                          self._uuids([cfo]))
         self.assertEqual(result['manager'], [])
 
-    def test_multi_team_membership(self):
-        """A person in two teams sees both sets of relationships."""
+    def test_multi_unit_membership(self):
+        """A person in two units sees both sets of relationships."""
         ceo = self._make_reviewee('CEO')
         cfo = self._make_reviewee('CFO')
         vp_eng = self._make_reviewee('VP Eng')
@@ -83,13 +83,13 @@ class DeriveReviewersTests(TestCase):
         alice = self._make_reviewee('Alice')
         bob = self._make_reviewee('Bob')
 
-        leadership = TeamFactory(organization=self.org, name='Leadership')
+        leadership = OrgUnitFactory(organization=self.org, name='Leadership')
         self._add(leadership, ceo, row=0, col=0)
         self._add(leadership, cfo, row=0, col=1)
         self._add(leadership, vp_eng, row=1, col=0)
         self._add(leadership, vp_sales, row=1, col=1)
 
-        engineering = TeamFactory(organization=self.org, name='Engineering')
+        engineering = OrgUnitFactory(organization=self.org, name='Engineering')
         self._add(engineering, vp_eng, row=0, col=0)
         self._add(engineering, alice, row=1, col=0)
         self._add(engineering, bob, row=1, col=1)
@@ -107,11 +107,11 @@ class DeriveReviewersTests(TestCase):
                          self._uuids([alice, bob]))
 
     def test_co_managers_are_peers(self):
-        """Two co-managers of the same team see each other as peers."""
+        """Two co-managers of the same unit see each other as peers."""
         a = self._make_reviewee('A')
         b = self._make_reviewee('B')
         c = self._make_reviewee('C')
-        t = TeamFactory(organization=self.org, name='T')
+        t = OrgUnitFactory(organization=self.org, name='T')
         self._add(t, a, row=0, col=0)
         self._add(t, b, row=0, col=1)
         self._add(t, c, row=1, col=0)
@@ -124,19 +124,19 @@ class DeriveReviewersTests(TestCase):
 
     def test_dedup_priority_manager_over_peer(self):
         """
-        If X is a manager of P via one team AND a peer of P via another,
+        If X is a manager of P via one unit AND a peer of P via another,
         X should end up only under `manager` (higher priority).
         """
         x = self._make_reviewee('X')
         p = self._make_reviewee('P')
 
-        # Team1: X is manager of P (P is member, X is manager).
-        t1 = TeamFactory(organization=self.org, name='T1')
+        # Unit1: X is manager of P (P is member, X is manager).
+        t1 = OrgUnitFactory(organization=self.org, name='T1')
         self._add(t1, x, row=0, col=0)
         self._add(t1, p, row=1, col=0)
 
-        # Team2: X and P are both members → would normally be peers.
-        t2 = TeamFactory(organization=self.org, name='T2')
+        # Unit2: X and P are both members → would normally be peers.
+        t2 = OrgUnitFactory(organization=self.org, name='T2')
         # Give t2 a manager so it's a complete pyramid (not required but realistic)
         owner = self._make_reviewee('Owner')
         self._add(t2, owner, row=0, col=0)
@@ -151,17 +151,17 @@ class DeriveReviewersTests(TestCase):
 
     def test_dedup_priority_direct_report_over_peer(self):
         """
-        If Y reports to P via Team A AND Y is a co-member-peer of P in Team B,
+        If Y reports to P via OrgUnit A AND Y is a co-member-peer of P in OrgUnit B,
         Y should only appear under `direct_report`.
         """
         p = self._make_reviewee('P')
         y = self._make_reviewee('Y')
 
-        t_a = TeamFactory(organization=self.org, name='A')
+        t_a = OrgUnitFactory(organization=self.org, name='A')
         self._add(t_a, p, row=0, col=0)
         self._add(t_a, y, row=1, col=0)
 
-        t_b = TeamFactory(organization=self.org, name='B')
+        t_b = OrgUnitFactory(organization=self.org, name='B')
         boss = self._make_reviewee('Boss')
         self._add(t_b, boss, row=0, col=0)
         self._add(t_b, p, row=1, col=0)
@@ -176,7 +176,7 @@ class DeriveReviewersTests(TestCase):
     def test_self_always_contains_only_the_reviewee(self):
         a = self._make_reviewee('A')
         b = self._make_reviewee('B')
-        t = TeamFactory(organization=self.org)
+        t = OrgUnitFactory(organization=self.org)
         self._add(t, a, row=0, col=0)
         self._add(t, b, row=1, col=0)
 
@@ -189,7 +189,7 @@ class DeriveReviewersTests(TestCase):
         alice = self._make_reviewee('Alice')
         marie = self._make_reviewee('Marie')
 
-        t = TeamFactory(organization=self.org)
+        t = OrgUnitFactory(organization=self.org)
         self._add(t, p, row=0, col=0)
         self._add(t, zara, row=1, col=0)
         self._add(t, alice, row=1, col=1)

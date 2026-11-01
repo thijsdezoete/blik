@@ -1,0 +1,5 @@
+{% load i18n %}{% if nodes %}
+<ul class="oc-outline">{% for node in nodes %}{% include "admin_dashboard/org_chart/_outline_node.html" %}{% endfor %}</ul>
+{% else %}
+{% include "admin_dashboard/org_chart/_empty.html" %}
+{% endif %}

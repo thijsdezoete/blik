@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _, gettext_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Reviewee, UserProfile, OrganizationInvitation, Team, TeamMembership
+from .models import Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
 from core.gdpr import GDPRDeletionService
 
 
@@ -259,26 +259,26 @@ class OrganizationInvitationAdmin(admin.ModelAdmin):
         return False
 
 
-class TeamMembershipInline(admin.TabularInline):
-    model = TeamMembership
+class OrgUnitMembershipInline(admin.TabularInline):
+    model = OrgUnitMembership
     extra = 0
     autocomplete_fields = ['reviewee']
     fields = ['reviewee', 'role', 'row', 'col']
     readonly_fields = ['role']
 
 
-@admin.register(Team)
-class TeamAdmin(admin.ModelAdmin):
+@admin.register(OrgUnit)
+class OrgUnitAdmin(admin.ModelAdmin):
     list_display = ['name', 'organization', 'display_order', 'created_at']
     list_filter = ['organization']
     search_fields = ['name']
     list_select_related = ['organization']
-    inlines = [TeamMembershipInline]
+    inlines = [OrgUnitMembershipInline]
 
 
-@admin.register(TeamMembership)
-class TeamMembershipAdmin(admin.ModelAdmin):
-    list_display = ['reviewee', 'team', 'role', 'row', 'col']
-    list_filter = ['team', 'role']
-    search_fields = ['reviewee__name', 'reviewee__email', 'team__name']
-    list_select_related = ['team', 'reviewee']
+@admin.register(OrgUnitMembership)
+class OrgUnitMembershipAdmin(admin.ModelAdmin):
+    list_display = ['reviewee', 'unit', 'role', 'row', 'col']
+    list_filter = ['unit', 'role']
+    search_fields = ['reviewee__name', 'reviewee__email', 'unit__name']
+    list_select_related = ['unit', 'reviewee']

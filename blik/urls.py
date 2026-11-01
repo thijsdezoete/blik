@@ -57,10 +57,12 @@ urlpatterns = [
     path('api/questions/<int:question_id>/dreyfus-config/', admin_views.question_dreyfus_config_api, name='question_dreyfus_config_api'),
     # Org chart
     path('dashboard/org-chart/', admin_views.org_chart, name='org_chart'),
-    path('dashboard/org-chart/teams/create/', admin_views.org_chart_team_create, name='org_chart_team_create'),
-    path('dashboard/org-chart/teams/<uuid:team_uuid>/update/', admin_views.org_chart_team_update, name='org_chart_team_update'),
-    path('dashboard/org-chart/teams/<uuid:team_uuid>/delete/', admin_views.org_chart_team_delete, name='org_chart_team_delete'),
-    path('dashboard/org-chart/teams/<uuid:team_uuid>/set-parent/', admin_views.org_chart_team_set_parent, name='org_chart_team_set_parent'),
+    path('dashboard/org-chart/import/', admin_views.org_chart_import, name='org_chart_import'),
+    path('dashboard/org-chart/import/columns/', admin_views.org_chart_import_map, name='org_chart_import_map'),
+    path('dashboard/org-chart/units/create/', admin_views.org_chart_unit_create, name='org_chart_unit_create'),
+    path('dashboard/org-chart/units/<uuid:unit_uuid>/update/', admin_views.org_chart_unit_update, name='org_chart_unit_update'),
+    path('dashboard/org-chart/units/<uuid:unit_uuid>/delete/', admin_views.org_chart_unit_delete, name='org_chart_unit_delete'),
+    path('dashboard/org-chart/units/<uuid:unit_uuid>/set-parent/', admin_views.org_chart_unit_set_parent, name='org_chart_unit_set_parent'),
     path('dashboard/org-chart/memberships/create/', admin_views.org_chart_membership_create, name='org_chart_membership_create'),
     path('dashboard/org-chart/memberships/<int:membership_id>/delete/', admin_views.org_chart_membership_delete, name='org_chart_membership_delete'),
 

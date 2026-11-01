@@ -57,7 +57,7 @@
                                        {% if has_org_chart %}checked{% else %}disabled{% endif %}
                                        style="margin-top: 0.25rem;">
                                 <div>
-                                    <div style="font-weight: 600;">Derive from org chart{% if not has_org_chart %} <span style="color: var(--text-tertiary); font-weight: normal;">(no teams yet)</span>{% endif %}</div>
+                                    <div style="font-weight: 600;">Derive from org chart{% if not has_org_chart %} <span style="color: var(--text-tertiary); font-weight: normal;">(no units yet)</span>{% endif %}</div>
                                     <div style="font-size: 0.875rem; color: var(--text-secondary);">
                                         Auto-assign managers, peers, and direct reports based on each reviewee's team memberships. You'll confirm before invitations send.
                                     </div>
@@ -231,7 +231,7 @@
                 </p>
 
                 <div id="chartEmptyNotice" class="alert alert-info" style="display: none; margin-bottom: 1.5rem;">
-                    This person isn't in the <a href="{% url 'org_chart' %}">org chart</a> yet, so we can't auto-fill their reviewers. Add them to a team to make future cycles one-click.
+                    This person isn't in the <a href="{% url 'org_chart' %}">org chart</a> yet, so we can't auto-fill their reviewers. Add them to a unit to make future cycles one-click.
                 </div>
 
                 <div class="form-group category-emails" data-category="self" style="margin-bottom: 1.5rem;">

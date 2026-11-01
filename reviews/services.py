@@ -85,44 +85,44 @@ def derive_reviewers(reviewee):
     """
     # Local import — avoids circular imports at module load time and keeps the
     # dependency arrow from reviews → accounts.
-    from accounts.models import TeamMembership
+    from accounts.models import OrgUnitMembership
 
     # Pull every membership of P in a single query, then fan out into two
     # queries (one per role) that fetch sibling memberships across those
-    # teams. Three queries total regardless of team count.
+    # units. Three queries total regardless of unit count.
     my_memberships = list(
-        TeamMembership.objects
+        OrgUnitMembership.objects
         .filter(reviewee=reviewee)
-        .values_list('team_id', 'role')
+        .values_list('unit_id', 'role')
     )
 
-    my_member_teams = [tid for tid, role in my_memberships if role == TeamMembership.MEMBER]
-    my_manager_teams = [tid for tid, role in my_memberships if role == TeamMembership.MANAGER]
+    my_member_units = [tid for tid, role in my_memberships if role == OrgUnitMembership.MEMBER]
+    my_manager_units = [tid for tid, role in my_memberships if role == OrgUnitMembership.MANAGER]
 
     managers, peers, direct_reports = [], [], []
 
-    if my_member_teams:
+    if my_member_units:
         rows = (
-            TeamMembership.objects
-            .filter(team_id__in=my_member_teams)
+            OrgUnitMembership.objects
+            .filter(unit_id__in=my_member_units)
             .exclude(reviewee=reviewee)
             .select_related('reviewee')
         )
         for m in rows:
-            if m.role == TeamMembership.MANAGER:
+            if m.role == OrgUnitMembership.MANAGER:
                 managers.append(m.reviewee)
             else:
                 peers.append(m.reviewee)
 
-    if my_manager_teams:
+    if my_manager_units:
         rows = (
-            TeamMembership.objects
-            .filter(team_id__in=my_manager_teams)
+            OrgUnitMembership.objects
+            .filter(unit_id__in=my_manager_units)
             .exclude(reviewee=reviewee)
             .select_related('reviewee')
         )
         for m in rows:
-            if m.role == TeamMembership.MEMBER:
+            if m.role == OrgUnitMembership.MEMBER:
                 direct_reports.append(m.reviewee)
             else:
                 # Co-manager — counts as a peer.

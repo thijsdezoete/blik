@@ -16,6 +16,7 @@ from django.core.validators import validate_email
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.db.models import Avg, Count, Exists, F, Max, OuterRef, Q, Subquery
+from django.db.models.functions import Lower
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -25,7 +26,7 @@ from django.utils.functional import partition
 from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.http import require_POST
 
-from accounts.models import Reviewee, UserProfile, OrganizationInvitation, Team, TeamMembership
+from accounts.models import Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
 from accounts.permissions import (
     assign_organization_admin,
     assign_organization_member,
@@ -34,6 +35,7 @@ from accounts.permissions import (
     can_view_all_reports,
     is_organization_admin,
     login_required,
+    reviewee_emails_below,
     set_user_permission,
     visible_cycles,
 )
@@ -1697,7 +1699,15 @@ def review_cycle_list(request):
             'reviewee', 'questionnaire', 'created_by'
         )
 
-    cycles_qs = visible_cycles(request.user, cycles_qs)
+    below = set() if can_view_all_reports(request.user) else reviewee_emails_below(request.user, org)
+    if below:
+        # Managers also see the cycles of the people below them in the org
+        # chart, but only to read the report (see report_only below).
+        own = visible_cycles(request.user, cycles_qs).values('pk')
+        cycles_qs = cycles_qs.annotate(reviewee_email_lower=Lower('reviewee__email')).filter(
+            Q(pk__in=own) | Q(reviewee_email_lower__in=below))
+    else:
+        cycles_qs = visible_cycles(request.user, cycles_qs)
     # Questionnaires that occur in this user's cycles, archived ones included.
     used_questionnaires = Questionnaire.objects.filter(
         review_cycles__in=cycles_qs).distinct().order_by('name')
@@ -1761,6 +1771,7 @@ def review_cycle_list(request):
 
     # "New Cycle" opens the start dialog of the reviewee list, set up as a copy of the row's cycle.
     for cycle in cycles:
+        cycle.report_only = cycle.reviewee.email.lower() in below
         cycle.start = {
             'reviewee': cycle.reviewee,
             'source_cycle': cycle,
@@ -1892,7 +1903,7 @@ def review_cycle_create(request):
                 if bulk_source == 'chart':
                     messages.success(
                         request,
-                        _('Created %(count)s review cycles. %(derived)s got reviewers from the org chart. %(unplaced)s reviewee(s) are not in a team yet.')
+                        _('Created %(count)s review cycles. %(derived)s got reviewers from the org chart. %(unplaced)s reviewee(s) are not in a unit yet.')
                         % {'count': len(created_cycles), 'derived': derived_count, 'unplaced': unplaced_count}
                     )
                 else:
@@ -2017,11 +2028,11 @@ def review_cycle_create(request):
     )
 
     # Org chart availability drives the default for the bulk-source radio:
-    # if at least one team exists we pre-select "derive from chart"; otherwise
+    # if at least one unit exists we pre-select "derive from chart"; otherwise
     # only "leave empty" is offered.
     has_org_chart = (
         org is not None
-        and Team.objects.filter(organization=org).exists()
+        and OrgUnit.objects.filter(organization=org).exists()
     )
 
     context = {
@@ -3484,64 +3495,64 @@ def delete_webhook(request, webhook_id):
 
 def _build_org_tree(organization):
     """
-    Load every team and membership for the org, then derive a tree:
-      - A team's parent is the (lowest display_order) team in which this
-        team's first manager is a MEMBER.
-      - Teams whose manager is on no other team (or who have no manager yet)
+    Load every unit and membership for the org, then derive a tree:
+      - A unit's parent is the (lowest display_order) unit in which this
+        unit's first manager is a MEMBER.
+      - Units whose manager is on no other unit (or who have no manager yet)
         are roots.
       - A rare cycle (A-manages-B-manages-A) is broken by dropping the
         offending parent edge so the cycle-causer becomes a root.
 
     Returns a dict:
       {
-        'roots': [Team, ...],
-        'children_of': {team.id: [Team, ...]},
-        'mships_by_team': {team.id: [TeamMembership sorted by (row, col)]},
-        'sibling_names_by_reviewee': {reviewee_id: [team_name, ...]},
+        'roots': [OrgUnit, ...],
+        'children_of': {unit.id: [OrgUnit, ...]},
+        'mships_by_unit': {unit.id: [OrgUnitMembership sorted by (row, col)]},
+        'sibling_names_by_reviewee': {reviewee_id: [unit_name, ...]},
       }
     """
-    teams = list(
-        Team.objects.for_organization(organization).order_by('display_order', 'name')
+    units = list(
+        OrgUnit.objects.for_organization(organization).order_by('display_order', 'name')
     )
-    if not teams:
+    if not units:
         return {
-            'roots': [], 'children_of': {}, 'mships_by_team': {},
+            'roots': [], 'children_of': {}, 'mships_by_unit': {},
             'sibling_names_by_reviewee': {},
         }
 
-    team_ids = [t.id for t in teams]
+    unit_ids = [t.id for t in units]
     memberships = list(
-        TeamMembership.objects
-        .filter(team_id__in=team_ids)
-        .select_related('reviewee', 'team')
+        OrgUnitMembership.objects
+        .filter(unit_id__in=unit_ids)
+        .select_related('reviewee', 'unit')
         .order_by('row', 'col')
     )
 
-    mships_by_team = {t.id: [] for t in teams}
-    member_teams_by_reviewee = {}  # reviewee_id -> [team_id where they're MEMBER]
-    team_names_by_reviewee = {}    # reviewee_id -> [team_name, ...] (all roles)
+    mships_by_unit = {t.id: [] for t in units}
+    member_units_by_reviewee = {}  # reviewee_id -> [unit_id where they're MEMBER]
+    unit_names_by_reviewee = {}    # reviewee_id -> [unit_name, ...] (all roles)
     for m in memberships:
-        mships_by_team[m.team_id].append(m)
-        team_names_by_reviewee.setdefault(m.reviewee_id, []).append(m.team.name)
-        if m.role == TeamMembership.MEMBER:
-            member_teams_by_reviewee.setdefault(m.reviewee_id, []).append(m.team_id)
+        mships_by_unit[m.unit_id].append(m)
+        unit_names_by_reviewee.setdefault(m.reviewee_id, []).append(m.unit.name)
+        if m.role == OrgUnitMembership.MEMBER:
+            member_units_by_reviewee.setdefault(m.reviewee_id, []).append(m.unit_id)
 
-    team_by_id = {t.id: t for t in teams}
+    unit_by_id = {t.id: t for t in units}
 
     # Parent inference
     parent_of = {}
-    for t in teams:
-        managers = [m for m in mships_by_team[t.id]
-                    if m.role == TeamMembership.MANAGER]
+    for t in units:
+        managers = [m for m in mships_by_unit[t.id]
+                    if m.role == OrgUnitMembership.MANAGER]
         if not managers:
             continue
         first_mgr_rid = managers[0].reviewee_id
         candidate_ids = [
-            tid for tid in member_teams_by_reviewee.get(first_mgr_rid, [])
+            tid for tid in member_units_by_reviewee.get(first_mgr_rid, [])
             if tid != t.id
         ]
         if candidate_ids:
-            candidates = [team_by_id[cid] for cid in candidate_ids]
+            candidates = [unit_by_id[cid] for cid in candidate_ids]
             candidates.sort(key=lambda x: (x.display_order, x.name))
             parent_of[t.id] = candidates[0].id
 
@@ -3559,120 +3570,75 @@ def _build_org_tree(organization):
         if _has_cycle(tid):
             del parent_of[tid]
 
-    children_of = {t.id: [] for t in teams}
+    children_of = {t.id: [] for t in units}
     for tid, pid in parent_of.items():
-        children_of[pid].append(team_by_id[tid])
+        children_of[pid].append(unit_by_id[tid])
     for pid in children_of:
         children_of[pid].sort(key=lambda x: (x.display_order, x.name))
 
-    roots = [t for t in teams if t.id not in parent_of]
+    roots = [t for t in units if t.id not in parent_of]
 
-    # Sibling-team labels for the ▣ badge tooltip (names of any other team
+    # Sibling-unit labels for the ▣ badge tooltip (names of any other unit
     # the reviewee also belongs to, regardless of role).
     sibling_names_by_reviewee = {}
-    for rid, names in team_names_by_reviewee.items():
+    for rid, names in unit_names_by_reviewee.items():
         if len(names) >= 2:
             sibling_names_by_reviewee[rid] = names
 
     return {
         'roots': roots,
         'children_of': children_of,
-        'mships_by_team': mships_by_team,
+        'mships_by_unit': mships_by_unit,
         'sibling_names_by_reviewee': sibling_names_by_reviewee,
     }
 
 
-def _team_card_html(team, tree):
-    """
-    Render a single team card (no nested children — see _tree_node_html).
+def _org_nodes(tree):
+    """The tree as nested dicts for the chart and outline templates."""
+    other_units = tree['sibling_names_by_reviewee']
 
-    Slots are adaptive: each tier shows `filled chips + 1 trailing empty "+"`.
-    The recursion into sub-teams happens one level up, in _tree_node_html,
-    which wraps this card in an oc-tree-node and drops a connector rail to
-    any child teams rendered below.
-    """
-    mships_by_team = tree['mships_by_team']
-    sibling_names = tree['sibling_names_by_reviewee']
-
-    memberships = mships_by_team.get(team.id, [])
-    managers = [m for m in memberships if m.role == TeamMembership.MANAGER]
-    members = [m for m in memberships if m.role == TeamMembership.MEMBER]
-
-    def _slot(m):
-        r = m.reviewee
-        other = sorted(n for n in sibling_names.get(r.id, []) if n != team.name)
+    def person(m):
         return {
             'membership': m,
-            'reviewee': r,
-            'is_multi_team': bool(other),
-            'other_teams_label': ', '.join(other),
+            'reviewee': m.reviewee,
+            'other_units': ', '.join(sorted(n for n in other_units.get(m.reviewee_id, []) if n != m.unit.name)),
         }
 
-    return render_to_string('admin_dashboard/org_chart/_team_card.html', {
-        'team': team,
-        'manager_slots_filled': [_slot(m) for m in managers],
-        'member_slots_filled': [_slot(m) for m in members],
-    })
+    def node(unit):
+        memberships = tree['mships_by_unit'].get(unit.id, [])
+        return {
+            'unit': unit,
+            'managers': [person(m) for m in memberships if m.role == OrgUnitMembership.MANAGER],
+            'members': [person(m) for m in memberships if m.role == OrgUnitMembership.MEMBER],
+            'children': [node(c) for c in tree['children_of'].get(unit.id, [])],
+        }
+
+    return [node(u) for u in tree['roots']]
 
 
-def _tree_node_html(team, tree):
-    """
-    Recursively render a team as a tree node: its card on top, any child
-    teams laid out horizontally below inside an `.oc-children` wrapper.
-    CSS in main.css draws connector lines between a parent card's bottom
-    and each child card's top.
-    """
-    card_html = _team_card_html(team, tree)
-    children = tree['children_of'].get(team.id, [])
-    if not children:
-        return f'<div class="oc-tree-node">{card_html}</div>'
-    children_html = ''.join(_tree_node_html(c, tree) for c in children)
-    return (
-        f'<div class="oc-tree-node">{card_html}'
-        f'<div class="oc-children">{children_html}</div>'
-        f'</div>'
-    )
-
-
-def _tree_html(organization, tree=None):
-    """
-    Render the entire org chart as horizontal trees. Multiple roots render
-    side-by-side as siblings (no connector rail above them). The outer
-    wrapper allows horizontal scroll for very wide orgs.
-    """
-    if tree is None:
-        tree = _build_org_tree(organization)
-    if not tree['roots']:
-        return ''
-    nodes = ''.join(_tree_node_html(t, tree) for t in tree['roots'])
-    return f'<div class="oc-tree-roots">{nodes}</div>'
-
-
-def _unplaced_html(organization):
-    """Render the sidebar list of reviewees not yet on any team."""
-    unplaced = (
-        Reviewee.objects.for_organization(organization)
-        .filter(is_active=True, team_memberships__isnull=True)
-        .order_by('name')
-    )
-    return render_to_string('admin_dashboard/org_chart/_unplaced_pool.html', {
-        'unplaced': unplaced,
-    })
+def _org_chart_context(organization):
+    tree = _build_org_tree(organization)
+    return {
+        'nodes': _org_nodes(tree),
+        'unplaced': (
+            Reviewee.objects.for_organization(organization)
+            .filter(is_active=True, unit_memberships__isnull=True)
+            .order_by('name')
+        ),
+    }
 
 
 def _chart_change_response(organization):
     """
-    Response after any mutation: the full tree HTML + the unplaced pool.
-
-    We re-render the whole tree on every mutation rather than doing surgical
-    per-team replacement. Reason: hierarchy can shift whenever a membership
-    changes (e.g., making Alice a member of Leadership may now re-parent
-    the 'Alice's Team' card under Leadership). Full replacement avoids a
-    class of stale-ancestry bugs and is trivially fast at SMB scale.
+    Response after any mutation: both views and the unplaced pool, rendered
+    again in full. Any membership change can move units in the hierarchy, so
+    patching parts of the page would go stale.
     """
+    context = _org_chart_context(organization)
     return JsonResponse({
-        'tree_html': _tree_html(organization),
-        'unplaced_html': _unplaced_html(organization),
+        'chart_html': render_to_string('admin_dashboard/org_chart/_chart.html', context),
+        'outline_html': render_to_string('admin_dashboard/org_chart/_outline.html', context),
+        'unplaced_html': render_to_string('admin_dashboard/org_chart/_unplaced.html', context),
     })
 
 
@@ -3694,19 +3660,90 @@ def org_chart(request):
         messages.error(request, 'No organization found.')
         return redirect('admin_dashboard')
 
-    tree = _build_org_tree(org)
-    context = {
-        'tree_html': _tree_html(org, tree=tree),
-        'unplaced_html': _unplaced_html(org),
-        'has_teams': bool(tree['roots']),
-    }
+    context = _org_chart_context(org)
     return render(request, 'admin_dashboard/org_chart/index.html', context)
 
 
 @login_required
 @require_POST
-def org_chart_team_create(request):
-    """Create a new team. Teams auto-grow — no shape config needed."""
+def org_chart_import(request):
+    """Read an uploaded CSV file and continue to the column mapping."""
+    from accounts.org_import import read_table
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, _('You do not have permission to edit the org chart.'))
+        return redirect('org_chart')
+    upload = request.FILES.get('file')
+    if not upload:
+        messages.error(request, _('Choose a CSV file.'))
+        return redirect('org_chart')
+    if upload.size > 1024 * 1024:  # ponytail: about 10,000 rows; raise if a customer needs more
+        messages.error(request, _('The file is too large.'))
+        return redirect('org_chart')
+    try:
+        headers, rows = read_table(upload.read())
+    except (UnicodeDecodeError, ValueError):
+        messages.error(request, _('The file is not a readable CSV file. Save it as CSV (UTF-8).'))
+        return redirect('org_chart')
+    if not rows:
+        messages.error(request, _('The file has no rows.'))
+        return redirect('org_chart')
+
+    # The table waits in the session until the admin has mapped the columns.
+    request.session['org_import'] = {'filename': upload.name, 'headers': headers, 'rows': rows}
+    return redirect('org_chart_import_map')
+
+
+@login_required
+def org_chart_import_map(request):
+    """Map the columns of the uploaded CSV file, then import it."""
+    from accounts.org_import import FIELDS, guess_mapping, import_org_chart, map_rows
+
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, _('You do not have permission to edit the org chart.'))
+        return redirect('org_chart')
+    upload = request.session.get('org_import')
+    if not upload:
+        return redirect('org_chart')
+    headers, rows = upload['headers'], upload['rows']
+
+    errors = []
+    if request.method == 'POST':
+        mapping = {}
+        for field, _label in FIELDS:
+            try:
+                mapping[field] = int(request.POST.get(field, ''))
+            except ValueError:
+                mapping[field] = None
+        mapped, errors = map_rows(headers, rows, mapping)
+        if not errors:
+            stats, errors = import_org_chart(request.organization, mapped)
+            if not errors:
+                del request.session['org_import']
+                messages.success(
+                    request,
+                    _('Imported %(units)s units: %(created)s new people, %(updated)s updated.') % stats,
+                )
+                return redirect('org_chart')
+    else:
+        mapping = guess_mapping(headers)
+
+    return render(request, 'admin_dashboard/org_chart/import_map.html', {
+        'filename': upload['filename'],
+        'headers': headers,
+        'preview': rows[:5],
+        'row_count': len(rows),
+        'fields': [(field, label, mapping.get(field)) for field, label in FIELDS],
+        'errors': errors[:20],
+        'more_errors': max(0, len(errors) - 20),
+        'has_units': OrgUnit.objects.filter(organization=request.organization).exists(),
+    })
+
+
+@login_required
+@require_POST
+def org_chart_unit_create(request):
+    """Create a new unit."""
     err = _manage_required(request)
     if err:
         return err
@@ -3714,23 +3751,22 @@ def org_chart_team_create(request):
     org = request.organization
     name = (request.POST.get('name') or '').strip()
     if not name:
-        return JsonResponse({'error': 'Team name is required.'}, status=400)
+        return JsonResponse({'error': 'Unit name is required.'}, status=400)
 
-    if Team.objects.filter(organization=org, name=name).exists():
+    if OrgUnit.objects.filter(organization=org, name=name).exists():
         return JsonResponse(
-            {'error': f'A team named "{name}" already exists.'},
+            {'error': f'A unit named "{name}" already exists.'},
             status=400,
         )
 
-    # New teams sort to the bottom by default.
+    # New units sort to the bottom by default.
     max_order = (
-        Team.objects.filter(organization=org).aggregate(m=Max('display_order'))['m']
+        OrgUnit.objects.filter(organization=org).aggregate(m=Max('display_order'))['m']
         or 0
     )
-    Team.objects.create(
+    OrgUnit.objects.create(
         organization=org,
         name=name,
-        shape={},  # unused now; kept for backward compat with existing rows
         display_order=max_order + 1,
     )
     return _chart_change_response(org)
@@ -3738,57 +3774,57 @@ def org_chart_team_create(request):
 
 @login_required
 @require_POST
-def org_chart_team_update(request, team_uuid):
-    """Rename a team. (Shape has no config anymore.)"""
+def org_chart_unit_update(request, unit_uuid):
+    """Rename a unit. (Shape has no config anymore.)"""
     err = _manage_required(request)
     if err:
         return err
 
     org = request.organization
-    team = get_object_or_404(
-        Team.objects.for_organization(org),
-        uuid=team_uuid,
+    unit = get_object_or_404(
+        OrgUnit.objects.for_organization(org),
+        uuid=unit_uuid,
     )
 
     if 'name' in request.POST:
         name = (request.POST.get('name') or '').strip()
         if not name:
-            return JsonResponse({'error': 'Team name is required.'}, status=400)
+            return JsonResponse({'error': 'Unit name is required.'}, status=400)
         if (
-            Team.objects.filter(organization=org, name=name)
-            .exclude(pk=team.pk).exists()
+            OrgUnit.objects.filter(organization=org, name=name)
+            .exclude(pk=unit.pk).exists()
         ):
             return JsonResponse(
-                {'error': f'A team named "{name}" already exists.'},
+                {'error': f'A unit named "{name}" already exists.'},
                 status=400,
             )
-        team.name = name
-        team.save()
+        unit.name = name
+        unit.save()
 
     return _chart_change_response(org)
 
 
 @login_required
 @require_POST
-def org_chart_team_delete(request, team_uuid):
-    """Delete a team and all its memberships."""
+def org_chart_unit_delete(request, unit_uuid):
+    """Delete a unit and all its memberships."""
     err = _manage_required(request)
     if err:
         return err
 
     org = request.organization
-    team = get_object_or_404(
-        Team.objects.for_organization(org),
-        uuid=team_uuid,
+    unit = get_object_or_404(
+        OrgUnit.objects.for_organization(org),
+        uuid=unit_uuid,
     )
-    team.delete()
+    unit.delete()
     return _chart_change_response(org)
 
 
-def _collect_descendants(team_id, children_of):
-    """Return the set of team ids reachable as descendants of `team_id`."""
+def _collect_descendants(unit_id, children_of):
+    """Return the set of unit ids reachable as descendants of `unit_id`."""
     out = set()
-    stack = [t.id for t in children_of.get(team_id, [])]
+    stack = [t.id for t in children_of.get(unit_id, [])]
     while stack:
         tid = stack.pop()
         if tid in out:
@@ -3800,23 +3836,23 @@ def _collect_descendants(team_id, children_of):
 
 @login_required
 @require_POST
-def org_chart_team_set_parent(request, team_uuid):
+def org_chart_unit_set_parent(request, unit_uuid):
     """
-    Make this team report to another team.
+    Make this unit report to another unit.
 
-    Mechanically: add the child team's first manager as a member of the
-    parent team. The tree inference then picks `parent` as the child's
+    Mechanically: add the child unit's first manager as a member of the
+    parent unit. The tree inference then picks `parent` as the child's
     parent (since the child's first-manager is now a MEMBER of parent).
 
-    Required POST: parent_team_uuid (UUID of the target parent team)
+    Required POST: parent_unit_uuid (UUID of the target parent unit)
 
     Refuses when:
       - child has no managers yet (user should add one first)
       - parent == child (would be self-referencing)
       - parent is a descendant of child in the current tree (would cycle)
       - child's first manager is already a MANAGER of parent (would make
-        them both a manager and a member of the same team — the data
-        model forbids duplicate memberships per team)
+        them both a manager and a member of the same unit — the data
+        model forbids duplicate memberships per unit)
     """
     err = _manage_required(request)
     if err:
@@ -3824,35 +3860,35 @@ def org_chart_team_set_parent(request, team_uuid):
 
     org = request.organization
     child = get_object_or_404(
-        Team.objects.for_organization(org),
-        uuid=team_uuid,
+        OrgUnit.objects.for_organization(org),
+        uuid=unit_uuid,
     )
-    parent_uuid = request.POST.get('parent_team_uuid')
+    parent_uuid = request.POST.get('parent_unit_uuid')
     if not parent_uuid:
         return JsonResponse(
-            {'error': 'parent_team_uuid is required.'},
+            {'error': 'parent_unit_uuid is required.'},
             status=400,
         )
     parent = get_object_or_404(
-        Team.objects.for_organization(org),
+        OrgUnit.objects.for_organization(org),
         uuid=parent_uuid,
     )
 
     if parent.pk == child.pk:
         return JsonResponse(
-            {'error': "A team can't report to itself."},
+            {'error': "A unit can't report to itself."},
             status=400,
         )
 
     first_mgr = (
-        child.memberships.filter(role=TeamMembership.MANAGER)
+        child.memberships.filter(role=OrgUnitMembership.MANAGER)
         .order_by('col').first()
     )
     if not first_mgr:
         return JsonResponse({
             'error': (
                 f'Add a manager to "{child.name}" first — we use that '
-                f'person as the bridge to the parent team.'
+                f'person as the bridge to the parent unit.'
             ),
         }, status=400)
 
@@ -3866,10 +3902,10 @@ def org_chart_team_set_parent(request, team_uuid):
             ),
         }, status=400)
 
-    # If the first manager is already on the parent team, either it's
+    # If the first manager is already on the parent unit, either it's
     # already a member (no-op — tree will show it) or a manager (conflict).
     existing = parent.memberships.filter(reviewee=first_mgr.reviewee).first()
-    if existing and existing.role == TeamMembership.MANAGER:
+    if existing and existing.role == OrgUnitMembership.MANAGER:
         return JsonResponse({
             'error': (
                 f'{first_mgr.reviewee.name} manages "{parent.name}" — '
@@ -3883,8 +3919,8 @@ def org_chart_team_set_parent(request, team_uuid):
             parent.memberships.filter(row=1).aggregate(m=Max('col'))['m']
         )
         col = 0 if next_col is None else next_col + 1
-        TeamMembership.objects.create(
-            team=parent,
+        OrgUnitMembership.objects.create(
+            unit=parent,
             reviewee=first_mgr.reviewee,
             row=1,
             col=col,
@@ -3897,13 +3933,13 @@ def org_chart_team_set_parent(request, team_uuid):
 @require_POST
 def org_chart_membership_create(request):
     """
-    Add or move a membership into a team.
+    Add or move a membership into a unit.
 
     Required POST params:
-        team_uuid, reviewee_uuid, role   (role = "manager" | "member")
+        unit_uuid, reviewee_uuid, role   (role = "manager" | "member")
     Optional:
         mode = "copy" (default) | "move"
-        source_team_uuid (required if mode=move)
+        source_unit_uuid (required if mode=move)
 
     Row/col are computed by the server: row = 0 for manager, 1 for member;
     col = next unused position in that row. Clients don't need to track
@@ -3915,49 +3951,52 @@ def org_chart_membership_create(request):
 
     org = request.organization
 
-    team = get_object_or_404(
-        Team.objects.for_organization(org),
-        uuid=request.POST.get('team_uuid'),
+    unit = get_object_or_404(
+        OrgUnit.objects.for_organization(org),
+        uuid=request.POST.get('unit_uuid'),
     )
     reviewee = get_object_or_404(
         Reviewee.objects.for_organization(org),
         uuid=request.POST.get('reviewee_uuid'),
     )
 
-    role = request.POST.get('role', TeamMembership.MEMBER)
-    if role not in (TeamMembership.MANAGER, TeamMembership.MEMBER):
+    role = request.POST.get('role', OrgUnitMembership.MEMBER)
+    if role not in (OrgUnitMembership.MANAGER, OrgUnitMembership.MEMBER):
         return JsonResponse(
             {'error': 'role must be "manager" or "member".'},
             status=400,
         )
-    row = 0 if role == TeamMembership.MANAGER else 1
+    row = 0 if role == OrgUnitMembership.MANAGER else 1
 
     mode = request.POST.get('mode', 'copy')
 
     with transaction.atomic():
-        if team.memberships.filter(reviewee=reviewee).exists():
+        # Move first, so moving within one unit changes the role (member to
+        # manager) instead of tripping over the existing membership.
+        if mode == 'move':
+            src_unit_uuid = request.POST.get('source_unit_uuid')
+            src_unit = get_object_or_404(
+                OrgUnit.objects.for_organization(org),
+                uuid=src_unit_uuid,
+            )
+            src_unit.memberships.filter(reviewee=reviewee).delete()
+
+        if unit.memberships.filter(reviewee=reviewee).exists():
+            transaction.set_rollback(True)
             return JsonResponse(
-                {'error': f'{reviewee.name} is already on this team.'},
+                {'error': _('%(name)s is already in this unit.') % {'name': reviewee.name}},
                 status=400,
             )
 
-        if mode == 'move':
-            src_team_uuid = request.POST.get('source_team_uuid')
-            src_team = get_object_or_404(
-                Team.objects.for_organization(org),
-                uuid=src_team_uuid,
-            )
-            src_team.memberships.filter(reviewee=reviewee).delete()
-
         # Append at the next unused col in this row.
         next_col = (
-            team.memberships.filter(row=row)
+            unit.memberships.filter(row=row)
             .aggregate(m=Max('col'))['m']
         )
         col = 0 if next_col is None else next_col + 1
 
-        TeamMembership.objects.create(
-            team=team,
+        OrgUnitMembership.objects.create(
+            unit=unit,
             reviewee=reviewee,
             row=row,
             col=col,
@@ -3969,16 +4008,16 @@ def org_chart_membership_create(request):
 @login_required
 @require_POST
 def org_chart_membership_delete(request, membership_id):
-    """Remove a reviewee from a team."""
+    """Remove a reviewee from a unit."""
     err = _manage_required(request)
     if err:
         return err
 
     org = request.organization
     membership = get_object_or_404(
-        TeamMembership.objects.select_related('team'),
+        OrgUnitMembership.objects.select_related('unit'),
         pk=membership_id,
-        team__organization=org,
+        unit__organization=org,
     )
     membership.delete()
     return _chart_change_response(org)

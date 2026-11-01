@@ -5,7 +5,7 @@ import factory
 from factory.django import DjangoModelFactory
 from django.utils import timezone
 from datetime import timedelta
-from .models import UserProfile, OrganizationInvitation, Reviewee, Team, TeamMembership
+from .models import UserProfile, OrganizationInvitation, Reviewee, OrgUnit, OrgUnitMembership
 from core.factories import UserFactory, OrganizationFactory
 
 
@@ -47,27 +47,24 @@ class RevieweeFactory(DjangoModelFactory):
     is_active = True
 
 
-class TeamFactory(DjangoModelFactory):
-    """Factory for creating teams (pyramids) in the org chart"""
+class OrgUnitFactory(DjangoModelFactory):
+    """Factory for creating units in the org chart"""
 
     class Meta:
-        model = Team
+        model = OrgUnit
 
     organization = factory.SubFactory(OrganizationFactory)
-    name = factory.Sequence(lambda n: f'Team {n}')
+    name = factory.Sequence(lambda n: f'Unit {n}')
     display_order = 0
-    shape = factory.LazyFunction(
-        lambda: {'manager_cols': 3, 'member_rows': [{'cols': 5}]}
-    )
 
 
-class TeamMembershipFactory(DjangoModelFactory):
-    """Factory for creating team memberships"""
+class OrgUnitMembershipFactory(DjangoModelFactory):
+    """Factory for creating org unit memberships"""
 
     class Meta:
-        model = TeamMembership
+        model = OrgUnitMembership
 
-    team = factory.SubFactory(TeamFactory)
+    unit = factory.SubFactory(OrgUnitFactory)
     reviewee = factory.SubFactory(RevieweeFactory)
     # role defaults are derived from row in the model's save()
     row = 0

@@ -10,8 +10,8 @@ from django.urls import reverse
 
 from accounts.factories import (
     RevieweeFactory,
-    TeamFactory,
-    TeamMembershipFactory,
+    OrgUnitFactory,
+    OrgUnitMembershipFactory,
     UserProfileFactory,
 )
 from accounts.models import UserProfile
@@ -48,19 +48,19 @@ class BulkChartDerivationTests(TestCase):
 
         self.questionnaire = QuestionnaireFactory(organization=self.org)
 
-    def test_cycle_create_form_hides_chart_option_when_no_teams(self):
-        """Radio shows 'no teams yet' text when the chart is empty."""
+    def test_cycle_create_form_hides_chart_option_when_no_units(self):
+        """Radio shows 'no units yet' text when the chart is empty."""
         RevieweeFactory(organization=self.org)
         resp = self.client.get(reverse('review_cycle_create'))
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'no teams yet')
+        self.assertContains(resp, 'no units yet')
 
-    def test_cycle_create_form_offers_chart_when_teams_exist(self):
+    def test_cycle_create_form_offers_chart_when_units_exist(self):
         RevieweeFactory(organization=self.org)
-        TeamFactory(organization=self.org, name='Leadership')
+        OrgUnitFactory(organization=self.org, name='Leadership')
         resp = self.client.get(reverse('review_cycle_create'))
         self.assertContains(resp, 'Derive from org chart')
-        self.assertNotContains(resp, 'no teams yet')
+        self.assertNotContains(resp, 'no units yet')
 
     def test_bulk_chart_source_creates_tokens_per_reviewee(self):
         # Build a chart: Leadership (CEO, CFO → Alice, Bob)
@@ -73,11 +73,11 @@ class BulkChartDerivationTests(TestCase):
         bob = RevieweeFactory(organization=self.org, name='Bob',
                               email='bob@example.com')
 
-        team = TeamFactory(organization=self.org, name='Leadership')
-        TeamMembershipFactory(team=team, reviewee=ceo, row=0, col=0)
-        TeamMembershipFactory(team=team, reviewee=cfo, row=0, col=1)
-        TeamMembershipFactory(team=team, reviewee=alice, row=1, col=0)
-        TeamMembershipFactory(team=team, reviewee=bob, row=1, col=1)
+        unit = OrgUnitFactory(organization=self.org, name='Leadership')
+        OrgUnitMembershipFactory(unit=unit, reviewee=ceo, row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=cfo, row=0, col=1)
+        OrgUnitMembershipFactory(unit=unit, reviewee=alice, row=1, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=bob, row=1, col=1)
 
         resp = self.client.post(reverse('review_cycle_create'), {
             'creation_mode': 'bulk',
@@ -121,7 +121,7 @@ class BulkChartDerivationTests(TestCase):
         RevieweeFactory(organization=self.org, name='A')
         RevieweeFactory(organization=self.org, name='B')
         # Even with a chart in place, 'empty' keeps existing behavior.
-        t = TeamFactory(organization=self.org)
+        t = OrgUnitFactory(organization=self.org)
 
         resp = self.client.post(reverse('review_cycle_create'), {
             'creation_mode': 'bulk',
@@ -137,14 +137,14 @@ class BulkChartDerivationTests(TestCase):
 
     def test_unplaced_reviewees_get_only_self_token_in_chart_mode(self):
         """
-        A reviewee not on any team should still get a cycle — with only a
+        A reviewee not on any unit should still get a cycle — with only a
         self-assessment token and no external reviewer tokens.
         """
-        on_team = RevieweeFactory(organization=self.org, name='OnTeam')
+        on_unit = RevieweeFactory(organization=self.org, name='OnUnit')
         loner = RevieweeFactory(organization=self.org, name='Loner')
 
-        team = TeamFactory(organization=self.org)
-        TeamMembershipFactory(team=team, reviewee=on_team, row=0, col=0)
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=on_unit, row=0, col=0)
 
         self.client.post(reverse('review_cycle_create'), {
             'creation_mode': 'bulk',
@@ -176,9 +176,9 @@ class BulkPreviewPageTests(TestCase):
                               email='ceo@example.com')
         alice = RevieweeFactory(organization=self.org, name='Alice',
                                 email='alice@example.com')
-        team = TeamFactory(organization=self.org, name='T')
-        TeamMembershipFactory(team=team, reviewee=ceo, row=0, col=0)
-        TeamMembershipFactory(team=team, reviewee=alice, row=1, col=0)
+        unit = OrgUnitFactory(organization=self.org, name='T')
+        OrgUnitMembershipFactory(unit=unit, reviewee=ceo, row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=alice, row=1, col=0)
 
         # POST creates cycles + redirects to preview
         self.client.post(reverse('review_cycle_create'), {
@@ -196,8 +196,8 @@ class BulkPreviewPageTests(TestCase):
 
     def test_preview_flags_unplaced(self):
         loner = RevieweeFactory(organization=self.org, name='Loner')
-        # Ensure at least one team exists so chart mode can be chosen.
-        TeamFactory(organization=self.org, name='OtherTeam')
+        # Ensure at least one unit exists so chart mode can be chosen.
+        OrgUnitFactory(organization=self.org, name='OtherUnit')
 
         self.client.post(reverse('review_cycle_create'), {
             'creation_mode': 'bulk',
@@ -207,7 +207,7 @@ class BulkPreviewPageTests(TestCase):
 
         resp = self.client.get(reverse('bulk_send_invitations'))
         self.assertContains(resp, 'Unplaced')
-        self.assertContains(resp, 'aren')  # "aren't on any org-chart team yet"
+        self.assertContains(resp, 'aren')  # "aren't on any org-chart unit yet"
 
     def test_preview_post_schedules_sends_and_clears_session(self):
         RevieweeFactory(organization=self.org)
@@ -226,10 +226,10 @@ class BulkPreviewPageTests(TestCase):
 
 
 @override_settings(STORAGES=NON_HASHING_STORAGES)
-class MultiTeamBadgeTests(TestCase):
+class MultiUnitBadgeTests(TestCase):
     """
-    The ▣ multi-team badge should render with a tooltip listing the other
-    team names that the reviewee belongs to.
+    The ▣ multi-unit badge should render with a tooltip listing the other
+    unit names that the reviewee belongs to.
     """
     def setUp(self):
         self.org = OrganizationFactory()
@@ -239,26 +239,26 @@ class MultiTeamBadgeTests(TestCase):
         _grant_manage(self.admin)
         self.client.force_login(self.admin)
 
-    def test_badge_tooltip_lists_sibling_team_names(self):
+    def test_badge_tooltip_lists_sibling_unit_names(self):
         vp = RevieweeFactory(organization=self.org, name='VP Eng')
-        leadership = TeamFactory(organization=self.org, name='Leadership')
-        engineering = TeamFactory(organization=self.org, name='Engineering')
-        sales = TeamFactory(organization=self.org, name='Sales')
-        TeamMembershipFactory(team=leadership, reviewee=vp, row=1, col=0)
-        TeamMembershipFactory(team=engineering, reviewee=vp, row=0, col=0)
-        TeamMembershipFactory(team=sales, reviewee=vp, row=0, col=0)
+        leadership = OrgUnitFactory(organization=self.org, name='Leadership')
+        engineering = OrgUnitFactory(organization=self.org, name='Engineering')
+        sales = OrgUnitFactory(organization=self.org, name='Sales')
+        OrgUnitMembershipFactory(unit=leadership, reviewee=vp, row=1, col=0)
+        OrgUnitMembershipFactory(unit=engineering, reviewee=vp, row=0, col=0)
+        OrgUnitMembershipFactory(unit=sales, reviewee=vp, row=0, col=0)
 
         resp = self.client.get(reverse('org_chart'))
         self.assertEqual(resp.status_code, 200)
         html = resp.content.decode()
         # Looking at the Leadership card, the tooltip should mention
         # Engineering and Sales (not Leadership itself).
-        self.assertIn('Also on: Engineering, Sales', html)
+        self.assertIn('Also in: Engineering, Sales', html)
 
-    def test_no_badge_when_only_on_one_team(self):
+    def test_no_badge_when_only_on_one_unit(self):
         r = RevieweeFactory(organization=self.org, name='Solo')
-        t = TeamFactory(organization=self.org, name='Solo Team')
-        TeamMembershipFactory(team=t, reviewee=r, row=0, col=0)
+        t = OrgUnitFactory(organization=self.org, name='Solo OrgUnit')
+        OrgUnitMembershipFactory(unit=t, reviewee=r, row=0, col=0)
 
         resp = self.client.get(reverse('org_chart'))
-        self.assertNotContains(resp, 'Also on:')
+        self.assertNotContains(resp, 'Also in:')

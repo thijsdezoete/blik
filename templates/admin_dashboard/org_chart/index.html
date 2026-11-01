@@ -1,83 +1,138 @@
 {% extends "admin_dashboard/base.html" %}
-{% load static %}
+{% load i18n static %}
 
-{% block title %}Org Chart{% endblock %}
+{% block title %}{% trans 'Org chart' %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/reviewees.css' %}"><link rel="stylesheet" href="{% static 'css/org_chart.css' %}">{% endblock %}
 
 {% block content %}
-<div style="margin-bottom: 2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+<div class="page-header oc-page-header">
     <div>
-        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Org chart</h1>
-        <p style="color: var(--text-secondary); margin: 0;">
-            Build pyramids by adding managers and members. When a member is also the manager of another team, that team automatically nests below them — turning your org chart into a real hierarchy.
-        </p>
+        <h1>{% trans 'Org chart' %}</h1>
+        <p>{% trans 'Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review.' %}</p>
     </div>
-    <button type="button" class="btn btn-primary" id="ocNewTeamBtn">+ New team</button>
-</div>
-
-<p style="color: var(--text-tertiary); font-size: 0.8125rem; margin-bottom: 1rem;">
-    Click a <span style="display: inline-block; padding: 0 0.5rem; border: 1px dashed var(--border); border-radius: 4px; background: var(--bg-light);">+</span> slot to add a person. Drag chips between teams to copy the membership — hold <kbd>Shift</kbd> to move instead. Click <strong>×</strong> on a chip to remove from a team.
-</p>
-
-<div class="oc-layout">
-    <div class="oc-teams" id="ocTeams">
-        {% if has_teams %}
-            {{ tree_html|safe }}
-        {% else %}
-            <div class="oc-empty-state">
-                <p style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No teams yet</p>
-                <p style="color: var(--text-secondary);">Click <strong>+ New team</strong> to create your first pyramid.</p>
-            </div>
-        {% endif %}
-    </div>
-
-    <aside class="oc-sidebar" id="ocUnplaced">
-        {{ unplaced_html|safe }}
-    </aside>
-</div>
-
-<div class="oc-modal-backdrop" id="ocTeamModalBackdrop" hidden>
-    <div class="oc-modal" id="ocTeamModal" role="dialog" aria-modal="true" aria-labelledby="ocTeamDialogTitle">
-        <form class="oc-dialog-form" id="ocTeamForm">
-            <h2 class="oc-dialog-title" id="ocTeamDialogTitle">New team</h2>
-
-            <div class="oc-dialog-row" id="ocTeamNameRow">
-                <label class="form-label" for="ocTeamName">Team name</label>
-                <input type="text" id="ocTeamName" class="form-control" placeholder="e.g. Leadership, Engineering, Sales">
-            </div>
-
-            <p class="oc-dialog-hint">Slots grow automatically as you add people.</p>
-
-            <div class="oc-dialog-error" id="ocTeamDialogError" hidden></div>
-
-            <div class="oc-dialog-actions">
-                <button type="button" class="btn btn-secondary" id="ocTeamDialogCancel">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="ocTeamDialogSubmit">Create</button>
-            </div>
-        </form>
+    <div class="oc-page-actions">
+        <button type="button" class="btn btn-secondary" data-oc-open="ocImportDialog">{% trans 'Import CSV' %}</button>
+        <button type="button" class="btn btn-primary" data-oc-new-unit>{% trans 'New unit' %}</button>
     </div>
 </div>
 
-<div class="oc-modal-backdrop" id="ocReportToBackdrop" hidden>
-    <div class="oc-modal" role="dialog" aria-modal="true" aria-labelledby="ocReportToTitle">
-        <div class="oc-dialog-form">
-            <h2 class="oc-dialog-title" id="ocReportToTitle">Report to…</h2>
-            <p class="oc-dialog-hint" id="ocReportToIntro"></p>
-            <div class="oc-team-option-list" id="ocReportToList"></div>
-            <div class="oc-dialog-error" id="ocReportToError" hidden></div>
-            <div class="oc-dialog-actions">
-                <button type="button" class="btn btn-secondary" id="ocReportToCancel">Cancel</button>
+<div class="card oc-board" data-view="chart">
+    <div class="list-filters oc-toolbar">
+        <nav class="stage-tabs" aria-label="{% trans 'View' %}">
+            <button type="button" class="stage-tab" data-oc-view="chart" aria-current="true">{% trans 'Chart' %}</button>
+            <button type="button" class="stage-tab" data-oc-view="outline">{% trans 'Outline' %}</button>
+        </nav>
+        <div class="list-filter-fields oc-controls">
+            <div class="oc-control-group" data-for-view="chart">
+                <button type="button" class="btn btn-sm btn-secondary" data-oc-zoom="out" aria-label="{% trans 'Zoom out' %}">&minus;</button>
+                <output class="oc-zoom-level" aria-live="polite">100%</output>
+                <button type="button" class="btn btn-sm btn-secondary" data-oc-zoom="in" aria-label="{% trans 'Zoom in' %}">+</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-oc-zoom="fit">{% trans 'Fit to screen' %}</button>
+                <span class="help-text">{% trans 'Drag the background to move around.' %}</span>
             </div>
+            <div class="oc-control-group" data-for-view="outline" hidden>
+                <button type="button" class="btn btn-sm btn-secondary" data-oc-expand="all">{% trans 'Expand all' %}</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-oc-expand="none">{% trans 'Collapse all' %}</button>
+                <span class="help-text">{% trans 'Drag a unit onto another unit to place it below.' %}</span>
+            </div>
+            <span class="help-text">{% trans 'Drag a person to move them. Hold Alt to copy.' %}</span>
         </div>
     </div>
+    <p class="alert alert-error oc-error" role="alert" hidden></p>
+    <div class="oc-layout">
+        <div class="oc-viewport" id="ocChart" data-view-panel="chart">{% include "admin_dashboard/org_chart/_chart.html" %}</div>
+        <div class="oc-outline-panel" id="ocOutline" data-view-panel="outline" hidden>{% include "admin_dashboard/org_chart/_outline.html" %}</div>
+        <aside class="oc-pool-panel" id="ocUnplaced">{% include "admin_dashboard/org_chart/_unplaced.html" %}</aside>
+    </div>
 </div>
+
+<dialog id="ocUnitDialog" class="modal-content reviewee-dialog" aria-labelledby="ocUnitDialogTitle" data-title-create="{% trans 'New unit' %}" data-title-rename="{% trans 'Rename unit' %}">
+    <div class="card-header">
+        <h2 class="card-title" id="ocUnitDialogTitle">{% trans 'New unit' %}</h2>
+        <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}">&times;</button></form>
+    </div>
+    <form class="oc-dialog-form" data-oc-form="unit">
+        <div class="card-body">
+            <div class="form-group">
+                <label class="form-label" for="ocUnitName">{% trans 'Name' %}</label>
+                <input type="text" id="ocUnitName" name="name" class="form-control" required maxlength="255" placeholder="{% trans 'For example: Optics, Chair of Physics' %}">
+            </div>
+            <p class="alert alert-error oc-dialog-error" hidden></p>
+        </div>
+        <div class="card-footer"><button type="button" class="btn btn-secondary" data-oc-close>{% trans 'Cancel' %}</button><button type="submit" class="btn btn-primary">{% trans 'Save' %}</button></div>
+    </form>
+</dialog>
+
+<dialog id="ocPersonDialog" class="modal-content reviewee-dialog" aria-labelledby="ocPersonDialogTitle" data-title-manager="{% trans 'Add manager' %}" data-title-member="{% trans 'Add member' %}">
+    <div class="card-header">
+        <div><h2 class="card-title" id="ocPersonDialogTitle">{% trans 'Add member' %}</h2><p class="help-text" data-oc-unit-label></p></div>
+        <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}">&times;</button></form>
+    </div>
+    <div class="card-body">
+        <p class="help-text">{% trans 'Find a person, or type a name and email to add someone new.' %}</p>
+        <div class="oc-picker-holder"></div>
+        <p class="alert alert-error oc-dialog-error" hidden></p>
+    </div>
+</dialog>
+
+<dialog id="ocParentDialog" class="modal-content reviewee-dialog" aria-labelledby="ocParentDialogTitle">
+    <div class="card-header">
+        <div><h2 class="card-title" id="ocParentDialogTitle">{% trans 'Place under another unit' %}</h2><p class="help-text" data-oc-unit-label></p></div>
+        <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}">&times;</button></form>
+    </div>
+    <form class="oc-dialog-form" data-oc-form="parent">
+        <div class="card-body">
+            <div class="form-group">
+                <label class="form-label" for="ocParentSelect">{% trans 'Unit above' %}</label>
+                <select id="ocParentSelect" name="parent_unit_uuid" class="form-control" required></select>
+            </div>
+            <p class="help-text">{% trans 'The manager of this unit becomes a member of the unit above.' %}</p>
+            <p class="alert alert-error oc-dialog-error" hidden></p>
+        </div>
+        <div class="card-footer"><button type="button" class="btn btn-secondary" data-oc-close>{% trans 'Cancel' %}</button><button type="submit" class="btn btn-primary">{% trans 'Save' %}</button></div>
+    </form>
+</dialog>
+
+<dialog id="ocDeleteDialog" class="modal-content reviewee-dialog" aria-labelledby="ocDeleteDialogTitle">
+    <div class="card-header">
+        <div><h2 class="card-title" id="ocDeleteDialogTitle">{% trans 'Delete unit' %}</h2><p class="help-text" data-oc-unit-label></p></div>
+        <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}">&times;</button></form>
+    </div>
+    <form class="oc-dialog-form" data-oc-form="delete">
+        <div class="card-body">
+            <p>{% trans 'The people in this unit stay in Blik. People who are in no other unit move to "Not in a unit".' %}</p>
+            <p class="alert alert-error oc-dialog-error" hidden></p>
+        </div>
+        <div class="card-footer"><button type="button" class="btn btn-secondary" data-oc-close>{% trans 'Cancel' %}</button><button type="submit" class="btn btn-danger">{% trans 'Delete unit' %}</button></div>
+    </form>
+</dialog>
+
+<dialog id="ocImportDialog" class="modal-content reviewee-dialog" aria-labelledby="ocImportDialogTitle">
+    <div class="card-header">
+        <h2 class="card-title" id="ocImportDialogTitle">{% trans 'Import CSV' %}</h2>
+        <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}">&times;</button></form>
+    </div>
+    <form method="post" action="{% url 'org_chart_import' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card-body">
+            <p>{% trans 'A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which.' %}</p>
+            {% if nodes %}<p class="reviewee-start-note">{% trans 'This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit.' %}</p>{% endif %}
+            <div class="form-group">
+                <label class="form-label" for="ocImportFile">{% trans 'File' %}</label>
+                <input type="file" id="ocImportFile" name="file" accept=".csv,text/csv" class="form-control" required>
+            </div>
+        </div>
+        <div class="card-footer"><button type="button" class="btn btn-secondary" data-oc-close>{% trans 'Cancel' %}</button><button type="submit" class="btn btn-primary">{% trans 'Next' %}</button></div>
+    </form>
+</dialog>
 
 {% csrf_token %}
 <script>
     window.OC_ENDPOINTS = {
-        teamCreate:       "{% url 'org_chart_team_create' %}",
-        teamUpdate:       "{% url 'org_chart_team_update' '00000000-0000-0000-0000-000000000000' %}",
-        teamDelete:       "{% url 'org_chart_team_delete' '00000000-0000-0000-0000-000000000000' %}",
-        teamSetParent:    "{% url 'org_chart_team_set_parent' '00000000-0000-0000-0000-000000000000' %}",
+        unitCreate:       "{% url 'org_chart_unit_create' %}",
+        unitUpdate:       "{% url 'org_chart_unit_update' '00000000-0000-0000-0000-000000000000' %}",
+        unitDelete:       "{% url 'org_chart_unit_delete' '00000000-0000-0000-0000-000000000000' %}",
+        unitSetParent:    "{% url 'org_chart_unit_set_parent' '00000000-0000-0000-0000-000000000000' %}",
         membershipCreate: "{% url 'org_chart_membership_create' %}",
         membershipDelete: "{% url 'org_chart_membership_delete' 0 %}",
     };

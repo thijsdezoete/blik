@@ -54,14 +54,14 @@
                 {% with url_name=request.resolver_match.url_name|default:'' %}
                 <li><a href="{% url 'admin_dashboard' %}" {% if url_name == 'admin_dashboard' %}class="active"{% endif %}>{% trans 'Dashboard' %}</a></li>
                 <li><a href="{% url 'reviewee_list' %}" {% if 'reviewee' in url_name %}class="active"{% endif %}>{% trans 'Reviewees' %}</a></li>
-                <li><a href="{% url 'org_chart' %}" {% if 'org_chart' in url_name %}class="active"{% endif %}>{% trans 'Org chart' %}</a></li>
                 <li><a href="{% url 'review_cycle_list' %}" {% if 'cycle' in url_name %}class="active"{% endif %}>{% trans 'Cycles' %}</a></li>
                 <li>
                     <details class="nav-menu">
-                        <summary {% if 'questionnaire' in url_name or 'team' in url_name or url_name == 'settings' %}class="active"{% endif %}>{% trans 'Organization' %}</summary>
+                        <summary {% if 'questionnaire' in url_name or 'team' in url_name or 'org_chart' in url_name or url_name == 'settings' %}class="active"{% endif %}>{% trans 'Organization' %}</summary>
                         <ul>
                             <li><a href="{% url 'questionnaire_list' %}" {% if 'questionnaire' in url_name %}class="active"{% endif %}>{% trans 'Questionnaires' %}</a></li>
                             <li><a href="{% url 'team_list' %}" {% if 'team' in url_name %}class="active"{% endif %}>{% trans 'Team' %}</a></li>
+                            <li><a href="{% url 'org_chart' %}" {% if 'org_chart' in url_name %}class="active"{% endif %}>{% trans 'Org chart' %}</a></li>
                             {% if perms.accounts.can_manage_organization %}
                             <li><a href="{% url 'settings' %}" {% if url_name == 'settings' %}class="active"{% endif %}>{% trans 'Settings' %}</a></li>
                             {% endif %}

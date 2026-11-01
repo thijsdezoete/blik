@@ -65,7 +65,7 @@
                 "name": "Single Round",
                 "price": "{{ plan_single_price }}",
                 "priceCurrency": "EUR",
-                "description": "One hosted 360 feedback round for up to {{ plan_single_max }} employees, paid once with no subscription"
+                "description": "One hosted 360 feedback round, €{{ plan_single_price }} per {{ plan_single_max }} employees, paid once with no subscription"
             },
             {
                 "@type": "Offer",
@@ -243,7 +243,7 @@
         <div class="container">
             <div class="fact-strip">
                 <div class="fact"><span class="fact-value">4</span><span class="fact-label">questionnaires included</span></div>
-                <div class="fact"><span class="fact-value">€{{ plan_single_price }}</span><span class="fact-label">per round, no subscription</span></div>
+                <div class="fact"><span class="fact-value">€{{ plan_single_price }}</span><span class="fact-label">per {{ plan_single_max }} employees, no subscription</span></div>
                 <div class="fact"><span class="fact-value">EU</span><span class="fact-label">hosted in Germany</span></div>
                 <div class="fact"><span class="fact-value">AGPL</span><span class="fact-label">open source, self-host free</span></div>
                 {% if rating_data %}<div class="fact"><span class="fact-value">{{ rating_data.aggregateRating.ratingValue }}/5</span><span class="fact-label">from {{ rating_data.aggregateRating.ratingCount }} reviews</span></div>{% endif %}
@@ -421,7 +421,7 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>Can I pay for one review round without a subscription?</summary>
-                    <p>Yes. The Single Round is €{{ plan_single_price }} once and covers a hosted feedback round for up to {{ plan_single_max }} employees, with no subscription and no charge for reviewers. <a href="{% landing_url 'one_time_360_review' %}">See what's included.</a></p>
+                    <p>Yes. The Single Round is €{{ plan_single_price }} once for a pack of {{ plan_single_max }} review cycles: a hosted feedback round for {{ plan_single_max }} employees. More people? Buy more packs: {{ plan_single_example }} employees = {{ plan_single_example_packs }} packs = €{{ plan_single_example_total }}. No subscription, and no charge for reviewers. <a href="{% landing_url 'one_time_360_review' %}">See what's included.</a></p>
                 </details>
                 <details class="faq-item">
                     <summary>How does Blik ensure reviewer anonymity?</summary>
@@ -477,7 +477,7 @@
                 "name": "Can I pay for one review round without a subscription?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. The Single Round is €{{ plan_single_price }} once and covers a hosted feedback round for up to {{ plan_single_max }} employees, with no subscription and no charge for reviewers."
+                    "text": "Yes. The Single Round is €{{ plan_single_price }} once for a pack of {{ plan_single_max }} review cycles: a hosted feedback round for {{ plan_single_max }} employees. More people? Buy more packs: {{ plan_single_example }} employees = {{ plan_single_example_packs }} packs = €{{ plan_single_example_total }}. No subscription, and no charge for reviewers."
                 }
             },
             {

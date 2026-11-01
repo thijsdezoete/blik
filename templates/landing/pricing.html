@@ -5,7 +5,7 @@
     <title>Blik360 Pricing — Self-Host Free, €{{ plan_single_price }} Once, or €{{ plan_saas_price }}/mo</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Self-host free, pay €{{ plan_single_price }} once for a hosted review round of up to {{ plan_single_max }} employees, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
+    <meta name="description" content="Self-host free, pay €{{ plan_single_price }} per {{ plan_single_max }} employees, once, for a hosted review round, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
     <meta name="keywords" content="360 feedback pricing, performance review cost, self-hosted free, open source HR software pricing, Lattice alternative cost, Culture Amp pricing comparison">
     <meta name="author" content="Blik">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
     <meta property="og:title" content="Blik360 Pricing — Self-Host Free, €{{ plan_single_price }} Once, or €{{ plan_saas_price }}/mo">
-    <meta property="og:description" content="Self-host free, pay €{{ plan_single_price }} once for a hosted review round of up to {{ plan_single_max }} employees, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
+    <meta property="og:description" content="Self-host free, pay €{{ plan_single_price }} per {{ plan_single_max }} employees, once, for a hosted review round, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
     <meta property="og:site_name" content="{{ site_name }}">
     <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20%E2%82%AC{{ plan_single_price }}%20once%20%7C%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
     <meta property="og:image:width" content="1200">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'pricing' %}">
     <meta name="twitter:title" content="Blik360 Pricing — Self-Host Free, €{{ plan_single_price }} Once, or €{{ plan_saas_price }}/mo">
-    <meta name="twitter:description" content="Self-host free, pay €{{ plan_single_price }} once for a hosted review round of up to {{ plan_single_max }} employees, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
+    <meta name="twitter:description" content="Self-host free, pay €{{ plan_single_price }} per {{ plan_single_max }} employees, once, for a hosted review round, or subscribe from €{{ plan_saas_price }}/mo. {{ trial_days }}-day subscription trial; credit card required.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Blik360%20Pricing&subtitle=Free%20Self-Hosted%20%7C%20%E2%82%AC{{ plan_single_price }}%20once%20%7C%20%E2%82%AC{{ plan_saas_price }}%2Fmo">
 {% endblock %}
 
@@ -80,7 +80,7 @@
                 "name": "Single Round",
                 "price": "{{ plan_single_price }}",
                 "priceCurrency": "EUR",
-                "description": "One hosted review round for up to {{ plan_single_max }} employees. One-time payment, no subscription.",
+                "description": "One hosted review round, €{{ plan_single_price }} per pack of {{ plan_single_max }} employees. One-time payment, no subscription.",
                 "availability": "https://schema.org/InStock",
                 "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'one_time_360_review' %}"
             },
@@ -123,7 +123,7 @@
             <div class="hero-content">
                 <h1 class="hero-title">Simple, Flat Pricing</h1>
                 <p class="hero-subtitle">
-                    Self-host free, pay €{{ plan_single_price }} once for a single hosted review round, or subscribe to managed EU hosting from €{{ plan_saas_price }}/month.
+                    Self-host free, pay €{{ plan_single_price }} per {{ plan_single_max }} employees, once, for a single hosted review round, or subscribe to managed EU hosting from €{{ plan_saas_price }}/month.
                     No per-user fees, clear limits, and no long-term contract.
                 </p>
             </div>
@@ -139,7 +139,7 @@
 
             <div class="cta-box mt-12">
                 <p class="hosting-trial">Subscriptions: {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
-                <p class="hosting-retention">Single Round: one payment, no trial, reports stay available. Subscriptions: cancel anytime, data export available, 30-day data retention after cancellation.</p>
+                <p class="hosting-retention">Single Round: €{{ plan_single_price }} per pack of {{ plan_single_max }} review cycles, buy as many packs as you need, no trial, reports stay available. Subscriptions: cancel anytime, data export available, 30-day data retention after cancellation. All prices exclude VAT.</p>
             </div>
         </div>
     </section>
@@ -211,12 +211,12 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>What does the €{{ plan_single_price }} Single Round include?</summary>
-                    <p>{{ plan_single_max }} review cycles on the hosted product. One review cycle is one employee reviewed with one questionnaire, including invitations, anonymous responses, and the report. All questionnaires and reports are included and reviewers are free. Review cycles don't expire and reports stay available. <a href="{% landing_url 'one_time_360_review' %}">Full details.</a></p>
+                    <p>A pack of {{ plan_single_max }} review cycles on the hosted product, for €{{ plan_single_price }}. One review cycle is one employee reviewed with one questionnaire, including invitations, anonymous responses, and the report. All questionnaires and reports are included and reviewers are free. Review cycles don't expire and reports stay available. More people? Buy more packs: {{ plan_single_example }} employees = {{ plan_single_example_packs }} packs = €{{ plan_single_example_total }}. <a href="{% landing_url 'one_time_360_review' %}">Full details.</a></p>
                 </details>
 
                 <details class="faq-item">
                     <summary>Should I pick the Single Round or a subscription?</summary>
-                    <p>Pick the Single Round if you run feedback once or twice a year for up to {{ plan_single_max }} people at a time: you pay €{{ plan_single_price }} per round and nothing in between. Pick a subscription if you review continuously or have more people: €{{ plan_saas_price }}/month covers up to {{ plan_saas_max }} employees with unlimited review cycles. You can start a subscription later from Settings inside your account.</p>
+                    <p>Pick the Single Round if you run feedback once or twice a year: you pay €{{ plan_single_price }} per {{ plan_single_max }} people for each round and nothing in between. Pick a subscription if you review continuously or have a larger team: €{{ plan_saas_price }}/month covers up to {{ plan_saas_max }} employees with unlimited review cycles. You can start a subscription later from the Billing page inside your account.</p>
                 </details>
 
                 <details class="faq-item">
@@ -261,7 +261,7 @@
 
                 <details class="faq-item">
                     <summary>Is there a refund policy?</summary>
-                    <p>{{ trial_days }}-day free trial means you can try before you pay. After that, if you cancel, you're billed for the current month and that's it. No refunds on partial months, but you keep access until the end of your billing period. For the Single Round, unused rounds are refunded on request within 14 days of purchase.</p>
+                    <p>{{ trial_days }}-day free trial means you can try before you pay. After that, if you cancel, you're billed for the current month and that's it. No refunds on partial months, but you keep access until the end of your billing period. For the Single Round, unused purchases are refunded on request within 14 days of purchase.</p>
                 </details>
 
                 <details class="faq-item">

@@ -10,6 +10,7 @@ Usage:
 """
 from django.core.management.base import BaseCommand
 
+from notifications.log import record_run
 from reviews.services import send_close_check_emails
 
 
@@ -34,6 +35,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Eligible cycles: {stats['eligible']}")
 
         if not dry_run:
+            record_run('send_cycle_reminders', stats['sent'], stats['errors'])
             self.stdout.write(f"Emails sent: {stats['sent']}")
 
         if stats['errors']:

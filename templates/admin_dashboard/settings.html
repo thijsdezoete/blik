@@ -196,89 +196,15 @@
         <!-- Right Column -->
         <div style="display: flex; flex-direction: column; gap: 1.5rem;">
 
-            {% if subscription %}
-            <!-- Subscription & Billing -->
+            {% if show_billing %}
+            <!-- Billing moved to its own page -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">{% trans 'Subscription & Billing' %}</h2>
+                    <h2 class="card-title">{% trans 'Billing' %}</h2>
                 </div>
                 <div class="card-body">
-                    <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <div>
-                                <label class="form-label" style="margin-bottom: 0.25rem;">{% trans 'Plan' %}</label>
-                                <p style="margin: 0; font-weight: 600; font-size: 1.125rem;">
-                                    {{ subscription.plan.name }}
-                                </p>
-                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
-                                    {% blocktrans trimmed with price=subscription.plan.price_monthly %}€{{ price }}/month{% endblocktrans %}
-                                </p>
-                            </div>
-                            <div>
-                                {% if subscription.status == 'active' %}
-                                    <span class="badge" style="background: #059669; color: white;">{% trans 'Active' %}</span>
-                                {% elif subscription.status == 'trialing' %}
-                                    <span class="badge" style="background: #0ea5e9; color: white;">{% trans 'Trial' %}</span>
-                                {% elif subscription.status == 'past_due' %}
-                                    <span class="badge" style="background: #f59e0b; color: white;">{% trans 'Past Due' %}</span>
-                                {% elif subscription.status == 'canceled' %}
-                                    <span class="badge" style="background: #dc2626; color: white;">{% trans 'Canceled' %}</span>
-                                {% else %}
-                                    <span class="badge" style="background: #6b7280; color: white;">{{ subscription.get_status_display }}</span>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                            {% if subscription.trial_end %}
-                            <div>
-                                <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">{% trans 'Trial Ends' %}</label>
-                                <p style="margin: 0; font-size: 0.875rem;">{{ subscription.trial_end|date:'SHORT_DATE_FORMAT' }}</p>
-                            </div>
-                            {% endif %}
-                            <div>
-                                <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">{% trans 'Max Employees' %}</label>
-                                <p style="margin: 0; font-size: 0.875rem;">{{ subscription.plan.max_employees }}</p>
-                            </div>
-                        </div>
-
-                        <div style="padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                            <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">{% trans 'Current Period' %}</label>
-                            <p style="margin: 0; font-size: 0.875rem;">{{ subscription.current_period_start|date:'SHORT_DATE_FORMAT' }} - {{ subscription.current_period_end|date:'SHORT_DATE_FORMAT' }}</p>
-                        </div>
-                    </div>
-
-                    {% if subscription.cancel_at_period_end %}
-                    <div style="padding: 12px; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; color: #991b1b; font-size: 0.875rem; margin-bottom: 1rem;">
-                        <strong>⚠️ {% trans 'Subscription Canceling:' %}</strong> {% blocktrans trimmed with end_date=subscription.current_period_end|date:'SHORT_DATE_FORMAT' %}Ends {{ end_date }}{% endblocktrans %}
-                    </div>
-                    {% endif %}
-
-                    <a href="{% url 'subscriptions:billing_portal' %}" class="btn btn-secondary" style="width: 100%; justify-content: center;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                        {% trans 'Manage Billing' %}
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-
-            {% if round_credits is not None or can_buy_round and HAS_STRIPE_CONFIGURED %}
-            <!-- Review rounds -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">{% trans 'Review Rounds' %}</h2>
-                </div>
-                <div class="card-body">
-                    {% if round_credits is not None %}
-                    <div style="margin-bottom: 1rem;">
-                        <label class="form-label" style="font-size: 0.8125rem; margin-bottom: 0.25rem;">{% trans 'Review cycles remaining' %}</label>
-                        <p style="margin: 0; font-size: 1.25rem; font-weight: 600;">{{ round_credits }}</p>
-                        {% if cycle_credits is None %}
-                        <p style="margin: 0.25rem 0 0; font-size: 0.8125rem; color: #64748b;">{% trans 'Not used while your subscription is active.' %}</p>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    {% include "admin_dashboard/partials/billing_actions.html" %}
+                    <p style="margin: 0 0 1rem; font-size: 0.875rem; color: var(--text-secondary);">{% trans 'Your plan, payment method, invoices and review credits.' %}</p>
+                    <a href="{% url 'billing' %}" class="btn btn-secondary">{% trans 'Go to Billing' %}</a>
                 </div>
             </div>
             {% endif %}
@@ -568,31 +494,6 @@
                 <button type="button" class="btn btn-primary btn-sm" onclick="showImportModal()">
                     {% trans 'Import Data' %}
                 </button>
-            </div>
-            {% endif %}
-
-            {% if subscription %}
-            <!-- Subscription Management -->
-            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
-                <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px;">{% trans 'Subscription' %}</h3>
-                {% if subscription.cancel_at_period_end %}
-                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
-                        {% blocktrans trimmed with end_date=subscription.current_period_end|date:'SHORT_DATE_FORMAT' %}Scheduled to cancel on {{ end_date }}.{% endblocktrans %}
-                    </p>
-                    <form method="post" action="{% url 'account:reactivate_subscription' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary btn-sm">{% trans 'Reactivate' %}</button>
-                    </form>
-                {% else %}
-                    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
-                        {% blocktrans trimmed with end_date=subscription.current_period_end|date:'SHORT_DATE_FORMAT' %}Cancel subscription. Access until {{ end_date }}.{% endblocktrans %}
-                    </p>
-                    <form method="post" action="{% url 'account:cancel_subscription' %}"
-                          onsubmit="return confirm('{{ _("Cancel subscription? You'll retain access until end of billing period.")|escapejs }}');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary btn-sm">{% trans 'Cancel Subscription' %}</button>
-                    </form>
-                {% endif %}
             </div>
             {% endif %}
 

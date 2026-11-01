@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 19:54+0000\n"
+"POT-Creation-Date: 2026-10-31 22:19+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1357,6 +1357,13 @@ msgstr ""
 msgid "Error deleting webhook: %(error)s"
 msgstr ""
 
+#, python-format
+msgid "%(count)s credits left"
+msgstr ""
+
+msgid "Free, no limits"
+msgstr ""
+
 msgid "You do not have permission to create organizations."
 msgstr ""
 
@@ -1364,6 +1371,10 @@ msgid "Organization name is required."
 msgstr ""
 
 msgid "Admin email is required."
+msgstr ""
+
+#, python-format
+msgid "Review credits must be a number from 0 to %(max)s."
 msgstr ""
 
 #, python-format
@@ -1535,6 +1546,9 @@ msgstr ""
 msgid "automatically send report email"
 msgstr ""
 
+msgid "Stripe customer ID"
+msgstr ""
+
 msgid "Allow new users to register for this organization"
 msgstr ""
 
@@ -1638,6 +1652,14 @@ msgstr ""
 msgid "Failed to generate demo data: %(error)s"
 msgstr ""
 
+#, python-format
+msgid "%(command)s: last run %(time)s"
+msgstr ""
+
+#, python-format
+msgid "%(command)s: never ran"
+msgstr ""
+
 msgid "Notifications"
 msgstr ""
 
@@ -1696,6 +1718,33 @@ msgid "sent email"
 msgstr ""
 
 msgid "sent emails"
+msgstr ""
+
+msgid "recipient"
+msgstr ""
+
+msgid "email log entry"
+msgstr ""
+
+msgid "email log"
+msgstr ""
+
+msgid "command"
+msgstr ""
+
+msgid "ran at"
+msgstr ""
+
+msgid "sent"
+msgstr ""
+
+msgid "errors"
+msgstr ""
+
+msgid "cron run"
+msgstr ""
+
+msgid "cron runs"
 msgstr ""
 
 #, python-format
@@ -2819,6 +2868,12 @@ msgstr ""
 msgid "Something went wrong. Please try again."
 msgstr ""
 
+msgid "Next trial reminder"
+msgstr ""
+
+msgid "Emails to this organization"
+msgstr ""
+
 msgid "Used"
 msgstr ""
 
@@ -2966,9 +3021,6 @@ msgstr ""
 msgid "Unpaid"
 msgstr ""
 
-msgid "Stripe customer ID"
-msgstr ""
-
 msgid "Stripe subscription ID"
 msgstr ""
 
@@ -3053,8 +3105,29 @@ msgid "Login token for %(email)s"
 msgstr ""
 
 #, python-format
-msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy another round or start a subscription under Settings."
-msgstr "Dafür werden %(needed)s Feedbackrunde(n) benötigt, dein Guthaben reicht für %(available)s. Kaufe ein weiteres Paket oder schließe unter Einstellungen ein Abonnement ab."
+msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy more on the Billing page, or start a subscription there."
+msgstr ""
+
+msgid "The card was declined: not enough funds."
+msgstr ""
+
+msgid "The card has expired."
+msgstr ""
+
+msgid "The card was declined by the bank."
+msgstr ""
+
+msgid "The card was reported lost."
+msgstr ""
+
+msgid "The card was reported stolen."
+msgstr ""
+
+msgid "The security code (CVC) is wrong."
+msgstr ""
+
+msgid "The bank asks you to confirm the payment."
+msgstr ""
 
 msgid "Your subscription is not active. Please update your payment information."
 msgstr "Dein Abonnement ist nicht aktiv. Bitte aktualisiere deine Zahlungsdaten."
@@ -3075,6 +3148,10 @@ msgstr ""
 msgid "This organization already has a subscription."
 msgstr ""
 
+#, python-format
+msgid "Enter a number of reviews from 1 to %(max)s."
+msgstr ""
+
 msgid "Could not start checkout. Please try again."
 msgstr ""
 
@@ -3091,6 +3168,19 @@ msgid "This email address already has an account. The new subscription was cance
 msgstr "Für diese E-Mail-Adresse gibt es bereits ein Konto. Das neue Abonnement wurde storniert, es wurde nichts berechnet. Melde dich an und wähle unter Einstellungen einen Tarif."
 
 msgid "This organization already has a subscription. The new one was cancelled and nothing was charged."
+msgstr ""
+
+#, python-format
+msgid "Your plan is now %(plan)s."
+msgstr ""
+
+msgid "Could not change the plan. Please try again, or contact us."
+msgstr ""
+
+msgid "There are no billing details yet. They are made with your first purchase."
+msgstr ""
+
+msgid "Could not open the billing portal. Please try again."
 msgstr ""
 
 msgid "Forgot Password - Blik 360 Feedback"
@@ -3345,6 +3435,9 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid "Billing"
+msgstr ""
+
 msgid "Platform"
 msgstr ""
 
@@ -3365,6 +3458,241 @@ msgid "Logout"
 msgstr ""
 
 msgid "Toggle theme"
+msgstr ""
+
+msgid "Your subscription has ended. You cannot add reviewees or start review cycles."
+msgstr ""
+
+msgid "Your last payment failed. Update your payment method to keep your subscription."
+msgstr ""
+
+msgid "Go to Billing"
+msgstr ""
+
+msgid "Your plan, payments and invoices"
+msgstr ""
+
+msgid "Live payment details are not available right now. Try again in a few minutes."
+msgstr ""
+
+#, python-format
+msgid "€%(price)s/month, excluding VAT"
+msgstr ""
+
+#, python-format
+msgid "Your subscription ended on %(date)s. You can start a new one below."
+msgstr ""
+
+msgid "Your last payment failed."
+msgstr ""
+
+#, python-format
+msgid "We try again on %(date)s."
+msgstr ""
+
+msgid "We do not try again. Update your payment method to pay the open invoice."
+msgstr ""
+
+msgid "Update payment method"
+msgstr ""
+
+#, python-format
+msgid "Your subscription ends on %(date)s."
+msgstr ""
+
+msgid "Reactivate subscription"
+msgstr ""
+
+#, python-format
+msgid "Your trial ends on %(date)s."
+msgstr ""
+
+msgid "Then your first invoice is:"
+msgstr ""
+
+#, python-format
+msgid "Next invoice on %(date)s:"
+msgstr ""
+
+#, python-format
+msgid "Next invoice on %(date)s."
+msgstr ""
+
+#, python-format
+msgid "%(brand)s card ending in %(last4)s, valid until %(month)s/%(year)s"
+msgstr ""
+
+msgid "This card expires before your next invoice. Add a new card to avoid a failed payment."
+msgstr ""
+
+msgid "No payment method on file."
+msgstr ""
+
+msgid "Change payment method"
+msgstr ""
+
+msgid "You pay per round. There is no subscription."
+msgstr ""
+
+msgid "Usage"
+msgstr ""
+
+msgid "Active reviewees"
+msgstr ""
+
+#, python-format
+msgid "%(count)s of %(max)s"
+msgstr ""
+
+msgid "Review credits left"
+msgstr ""
+
+msgid "Not used while your subscription is active."
+msgstr ""
+
+msgid "One credit is one reviewee with one questionnaire."
+msgstr ""
+
+msgid "Plan"
+msgstr ""
+
+#, python-format
+msgid "Switch to %(name)s: €%(price)s/month, up to %(max)s reviewees"
+msgstr ""
+
+msgid "Start EU Hosted subscription"
+msgstr ""
+
+msgid "Start Enterprise subscription"
+msgstr ""
+
+msgid "Buy review credits"
+msgstr ""
+
+#, python-format
+msgid "%(packs)s × €%(price)s per pack = €%(total)s, excluding VAT"
+msgstr ""
+
+msgid "How many reviews do you need?"
+msgstr ""
+
+#, python-format
+msgid "Credits come in packs of %(per_pack)s. One credit is one reviewee with one questionnaire. Credits do not expire."
+msgstr ""
+
+msgid "Buy credits"
+msgstr ""
+
+msgid "Invoices"
+msgstr ""
+
+msgid "Edit billing details"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Number"
+msgstr ""
+
+msgid "Amount"
+msgstr ""
+
+msgid "Paid"
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+msgid "Void"
+msgstr ""
+
+msgid "Not paid"
+msgstr ""
+
+msgid "Pay"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "No invoices yet."
+msgstr ""
+
+msgid "Invoices are sent by Thijs de Zoete Holding BV, trading as Blik360, the Netherlands. Prices are excluding VAT."
+msgstr ""
+
+#, python-format
+msgid "Companies in the Netherlands pay 21%% VAT."
+msgstr ""
+
+msgid "Companies in another EU country with a valid VAT number: VAT reverse charged."
+msgstr ""
+
+msgid "Companies outside the EU: no VAT."
+msgstr ""
+
+msgid "To change the company name, address or VAT number on new invoices, use \"Edit billing details\"."
+msgstr ""
+
+msgid "Cancel subscription"
+msgstr ""
+
+msgid "What happens when I cancel?"
+msgstr ""
+
+#, python-format
+msgid "You keep full access until %(date)s. You pay nothing more."
+msgstr ""
+
+msgid "After that, you cannot add reviewees or start review cycles. Reports stay available."
+msgstr ""
+
+#, python-format
+msgid "%(days)s days after the end, we delete your data."
+msgstr ""
+
+msgid "Export your data first"
+msgstr ""
+
+msgid "Questions?"
+msgstr ""
+
+msgid "Send us an email about billing, invoices or your plan:"
+msgstr ""
+
+msgid "Change plan"
+msgstr ""
+
+#, python-format
+msgid "Switch to %(name)s"
+msgstr ""
+
+#, python-format
+msgid "You are on %(name)s now."
+msgstr ""
+
+#, python-format
+msgid "€%(price)s/month, excluding VAT, for up to %(max)s active reviewees."
+msgstr ""
+
+#, python-format
+msgid "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewee first."
+msgid_plural "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewees first."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Go to Reviewees"
+msgstr ""
+
+#, python-format
+msgid "The change starts now. Your next invoice, on %(date)s, is"
+msgstr ""
+
+msgid "It includes the price difference for the rest of this month."
+msgstr ""
+
+msgid "Back"
 msgstr ""
 
 msgid "Send Bulk Invitations"
@@ -3437,9 +3765,6 @@ msgstr ""
 msgid "Subscription & Limits"
 msgstr ""
 
-msgid "Plan"
-msgstr ""
-
 #, python-format
 msgid "Renews %(renewal_date)s"
 msgstr ""
@@ -3477,9 +3802,6 @@ msgid "Progress"
 msgstr ""
 
 msgid "Actions"
-msgstr ""
-
-msgid "View"
 msgstr ""
 
 msgid "Recent Review Cycles"
@@ -3820,13 +4142,11 @@ msgstr ""
 msgid "Buy another round"
 msgstr ""
 
-msgid "Start EU Hosted subscription"
-msgstr ""
-
-msgid "Start Enterprise subscription"
-msgstr ""
-
 msgid "Ask an organization administrator to buy another round."
+msgstr ""
+
+#, python-format
+msgid "€%(amount)s"
 msgstr ""
 
 msgid "Move section up"
@@ -3948,9 +4268,6 @@ msgid "This questionnaire doesn't have any sections or questions yet."
 msgstr ""
 
 msgid "Archived"
-msgstr ""
-
-msgid "Usage"
 msgstr ""
 
 msgid "The default choice when no other questionnaire is selected."
@@ -5541,39 +5858,7 @@ msgstr ""
 msgid "If disabled, new users can only create cycles for themselves"
 msgstr ""
 
-msgid "Subscription & Billing"
-msgstr ""
-
-#, python-format
-msgid "€%(price)s/month"
-msgstr ""
-
-msgid "Trial Ends"
-msgstr ""
-
-msgid "Max Employees"
-msgstr ""
-
-msgid "Current Period"
-msgstr ""
-
-msgid "Subscription Canceling:"
-msgstr ""
-
-#, python-format
-msgid "Ends %(end_date)s"
-msgstr ""
-
-msgid "Manage Billing"
-msgstr ""
-
-msgid "Review Rounds"
-msgstr ""
-
-msgid "Review cycles remaining"
-msgstr ""
-
-msgid "Not used while your subscription is active."
+msgid "Your plan, payment method, invoices and review credits."
 msgstr ""
 
 msgid "Email (SMTP) Settings"
@@ -5676,26 +5961,6 @@ msgstr ""
 msgid "Import Data"
 msgstr ""
 
-msgid "Subscription"
-msgstr ""
-
-#, python-format
-msgid "Scheduled to cancel on %(end_date)s."
-msgstr ""
-
-msgid "Reactivate"
-msgstr ""
-
-#, python-format
-msgid "Cancel subscription. Access until %(end_date)s."
-msgstr ""
-
-msgid "Cancel subscription? You'll retain access until end of billing period."
-msgstr ""
-
-msgid "Cancel Subscription"
-msgstr ""
-
 msgid "Delete Account"
 msgstr ""
 
@@ -5789,9 +6054,6 @@ msgid "Response data may be skipped if question matching fails"
 msgstr ""
 
 msgid "Reports attach to imported cycles, or create new cycles if importing separately"
-msgstr ""
-
-msgid "Back"
 msgstr ""
 
 msgid "Confirm Import"
@@ -7974,7 +8236,7 @@ msgstr ""
 msgid "Create Organization"
 msgstr ""
 
-msgid "Create a new organization without a payment plan for testing"
+msgid "Create an organization without a payment, for testing or for a customer you invoice yourself."
 msgstr ""
 
 msgid "New Organization Details"
@@ -7993,6 +8255,12 @@ msgid "Admin Email"
 msgstr ""
 
 msgid "An invitation will be sent to this email address. The user will be set up as the organization administrator."
+msgstr ""
+
+msgid "Review credits"
+msgstr ""
+
+msgid "Leave empty for an account without limits. With credits, the account works like a Single Round customer: one credit is one review cycle, and the admin can buy more on the Billing page."
 msgstr ""
 
 msgid "Create Organization & Send Invitation"

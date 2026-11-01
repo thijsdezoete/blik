@@ -26,6 +26,7 @@ from core.models import Organization
 from .models import (
     CheckoutFulfilment, OneTimeLoginToken, Plan, RoundPurchase, Subscription,
 )
+from .utils import CREDITS_PER_PACK
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,8 @@ def resolve_checkout_account(session):
         if profile is not None and str(profile.organization_id) == str(organization_id):
             organization = Organization.objects.select_for_update().get(pk=profile.organization_id)
             account = Account(organization=organization, user=profile.user)
-            if is_subscription and Subscription.objects.filter(organization=organization).exists():
+            if is_subscription and Subscription.objects.filter(
+                    organization=organization).exclude(status='canceled').exists():
                 account.rejection = 'rejected_duplicate_subscription'
             return account
 
@@ -114,6 +116,12 @@ def resolve_checkout_account(session):
         return Account(organization=profile.organization, user=user,
                        rejection='rejected_existing_account')
     return Account(organization=profile.organization, user=user)
+
+
+def _packs(session):
+    """Packs paid for in a single-round session: the quantity of its one line item."""
+    items = stripe.checkout.Session.list_line_items(session['id'], limit=1)
+    return items['data'][0]['quantity'] if items['data'] else 1
 
 
 @transaction.atomic
@@ -147,19 +155,33 @@ def _fulfil(session, plan_type, stripe_subscription):
             stripe.Subscription.cancel(session['subscription'])
     elif stripe_subscription is not None:
         start, end = _period(stripe_subscription)
-        Subscription.objects.create(
+        # A returning subscriber replaces its canceled row; only canceled ones get here.
+        Subscription.objects.update_or_create(
             organization=account.organization,
-            plan=Plan.objects.get(plan_type=plan_type),
-            stripe_customer_id=session['customer'],
-            stripe_subscription_id=session['subscription'],
-            status=stripe_subscription.get('status', 'trialing'),
-            current_period_start=_ts(start),
-            current_period_end=_ts(end),
-            trial_start=_ts(stripe_subscription.get('trial_start')),
-            trial_end=_ts(stripe_subscription.get('trial_end')),
+            defaults=dict(
+                plan=Plan.objects.get(plan_type=plan_type),
+                stripe_customer_id=session['customer'],
+                stripe_subscription_id=session['subscription'],
+                status=stripe_subscription.get('status', 'trialing'),
+                current_period_start=_ts(start),
+                current_period_end=_ts(end),
+                cancel_at_period_end=False,
+                canceled_at=None,
+                trial_start=_ts(stripe_subscription.get('trial_start')),
+                trial_end=_ts(stripe_subscription.get('trial_end')),
+                trial_reminder_3_days_sent_at=None,
+                trial_reminder_1_day_sent_at=None,
+            ),
         )
     else:
-        RoundPurchase.objects.create(organization=account.organization, fulfilment=fulfilment)
+        RoundPurchase.objects.create(
+            organization=account.organization, fulfilment=fulfilment,
+            cycles_remaining=CREDITS_PER_PACK * _packs(session),
+        )
+
+    if not account.rejection and session.get('customer') and not account.organization.stripe_customer_id:
+        account.organization.stripe_customer_id = session['customer']
+        account.organization.save(update_fields=['stripe_customer_id'])
 
     if account.user_created:
         OneTimeLoginToken.objects.create(

@@ -1,8 +1,11 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.formats import date_format
+from django.utils.html import format_html, format_html_join
 from django.utils import timezone
 from django.utils.translation import gettext as _, gettext_lazy
+from .emails import next_trial_reminder
 from .models import Plan, Subscription, OneTimeLoginToken, CheckoutFulfilment, RoundPurchase
+from .utils import billing_enabled
 
 
 @admin.register(Plan)
@@ -19,6 +22,35 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ['organization__name', 'stripe_customer_id', 'stripe_subscription_id']
     readonly_fields = ['stripe_customer_id', 'stripe_subscription_id', 'created_at', 'updated_at']
     date_hierarchy = 'created_at'
+
+    # The trial reminders and the email log only mean something on the hosted SaaS, not to self-hosters.
+    def get_list_display(self, request):
+        if not billing_enabled():
+            return self.list_display
+        return [*self.list_display, 'trial_end', 'trial_reminder_3_days_sent_at',
+                'trial_reminder_1_day_sent_at', 'next_reminder']
+
+    def get_readonly_fields(self, request, obj=None):
+        if not billing_enabled():
+            return self.readonly_fields
+        return [*self.readonly_fields, 'next_reminder', 'emails']
+
+    @admin.display(description=gettext_lazy('Next trial reminder'))
+    def next_reminder(self, obj):
+        return next_trial_reminder(obj)
+
+    @admin.display(description=gettext_lazy('Emails to this organization'))
+    def emails(self, obj):
+        entries = obj.organization.email_log.all()
+        if not entries:
+            return '-'
+        return format_html(
+            '<table>{}</table>',
+            format_html_join('', '<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>', (
+                (date_format(timezone.localtime(e.sent_at), 'DATETIME_FORMAT'), e.kind, e.recipient, e.error)
+                for e in entries
+            )),
+        )
 
 
 @admin.register(OneTimeLoginToken)

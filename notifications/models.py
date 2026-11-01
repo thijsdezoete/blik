@@ -41,3 +41,47 @@ class SentEmail(models.Model):
 
     def __str__(self):
         return f'{self.kind} {self.object_id}'
+
+
+class EmailLog(models.Model):
+    """One email to a customer: an organization's admins or reviewees. Never to a reviewer.
+
+    Only for looking up what went out. SentEmail is what makes an email go out once.
+    Deleted with the organization: the recipients are personal data.
+    """
+
+    organization = models.ForeignKey(
+        'core.Organization', on_delete=models.CASCADE, null=True, blank=True,
+        related_name='email_log', verbose_name=_('organization'),
+    )
+    kind = models.CharField(_('kind'), max_length=60)
+    recipient = models.EmailField(_('recipient'))
+    sent_at = models.DateTimeField(_('sent at'), auto_now_add=True)
+    error = models.TextField(_('error'), blank=True)
+
+    class Meta:
+        verbose_name = _('email log entry')
+        verbose_name_plural = _('email log')
+        db_table = 'email_log'
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        return f'{self.kind} to {self.recipient}'
+
+
+class CronRun(models.Model):
+    """One run of a daily email command."""
+
+    command = models.CharField(_('command'), max_length=60)
+    ran_at = models.DateTimeField(_('ran at'), auto_now_add=True)
+    sent = models.PositiveIntegerField(_('sent'), default=0)
+    errors = models.TextField(_('errors'), blank=True)
+
+    class Meta:
+        verbose_name = _('cron run')
+        verbose_name_plural = _('cron runs')
+        db_table = 'cron_runs'
+        ordering = ['-ran_at']
+
+    def __str__(self):
+        return f'{self.command} {self.ran_at:%Y-%m-%d %H:%M}'

@@ -57,12 +57,15 @@
                 <li><a href="{% url 'review_cycle_list' %}" {% if 'cycle' in url_name %}class="active"{% endif %}>{% trans 'Cycles' %}</a></li>
                 <li>
                     <details class="nav-menu">
-                        <summary {% if 'questionnaire' in url_name or 'team' in url_name or url_name == 'settings' %}class="active"{% endif %}>{% trans 'Organization' %}</summary>
+                        <summary {% if 'questionnaire' in url_name or 'team' in url_name or url_name == 'settings' or 'billing' in url_name %}class="active"{% endif %}>{% trans 'Organization' %}</summary>
                         <ul>
                             <li><a href="{% url 'questionnaire_list' %}" {% if 'questionnaire' in url_name %}class="active"{% endif %}>{% trans 'Questionnaires' %}</a></li>
                             <li><a href="{% url 'team_list' %}" {% if 'team' in url_name %}class="active"{% endif %}>{% trans 'Team' %}</a></li>
                             {% if perms.accounts.can_manage_organization %}
                             <li><a href="{% url 'settings' %}" {% if url_name == 'settings' %}class="active"{% endif %}>{% trans 'Settings' %}</a></li>
+                            {% endif %}
+                            {% if show_billing %}
+                            <li><a href="{% url 'billing' %}" {% if 'billing' in url_name %}class="active"{% endif %}>{% trans 'Billing' %}</a></li>
                             {% endif %}
                         </ul>
                     </details>
@@ -118,6 +121,12 @@
     </nav>
 
     <div class="container">
+        {% if billing_problem and request.resolver_match.url_name != 'billing' %}
+        <div class="alert alert-error"><div>
+            {% if billing_problem == 'lapsed' %}{% trans 'Your subscription has ended. You cannot add reviewees or start review cycles.' %}{% else %}{% trans 'Your last payment failed. Update your payment method to keep your subscription.' %}{% endif %}
+            <a href="{% url 'billing' %}">{% trans 'Go to Billing' %}</a>
+        </div></div>
+        {% endif %}
         {% if messages %}
         <div class="messages">
             {% for message in messages %}

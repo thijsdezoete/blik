@@ -21,7 +21,7 @@ class Command(BaseCommand):
     def handle(self, *args, dry_run=False, **options):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         for organization in Organization.objects.filter(stripe_customer_id=''):
-            customer_id = (Subscription.objects.filter(organization=organization)
+            customer_id = (Subscription.objects.filter(organization=organization).exclude(status='canceled')
                            .values_list('stripe_customer_id', flat=True).first())
             if not customer_id:
                 customer_id = self._from_checkouts(organization)

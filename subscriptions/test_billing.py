@@ -1,8 +1,10 @@
 from datetime import datetime, timezone as dt_timezone
+from io import StringIO
 from unittest.mock import MagicMock, patch
 
 import stripe
 
+from django.core.management import call_command
 from django.test import Client, RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
@@ -14,7 +16,10 @@ from subscriptions.billing import card_expires_before, live_details
 from subscriptions.models import Plan, Subscription
 from subscriptions.services import change_plan
 from subscriptions.testing import grant, subscribe
-from subscriptions.utils import can_see_billing, packs_for, payment_error_text, reviewees_over_limit
+from subscriptions.utils import (
+    can_see_billing, packs_for, payment_error_text, reviewees_over_limit,
+    stripe_customer_id,
+)
 
 BILLING = dict(STRIPE_SECRET_KEY='sk_test_x', STRIPE_WEBHOOK_SECRET='whsec_x',
                STRIPE_PRICE_ID_SAAS='price_saas', STRIPE_PRICE_ID_ENTERPRISE='price_ent',
@@ -136,7 +141,7 @@ class CheckoutCustomerTests(TestCase):
         self.assertNotIn('customer_creation', params)
 
     def test_a_subscriber_without_a_backfilled_customer_reuses_the_subscriptions_one(self):
-        subscribe(self.org, status='canceled')
+        subscribe(self.org)
         params = self.start()
         self.assertEqual(params['customer'], f'cus_org{self.org.pk}')
         self.assertNotIn('customer_creation', params)
@@ -194,6 +199,7 @@ class FailedPaymentTests(TestCase):
         org = OrganizationFactory()
         subscription = subscribe(org, status='past_due')
         stripe_sub = stripe_object({
+            'status': 'past_due',
             'default_payment_method': None,
             'latest_invoice': {'next_payment_attempt': None,
                                'payments': {'data': [{'payment': {'payment_intent': 'pi_invoice'}}]}},
@@ -218,3 +224,34 @@ class ChangePlanTests(TestCase):
             change_plan(stale, big)
         saved = Subscription.objects.get(pk=stale.pk)
         self.assertEqual((saved.plan, saved.status), (big, 'past_due'))
+
+
+@override_settings(**BILLING)
+class SyncStripeTests(TestCase):
+    def test_subscriptions_and_customers_follow_stripe(self):
+        canceled, missing, live = (OrganizationFactory() for _ in range(3))
+        for org in (canceled, missing, live):
+            subscribe(org)
+        canceled.stripe_customer_id = 'cus_deleted'
+        canceled.save()
+        live.stripe_customer_id = 'cus_live'
+        live.save()
+
+        def subscription(sub_id):
+            if sub_id == f'sub_org{missing.pk}':
+                raise stripe.InvalidRequestError('No such subscription', 'id', code='resource_missing')
+            status = 'canceled' if sub_id == f'sub_org{canceled.pk}' else 'active'
+            return stripe_object({'status': status, 'ended_at': 1_700_000_000})
+
+        customers = {'cus_deleted': {'id': 'cus_deleted', 'deleted': True}, 'cus_live': {'id': 'cus_live'}}
+        with patch('subscriptions.management.commands.sync_stripe.stripe.Subscription.retrieve', side_effect=subscription), \
+                patch('subscriptions.management.commands.sync_stripe.stripe.Customer.retrieve',
+                      side_effect=lambda cus: stripe_object(customers[cus])):
+            call_command('sync_stripe', stdout=StringIO())
+
+        statuses = dict(Subscription.objects.values_list('organization_id', 'status'))
+        self.assertEqual([statuses[o.pk] for o in (canceled, missing, live)], ['canceled', 'canceled', 'active'])
+        canceled.refresh_from_db(), live.refresh_from_db()
+        self.assertEqual((canceled.stripe_customer_id, live.stripe_customer_id), ('', 'cus_live'))
+        # The deleted customer is not picked up again from the canceled subscription.
+        self.assertEqual(stripe_customer_id(canceled), '')

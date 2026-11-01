@@ -71,9 +71,10 @@ SUPPORT_EMAIL = 'thijs@mail.blik360.com'
 
 def stripe_customer_id(organization):
     """The organization's Stripe customer, or ''. Subscribers from before the billing page have it only on
-    their subscription until backfill_stripe_customers runs."""
+    their subscription until backfill_stripe_customers runs. Not from a canceled one: its customer may be
+    deleted in Stripe, and sync_stripe clears only the organization's."""
     return organization.stripe_customer_id or (
-        Subscription.objects.filter(organization=organization)
+        Subscription.objects.filter(organization=organization).exclude(status='canceled')
         .values_list('stripe_customer_id', flat=True).first() or '')
 
 

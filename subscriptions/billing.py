@@ -63,6 +63,8 @@ def live_details(organization, subscription):
         stripe_sub = stripe.Subscription.retrieve(
             subscription.stripe_subscription_id,
             expand=['default_payment_method', 'latest_invoice.payments']).to_dict()
+        if stripe_sub['status'] == 'canceled':
+            return details  # Ended in Stripe, missed here: nothing to preview. sync_stripe fixes the row.
         method = stripe_sub['default_payment_method']
         if method and method['type'] == 'card':
             card = method['card']

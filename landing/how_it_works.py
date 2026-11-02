@@ -39,8 +39,9 @@ STEPS = [
         "slug": "sign-up",
         "act": "setup",
         "title": "Sign up",
-        "lead": "Pick a plan and pay with Stripe. You get an admin account and a welcome email.",
+        "lead": "Start free, or pick a plan and pay with Stripe. You get an admin account and a welcome email.",
         "points": [
+            "Free: one round for one reviewee, with no credit card.",
             "€19 buys 10 credits. One credit is one round for one reviewee.",
             "Reviewers are free. There is no limit on reviewers.",
             "A subscription covers up to 50 reviewees and starts with a 14-day free trial. For more people, ask Thijs.",

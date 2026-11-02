@@ -899,19 +899,25 @@
     font-size: var(--text-base);
 }
 
-/* Pricing Grid: three plan cards in a row. The single-column breakpoint
-   lives after the fold-out rules below. */
+/* Pricing Grid: four plan cards in a row, two by two below 1100px. The
+   single-column breakpoint lives after the fold-out rules below. */
 .landing-page .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
     max-width: 1100px;
     margin: 0 auto;
 }
 
+@media (max-width: 1100px) {
+    .landing-page .pricing-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .landing-page .pricing-card {
     background: var(--bg-card);
-    padding: 2.5rem;
+    padding: 1.75rem;
     border-radius: 12px;
     border: 1px solid var(--border);
     position: relative;
@@ -934,6 +940,7 @@
     border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .landing-page .pricing-card h3 {
@@ -1411,7 +1418,7 @@
 
 /* Signup Page Styles */
 .signup-container {
-    max-width: 800px;
+    max-width: 1040px;
     margin: 80px auto;
     padding: 40px 20px;
 }
@@ -8167,4 +8174,11 @@
 /* Dark mode: --border is too faint for a hairline that carries the layout. */
 [data-theme="dark"] .landing-page :is(.features-grid, .audience-card-grid):not(:has(> .feature-card:is([class*="feature-card-"], [class*="comparison-"], [class*="dreyfus-"], [class*="portfolio-"], [class*="archetype-"], [class*="audience-"], [class*="about-"], [class*="framework-"], [class*="product-"]))) > .feature-card {
     border-top-color: color-mix(in srgb, var(--text-secondary) 35%, transparent);
+}
+
+a.checkout-btn {
+    display: block;
+    box-sizing: border-box;
+    text-align: center;
+    text-decoration: none;
 }

@@ -41,6 +41,24 @@ class ModelLimitTests(ReviewerLimitBase):
         self.add(cycle, FREE_REVIEWERS_PER_CYCLE)
         self.assertEqual(cycle.tokens.exclude(category='self').count(), FREE_REVIEWERS_PER_CYCLE)
 
+    def test_second_self_token_is_refused_at_the_cap(self):
+        self.give_free_credit()
+        cycle = self.new_cycle()
+        self.add(cycle, 1, category='self')
+        self.add(cycle, FREE_REVIEWERS_PER_CYCLE)
+        with self.assertRaises(ReviewerLimit):
+            self.add(cycle, 1, category='self')
+        self.assertEqual(cycle.tokens.filter(category='self').count(), 1)
+
+    def test_second_self_token_counts_toward_the_cap(self):
+        self.give_free_credit()
+        cycle = self.new_cycle()
+        self.add(cycle, 2, category='self')
+        self.add(cycle, FREE_REVIEWERS_PER_CYCLE - 1)
+        with self.assertRaises(ReviewerLimit):
+            self.add(cycle, 1)
+        self.assertEqual(cycle.tokens.count(), FREE_REVIEWERS_PER_CYCLE + 1)
+
     def test_granted_credits_lift_the_cap(self):
         self.give_free_credit()
         grant(self.org, 1)

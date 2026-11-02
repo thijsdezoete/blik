@@ -6,6 +6,7 @@ with organization scoping and anonymity preservation.
 """
 from django.utils.translation import gettext as _
 from rest_framework import serializers
+from django.db import transaction
 from django.db.models import Count, Q
 from accounts.models import Reviewee
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken, Response
@@ -423,11 +424,11 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
         send_invitations = validated_data.pop("send_invitations", True)
 
         validated_data["created_by"] = self.context["request"].user
-        cycle = super().create(validated_data)
+        created_tokens = []
 
-        # Create reviewer tokens if emails provided
-        if reviewer_emails:
-            created_tokens = []
+        # The cycle and its tokens together: a refused token leaves no cycle behind.
+        with transaction.atomic():
+            cycle = super().create(validated_data)
 
             # Create tokens for each category and email, skipping the
             # categories this cycle does not collect.
@@ -443,10 +444,10 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
                     )
                     created_tokens.append(token)
 
-            # Send invitations if requested
-            if send_invitations and created_tokens:
-                from reviews.services import send_reviewer_invitations
-                send_reviewer_invitations(cycle)
+        # Send invitations if requested
+        if send_invitations and created_tokens:
+            from reviews.services import send_reviewer_invitations
+            send_reviewer_invitations(cycle)
 
         return cycle
 

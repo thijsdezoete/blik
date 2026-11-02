@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.utils.translation import gettext as _, gettext_lazy
 
 from accounts.models import Reviewee, UserProfile
@@ -29,6 +29,21 @@ class NoCycleCredits(Exception):
         )
 
 
+# An organization on the free signup credit alone may invite this many reviewers per cycle.
+FREE_REVIEWERS_PER_CYCLE = 10
+
+
+class ReviewerLimit(Exception):
+    """Raised when a free organization adds a reviewer past FREE_REVIEWERS_PER_CYCLE."""
+
+    def __init__(self):
+        super().__init__(
+            _('Free accounts can invite up to %(max)s reviewers per review cycle. '
+              'Buy review credits on the Billing page to invite more.')
+            % {'max': FREE_REVIEWERS_PER_CYCLE}
+        )
+
+
 def entitlement(organization):
     """Which rules apply to this organization. The only place that decides.
 
@@ -43,6 +58,16 @@ def entitlement(organization):
     if RoundPurchase.objects.filter(organization=organization).exists():
         return 'credits'
     return 'lapsed' if subscription else 'self_hosted'
+
+
+def is_free_tier(organization):
+    """True when the organization has only the free signup credit: never bought, never granted by hand."""
+    return bool(
+        organization
+        and entitlement(organization) == 'credits'
+        and not RoundPurchase.objects.filter(organization=organization).filter(
+            Q(free_signup_inbox__isnull=True) | Q(free_signup_inbox='')).exists()
+    )
 
 
 def billing_enabled():

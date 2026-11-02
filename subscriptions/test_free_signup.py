@@ -57,6 +57,7 @@ class CanonicalInboxTests(TestCase):
             ('Thijs.DeZoete+x@googlemail.com', 'thijsdezoete@gmail.com'),
             ('jan+x@example.com', 'jan@example.com'),
             ('j.an@example.com', 'j.an@example.com'),
+            ('+x@gmail.com', '+x@gmail.com'),
         ]:
             with self.subTest(email=email):
                 self.assertEqual(canonical_inbox(email), inbox)

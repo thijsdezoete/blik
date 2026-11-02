@@ -113,7 +113,12 @@ class LanguageMiddleware:
             request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME),
             organization=getattr(request, 'organization', None) or getattr(profile, 'organization', None),
         )
-        translation.activate(language)
         request.LANGUAGE_CODE = language
 
-        return self.get_response(request)
+        # override() restores the previous language after the response, so views that activate
+        # another one (the feedback form, the API) cannot leak it into the next request or test.
+        # Django's LocaleMiddleware reads Content-Language after this returns, so set it here.
+        with translation.override(language):
+            response = self.get_response(request)
+            response.headers.setdefault('Content-Language', translation.get_language())
+        return response

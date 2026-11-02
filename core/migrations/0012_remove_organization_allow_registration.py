@@ -1,5 +1,4 @@
 from django.db import migrations, models
-from django.utils.translation import gettext_lazy as _
 
 
 class Migration(migrations.Migration):
@@ -29,8 +28,8 @@ class Migration(migrations.Migration):
                     field=models.BooleanField(
                         default=False,
                         db_default=False,
-                        help_text=_("Allow new users to register for this organization"),
-                        verbose_name=_("allow user registration"),
+                        help_text="Allow new users to register for this organization",
+                        verbose_name="allow user registration",
                     ),
                 ),
             ],

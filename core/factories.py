@@ -62,5 +62,4 @@ class OrganizationFactory(DjangoModelFactory):
     auto_send_report_email = True
 
     # Registration settings
-    allow_registration = False
     default_users_can_create_cycles = False

@@ -21,7 +21,6 @@ class Command(BaseCommand):
                 'email': 'growth@blik360.com',
                 'min_responses_for_anonymity': 1,  # Allow single self-assessment
                 'auto_send_report_email': False,  # Custom email sent from landing app
-                'allow_registration': False,
                 'default_users_can_create_cycles': False,
                 'is_active': True,
             }

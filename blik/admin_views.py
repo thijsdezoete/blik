@@ -87,6 +87,15 @@ from subscriptions.utils import (
 logger = logging.getLogger(__name__)
 
 
+def limit_error(request, error):
+    """A credit or reviewer limit message. Admins who can open Billing get a link to it."""
+    from django.utils.html import format_html
+    if can_see_billing(request.organization, request.user):
+        messages.error(request, format_html('{} <a href="{}">{}</a>', str(error), reverse('billing'), _('Go to Billing')))
+    else:
+        messages.error(request, str(error))
+
+
 def get_default_labels(questionnaire):
     """The default likert scale and rating labels of a new question, in the questionnaire's source language."""
 
@@ -688,7 +697,7 @@ def quick_cycle_create(request, reviewee_uuid):
                         )
                         total_tokens += 1
     except (NoCycleCredits, ReviewerLimit) as e:
-        messages.error(request, str(e))
+        limit_error(request, e)
         return redirect('reviewee_list')
 
     if previous_cycle:
@@ -1836,7 +1845,7 @@ def review_cycle_create(request):
                 return redirect(f"{reverse('billing')}?reviews={e.needed - e.available}")
             return redirect('review_cycle_create')
         except ReviewerLimit as e:
-            messages.error(request, str(e))
+            limit_error(request, e)
             return redirect('review_cycle_create')
         except Exception as e:
             messages.error(request, _('Error creating review cycle: %(error)s') % {'error': str(e)})
@@ -2166,7 +2175,7 @@ def assign_invitations(request, cycle_uuid):
                 language = request.POST.get('language', '')
                 stats = assign_tokens_to_emails(cycle, email_assignments, language=language if is_language(language) else '')
         except ReviewerLimit as e:
-            messages.error(request, str(e))
+            limit_error(request, e)
             return redirect('manage_invitations', cycle_uuid=cycle.uuid)
 
         if stats['errors']:

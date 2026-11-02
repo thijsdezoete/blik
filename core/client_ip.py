@@ -1,3 +1,5 @@
+import ipaddress
+
 from django.conf import settings
 
 
@@ -12,6 +14,8 @@ def client_ip(request):
     header = getattr(settings, "TRUSTED_CLIENT_IP_HEADER", "")
     if header:
         value = request.META.get(header, "").split(",")[0].strip()
-        if value:
-            return value
-    return request.META.get("REMOTE_ADDR")
+        try:
+            return str(ipaddress.ip_address(value))
+        except ValueError:
+            pass
+    return request.META.get("REMOTE_ADDR", "")

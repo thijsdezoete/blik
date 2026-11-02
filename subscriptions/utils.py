@@ -7,6 +7,15 @@ from accounts.models import Reviewee, UserProfile
 from .models import RoundPurchase, Subscription
 
 
+def canonical_inbox(email):
+    """The inbox an address delivers to: lowercase, without a +tag, and for Gmail without dots."""
+    local, _sep, domain = email.strip().lower().rpartition('@')
+    local = local.split('+')[0]
+    if domain in ('gmail.com', 'googlemail.com'):
+        local, domain = local.replace('.', ''), 'gmail.com'
+    return f'{local}@{domain}'
+
+
 class NoCycleCredits(Exception):
     """Raised when an organization in credits mode cannot pay for new cycles."""
 

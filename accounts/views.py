@@ -60,7 +60,7 @@ def register_view(request):
         try:
             account = free_signup(email, '')
         except IntegrityError:
-            account = None  # The same email signed up at the same moment: it has an account now.
+            account = None  # The same email or inbox signed up at the same moment: it is taken now.
         try:
             if account:
                 from core.email import send_welcome_email
@@ -83,15 +83,15 @@ def _send_existing_account_email(email):
 
     active = User.objects.filter(is_active=True).exclude(email='')
     user = active.filter(email__iexact=email).first() or active.filter(username__iexact=email).first()
-    if user is None:
-        return
-    with translation.override(user_language(user)):
+    # No user: a variant of an address that already had its free credit. Notify the typed address,
+    # in the language of the request.
+    with translation.override(user_language(user) if user else translation.get_language()):
         send_email(
             subject=_('You already have a Blik360 account'),
             message=render_to_string('emails/existing_account_signup.txt', {
-                'user': user, 'site_url': settings.SITE_URL,
+                'email': email, 'site_url': settings.SITE_URL,
             }),
-            recipient_list=[user.email],
+            recipient_list=[user.email if user else email],
         )
 
 

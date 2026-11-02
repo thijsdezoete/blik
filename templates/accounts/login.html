@@ -41,6 +41,7 @@
 
     <div class="register-link">
         <p><a href="{% url 'forgot_password' %}">{% trans 'Forgot your password?' %}</a></p>
+        {% if free_signup_enabled %}<p><a href="{% url 'register' %}">{% trans 'No account yet? Sign up free' %}</a></p>{% endif %}
     </div>
 </div>
 {% endblock %}

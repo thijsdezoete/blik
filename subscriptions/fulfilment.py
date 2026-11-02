@@ -66,6 +66,26 @@ def _create_organization(user, name, email):
     return organization
 
 
+# A free signup gets this many review-cycle credits. After that the billing page sells packs or a subscription.
+FREE_SIGNUP_CREDITS = 1
+
+
+@transaction.atomic
+def free_signup(email, name):
+    """A new user and organization with FREE_SIGNUP_CREDITS credits; None when the email has an account.
+
+    Raises IntegrityError when the same email signs up at the same moment.
+    """
+    if User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
+        return None
+    user, password = create_user_with_email_as_username(
+        email=email, password=None, is_staff=True, is_active=True,
+    )
+    organization = _create_organization(user, name or email, email)
+    RoundPurchase.objects.create(organization=organization, cycles_remaining=FREE_SIGNUP_CREDITS)
+    return Account(organization=organization, user=user, user_created=True, password=password)
+
+
 def resolve_checkout_account(session):
     """Find or create the organization this checkout pays for.
 

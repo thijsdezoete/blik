@@ -101,7 +101,6 @@ class ProfilePasswordForm(PasswordChangeForm):
 
 class FreeSignupForm(forms.Form):
     email = forms.EmailField(label=_('Email'), max_length=150)  # the username too: User.username has 150
-    organization = forms.CharField(label=_('Organization name'), max_length=255, required=False)
 
 
 class ForgotPasswordForm(forms.Form):

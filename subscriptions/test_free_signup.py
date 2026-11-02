@@ -16,13 +16,13 @@ class FreeSignupTests(TestCase):
     def setUp(self):
         UserProfileFactory()  # past the setup wizard
 
-    def signup(self, email='new@example.com', organization='Acme'):
-        return self.client.post(reverse('register'), {'email': email, 'organization': organization})
+    def signup(self, email='new@example.com'):
+        return self.client.post(reverse('register'), {'email': email})
 
     def test_signup_gives_one_review_cycle_then_blocks(self):
         response = self.signup(email='New@Example.com')
         self.assertRedirects(response, reverse('login'), fetch_redirect_response=False)
-        org = Organization.objects.get(name='Acme')
+        org = Organization.objects.get(name='new@example.com')
         self.assertEqual(entitlement(org), 'credits')
         self.assertEqual(cycle_credits(org), 1)
         self.assertEqual(mail.outbox[0].to, ['new@example.com'])
@@ -45,4 +45,4 @@ class FreeSignupTests(TestCase):
     @override_settings(STRIPE_SECRET_KEY='')
     def test_self_hosted_has_no_free_signup(self):
         self.signup()
-        self.assertFalse(Organization.objects.filter(name='Acme').exists())
+        self.assertFalse(Organization.objects.filter(name='new@example.com').exists())

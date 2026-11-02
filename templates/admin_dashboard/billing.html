@@ -160,7 +160,7 @@
             {% csrf_token %}
             <input type="hidden" name="plan_type" value="single">
             <input type="hidden" name="reviews" value="{{ credits_per_pack }}">
-            <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=credits_per_pack %}Purchase {{ count }} review slots{% endblocktrans %}{% if plan_single_price %} (€{{ plan_single_price }}){% endif %}</button>
+            <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=credits_per_pack %}Purchase {{ count }} review slots{% endblocktrans %}{% if plan_single_price %} {% blocktrans trimmed with price=plan_single_price %}(€{{ price }}, excluding VAT){% endblocktrans %}{% endif %}</button>
         </form>
         <form method="post" action="{% url 'subscriptions:start_checkout' %}" style="display: grid; gap: 0.75rem;">
             {% csrf_token %}

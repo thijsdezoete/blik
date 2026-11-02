@@ -61,5 +61,5 @@ class OrganizationFactory(DjangoModelFactory):
     min_responses_for_anonymity = 3
     auto_send_report_email = True
 
-    # Registration settings
+    # New user settings
     default_users_can_create_cycles = False

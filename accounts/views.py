@@ -58,7 +58,7 @@ def register_view(request):
     if request.method == 'POST' and form.is_valid():
         email = form.cleaned_data['email'].strip().lower()
         try:
-            account = free_signup(email, form.cleaned_data['organization'].strip())
+            account = free_signup(email, '')
         except IntegrityError:
             account = None  # The same email signed up at the same moment: it has an account now.
         try:
@@ -81,7 +81,8 @@ def _send_existing_account_email(email):
     from core.email import send_email
     from core.languages import user_language
 
-    user = User.objects.filter(email__iexact=email).first() or User.objects.filter(username__iexact=email).first()
+    active = User.objects.filter(is_active=True).exclude(email='')
+    user = active.filter(email__iexact=email).first() or active.filter(username__iexact=email).first()
     if user is None:
         return
     with translation.override(user_language(user)):

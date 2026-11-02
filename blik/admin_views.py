@@ -2425,7 +2425,7 @@ def settings_view(request):
                 messages.success(request, _('Organization details updated successfully.'))
 
             elif section == 'registration':
-                # Update registration settings
+                # New user settings
                 organization.default_users_can_create_cycles = request.POST.get('default_users_can_create_cycles') == 'on'
                 organization.save()
                 messages.success(request, _('New user settings updated successfully.'))

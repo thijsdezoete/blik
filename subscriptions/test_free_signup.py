@@ -8,7 +8,7 @@ from core.models import Organization
 from questionnaires.factories import QuestionnaireFactory
 from reviews.models import ReviewCycle
 from subscriptions.test_billing import BILLING
-from subscriptions.utils import NoCycleCredits, cycle_credits, entitlement
+from subscriptions.utils import NoCycleCredits, canonical_inbox, cycle_credits, entitlement
 
 
 @override_settings(**BILLING, RATELIMIT_ENABLE=False)
@@ -46,3 +46,33 @@ class FreeSignupTests(TestCase):
     def test_self_hosted_has_no_free_signup(self):
         self.signup()
         self.assertFalse(Organization.objects.filter(name='new@example.com').exists())
+
+
+class CanonicalInboxTests(TestCase):
+    def test_variants_of_one_inbox_match(self):
+        for email, inbox in [
+            ('thijs.dezoete@gmail.com', 'thijsdezoete@gmail.com'),
+            ('thijs.d.e.z.o.e.t.e@gmail.com', 'thijsdezoete@gmail.com'),
+            ('thijsdezoete+blik@gmail.com', 'thijsdezoete@gmail.com'),
+            ('Thijs.DeZoete+x@googlemail.com', 'thijsdezoete@gmail.com'),
+            ('jan+x@example.com', 'jan@example.com'),
+            ('j.an@example.com', 'j.an@example.com'),
+        ]:
+            with self.subTest(email=email):
+                self.assertEqual(canonical_inbox(email), inbox)
+
+
+@override_settings(**BILLING, RATELIMIT_ENABLE=False)
+class FreeCreditPerInboxTests(TestCase):
+    def setUp(self):
+        UserProfileFactory()  # past the setup wizard
+
+    def test_gmail_variant_gets_the_notice_not_a_second_organization(self):
+        self.client.post(reverse('register'), {'email': 'jan.doe@gmail.com'})
+        orgs = Organization.objects.count()
+        mail.outbox.clear()
+        response = self.client.post(reverse('register'), {'email': 'jandoe+again@gmail.com'})
+        self.assertRedirects(response, reverse('login'), fetch_redirect_response=False)
+        self.assertEqual(Organization.objects.count(), orgs)
+        self.assertEqual(mail.outbox[0].to, ['jandoe+again@gmail.com'])
+        self.assertIn('already has a Blik360 account', mail.outbox[0].body)

@@ -1948,15 +1948,11 @@ def review_cycle_detail(request, cycle_uuid):
     total_tokens = tokens.count()
     completed_tokens = tokens.filter(completed_at__isnull=False).count()
     claimed_tokens = tokens.filter(claimed_at__isnull=False).count()
-    pending_invites = (
-        tokens.filter(
-            reviewer_email__isnull=False,
-            invitation_sent_at__isnull=True,
-            completed_at__isnull=True,
-        )
-        .exclude(category="self")
-        .count()
-    )
+    pending_invites = tokens.filter(
+        reviewer_email__isnull=False,
+        invitation_sent_at__isnull=True,
+        completed_at__isnull=True,
+    ).count()
     pending_reminders = tokens.filter(invitation_sent_at__isnull=False, completed_at__isnull=True).count()
     email_invited_count = tokens.filter(reviewer_email__isnull=False).exclude(category='self').count()
     completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0

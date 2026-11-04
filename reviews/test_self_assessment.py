@@ -181,6 +181,36 @@ class ManageInvitationsTests(SelfAssessmentTestCase):
         self.assertEqual(send.call_args.kwargs['recipient_list'], ['dana@acme.example'])
 
 
+class CycleDetailTests(SelfAssessmentTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.admin)
+
+    def get_detail(self):
+        return self.client.get(reverse('review_cycle_detail', args=[self.cycle.uuid]))
+
+    def test_the_count_is_what_send_pending_invites_sends(self):
+        ReviewerToken.objects.create(cycle=self.cycle, category='self', reviewer_email='dana@acme.example')
+        ReviewerToken.objects.create(cycle=self.cycle, category='peer', reviewer_email='pat@acme.example')
+        ReviewerToken.objects.create(
+            cycle=self.cycle, category='peer', reviewer_email='kim@acme.example', completed_at=timezone.now())
+
+        pending_invites = self.get_detail().context['pending_invites']
+
+        with patch(SEND_MAIL):
+            stats = send_reviewer_invitations(self.cycle)
+
+        self.assertEqual(pending_invites, 2)
+        self.assertEqual(stats['sent'], pending_invites)
+
+    def test_an_unsent_self_assessment_has_its_send_button(self):
+        token = ReviewerToken.objects.create(cycle=self.cycle, category='self', reviewer_email='dana@acme.example')
+
+        response = self.get_detail()
+
+        self.assertContains(response, f'name="token_id" value="{token.id}"')
+
+
 class NewCycleTests(SelfAssessmentTestCase):
     def setUp(self):
         super().setUp()

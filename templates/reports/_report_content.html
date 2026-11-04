@@ -179,8 +179,7 @@
             </h3>
 
             <!-- Progress bar for overall section score -->
-            {# Combined score of all groups, so it uses the unfiltered section summary #}
-            {% with avg_score=report_data.section_summary|get_item:section_name|others_average %}
+            {% with avg_score=categories|others_average %}
                 {% if avg_score > 0 %}
                 <div style="margin-bottom: 0.5rem;">
                     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem;">
@@ -238,7 +237,7 @@
                 <div class="category-score-item">
                     <span class="badge badge-{{ category }}">{{ category|category_label }}</span>
                     {% if score.insufficient %}
-                    <span class="insufficient-data" style="padding: 0;">{{ score.message }}</span>
+                    <span class="insufficient-data insufficient-data-inline">{{ score.message }}</span>
                     {% else %}
                     <span class="category-score-value">{{ score|floatformat:1 }}</span>
                     {% endif %}

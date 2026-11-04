@@ -162,7 +162,10 @@ class GeneratedReportTest(TestCase):
 
     def setUp(self):
         ensure_permission_groups()
-        self.organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        # The two peers below are enough to show their scores, so the page shows every text
+        self.organization = Organization.objects.create(
+            name='Acme', email='org@acme.example', min_responses_for_anonymity=2,
+        )
         self.admin = User.objects.create_user('admin', 'admin@acme.example', 'pw')
         UserProfile.objects.create(user=self.admin, organization=self.organization)
         assign_organization_admin(self.admin)

@@ -57,18 +57,19 @@ def view_report(request, cycle_uuid):
     summary = get_report_summary(report)
 
     # Apply display-level anonymization based on organization settings
+    # Anonymize the stored data first: with_texts() adds the texts to the insights calculated without hidden groups
     min_threshold = cycle.organization.min_responses_for_anonymity
-    report_data = with_texts(report.report_data, cycle.questionnaire, cycle.reviewee.name)
-    display_data = apply_display_anonymization(
-        report_data,
-        min_threshold=min_threshold
+    display_data = with_texts(
+        apply_display_anonymization(report.report_data, min_threshold=min_threshold),
+        cycle.questionnaire,
+        cycle.reviewee.name,
     )
 
     context = {
         'cycle': cycle,
         'report': report,
-        'report_data': report_data,
-        'display_data': display_data,  # For detailed report sections
+        'report_data': display_data,
+        'display_data': display_data,
         'summary': summary,
         'questionnaire': cycle.questionnaire.translated(),
         'is_admin_view': True,
@@ -124,18 +125,19 @@ def reviewee_report(request, access_token):
     summary = get_report_summary(report)
 
     # Apply display-level anonymization based on organization settings
+    # Anonymize the stored data first: with_texts() adds the texts to the insights calculated without hidden groups
     min_threshold = cycle.organization.min_responses_for_anonymity
-    report_data = with_texts(report.report_data, cycle.questionnaire, cycle.reviewee.name)
-    display_data = apply_display_anonymization(
-        report_data,
-        min_threshold=min_threshold
+    display_data = with_texts(
+        apply_display_anonymization(report.report_data, min_threshold=min_threshold),
+        cycle.questionnaire,
+        cycle.reviewee.name,
     )
 
     context = {
         'cycle': cycle,
         'report': report,
-        'report_data': report_data,
-        'display_data': display_data,  # For detailed report sections
+        'report_data': display_data,
+        'display_data': display_data,
         'summary': summary,
         'questionnaire': cycle.questionnaire.translated(),
         'is_public_view': True,

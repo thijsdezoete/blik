@@ -242,10 +242,14 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
     Apply anonymization filtering to report data for display purposes.
 
     A reviewer group (category) below the threshold doesn't show its own
-    score anywhere: per question in 'by_section', per section in
-    'section_summary', and in the chart series. Values that combine all
-    groups into one (insights, overall sentiment, the charts' 'others_avg')
-    stay as they are, because they don't expose one person.
+    score anywhere, and no value that combines groups includes it: a mean
+    over the groups would give the hidden score away from the visible ones.
+
+    The threshold applies at two granularities:
+    - per question in 'by_section': the question's own count for the category
+    - everywhere else: the category's report-level count, see reviewer_counts()
+
+    When no group is hidden, the result has the same numbers as report_data.
 
     Args:
         report_data: The raw report data structure
@@ -253,10 +257,12 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
         exempt_categories: List of categories exempt from threshold (default: ['self', 'manager'])
 
     Returns:
-        Copy of report_data where, for each category below the threshold:
-        - per-question entries in 'by_section' are marked 'insufficient' and lose their responses
-        - 'section_summary' entries become {'insufficient': True, 'message': ...}
-        - the category is removed from charts['section_scores'] and charts['overall']
+        Copy of report_data (which stays unchanged) where:
+        - per-question entries in 'by_section' below the threshold are marked 'insufficient' and lose their responses
+        - for each hidden group, its 'section_summary' entries become {'insufficient': True, 'message': ...}
+        - when any group is hidden, 'insights' and 'charts' are calculated again without the hidden groups,
+          and 'peer_benchmarks' and the comparison trends are left out. A combined value without any visible
+          group is absent.
     """
     if exempt_categories is None:
         exempt_categories = ['self', 'manager']
@@ -283,22 +289,49 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
                     if 'distribution' in cat_data:
                         del cat_data['distribution']
 
-    # Section scores and chart series per reviewer group use the group's reviewer count
     hidden = {
         category for category, count in reviewer_counts(report_data).items()
         if category not in exempt_categories and count < min_threshold
     }
 
+    if hidden:
+        _leave_out_hidden_groups(filtered_data, report_data, hidden, message)
+
+    return filtered_data
+
+
+def _leave_out_hidden_groups(filtered_data, report_data, hidden, message):
+    """Mark the hidden groups' section scores and calculate the combined values again from the visible groups."""
+
+    # A group's section score is the mean of its own answers, so the visible ones stay as they are
     for categories in (filtered_data.get('section_summary') or {}).values():
         for category in hidden & categories.keys():
             categories[category] = {'insufficient': True, 'message': message}
 
-    charts = filtered_data.get('charts') or {}
-    for scores in [*(charts.get('section_scores') or {}).values(), charts.get('overall') or {}]:
-        for category in hidden & scores.keys():
-            del scores[category]
+    visible_data = copy.deepcopy(report_data)
+    for section in visible_data.get('by_section', {}).values():
+        for question in section.get('questions', {}).values():
+            by_category = question.get('by_category', {})
+            for category in hidden & by_category.keys():
+                del by_category[category]
 
-    return filtered_data
+    insights, _section_summary = _calculate_insights(visible_data)
+    if report_data.get('schema') == REPORT_SCHEMA:
+        filtered_data['insights'] = insights
+    else:
+        # Reports of schema 1 have no labels, so with_texts() can't add texts to calculated insights:
+        # leave out their combined values instead. Regenerating the report restores them.
+        filtered_data['insights'] = {
+            **(filtered_data.get('insights') or {}),
+            'overall_sentiment': None, 'perception_gaps': [], 'strengths': [], 'development_areas': [],
+        }
+    filtered_data['charts'] = _calculate_chart_data(visible_data)
+
+    # Benchmarks and trends compare combined values of this report with other reports, so they are left out
+    filtered_data.pop('peer_benchmarks', None)
+    if comparison := filtered_data.get('comparison'):
+        comparison.pop('overall_trend', None)
+        comparison.pop('section_trends', None)
 
 
 def reviewer_counts(report_data):
@@ -478,7 +511,7 @@ def _calculate_insights(report_data):
     return insights, section_summary
 
 
-def _calculate_chart_data(report_data, cycle):
+def _calculate_chart_data(report_data):
     """
     Calculate weighted section averages and prepare chart-ready data
 
@@ -808,7 +841,7 @@ def generate_report(cycle):
     report_data['section_summary'] = section_summary
 
     # Generate chart data
-    chart_data = _calculate_chart_data(report_data, cycle)
+    chart_data = _calculate_chart_data(report_data)
     report_data['charts'] = chart_data
 
     # Add cycle-over-cycle comparison if previous cycle exists

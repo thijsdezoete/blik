@@ -1033,6 +1033,9 @@ def send_report_ready_notification(report, request=None, pdf=None):
     summary = get_report_summary(report)
     response_count = summary.get('total_responses', 0)
 
+    # One decision for the text and the attachment, so an empty PDF doesn't promise an attachment
+    attach = bool(pdf)
+
     try:
         with translation.override(recipient_language(reviewee.language, organization=reviewee.organization)):
             questionnaire = cycle.questionnaire.translated()
@@ -1042,7 +1045,7 @@ def send_report_ready_notification(report, request=None, pdf=None):
                 'questionnaire_name': questionnaire.name,
                 'report_url': report_url,
                 'response_count': response_count,
-                'has_attachment': pdf is not None,
+                'has_attachment': attach,
             }
 
             html_message = render_to_string('emails/report_ready.html', context)
@@ -1053,7 +1056,7 @@ def send_report_ready_notification(report, request=None, pdf=None):
                 message=text_message,
                 recipient_list=[reviewee.email],
                 html_message=html_message,
-                attachments=[(pdf_filename(report), pdf, 'application/pdf')] if pdf else None,
+                attachments=[(pdf_filename(report), pdf, 'application/pdf')] if attach else None,
             )
 
         stats['sent'] += 1

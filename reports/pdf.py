@@ -123,7 +123,9 @@ def drop_report_pdf(report):
         report.pdf_file.delete(save=False)
     report.pdf_file = ''
     report.pdf_generated_at = None
-    report.save(update_fields=['pdf_file', 'pdf_generated_at'])
+    # A new or regenerated report gets all its build attempts again
+    report.pdf_attempts = 0
+    report.save(update_fields=['pdf_file', 'pdf_generated_at', 'pdf_attempts'])
 
 
 def _pdf_context(report):

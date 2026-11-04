@@ -304,7 +304,8 @@ class Command(BaseCommand):
             reviewee=reviewee,
             questionnaire=questionnaire,
             created_by=admin_user,
-            status='completed'
+            status='completed',
+            report_finalized_at=timezone.now(),  # demo data: the finalize_reports cron must not email it
         )
 
         # Create tokens: 1 self, 3 managers, 4 peers, 2 direct reports = 10 total

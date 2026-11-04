@@ -335,24 +335,10 @@ def submit_feedback(request, token):
             )
 
             if all_tokens_completed and cycle.status == 'active':
-                # Auto-close the cycle
+                # Auto-close the cycle. The finalize_reports cron makes the report and emails it,
+                # so the last submit is as fast as the first.
                 cycle.status = 'completed'
                 cycle.save()
-
-                # Auto-generate report
-                from reports.services import generate_report, send_report_ready_notification
-                try:
-                    report = generate_report(cycle)
-
-                    # Send notification email if organization setting enabled
-                    organization = cycle.reviewee.organization
-                    if organization and organization.auto_send_report_email:
-                        email_stats = send_report_ready_notification(report)
-                        if email_stats.get('errors'):
-                            logger.error("Errors sending report email for cycle %s: %s", cycle.id, email_stats['errors'])
-                except Exception as e:
-                    # Log error but don't fail the submission
-                    logger.exception("Error auto-generating report for cycle %s", cycle.id)
 
                 from notifications.lifecycle import send_cycle_summary
                 send_cycle_summary(cycle)

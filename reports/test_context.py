@@ -1,7 +1,6 @@
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from accounts.models import Reviewee, UserProfile
+from accounts.models import Reviewee
 from core.models import Organization
 from questionnaires.models import Question, Questionnaire, QuestionSection
 from reviews.models import ReviewCycle, ReviewerToken, Response

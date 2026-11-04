@@ -289,15 +289,31 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
                     if 'distribution' in cat_data:
                         del cat_data['distribution']
 
-    hidden = {
-        category for category, count in reviewer_counts(report_data).items()
-        if category not in exempt_categories and count < min_threshold
-    }
+    hidden = _hidden_groups(report_data, min_threshold, exempt_categories)
 
     if hidden:
         _leave_out_hidden_groups(filtered_data, report_data, hidden, message)
 
     return filtered_data
+
+
+def _hidden_groups(report_data, min_threshold, exempt_categories):
+    """Categories whose reviewer count is below the threshold and that are not exempt."""
+    return {
+        category for category, count in reviewer_counts(report_data).items()
+        if category not in exempt_categories and count < min_threshold
+    }
+
+
+def _without_groups(report_data, groups):
+    """Copy of report_data without the answers of the given categories."""
+    visible_data = copy.deepcopy(report_data)
+    for section in visible_data.get('by_section', {}).values():
+        for question in section.get('questions', {}).values():
+            by_category = question.get('by_category', {})
+            for category in groups & by_category.keys():
+                del by_category[category]
+    return visible_data
 
 
 def _leave_out_hidden_groups(filtered_data, report_data, hidden, message):
@@ -308,12 +324,7 @@ def _leave_out_hidden_groups(filtered_data, report_data, hidden, message):
         for category in hidden & categories.keys():
             categories[category] = {'insufficient': True, 'message': message}
 
-    visible_data = copy.deepcopy(report_data)
-    for section in visible_data.get('by_section', {}).values():
-        for question in section.get('questions', {}).values():
-            by_category = question.get('by_category', {})
-            for category in hidden & by_category.keys():
-                del by_category[category]
+    visible_data = _without_groups(report_data, hidden)
 
     insights, _section_summary = _calculate_insights(visible_data)
     if report_data.get('schema') == REPORT_SCHEMA:
@@ -346,6 +357,37 @@ def reviewer_counts(report_data):
     return dict(counts)
 
 
+def _numeric_category_averages(report_data):
+    """Yield (section title, category, average) for each category average that is valid to use in scores."""
+    for section_data in report_data.get('by_section', {}).values():
+        section_title = section_data.get('title', '')
+
+        for question_data in section_data.get('questions', {}).values():
+            question_type = question_data.get('question_type')
+
+            # Process numeric questions: rating, scale, and choice questions with scoring
+            if question_type in ('rating', 'scale'):
+                pass
+            elif question_type in ('single_choice', 'multiple_choice'):
+                # Only include if scoring is enabled
+                if not question_data.get('question_config', {}).get('scoring_enabled'):
+                    continue
+            else:
+                # Skip text, likert (text-based), and other non-numeric types
+                continue
+
+            for category, cat_data in question_data.get('by_category', {}).items():
+                # Statistical validity check: need 2+ responses for meaningful average
+                # Exception: self and manager categories can use 1+ (single assessor)
+                min_valid = 1 if category in ['self', 'manager'] else 2
+                if cat_data.get('count', 0) < min_valid:
+                    continue
+
+                avg = cat_data.get('avg')
+                if avg is not None:
+                    yield section_title, category, avg
+
+
 def _calculate_insights(report_data):
     """Generate actionable insights from report data"""
     insights = {
@@ -365,43 +407,15 @@ def _calculate_insights(report_data):
     all_peer_ratings = []
     all_manager_ratings = []
 
-    for section_id, section_data in report_data.get('by_section', {}).items():
-        section_title = section_data.get('title', '')
+    for section_title, category, avg in _numeric_category_averages(report_data):
+        section_averages[section_title][category].append(avg)
 
-        for question_id, question_data in section_data.get('questions', {}).items():
-            question_type = question_data.get('question_type')
-
-            # Process numeric questions: rating, scale, and choice questions with scoring
-            if question_type == 'rating' or question_type == 'scale':
-                # Direct numeric types
-                pass
-            elif question_type in ['single_choice', 'multiple_choice']:
-                # Only include if scoring is enabled
-                config = question_data.get('question_config', {})
-                if not config.get('scoring_enabled'):
-                    continue
-            else:
-                # Skip text, likert (text-based), and other non-numeric types
-                continue
-
-            for category, cat_data in question_data.get('by_category', {}).items():
-                # Statistical validity check: need 2+ responses for meaningful average
-                # Exception: self and manager categories can use 1+ (single assessor)
-                count = cat_data.get('count', 0)
-                min_valid = 1 if category in ['self', 'manager'] else 2
-                if count < min_valid:
-                    continue
-
-                avg = cat_data.get('avg')
-                if avg is not None:
-                    section_averages[section_title][category].append(avg)
-
-                    if category == 'self':
-                        all_self_ratings.append(avg)
-                    elif category == 'peer':
-                        all_peer_ratings.append(avg)
-                    elif category == 'manager':
-                        all_manager_ratings.append(avg)
+        if category == 'self':
+            all_self_ratings.append(avg)
+        elif category == 'peer':
+            all_peer_ratings.append(avg)
+        elif category == 'manager':
+            all_manager_ratings.append(avg)
 
     # Calculate section-level averages
     # Ensure 'self' is always listed first
@@ -954,26 +968,29 @@ OTHERS_CATEGORIES = ('peer', 'manager')  # same "others" as insights['overall_se
 
 def self_vs_others_gap(report_data, min_threshold):
     """
-    Self-assessment minus the others' average, from the display-anonymized insights.
-
-    The stored insights include hidden groups, so a hidden group could be
-    solved from this number.
+    Self-assessment minus the others' average, from the stored report data.
 
     Positive: rates self higher than others do. Negative: rates self lower.
-    None when there is no self-assessment, no others' score, or fewer other
-    reviewers (peer + manager) than the organization's anonymity threshold.
+    The others' average only counts groups that are visible at the threshold
+    (the manager always is), so a hidden group cannot be solved from this
+    number. None when there is no self-assessment, no visible others' score,
+    or fewer other reviewers (peer + manager, hidden or not) than the
+    organization's anonymity threshold.
     """
-    anonymized = apply_display_anonymization(report_data, min_threshold)
-    sentiment = (anonymized.get('insights') or {}).get('overall_sentiment') or {}
-    self_avg, others_avg = sentiment.get('self_avg'), sentiment.get('score')
-    if self_avg is None or others_avg is None:
-        return None
-
     reviewers = reviewer_counts(report_data)
     if sum(reviewers.get(c, 0) for c in OTHERS_CATEGORIES) < min_threshold:
         return None
 
-    return round(self_avg - others_avg, 2)
+    hidden = _hidden_groups(report_data, min_threshold, ['self', 'manager'])
+    ratings = defaultdict(list)
+    for _title, category, avg in _numeric_category_averages(_without_groups(report_data, hidden)):
+        ratings[category].append(avg)
+
+    others = ratings['peer'] + ratings['manager']
+    if not ratings['self'] or not others:
+        return None
+
+    return round(round(mean(ratings['self']), 2) - round(mean(others), 2), 2)
 
 
 def send_report_ready_notification(report, request=None):

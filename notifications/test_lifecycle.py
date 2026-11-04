@@ -211,12 +211,9 @@ class PerceptionGapTests(LifecycleTestCase):
         self.org.save()
         report = self.report(self.cycle(self.org, status='completed'))
         report.report_data = {
-            'insights': {
-                'perception_gaps': perception_gaps,
-                'overall_sentiment': {'score': 3.0, 'self_avg': 4.0},
-            },
-            'by_section': {'1': {'questions': {'10': {'by_category': {
-                'self': {'count': 1}, 'peer': {'count': peer_count},
+            'insights': {'perception_gaps': perception_gaps},
+            'by_section': {'1': {'questions': {'10': {'question_type': 'rating', 'by_category': {
+                'self': {'count': 1, 'avg': 4.0}, 'peer': {'count': peer_count, 'avg': 3.0},
             }}}}},
         }
         return report

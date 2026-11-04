@@ -102,6 +102,24 @@ class ReportPdfTests(TestCase):
 
         self.assertIn('Insufficient responses (minimum 3 required)', html)
         self.assertNotIn('Kind.', html)
+        # The peer cell of each section is a dash, not a score (Teamwork would be 4.5); no peer radar, no peer count
+        self.assertEqual(html.count('<td class="num"><span class="faint">–</span></td>'), 2)
+        self.assertNotIn('>4.5<', html)
+        self.assertNotIn('stroke="#4f46e5"', html)
+        self.assertNotIn('2 peers', html)
+        self.assertTrue(render_report_pdf(report, 'en').startswith(b'%PDF'))
+
+    def test_render_with_only_self_data_builds(self):
+        self.add_questions(MAPPED)
+        report = generate_report(self.cycle('Anna de Vries', {'self': [{self.craft: 3, self.team: 4}]}))
+
+        self.assertTrue(render_report_pdf(report, 'en').startswith(b'%PDF'))
+
+    def test_render_without_sections_builds(self):
+        self.add_questions(MAPPED)
+        report = generate_report(self.cycle('Anna de Vries', {}))
+        self.assertEqual(report.report_data['by_section'], {})
+
         self.assertTrue(render_report_pdf(report, 'en').startswith(b'%PDF'))
 
     def test_render_without_visible_others_builds(self):

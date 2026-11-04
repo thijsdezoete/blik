@@ -41,7 +41,7 @@
         </tr>
         {% if row.benchmark %}
         <tr class="bench"><td colspan="{{ sections.groups|length|add:5 }}">{% blocktrans trimmed with top=row.benchmark.percentile|top_share %}Top {{ top }}% in organization{% endblocktrans %}.
-            {% if row.score|strong_rating %}{% trans 'Strong performance' %}. {% endif %}{% blocktrans trimmed with score=row.benchmark.current_score percentile=row.benchmark.percentile %}You scored {{ score }}/5.0, higher than {{ percentile }}% of peers{% endblocktrans %}.</td></tr>
+            {% if row.score and row.score|strong_rating %}{% trans 'Strong performance' %}. {% endif %}{% blocktrans trimmed with score=row.benchmark.current_score percentile=row.benchmark.percentile %}You scored {{ score }}/5.0, higher than {{ percentile }}% of peers{% endblocktrans %}.</td></tr>
         {% endif %}
         </tbody>
         {% endfor %}

@@ -1,13 +1,12 @@
 """
-One-time backfill after the PDF export ships: every completed cycle gets a report, a stored PDF
-and a finalised date. It never sends an email. Running it again changes nothing.
+One-time backfill after the PDF export ships: every finalised completed cycle gets a report and a stored PDF.
+It never sends an email. Running it again changes nothing.
 
 Usage:
     python manage.py backfill_report_pdfs            # Build reports and PDFs
     python manage.py backfill_report_pdfs --dry-run  # Count what is missing
 """
-from django.core.management.base import BaseCommand
-from django.utils import timezone
+from django.core.management.base import BaseCommand, CommandError
 
 from reports.models import Report
 from reports.pdf import store_report_pdf
@@ -30,31 +29,31 @@ class Command(BaseCommand):
         if dry_run:
             self.stdout.write(self.style.WARNING('DRY RUN -- nothing will be changed\n'))
 
-        reports_made = pdfs_stored = finalized = 0
+        reports_made = pdfs_stored = 0
         errors = []
-        for cycle in ReviewCycle.objects.filter(status='completed').order_by('pk'):
+        # Unfinalised cycles belong to finalize_reports, which also sends the reviewee's email
+        cycles = ReviewCycle.objects.filter(status='completed', report_finalized_at__isnull=False).order_by('pk')
+        for cycle in cycles:
             try:
                 report = Report.objects.filter(cycle=cycle).first()
+                if dry_run:
+                    reports_made += report is None
+                    pdfs_stored += report is None or not report.has_valid_pdf()
+                    continue
                 if report is None:
-                    if not dry_run:
-                        # generate_report sends no email; the follow-up emails are not touched
-                        report = generate_report(cycle)
+                    # generate_report sends no email
+                    report = generate_report(cycle)
                     reports_made += 1
-                if report is None or not report.has_valid_pdf():
-                    if not dry_run:
-                        store_report_pdf(report)
+                if not report.has_valid_pdf():
+                    store_report_pdf(report)
                     pdfs_stored += 1
-                if cycle.report_finalized_at is None:
-                    if not dry_run:
-                        cycle.report_finalized_at = timezone.now()
-                        cycle.save(update_fields=['report_finalized_at'])
-                    finalized += 1
             except Exception as e:
                 errors.append(f'Cycle {cycle.pk}: {e}')
 
         verb = 'to do' if dry_run else 'done'
         self.stdout.write(f'Reports created: {reports_made} {verb}')
         self.stdout.write(f'PDFs stored: {pdfs_stored} {verb}')
-        self.stdout.write(f'Cycles finalised: {finalized} {verb}')
         for error in errors:
-            self.stdout.write(self.style.ERROR(error))
+            self.stderr.write(error)
+        if errors:
+            raise CommandError(f'{len(errors)} cycle(s) failed')

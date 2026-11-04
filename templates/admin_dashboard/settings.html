@@ -130,6 +130,39 @@
                         <small class="help-text">{% trans 'When enabled, reviewees automatically receive an email with a link to their report when all feedback is collected.' %}</small>
                     </div>
 
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
+                                id="attach_report_pdf"
+                                name="attach_report_pdf"
+                                class="form-check-input"
+                                {% if organization.attach_report_pdf %}checked{% endif %}
+                                {% if not perms.accounts.can_manage_organization %}disabled{% endif %}
+                            >
+                            <label class="form-label" for="attach_report_pdf" style="display: inline; font-weight: normal;">
+                                {% trans 'Attach the report as a PDF to the email' %}
+                            </label>
+                        </div>
+                        <small class="help-text">{% trans 'When enabled, the report email to the reviewee includes the report as a PDF file.' %}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="report_pdf_retention_days">{% trans 'Report PDF Retention (days)' %}</label>
+                        <input
+                            type="number"
+                            id="report_pdf_retention_days"
+                            name="report_pdf_retention_days"
+                            class="form-control"
+                            value="{{ organization.report_pdf_retention_days|default_if_none:'' }}"
+                            min="1"
+                            max="3650"
+                            placeholder="{{ default_report_pdf_retention_days }}"
+                            {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
+                        >
+                        <small class="help-text">{% trans 'How long a report PDF is kept before it is deleted. Leave empty to use the default.' %}</small>
+                    </div>
+
                     {% if perms.accounts.can_manage_organization %}
                     <div style="margin-top: 1rem;">
                         <button type="submit" class="btn btn-primary btn-sm">{% trans 'Save Changes' %}</button>

@@ -58,6 +58,13 @@ class ReviewCycle(TimeStampedModel):
         verbose_name=_('close check sent at')
     )
 
+    report_finalized_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=_('When the cycle was finalised and its report emailed'),
+        verbose_name=_('report finalized at')
+    )
+
     @property
     def organization(self):
         """Get organization through reviewee relationship"""

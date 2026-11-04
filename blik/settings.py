@@ -215,6 +215,10 @@ STORAGES = {
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'mediafiles'
+# Never served: MEDIA_ROOT is public in DEBUG, report PDFs must go through an authorised view.
+# `or` so a present-but-empty variable (as in a copied .env.example) falls back to the default.
+PRIVATE_MEDIA_ROOT = env('PRIVATE_MEDIA_ROOT', default='') or BASE_DIR / 'privatefiles'
+REPORT_PDF_RETENTION_DAYS = int(env('REPORT_PDF_RETENTION_DAYS', default='') or 30)
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

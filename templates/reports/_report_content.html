@@ -221,8 +221,9 @@
                     {# Reviewee view: only show if performing well #}
                     <div style="margin: 0.75rem 0; padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="color: var(--text-secondary);">{% trans 'Strong performance' %}</span>
-                            <span class="percentile-badge">{% blocktrans trimmed with top=100|subtract:benchmark.percentile|floatformat:0 %}Top {{ top }}% in organization{% endblocktrans %}</span>
+                            {# A score rated below Strong can rank high in the organization; it is not called strong #}
+                            <span style="color: var(--text-secondary);">{% if categories|others_average|strong_rating %}{% trans 'Strong performance' %}{% endif %}</span>
+                            <span class="percentile-badge">{% blocktrans trimmed with top=benchmark.percentile|top_share %}Top {{ top }}% in organization{% endblocktrans %}</span>
                         </div>
                         <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.8125rem;">
                             {% blocktrans trimmed with score=benchmark.current_score percentile=benchmark.percentile %}You scored {{ score }}/5.0, higher than {{ percentile }}% of peers{% endblocktrans %}

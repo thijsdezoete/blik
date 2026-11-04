@@ -1,31 +1,15 @@
-{% load i18n email_tags %}{% blocktrans trimmed with org_name=organization.name %}Welcome to {{ org_name }}!{% endblocktrans %}
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% blocktrans trimmed with org_name=organization.name %}Welcome to {{ org_name }} on {{ site_name }}{% endblocktrans %}{% endheadline %}
 
-{% trans 'Hi there,' %}
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
 
-{% trans "Your account has been successfully created. You're all set to start your feedback journey." %}
+{% if inviter_name %}{% blocktrans trimmed with inviter=inviter_name org_name=organization.name %}{{ inviter }} invited you to {{ org_name }}, and your account is ready.{% endblocktrans %}{% else %}{% blocktrans trimmed with org_name=organization.name %}Your account for {{ org_name }} is ready.{% endblocktrans %}{% endif %}
 
-{% headline '─' %}{% trans 'GETTING STARTED' %}{% endheadline %}
+{% trans 'In a review cycle, colleagues give feedback on your work. All feedback is anonymous. Nobody can see who gave which answer. When a cycle asks for your feedback, you get an email with a link.' %}
 
-1. {% blocktrans trimmed %}Log in to your dashboard: {{ login_url }}{% endblocktrans %}
-2. {% trans 'Complete your profile' %}
-3. {% trans "Participate in feedback cycles as they're created" %}
-4. {% trans 'Track your development over time' %}
+{% trans 'Log in to your dashboard:' %}
+{{ login_url }}
 
-{% trans 'If you have any questions, your team admin is here to help.' %}
+{% if inviter_name %}{% blocktrans trimmed with inviter=inviter_name %}Questions? Ask {{ inviter }} or an administrator in your team.{% endblocktrans %}{% else %}{% trans 'Questions? Ask an administrator in your team.' %}{% endif %}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-{% trans "While you're here, here's something interesting about feedback and growth:" %}
-
-{{ fact_title|upper }}
-
-{{ fact_content|striptags }}
-
-{% blocktrans trimmed %}Blik uses the Dreyfus Model as a framework for understanding skill development—from Novice to Expert. We believe it's a powerful tool for tracking your growth journey. Learn more: {{ dreyfus_url }}{% endblocktrans %}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-{% trans 'Best regards,' %}
-{% blocktrans trimmed with org_name=organization.name %}The {{ org_name }} Team{% endblocktrans %}
-
-{% blocktrans trimmed with email=user.email org_name=organization.name %}This email was sent to {{ email }} because you were invited to join {{ org_name }}.{% endblocktrans %}
+---
+{% blocktrans trimmed with email=user.email org_name=organization.name %}This email was sent to {{ email }} because you were invited to join {{ org_name }}.{% endblocktrans %}{% endautoescape %}

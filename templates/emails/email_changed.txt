@@ -1,0 +1,14 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% trans 'Your email address was changed' %}{% endheadline %}
+
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% blocktrans trimmed %}The email address of your {{ site_name }} account was changed on {{ date }} at {{ time }} (UTC).{% endblocktrans %}
+
+{% blocktrans trimmed with old=old_email %}Old address: {{ old }}{% endblocktrans %}
+{% blocktrans trimmed with new=new_email %}New address: {{ new }}{% endblocktrans %}
+
+{% trans 'From now on, we send all emails about your account to the new address. This is the last email to this address.' %}
+
+{% trans 'Did you change it? Then you do not need to do anything.' %}
+
+{% if organization.email %}{% blocktrans trimmed with email=organization.email %}Did you not change it? Then someone else may have access to your account. Contact your organization administrator now: {{ email }}.{% endblocktrans %}{% else %}{% trans 'Did you not change it? Then someone else may have access to your account. Contact your organization administrator now.' %}{% endif %}{% endautoescape %}

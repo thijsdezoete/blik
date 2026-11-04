@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Sum
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, gettext_lazy
 
 from accounts.models import Reviewee, UserProfile
 from .models import RoundPurchase, Subscription
@@ -15,7 +15,7 @@ class NoCycleCredits(Exception):
         self.available = available
         super().__init__(
             _('This needs %(needed)s review-cycle credit(s) and you have %(available)s. '
-              'Buy another round or start a subscription under Settings.')
+              'Buy more on the Billing page, or start a subscription there.')
             % {'needed': needed, 'available': available}
         )
 
@@ -36,12 +36,87 @@ def entitlement(organization):
     return 'lapsed' if subscription else 'self_hosted'
 
 
+def billing_enabled():
+    """True when this instance runs the hosted SaaS: it can charge in Stripe and receives Stripe's webhooks.
+
+    ponytail: checks the configuration, not the live Stripe account; a revoked key still passes.
+    """
+    return bool(
+        settings.STRIPE_SECRET_KEY.startswith(('sk_', 'rk_'))
+        and settings.STRIPE_WEBHOOK_SECRET
+        and (settings.STRIPE_PRICE_ID_SAAS or settings.STRIPE_PRICE_ID_ENTERPRISE)
+    )
+
+
 def is_hosted_customer(organization):
     """True for anyone who ever paid us, whatever their status or balance."""
     return (
         Subscription.objects.filter(organization=organization).exists()
         or RoundPurchase.objects.filter(organization=organization).exists()
     )
+
+
+def can_see_billing(organization, user):
+    """The billing page, its nav link and the banner: hosted customers' admins only."""
+    return bool(
+        organization
+        and billing_enabled()
+        and user.has_perm('accounts.can_manage_organization')
+        and is_hosted_customer(organization)
+    )
+
+
+SUPPORT_EMAIL = 'thijs@mail.blik360.com'
+
+
+def stripe_customer_id(organization):
+    """The organization's Stripe customer, or ''. Subscribers from before the billing page have it only on
+    their subscription until backfill_stripe_customers runs. Not from a canceled one: its customer may be
+    deleted in Stripe, and sync_stripe clears only the organization's."""
+    return organization.stripe_customer_id or (
+        Subscription.objects.filter(organization=organization).exclude(status='canceled')
+        .values_list('stripe_customer_id', flat=True).first() or '')
+
+
+# One round purchase (€19) grants this many review-cycle credits.
+CREDITS_PER_PACK = 10
+# ponytail: a sanity cap on one checkout, not a business rule; raise it when someone hits it
+MAX_PACKS = 100
+
+
+def packs_for(reviews):
+    """Packs to buy for this many reviews: always at least one."""
+    return max(1, -(-reviews // CREDITS_PER_PACK))  # integer ceil: a float overflows on huge input
+
+
+def reviewees_over_limit(organization, plan):
+    """How many active reviewees must be deactivated before moving to this plan; 0 when they fit."""
+    active = Reviewee.objects.filter(organization=organization, is_active=True).count()
+    return max(0, active - plan.max_employees)
+
+
+# Stripe decline codes we can explain. Others show Stripe's own message.
+PAYMENT_ERRORS = {
+    'insufficient_funds': gettext_lazy('The card was declined: not enough funds.'),
+    'expired_card': gettext_lazy('The card has expired.'),
+    'card_declined': gettext_lazy('The card was declined by the bank.'),
+    'generic_decline': gettext_lazy('The card was declined by the bank.'),
+    'do_not_honor': gettext_lazy('The card was declined by the bank.'),
+    'lost_card': gettext_lazy('The card was reported lost.'),
+    'stolen_card': gettext_lazy('The card was reported stolen.'),
+    'incorrect_cvc': gettext_lazy('The security code (CVC) is wrong.'),
+    'authentication_required': gettext_lazy('The bank asks you to confirm the payment.'),
+}
+
+
+def payment_error_text(error):
+    """Clear text for a PaymentIntent's last_payment_error; None when there is no error."""
+    if not error:
+        return None
+    for code in (error.get('decline_code'), error.get('code')):
+        if code in PAYMENT_ERRORS:
+            return str(PAYMENT_ERRORS[code])
+    return error.get('message') or str(PAYMENT_ERRORS['card_declined'])
 
 
 def purchased_credits(organization):

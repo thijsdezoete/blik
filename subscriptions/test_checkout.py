@@ -7,6 +7,7 @@ from django.urls import reverse
 from accounts.factories import UserProfileFactory
 from accounts.permissions import assign_organization_admin
 from core.factories import OrganizationFactory, UserFactory
+from subscriptions.models import Subscription
 from subscriptions.testing import grant, subscribe
 from subscriptions.utils import price_id_for
 
@@ -78,11 +79,20 @@ class StartCheckoutTests(TestCase):
         self.assertEqual(params['subscription_data'], {'trial_period_days': 14})
         self.assertEqual(params['client_reference_id'], str(self.org.pk))
 
-    def test_subscription_is_refused_when_a_subscription_row_exists(self):
+    def test_subscription_is_refused_while_a_subscription_is_live(self):
+        for status in ('trialing', 'active', 'past_due', 'unpaid'):
+            Subscription.objects.filter(organization=self.org).delete()
+            subscribe(self.org, status=status)
+            response, create = self.start('saas')
+            create.assert_not_called()
+            self.assertRedirects(response, reverse('billing'), fetch_redirect_response=False)
+
+    def test_a_canceled_subscriber_can_subscribe_again_without_a_second_trial(self):
         subscribe(self.org, status='canceled')
-        response, create = self.start('saas')
-        create.assert_not_called()
-        self.assertRedirects(response, reverse('settings'), fetch_redirect_response=False)
+        _, create = self.start('saas')
+        params = create.call_args.kwargs
+        self.assertEqual(params['mode'], 'subscription')
+        self.assertNotIn('subscription_data', params)
 
     def test_buying_a_round_is_still_allowed_with_a_canceled_subscription(self):
         subscribe(self.org, status='canceled')
@@ -100,7 +110,7 @@ class StartCheckoutTests(TestCase):
         for bad in ('gold', ''):
             response, create = self.start(bad)
             create.assert_not_called()
-            self.assertRedirects(response, reverse('settings'), fetch_redirect_response=False)
+            self.assertRedirects(response, reverse('billing'), fetch_redirect_response=False)
 
 
 @override_settings(**PRICES)

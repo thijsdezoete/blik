@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Your Plan - {{ site_name }}</title>
 
-    <meta name="description" content="Pay €{{ plan_single_price }} once for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.">
+    <meta name="description" content="Pay €{{ plan_single_price }} per {{ plan_single_max }} employees, once, for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.">
     <meta name="robots" content="noindex, nofollow">
 
     {% include 'components/favicon.html' %}
@@ -53,10 +53,11 @@
         <div class="plans-grid">
             <div class="plan-card{% if selected_plan == 'single' %} plan-card--selected{% endif %}">
                 <h2 class="plan-name">Single Round</h2>
-                <div class="plan-price">€{{ plan_single_price }}<small> once</small></div>
+                <div class="plan-price">€{{ plan_single_price }}<small> per {{ plan_single_max }} employees, once</small></div>
                 <p class="plan-description">One review round, no subscription</p>
                 <ul class="plan-features">
-                    <li>{{ plan_single_max }} review cycles, one employee per cycle</li>
+                    <li>{{ plan_single_max }} review cycles per pack, one employee per cycle</li>
+                    <li>More people? Choose the number of packs at checkout</li>
                     <li>All questionnaires and reports</li>
                     <li>Anonymous feedback</li>
                     <li>Free, unlimited reviewers</li>
@@ -103,7 +104,7 @@
             </div>
         </details>
 
-        <p class="signup-signin">Already have an account? <a href="{{ main_app_url }}/accounts/login/">Sign in</a> and manage your plan in Settings.</p>
+        <p class="signup-signin">Already have an account? <a href="{{ main_app_url }}/accounts/login/">Sign in</a> and manage your plan on the Billing page.</p>
     </div>
 
     <script>

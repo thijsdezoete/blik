@@ -1,0 +1,18 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% blocktrans trimmed %}{{ reviewee_name }}'s cycle is set up{% endblocktrans %}{% endblock %}
+{% block preheader %}{% trans 'Nothing happens until the reviewers get the link.' %}{% endblock %}
+{% block heading %}{% blocktrans trimmed %}{{ reviewee_name }}'s cycle is set up{% endblocktrans %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+<p style="margin:0 0 16px;">{% trans 'Nothing happens until the reviewers get the link.' %}</p>
+<p style="margin:0 0 16px;">{% trans 'Reviewers who get the link early have more time to answer. More answers make the report more complete.' %}</p>
+<p style="margin:0 0 8px;">{% trans 'Invite them in one of two ways:' %}</p>
+<ul style="margin:0 0 16px; padding-left:22px;">
+  <li style="margin-bottom:6px;">{% trans '<strong>By email.</strong> Blik sends each reviewer a personal link.' %}</li>
+  <li style="margin-bottom:6px;">{% trans '<strong>With invite links.</strong> Share one link per group yourself.' %}</li>
+</ul>
+{% include 'emails/_button.html' with url=cycle_url label=_('Invite reviewers') %}
+{% blocktrans trimmed count counter=threshold asvar facts %}The report shows the results of a group when at least {{ counter }} reviewer in that group responds.{% plural %}The report shows the results of a group when at least {{ counter }} reviewers in that group respond.{% endblocktrans %}
+{% include 'emails/_panel.html' with title=_('Anonymity') body=facts %}
+{% endblock %}

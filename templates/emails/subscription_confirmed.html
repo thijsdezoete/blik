@@ -1,0 +1,31 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% include 'emails/partials/subscription_confirmed_heading.txt' %}{% endblock %}
+{% block preheader %}{% include 'emails/partials/subscription_confirmed_next_step.txt' with part='title' %}{% endblock %}
+{% block heading %}{% include 'emails/partials/subscription_confirmed_heading.txt' %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+
+<p style="margin:0 0 16px;">{% include 'emails/partials/subscription_confirmed_intro.txt' %}</p>
+
+<h2 style="margin:28px 0 8px; font-size:16px; font-weight:600; color:#0f172a;">{% include 'emails/partials/subscription_confirmed_next_step.txt' with part='title' %}</h2>
+
+<p style="margin:0 0 16px;">{% include 'emails/partials/subscription_confirmed_next_step.txt' with part='text' %}</p>
+
+{% if next_step == 'follow_up' %}{% trans 'Go to your open cycles' as button_label %}{% include 'emails/_button.html' with url=cycles_url label=button_label %}{% elif next_step == 'first_cycle' %}{% trans 'Start a test cycle' as button_label %}{% include 'emails/_button.html' with url=create_cycle_url label=button_label %}{% else %}{% trans 'Start a new review cycle' as button_label %}{% include 'emails/_button.html' with url=create_cycle_url label=button_label %}{% endif %}
+
+{% if trial_end_date %}
+{% blocktrans trimmed asvar facts with plan=plan.name price=plan.price_monthly|floatformat:"-2" max=plan.max_employees date=trial_end_date %}
+<strong>{{ plan }}</strong>, €{{ price }} per month, for up to {{ max }} people.<br>
+Free trial until {{ date }}.
+{% endblocktrans %}
+{% else %}
+{% blocktrans trimmed asvar facts with plan=plan.name price=plan.price_monthly|floatformat:"-2" max=plan.max_employees date=period_end_date %}
+<strong>{{ plan }}</strong>, €{{ price }} per month, for up to {{ max }} people.<br>
+Next payment on {{ date }}.
+{% endblocktrans %}
+{% endif %}
+{% trans 'Your plan' as facts_title %}
+{% include 'emails/_panel.html' with title=facts_title body=facts %}
+
+<p style="margin:0; font-size:13px; color:#64748b;">{% blocktrans trimmed with email=support_email %}Team members are free on every plan. Stripe sends a receipt for each payment. Questions about your plan? Write to <a href="mailto:{{ email }}">{{ email }}</a>.{% endblocktrans %}</p>
+{% endblock %}

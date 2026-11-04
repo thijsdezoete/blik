@@ -117,6 +117,8 @@ TEMPLATES = [
                 'landing.context_processors.url_namespace',
                 'landing.context_processors.organization_metadata',
                 'blik.context_processors.stripe_settings',
+                'blik.context_processors.billing',
+                'blik.context_processors.site_settings',
             ],
         },
     },
@@ -188,6 +190,9 @@ LANGUAGES = [
     ('en', 'English'),
     ('de', 'Deutsch (Sie)'),
     ('de-informal', 'Deutsch (Du)'),
+    ('fr', 'Français'),
+    ('es', 'Español'),
+    ('it', 'Italiano'),
 ]
 
 LOCALE_PATHS = [BASE_DIR / 'locale']

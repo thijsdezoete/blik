@@ -1,0 +1,19 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% trans 'What your team built during the trial' %}{% endheadline %}
+
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% if completed_review_count %}{% blocktrans trimmed count counter=completed_review_count %}Your team gave {{ counter }} review in {{ site_name }}.{% plural %}Your team gave {{ counter }} reviews in {{ site_name }}.{% endblocktrans %} {% blocktrans trimmed count counter=reviewed_people_count %}{{ counter }} person now has feedback on their work.{% plural %}{{ counter }} people now have feedback on their work.{% endblocktrans %} {% trans 'Before the trial, your team did not have those perspectives.' %}{% else %}{% blocktrans trimmed count counter=cycle_count %}You started {{ counter }} review cycle in {{ site_name }}.{% plural %}You started {{ counter }} review cycles in {{ site_name }}.{% endblocktrans %}{% endif %}{% if open_cycle_count %}
+
+{% headline '-' %}{% trans 'Still in progress' %}{% endheadline %}
+{% if pending_report_count %}{% blocktrans trimmed count counter=open_cycle_count %}{{ counter }} review cycle is still collecting feedback. Its report is on the way. You get it when you close the cycle.{% plural %}{{ counter }} review cycles are still collecting feedback. Their reports are on the way. You get each report when you close its cycle.{% endblocktrans %}{% else %}{% blocktrans trimmed count counter=open_cycle_count %}{{ counter }} review cycle is still collecting feedback.{% plural %}{{ counter }} review cycles are still collecting feedback.{% endblocktrans %}{% endif %}{% endif %}
+
+{% headline '-' %}{% blocktrans trimmed with date=trial_end_date %}What happens on {{ date }}{% endblocktrans %}{% endheadline %}
+
+{% blocktrans trimmed with plan=plan.name price=plan.price_monthly|floatformat:"-2" max=plan.max_employees %}Your {{ plan }} plan starts, for up to {{ max }} people. We charge €{{ price }} per month to the card you gave at checkout.{% endblocktrans %} {% if open_cycle_count %}{% trans 'Your review cycles, reports and settings stay as they are. Open cycles keep collecting feedback.' %}{% else %}{% trans 'Your review cycles, reports and settings stay as they are.' %}{% endif %}
+
+{% if open_cycle_count %}{% trans 'Go to your open cycles:' %}
+{{ cycles_url }}{% else %}{% trans 'Go to your dashboard:' %}
+{{ dashboard_url }}{% endif %}
+
+{% blocktrans trimmed with date=trial_end_date %}Do you want a different plan, or do you want to stop? Change or cancel your plan before {{ date }}. If you cancel, we charge nothing:{% endblocktrans %}
+{{ choose_plan_url }}{% endautoescape %}

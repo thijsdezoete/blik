@@ -1,11 +1,10 @@
-{% load i18n %}{% autoescape off %}{% trans 'Hello,' %}
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% blocktrans trimmed with organization=organization.name %}Join {{ organization }} on {{ site_name }}{% endblocktrans %}{% endheadline %}
 
-{% blocktrans trimmed with organization=organization.name %}You've been invited to join {{ organization }} on Blik 360 Feedback Platform.{% endblocktrans %}
+{% trans 'Hello,' %}
 
-{% trans 'Click the link below to accept this invitation and create your account:' %}
+{% if inviter_name %}{% blocktrans trimmed with inviter=inviter_name organization=organization.name %}{{ inviter }} invited you to join {{ organization }} on {{ site_name }}.{% endblocktrans %}{% else %}{% blocktrans trimmed with organization=organization.name %}You are invited to join {{ organization }} on {{ site_name }}.{% endblocktrans %}{% endif %} {% trans 'Your team uses it to give each other anonymous 360 feedback.' %}
+
+{% trans 'Accept the invitation and create your account:' %}
 {{ invite_url }}
 
-{% trans 'This invitation will expire in 7 days.' %}
-
-{% trans 'Best regards,' %}
-{% blocktrans trimmed with organization=organization.name %}{{ organization }} Team{% endblocktrans %}{% endautoescape %}
+{% trans 'This invitation expires in 7 days.' %}{% endautoescape %}

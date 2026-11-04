@@ -108,10 +108,6 @@ def report_generated(sender, instance, created, update_fields, **kwargs):
             (update_fields and 'report_data' in update_fields)
         )
 
-        logger.info(f"Report saved: created={created}, update_fields={update_fields}, "
-                   f"should_fire={should_fire}, available={instance.available}, "
-                   f"has_token={bool(instance.access_token)}")
-
         # Also ensure the report is ready (has access_token and is available)
         if should_fire and instance.available and instance.access_token:
             logger.info(f"Sending report.generated webhook for report {instance.id}")
@@ -130,8 +126,5 @@ def report_generated(sender, instance, created, update_fields, **kwargs):
                     "access_url": f"/reports/view/{instance.access_token}/",
                 },
             )
-        else:
-            logger.warning(f"Report webhook NOT sent - should_fire={should_fire}, "
-                         f"available={instance.available}, has_token={bool(instance.access_token)}")
     except Exception as e:
         logger.error(f"Error in report_generated webhook: {str(e)}")

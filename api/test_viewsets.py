@@ -313,6 +313,32 @@ class ReviewCycleViewSetTest(TestCase):
         self.assertEqual(cycle.tokens.count(), 4)
         self.assertEqual(cycle.tokens.filter(category='peer').count(), 2)
 
+    def test_send_reminders_reminds_invited_pending_reviewers_only(self):
+        """POST /cycles/{id}/send_reminders/ emails invited reviewers who have not finished."""
+        from django.core import mail
+        from django.utils import timezone
+
+        cycle = ReviewCycle.objects.create(
+            reviewee=self.reviewee, questionnaire=self.questionnaire, created_by=self.user
+        )
+        now = timezone.now()
+        pending = ReviewerToken.objects.create(
+            cycle=cycle, category='peer', reviewer_email='pending@example.com', invitation_sent_at=now
+        )
+        ReviewerToken.objects.create(
+            cycle=cycle, category='peer', reviewer_email='done@example.com',
+            invitation_sent_at=now, completed_at=now
+        )
+        ReviewerToken.objects.create(cycle=cycle, category='peer')  # unused invite-link token
+
+        response = self.client.post(f'/api/v1/cycles/{cycle.uuid}/send_reminders/', {}, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['sent'], 1)
+        self.assertEqual([m.to for m in mail.outbox], [['pending@example.com']])
+        pending.refresh_from_db()
+        self.assertIsNotNone(pending.last_reminder_sent_at)
+
     def test_list_cycles(self):
         """GET /cycles/ returns list of cycles."""
         ReviewCycle.objects.create(

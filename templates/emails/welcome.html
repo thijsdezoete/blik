@@ -1,46 +1,27 @@
+{% extends 'emails/_base.html' %}
 {% load i18n %}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="color: #4f46e5;">{% blocktrans trimmed %}Welcome to {{ site_name }}{% endblocktrans %}</h1>
+{% block title %}{% blocktrans trimmed %}Welcome to {{ site_name }}{% endblocktrans %}{% endblock %}
+{% block preheader %}{% trans 'Your account is ready. Start with one test cycle on yourself.' %}{% endblock %}
+{% block heading %}{% blocktrans trimmed %}Welcome to {{ site_name }}{% endblocktrans %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
 
-        <p>{% blocktrans trimmed with username=user.username %}Hello {{ username }},{% endblocktrans %}</p>
+<p style="margin:0 0 16px;">{% blocktrans trimmed with organization=organization.name %}The {{ site_name }} account for {{ organization }} is ready.{% endblocktrans %}</p>
 
-        <p>{% blocktrans trimmed %}Your {{ site_name }} account has been created and is ready to use. You can now start creating 360-degree feedback cycles for your organization.{% endblocktrans %}</p>
+{% if password %}
+{% blocktrans trimmed asvar credentials with email=user.email password=password %}
+Email: <strong>{{ email }}</strong><br>
+Password: <strong>{{ password }}</strong>
+{% endblocktrans %}
+{% trans 'Your login details' as credentials_title %}
+{% include 'emails/_panel.html' with title=credentials_title body=credentials %}
+<p style="margin:0 0 16px; font-size:13px; color:#64748b;">{% trans 'Change this password after you log in for the first time.' %}</p>
+{% endif %}
 
-        <div style="background: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
-            <h2 style="margin-top: 0;">{% trans 'Your Login Credentials' %}</h2>
-            <strong>{% trans 'Email:' %}</strong> {{ user.email }}{% if password %}<br>
-            <strong>{% trans 'Password:' %}</strong> {{ password }}{% endif %}</p>
+<p style="margin:0 0 16px;">{% trans 'Start with one test cycle on yourself. Choose a few colleagues you trust and ask them for feedback on you. It takes 5 minutes, and you see the report your team would get.' %}</p>
 
-            <p style="margin-top: 20px;">
-                <a href="{{ login_url }}" style="background: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">{% trans 'Login to Dashboard' %}</a>
-            </p>
-        </div>
+{% trans 'Start a test cycle' as cta %}{% include 'emails/_button.html' with url=create_cycle_url label=cta %}
 
-        {% if password %}<p><strong>{% trans 'Important:' %}</strong> {% trans 'Please change your password after your first login for security.' %}</p>{% endif %}
-
-        <h3>{% trans 'Getting Started' %}</h3>
-        <ol>
-            <li>{% trans 'Login to your dashboard using the credentials above' %}</li>
-            <li>{% trans 'Add reviewees (employees) to your organization' %}</li>
-            <li>{% trans 'Create a review cycle and invite reviewers' %}</li>
-            <li>{% trans 'Monitor progress and generate reports' %}</li>
-        </ol>
-
-        <p>{% trans "If you have any questions, please don't hesitate to reach out to our support team." %}</p>
-
-        <p>{% trans 'Best regards,' %}<br>
-        {% blocktrans trimmed %}The {{ site_name }} Team{% endblocktrans %}</p>
-
-        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-        <p style="font-size: 12px; color: #666;">
-            {% blocktrans trimmed with email=user.email %}This email was sent to {{ email }} because an account was created for your organization.{% endblocktrans %}
-        </p>
-    </div>
-</body>
-</html>
+<p style="margin:0; font-size:13px; color:#64748b;">{% blocktrans trimmed with email=support_email %}Questions? Write to <a href="mailto:{{ email }}">{{ email }}</a>.{% endblocktrans %}</p>
+{% endblock %}
+{% block footer %}{% blocktrans trimmed with email=user.email %}This email was sent to {{ email }} because an account was created for your organization.{% endblocktrans %}{% endblock %}

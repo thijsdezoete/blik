@@ -1,0 +1,5 @@
+{# A quiet key-facts box. Usage: {% include 'emails/_panel.html' with title=_('Your plan') body=some_html %} #}
+<div style="margin:24px 0; padding:16px 20px; background:#f8fafc; border-left:3px solid #4f46e5; border-radius:4px;">
+  {% if title %}<div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#64748b; margin-bottom:6px;">{{ title }}</div>{% endif %}
+  <div style="font-size:15px; color:#1e293b;">{{ body }}</div>
+</div>

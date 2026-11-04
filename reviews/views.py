@@ -347,6 +347,9 @@ def submit_feedback(request, token):
                     # Log error but don't fail the submission
                     logger.exception("Error auto-generating report for cycle %s", cycle.id)
 
+                from notifications.lifecycle import send_cycle_summary
+                send_cycle_summary(cycle)
+
         return JsonResponse({'success': True, 'redirect': f'/feedback/{token}/complete/'})
 
     except Exception as e:

@@ -1,12 +1,13 @@
 {% load i18n %}{% blocktrans trimmed with name=reviewee.name %}Hi {{ name }},{% endblocktrans %}
 
-{% blocktrans trimmed count counter=completed_count %}{{ counter }} review has been completed for your {{ questionnaire_name }} cycle.{% plural %}{{ counter }} reviews have been completed for your {{ questionnaire_name }} cycle.{% endblocktrans %}
+{% blocktrans trimmed count counter=completed_count %}{{ counter }} review is complete for your {{ questionnaire_name }} cycle.{% plural %}{{ counter }} reviews are complete for your {{ questionnaire_name }} cycle.{% endblocktrans %}
 
-{% trans 'If everyone has submitted their feedback, you can close the cycle and generate your report from your dashboard:' %}
+{% trans 'When everyone has responded, close the cycle on your dashboard. This makes your report.' %}
 
+{% trans 'View the cycle:' %}
 {{ dashboard_url }}
 
-{% trans 'Note:' %} {% trans 'Your cycle will stay open until you manually close it, so additional reviewers can still submit feedback via the invite link.' %}
+{% trans 'The cycle stays open until you close it. Until then, others can still respond with the invite links.' %}
 
-{% trans 'Best regards,' %}
-{% trans 'Your Feedback Team' %}
+---
+{% trans 'This is an automated message from Blik.' %}

@@ -1,0 +1,14 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% blocktrans trimmed with date=trial_end_date %}Nothing changes on {{ date }}{% endblocktrans %}{% endheadline %}
+
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% if open_cycle_count %}{% blocktrans trimmed count counter=open_cycle_count %}{{ counter }} review cycle is still collecting feedback.{% plural %}{{ counter }} review cycles are still collecting feedback.{% endblocktrans %}{% else %}{% blocktrans trimmed count counter=cycle_count %}Your {{ counter }} review cycle and all its feedback stay where they are.{% plural %}Your {{ counter }} review cycles and all their feedback stay where they are.{% endblocktrans %}{% endif %}
+
+{% blocktrans trimmed with date=trial_end_date plan=plan.name price=plan.price_monthly|floatformat:"-2" %}Your trial ends on {{ date }}. Your work continues on the {{ plan }} plan, at €{{ price }} per month on the card you gave at checkout.{% endblocktrans %}
+
+{% if open_cycle_count %}{% trans 'Go to your open cycles:' %}
+{{ cycles_url }}{% else %}{% trans 'Go to your dashboard:' %}
+{{ dashboard_url }}{% endif %}
+
+{% trans 'Do you want to change or stop? Change or cancel your plan:' %}
+{{ choose_plan_url }}{% endautoescape %}

@@ -1,0 +1,20 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% include 'emails/partials/subscription_confirmed_heading.txt' %}{% endheadline %}
+
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% include 'emails/partials/subscription_confirmed_intro.txt' %}
+
+{% headline '-' %}{% include 'emails/partials/subscription_confirmed_next_step.txt' with part='title' %}{% endheadline %}
+
+{% include 'emails/partials/subscription_confirmed_next_step.txt' with part='text' %}
+
+{% if next_step == 'follow_up' %}{% trans 'Go to your open cycles:' %}
+{{ cycles_url }}{% elif next_step == 'first_cycle' %}{% trans 'Start a test cycle:' %}
+{{ create_cycle_url }}{% else %}{% trans 'Start a new review cycle:' %}
+{{ create_cycle_url }}{% endif %}
+
+{% headline '-' %}{% trans 'Your plan' %}{% endheadline %}
+{% blocktrans trimmed with plan=plan.name price=plan.price_monthly|floatformat:"-2" max=plan.max_employees %}{{ plan }}, €{{ price }} per month, for up to {{ max }} people.{% endblocktrans %}
+{% if trial_end_date %}{% blocktrans trimmed with date=trial_end_date %}Free trial until {{ date }}.{% endblocktrans %}{% else %}{% blocktrans trimmed with date=period_end_date %}Next payment on {{ date }}.{% endblocktrans %}{% endif %}
+
+{% blocktrans trimmed with email=support_email %}Team members are free on every plan. Stripe sends a receipt for each payment. Questions about your plan? Write to {{ email }}.{% endblocktrans %}{% endautoescape %}

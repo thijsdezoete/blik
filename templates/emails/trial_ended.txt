@@ -1,0 +1,12 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% trans 'Your first payment did not go through' %}{% endheadline %}
+
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% blocktrans trimmed with organization=organization.name plan=plan.name %}The trial for {{ organization }} has ended, and we could not take the first payment for your {{ plan }} plan. Update your payment method to continue.{% endblocktrans %}
+
+{% trans 'Update your payment method:' %}
+{{ reactivate_url }}
+
+{% if cycle_count %}{% blocktrans trimmed count counter=cycle_count %}Your data is safe. Your review cycle, its feedback and your settings stay as they are.{% plural %}Your data is safe. Your {{ counter }} review cycles, their feedback and your settings stay as they are.{% endblocktrans %}{% else %}{% trans 'Your data is safe. Your settings and team stay as they are.' %}{% endif %} {% trans 'Until the payment works, the account is paused. You cannot add new people to review in that time. After the payment, everything works as before.' %}
+
+{% blocktrans trimmed with email=support_email %}Does the payment still fail? Write to {{ email }}. We will help.{% endblocktrans %}{% endautoescape %}

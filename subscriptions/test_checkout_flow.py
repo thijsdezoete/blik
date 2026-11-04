@@ -10,7 +10,7 @@ from django.utils import timezone
 from accounts.factories import UserProfileFactory
 from core.factories import OrganizationFactory, UserFactory
 from subscriptions.models import CheckoutFulfilment, OneTimeLoginToken, RoundPurchase
-from subscriptions.testing import checkout_session
+from subscriptions.testing import checkout_session, patch_line_items
 from subscriptions.utils import cycle_credits
 
 
@@ -41,6 +41,7 @@ class CheckoutFlowTests(TestCase):
         patcher = patch('core.email.send_email')
         self.send_email = patcher.start()
         self.addCleanup(patcher.stop)
+        patch_line_items(self)
 
     def token_url(self, session_id='cs_1'):
         token = OneTimeLoginToken.objects.get(fulfilment__stripe_session_id=session_id)

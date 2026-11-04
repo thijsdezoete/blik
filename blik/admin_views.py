@@ -55,6 +55,7 @@ from questionnaires.translations import (
     has_translation,
     save_text_translations,
 )
+from notifications.lifecycle import cycle_summary, send_cycle_summary
 from reports.dreyfus_service import (
     agency_profile_with_texts,
     calculate_dreyfus_quadrant,
@@ -76,6 +77,7 @@ from subscriptions.models import Subscription
 from subscriptions.utils import (
     NoCycleCredits,
     billing_context,
+    can_see_billing,
     check_employee_limit,
     cycle_credits,
     get_subscription_status,
@@ -1144,7 +1146,7 @@ def questionnaire_edit(request, questionnaire_uuid):
                             action_item_indices.add(idx_str)
 
                     # Build action items list
-                    for idx in sorted(action_item_indices):
+                    for idx in sorted(action_item_indices, key=int):
                         text = request.POST.get(f'add_action_items[{idx}][text]', '').strip()
                         threshold = request.POST.get(f'add_action_items[{idx}][threshold]', 3.0)
                         stages_raw = request.POST.getlist(f'add_action_items[{idx}][stages][]')
@@ -1326,6 +1328,8 @@ def questionnaire_edit(request, questionnaire_uuid):
                     # Parse action items from form
                     action_items = []
                     action_item_indices = set()
+                    # A posted key may only name an item the question has, so the client cannot set keys of its own
+                    known_keys = {item.get('key') for item in question.action_items if isinstance(item, dict)}
 
                     # Extract all action item indices from the POST data
                     for key in request.POST.keys():
@@ -1335,7 +1339,7 @@ def questionnaire_edit(request, questionnaire_uuid):
                             action_item_indices.add(idx_str)
 
                     # Build action items list
-                    for idx in sorted(action_item_indices):
+                    for idx in sorted(action_item_indices, key=int):
                         text = request.POST.get(f'action_items[{idx}][text]', '').strip()
                         threshold = request.POST.get(f'action_items[{idx}][threshold]', 3.0)
                         stages_raw = request.POST.getlist(f'action_items[{idx}][stages][]')
@@ -1347,7 +1351,7 @@ def questionnaire_edit(request, questionnaire_uuid):
                                 'threshold': float(threshold)
                             }
 
-                            if key:
+                            if key in known_keys:
                                 item['key'] = key
 
                             # Add stages if any are selected
@@ -1824,6 +1828,8 @@ def review_cycle_create(request):
 
         except NoCycleCredits as e:
             messages.error(request, str(e))
+            if can_see_billing(org, request.user):
+                return redirect(f"{reverse('billing')}?reviews={e.needed - e.available}")
             return redirect('review_cycle_create')
         except Exception as e:
             messages.error(request, _('Error creating review cycle: %(error)s') % {'error': str(e)})
@@ -1926,7 +1932,15 @@ def review_cycle_detail(request, cycle_uuid):
     total_tokens = tokens.count()
     completed_tokens = tokens.filter(completed_at__isnull=False).count()
     claimed_tokens = tokens.filter(claimed_at__isnull=False).count()
-    pending_invites = tokens.filter(reviewer_email__isnull=False, invitation_sent_at__isnull=True).count()
+    pending_invites = (
+        tokens.filter(
+            reviewer_email__isnull=False,
+            invitation_sent_at__isnull=True,
+            completed_at__isnull=True,
+        )
+        .exclude(category="self")
+        .count()
+    )
     pending_reminders = tokens.filter(invitation_sent_at__isnull=False, completed_at__isnull=True).count()
     email_invited_count = tokens.filter(reviewer_email__isnull=False).exclude(category='self').count()
     completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
@@ -2002,6 +2016,9 @@ def close_cycle(request, cycle_uuid):
         messages.error(request, _('Cannot close cycle: No reviews have been completed yet.'))
         return redirect('review_cycle_detail', cycle_uuid=cycle_uuid)
 
+    # Count the responses for the admins' summary before the unused tokens go
+    summary = cycle_summary(cycle)
+
     # Remove unclaimed tokens (tokens that are still active but not claimed)
     # Keep claimed tokens as an indication that the report was closed while people were still working
     unclaimed_tokens = cycle.tokens.filter(claimed_at__isnull=True, completed_at__isnull=True)
@@ -2026,6 +2043,8 @@ def close_cycle(request, cycle_uuid):
         messages.success(request, success_msg)
     except Exception as e:
         messages.error(request, _('Cycle closed but error generating report: %(error)s') % {'error': str(e)})
+
+    send_cycle_summary(cycle, summary)
 
     return redirect('review_cycle_detail', cycle_uuid=cycle_uuid)
 
@@ -2335,6 +2354,8 @@ def remove_reviewer_token(request, cycle_uuid, token_id):
                     logger.exception("Error auto-generating report for cycle %s", cycle.id)
                     messages.warning(request, _('Cycle closed but error generating report: %(error)s') % {'error': str(e)})
 
+                send_cycle_summary(cycle)
+
     except ReviewerToken.DoesNotExist:
         messages.error(request, _('Reviewer token not found.'))
     except Exception as e:
@@ -2463,15 +2484,6 @@ def settings_view(request):
         except Exception as e:
             messages.error(request, _('Error updating settings: %(error)s') % {'error': str(e)})
 
-    # Get subscription information if exists
-    subscription = None
-    try:
-        subscription = organization.subscription
-    except (Subscription.DoesNotExist, AttributeError):
-        pass
-    except Exception:
-        logger.exception("Error getting subscription for %s", organization.name)
-
     # Check if current user has organization admin permission
     is_org_admin = request.user.has_perm('accounts.can_manage_organization')
 
@@ -2489,7 +2501,6 @@ def settings_view(request):
 
     context = {
         'organization': organization,
-        'subscription': subscription,
         'is_org_admin': is_org_admin,
         'admin_count': admin_count,
         'is_last_admin': is_org_admin and admin_count == 1,

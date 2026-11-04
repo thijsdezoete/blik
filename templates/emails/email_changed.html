@@ -1,0 +1,21 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% trans 'Your email address was changed' %}{% endblock %}
+{% block preheader %}{% trans 'If you did not change it, contact your organization administrator now.' %}{% endblock %}
+{% block heading %}{% trans 'Your email address was changed' %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+
+<p style="margin:0 0 16px;">{% blocktrans trimmed %}The email address of your {{ site_name }} account was changed on {{ date }} at {{ time }} (UTC).{% endblocktrans %}</p>
+
+{% blocktrans trimmed asvar change with old=old_email new=new_email %}
+Old address: <strong>{{ old }}</strong><br>
+New address: <strong>{{ new }}</strong>
+{% endblocktrans %}
+{% include 'emails/_panel.html' with body=change %}
+
+<p style="margin:0 0 16px;">{% trans 'From now on, we send all emails about your account to the new address. This is the last email to this address.' %}</p>
+
+<p style="margin:0 0 16px;">{% trans 'Did you change it? Then you do not need to do anything.' %}</p>
+
+<p style="margin:0;">{% if organization.email %}{% blocktrans trimmed with email=organization.email %}Did you not change it? Then someone else may have access to your account. Contact your organization administrator now: <a href="mailto:{{ email }}">{{ email }}</a>.{% endblocktrans %}{% else %}{% trans 'Did you not change it? Then someone else may have access to your account. Contact your organization administrator now.' %}{% endif %}</p>
+{% endblock %}

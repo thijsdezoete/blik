@@ -13,8 +13,17 @@ from django_ratelimit.decorators import ratelimit
 from accounts.models import UserProfile, OrganizationInvitation, PasswordResetToken
 from accounts.services import create_user_with_email_as_username
 from accounts.forms import ForgotPasswordForm, ResetPasswordForm
+from core.email import send_email_changed_email, send_password_changed_email
 
 logger = logging.getLogger(__name__)
+
+
+def _send_security_notice(sender, user, *args):
+    """Send a security notice. A mail failure is logged and never undoes the change."""
+    try:
+        sender(user, *args)
+    except Exception:
+        logger.exception('Security notice %s for user %s failed', sender.__name__, user.pk)
 
 
 @method_decorator(ratelimit(key='ip', rate='5/m', block=True), name='post')
@@ -127,7 +136,7 @@ def signup_view(request):
         # Send welcome email
         try:
             from core.email import send_welcome_email
-            send_welcome_email(user, invitation.organization)
+            send_welcome_email(user, invitation.organization, invited_by=invitation.invited_by)
         except Exception as e:
             logger.exception("Failed to send welcome email to %s", user.email)
 
@@ -220,6 +229,8 @@ def reset_password_view(request, token):
             reset_token.used_at = timezone.now()
             reset_token.save()
 
+            _send_security_notice(send_password_changed_email, user)
+
             messages.success(request, _('Your password has been reset successfully. Please log in.'))
             return redirect('login')
         else:
@@ -258,12 +269,17 @@ def profile_view(request):
             user = password_form.save()
             # Keep this session logged in; other sessions are logged out
             update_session_auth_hash(request, user)
+            _send_security_notice(send_password_changed_email, user)
             messages.success(request, _('Your password has been changed.'))
             return redirect('profile')
     elif request.method == 'POST':
+        # The form changes request.user while it validates, so keep the old address first
+        old_email = request.user.email
         form = ProfileEditForm(request.POST, instance=request.user)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            if old_email and user.email.lower() != old_email.lower():
+                _send_security_notice(send_email_changed_email, user, old_email)
             messages.success(request, _('Your profile has been updated successfully.'))
             return redirect('profile')
 

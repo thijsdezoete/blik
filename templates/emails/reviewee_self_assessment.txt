@@ -1,14 +1,13 @@
 {% load i18n %}{% blocktrans trimmed with name=reviewee.name %}Hi {{ name }},{% endblocktrans %}
 
-{% if is_reminder %}{% trans 'This is a friendly reminder that your self-assessment is still open.' %}{% else %}{% trans 'A new 360-degree feedback cycle has been created for you!' %}{% endif %}
+{% if is_reminder %}{% trans 'Your self-assessment is still open.' %}{% else %}{% trans 'Your 360 feedback cycle has started.' %}{% endif %} {% trans 'Write down how you see yourself before you see what others think.' %}{% if estimated_minutes %} {% blocktrans trimmed count minutes=estimated_minutes %}It takes about {{ minutes }} minute.{% plural %}It takes about {{ minutes }} minutes.{% endblocktrans %}{% endif %}
 
-{% trans 'Please complete your self-assessment by clicking the link below:' %}
+{% trans 'Your report puts your view next to theirs. The differences are often the most useful part.' %}
 
+{% trans 'Start the self-assessment:' %}
 {{ self_assessment_url }}
-
-{% trans 'This is your opportunity to reflect on your own performance before receiving feedback from others.' %}
 
 {% trans 'Questionnaire:' %} {{ questionnaire_name }}
 
-{% trans 'Best regards,' %}
-{% trans 'Your Feedback Team' %}
+---
+{% trans 'This is an automated message from Blik.' %}

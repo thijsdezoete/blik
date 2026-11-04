@@ -67,6 +67,10 @@ class Subscription(TimeStampedModel):
     trial_start = models.DateTimeField(_('trial start'), null=True, blank=True)
     trial_end = models.DateTimeField(_('trial end'), null=True, blank=True)
 
+    # When the trial-ending reminders went out, so the daily run sends each one once
+    trial_reminder_3_days_sent_at = models.DateTimeField(_('3-day trial reminder sent at'), null=True, blank=True)
+    trial_reminder_1_day_sent_at = models.DateTimeField(_('1-day trial reminder sent at'), null=True, blank=True)
+
     class Meta:
         verbose_name = _('subscription')
         verbose_name_plural = _('subscriptions')

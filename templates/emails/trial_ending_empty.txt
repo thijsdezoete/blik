@@ -1,0 +1,13 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% blocktrans trimmed with date=trial_end_date %}Your trial ends on {{ date }}{% endblocktrans %}{% endheadline %}
+
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% if days == 1 %}{% trans 'There is no review cycle in your account yet. A test cycle on yourself still fits in before the trial ends. It takes 5 minutes.' %}{% else %}{% trans 'There is no review cycle in your account yet. Maybe now is not the right time, and that is fine.' %}
+
+{% trans 'Before you decide, run one test cycle on yourself with a few colleagues you trust. It takes 5 minutes, and you see the report your team would get.' %}{% endif %}
+
+{% trans 'Start a test cycle:' %}
+{{ create_cycle_url }}
+
+{% blocktrans trimmed with plan=plan.name price=plan.price_monthly|floatformat:"-2" date=trial_end_date %}On {{ date }}, your {{ plan }} plan starts at €{{ price }} per month, on the card you gave at checkout. To stop, cancel your plan before then, and we charge nothing:{% endblocktrans %}
+{{ choose_plan_url }}{% endautoescape %}

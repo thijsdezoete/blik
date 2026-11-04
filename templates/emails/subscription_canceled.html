@@ -1,0 +1,46 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% if ended %}{% trans 'Your subscription has ended' %}{% else %}{% trans 'Your subscription is canceled' %}{% endif %}{% endblock %}
+{% block preheader %}{% blocktrans trimmed with date=deletion_date %}Your data stays available until {{ date }}. You pay nothing more.{% endblocktrans %}{% endblock %}
+{% block heading %}{% if ended %}{% trans 'Your subscription has ended' %}{% else %}{% trans 'Your subscription is canceled' %}{% endif %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+
+{% if ended %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed with organization=organization.name plan=plan.name %}We have canceled the {{ plan }} plan for {{ organization }}, as you asked. It has ended now. You pay nothing more.{% endblocktrans %}</p>
+{% else %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed with organization=organization.name plan=plan.name date=end_date %}We have canceled the {{ plan }} plan for {{ organization }}, as you asked. You keep full access until {{ date }}. After that, you pay nothing more.{% endblocktrans %}</p>
+{% endif %}
+
+{% if not ended and open_cycle_count %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed count counter=open_cycle_count with date=end_date %}<strong>{{ counter }} review cycle</strong> is still collecting feedback. Until {{ date }}, it runs as normal, and you can close it to get its report.{% plural %}<strong>{{ counter }} review cycles</strong> are still collecting feedback. Until {{ date }}, they run as normal, and you can close them to get their reports.{% endblocktrans %}</p>
+{% endif %}
+
+{% if ended %}
+{% blocktrans trimmed asvar data with end=end_date deletion=deletion_date %}
+From {{ end }}, your account is paused. You can still sign in and export your data.<br>
+On {{ deletion }}, we delete your organization's data.
+{% endblocktrans %}
+{% else %}
+{% blocktrans trimmed asvar data with end=end_date deletion=deletion_date %}
+Until {{ end }}, everything works as it does now.<br>
+From {{ end }}, your account is paused. You can still sign in and export your data.<br>
+On {{ deletion }}, we delete your organization's data.
+{% endblocktrans %}
+{% endif %}
+{% trans 'What happens to your data' as data_title %}
+{% include 'emails/_panel.html' with title=data_title body=data %}
+
+{% if ended %}
+<p style="margin:0 0 16px;">{% trans 'Do you want to keep your reports? Download an export before your data is deleted.' %}</p>
+{% trans 'Export your data' as button_label %}
+{% include 'emails/_button.html' with url=export_url label=button_label %}
+{% else %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed with date=end_date %}Did you change your mind? Keep your subscription before {{ date }}, and nothing changes for your team.{% endblocktrans %}</p>
+{% trans 'Keep my subscription' as button_label %}
+{% include 'emails/_button.html' with url=settings_url label=button_label %}
+{% endif %}
+
+{% trans 'Why I canceled:' as prefix %}{% trans 'Too expensive' as r1 %}{% trans 'Missing a feature' as r2 %}{% trans 'We use something else' as r3 %}{% trans 'Only needed it once' as r4 %}{% trans 'Something else' as r5 %}
+<p style="margin:24px 0 6px; font-size:13px; color:#64748b;">{% trans 'Why did you cancel? Click one reason. It opens an email to us, and you can send it as it is.' %}</p>
+<p style="margin:0; font-size:13px; color:#64748b;"><a href="mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r1|urlencode }}">{{ r1 }}</a> &middot; <a href="mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r2|urlencode }}">{{ r2 }}</a> &middot; <a href="mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r3|urlencode }}">{{ r3 }}</a> &middot; <a href="mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r4|urlencode }}">{{ r4 }}</a> &middot; <a href="mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r5|urlencode }}">{{ r5 }}</a></p>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% blocktrans trimmed %}Review cycle closed: {{ reviewee_name }}{% endblocktrans %}{% endblock %}
+{% block preheader %}{% trans 'The responses in numbers, and the next step.' %}{% endblock %}
+{% block eyebrow %}<div style="margin:0 0 8px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#4f46e5;">{% trans 'Cycle summary' %}</div>{% endblock %}
+{% block heading %}{% blocktrans trimmed %}The review cycle for {{ reviewee_name }} is closed{% endblocktrans %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+<p style="margin:0 0 16px;">{% if completed_cycles == 1 %}{% blocktrans trimmed with organization=organization.name %}This is the first closed review cycle of {{ organization }}.{% endblocktrans %}{% else %}{% blocktrans trimmed count counter=completed_cycles with organization=organization.name %}With this one, {{ organization }} has closed {{ counter }} review cycle.{% plural %}With this one, {{ organization }} has closed {{ counter }} review cycles.{% endblocktrans %}{% endif %}</p>
+<p style="margin:0 0 16px;">{% blocktrans trimmed %}The report for <strong>{{ reviewee_name }}</strong> is ready. These are the numbers.{% endblocktrans %}</p>
+{% if enough_responses %}
+{% blocktrans trimmed asvar responses %}{{ responded }} of {{ invited }} invited reviewers responded ({{ response_rate }}%).{% endblocktrans %}
+{% else %}
+{% blocktrans trimmed count counter=threshold asvar responses %}Fewer than {{ counter }} reviewer responded. To keep the answers anonymous, the report does not show them.{% plural %}Fewer than {{ counter }} reviewers responded. To keep the answers anonymous, the report does not show them.{% endblocktrans %}
+{% endif %}
+{% include 'emails/_panel.html' with title=_('Responses') body=responses %}
+<p style="margin:0 0 4px; font-weight:600; color:#0f172a;">{% trans 'Next step' %}</p>
+<p style="margin:0 0 16px;">{% if enough_responses %}{% blocktrans trimmed %}Read the report. Then plan a feedback conversation with {{ reviewee_name }}.{% endblocktrans %}{% else %}{% blocktrans trimmed count counter=threshold %}In the next cycle, invite more reviewers. The report shows the results of a group when at least {{ counter }} reviewer in that group responds.{% plural %}In the next cycle, invite more reviewers. The report shows the results of a group when at least {{ counter }} reviewers in that group respond.{% endblocktrans %}{% endif %}</p>
+{% include 'emails/_button.html' with url=cycle_url label=_('View the review cycle') %}
+<p style="margin:0 0 4px; font-weight:600; color:#0f172a;">{% blocktrans trimmed with organization=organization.name %}All review cycles of {{ organization }}{% endblocktrans %}</p>
+<p style="margin:0;">{% if open_cycles %}{% blocktrans trimmed count counter=open_cycles %}{{ counter }} review cycle is still open.{% plural %}{{ counter }} review cycles are still open.{% endblocktrans %}{% else %}{% trans 'No review cycles are open.' %}{% endif %}
+<a href="{{ cycles_url }}">{% trans 'See all review cycles' %}</a></p>
+{% endblock %}

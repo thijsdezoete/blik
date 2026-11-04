@@ -1,0 +1,24 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% if ended %}{% trans 'Your subscription has ended' %}{% else %}{% trans 'Your subscription is canceled' %}{% endif %}{% endheadline %}
+
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% if ended %}{% blocktrans trimmed with organization=organization.name plan=plan.name %}We have canceled the {{ plan }} plan for {{ organization }}, as you asked. It has ended now. You pay nothing more.{% endblocktrans %}{% else %}{% blocktrans trimmed with organization=organization.name plan=plan.name date=end_date %}We have canceled the {{ plan }} plan for {{ organization }}, as you asked. You keep full access until {{ date }}. After that, you pay nothing more.{% endblocktrans %}{% endif %}{% if not ended and open_cycle_count %}
+
+{% blocktrans trimmed count counter=open_cycle_count with date=end_date %}{{ counter }} review cycle is still collecting feedback. Until {{ date }}, it runs as normal, and you can close it to get its report.{% plural %}{{ counter }} review cycles are still collecting feedback. Until {{ date }}, they run as normal, and you can close them to get their reports.{% endblocktrans %}{% endif %}
+
+{% headline '-' %}{% trans 'What happens to your data' %}{% endheadline %}
+{% if not ended %}
+- {% blocktrans trimmed with end=end_date %}Until {{ end }}, everything works as it does now.{% endblocktrans %}{% endif %}
+- {% blocktrans trimmed with end=end_date %}From {{ end }}, your account is paused. You can still sign in and export your data.{% endblocktrans %}
+- {% blocktrans trimmed with deletion=deletion_date %}On {{ deletion }}, we delete your organization's data.{% endblocktrans %}
+
+{% if ended %}{% trans 'Do you want to keep your reports? Download an export before your data is deleted:' %}
+{{ export_url }}{% else %}{% blocktrans trimmed with date=end_date %}Did you change your mind? Keep your subscription before {{ date }}, and nothing changes for your team:{% endblocktrans %}
+{{ settings_url }}{% endif %}
+
+{% trans 'Why I canceled:' as prefix %}{% trans 'Too expensive' as r1 %}{% trans 'Missing a feature' as r2 %}{% trans 'We use something else' as r3 %}{% trans 'Only needed it once' as r4 %}{% trans 'Something else' as r5 %}{% trans 'Why did you cancel? Click one reason. It opens an email to us, and you can send it as it is.' %}
+- {{ r1 }}: mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r1|urlencode }}
+- {{ r2 }}: mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r2|urlencode }}
+- {{ r3 }}: mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r3|urlencode }}
+- {{ r4 }}: mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r4|urlencode }}
+- {{ r5 }}: mailto:{{ support_email }}?subject={{ prefix|add:' '|add:r5|urlencode }}{% endautoescape %}

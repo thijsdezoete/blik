@@ -1,0 +1,14 @@
+{% load i18n %}{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% blocktrans trimmed with organization=organization.name %}The first 360 report of {{ organization }} is ready.{% endblocktrans %} {% trans 'A report helps most when the person talks about it with their manager. Five steps to prepare that conversation:' %}
+
+1. {% trans 'Give time to read. The person reads the report one or two days before you meet.' %}
+2. {% trans 'Ask before you tell. Start with questions: What surprised you? What do you agree with?' %}
+3. {% trans 'Look for patterns. Talk about the themes that come back, not about one comment.' %}
+4. {% trans 'Do not guess who wrote what. The feedback is anonymous. Talk about behaviour, not about people.' %}
+5. {% trans 'Agree on one or two goals. Write them down. Set a date to look at the progress together.' %}
+
+{% trans 'Tip:' %} {% trans 'The report compares the self-assessment with the scores from others. The largest gaps are a good place to start the conversation.' %}
+
+{% trans 'Open the report:' %}
+{{ report_url }}

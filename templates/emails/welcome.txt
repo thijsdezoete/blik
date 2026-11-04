@@ -1,27 +1,21 @@
-{% load i18n email_tags %}{% blocktrans trimmed %}Welcome to {{ site_name }}{% endblocktrans %}
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% blocktrans trimmed %}Welcome to {{ site_name }}{% endblocktrans %}{% endheadline %}
 
-{% blocktrans trimmed with username=user.username %}Hello {{ username }},{% endblocktrans %}
+{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
 
-{% blocktrans trimmed %}Your {{ site_name }} account has been created and is ready to use. You can now start creating 360-degree feedback cycles for your organization.{% endblocktrans %}
+{% blocktrans trimmed with organization=organization.name %}The {{ site_name }} account for {{ organization }} is ready.{% endblocktrans %}
 
-{% headline '=' %}{% trans 'YOUR LOGIN CREDENTIALS' %}{% endheadline %}
-{% trans 'Email:' %} {{ user.email }}{% if password %}
-{% trans 'Password:' %} {{ password }}{% endif %}
+{% if password %}{% headline '-' %}{% trans 'Your login details' %}{% endheadline %}
+{% blocktrans trimmed with email=user.email %}Email: {{ email }}{% endblocktrans %}
+{% blocktrans trimmed with password=password %}Password: {{ password }}{% endblocktrans %}
 
-{% trans 'Login URL:' %} {{ login_url }}
+{% trans 'Change this password after you log in for the first time.' %}
 
-{% if password %}{% trans 'IMPORTANT:' %} {% trans 'Please change your password after your first login for security.' %}{% endif %}
+{% endif %}{% trans 'Start with one test cycle on yourself. Choose a few colleagues you trust and ask them for feedback on you. It takes 5 minutes, and you see the report your team would get.' %}
 
-{% headline '=' %}{% trans 'GETTING STARTED' %}{% endheadline %}
-1. {% trans 'Login to your dashboard using the credentials above' %}
-2. {% trans 'Add reviewees (employees) to your organization' %}
-3. {% trans 'Create a review cycle and invite reviewers' %}
-4. {% trans 'Monitor progress and generate reports' %}
+{% trans 'Start a test cycle:' %}
+{{ create_cycle_url }}
 
-{% trans "If you have any questions, please don't hesitate to reach out to our support team." %}
-
-{% trans 'Best regards,' %}
-{% blocktrans trimmed %}The {{ site_name }} Team{% endblocktrans %}
+{% blocktrans trimmed with email=support_email %}Questions? Write to {{ email }}.{% endblocktrans %}
 
 ---
-{% blocktrans trimmed with email=user.email %}This email was sent to {{ email }} because an account was created for your organization.{% endblocktrans %}
+{% blocktrans trimmed with email=user.email %}This email was sent to {{ email }} because an account was created for your organization.{% endblocktrans %}{% endautoescape %}

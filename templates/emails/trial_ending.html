@@ -1,0 +1,31 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% trans 'What your team built during the trial' %}{% endblock %}
+{% block preheader %}{% blocktrans trimmed with plan=plan.name date=trial_end_date %}Your {{ plan }} plan starts on {{ date }}. Your work continues.{% endblocktrans %}{% endblock %}
+{% block eyebrow %}<div style="margin:0 0 8px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#4f46e5;">{% trans 'Trial reminder' %}</div>{% endblock %}
+{% block heading %}{% trans 'What your team built during the trial' %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+
+{% if completed_review_count %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed count counter=completed_review_count %}Your team gave <strong>{{ counter }} review</strong> in {{ site_name }}.{% plural %}Your team gave <strong>{{ counter }} reviews</strong> in {{ site_name }}.{% endblocktrans %}
+{% blocktrans trimmed count counter=reviewed_people_count %}{{ counter }} person now has feedback on their work.{% plural %}{{ counter }} people now have feedback on their work.{% endblocktrans %}
+{% trans 'Before the trial, your team did not have those perspectives.' %}</p>
+{% else %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed count counter=cycle_count %}You started <strong>{{ counter }} review cycle</strong> in {{ site_name }}.{% plural %}You started <strong>{{ counter }} review cycles</strong> in {{ site_name }}.{% endblocktrans %}</p>
+{% endif %}
+
+{% if open_cycle_count %}
+{% if pending_report_count %}{% blocktrans trimmed asvar open_work count counter=open_cycle_count %}<strong>{{ counter }} review cycle</strong> is still collecting feedback. Its report is on the way. You get it when you close the cycle.{% plural %}<strong>{{ counter }} review cycles</strong> are still collecting feedback. Their reports are on the way. You get each report when you close its cycle.{% endblocktrans %}{% else %}{% blocktrans trimmed asvar open_work count counter=open_cycle_count %}<strong>{{ counter }} review cycle</strong> is still collecting feedback.{% plural %}<strong>{{ counter }} review cycles</strong> are still collecting feedback.{% endblocktrans %}{% endif %}
+{% trans 'Still in progress' as open_title %}
+{% include 'emails/_panel.html' with title=open_title body=open_work %}
+{% endif %}
+
+<h2 style="margin:28px 0 8px; font-size:16px; font-weight:600; color:#0f172a;">{% blocktrans trimmed with date=trial_end_date %}What happens on {{ date }}{% endblocktrans %}</h2>
+
+<p style="margin:0 0 16px;">{% blocktrans trimmed with plan=plan.name price=plan.price_monthly|floatformat:"-2" max=plan.max_employees %}Your {{ plan }} plan starts, for up to {{ max }} people. We charge €{{ price }} per month to the card you gave at checkout.{% endblocktrans %}
+{% if open_cycle_count %}{% trans 'Your review cycles, reports and settings stay as they are. Open cycles keep collecting feedback.' %}{% else %}{% trans 'Your review cycles, reports and settings stay as they are.' %}{% endif %}</p>
+
+{% if open_cycle_count %}{% trans 'Go to your open cycles' as button_label %}{% include 'emails/_button.html' with url=cycles_url label=button_label %}{% else %}{% trans 'Go to your dashboard' as button_label %}{% include 'emails/_button.html' with url=dashboard_url label=button_label %}{% endif %}
+
+<p style="margin:0; font-size:13px; color:#64748b;">{% blocktrans trimmed with url=choose_plan_url date=trial_end_date %}Do you want a different plan, or do you want to stop? <a href="{{ url }}">Change or cancel your plan</a> before {{ date }}. If you cancel, we charge nothing.{% endblocktrans %}</p>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% blocktrans trimmed with date=trial_end_date %}Nothing changes on {{ date }}{% endblocktrans %}{% endblock %}
+{% block preheader %}{% blocktrans trimmed with date=trial_end_date %}Your trial ends on {{ date }}. Your work continues.{% endblocktrans %}{% endblock %}
+{% block eyebrow %}<div style="margin:0 0 8px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#4f46e5;">{% trans 'Last reminder' %}</div>{% endblock %}
+{% block heading %}{% blocktrans trimmed with date=trial_end_date %}Nothing changes on {{ date }}{% endblocktrans %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+
+<p style="margin:0 0 16px;">{% if open_cycle_count %}{% blocktrans trimmed count counter=open_cycle_count %}<strong>{{ counter }} review cycle</strong> is still collecting feedback.{% plural %}<strong>{{ counter }} review cycles</strong> are still collecting feedback.{% endblocktrans %}{% else %}{% blocktrans trimmed count counter=cycle_count %}Your <strong>{{ counter }} review cycle</strong> and all its feedback stay where they are.{% plural %}Your <strong>{{ counter }} review cycles</strong> and all their feedback stay where they are.{% endblocktrans %}{% endif %}</p>
+
+<p style="margin:0 0 16px;">{% blocktrans trimmed with date=trial_end_date plan=plan.name price=plan.price_monthly|floatformat:"-2" %}Your trial ends on {{ date }}. Your work continues on the {{ plan }} plan, at €{{ price }} per month on the card you gave at checkout.{% endblocktrans %}</p>
+
+{% if open_cycle_count %}{% trans 'Go to your open cycles' as button_label %}{% include 'emails/_button.html' with url=cycles_url label=button_label %}{% else %}{% trans 'Go to your dashboard' as button_label %}{% include 'emails/_button.html' with url=dashboard_url label=button_label %}{% endif %}
+
+<p style="margin:0; font-size:13px; color:#64748b;">{% blocktrans trimmed with url=choose_plan_url %}Do you want to change or stop? <a href="{{ url }}">Change or cancel your plan</a>.{% endblocktrans %}</p>
+{% endblock %}

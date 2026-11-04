@@ -1,40 +1,12 @@
+{% extends 'emails/_base.html' %}
 {% load i18n %}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
-        .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }
-        .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; }
-        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 0.875rem; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1 style="margin: 0; font-size: 1.75rem;">{% if is_reminder %}{% trans 'Self-Assessment Reminder' %}{% else %}{% trans '360° Feedback Cycle Started' %}{% endif %}</h1>
-        </div>
-        <div class="content">
-            <p>{% blocktrans trimmed with name=reviewee.name %}Hi <strong>{{ name }}</strong>,{% endblocktrans %}</p>
-
-            <p>{% if is_reminder %}{% trans 'This is a friendly reminder that your self-assessment is still open.' %}{% else %}{% trans 'A new 360-degree feedback cycle has been created for you!' %}{% endif %}</p>
-
-            <p>{% trans 'Please complete your <strong>self-assessment</strong> by clicking the button below:' %}</p>
-
-            <div style="text-align: center;">
-                <a href="{{ self_assessment_url }}" class="button">{% trans 'Complete Self-Assessment' %}</a>
-            </div>
-
-            <p>{% trans 'This is your opportunity to reflect on your own performance before receiving feedback from others.' %}</p>
-
-            <p><strong>{% trans 'Questionnaire:' %}</strong> {{ questionnaire_name }}</p>
-        </div>
-        <div class="footer">
-            <p>{% trans 'This is an automated email from your feedback system.' %}</p>
-        </div>
-    </div>
-</body>
-</html>
+{% block title %}{% if is_reminder %}{% trans 'Your self-assessment is still open' %}{% else %}{% trans 'Your self-assessment' %}{% endif %}{% endblock %}
+{% block preheader %}{% trans 'Write down how you see yourself before you see what others think.' %}{% endblock %}
+{% block eyebrow %}<div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#64748b; margin-bottom:8px;">{{ questionnaire_name }}</div>{% endblock %}
+{% block heading %}{% if is_reminder %}{% trans 'Your self-assessment is still open' %}{% else %}{% trans 'Your self-assessment' %}{% endif %}{% endblock %}
+{% block content %}
+<p>{% blocktrans trimmed with name=reviewee.name %}Hi <strong>{{ name }}</strong>,{% endblocktrans %}</p>
+<p>{% if not is_reminder %}{% trans 'Your 360 feedback cycle has started.' %} {% endif %}{% trans 'Write down how you see yourself before you see what others think.' %}{% if estimated_minutes %} {% blocktrans trimmed count minutes=estimated_minutes %}It takes about {{ minutes }} minute.{% plural %}It takes about {{ minutes }} minutes.{% endblocktrans %}{% endif %}</p>
+<p>{% trans 'Your report puts your view next to theirs. The differences are often the most useful part.' %}</p>
+{% trans 'Start the self-assessment' as cta %}{% include 'emails/_button.html' with url=self_assessment_url label=cta %}
+{% endblock %}

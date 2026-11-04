@@ -1,10 +1,11 @@
 {% load landing_tags %}
 {# Single Round offer for pages whose closing call to action names only self-hosting and the subscription. Same component as the Enterprise fold-out in pricing_plans.html. #}
 <details class="pricing-foldout">
-    <summary>Only need one review round? €{{ plan_single_price }} once for up to {{ plan_single_max }} employees, no subscription</summary>
+    <summary>Only need one review round? €{{ plan_single_price }} per {{ plan_single_max }} employees, once, no subscription</summary>
     <div class="pricing-foldout-body">
         <ul class="pricing-features">
-            <li>Up to {{ plan_single_max }} employees</li>
+            <li>{{ plan_single_max }} employees per pack</li>
+            <li>More people? Buy more packs</li>
             <li>All questionnaires and reports</li>
             <li>Free, unlimited reviewers</li>
             <li>Hosted in EU, nothing to install</li>

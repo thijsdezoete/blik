@@ -1,0 +1,17 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'What should your next report say?' %}{% endblock %}
+{% block preheader %}{% trans 'One question, and one small plan for the next round.' %}{% endblock %}
+{% block heading %}{% trans 'What should your next report say?' %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}</p>
+<p style="margin:0 0 16px;">{% trans 'You got your 360 feedback report about a month ago.' %} {% blocktrans trimmed with organization=organization.name %}When {{ organization }} runs the next round, what do you want that report to show?{% endblocktrans %}</p>
+{% if has_gap %}<p style="margin:0 0 16px;">{% trans 'Your report shows a difference between how you see yourself and how others see you. Do you still see it the same way?' %}</p>{% endif %}
+<p style="margin:0 0 8px;">{% trans 'Make it concrete. Pick one behaviour and one situation. Then finish this sentence:' %}</p>
+<p style="margin:0 0 8px; padding-left:16px; font-style:italic;">{% trans 'When [situation] happens, I will [behaviour].' %}</p>
+<p style="margin:0 0 16px; padding-left:16px; color:#64748b;">{% trans 'For example: When a meeting has no agenda, I will ask for the goal first.' %}</p>
+{% if has_development_path %}<p style="margin:0 0 16px;">{% trans 'Your report has a development path. It can help you choose the behaviour.' %}</p>{% endif %}
+<p style="margin:0 0 24px;"><a href="{{ report_url }}" style="font-weight:600;">{% trans 'Open your report' %}</a></p>
+<p style="margin:0;">{% blocktrans trimmed with organization=organization.name %}{{ organization }} uses Blik for 360 feedback. Blik sends this reminder once, about a month after your report.{% endblocktrans %}</p>
+{% endblock %}
+{% block footer %}{% trans 'This link is personal. Do not forward this email.' %}{% endblock %}

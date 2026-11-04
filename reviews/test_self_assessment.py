@@ -52,7 +52,7 @@ class InvitationTests(SelfAssessmentTestCase):
         [token] = self.self_tokens()
         self.assertEqual(token.reviewer_email, 'dana@acme.example')
         self.assertIsNotNone(token.invitation_sent_at)
-        [self_mail] = [c.kwargs for c in send.call_args_list if 'Self-Assessment' in c.kwargs['subject']]
+        [self_mail] = [c.kwargs for c in send.call_args_list if 'self-assessment' in c.kwargs['subject']]
         self.assertEqual(self_mail['recipient_list'], ['dana@acme.example'])
         self.assertIn(f'/feedback/{token.token}/', self_mail['message'])
 
@@ -75,7 +75,7 @@ class InvitationTests(SelfAssessmentTestCase):
             send_reviewer_invitations(self.cycle)
 
         subjects = [c.kwargs['subject'] for c in send.call_args_list]
-        self.assertEqual(len([s for s in subjects if 'Self-Assessment' in s]), 1)
+        self.assertEqual(len([s for s in subjects if 'self-assessment' in s]), 1)
 
     def test_the_reminder_speaks_to_the_reviewee(self):
         with patch(SEND_MAIL):
@@ -87,9 +87,9 @@ class InvitationTests(SelfAssessmentTestCase):
         self.assertEqual(stats['sent'], 1)
         kwargs = send.call_args.kwargs
         self.assertEqual(kwargs['recipient_list'], ['dana@acme.example'])
-        self.assertIn('Reminder: Complete Your Self-Assessment', kwargs['subject'])
-        self.assertIn('your self-assessment is still open', kwargs['message'])
-        self.assertNotIn('feedback request for', kwargs['message'])
+        self.assertIn('Your self-assessment is still open', kwargs['subject'])
+        self.assertIn('Your self-assessment is still open.', kwargs['message'])
+        self.assertNotIn('Your feedback for', kwargs['message'])
 
 
 class CreateFormTests(SelfAssessmentTestCase):
@@ -113,7 +113,7 @@ class CreateFormTests(SelfAssessmentTestCase):
         [token] = created.tokens.filter(category='self')
         self.assertIsNotNone(token.invitation_sent_at)
         subjects = [c.kwargs['subject'] for c in send.call_args_list]
-        self.assertEqual(len([s for s in subjects if 'Self-Assessment' in s]), 1)
+        self.assertEqual(len([s for s in subjects if 'self-assessment' in s]), 1)
 
 
 class SelfLinkTests(SelfAssessmentTestCase):
@@ -196,7 +196,7 @@ class NewCycleTests(SelfAssessmentTestCase):
         created, send = self.new_cycle()
 
         subjects = {c.kwargs['subject'].split(':')[0] for c in send.call_args_list}
-        self.assertEqual(subjects, {'Complete Your Self-Assessment', 'Share Your 360 Feedback Links'})
+        self.assertEqual(subjects, {'Your self-assessment', 'Your links to share with reviewers'})
         [token] = created.tokens.filter(category='self')
         self.assertIsNotNone(token.invitation_sent_at)
 

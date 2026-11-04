@@ -1,0 +1,21 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% blocktrans trimmed with date=trial_end_date %}Your trial ends on {{ date }}{% endblocktrans %}{% endblock %}
+{% block preheader %}{% trans 'Before you decide, see the report your team would get.' %}{% endblock %}
+{% block eyebrow %}<div style="margin:0 0 8px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#4f46e5;">{% if days == 1 %}{% trans 'Last reminder' %}{% else %}{% trans 'Trial reminder' %}{% endif %}</div>{% endblock %}
+{% block heading %}{% blocktrans trimmed with date=trial_end_date %}Your trial ends on {{ date }}{% endblocktrans %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+
+{% if days == 1 %}
+<p style="margin:0 0 16px;">{% trans 'There is no review cycle in your account yet. A test cycle on yourself still fits in before the trial ends. It takes 5 minutes.' %}</p>
+{% else %}
+<p style="margin:0 0 16px;">{% trans 'There is no review cycle in your account yet. Maybe now is not the right time, and that is fine.' %}</p>
+
+<p style="margin:0 0 16px;">{% trans 'Before you decide, run one test cycle on yourself with a few colleagues you trust. It takes 5 minutes, and you see the report your team would get.' %}</p>
+{% endif %}
+
+{% trans 'Start a test cycle' as button_label %}
+{% include 'emails/_button.html' with url=create_cycle_url label=button_label %}
+
+<p style="margin:0; font-size:13px; color:#64748b;">{% blocktrans trimmed with plan=plan.name price=plan.price_monthly|floatformat:"-2" date=trial_end_date url=choose_plan_url %}On {{ date }}, your {{ plan }} plan starts at €{{ price }} per month, on the card you gave at checkout. To stop, <a href="{{ url }}">cancel your plan</a> before then, and we charge nothing.{% endblocktrans %}</p>
+{% endblock %}

@@ -1,19 +1,13 @@
-{% load i18n %}{% blocktrans trimmed %}Reminder: Feedback Request for {{ reviewee_name }}{% endblocktrans %}
+{% load i18n %}{% blocktrans trimmed %}Your feedback for {{ reviewee_name }} is still open{% endblocktrans %}
 
 {% trans 'Hello,' %}
 
-{% blocktrans trimmed %}This is a friendly reminder that you have a pending {{ category }} feedback request for {{ reviewee_name }}.{% endblocktrans %}
+{% blocktrans trimmed %}Your {{ category }} for {{ reviewee_name }} is still open.{% endblocktrans %}{% if responded_count %} {% blocktrans trimmed count counter=responded_count %}{{ counter }} colleague already responded.{% plural %}{{ counter }} colleagues already responded.{% endblocktrans %}{% endif %}{% if estimated_minutes %} {% blocktrans trimmed count minutes=estimated_minutes %}It takes about {{ minutes }} minute.{% plural %}It takes about {{ minutes }} minutes.{% endblocktrans %}{% endif %} {% trans 'Your answers are anonymous.' %}
 
-{% blocktrans trimmed %}Your feedback is important and will help {{ reviewee_name }} grow professionally. If you've already started, you can continue where you left off.{% endblocktrans %}
-
-{% trans 'Click the link below to continue your review:' %}
+{% trans 'Open the review:' %}
 {{ feedback_url }}
 
-{% blocktrans trimmed %}This questionnaire covers: {{ questionnaire_name }}{% endblocktrans %}
-
-{% trans 'Your progress is saved automatically, so you can complete the review at your convenience.' %}
-
-{% trans 'Thank you for your time.' %}
+{% trans 'If you started in this browser, your answers are still there.' %}
 
 ---
-{% trans 'This is an automated reminder from the Blik 360 Feedback System.' %}
+{% trans 'This is an automated message from Blik.' %}

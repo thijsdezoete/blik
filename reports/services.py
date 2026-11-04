@@ -959,7 +959,7 @@ def send_report_ready_notification(report, request=None):
             text_message = render_to_string('emails/report_ready.txt', context)
 
             send_email(
-                subject=_('Your 360 Feedback Report is Ready!'),
+                subject=_('Your 360 feedback report is ready'),
                 message=text_message,
                 recipient_list=[reviewee.email],
                 html_message=html_message,
@@ -969,5 +969,9 @@ def send_report_ready_notification(report, request=None):
 
     except Exception as e:
         stats['errors'].append(_('Failed to send report ready email: %(error)s') % {'error': str(e)})
+        return stats
+
+    from notifications.lifecycle import report_delivered
+    report_delivered(report)
 
     return stats

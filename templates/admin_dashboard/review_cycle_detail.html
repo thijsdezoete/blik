@@ -365,7 +365,7 @@
                                     {% endif %}
                                 </td>
                                 <td style="border-bottom: 1px solid var(--border);">
-                                    {% if token.reviewer_email and not token.invitation_sent_at %}
+                                    {% if token.reviewer_email and token.category != 'self' and not token.invitation_sent_at and not token.completed_at %} 
                                     <div style="display: flex; gap: 0.5rem;">
                                         <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: inline; margin: 0;">
                                             {% csrf_token %}

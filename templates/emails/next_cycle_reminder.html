@@ -1,0 +1,12 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Time for the next round' %}{% endblock %}
+{% block preheader %}{% trans 'Only a second round shows who grew.' %}{% endblock %}
+{% block heading %}{% trans 'Time for the next round' %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+<p style="margin:0 0 16px;">{% if baseline %}{% blocktrans trimmed count counter=baseline with organization=organization.name %}In {{ organization }}, {{ counter }} person has a baseline: a 360 report from a closed review cycle.{% plural %}In {{ organization }}, {{ counter }} people have a baseline: a 360 report from a closed review cycle.{% endblocktrans %} {% endif %}{% trans 'Only a second round shows who grew.' %}</p>
+<p style="margin:0 0 16px;">{% blocktrans trimmed with date=last_closed_at|date:'DATE_FORMAT' %}The last review cycle closed on {{ date }}. Use the same questionnaire as last time. The new report then compares the results with the earlier round.{% endblocktrans %}</p>
+<p style="margin:0 0 16px;">{% trans 'Each report places a person on the Dreyfus model, from novice to expert, for skill and for agency.' %}</p>
+{% include 'emails/_button.html' with url=create_url label=_('Start the next round') %}
+{% endblock %}

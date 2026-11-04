@@ -1,0 +1,1 @@
+{% load i18n %}{% if kind == 'started' %}{% trans 'Your trial has started' %}{% elif kind == 'plan_changed' %}{% blocktrans trimmed with plan=plan.name %}Your plan is now {{ plan }}{% endblocktrans %}{% elif kind == 'resumed' %}{% trans 'Your subscription continues' %}{% else %}{% trans 'Your subscription is active' %}{% endif %}

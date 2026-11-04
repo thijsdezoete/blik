@@ -1,0 +1,14 @@
+{% load i18n %}{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% blocktrans trimmed %}{{ reviewee_name }}'s cycle is set up.{% endblocktrans %} {% trans 'Nothing happens until the reviewers get the link.' %}
+
+{% trans 'Reviewers who get the link early have more time to answer. More answers make the report more complete.' %}
+
+{% trans 'Invite them in one of two ways:' %}
+- {% trans 'By email. Blik sends each reviewer a personal link.' %}
+- {% trans 'With invite links. Share one link per group yourself.' %}
+
+{% trans 'Invite reviewers:' %}
+{{ cycle_url }}
+
+{% blocktrans trimmed count counter=threshold %}The report shows the results of a group when at least {{ counter }} reviewer in that group responds.{% plural %}The report shows the results of a group when at least {{ counter }} reviewers in that group respond.{% endblocktrans %}

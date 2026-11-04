@@ -1451,7 +1451,7 @@ function addActionItem(text = '', threshold = 3.0, stages = [], key = '') {
             >&times;</button>
         </div>
 
-        <input type="hidden" name="action_items[${itemId}][key]" value="${key}">
+        <input type="hidden" name="action_items[${itemId}][key]">
 
         <div style="margin-bottom: 1rem;">
             <label style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); font-size: 0.875rem;">{{ _('Action Item Text')|escapejs }} *</label>
@@ -1462,7 +1462,7 @@ function addActionItem(text = '', threshold = 3.0, stages = [], key = '') {
                 required
                 placeholder="{{ _('e.g., Practice pair programming with senior developers')|escapejs }}"
                 style="font-size: 0.875rem;"
-            >${text}</textarea>
+            ></textarea>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
@@ -1475,7 +1475,6 @@ function addActionItem(text = '', threshold = 3.0, stages = [], key = '') {
                     min="1"
                     max="5"
                     step="0.1"
-                    value="${threshold}"
                     style="font-size: 0.875rem;"
                 >
                 <small style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-top: 0.25rem;">
@@ -1506,6 +1505,10 @@ function addActionItem(text = '', threshold = 3.0, stages = [], key = '') {
             </div>
         </div>
     `;
+    // Stored values go in as values, not as HTML, so text like "</textarea><script>" stays text
+    itemDiv.querySelector('[name$="[key]"]').value = key;
+    itemDiv.querySelector('[name$="[text]"]').value = text;
+    itemDiv.querySelector('[name$="[threshold]"]').value = threshold;
 
     container.appendChild(itemDiv);
 }

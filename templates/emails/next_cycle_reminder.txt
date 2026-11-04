@@ -1,0 +1,10 @@
+{% load i18n %}{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}
+
+{% if baseline %}{% blocktrans trimmed count counter=baseline with organization=organization.name %}In {{ organization }}, {{ counter }} person has a baseline: a 360 report from a closed review cycle.{% plural %}In {{ organization }}, {{ counter }} people have a baseline: a 360 report from a closed review cycle.{% endblocktrans %} {% endif %}{% trans 'Only a second round shows who grew.' %}
+
+{% blocktrans trimmed with date=last_closed_at|date:'DATE_FORMAT' %}The last review cycle closed on {{ date }}. Use the same questionnaire as last time. The new report then compares the results with the earlier round.{% endblocktrans %}
+
+{% trans 'Each report places a person on the Dreyfus model, from novice to expert, for skill and for agency.' %}
+
+{% trans 'Start the next round:' %}
+{{ create_url }}

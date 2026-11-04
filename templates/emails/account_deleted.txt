@@ -1,0 +1,17 @@
+{% load i18n email_tags %}{% autoescape off %}{% headline '=' %}{% if organization_name %}{% trans 'Your organization was deleted' %}{% else %}{% trans 'Your account was deleted' %}{% endif %}{% endheadline %}
+
+{% trans 'Hello,' %}
+{% if organization_name %}
+{% blocktrans trimmed with organization=organization_name %}On {{ date }}, we deleted {{ organization }} from {{ site_name }}, as you asked.{% endblocktrans %}
+
+{% trans 'We deleted all its data: people, review cycles, questionnaires, feedback and reports.' %}
+{% if had_subscription %}
+{% trans 'We have also canceled the subscription. You pay nothing more.' %}
+{% endif %}{% else %}
+{% blocktrans trimmed %}On {{ date }}, we deleted your {{ site_name }} account {{ email }}, as you asked. You can no longer sign in with it.{% endblocktrans %}
+
+{% trans 'Feedback you gave as a reviewer is anonymous. It is not linked to your account, so it stays part of the reports it belongs to.' %}
+{% endif %}
+{% blocktrans trimmed %}Thank you for using {{ site_name }}.{% endblocktrans %}
+
+{% trans 'We cannot undo this deletion. This is the last email we send you about it.' %}{% endautoescape %}

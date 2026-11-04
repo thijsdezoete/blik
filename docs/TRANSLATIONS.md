@@ -83,9 +83,14 @@ also moves them, so branches that touched the same catalogue conflict.
 `locale/de_Informal/`, only holds the texts that address the reader. For every other text it falls
 back to `de` (`core/languages.py`).
 
-- Where it sounds natural, write without addressing the reader, in the infinitive or passive:
-  "Alle Pflichtfragen beantworten", "Feedback absenden". Such a text needs no entry in
+- In the interface, where space is short, write without addressing the reader, in the infinitive
+  or passive: "Alle Pflichtfragen beantworten", "Feedback absenden". Such a text needs no entry in
   `de_Informal`.
+- Emails speak to one person, so they address the reader. Subjects, headings and running text say
+  *Sie* or *du*: "Ihr Bericht ist fertig", "Bitte ändern Sie dieses Passwort nach Ihrer ersten
+  Anmeldung." Only buttons and the steps of a checklist stay short and impersonal: "Bericht
+  öffnen". Keep a sentence impersonal where *Sie* could also mean "they": "Jeder Link lässt sich
+  mit mehreren Personen teilen. Feedbackgebende bleiben anonym."
 - A text that addresses the reader gets both forms:
 
   | `de` | `de_Informal` |
@@ -101,23 +106,27 @@ back to `de` (`core/languages.py`).
 
 ## German terms
 
-German texts are gender-neutral. A neutral phrase that sounds natural comes first ("Die
-eingeladene Person erhält …"). Where there is none, use a colon: "Benutzer:innen",
-"Kolleg:innen".
+German texts are gender-neutral. A form without a gender sign comes first, in labels too ("Die
+eingeladene Person erhält …", "Feedbacknehmende Person hinzufügen"). Where there is none, use a
+colon: "Benutzer:innen", "Kolleg:innen".
 
 Use the same term throughout:
 
 | English | German | Notes |
 |---|---|---|
 | Review cycle, cycle | Feedbackrunde | |
-| Reviewee | Beurteilte:r | plural Beurteilte; also "beurteilte Person" |
-| Reviewer | Beurteilende:r | plural Beurteilende |
+| Test cycle (on yourself) | Proberunde | not "Testrunde", which reads like part of the trial |
+| Trial | Testphase | |
+| Review (what a reviewer gives) | Feedback | neuter, plural Feedbacks |
+| Reviewee | feedbacknehmende Person | plural Feedbacknehmende |
+| Reviewer | feedbackgebende Person | plural Feedbackgebende |
+| Department | Bereich | |
 | Questionnaire | Fragebogen | |
 | Report | Bericht | |
 | Self-assessment, self | Selbsteinschätzung, Selbst | |
 | Peer | Kolleg:in | plural Kolleg:innen |
 | Manager | Führungskraft | |
-| Direct report | Unterstellte:r | plural Unterstellte |
+| Direct report | direkte Mitarbeitende | plural only; as a label "Direkte Mitarbeitende" |
 | Others' average | Durchschnitt der anderen | |
 | User | Benutzer:in | |
 | Team member | Teammitglied | |

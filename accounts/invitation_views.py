@@ -2,6 +2,7 @@
 Views for organization invitations
 """
 from datetime import timedelta
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,7 +13,7 @@ from django.utils.translation import gettext as _
 from accounts.models import OrganizationInvitation
 from accounts.permissions import organization_admin_required
 from core.languages import recipient_language
-from core.email import send_email
+from core.email import inviter_name, send_email
 from core.url import get_absolute_url
 from subscriptions.utils import check_user_limit
 
@@ -73,9 +74,21 @@ def send_invitation(request):
         try:
             # There is no profile yet: the language chosen in the invitation form, else the organization's
             with translation.override(recipient_language(request.POST.get('language'), organization=org)):
-                context = {'organization': org, 'invite_url': invite_url}
+                inviter = inviter_name(request.user)
+                context = {
+                    'organization': org,
+                    'invite_url': invite_url,
+                    'inviter_name': inviter,
+                    'site_name': settings.SITE_NAME,
+                }
+                if inviter:
+                    subject = _('%(inviter)s invited you to join %(organization)s on %(site_name)s') % {
+                        'inviter': inviter, 'organization': org.name, 'site_name': settings.SITE_NAME}
+                else:
+                    subject = _('Invitation to join %(organization)s on %(site_name)s') % {
+                        'organization': org.name, 'site_name': settings.SITE_NAME}
                 send_email(
-                    subject=_('Invitation to join %(organization)s on Blik') % {'organization': org.name},
+                    subject=subject,
                     message=render_to_string('emails/team_invitation.txt', context),
                     recipient_list=[email],
                     html_message=render_to_string('emails/team_invitation.html', context),

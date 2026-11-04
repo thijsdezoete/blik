@@ -1,19 +1,19 @@
-{% load i18n %}{% blocktrans trimmed %}360 Feedback Request for {{ reviewee_name }}{% endblocktrans %}
+{% load i18n %}{% blocktrans trimmed %}Your feedback for {{ reviewee_name }}{% endblocktrans %}
 
 {% trans 'Hello,' %}
 
-{% blocktrans trimmed %}You have been invited to provide {{ category }} feedback for {{ reviewee_name }}.{% endblocktrans %}
+{% blocktrans trimmed %}{{ organization_name }} asks for your honest feedback about {{ reviewee_name }}. This is a {{ category }}.{% endblocktrans %}{% if estimated_minutes %} {% blocktrans trimmed count minutes=estimated_minutes %}It takes about {{ minutes }} minute.{% plural %}It takes about {{ minutes }} minutes.{% endblocktrans %}{% endif %}
 
-{% blocktrans trimmed %}Your feedback is anonymous and will help {{ reviewee_name }} grow professionally.{% endblocktrans %}
+{% blocktrans trimmed %}Your answers are anonymous. {{ reviewee_name }} never sees your name with them. So you can be honest.{% endblocktrans %}
 
-{% trans 'Click the link below to start your review:' %}
+{% trans 'Start the review:' %}
 {{ feedback_url }}
 
-{% blocktrans trimmed %}This questionnaire covers: {{ questionnaire_name }}{% endblocktrans %}
+{% trans 'You can stop and continue later in the same browser. Your answers stay there until you submit them.' %}
 
-{% trans 'You can save your progress and return to complete it later - just bookmark the link above.' %}
+{% trans 'Questionnaire:' %} {{ questionnaire_name }}
 
-{% trans 'Thank you for your participation.' %}
+{% trans 'Thank you.' %}
 
 ---
-{% trans 'This is an automated message from the Blik 360 Feedback System.' %}
+{% trans 'This is an automated message from Blik.' %}

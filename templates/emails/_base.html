@@ -1,0 +1,35 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>{% block title %}{% endblock %}</title>
+<style>
+  body { margin: 0; padding: 0; background: #f8fafc; }
+  a { color: #4f46e5; }
+  @media (max-width: 620px) { .card { padding: 28px 20px !important; } }
+</style>
+</head>
+<body style="margin:0; padding:0; background:#f8fafc; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#1e293b; line-height:1.6;">
+{# Preheader: the one-line summary shown next to the subject in the inbox. #}
+<div style="display:none; max-height:0; overflow:hidden; opacity:0;">{% block preheader %}{% endblock %}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;">
+  <tr><td align="center" style="padding:32px 16px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+      <tr><td style="padding:0 4px 20px; font-size:20px; font-weight:700; letter-spacing:-0.02em; color:#4f46e5;">{{ site_name|default:"Blik" }}</td></tr>
+      <tr><td class="card" style="background:#ffffff; border:1px solid #e2e8f0; border-top:3px solid #4f46e5; border-radius:8px; padding:36px 40px;">
+        {% block eyebrow %}{% endblock %}
+        <h1 style="margin:0 0 20px; font-size:22px; line-height:1.3; font-weight:700; color:#0f172a;">{% block heading %}{% endblock %}</h1>
+        <div style="font-size:15px; color:#334155;">
+          {% block content %}{% endblock %}
+        </div>
+      </td></tr>
+      <tr><td style="padding:20px 4px; font-size:12px; color:#64748b;">
+        {% block footer %}{% trans 'This is an automated message from Blik.' %}{% endblock %}
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>

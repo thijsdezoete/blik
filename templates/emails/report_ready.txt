@@ -1,21 +1,15 @@
 {% load i18n %}{% blocktrans trimmed with name=reviewee.name %}Hi {{ name }},{% endblocktrans %}
 
-{% trans 'Your 360-degree feedback report is now ready!' %}
+{% blocktrans trimmed count counter=response_count %}Your 360 feedback report is ready. It is based on {{ counter }} response.{% plural %}Your 360 feedback report is ready. It is based on {{ counter }} responses.{% endblocktrans %}
 
-{% trans 'View your report here:' %}
+{% trans 'Feedback can feel personal. Read it once now, then again in two days. The second reading is usually the useful one.' %}
+
+{% trans 'View your report:' %}
 {{ report_url }}
 
-{% blocktrans trimmed %}This report contains feedback from {{ response_count }} reviewer(s) across different categories.{% endblocktrans %}
-
-{% trans 'The report includes:' %}
-- {% trans 'Overall performance insights' %}
-- {% trans 'Strength areas and development opportunities' %}
-- {% trans 'Perception gap analysis (if applicable)' %}
-- {% trans 'Detailed feedback by competency area' %}
-
-{% trans 'Your report is completely confidential and accessible only through the secure link above.' %}
+{% trans 'Privacy:' %} {% trans 'Your report is confidential. The secure link above opens it.' %}
 
 {% trans 'Questionnaire:' %} {{ questionnaire_name }}
 
-{% trans 'Best regards,' %}
-{% trans 'Your Feedback Team' %}
+---
+{% trans 'This is an automated message from Blik.' %}

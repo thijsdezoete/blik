@@ -1,0 +1,17 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% trans 'Your first payment did not go through' %}{% endblock %}
+{% block preheader %}{% trans 'Update your payment method to continue. Your data is safe.' %}{% endblock %}
+{% block heading %}{% trans 'Your first payment did not go through' %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if user.first_name %}{% blocktrans trimmed with name=user.first_name %}Hello {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+
+<p style="margin:0 0 16px;">{% blocktrans trimmed with organization=organization.name plan=plan.name %}The trial for {{ organization }} has ended, and we could not take the first payment for your {{ plan }} plan. Update your payment method to continue.{% endblocktrans %}</p>
+
+{% trans 'Update your payment method' as button_label %}
+{% include 'emails/_button.html' with url=reactivate_url label=button_label %}
+
+<p style="margin:0 0 16px;">{% if cycle_count %}{% blocktrans trimmed count counter=cycle_count %}Your data is safe. Your review cycle, its feedback and your settings stay as they are.{% plural %}Your data is safe. Your {{ counter }} review cycles, their feedback and your settings stay as they are.{% endblocktrans %}{% else %}{% trans 'Your data is safe. Your settings and team stay as they are.' %}{% endif %}
+{% trans 'Until the payment works, the account is paused. You cannot add new people to review in that time. After the payment, everything works as before.' %}</p>
+
+<p style="margin:0; font-size:13px; color:#64748b;">{% blocktrans trimmed with email=support_email %}Does the payment still fail? Write to <a href="mailto:{{ email }}">{{ email }}</a>. We will help.{% endblocktrans %}</p>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% load i18n %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}
+
+{% trans 'You got your 360 feedback report about a month ago.' %} {% blocktrans trimmed with organization=organization.name %}When {{ organization }} runs the next round, what do you want that report to show?{% endblocktrans %}
+{% if has_gap %}
+{% trans 'Your report shows a difference between how you see yourself and how others see you. Do you still see it the same way?' %}
+{% endif %}
+{% trans 'Make it concrete. Pick one behaviour and one situation. Then finish this sentence:' %}
+
+  {% trans 'When [situation] happens, I will [behaviour].' %}
+  {% trans 'For example: When a meeting has no agenda, I will ask for the goal first.' %}
+{% if has_development_path %}
+{% trans 'Your report has a development path. It can help you choose the behaviour.' %}
+{% endif %}
+{% trans 'Open your report:' %}
+{{ report_url }}
+
+{% blocktrans trimmed with organization=organization.name %}{{ organization }} uses Blik for 360 feedback. Blik sends this reminder once, about a month after your report.{% endblocktrans %}
+
+{% trans 'This link is personal. Do not forward this email.' %}

@@ -388,24 +388,18 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         POST /api/v1/cycles/{id}/send_reminders/
         Body: {"token_ids": [1, 2, 3]}  # Optional, all pending if not provided
         """
-        cycle = self.get_object()
-        token_ids = request.data.get("token_ids", [])
+        from reviews.services import send_reminder_emails
 
-        # Get pending tokens
+        cycle = self.get_object()
+        token_ids = request.data.get("token_ids") or None
+
         pending_tokens = cycle.tokens.filter(completed_at__isnull=True)
         if token_ids:
             pending_tokens = pending_tokens.filter(id__in=token_ids)
 
-        # Send reminders
-        from core.email import send_reviewer_reminder
+        stats = send_reminder_emails(cycle, token_ids=token_ids)
 
-        sent_count = 0
-        for token in pending_tokens:
-            if token.reviewer_email:
-                send_reviewer_reminder(token)
-                sent_count += 1
-
-        return Response({"sent": sent_count, "total_pending": pending_tokens.count()})
+        return Response({"sent": stats["sent"], "total_pending": pending_tokens.count(), "errors": stats["errors"]})
 
     @extend_schema(
         tags=["cycles"],

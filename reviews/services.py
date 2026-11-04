@@ -1,6 +1,7 @@
 """
 Service functions for review cycles
 """
+import math
 import random
 from django.utils import timezone
 from django.template.loader import render_to_string
@@ -9,8 +10,10 @@ from django.utils.translation import gettext as _
 from core.email import send_email
 from core.languages import recipient_language
 from core.url import get_absolute_url
+from notifications.log import send_logged
 from datetime import timedelta
 from django.db.models import F, Q
+from questionnaires.models import Question
 from .models import ReviewCycle, ReviewerToken
 
 
@@ -112,6 +115,49 @@ def assign_tokens_to_emails(cycle, email_assignments, language=''):
     return stats
 
 
+# About how long a reviewer takes for one question. Optional free-text questions add nothing.
+SECONDS_PER_CHOICE_QUESTION = 25
+SECONDS_PER_TEXT_QUESTION = 60
+
+
+def estimated_minutes(questionnaire):
+    """About how many minutes the questionnaire takes, as a friendly number. None without questions.
+
+    Up to five minutes in whole minutes, above that in steps of five.
+    """
+
+    questions = Question.objects.filter(section__questionnaire=questionnaire)
+    seconds = (
+        questions.exclude(question_type='text').count() * SECONDS_PER_CHOICE_QUESTION
+        + questions.filter(question_type='text', required=True).count() * SECONDS_PER_TEXT_QUESTION
+    )
+
+    if not seconds:
+        return None
+
+    minutes = math.ceil(seconds / 60)
+    return minutes if minutes <= 5 else 5 * math.ceil(minutes / 5)
+
+
+def responded_count(token):
+    """How many other reviewers of the token's cycle responded, for the reminder to that token.
+
+    None when the count could tell who responded: below the anonymity threshold the reports
+    use, or when every other reviewer responded. The reviewee's self-assessment does not count.
+    """
+
+    others = (
+        token.cycle.tokens.exclude(category='self').exclude(pk=token.pk)
+        .filter(Q(reviewer_email__isnull=False) | Q(claimed_at__isnull=False) | Q(completed_at__isnull=False))
+    )
+    responded = others.filter(completed_at__isnull=False).count()
+
+    if responded < max(token.cycle.organization.min_responses_for_anonymity, 1) or responded == others.count():
+        return None
+
+    return responded
+
+
 def send_token_email(token, reminder=False):
     """Send a reviewer the link to their feedback form, as an invitation or a reminder.
 
@@ -130,6 +176,8 @@ def send_token_email(token, reminder=False):
             'category': token.get_category_display(),
             'feedback_url': feedback_url,
             'questionnaire_name': questionnaire.name,
+            'organization_name': cycle.organization.name,
+            'estimated_minutes': estimated_minutes(cycle.questionnaire),
         }
 
         if token.category == 'self':
@@ -143,17 +191,18 @@ def send_token_email(token, reminder=False):
             template = 'emails/reviewee_self_assessment'
 
             if reminder:
-                subject = _('Reminder: Complete Your Self-Assessment: %(questionnaire)s')
+                subject = _('Your self-assessment is still open: %(questionnaire)s')
             else:
-                subject = _('Complete Your Self-Assessment: %(questionnaire)s')
+                subject = _('Your self-assessment: %(questionnaire)s')
 
         elif reminder:
+            context['responded_count'] = responded_count(token)
             template = 'emails/reviewer_reminder'
-            subject = _('Reminder: 360 Feedback Request for %(name)s')
+            subject = _('Your feedback for %(name)s is still open')
 
         else:
             template = 'emails/reviewer_invitation'
-            subject = _('360 Feedback Request: %(name)s')
+            subject = _('Your feedback for %(name)s')
 
         send_email(
             subject=subject % {'questionnaire': questionnaire.name, 'name': cycle.reviewee.name},
@@ -306,7 +355,7 @@ def send_invitation_links_email(cycle, categories, stats):
             text_message = render_to_string('emails/reviewee_invitation_links.txt', context)
 
             send_email(
-                subject=_('Share Your 360 Feedback Links: %(questionnaire)s') % {'questionnaire': questionnaire.name},
+                subject=_('Your links to share with reviewers: %(questionnaire)s') % {'questionnaire': questionnaire.name},
                 message=text_message,
                 recipient_list=[cycle.reviewee.email],
                 html_message=html_message,
@@ -376,8 +425,9 @@ def send_close_check_emails(dry_run=False):
                 html_message = render_to_string('emails/cycle_close_check.html', context)
                 text_message = render_to_string('emails/cycle_close_check.txt', context)
 
-                send_email(
-                    subject=_('Review Check-In: %(questionnaire)s') % {'questionnaire': questionnaire.name},
+                send_logged(
+                    cycle.reviewee.organization, 'cycle_close_check',
+                    subject=_('Check your feedback cycle: %(questionnaire)s') % {'questionnaire': questionnaire.name},
                     message=text_message,
                     recipient_list=[cycle.reviewee.email],
                     html_message=html_message,

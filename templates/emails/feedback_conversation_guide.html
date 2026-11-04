@@ -1,0 +1,19 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% blocktrans trimmed with organization=organization.name %}The first 360 report of {{ organization }} is ready{% endblocktrans %}{% endblock %}
+{% block preheader %}{% trans 'Five steps to turn the first report into a good conversation.' %}{% endblock %}
+{% block heading %}{% blocktrans trimmed with organization=organization.name %}The first 360 report of {{ organization }} is ready{% endblocktrans %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+<p style="margin:0 0 16px;">{% trans 'A report helps most when the person talks about it with their manager. Five steps to prepare that conversation:' %}</p>
+<ol style="margin:0 0 16px; padding-left:22px;">
+  <li style="margin-bottom:8px;">{% trans '<strong>Give time to read.</strong> The person reads the report one or two days before you meet.' %}</li>
+  <li style="margin-bottom:8px;">{% trans '<strong>Ask before you tell.</strong> Start with questions: What surprised you? What do you agree with?' %}</li>
+  <li style="margin-bottom:8px;">{% trans '<strong>Look for patterns.</strong> Talk about the themes that come back, not about one comment.' %}</li>
+  <li style="margin-bottom:8px;">{% trans '<strong>Do not guess who wrote what.</strong> The feedback is anonymous. Talk about behaviour, not about people.' %}</li>
+  <li style="margin-bottom:8px;">{% trans '<strong>Agree on one or two goals.</strong> Write them down. Set a date to look at the progress together.' %}</li>
+</ol>
+{% trans 'The report compares the self-assessment with the scores from others. The largest gaps are a good place to start the conversation.' as tip %}
+{% include 'emails/_panel.html' with title=_('Tip') body=tip %}
+{% include 'emails/_button.html' with url=report_url label=_('Open the report') %}
+{% endblock %}

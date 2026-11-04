@@ -227,7 +227,7 @@ class InvitationMailTests(CycleCategoryTestCase):
         send = self._send(cycle)
 
         self.assertEqual(send.call_count, 1)
-        self.assertIn('Self-Assessment', send.call_args_list[0].kwargs['subject'])
+        self.assertIn('self-assessment', send.call_args_list[0].kwargs['subject'])
 
     def test_cycle_without_self_sends_no_self_mail(self):
         cycle = ReviewCycle.objects.create(
@@ -237,7 +237,7 @@ class InvitationMailTests(CycleCategoryTestCase):
         send = self._send(cycle)
 
         self.assertEqual(send.call_count, 1)
-        self.assertIn('Share Your 360 Feedback Links',
+        self.assertIn('Your links to share with reviewers',
                       send.call_args_list[0].kwargs['subject'])
 
     def test_the_link_mail_only_lists_the_active_categories(self):
@@ -271,7 +271,7 @@ class ResendLinksTests(CycleCategoryTestCase):
                              fetch_redirect_response=False)
         kwargs = send.call_args.kwargs
         self.assertEqual(kwargs['recipient_list'], ['dana@acme.example'])
-        self.assertIn('Share Your 360 Feedback Links', kwargs['subject'])
+        self.assertIn('Your links to share with reviewers', kwargs['subject'])
         self.assertIn(str(cycle.invitation_token_peer), kwargs['html_message'])
         self.assertNotIn(str(cycle.invitation_token_direct_report), kwargs['html_message'])
         self.assertNotIn(str(cycle.invitation_token_self), kwargs['html_message'])

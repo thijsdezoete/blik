@@ -1,0 +1,18 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Your account is ready. One step left.' %}{% endblock %}
+{% block preheader %}{% trans 'Start with a test cycle on yourself and a few colleagues you trust.' %}{% endblock %}
+{% block heading %}{% trans 'Your account is ready. One step left.' %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% if name %}{% blocktrans trimmed %}Hi {{ name }},{% endblocktrans %}{% else %}{% trans 'Hello,' %}{% endif %}</p>
+<p style="margin:0 0 16px;">{% blocktrans trimmed with organization=organization.name %}The Blik account of {{ organization }} is ready. The last step is your first review cycle. A review cycle collects feedback for one person.{% endblocktrans %}</p>
+<p style="margin:0 0 4px; font-weight:600; color:#0f172a;">{% trans 'Start with yourself' %}</p>
+<p style="margin:0 0 16px;">{% trans 'Make the first cycle about yourself, and invite a few colleagues you trust. This is the lowest-risk way to see what your team gets: the questions, the invitation and the report.' %}</p>
+<ol style="margin:0 0 16px; padding-left:22px;">
+  <li style="margin-bottom:6px;">{% trans 'Choose the person who gets the feedback. You can choose yourself.' %}</li>
+  <li style="margin-bottom:6px;">{% trans 'Choose a questionnaire. The default questionnaire is a good start.' %}</li>
+  <li style="margin-bottom:6px;">{% trans 'Invite the reviewers by email, or share the invite links.' %}</li>
+</ol>
+{% include 'emails/_button.html' with url=create_url label=_('Create a review cycle') %}
+<p style="margin:0;">{% trans 'All feedback is anonymous. Nobody can see who gave which answer.' %}</p>
+{% endblock %}

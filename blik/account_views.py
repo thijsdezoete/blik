@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import Http404, JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.utils.translation import gettext as _, gettext_lazy
 from accounts.services import (
@@ -26,6 +26,19 @@ from accounts.permissions import (
 )
 from subscriptions.services import cancel_subscription, reactivate_subscription
 from subscriptions.models import Subscription
+from subscriptions.utils import can_see_billing
+from core.email import send_account_deleted_email
+from core.languages import user_language
+
+
+def _send_deletion_confirmation(email, language, **kwargs):
+    """Confirm a deletion. The data is gone already, so a mail failure is only logged."""
+    if not email:
+        return
+    try:
+        send_account_deleted_email(email, language, **kwargs)
+    except Exception:
+        logger.exception('Deletion confirmation email failed')
 
 
 @login_required
@@ -38,10 +51,12 @@ def account_settings(request):
 @require_POST
 def cancel_subscription_view(request):
     """Cancel subscription at period end."""
+    if not can_see_billing(request.organization, request.user):
+        raise Http404
     org = request.organization
     if not org:
         messages.error(request, _('Organization not found.'))
-        return redirect('settings')
+        return redirect('billing')
 
     try:
         subscription = Subscription.objects.get(organization=org)
@@ -52,17 +67,19 @@ def cancel_subscription_view(request):
     except Exception as e:
         messages.error(request, _('Error canceling subscription: %(error)s') % {'error': str(e)})
 
-    return redirect('settings')
+    return redirect('billing')
 
 
 @login_required
 @require_POST
 def reactivate_subscription_view(request):
     """Reactivate a subscription that was set to cancel."""
+    if not can_see_billing(request.organization, request.user):
+        raise Http404
     org = request.organization
     if not org:
         messages.error(request, _('Organization not found.'))
-        return redirect('settings')
+        return redirect('billing')
 
     try:
         subscription = Subscription.objects.get(organization=org)
@@ -73,7 +90,7 @@ def reactivate_subscription_view(request):
     except Exception as e:
         messages.error(request, _('Error reactivating subscription: %(error)s') % {'error': str(e)})
 
-    return redirect('settings')
+    return redirect('billing')
 
 
 @login_required
@@ -259,9 +276,10 @@ def delete_account(request):
         return redirect('settings')
 
     try:
+        email, language = user.email, user_language(user)
         delete_user_account(user)
+        _send_deletion_confirmation(email, language)
         logout(request)
-        messages.success(request, _('Your account has been deleted.'))
         return redirect('landing:index')
     except ValueError as e:
         messages.error(request, str(e))
@@ -297,9 +315,13 @@ def delete_organization(request):
         return redirect('settings')
 
     try:
+        # Read what the confirmation needs while the organization still exists
+        email, language = user.email, user_language(user)
+        had_subscription = Subscription.objects.filter(organization=org).exists()
         delete_organization_service(org)
+        _send_deletion_confirmation(email, language, organization_name=org_name,
+                                    had_subscription=had_subscription)
         logout(request)
-        messages.success(request, _('Organization and all data have been deleted.'))
         return redirect('landing:index')
     except Exception as e:
         messages.error(request, _('Error deleting organization: %(error)s') % {'error': str(e)})

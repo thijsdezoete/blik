@@ -1,34 +1,24 @@
 {% load i18n %}{% blocktrans trimmed with name=reviewee.name %}Hi {{ name }},{% endblocktrans %}
 
-{% trans 'Your 360-degree feedback cycle has been created. Please share the following invitation links with your reviewers:' %}
+{% trans 'Your 360 feedback cycle has started. Share these links with the people you want feedback from.' %}
 
+{% trans 'It helps to ask a few colleagues personally before you share the link.' %}
 {% if peer_url %}
-{% trans 'PEER REVIEWS:' %}
+{% trans 'Peer Reviews' %}
 {{ peer_url }}
-
-{% trans 'Share this link with your colleagues/peers. Each person who clicks will get their own unique review link.' %}
-{% endif %}
-
-{% if manager_url %}
-{% trans 'MANAGER REVIEW:' %}
+{% trans 'For your colleagues. Each person who opens it gets their own review.' %}
+{% endif %}{% if manager_url %}
+{% trans 'Manager Review' %}
 {{ manager_url }}
-
-{% trans 'Share this link with your manager.' %}
-{% endif %}
-
-{% if direct_report_url %}
-{% trans 'DIRECT REPORT REVIEWS:' %}
+{% trans 'For your manager.' %}
+{% endif %}{% if direct_report_url %}
+{% trans 'Direct Report Reviews' %}
 {{ direct_report_url }}
-
-{% trans 'Share this link with your direct reports. Each person who clicks will get their own unique review link.' %}
+{% trans 'For the people who report to you. Each person who opens it gets their own review.' %}
 {% endif %}
-
-{% trans 'Important:' %}
-- {% trans 'Each link can be shared with multiple people' %}
-- {% trans 'Reviewers remain anonymous' %}
-- {% trans 'They can save their progress and return later' %}
+{% trans 'You can share each link with more than one person. Reviewers stay anonymous. They can stop and continue later.' %}
 
 {% trans 'Questionnaire:' %} {{ questionnaire_name }}
 
-{% trans 'Best regards,' %}
-{% trans 'Your Feedback Team' %}
+---
+{% trans 'This is an automated message from Blik.' %}

@@ -1,0 +1,280 @@
+{% extends "admin_dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Billing' %}{% endblock %}
+
+{% block content %}
+<div class="billing-page">
+<div class="page-header">
+    <div>
+        <h1>{% trans 'Billing' %}</h1>
+        <p class="page-description">{% trans 'Your plan, payments and invoices' %}</p>
+    </div>
+</div>
+
+{% if live is None %}
+<div class="alert alert-info" style="margin-bottom: 1.5rem;">
+    {% trans 'Live payment details are not available right now. Try again in a few minutes.' %}
+</div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+
+    <!-- Status -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{% trans 'Status' %}</h2>
+        </div>
+        <div class="card-body" style="display: grid; gap: 1rem;">
+            {% if subscription %}
+            <div>
+                <p style="margin: 0; font-weight: 600; font-size: 1.125rem;">{{ subscription.plan.name }}</p>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                    {% blocktrans trimmed with price=subscription.plan.price_monthly %}€{{ price }}/month, excluding VAT{% endblocktrans %}
+                </p>
+            </div>
+
+            {% if subscription.status == 'canceled' %}
+                <div class="alert alert-warning" style="margin: 0;">
+                    {% blocktrans trimmed with date=subscription.canceled_at|default:subscription.current_period_end|date:'DATE_FORMAT' %}Your subscription ended on {{ date }}. You can start a new one below.{% endblocktrans %}
+                </div>
+            {% elif subscription.status == 'past_due' or subscription.status == 'unpaid' %}
+                <div class="alert alert-error" style="margin: 0;"><div>
+                    <strong>{% trans 'Your last payment failed.' %}</strong>
+                    {% if live.payment_error %}{{ live.payment_error }}{% endif %}
+                    {% if live.next_attempt %}
+                    <br>{% blocktrans trimmed with date=live.next_attempt|date:'DATE_FORMAT' %}We try again on {{ date }}.{% endblocktrans %}
+                    {% elif subscription.status == 'unpaid' %}
+                    <br>{% trans 'We do not try again. Update your payment method to pay the open invoice.' %}
+                    {% endif %}
+                </div></div>
+                <a href="{% url 'subscriptions:billing_portal' %}" class="btn btn-primary">{% trans 'Update payment method' %}</a>
+            {% elif subscription.cancel_at_period_end %}
+                <div class="alert alert-warning" style="margin: 0;">
+                    {% blocktrans trimmed with date=subscription.current_period_end|date:'DATE_FORMAT' %}Your subscription ends on {{ date }}.{% endblocktrans %}
+                </div>
+                <form method="post" action="{% url 'account:reactivate_subscription' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">{% trans 'Reactivate subscription' %}</button>
+                </form>
+            {% elif subscription.status == 'trialing' %}
+                <p style="margin: 0;">
+                    {% blocktrans trimmed with date=subscription.trial_end|date:'DATE_FORMAT' %}Your trial ends on {{ date }}.{% endblocktrans %}
+                    {% if live.upcoming %}
+                    {% blocktrans trimmed %}Then your first invoice is:{% endblocktrans %} <strong>{% include "admin_dashboard/partials/money.html" with money=live.upcoming.total %}</strong>
+                    {% endif %}
+                </p>
+            {% else %}
+                <p style="margin: 0;">
+                    {% if live.upcoming %}
+                    {% blocktrans trimmed with date=live.upcoming.date|date:'DATE_FORMAT' %}Next invoice on {{ date }}:{% endblocktrans %}
+                    <strong>{% include "admin_dashboard/partials/money.html" with money=live.upcoming.total %}</strong>
+                    {% else %}
+                    {% blocktrans trimmed with date=subscription.current_period_end|date:'DATE_FORMAT' %}Next invoice on {{ date }}.{% endblocktrans %}
+                    {% endif %}
+                </p>
+            {% endif %}
+
+            {% if subscription.status != 'canceled' %}
+            <div style="padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.875rem;">
+                {% if live.card %}
+                    {% blocktrans trimmed with brand=live.card.brand|title last4=live.card.last4 month=live.card.exp_month year=live.card.exp_year %}{{ brand }} card ending in {{ last4 }}, valid until {{ month }}/{{ year }}{% endblocktrans %}
+                    {% if live.card.expires_soon %}
+                    <div class="alert alert-warning" style="margin: 0.5rem 0 0;">{% trans 'This card expires before your next invoice. Add a new card to avoid a failed payment.' %}</div>
+                    {% endif %}
+                {% elif live %}
+                    {% trans 'No payment method on file.' %}
+                {% endif %}
+                <a href="{% url 'subscriptions:billing_portal' %}" style="display: block; margin-top: 0.5rem;">{% trans 'Change payment method' %}</a>
+            </div>
+            {% endif %}
+            {% elif round_credits is not None %}
+            <p style="margin: 0;">{% trans 'You pay per round. There is no subscription.' %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Usage -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{% trans 'Usage' %}</h2>
+        </div>
+        <div class="card-body" style="display: grid; gap: 1rem;">
+            {% if status.has_subscription %}
+            <div>
+                <label class="form-label" style="margin-bottom: 0.25rem;">{% trans 'Active reviewees' %}</label>
+                <p style="margin: 0; font-size: 1.25rem; font-weight: 600;">
+                    {% blocktrans trimmed with count=status.current_reviewees max=status.max_employees %}{{ count }} of {{ max }}{% endblocktrans %}
+                </p>
+                <progress value="{{ status.current_reviewees }}" max="{{ status.max_employees }}" style="width: 100%;"></progress>
+            </div>
+            {% endif %}
+            {% if round_credits is not None %}
+            <div>
+                <label class="form-label" style="margin-bottom: 0.25rem;">{% trans 'Review credits left' %}</label>
+                <p style="margin: 0; font-size: 1.25rem; font-weight: 600;">{{ round_credits }}</p>
+                <p style="margin: 0.25rem 0 0; font-size: 0.8125rem; color: var(--text-secondary);">
+                    {% if cycle_credits is None %}{% trans 'Not used while your subscription is active.' %}{% else %}{% trans 'One credit is one reviewee with one questionnaire.' %}{% endif %}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Plan -->
+    {% if other_plans or can_start_subscription %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{% trans 'Plan' %}</h2>
+        </div>
+        <div class="card-body" style="display: grid; gap: 0.75rem;">
+            {% for plan in other_plans %}
+            <a href="{% url 'billing_change_plan' plan.plan_type %}" class="btn btn-secondary" style="white-space: normal;">
+                {% blocktrans trimmed with name=plan.name price=plan.price_monthly max=plan.max_employees %}Switch to {{ name }}: €{{ price }}/month, up to {{ max }} reviewees{% endblocktrans %}
+            </a>
+            {% endfor %}
+            {% if can_start_subscription %}
+            <form method="post" action="{% url 'subscriptions:start_checkout' %}">
+                {% csrf_token %}
+                <input type="hidden" name="plan_type" value="saas">
+                <button type="submit" class="btn btn-secondary" style="width: 100%;">{% trans 'Start EU Hosted subscription' %}</button>
+            </form>
+            <form method="post" action="{% url 'subscriptions:start_checkout' %}">
+                {% csrf_token %}
+                <input type="hidden" name="plan_type" value="enterprise">
+                <button type="submit" class="btn btn-secondary" style="width: 100%;">{% trans 'Start Enterprise subscription' %}</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Buy review credits -->
+    {% if status.mode != 'subscription' %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{% trans 'Buy review credits' %}</h2>
+        </div>
+        <form method="post" action="{% url 'subscriptions:start_checkout' %}" class="card-body" style="display: grid; gap: 0.75rem;">
+            {% csrf_token %}
+            <input type="hidden" name="plan_type" value="single">
+            {% blocktrans trimmed asvar packs_text with packs='%(packs)s' price='%(price)s' total='%(total)s' %}{{ packs }} × €{{ price }} per pack = €{{ total }}, excluding VAT{% endblocktrans %}
+            <label class="form-label" for="reviews">{% trans 'How many reviews do you need?' %}</label>
+            <input type="number" class="form-control" id="reviews" name="reviews" value="{{ reviews }}" min="1" max="{{ max_reviews }}" step="1" required>
+            <p style="margin: 0; font-size: 0.875rem; color: var(--text-secondary);" id="packs-total"
+               data-per-pack="{{ credits_per_pack }}" data-price="{{ plan_single_price }}"
+               data-template="{{ packs_text }}"></p>
+            <p style="margin: 0; font-size: 0.8125rem; color: var(--text-secondary);">
+                {% blocktrans trimmed with per_pack=credits_per_pack %}Credits come in packs of {{ per_pack }}. One credit is one reviewee with one questionnaire. Credits do not expire.{% endblocktrans %}
+            </p>
+            <button type="submit" class="btn btn-primary">{% trans 'Buy credits' %}</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Invoices -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <h2 class="card-title">{% trans 'Invoices' %}</h2>
+        <a href="{% url 'subscriptions:billing_portal' %}" class="btn btn-secondary btn-sm">{% trans 'Edit billing details' %}</a>
+    </div>
+    <div class="card-body">
+        {% if live.invoices %}
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{% trans 'Date' %}</th>
+                        <th>{% trans 'Number' %}</th>
+                        <th>{% trans 'Amount' %}</th>
+                        <th>{% trans 'Status' %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in live.invoices %}
+                    <tr>
+                        <td>{{ invoice.date|date:'SHORT_DATE_FORMAT' }}</td>
+                        <td>{{ invoice.number }}</td>
+                        <td>{% include "admin_dashboard/partials/money.html" with money=invoice.total %}</td>
+                        <td>{% if invoice.status == 'paid' %}{% trans 'Paid' %}{% elif invoice.status == 'open' %}{% trans 'Open' %}{% elif invoice.status == 'void' %}{% trans 'Void' %}{% else %}{% trans 'Not paid' %}{% endif %}</td>
+                        <td style="white-space: nowrap;">
+                            {% if invoice.pdf_url %}<a href="{{ invoice.pdf_url }}">PDF</a>{% endif %}
+                            {% if invoice.url %} · <a href="{{ invoice.url }}" target="_blank" rel="noopener">{% if invoice.status == 'open' %}{% trans 'Pay' %}{% else %}{% trans 'View' %}{% endif %}</a>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% elif live %}
+        <p style="margin: 0; color: var(--text-secondary);">{% trans 'No invoices yet.' %}</p>
+        {% endif %}
+
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.8125rem; color: var(--text-secondary);">
+            <p style="margin: 0 0 0.5rem;">{% trans 'Invoices are sent by Thijs de Zoete Holding BV, trading as Blik360, the Netherlands. Prices are excluding VAT.' %}</p>
+            <ul style="margin: 0; padding-left: 1.25rem;">
+                <li>{% trans 'Companies in the Netherlands pay 21% VAT.' %}</li>
+                <li>{% trans 'Companies in another EU country with a valid VAT number: VAT reverse charged.' %}</li>
+                <li>{% trans 'Companies outside the EU: no VAT.' %}</li>
+            </ul>
+            <p style="margin: 0.5rem 0 0;">{% trans 'To change the company name, address or VAT number on new invoices, use "Edit billing details".' %}</p>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 1.5rem;">
+    <!-- Cancel -->
+    {% if subscription.is_active and not subscription.cancel_at_period_end %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{% trans 'Cancel subscription' %}</h2>
+        </div>
+        <div class="card-body">
+            <details>
+                <summary style="cursor: pointer;">{% trans 'What happens when I cancel?' %}</summary>
+                <ul style="font-size: 0.875rem; padding-left: 1.25rem;">
+                    <li>{% blocktrans trimmed with date=subscription.current_period_end|date:'DATE_FORMAT' %}You keep full access until {{ date }}. You pay nothing more.{% endblocktrans %}</li>
+                    <li>{% trans 'After that, you cannot add reviewees or start review cycles. Reports stay available.' %}</li>
+                    <li>{% blocktrans trimmed with days=retention_days %}{{ days }} days after the end, we delete your data.{% endblocktrans %}</li>
+                    <li><a href="{% url 'account:export_data' %}">{% trans 'Export your data first' %}</a></li>
+                </ul>
+                <form method="post" action="{% url 'account:cancel_subscription' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">{% trans 'Cancel subscription' %}</button>
+                </form>
+            </details>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Support -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{% trans 'Questions?' %}</h2>
+        </div>
+        <div class="card-body">
+            <p style="margin: 0;">{% trans 'Send us an email about billing, invoices or your plan:' %} <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var input = document.getElementById('reviews');
+    var out = document.getElementById('packs-total');
+    if (!input || !out || !out.dataset.price) return;
+    function update() {
+        var reviews = Math.max(1, parseInt(input.value, 10) || 1);
+        var packs = Math.ceil(reviews / parseInt(out.dataset.perPack, 10));
+        var price = parseFloat(out.dataset.price);
+        out.textContent = out.dataset.template
+            .replace('%(packs)s', packs).replace('%(price)s', price).replace('%(total)s', packs * price);
+    }
+    input.addEventListener('input', update);
+    update();
+})();
+</script>
+</div>
+{% endblock %}

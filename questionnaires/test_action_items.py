@@ -82,3 +82,26 @@ class ActionItemKeyTests(TestCase):
         self.assertEqual((first['key'], first['text']), ('pairing', 'Pair every week'))
         self.assertTrue(second['key'])
         self.assertNotEqual(second['key'], 'pairing')
+
+    def test_more_than_ten_items_keep_their_order(self):
+        texts = [f'Step {i}' for i in range(12)]
+
+        self.edit(action='add_question', section_id=self.section.id, question_type='text', question_text='Notes',
+                  **{f'add_action_items[{i}][text]': text for i, text in enumerate(texts)})
+        self.edit(action='update_dreyfus_config', question_id=self.question.id,
+                  **{f'action_items[{i}][text]': text for i, text in enumerate(texts)})
+
+        for question in Question.objects.get(question_text='Notes'), Question.objects.get(id=self.question.id):
+            self.assertEqual([item['text'] for item in question.action_items], texts)
+
+    def test_the_dreyfus_dialog_replaces_keys_the_question_does_not_have(self):
+        self.edit(**{
+            'action': 'update_dreyfus_config',
+            'question_id': self.question.id,
+            'action_items[0][key]': '"><img src=x onerror=alert(1)>',
+            'action_items[0][text]': 'Pair weekly',
+        })
+
+        self.question.refresh_from_db()
+        [item] = self.question.action_items
+        self.assertRegex(item['key'], r'^[A-Za-z0-9]{8}$')

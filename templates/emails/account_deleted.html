@@ -1,0 +1,27 @@
+{% extends 'emails/_base.html' %}{% load i18n %}
+{% block title %}{% if organization_name %}{% trans 'Your organization was deleted' %}{% else %}{% trans 'Your account was deleted' %}{% endif %}{% endblock %}
+{% block preheader %}{% trans 'We have deleted the data, as you asked.' %}{% endblock %}
+{% block heading %}{% if organization_name %}{% trans 'Your organization was deleted' %}{% else %}{% trans 'Your account was deleted' %}{% endif %}{% endblock %}
+{% block content %}
+<p style="margin:0 0 16px;">{% trans 'Hello,' %}</p>
+
+{% if organization_name %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed with organization=organization_name %}On {{ date }}, we deleted <strong>{{ organization }}</strong> from {{ site_name }}, as you asked.{% endblocktrans %}</p>
+
+{% trans 'People, review cycles, questionnaires, feedback and reports' as deleted_data %}
+{% trans 'What we deleted' as deleted_title %}
+{% include 'emails/_panel.html' with title=deleted_title body=deleted_data %}
+
+{% if had_subscription %}
+<p style="margin:0 0 16px;">{% trans 'We have also canceled the subscription. You pay nothing more.' %}</p>
+{% endif %}
+{% else %}
+<p style="margin:0 0 16px;">{% blocktrans trimmed %}On {{ date }}, we deleted your {{ site_name }} account <strong>{{ email }}</strong>, as you asked. You can no longer sign in with it.{% endblocktrans %}</p>
+
+<p style="margin:0 0 16px;">{% trans 'Feedback you gave as a reviewer is anonymous. It is not linked to your account, so it stays part of the reports it belongs to.' %}</p>
+{% endif %}
+
+<p style="margin:0 0 16px;">{% blocktrans trimmed %}Thank you for using {{ site_name }}.{% endblocktrans %}</p>
+
+<p style="margin:0;">{% trans 'We cannot undo this deletion. This is the last email we send you about it.' %}</p>
+{% endblock %}

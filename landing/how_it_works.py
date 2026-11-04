@@ -132,7 +132,7 @@ STEPS = [
             "After one week, Blik emails them how many reviews are done.",
         ],
         "email": {
-            "subject": "Complete Your Self-Assessment: Professional Skills 360 Review",
+            "subject": "Your self-assessment: Professional Skills 360 Review",
             "lines": [
                 "Hi Emma,",
                 "A new 360-degree feedback cycle has been created for you!",
@@ -169,7 +169,7 @@ STEPS = [
             "Answers are stored against the random link, not against a name.",
         ],
         "email": {
-            "subject": "360 Feedback Request: Emma Davis",
+            "subject": "Your feedback for Emma Davis",
             "lines": [
                 "Hello,",
                 "You have been invited to provide peer feedback for Emma Davis.",

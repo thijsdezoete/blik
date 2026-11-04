@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -12,6 +14,7 @@ from accounts.factories import (
 from questionnaires.factories import QuestionnaireFactory
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
 from accounts.models import OrganizationInvitation, Reviewee
+from core.email import inviter_name
 
 
 class DashboardTestCase(TestCase):
@@ -128,6 +131,27 @@ class UserInvitationTestCase(TestCase):
         invitation.save()
 
         self.assertFalse(invitation.is_valid())
+
+    def test_inviter_name_prefers_the_full_name(self):
+        self.assertEqual(inviter_name(UserFactory(first_name='Anna', last_name='de Vries', email='a@x.example')),
+                         'Anna de Vries')
+        self.assertEqual(inviter_name(UserFactory(first_name='', last_name='', email='a@y.example')), 'a@y.example')
+        self.assertIsNone(inviter_name(None))
+
+    def test_signup_welcomes_the_member_with_the_inviter(self):
+        invitation = OrganizationInvitationFactory(organization=self.org, email='new@test.local', invited_by=self.user)
+        client = Client()
+        session = client.session
+        session['invitation_token'] = invitation.token
+        session['invitation_email'] = invitation.email
+        session.save()
+
+        with patch('core.email.send_welcome_email') as send:
+            client.post(reverse('signup_from_invitation'), {
+                'email': 'new@test.local', 'password1': 'a-Long-pass-9876', 'password2': 'a-Long-pass-9876'})
+
+        send.assert_called_once()
+        self.assertEqual(send.call_args.kwargs['invited_by'], self.user)
 
 
 class ReportGenerationTestCase(TestCase):

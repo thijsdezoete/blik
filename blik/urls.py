@@ -7,6 +7,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views, admin_views, seo_views, superuser_views
 from productreviews import api_views as review_api
+from subscriptions import views as subscription_views
 from accounts.models import Reviewee
 from questionnaires.models import Questionnaire
 
@@ -29,6 +30,8 @@ urlpatterns = [
     # Admin dashboard
     path('dashboard/', admin_views.dashboard, name='admin_dashboard'),
     path('dashboard/settings/', admin_views.settings_view, name='settings'),
+    path('dashboard/billing/', subscription_views.billing, name='billing'),
+    path('dashboard/billing/plan/<str:plan_type>/', subscription_views.change_plan_view, name='billing_change_plan'),
     path('dashboard/settings/api-tokens/create/', admin_views.create_api_token, name='create_api_token'),
     path('dashboard/settings/api-tokens/<int:token_id>/update/', admin_views.update_api_token, name='update_api_token'),
     path('dashboard/settings/api-tokens/<int:token_id>/delete/', admin_views.delete_api_token, name='delete_api_token'),

@@ -66,7 +66,7 @@ class SendReviewerInvitationsTests(TestCase):
         self.assertEqual(stats['sent'], 1)
         kwargs = mock_send_email.call_args.kwargs
         self.assertEqual(kwargs['recipient_list'], [self.reviewee.email])
-        self.assertIn('Self-Assessment', kwargs['subject'])
+        self.assertIn('self-assessment', kwargs['subject'])
 
 
 @override_settings(SITE_DOMAIN='public.example.com', SITE_PROTOCOL='https')
@@ -127,7 +127,7 @@ class SendSelfAssessmentInviteTests(TestCase):
         self.assertEqual(stats['sent'], 1)
         kwargs = mock_send_email.call_args.kwargs
         self.assertEqual(kwargs['recipient_list'], ['reviewee@example.com'])
-        self.assertIn('Self-Assessment', kwargs['subject'])
+        self.assertIn('self-assessment', kwargs['subject'])
         self.assertIn(f'/feedback/{self.token.token}/', kwargs['message'])
         self.token.refresh_from_db()
         self.assertIsNotNone(self.token.invitation_sent_at)

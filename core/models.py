@@ -38,6 +38,9 @@ class Organization(TimeStampedModel):
         verbose_name=_('automatically send report email')
     )
 
+    # Billing: the one Stripe customer every checkout, invoice and portal session uses
+    stripe_customer_id = models.CharField(_('Stripe customer ID'), max_length=255, blank=True, db_index=True)
+
     # Registration settings
     allow_registration = models.BooleanField(
         default=False,

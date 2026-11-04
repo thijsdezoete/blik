@@ -1,14 +1,6 @@
 {% load i18n feedback_tags %}{% with s=summary_figures sentiment=report_data.insights.overall_sentiment %}
-<section class="summary-page">
-    <header class="masthead">
-        <div>
-            <div class="eyebrow">{% trans '360 Feedback Report' %} · {% trans 'Confidential' %}</div>
-            <h1>{{ reviewee_name }}</h1>
-            <div class="muted">{{ questionnaire.name }} · {% trans 'Review Date' %} {{ cycle.created_at|date:'DATE_FORMAT' }} · {{ responses_line }}</div>
-        </div>
-        <div class="brand">Blik360</div>
-    </header>
-    <div class="rule"></div>
+<section class="page summary-page">
+    <h2>{% trans 'Summary' %}</h2>
 
     <div class="figs">
         {% if s.overall %}
@@ -46,35 +38,53 @@
         {% endif %}
     </div>
 
-    <div class="summary-columns">
-        <div class="summary-text">
-            <h2>{% trans 'Summary' %}</h2>
-            {% if s.overall %}<p>{% blocktrans trimmed with rating=s.overall.rating %}Others rate you <b>{{ rating }}</b> overall.{% endblocktrans %}
-            {% if s.quadrant %}{% blocktrans trimmed with name=s.quadrant.name description=s.quadrant.description %}You are a <b>{{ name }}</b>: {{ description }}.{% endblocktrans %}{% endif %}</p>{% endif %}
-            {% if s.sections_below_self_count is not None %}<p>{% if s.sections_below_self_count %}{% blocktrans trimmed count counter=s.sections_below_self_count %}On {{ counter }} section, others score you lower than you score yourself.{% plural %}On {{ counter }} sections, others score you lower than you score yourself.{% endblocktrans %}{% else %}{% trans 'Others score you at least as high as you score yourself in every section.' %}{% endif %}</p>{% endif %}
-
-            {% if s.strengths %}
-            <h4>{% trans 'Strengths' %}</h4>
-            <ul>{% for item in s.strengths %}<li>{{ item.area }}, {{ item.others_avg|floatformat:1 }}</li>{% endfor %}</ul>
-            {% endif %}
-            {% if s.growth %}
-            <h4>{% trans 'Areas to grow' %}</h4>
-            <ul>{% for item in s.growth %}<li>{{ item.area }}, {{ item.others_avg|floatformat:1 }}</li>{% endfor %}</ul>
-            {% endif %}
-            {% if s.next_steps %}
-            <h4>{% trans 'Next step' %}</h4>
-            <ul>{% for step in s.next_steps %}<li>{{ step }}</li>{% endfor %}</ul>
-            {% endif %}
-        </div>
-        {% if radar %}
-        <div class="summary-radar">
-            <h2>{% trans 'Sections' %}</h2>
-            {% include "reports/pdf/_radar.svg.html" %}
-            <div class="legend muted"><span class="key others"></span> {% trans 'Others' %} &nbsp; <span class="key self"></span> {% trans 'Self-assessment' %}</div>
-        </div>
+    {# One row per point: a coloured marker for its kind, a label, then the point itself #}
+    <div class="points">
+        {% if s.overall %}
+        <div class="point neutral"><div class="point-label">{% trans 'Overall Rating' %}</div>
+            <div class="point-text">{% blocktrans trimmed with rating=s.overall.rating %}Others rate you <b>{{ rating }}</b> overall.{% endblocktrans %}</div></div>
+        {% endif %}
+        {% if s.quadrant %}
+        <div class="point neutral"><div class="point-label">{% trans 'Performance matrix' %}</div>
+            <div class="point-text"><b>{{ s.quadrant.name }}</b>: {{ s.quadrant.description }}</div></div>
+        {% endif %}
+        {% for gap in report_data.insights.perception_gaps %}
+        <div class="point blind"><div class="point-label">{% if gap.type == 'imposter_syndrome' %}{% trans "Blind Spot: You're Better Than You Think" %}{% else %}{% trans 'Calibration Opportunity' %}{% endif %}</div>
+            <div class="point-text">{{ gap.interpretation }}</div></div>
+        {% endfor %}
+        {% if s.sections_below_self_count is not None %}
+        <div class="point neutral"><div class="point-label">{% trans 'Self vs others' %}</div>
+            <div class="point-text">{% if s.sections_below_self_count %}{% blocktrans trimmed count counter=s.sections_below_self_count %}On {{ counter }} section, others score you lower than you score yourself.{% plural %}On {{ counter }} sections, others score you lower than you score yourself.{% endblocktrans %}{% else %}{% trans 'Others score you at least as high as you score yourself in every section.' %}{% endif %}</div></div>
+        {% endif %}
+        {% if s.strengths %}
+        <div class="point strength"><div class="point-label">{% trans 'Strengths' %}</div>
+            <table class="point-text pairs">{% for item in s.strengths %}<tr><td>{{ item.area }}</td><td class="num">{{ item.others_avg|floatformat:1 }}</td></tr>{% endfor %}</table></div>
+        {% endif %}
+        {% if s.growth %}
+        <div class="point grow"><div class="point-label">{% trans 'Areas to grow' %}</div>
+            <table class="point-text pairs">{% for item in s.growth %}<tr><td>{{ item.area }}</td><td class="num">{{ item.others_avg|floatformat:1 }}</td></tr>{% endfor %}</table></div>
+        {% endif %}
+        {% if s.next_steps %}
+        <div class="point step"><div class="point-label">{% trans 'Next step' %}</div>
+            <div class="point-text">{% for step in s.next_steps %}<div>{{ step }}</div>{% endfor %}</div></div>
         {% endif %}
     </div>
 
-    <div class="read-twice muted">{% trans 'Feedback can feel personal. Read it once now, then again in two days. The second reading is usually the useful one.' %}</div>
+    {% if sections %}
+    <h3 class="sub-head">{% trans 'Sections' %}</h3>
+    <table class="mini-sections">
+        <thead><tr><th></th><th class="num">{% trans 'Others' %}</th><th></th>{% if sections.has_self %}<th class="num">{% trans 'Self' %}</th>{% endif %}</tr></thead>
+        <tbody>
+        {% for row in sections.rows %}
+        <tr class="lvl-{{ row.level }}">
+            <td class="name">{{ row.name }}</td>
+            <td class="num score">{% if row.score %}{{ row.score|floatformat:1 }}{% endif %}</td>
+            <td class="rating">{% if row.score %}<span class="lvl-bar"><i style="width: {{ row.bar }}%"></i></span> {{ row.rating }}{% endif %}</td>
+            {% if sections.has_self %}<td class="num muted">{% if row.self is not None %}{{ row.self|floatformat:1 }}{% endif %}</td>{% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </section>
 {% endwith %}

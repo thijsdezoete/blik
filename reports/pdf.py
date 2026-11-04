@@ -16,7 +16,7 @@ from reviews.templatetags.feedback_tags import distribution_key, likert_positive
     report_options
 
 from .report_texts import RATING_RANGES, RATINGS
-from .services import get_rating_key
+from .services import _hidden_groups, get_rating_key
 
 from .context import build_report_context
 from .dreyfus_service import AGENCY_STAGES, QUADRANTS
@@ -132,6 +132,7 @@ def drop_report_pdf(report):
 
 def _pdf_context(report):
     context = build_report_context(report, is_admin_view=False)
+    threshold = context['cycle'].organization.min_responses_for_anonymity
     data = context['report_data']
     insights = data.get('insights') or {}
     comparison = data.get('comparison') or {}
@@ -144,12 +145,15 @@ def _pdf_context(report):
     context.update({
         'reviewee_name': context['cycle'].reviewee.name,
         'summary_figures': figures,
-        'responses_line': _responses_line(context['summary']),
+        'feedback_groups': _feedback_groups(
+            context['summary'], _hidden_groups(report.report_data, threshold, ['self', 'manager']),
+            gettext('Insufficient responses (minimum %(count)s required)') % {'count': threshold},
+        ),
         'show_trends': bool(comparison.get('show_trends')),
         'previous_date': _iso_date(comparison.get('previous_cycle_date')) if comparison.get('has_previous') else None,
         'radar': radar_chart(section_scores) if len(section_scores) >= RADAR_MIN_SECTIONS else None,
         'sections': _section_table(data, insights, comparison),
-        'rating_ranges': list(RATING_RANGES.values()),
+        'rating_ranges': list(RATING_RANGES.items()),
         'agency': _agency(insights.get('agency_profile')),
         'matrix': _matrix(insights.get('dreyfus_quadrant')),
         'detail_sections': _detail_sections(data),
@@ -165,20 +169,25 @@ def _iso_date(value):
         return value
 
 
-def _responses_line(summary):
-    """For example "9 responses: 4 peers, 1 manager, 3 direct reports, self"."""
+def _feedback_groups(summary, hidden, message):
+    """Who gave feedback, for the cover: a hidden group shows the insufficient message, never its count."""
     counts = summary.get('by_category') or {}
     groups = {
         'peer': lambda n: ngettext('%(count)s peer', '%(count)s peers', n),
         'manager': lambda n: ngettext('%(count)s manager', '%(count)s managers', n),
         'direct_report': lambda n: ngettext('%(count)s direct report', '%(count)s direct reports', n),
-        'self': lambda n: gettext('self'),
     }
-    order = [c for c in CATEGORY_ORDER if c != 'self'] + ['self']
-    parts = [groups[c](counts[c]) % {'count': counts[c]} for c in order if counts.get(c) and c in groups]
-    total = summary.get('total_responses') or 0
-    line = ngettext('%(counter)s response', '%(counter)s responses', total) % {'counter': total}
-    return f'{line}: {", ".join(parts)}' if parts else line
+    lines = []
+    for category in [c for c in CATEGORY_ORDER if c != 'self'] + ['self']:
+        if not counts.get(category):
+            continue
+        if category in hidden:
+            lines.append({'category': category, 'hidden': True, 'text': message})
+        elif category == 'self':
+            lines.append({'category': category, 'text': gettext('Self-assessment')})
+        else:
+            lines.append({'category': category, 'text': groups[category](counts[category]) % {'count': counts[category]}})
+    return lines
 
 
 def _trend_class(trend):
@@ -212,6 +221,7 @@ def _section_table(data, insights, comparison):
             'name': name,
             'score': score,
             'rating': RATINGS[get_rating_key(score)] if score else None,
+            'level': get_rating_key(score) if score else 'none',
             'bar': _percent(score),
             'self': own,
             'tick': _percent(own),

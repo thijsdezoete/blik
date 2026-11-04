@@ -24,7 +24,7 @@
             {% for category in sections.groups %}<th class="num">{{ category|category_label }}</th>{% endfor %}
         </tr></thead>
         {% for row in sections.rows %}
-        <tbody class="row{% if row.growth %} grow{% endif %}">
+        <tbody class="row lvl-{{ row.level }}{% if row.growth %} grow{% endif %}">
         <tr>
             <td class="name"><b>{{ row.name }}</b>
                 {% if row.strength %}<div class="mark">{% trans 'strength' %}</div>
@@ -33,7 +33,7 @@
             <td class="value">{% if row.score %}{{ row.score|floatformat:1 }}{% endif %}</td>
             <td class="track-cell">{% if row.score %}
                 <div class="track"><i style="width: {{ row.bar }}%"></i>{% if row.tick %}<s style="left: {{ row.tick }}%"></s>{% endif %}</div>
-                <div class="small muted">{{ row.rating }}{% if row.trend %} · <span class="{{ row.trend_class }}">{{ row.trend.symbol }} {% if row.trend.change > 0 %}+{% endif %}{{ row.trend.change|floatformat:1 }}</span>{% endif %}</div>
+                <div class="small"><span class="rating">{{ row.rating }}</span>{% if row.trend %} · <span class="{{ row.trend_class }}">{{ row.trend.symbol }} {% if row.trend.change > 0 %}+{% endif %}{{ row.trend.change|floatformat:1 }}</span>{% endif %}</div>
             {% endif %}</td>
             {% if sections.has_self %}<td class="num">{% if row.self is not None %}{{ row.self|floatformat:1 }}{% endif %}</td>
             <td class="num">{% if row.gap is not None %}<span class="{% if row.gap < 0 %}down{% else %}up{% endif %}">{% if row.gap > 0 %}+{% endif %}{{ row.gap|floatformat:1 }}</span>{% endif %}</td>{% endif %}
@@ -48,8 +48,8 @@
     </table>
 
     <div class="key-line small muted">
-        <span class="key others"></span> {% trans 'Overall score (excluding self-assessment)' %}{% if sections.has_self %} &nbsp; <span class="key tick"></span> {% trans 'Self-assessment' %}{% endif %}
-        &nbsp;·&nbsp; {% for range in rating_ranges %}{{ range }}{% if not forloop.last %} · {% endif %}{% endfor %}
+        <span class="key neutral"></span> {% trans 'Overall score (excluding self-assessment)' %}{% if sections.has_self %} &nbsp; <span class="key tick"></span> {% trans 'Self-assessment' %}{% endif %}
+        &nbsp;·&nbsp; {% for level, range in rating_ranges %}<span class="lvl-{{ level }} lvl-text">{{ range }}</span>{% if not forloop.last %} · {% endif %}{% endfor %}
         {% if previous_date and show_trends %}<br>{% blocktrans trimmed with date=previous_date|date:'DATE_FORMAT' %}Compared to {{ date }}{% endblocktrans %}{% endif %}
         {% for category, message in sections.hidden %}<br>– {{ category|category_label }}: {{ message }}{% endfor %}
     </div>

@@ -12,7 +12,7 @@ from questionnaires.models import AnswerOption, Question, Questionnaire, Questio
 from reviews.models import ReviewCycle, ReviewerToken, Response
 
 from .models import Report
-from .pdf import _detail_question, _section_table, drop_report_pdf, pdf_filename, render_report_pdf, \
+from .pdf import _detail_question, _feedback_groups, _section_table, drop_report_pdf, pdf_filename, render_report_pdf, \
     report_pdf_document, report_pdf_html, reviewee_language, store_report_pdf
 from .services import generate_report
 
@@ -276,3 +276,14 @@ class DetailQuestionTests(SimpleTestCase):
         self.assertEqual(detail['others_avg'], 4.5)
         self.assertEqual(detail['self']['avg'], 2.0)
         self.assertEqual(detail['self']['gap'], -2.5)
+
+
+class FeedbackGroupsTests(SimpleTestCase):
+    def test_a_hidden_group_shows_the_message_not_its_count(self):
+        summary = {'by_category': {'self': 1, 'peer': 2, 'manager': 1}}
+
+        lines = _feedback_groups(summary, {'peer'}, 'Insufficient responses (minimum 3 required)')
+
+        self.assertEqual([line['text'] for line in lines],
+                         ['Insufficient responses (minimum 3 required)', '1 manager', 'Self-assessment'])
+        self.assertTrue(lines[0]['hidden'])

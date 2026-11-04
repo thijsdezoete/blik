@@ -65,17 +65,15 @@ li { margin-bottom: 0.6mm; }
 .cats { display: flex; flex-wrap: wrap; gap: 0.6mm 4mm; margin-top: 1mm; }
 .cats b { font-weight: 500; color: #1f2937; }
 .big { font-size: 15pt; font-weight: 700; line-height: 1.2; }
-.chk { margin: 0; padding: 0; list-style: none; }
-.chk li { padding-left: 4mm; position: relative; }
-.chk li:before { content: '○'; position: absolute; left: 0; color: #9ca3af; }
+.marks { margin: 0 0 1mm; padding: 0; list-style: none; }
+.marks li { padding-left: 3.5mm; position: relative; }
+.marks li:before { content: '•'; position: absolute; left: 0.3mm; color: #6b7280; }
 .items { margin: 0; padding: 0; list-style: none; }
 .items li { padding: 1.2mm 0; border-bottom: 0.5pt solid #e5e7eb; break-inside: avoid; }
 .items li:last-child { border-bottom: 0; }
 
 /* Page 1: executive summary */
-.masthead { display: flex; justify-content: space-between; align-items: flex-start; }
 .brand { font-weight: 700; color: #4f46e5; font-size: 13pt; }
-.rule { border-top: 1.2pt solid #111827; margin: 4mm 0 0; }
 .figs { display: flex; border-bottom: 0.5pt solid #e5e7eb; margin: 0 0 6mm; }
 .fig { flex: 1; padding: 3mm 3mm 3mm 0; border-right: 0.5pt solid #e5e7eb; margin-right: 3mm; }
 .fig:last-child { border-right: 0; margin-right: 0; }
@@ -86,16 +84,46 @@ li { margin-bottom: 0.6mm; }
 .fig-label { font-weight: 500; }
 .stage.skill { color: #4f46e5 !important; }
 .stage.agency { color: #0d9488 !important; }
-.summary-columns { display: flex; gap: 8mm; }
-.summary-text { flex: 1.1; }
-.summary-radar { flex: 1; }
-.summary-radar svg { display: block; width: 100%; height: auto; }
+/* Score levels: the colour of a score's rating, the same on every page */
+.lvl-outstanding, .lvl-excellent { --lvl: #047857; }
+.lvl-strong { --lvl: #4f46e5; }
+.lvl-developing { --lvl: #64748b; }
+.lvl-needs_support { --lvl: #b45309; }
+.points { margin: 0 0 6mm; }
+.point { display: flex; gap: 4mm; padding: 2mm 0 2mm 3mm; border-left: 2pt solid #d1d5db; margin-bottom: 1.6mm; break-inside: avoid; }
+.point-label { flex: none; width: 44mm; font-weight: 500; color: #374151; }
+.point-text { flex: 1; }
+.point.blind { border-left-color: #4f46e5; } .point.blind .point-label { color: #4338ca; }
+.point.strength { border-left-color: #047857; } .point.strength .point-label { color: #047857; }
+.point.grow { border-left-color: #f59e0b; } .point.grow .point-label { color: #b45309; }
+.point.step { border-left-color: #111827; }
+.pairs { width: auto; } .pairs td { padding: 0; } .pairs td.num { padding-left: 10mm; text-align: right; font-weight: 700; }
+.sub-head { font-size: 10.5pt; margin: 0 0 1.5mm; }
+.mini-sections th { padding: 0 1.5mm 1mm; border-bottom: 0.8pt solid #1f2937; }
+.mini-sections td { padding: 1.3mm 1.5mm; border-bottom: 0.5pt solid #eef0f4; vertical-align: middle; }
+.mini-sections .name { padding-left: 0; }
+.mini-sections .num { width: 16mm; text-align: right; }
+.mini-sections th.num { text-align: right; }
+.mini-sections .score { font-weight: 700; color: var(--lvl, #111827); }
+.mini-sections .rating { width: 52mm; color: var(--lvl, #6b7280); font-size: 8pt; }
+.lvl-bar { display: inline-block; width: 18mm; height: 1.8mm; background: #eef0f4; border-radius: 1mm; vertical-align: middle; margin-right: 1.5mm; }
+.lvl-bar i { display: block; height: 100%; border-radius: 1mm; background: var(--lvl, #4f46e5); }
 .legend { text-align: center; font-size: 7.5pt; margin-top: 1mm; }
 .key { display: inline-block; width: 3mm; height: 2.2mm; border-radius: 0.5mm; vertical-align: middle; }
 .key.others { background: #4f46e5; opacity: 0.8; }
 .key.self { border-top: 1pt dashed #10b981; height: 0; border-radius: 0; }
-.key.self-bar { background: #a7f3d0; }
-.read-twice { margin-top: 6mm; background: #f8fafc; border-radius: 1.5mm; padding: 3mm 3.5mm; break-inside: avoid; }
+.key.neutral { background: #9ca3af; }
+.lvl-text { color: var(--lvl); }
+/* Cover */
+.cover { position: relative; height: 255mm; }
+.cover .brand { font-size: 14pt; }
+.cover-body { position: absolute; top: 70mm; left: 0; right: 0; }
+.cover-name { font-size: 32pt; margin: 2mm 0 0; }
+.cover-rule { border-top: 1.2pt solid #111827; width: 30mm; margin: 6mm 0 8mm; }
+.cover-facts { display: grid; grid-template-columns: 38mm 1fr; row-gap: 3mm; margin: 0 0 12mm; font-size: 10.5pt; }
+.cover-facts dt { color: #6b7280; }
+.cover-facts dd { margin: 0; }
+.cover-about { max-width: 120mm; font-size: 9.5pt; }
 
 /* Page 2: development path */
 .group { border-radius: 3mm; padding: 3mm; margin-bottom: 4mm; break-inside: avoid; }
@@ -109,10 +137,7 @@ li { margin-bottom: 0.6mm; }
 .group > .tile:last-child { margin-bottom: 0; }
 .diamonds { padding: 1.5mm 3mm; }
 .diamonds svg { display: block; width: 78%; height: auto; margin: 0 auto; }  /* stage labels at about body size */
-.two-col { display: flex; gap: 6mm; }
-.two-col > div { flex: 1; }
-.sub { font-weight: 500; margin-top: 1.5mm; }
-.sub.first { margin-top: 0; }
+.sub { font-weight: 500; margin: 2mm 0 0.6mm; }
 .next-steps h3 { margin-bottom: 2mm; }
 .ladder { display: flex; gap: 1mm; margin: 1mm 0 1.2mm; }
 .ladder span { flex: 1; height: 2mm; border-radius: 1mm; background: #d1d5db; }
@@ -148,9 +173,11 @@ th { font-weight: 500; font-size: 7.5pt; color: #6b7280; text-align: left; verti
 .sections .num { text-align: right; width: 14mm; }
 .sections th.num { text-align: right; white-space: nowrap; }
 .sections th.score { text-align: left; padding-left: 4mm; }
-.sections tbody.grow .value, .sections tbody.grow .mark { color: #b45309; }
-.sections tbody.grow .track i { background: #f59e0b; }
-.mark { font-size: 7.5pt; color: #4f46e5; margin-top: 0.3mm; }
+.sections .value { color: var(--lvl, #111827); }
+.sections .rating { color: var(--lvl, #6b7280); }
+.sections tbody.grow .mark { color: #b45309; }
+.sections .track i { background: var(--lvl, #4f46e5); }
+.mark { font-size: 7.5pt; color: #047857; margin-top: 0.3mm; }
 .track { position: relative; height: 2mm; background: #eef0f4; border-radius: 1mm; margin-bottom: 1mm; }
 .track i { display: block; height: 100%; background: #4f46e5; border-radius: 1mm; }
 .track s { position: absolute; top: -0.8mm; width: 0; height: 3.6mm; border-left: 1.2pt solid #111827; }
@@ -198,6 +225,7 @@ th { font-weight: 500; font-size: 7.5pt; color: #6b7280; text-align: left; verti
 </head>
 <body>
 <div class="footer-name">{{ reviewee_name }} · {% trans 'Confidential' %}</div>
+{% include "reports/pdf/_cover.html" %}
 {% include "reports/pdf/_summary.html" %}
 {% if report_data.insights.skill_profile %}{% include "reports/pdf/_development.html" with insights=report_data.insights %}{% endif %}
 {% include "reports/pdf/_others.html" %}

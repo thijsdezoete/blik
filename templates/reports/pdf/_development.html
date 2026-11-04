@@ -15,19 +15,13 @@
         {% if insights.development_plan and insights.skill_profile.stage_info.next_stage %}
         <div class="tile white next-steps">
             <h3>{% blocktrans trimmed with stage=insights.skill_profile.stage_info.next_stage %}To Reach {{ stage }}{% endblocktrans %}</h3>
-            <div class="two-col">
-                <div>
-                    {% if insights.development_plan.next_level_requirements %}
-                    <ul class="chk">{% for requirement in insights.development_plan.next_level_requirements %}<li>{{ requirement }}</li>{% endfor %}</ul>
-                    {% endif %}
-                </div>
-                <div>
-                    {% if insights.development_plan.quick_wins %}
-                    <div class="sub first">{% trans 'Action Items' %}</div>
-                    <ul>{% for win in insights.development_plan.quick_wins|slice:":3" %}<li>{{ win }}</li>{% endfor %}</ul>
-                    {% endif %}
-                </div>
-            </div>
+            {% if insights.development_plan.next_level_requirements %}
+            <ul class="marks">{% for requirement in insights.development_plan.next_level_requirements %}<li>{{ requirement }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% if insights.development_plan.quick_wins %}
+            <div class="sub">{% trans 'Action Items' %}</div>
+            <ul class="marks">{% for win in insights.development_plan.quick_wins|slice:":3" %}<li>{{ win }}</li>{% endfor %}</ul>
+            {% endif %}
         </div>
         {% endif %}
     </div>
@@ -68,9 +62,9 @@
             {% if agency.next_name %}
             <div class="tile white next-steps">
                 <h3>{% blocktrans trimmed with stage=agency.next_name %}To Reach {{ stage }}{% endblocktrans %}</h3>
-                <ul class="chk">{% for requirement in agency.next_steps.requirements %}<li>{{ requirement }}</li>{% endfor %}</ul>
+                <ul class="marks">{% for requirement in agency.next_steps.requirements %}<li>{{ requirement }}</li>{% endfor %}</ul>
                 <div class="sub">{% trans 'Action Items' %}</div>
-                <ul>{% for action in agency.next_steps.actions %}<li>{{ action }}</li>{% endfor %}</ul>
+                <ul class="marks">{% for action in agency.next_steps.actions %}<li>{{ action }}</li>{% endfor %}</ul>
             </div>
             {% endif %}
         </div>

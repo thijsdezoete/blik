@@ -28,6 +28,9 @@ def _report_data(counts, schema=REPORT_SCHEMA):
             'strengths': [],
             'development_areas': [{'area': 'Craft', 'others_avg': 2.6}],
             'skill_profile': {'skill_level': 3.0},
+            'agency_profile': {'agency_level': 2.0},
+            'dreyfus_quadrant': {'quadrant_key': 'force_multiplier'},
+            'development_plan': {'action_items': []},
         },
         'peer_benchmarks': {'Craft': {'current_score': 2.6, 'peer_median': 3.0}},
         'comparison': {
@@ -139,7 +142,7 @@ class CombinedValuesAnonymizationTests(TestCase):
 
         self.assertEqual(filtered['insights'], {
             'overall_sentiment': None, 'perception_gaps': [], 'strengths': [], 'development_areas': [],
-            'skill_profile': {'skill_level': 3.0},
+            'skill_profile': None, 'agency_profile': None, 'dreyfus_quadrant': None, 'development_plan': None,
         })
         self.assertEqual(filtered['section_summary']['Craft']['manager'], 2.8)
         self.assertEqual(filtered['charts']['overall']['manager'], 2.8)

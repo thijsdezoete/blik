@@ -324,7 +324,9 @@ def _leave_out_hidden_groups(filtered_data, report_data, hidden, message):
         filtered_data['insights'] = {
             **(filtered_data.get('insights') or {}),
             'overall_sentiment': None, 'perception_gaps': [], 'strengths': [], 'development_areas': [],
+            'skill_profile': None, 'agency_profile': None, 'dreyfus_quadrant': None, 'development_plan': None,
         }
+    # Uses the current question config (chart weights, exclusions), which may differ from when the report was made
     filtered_data['charts'] = _calculate_chart_data(visible_data)
 
     # Benchmarks and trends compare combined values of this report with other reports, so they are left out

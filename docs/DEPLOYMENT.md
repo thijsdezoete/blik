@@ -105,6 +105,17 @@ ORGANIZATION_NAME=Your Company Name
 ORGANIZATION_LANGUAGE=en
 ```
 
+#### Report PDFs (Optional)
+```env
+# Where generated report PDFs are stored. Never served directly. Default: privatefiles/
+PRIVATE_MEDIA_ROOT=
+# Days a report PDF is kept before it is deleted. An organization can override this. Default: 30
+REPORT_PDF_RETENTION_DAYS=30
+```
+
+The PDFs are a cache of the stored report. If `privatefiles/` is lost, nothing breaks: the
+report shows "Regenerate PDF" instead of "Download PDF".
+
 #### Port Configuration (Optional)
 ```env
 # Internal port for main application container
@@ -511,6 +522,30 @@ docker compose up -d --build
 
 # Migrations run automatically via entrypoint
 ```
+
+### Upgrading to the report PDF release
+
+This release adds system libraries (Pango, for WeasyPrint) and a Python dependency, so the image
+must be rebuilt. In Dokploy, click **"Redeploy"** so it rebuilds the image. A `git pull` and a
+container restart are not enough: every `manage.py` command then stops with check `reports.E001`.
+
+After the deploy, run once:
+
+```bash
+docker compose exec web python manage.py backfill_report_pdfs
+```
+
+It builds the report and the PDF for every cycle the migration already marked as finalised. It
+sends no email. It exits with a non-zero status if a cycle failed, and it is safe to run again.
+Add `--dry-run` to only count what is missing.
+
+The entrypoint now also installs a cron line that finalises reports every 5 minutes:
+
+```cron
+*/5 * * * * . /app/.env.cron && cd /app && flock -n /tmp/finalize_reports.lock python manage.py finalize_reports >> /var/log/cron.log 2>&1
+```
+
+You don't add it yourself. If you run Blik without the entrypoint, add it to your own crontab.
 
 ### View Logs
 

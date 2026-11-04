@@ -3,7 +3,7 @@
     {% for ring in radar.rings %}<polygon points="{{ ring }}"/>{% endfor %}
     {% for a in radar.axes %}<line x1="{{ a.x1 }}" y1="{{ a.y1 }}" x2="{{ a.x2 }}" y2="{{ a.y2 }}"/>{% endfor %}
   </g>
-  {% for s in series %}<polygon points="{{ s.points }}" fill="{% if s.dashed %}none{% else %}{{ s.colour }}{% endif %}" fill-opacity="{{ fill_opacity|default:'0.12' }}" stroke="{{ s.colour }}" stroke-width="{{ stroke|default:'1.4' }}"{% if s.dashed %} stroke-dasharray="4 2.5"{% endif %}/>{% endfor %}
+  {% for s in series %}<polygon points="{{ s.points }}" fill="{% if s.dashed %}none{% else %}{{ s.colour }}{% endif %}" fill-opacity="{{ fill_opacity|default:'0.12' }}" stroke="{{ s.colour }}" stroke-width="{{ stroke|default:'1.4' }}"{% if s.dashed %} stroke-dasharray="4 2.5"{% endif %}/>{% for d in s.dots %}<circle cx="{{ d.x }}" cy="{{ d.y }}" r="2" fill="{{ s.colour }}"/>{% endfor %}{% endfor %}
   {% if numbers %}<g font-size="{{ font|default:'13' }}" fill="#6b7280" text-anchor="middle">
     {% for a in radar.axes %}<text x="{{ a.nx }}" y="{{ a.ny }}">{{ a.number }}</text>{% endfor %}
   </g>{% else %}<g font-size="{{ font|default:'10' }}" fill="#374151">

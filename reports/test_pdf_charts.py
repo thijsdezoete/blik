@@ -16,10 +16,13 @@ class RadarChartTests(SimpleTestCase):
         self.assertEqual(len(chart['rings']), 5)
         self.assertEqual(len(chart['axes']), 3)
 
-    def test_radar_section_without_a_group_score_counts_as_zero(self):
-        chart = radar_chart({'A': {'self': 3}, 'B': {'peer': 4}}, size=200)
+    def test_radar_leaves_out_a_section_without_a_group_score(self):
+        chart = radar_chart({'A': {'self': 3}, 'B': {'peer': 4}, 'C': {'peer': 5}}, size=200)
         peer = chart['groups'][1]
-        self.assertEqual(peer['points'].split(' ')[0], '100.0,100.0')
+        # Two scored axes, none at the centre
+        self.assertEqual(len(peer['points'].split(' ')), 2)
+        self.assertNotIn('100.0,100.0', peer['points'])
+        self.assertEqual(len(peer['dots']), 2)
 
     def test_radar_truncates_long_labels(self):
         chart = radar_chart({'x' * 40: {'peer': 3}})

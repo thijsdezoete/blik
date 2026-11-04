@@ -43,7 +43,11 @@ def radar_chart(section_scores, size=240):
         return c + r * math.sin(angle), c - r * math.cos(angle)
 
     def polygon(scores):
-        return ' '.join('%.1f,%.1f' % point(i, s) for i, s in enumerate(scores))
+        # An axis without a score (None) is left out: it must not read as 0
+        return ' '.join('%.1f,%.1f' % point(i, s) for i, s in enumerate(scores) if s is not None)
+
+    def dots(scores):
+        return [point(i, s) for i, s in enumerate(scores) if s is not None]
 
     rings = [polygon([level] * n) for level in range(1, 6)]
     axes = []
@@ -64,18 +68,18 @@ def radar_chart(section_scores, size=240):
 
     return {
         'size': size, 'center': c, 'rings': rings, 'axes': axes,
-        'groups': _group_polygons(section_scores, polygon),
+        'groups': _group_polygons(section_scores, polygon, dots),
         'view_box': '%d %d %d %d' % (-RADAR_PAD_X, -RADAR_PAD_Y,
                                      size + 2 * RADAR_PAD_X, size + 2 * RADAR_PAD_Y),
         'width': size + 2 * RADAR_PAD_X, 'height': size + 2 * RADAR_PAD_Y,
     }
 
 
-def _group_polygons(section_scores, polygon):
+def _group_polygons(section_scores, polygon, dots):
     """One polygon per reviewer group with a score, self included, in the usual group order.
 
-    A section without a score of the group is drawn at 0 (the centre), not skipped: skipping would change the
-    polygon's axes.
+    A section without a score of the group is left out of its polygon, not drawn at 0 (the centre). Each scored axis
+    also gets a dot, so a group with one or two scores still shows.
 
     A group hidden for anonymity has no scores here, or an 'insufficient' marker instead of a number: it gets none.
     """
@@ -84,5 +88,6 @@ def _group_polygons(section_scores, polygon):
         scores = [cats.get(category) for cats in section_scores.values()]
         scores = [score if isinstance(score, (int, float)) else None for score in scores]
         if any(score is not None for score in scores):
-            groups.append({'category': category, 'points': polygon([score or 0 for score in scores])})
+            groups.append({'category': category, 'points': polygon(scores),
+                           'dots': [{'x': round(x, 1), 'y': round(y, 1)} for x, y in dots(scores)]})
     return groups

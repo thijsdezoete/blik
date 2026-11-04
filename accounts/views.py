@@ -75,10 +75,10 @@ def register_view(request):
 
 
 def _send_existing_account_email(email):
-    from django.conf import settings
     from django.template.loader import render_to_string
     from django.utils import translation
     from core.email import send_email
+    from core.url import get_absolute_url
     from core.languages import user_language
 
     active = User.objects.filter(is_active=True).exclude(email='')
@@ -89,7 +89,7 @@ def _send_existing_account_email(email):
         send_email(
             subject=_('You already have a Blik360 account'),
             message=render_to_string('emails/existing_account_signup.txt', {
-                'email': email, 'site_url': settings.SITE_URL,
+                'email': email, 'site_url': get_absolute_url('login'),
             }),
             recipient_list=[user.email if user else email],
         )

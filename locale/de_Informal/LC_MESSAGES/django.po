@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 11:14+0000\n"
+"POT-Creation-Date: 2026-11-04 18:47+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -2664,6 +2664,10 @@ msgid "Document your decision-making process for others to learn from"
 msgstr ""
 
 #, python-format
+msgid "Insufficient responses (minimum %(count)s required)"
+msgstr ""
+
+#, python-format
 msgid "%(count)s peer"
 msgid_plural "%(count)s peers"
 msgstr[0] ""
@@ -2681,14 +2685,8 @@ msgid_plural "%(count)s direct reports"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "self"
+msgid "Self-assessment"
 msgstr ""
-
-#, python-format
-msgid "%(counter)s response"
-msgid_plural "%(counter)s responses"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "Improved"
 msgstr ""
@@ -2747,10 +2745,6 @@ msgid "Developing"
 msgstr ""
 
 msgid "Needs Support"
-msgstr ""
-
-#, python-format
-msgid "Insufficient responses (minimum %(count)s required)"
 msgstr ""
 
 #, python-format
@@ -3479,6 +3473,12 @@ msgstr ""
 msgctxt "cycle status"
 msgid "Completed"
 msgstr ""
+
+#, python-format
+msgid "%(counter)s response"
+msgid_plural "%(counter)s responses"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "No reportable responses yet"
 msgstr ""
@@ -7986,9 +7986,6 @@ msgctxt "severity"
 msgid "moderate"
 msgstr ""
 
-msgid "Self-assessment"
-msgstr ""
-
 msgid "You see yourself"
 msgstr "So siehst du dich"
 
@@ -8098,7 +8095,31 @@ msgstr "Du hast keine Berechtigung, diesen Bericht anzusehen. Bitte prüfe deine
 msgid "Go Home"
 msgstr ""
 
+msgid "360 Feedback Report"
+msgstr ""
+
+msgid "Confidential"
+msgstr ""
+
+msgid "Review Date"
+msgstr ""
+
+msgid "Feedback from"
+msgstr ""
+
+msgid "This report brings together the feedback from your reviewers: a summary, your scores per section and every answer per question. Individual reviewers cannot be identified."
+msgstr "Dieser Bericht fasst das Feedback deiner Feedbackgebenden zusammen: eine Zusammenfassung, deine Werte je Abschnitt und jede Antwort je Frage. Einzelne Feedbackgebende lassen sich nicht identifizieren."
+
 msgid "Scale:"
+msgstr ""
+
+msgid "Average"
+msgstr ""
+
+msgid "Positive"
+msgstr ""
+
+msgid "Others"
 msgstr ""
 
 msgid "Dreyfus model"
@@ -8116,45 +8137,27 @@ msgstr ""
 msgid "How others see you"
 msgstr "So sehen andere dich"
 
-msgid "Section scores:"
+msgid "Sections"
+msgstr ""
+
+msgid "Gap"
+msgstr ""
+
+msgid "strength"
 msgstr ""
 
 msgid "area to grow"
 msgstr ""
 
-msgid "Others"
-msgstr ""
-
-msgid "360 Feedback Report"
-msgstr ""
-
-msgid "Confidential"
-msgstr ""
-
-msgid "Review Date"
+msgid "Summary"
 msgstr ""
 
 msgid "Overall Rating"
 msgstr ""
 
 #, python-format
-msgid "%(gap)s above others"
-msgstr ""
-
-#, python-format
-msgid "%(gap)s below others"
-msgstr ""
-
-msgid "Summary"
-msgstr ""
-
-#, python-format
 msgid "Others rate you <b>%(rating)s</b> overall."
 msgstr "Andere bewerten dich insgesamt mit <b>%(rating)s</b>."
-
-#, python-format
-msgid "You are a <b>%(name)s</b>: %(description)s."
-msgstr "Dein Profil: <b>%(name)s</b> – %(description)s."
 
 #, python-format
 msgid "On %(counter)s section, others score you lower than you score yourself."
@@ -8169,9 +8172,6 @@ msgid "Strengths"
 msgstr ""
 
 msgid "Areas to grow"
-msgstr ""
-
-msgid "Sections"
 msgstr ""
 
 msgid "Feedback Report"

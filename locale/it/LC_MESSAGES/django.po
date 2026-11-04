@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 11:14+0000\n"
+"POT-Creation-Date: 2026-11-04 18:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
@@ -2695,6 +2695,10 @@ msgid "Document your decision-making process for others to learn from"
 msgstr "Documenta il tuo processo decisionale affinché gli altri possano imparare"
 
 #, python-format
+msgid "Insufficient responses (minimum %(count)s required)"
+msgstr "Risposte insufficienti (minimo %(count)s richiesto)"
+
+#, python-format
 msgid "%(count)s peer"
 msgid_plural "%(count)s peers"
 msgstr[0] "%(count)s collega"
@@ -2712,14 +2716,8 @@ msgid_plural "%(count)s direct reports"
 msgstr[0] "%(count)s collaboratore diretto"
 msgstr[1] "%(count)s collaboratori diretti"
 
-msgid "self"
-msgstr "autovalutazione"
-
-#, python-format
-msgid "%(counter)s response"
-msgid_plural "%(counter)s responses"
-msgstr[0] "%(counter)s risposta"
-msgstr[1] "%(counter)s risposte"
+msgid "Self-assessment"
+msgstr "Autovalutazione"
 
 msgid "Improved"
 msgstr "Migliorato"
@@ -2779,10 +2777,6 @@ msgstr "Sviluppo"
 
 msgid "Needs Support"
 msgstr "Necessita di supporto"
-
-#, python-format
-msgid "Insufficient responses (minimum %(count)s required)"
-msgstr "Risposte insufficienti (minimo %(count)s richiesto)"
 
 #, python-format
 msgid "No email address for reviewee %(name)s"
@@ -3527,6 +3521,12 @@ msgstr "Attivo"
 msgctxt "cycle status"
 msgid "Completed"
 msgstr "Completato"
+
+#, python-format
+msgid "%(counter)s response"
+msgid_plural "%(counter)s responses"
+msgstr[0] "%(counter)s risposta"
+msgstr[1] "%(counter)s risposte"
 
 msgid "No reportable responses yet"
 msgstr "Nessuna risposta segnalabile per ora"
@@ -8093,9 +8093,6 @@ msgctxt "severity"
 msgid "moderate"
 msgstr "Moderato"
 
-msgid "Self-assessment"
-msgstr "Autovalutazione"
-
 msgid "You see yourself"
 msgstr "Ti vedi"
 
@@ -8205,8 +8202,32 @@ msgstr "Non hai il permesso di visualizzare questo rapporto. Consulta la tua ema
 msgid "Go Home"
 msgstr "Vai a casa"
 
+msgid "360 Feedback Report"
+msgstr "Rapporto di feedback 360"
+
+msgid "Confidential"
+msgstr "Riservato"
+
+msgid "Review Date"
+msgstr "Data della recensione"
+
+msgid "Feedback from"
+msgstr "Feedback da"
+
+msgid "This report brings together the feedback from your reviewers: a summary, your scores per section and every answer per question. Individual reviewers cannot be identified."
+msgstr "Questo report riunisce il feedback dei tuoi recensori: un riepilogo, i tuoi punteggi per sezione e ogni risposta per domanda. I singoli recensori non possono essere identificati."
+
 msgid "Scale:"
 msgstr "Scala:"
+
+msgid "Average"
+msgstr "Media"
+
+msgid "Positive"
+msgstr "Positivo"
+
+msgid "Others"
+msgstr "Gli altri"
 
 msgid "Dreyfus model"
 msgstr "Modello Dreyfus"
@@ -8223,45 +8244,27 @@ msgstr "Matrice delle performance"
 msgid "How others see you"
 msgstr "Come ti vedono gli altri"
 
-msgid "Section scores:"
-msgstr "Punteggi per sezione:"
+msgid "Sections"
+msgstr "Sezioni"
+
+msgid "Gap"
+msgstr "Divario"
+
+msgid "strength"
+msgstr "punto di forza"
 
 msgid "area to grow"
 msgstr "area di crescita"
 
-msgid "Others"
-msgstr "Gli altri"
-
-msgid "360 Feedback Report"
-msgstr "Rapporto di feedback 360"
-
-msgid "Confidential"
-msgstr "Riservato"
-
-msgid "Review Date"
-msgstr "Data della recensione"
+msgid "Summary"
+msgstr "Riepilogo"
 
 msgid "Overall Rating"
 msgstr "Valutazione complessiva"
 
 #, python-format
-msgid "%(gap)s above others"
-msgstr "%(gap)s sopra gli altri"
-
-#, python-format
-msgid "%(gap)s below others"
-msgstr "%(gap)s sotto gli altri"
-
-msgid "Summary"
-msgstr "Riepilogo"
-
-#, python-format
 msgid "Others rate you <b>%(rating)s</b> overall."
 msgstr "Nel complesso gli altri ti valutano <b>%(rating)s</b>."
-
-#, python-format
-msgid "You are a <b>%(name)s</b>: %(description)s."
-msgstr "Il tuo profilo: <b>%(name)s</b> – %(description)s."
 
 #, python-format
 msgid "On %(counter)s section, others score you lower than you score yourself."
@@ -8277,9 +8280,6 @@ msgstr "Punti di forza"
 
 msgid "Areas to grow"
 msgstr "Aree di crescita"
-
-msgid "Sections"
-msgstr "Sezioni"
 
 msgid "Feedback Report"
 msgstr "Rapporto di feedback"

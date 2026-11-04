@@ -233,17 +233,18 @@
 
         if (sectionNames.length === 0) return;
 
-        // Calculate gaps and sort by size
+        // Calculate gaps and sort by size. An absent score stays null, so Chart.js
+        // draws no bar, and a section without a gap goes after the sorted ones.
         const gaps = sectionNames.map(section => {
-            const self = sections[section].self || 0;
-            const others = sections[section].others_avg || 0;
+            const self = sections[section].self ?? null;
+            const others = sections[section].others_avg ?? null;
             return {
                 section: section,
                 self: self,
                 others: others,
-                gap: self - others
+                gap: self !== null && others !== null ? self - others : null
             };
-        }).sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
+        }).sort((a, b) => (b.gap === null ? -1 : Math.abs(b.gap)) - (a.gap === null ? -1 : Math.abs(a.gap)));
 
         new Chart(ctx, {
             type: 'bar',

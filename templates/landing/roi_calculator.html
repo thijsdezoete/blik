@@ -195,10 +195,11 @@
             <div class="cta-box">
                 <h2 class="cta-heading">Choose the Deployment That Fits</h2>
                 <p class="cta-description">
-                    Self-host free, or choose managed hosting: {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
+                    Self-host free, or choose managed hosting. Start with one free review, no credit card. Subscriptions have a {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.
                 </p>
                 <div class="action-links">
                     <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">Self-Host (Free)</a>
+                    <a href="{{ main_app_url }}/accounts/register/" class="btn btn-secondary">Start free</a>
                     <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted ({{ trial_days }}-Day Trial)</a>
                 </div>
             </div>

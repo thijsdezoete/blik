@@ -76,6 +76,7 @@ from reviews.services import (
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     NoCycleCredits,
+    ReviewerLimit,
     billing_context,
     can_see_billing,
     check_employee_limit,
@@ -84,6 +85,15 @@ from subscriptions.utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def limit_error(request, error):
+    """A credit or reviewer limit message. Admins who can open Billing get a link to it."""
+    from django.utils.html import format_html
+    if can_see_billing(request.organization, request.user):
+        messages.error(request, format_html('{} <a href="{}">{}</a>', str(error), reverse('billing'), _('Go to Billing')))
+    else:
+        messages.error(request, str(error))
 
 
 def get_default_labels(questionnaire):
@@ -639,39 +649,58 @@ def quick_cycle_create(request, reviewee_uuid):
             for category in CATEGORY_ORDER
         }
 
-    # Create the cycle
+    # Create the cycle and its tokens together: a refused token leaves no cycle behind.
     try:
-        cycle = ReviewCycle.objects.create(
-            reviewee=reviewee,
-            questionnaire=questionnaire,
-            created_by=request.user,
-            status='active',
-            **category_flags
-        )
-    except NoCycleCredits as e:
-        messages.error(request, str(e))
+        with transaction.atomic():
+            cycle = ReviewCycle.objects.create(
+                reviewee=reviewee,
+                questionnaire=questionnaire,
+                created_by=request.user,
+                status='active',
+                **category_flags
+            )
+            transaction.on_commit(lambda c=cycle: send_reviewee_notifications(c, request))
+
+            total_tokens = 0
+            email_invited_count = 0
+
+            if previous_cycle:
+                # Copy tokens from previous cycle, including email assignments. The self-assessment
+                # token comes from send_reviewee_notifications above.
+                previous_tokens = previous_cycle.tokens.filter(
+                    category__in=cycle.active_categories).exclude(category='self')
+
+                for prev_token in previous_tokens:
+                    ReviewerToken.objects.create(
+                        cycle=cycle,
+                        category=prev_token.category,
+                        reviewer_email=prev_token.reviewer_email
+                    )
+                    total_tokens += 1
+                    if prev_token.reviewer_email:
+                        email_invited_count += 1
+            else:
+                # No previous cycle - use default token distribution
+                token_distribution = [
+                    ('peer', 3),
+                    ('manager', 1),
+                    ('direct_report', 0),
+                ]
+
+                for category, count in token_distribution:
+                    if not cycle.collects(category):
+                        continue
+                    for i in range(count):
+                        ReviewerToken.objects.create(
+                            cycle=cycle,
+                            category=category
+                        )
+                        total_tokens += 1
+    except (NoCycleCredits, ReviewerLimit) as e:
+        limit_error(request, e)
         return redirect('reviewee_list')
 
-    transaction.on_commit(lambda c=cycle: send_reviewee_notifications(c, request))
-
-    total_tokens = 0
-    email_invited_count = 0
-
     if previous_cycle:
-        # Copy tokens from previous cycle, including email assignments. The self-assessment
-        # token comes from send_reviewee_notifications above.
-        previous_tokens = previous_cycle.tokens.filter(category__in=cycle.active_categories).exclude(category='self')
-
-        for prev_token in previous_tokens:
-            new_token = ReviewerToken.objects.create(
-                cycle=cycle,
-                category=prev_token.category,
-                reviewer_email=prev_token.reviewer_email
-            )
-            total_tokens += 1
-            if prev_token.reviewer_email:
-                email_invited_count += 1
-
         # Send invitations to all email-assigned tokens
         if email_invited_count > 0:
             send_stats = send_reviewer_invitations(cycle)
@@ -692,23 +721,6 @@ def quick_cycle_create(request, reviewee_uuid):
                 % {'name': reviewee.name, 'questionnaire': questionnaire.name, 'count': total_tokens}
             )
     else:
-        # No previous cycle - use default token distribution
-        token_distribution = [
-            ('peer', 3),
-            ('manager', 1),
-            ('direct_report', 0),
-        ]
-
-        for category, count in token_distribution:
-            if not cycle.collects(category):
-                continue
-            for i in range(count):
-                ReviewerToken.objects.create(
-                    cycle=cycle,
-                    category=category
-                )
-                total_tokens += 1
-
         messages.success(
             request,
             _('Review cycle created for "%(name)s" using "%(questionnaire)s" with %(count)s reviewer token(s). '
@@ -1733,57 +1745,58 @@ def review_cycle_create(request):
 
                 reviewee = Reviewee.objects.for_organization(org).get(id=reviewee_id)
 
-                # Create review cycle (no tokens created here)
-                cycle = ReviewCycle.objects.create(
-                    reviewee=reviewee,
-                    questionnaire=questionnaire,
-                    created_by=request.user,
-                    status='active',
-                    **category_flags
-                )
+                with transaction.atomic():
+                    # The cycle and its tokens together: a refused token leaves no cycle behind.
+                    cycle = ReviewCycle.objects.create(
+                        reviewee=reviewee,
+                        questionnaire=questionnaire,
+                        created_by=request.user,
+                        status='active',
+                        **category_flags
+                    )
 
-                # Check if user provided reviewer emails
+                    # Check if user provided reviewer emails
 
-                email_assignments = {}
-                has_emails = False
+                    email_assignments = {}
+                    has_emails = False
 
-                for category_code, category_display in ReviewerToken.CATEGORY_CHOICES:
-                    if not cycle.collects(category_code):
-                        # The field is hidden for categories this cycle skips;
-                        # a stale or hand-made POST must not reinstate them.
-                        email_assignments[category_code] = []
-                        continue
+                    for category_code, category_display in ReviewerToken.CATEGORY_CHOICES:
+                        if not cycle.collects(category_code):
+                            # The field is hidden for categories this cycle skips;
+                            # a stale or hand-made POST must not reinstate them.
+                            email_assignments[category_code] = []
+                            continue
 
-                    emails_data = request.POST.get(f'{category_code}_emails', '').strip()
-                    if emails_data:
-                        emails = re.split(r'[,\n]+', emails_data)
-                        validated_emails = []
-                        for e in emails:
-                            e = e.strip()
-                            if e:
-                                try:
-                                    validate_email(e)
-                                    validated_emails.append(e)
-                                    has_emails = True
-                                except ValidationError:
-                                    messages.warning(request, _('Invalid email skipped in %(category)s: %(email)s') % {'category': category_display, 'email': e})
-                        email_assignments[category_code] = validated_emails
-                    else:
-                        email_assignments[category_code] = []
+                        emails_data = request.POST.get(f'{category_code}_emails', '').strip()
+                        if emails_data:
+                            emails = re.split(r'[,\n]+', emails_data)
+                            validated_emails = []
+                            for e in emails:
+                                e = e.strip()
+                                if e:
+                                    try:
+                                        validate_email(e)
+                                        validated_emails.append(e)
+                                        has_emails = True
+                                    except ValidationError:
+                                        messages.warning(request, _('Invalid email skipped in %(category)s: %(email)s') % {'category': category_display, 'email': e})
+                            email_assignments[category_code] = validated_emails
+                        else:
+                            email_assignments[category_code] = []
 
-                # If emails were provided, create tokens and assign them
-                if has_emails:
-                    # Create tokens dynamically based on email count
-                    for category_code, emails in email_assignments.items():
-                        if emails:
-                            for i in range(len(emails)):
-                                ReviewerToken.objects.create(
-                                    cycle=cycle,
-                                    category=category_code
-                                )
+                    # If emails were provided, create tokens and assign them
+                    if has_emails:
+                        # Create tokens dynamically based on email count
+                        for category_code, emails in email_assignments.items():
+                            if emails:
+                                for i in range(len(emails)):
+                                    ReviewerToken.objects.create(
+                                        cycle=cycle,
+                                        category=category_code
+                                    )
 
-                    # Assign tokens to emails with randomization
-                    assign_stats = assign_tokens_to_emails(cycle, email_assignments)
+                        # Assign tokens to emails with randomization
+                        assign_stats = assign_tokens_to_emails(cycle, email_assignments)
 
                 # Send notification emails to reviewee. Defer to after the
                 # transaction commits so a slow SMTP backend can't stall this
@@ -1830,6 +1843,9 @@ def review_cycle_create(request):
             messages.error(request, str(e))
             if can_see_billing(org, request.user):
                 return redirect(f"{reverse('billing')}?reviews={e.needed - e.available}")
+            return redirect('review_cycle_create')
+        except ReviewerLimit as e:
+            limit_error(request, e)
             return redirect('review_cycle_create')
         except Exception as e:
             messages.error(request, _('Error creating review cycle: %(error)s') % {'error': str(e)})
@@ -2138,31 +2154,37 @@ def assign_invitations(request, cycle_uuid):
             else:
                 email_assignments[category_code] = []
 
-        # Create tokens dynamically based on email count
-        tokens_created = 0
-        for category_code, emails in email_assignments.items():
-            if not emails:
-                continue
+        # All new tokens or none: past the free reviewer cap nothing is added.
+        try:
+            with transaction.atomic():
+                # Create tokens dynamically based on email count
+                tokens_created = 0
+                for category_code, emails in email_assignments.items():
+                    if not emails:
+                        continue
 
-            # Get existing unassigned tokens for this category (only count tokens without emails)
-            existing_unassigned = cycle.tokens.filter(
-                category=category_code,
-                reviewer_email__isnull=True
-            ).count()
-            needed_count = len(emails)
+                    # Get existing unassigned tokens for this category (only count tokens without emails)
+                    existing_unassigned = cycle.tokens.filter(
+                        category=category_code,
+                        reviewer_email__isnull=True
+                    ).count()
+                    needed_count = len(emails)
 
-            # Create additional tokens if needed
-            if needed_count > existing_unassigned:
-                for i in range(needed_count - existing_unassigned):
-                    ReviewerToken.objects.create(
-                        cycle=cycle,
-                        category=category_code
-                    )
-                    tokens_created += 1
+                    # Create additional tokens if needed
+                    if needed_count > existing_unassigned:
+                        for i in range(needed_count - existing_unassigned):
+                            ReviewerToken.objects.create(
+                                cycle=cycle,
+                                category=category_code
+                            )
+                            tokens_created += 1
 
-        # Assign tokens to emails with randomization
-        language = request.POST.get('language', '')
-        stats = assign_tokens_to_emails(cycle, email_assignments, language=language if is_language(language) else '')
+                # Assign tokens to emails with randomization
+                language = request.POST.get('language', '')
+                stats = assign_tokens_to_emails(cycle, email_assignments, language=language if is_language(language) else '')
+        except ReviewerLimit as e:
+            limit_error(request, e)
+            return redirect('manage_invitations', cycle_uuid=cycle.uuid)
 
         if stats['errors']:
             for error in stats['errors']:
@@ -2433,11 +2455,10 @@ def settings_view(request):
                 messages.success(request, _('Organization details updated successfully.'))
 
             elif section == 'registration':
-                # Update registration settings
-                organization.allow_registration = request.POST.get('allow_registration') == 'on'
+                # New user settings
                 organization.default_users_can_create_cycles = request.POST.get('default_users_can_create_cycles') == 'on'
                 organization.save()
-                messages.success(request, _('Registration settings updated successfully.'))
+                messages.success(request, _('New user settings updated successfully.'))
 
             elif section == 'reports':
                 # Update report settings

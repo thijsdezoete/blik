@@ -26,7 +26,7 @@ from core.models import Organization
 from .models import (
     CheckoutFulfilment, OneTimeLoginToken, Plan, RoundPurchase, Subscription,
 )
-from .utils import CREDITS_PER_PACK
+from .utils import CREDITS_PER_PACK, canonical_inbox
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +64,32 @@ def _create_organization(user, name, email):
     )
     assign_organization_admin(user)
     return organization
+
+
+# A free signup gets this many review-cycle credits. After that the billing page sells packs or a subscription.
+FREE_SIGNUP_CREDITS = 1
+
+
+@transaction.atomic
+def free_signup(email, name):
+    """A new user and organization with FREE_SIGNUP_CREDITS credits; None when the email has an account
+    or its inbox already had a free credit (see canonical_inbox).
+
+    Raises IntegrityError when the same email or inbox signs up at the same moment.
+    """
+    inbox = canonical_inbox(email)
+    if User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
+        return None
+    if RoundPurchase.objects.filter(free_signup_inbox=inbox).exists():
+        return None
+    user, password = create_user_with_email_as_username(
+        email=email, password=None, is_staff=True, is_active=True,
+    )
+    organization = _create_organization(user, name or email, email)
+    RoundPurchase.objects.create(
+        organization=organization, cycles_remaining=FREE_SIGNUP_CREDITS, free_signup_inbox=inbox,
+    )
+    return Account(organization=organization, user=user, user_created=True, password=password)
 
 
 def resolve_checkout_account(session):

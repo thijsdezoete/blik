@@ -41,12 +41,7 @@ class Organization(TimeStampedModel):
     # Billing: the one Stripe customer every checkout, invoice and portal session uses
     stripe_customer_id = models.CharField(_('Stripe customer ID'), max_length=255, blank=True, db_index=True)
 
-    # Registration settings
-    allow_registration = models.BooleanField(
-        default=False,
-        help_text=_('Allow new users to register for this organization'),
-        verbose_name=_('allow user registration')
-    )
+    # New user settings
     default_users_can_create_cycles = models.BooleanField(
         default=False,
         help_text=_('By default, new users can create cycles for others (not just themselves)'),

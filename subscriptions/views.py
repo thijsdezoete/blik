@@ -333,8 +333,8 @@ def checkout_success(request):
 
     if fulfilment.outcome == 'rejected_existing_account':
         messages.error(request, _('This email address already has an account. The new subscription '
-                                  'was cancelled and nothing was charged. Sign in and choose a plan '
-                                  'under Settings.'))
+                                  'was cancelled and nothing was charged. Sign in and start the '
+                                  'subscription from the Billing page.'))
     else:
         messages.error(request, _('This organization already has a subscription. The new one was '
                                   'cancelled and nothing was charged.'))

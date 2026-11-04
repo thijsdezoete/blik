@@ -45,6 +45,7 @@ docker run -d --name blik -p 8000:8000 \
 See complete guides for:
 - [DigitalOcean Deployment](docs/DIGITALOCEAN.md) - App Platform or Droplet setup
 - [General Deployment Guide](docs/DEPLOYMENT.md) - Nginx/Caddy, email, SSL/HTTPS, backups
+- [Behind a reverse proxy or Cloudflare](docs/DEPLOYMENT.md#behind-a-reverse-proxy-or-cloudflare) - Visitor IP for rate limits and lockouts
 
 ## Features
 

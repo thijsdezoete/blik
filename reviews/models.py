@@ -187,6 +187,28 @@ class ReviewerToken(TimeStampedModel):
     def __str__(self):
         return f"{self.cycle} - {self.get_category_display()}"
 
+    def save(self, *args, **kwargs):
+        """On creation of a reviewer token: keep a free organization's cycle within its reviewer cap."""
+        if not self._state.adding:
+            super().save(*args, **kwargs)
+            return
+
+        # Every creation path goes through here, like the cycle-credit gate. The lock on the
+        # cycle row makes concurrent additions count one after another. Only tokens per cycle
+        # are counted; nothing links a reviewer to their answers. The cycle's one
+        # self-assessment is free; any further self token counts as a reviewer.
+        from subscriptions.utils import FREE_REVIEWERS_PER_CYCLE, ReviewerLimit, is_free_tier
+        with transaction.atomic():
+            list(ReviewCycle._base_manager.select_for_update().filter(pk=self.cycle_id).values_list('pk'))
+            if is_free_tier(self.cycle.reviewee.organization):
+                tokens = ReviewerToken._base_manager.filter(cycle_id=self.cycle_id)
+                has_self = tokens.filter(category='self').exists()
+                is_first_self = self.category == 'self' and not has_self
+                reviewers = tokens.count() - (1 if has_self else 0)
+                if not is_first_self and reviewers >= FREE_REVIEWERS_PER_CYCLE:
+                    raise ReviewerLimit()
+            super().save(*args, **kwargs)
+
     @property
     def is_completed(self):
         return self.completed_at is not None

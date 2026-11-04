@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 from django_ratelimit.decorators import ratelimit
 from accounts.models import UserProfile, OrganizationInvitation, PasswordResetToken
 from accounts.services import create_user_with_email_as_username
-from accounts.forms import ForgotPasswordForm, ResetPasswordForm
+from accounts.forms import ForgotPasswordForm, FreeSignupForm, ResetPasswordForm
 from core.email import send_email_changed_email, send_password_changed_email
 
 logger = logging.getLogger(__name__)
@@ -31,21 +31,68 @@ class RateLimitedLoginView(LoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
 
+    def get_context_data(self, **kwargs):
+        from subscriptions.utils import billing_enabled
+        return {**super().get_context_data(**kwargs), 'free_signup_enabled': billing_enabled()}
 
-@require_http_methods(["GET"])
+
+@require_http_methods(["GET", "POST"])
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def register_view(request):
+    """Free signup on the hosted service: an organization with one review-cycle credit.
+
+    The sign-in details go by email, so the address is proven before it is used, and the page says the same
+    thing whether or not the address already has an account.
     """
-    User registration view - disabled.
-    Users must register via signup page or invitation.
-    """
+    from django.db import IntegrityError
+    from subscriptions.fulfilment import free_signup
+    from subscriptions.utils import billing_enabled
+
     if request.user.is_authenticated:
         return redirect('admin_dashboard')
+    if not billing_enabled():
+        messages.warning(request, _('Please use the signup page to create an account.'))
+        return redirect('login')
 
-    messages.warning(
-        request,
-        _('Please use the signup page to create an account.')
-    )
-    return redirect('login')
+    form = FreeSignupForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        email = form.cleaned_data['email'].strip().lower()
+        try:
+            account = free_signup(email, '')
+        except IntegrityError:
+            account = None  # The same email or inbox signed up at the same moment: it is taken now.
+        try:
+            if account:
+                from core.email import send_welcome_email
+                send_welcome_email(account.user, account.organization, password=account.password)
+            else:
+                _send_existing_account_email(email)
+        except Exception:
+            logger.exception('Free signup email failed')
+        messages.success(request, _('Check your email. We sent your sign-in details to %(email)s.') % {'email': email})
+        return redirect('login')
+    return render(request, 'accounts/free_signup.html', {'form': form})
+
+
+def _send_existing_account_email(email):
+    from django.conf import settings
+    from django.template.loader import render_to_string
+    from django.utils import translation
+    from core.email import send_email
+    from core.languages import user_language
+
+    active = User.objects.filter(is_active=True).exclude(email='')
+    user = active.filter(email__iexact=email).first() or active.filter(username__iexact=email).first()
+    # No user: a variant of an address that already had its free credit. Notify the typed address,
+    # in the language of the request.
+    with translation.override(user_language(user) if user else translation.get_language()):
+        send_email(
+            subject=_('You already have a Blik360 account'),
+            message=render_to_string('emails/existing_account_signup.txt', {
+                'email': email, 'site_url': settings.SITE_URL,
+            }),
+            recipient_list=[user.email if user else email],
+        )
 
 
 @require_http_methods(["GET", "POST"])

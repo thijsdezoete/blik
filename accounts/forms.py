@@ -99,6 +99,10 @@ class ProfilePasswordForm(PasswordChangeForm):
         self.fields['old_password'].widget.attrs['autofocus'] = True
 
 
+class FreeSignupForm(forms.Form):
+    email = forms.EmailField(label=_('Email'), max_length=150)  # the username too: User.username has 150
+
+
 class ForgotPasswordForm(forms.Form):
     """Form for requesting a password reset"""
     email = forms.EmailField(

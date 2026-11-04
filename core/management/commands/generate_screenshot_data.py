@@ -57,7 +57,6 @@ class Command(BaseCommand):
             name='Acme Corporation',
             email='admin@acme.example.com',
             min_responses_for_anonymity=3,
-            allow_registration=True,
             default_users_can_create_cycles=False
         )
         self.stdout.write(self.style.SUCCESS(f'Created organization: {org.name}'))

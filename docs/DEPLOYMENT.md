@@ -312,6 +312,41 @@ Without this header, these settings will break (Django thinks all requests are H
 
 **Do NOT set `SECURE_SSL_REDIRECT=True`** - it causes infinite loops when SSL is terminated upstream.
 
+### Behind a reverse proxy or Cloudflare
+
+Blik limits login and signup attempts by client IP. It also locks out an IP after repeated failed logins. Behind a proxy, Django sees the proxy's IP. All visitors then share one limit.
+
+Set `TRUSTED_CLIENT_IP_HEADER` so Blik reads the visitor IP from a request header. Use the Django META form of the header name:
+
+```env
+# Cloudflare
+TRUSTED_CLIENT_IP_HEADER=HTTP_CF_CONNECTING_IP
+
+# A proxy that sets X-Real-IP from the connecting address
+TRUSTED_CLIENT_IP_HEADER=HTTP_X_REAL_IP
+```
+
+Empty is the default. Blik then uses the direct connection address. An invalid header value also falls back to that address.
+
+> **Warning:** Set this only when every request passes through that proxy. If the server is reachable directly, anyone can send the header with any IP. They can then get around the rate limits and lockouts.
+
+**Check that the server is not reachable directly**
+
+Run this from another machine:
+
+```bash
+curl -sI --max-time 5 -H 'Host: <your-domain>' http://<server-ip>/accounts/login/
+```
+
+Any HTTP response means the server is reachable without the proxy. Fix this before you set the header.
+
+**Fix for Cloudflare**
+
+- Allow ports 80 and 443 only from [Cloudflare's IP ranges](https://www.cloudflare.com/ips/). Set this in the firewall of your hosting provider (for example Hetzner Cloud Firewall or DigitalOcean Cloud Firewall).
+- A host `ufw` rule alone does not protect the server. Ports that Docker publishes bypass the `ufw` and iptables INPUT rules.
+- Alternative: add a Traefik `ipAllowList` middleware with Cloudflare's ranges.
+- Alternative: use Cloudflare Tunnel. It needs no open ports.
+
 ### 5. Initial Setup
 
 Visit `https://yourdomain.com/setup/` to complete the setup wizard.

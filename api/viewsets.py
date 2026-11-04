@@ -358,10 +358,10 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         return [IsOrganizationMember()]
 
     def perform_create(self, serializer):
-        from subscriptions.utils import NoCycleCredits
+        from subscriptions.utils import NoCycleCredits, ReviewerLimit
         try:
             serializer.save()
-        except NoCycleCredits as e:
+        except (NoCycleCredits, ReviewerLimit) as e:
             raise ValidationError({'detail': str(e)})
 
     @extend_schema(

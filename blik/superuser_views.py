@@ -104,7 +104,6 @@ def create_organization(request):
                     name=org_name,
                     email=admin_email,
                     is_active=True,
-                    allow_registration=False,
                     default_users_can_create_cycles=False
                 )
 

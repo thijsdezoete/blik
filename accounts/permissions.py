@@ -293,7 +293,7 @@ def build_permission_decorator(name, permission, default_message,
                     if as_json:
                         return JsonResponse({'error': message}, status=403)
 
-                    messages.error(request, message)
+                    messages.error(request, str(message))
                     return redirect(redirect_url)
 
                 return func(request, *args, **kwargs)

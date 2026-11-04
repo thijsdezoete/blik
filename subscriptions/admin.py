@@ -114,8 +114,8 @@ class OneTimeLoginTokenAdmin(admin.ModelAdmin):
 
 @admin.register(RoundPurchase)
 class RoundPurchaseAdmin(admin.ModelAdmin):
-    list_display = ['organization', 'cycles_remaining', 'fulfilment', 'created_at']
-    search_fields = ['organization__name', 'fulfilment__stripe_session_id']
+    list_display = ['organization', 'cycles_remaining', 'free_signup_inbox', 'fulfilment', 'created_at']
+    search_fields = ['organization__name', 'fulfilment__stripe_session_id', 'free_signup_inbox']
     readonly_fields = ['fulfilment', 'created_at', 'updated_at']
 
     def has_delete_permission(self, request, obj=None):

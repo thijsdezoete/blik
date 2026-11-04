@@ -132,13 +132,18 @@ class RoundPurchase(TimeStampedModel):
         Organization, on_delete=models.CASCADE, related_name='round_purchases',
         verbose_name=_('organization'),
     )
-    # Null only for credits granted by hand in admin.
+    # Null for credits granted by hand in admin and for the free signup credit.
     fulfilment = models.OneToOneField(
         CheckoutFulfilment, null=True, blank=True, on_delete=models.SET_NULL,
         related_name='round_purchase',
         verbose_name=_('checkout fulfilment'),
     )
     cycles_remaining = models.PositiveIntegerField(_('review cycles remaining'), default=10)
+    # The unique constraint is what stops a second free credit for the same inbox, also under a race.
+    free_signup_inbox = models.CharField(
+        _('free signup inbox'), max_length=254, null=True, blank=True, unique=True,
+        help_text=_('Set on the free signup credit: the inbox it was given to. One free credit per inbox.'),
+    )
 
     class Meta:
         verbose_name = _('round purchase')

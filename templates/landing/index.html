@@ -5,7 +5,7 @@
     <title>Honest 360° feedback for small teams | Blik360</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Anonymous 360° feedback from peers, managers and reports, turned into one clear report. Run a single round for €{{ plan_single_price }}, subscribe from €{{ plan_saas_price }}/mo, or self-host the open source version.">
+    <meta name="description" content="Anonymous 360° feedback from peers, managers and reports, turned into one clear report. Start with one free review, run a single round for €{{ plan_single_price }}, subscribe from €{{ plan_saas_price }}/mo, or self-host the open source version.">
     <meta name="keywords" content="open source 360 feedback, self-hosted performance review, anonymous feedback software, 360 degree feedback platform, employee feedback system, peer review software, performance management tool, GDPR support tools">
     <meta name="author" content="Thijs de Zoete">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
@@ -14,7 +14,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
     <meta property="og:title" content="Honest 360° feedback for small teams | Blik360">
-    <meta property="og:description" content="Anonymous 360° feedback from peers, managers and reports, turned into one clear report. Run a single round for €{{ plan_single_price }}, subscribe from €{{ plan_saas_price }}/mo, or self-host the open source version.">
+    <meta property="og:description" content="Anonymous 360° feedback from peers, managers and reports, turned into one clear report. Start with one free review, run a single round for €{{ plan_single_price }}, subscribe from €{{ plan_saas_price }}/mo, or self-host the open source version.">
     <meta property="og:site_name" content="{{ site_name }}">
     <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Honest%20360%C2%B0%20feedback&subtitle=For%20small%20teams">
     <meta property="og:image:width" content="1200">
@@ -26,12 +26,12 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}">
     <meta name="twitter:title" content="Honest 360° feedback for small teams | Blik360">
-    <meta name="twitter:description" content="Anonymous 360° feedback from peers, managers and reports, turned into one clear report. Run a single round for €{{ plan_single_price }}, subscribe from €{{ plan_saas_price }}/mo, or self-host the open source version.">
+    <meta name="twitter:description" content="Anonymous 360° feedback from peers, managers and reports, turned into one clear report. Start with one free review, run a single round for €{{ plan_single_price }}, subscribe from €{{ plan_saas_price }}/mo, or self-host the open source version.">
     <meta name="twitter:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title=Honest%20360%C2%B0%20feedback&subtitle=For%20small%20teams">
 {% endblock %}
 
 {% block structured_data %}
-    {% article_schema "landing/index.html" headline="Honest 360° feedback for small teams" description="Anonymous 360° feedback for small teams: one hosted round for a one-time price, a subscription, or self-hosting under AGPL-3.0." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360&subtitle=Open%20Source%20360%20Feedback" %}
+    {% article_schema "landing/index.html" headline="Honest 360° feedback for small teams" description="Anonymous 360° feedback for small teams: one free hosted review, one hosted round for a one-time price, a subscription, or self-hosting under AGPL-3.0." canonical_url=request.build_absolute_uri author_name="Thijs de Zoete" image_url=request.build_absolute_uri|add:"?title=Blik360&subtitle=Open%20Source%20360%20Feedback" %}
 {% endblock %}
 
 {% block extra_head %}
@@ -59,6 +59,13 @@
                 "price": "0",
                 "priceCurrency": "EUR",
                 "description": "Free open source version with unlimited users and features"
+            },
+            {
+                "@type": "Offer",
+                "name": "Free Review",
+                "price": "0",
+                "priceCurrency": "EUR",
+                "description": "One hosted review: one person, one questionnaire, up to 10 reviewers. No credit card."
             },
             {
                 "@type": "Offer",
@@ -146,6 +153,14 @@
             },
             {
                 "@type": "Offer",
+                "name": "Free Review",
+                "price": "0.00",
+                "priceCurrency": "EUR",
+                "availability": "https://schema.org/InStock",
+                "url": "{{ main_app_url }}/accounts/register/"
+            },
+            {
+                "@type": "Offer",
                 "name": "Single Round",
                 "price": "{{ plan_single_price }}.00",
                 "priceCurrency": "EUR",
@@ -218,7 +233,7 @@
             <div class="hero-content">
                 <span class="eyebrow">360° feedback</span>
                 <h1 class="hero-title">Honest 360° feedback for small teams</h1>
-                <p class="hero-subtitle">Anonymous reviews from peers, managers and reports, turned into one clear report. Run a single round for €{{ plan_single_price }}, subscribe, or self-host the open source version.</p>
+                <p class="hero-subtitle">Anonymous reviews from peers, managers and reports, turned into one clear report. Start with one free review, run a single round for €{{ plan_single_price }}, subscribe, or self-host the open source version.</p>
                 <div class="hero-cta">
                     <a href="{% landing_url 'signup' %}?plan=single" class="btn btn-primary">Run a review round, €{{ plan_single_price }}</a>
                     <a href="#how" class="btn btn-secondary">See how it works</a>
@@ -346,7 +361,7 @@
 
     <section id="pricing" class="section">
         <div class="container">
-            <h2 class="section-title">Pay once, subscribe, or self-host</h2>
+            <h2 class="section-title">Start free, pay once, subscribe, or self-host</h2>
             <p class="section-intro">Flat prices, no per-seat fees, reviewers are always free.</p>
             {% include "landing/includes/pricing_plans.html" %}
         </div>
@@ -441,7 +456,7 @@
                 </details>
                 <details class="faq-item">
                     <summary>How is Blik different from Lattice, Culture Amp, and 15Five?</summary>
-                    <p>Blik is AGPL-3.0 software you can self-host free, with a one-time hosted review round for €{{ plan_single_price }} or managed EU hosting subscriptions from €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. Lattice, Culture Amp, and 15Five offer broader hosted performance-management suites with different modules and pricing. <a href="{% landing_url 'alternatives' %}">Compare features, deployment, and dated vendor prices.</a></p>
+                    <p>Blik is AGPL-3.0 software you can self-host free, with one free hosted review, a one-time hosted review round for €{{ plan_single_price }} or managed EU hosting subscriptions from €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. Lattice, Culture Amp, and 15Five offer broader hosted performance-management suites with different modules and pricing. <a href="{% landing_url 'alternatives' %}">Compare features, deployment, and dated vendor prices.</a></p>
                 </details>
             </div>
             <a class="section-link" href="{% landing_url 'faq' %}">All questions and answers</a>
@@ -452,9 +467,10 @@
         <div class="container">
             <div class="cta-card">
                 <h2>Start your first review round today</h2>
-                <p>Self-host for free, run a single hosted round for €{{ plan_single_price }}, or let us handle the infrastructure with an EU-hosted subscription.</p>
+                <p>Start with one free review, no credit card. Self-host for free, run a single hosted round for €{{ plan_single_price }}, or let us handle the infrastructure with an EU-hosted subscription.</p>
                 <div class="cta-buttons">
                     <a href="{% landing_url 'signup' %}?plan=single" class="btn btn-primary">Run a review round, €{{ plan_single_price }}</a>
+                    <a href="{{ main_app_url }}/accounts/register/" class="btn btn-secondary">Start free</a>
                     <a href="#how" class="btn btn-secondary">See how it works</a>
                 </div>
             </div>
@@ -517,7 +533,7 @@
                 "name": "How is Blik different from Lattice, Culture Amp, and 15Five?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Blik is AGPL-3.0 software you can self-host free, with a one-time hosted review round for €{{ plan_single_price }} or managed EU hosting subscriptions from €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. Lattice, Culture Amp, and 15Five offer broader hosted performance-management suites with different modules and pricing."
+                    "text": "Blik is AGPL-3.0 software you can self-host free, with one free hosted review, a one-time hosted review round for €{{ plan_single_price }} or managed EU hosting subscriptions from €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. Lattice, Culture Amp, and 15Five offer broader hosted performance-management suites with different modules and pricing."
                 }
             }
         ]

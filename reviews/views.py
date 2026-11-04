@@ -9,6 +9,7 @@ from django_ratelimit.decorators import ratelimit
 from core.languages import is_language, request_language
 from .models import ReviewerToken, Response, ReviewCycle
 from .services import self_assessment_token
+from subscriptions.utils import ReviewerLimit
 from questionnaires.answer_options import OPTION_TYPES, resolve_answer
 from questionnaires.models import Question
 import secrets
@@ -90,11 +91,17 @@ def claim_token(request, invitation_token):
 
         if not available_tokens:
             # No available tokens - create a new one dynamically
-            token = ReviewerToken.objects.create(
-                cycle=cycle,
-                category=category,
-                claimed_at=timezone.now()
-            )
+            try:
+                token = ReviewerToken.objects.create(
+                    cycle=cycle,
+                    category=category,
+                    claimed_at=timezone.now()
+                )
+            except ReviewerLimit:
+                return render(request, 'reviews/claim_error.html', {
+                    'error': _('This feedback round has reached its maximum number of reviewers. '
+                               'Contact the person who sent you this link.')
+                }, status=404)
         else:
             # Cryptographically randomly select a token from available ones
             token = secrets.choice(available_tokens)

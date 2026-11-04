@@ -121,8 +121,8 @@
         </div>
     </div>
 
-    <!-- Plan -->
-    {% if other_plans or can_start_subscription %}
+    <!-- Plan, and review credits when there is no active subscription -->
+    {% if other_plans or can_start_subscription or status.mode != 'subscription' %}
     <div class="card">
         <div class="card-header">
             <h2 class="card-title">{% trans 'Plan' %}</h2>
@@ -145,30 +145,35 @@
                 <button type="submit" class="btn btn-secondary" style="width: 100%;">{% trans 'Start Enterprise subscription' %}</button>
             </form>
             {% endif %}
+            {% if status.mode != 'subscription' %}
+            <div style="display: grid; gap: 1.25rem;{% if other_plans or can_start_subscription %} padding-top: 1rem; margin-top: 0.5rem; border-top: 1px solid var(--border-color);{% endif %}">
+            <h3 style="margin: 0; font-size: 1rem;">{% trans 'Buy review credits' %}</h3>
+            <form method="post" action="{% url 'subscriptions:start_checkout' %}" style="display: grid; gap: 0.5rem;">
+                {% csrf_token %}
+                <input type="hidden" name="plan_type" value="single">
+                <input type="hidden" name="reviews" value="{{ credits_per_pack }}">
+                <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=credits_per_pack %}Purchase {{ count }} review slots{% endblocktrans %}</button>
+                {% if plan_single_price %}
+                <p style="margin: 0; font-size: 0.875rem; color: var(--text-secondary);">{% blocktrans trimmed with price=plan_single_price %}€{{ price }}, excluding VAT{% endblocktrans %}</p>
+                {% endif %}
+            </form>
+            <form method="post" action="{% url 'subscriptions:start_checkout' %}" style="display: grid; gap: 0.75rem;">
+                {% csrf_token %}
+                <input type="hidden" name="plan_type" value="single">
+                {% blocktrans trimmed asvar packs_text with packs='%(packs)s' price='%(price)s' total='%(total)s' %}{{ packs }} × €{{ price }} per pack = €{{ total }}, excluding VAT{% endblocktrans %}
+                <label class="form-label" for="reviews">{% trans 'How many reviews do you need?' %}</label>
+                <input type="number" class="form-control" id="reviews" name="reviews" value="{{ reviews }}" min="1" max="{{ max_reviews }}" step="1" required>
+                <p style="margin: 0; font-size: 0.875rem; color: var(--text-secondary);" id="packs-total"
+                   data-per-pack="{{ credits_per_pack }}" data-price="{{ plan_single_price }}"
+                   data-template="{{ packs_text }}"></p>
+                <p style="margin: 0; font-size: 0.8125rem; color: var(--text-secondary);">
+                    {% blocktrans trimmed with per_pack=credits_per_pack %}Credits come in packs of {{ per_pack }}. One credit is one reviewee with one questionnaire. Credits do not expire.{% endblocktrans %}
+                </p>
+                <button type="submit" class="btn btn-secondary">{% trans 'Buy credits' %}</button>
+            </form>
+            </div>
+            {% endif %}
         </div>
-    </div>
-    {% endif %}
-
-    <!-- Buy review credits -->
-    {% if status.mode != 'subscription' %}
-    <div class="card">
-        <div class="card-header">
-            <h2 class="card-title">{% trans 'Buy review credits' %}</h2>
-        </div>
-        <form method="post" action="{% url 'subscriptions:start_checkout' %}" class="card-body" style="display: grid; gap: 0.75rem;">
-            {% csrf_token %}
-            <input type="hidden" name="plan_type" value="single">
-            {% blocktrans trimmed asvar packs_text with packs='%(packs)s' price='%(price)s' total='%(total)s' %}{{ packs }} × €{{ price }} per pack = €{{ total }}, excluding VAT{% endblocktrans %}
-            <label class="form-label" for="reviews">{% trans 'How many reviews do you need?' %}</label>
-            <input type="number" class="form-control" id="reviews" name="reviews" value="{{ reviews }}" min="1" max="{{ max_reviews }}" step="1" required>
-            <p style="margin: 0; font-size: 0.875rem; color: var(--text-secondary);" id="packs-total"
-               data-per-pack="{{ credits_per_pack }}" data-price="{{ plan_single_price }}"
-               data-template="{{ packs_text }}"></p>
-            <p style="margin: 0; font-size: 0.8125rem; color: var(--text-secondary);">
-                {% blocktrans trimmed with per_pack=credits_per_pack %}Credits come in packs of {{ per_pack }}. One credit is one reviewee with one questionnaire. Credits do not expire.{% endblocktrans %}
-            </p>
-            <button type="submit" class="btn btn-primary">{% trans 'Buy credits' %}</button>
-        </form>
     </div>
     {% endif %}
 </div>

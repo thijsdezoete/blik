@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Your Plan - {{ site_name }}</title>
 
-    <meta name="description" content="Pay €{{ plan_single_price }} per {{ plan_single_max }} employees, once, for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.">
+    <meta name="description" content="Start free with one review and no credit card. Or pay €{{ plan_single_price }} per {{ plan_single_max }} employees, once, for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.">
     <meta name="robots" content="noindex, nofollow">
 
     {% include 'components/favicon.html' %}
@@ -45,12 +45,25 @@
 
         <div class="signup-header">
             <h1 class="signup-title">Choose your plan</h1>
-            <p class="signup-subtitle">Pay once for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.</p>
+            <p class="signup-subtitle">Start free with one review and no credit card. Or pay once for a single review round, or start a {{ trial_days }}-day free trial of a subscription — credit card required; cancel before it ends and you won't be charged.</p>
         </div>
 
         <div id="error-message" class="error-message" role="alert" hidden></div>
 
         <div class="plans-grid">
+            <div class="plan-card">
+                <h2 class="plan-name">Free</h2>
+                <div class="plan-price">€0<small> for one review</small></div>
+                <p class="plan-description">Try Blik360 on the EU-hosted service</p>
+                <ul class="plan-features">
+                    <li>One review: one person, one questionnaire</li>
+                    <li>Free, up to 10 reviewers</li>
+                    <li>No credit card</li>
+                    <li>After that, buy packs of {{ plan_single_max }} or start a subscription from the Billing page</li>
+                </ul>
+                <a class="checkout-btn primary" href="{{ main_app_url }}/accounts/register/">Start free</a>
+            </div>
+
             <div class="plan-card{% if selected_plan == 'single' %} plan-card--selected{% endif %}">
                 <h2 class="plan-name">Single Round</h2>
                 <div class="plan-price">€{{ plan_single_price }}<small> per {{ plan_single_max }} employees, once</small></div>

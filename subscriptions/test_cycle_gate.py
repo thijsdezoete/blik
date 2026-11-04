@@ -116,6 +116,15 @@ class DashboardEntryPointTests(CycleGateBase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(self.cycles(), 0)
 
+    def test_refusal_links_admins_to_billing(self):
+        grant(self.org, 0)
+        with patch('blik.admin_views.can_see_billing', return_value=True):
+            response = self.client.post(
+                reverse('quick_cycle_create', args=[self.reviewee.uuid]),
+                {'questionnaire_id': str(self.questionnaire.id)}, follow=True,
+            )
+        self.assertContains(response, f'<a href="{reverse("billing")}">', html=False)
+
     def test_single_create_spends_a_credit(self):
         grant(self.org, 1)
         self.single()

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-31 22:19+0000\n"
+"POT-Creation-Date: 2026-11-02 19:23+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -527,6 +527,13 @@ msgstr ""
 msgid "Please use the signup page to create an account."
 msgstr "Bitte leg dein Konto über die Registrierungsseite an."
 
+#, python-format
+msgid "Check your email. We sent your sign-in details to %(email)s."
+msgstr ""
+
+msgid "You already have a Blik360 account"
+msgstr "Du hast bereits ein Blik360-Konto"
+
 msgid "Invalid signup link. Please use your invitation email."
 msgstr "Ungültiger Registrierungslink. Bitte verwende den Link aus deiner Einladungs-E-Mail."
 
@@ -788,6 +795,9 @@ msgid "Error deleting organization: %(error)s"
 msgstr ""
 
 msgid "Something went wrong."
+msgstr ""
+
+msgid "Go to Billing"
 msgstr ""
 
 msgid "You do not have permission to manage user permissions."
@@ -1196,7 +1206,7 @@ msgstr ""
 msgid "Organization details updated successfully."
 msgstr ""
 
-msgid "Registration settings updated successfully."
+msgid "New user settings updated successfully."
 msgstr ""
 
 msgid "Report settings updated successfully."
@@ -1547,12 +1557,6 @@ msgid "automatically send report email"
 msgstr ""
 
 msgid "Stripe customer ID"
-msgstr ""
-
-msgid "Allow new users to register for this organization"
-msgstr ""
-
-msgid "allow user registration"
 msgstr ""
 
 msgid "By default, new users can create cycles for others (not just themselves)"
@@ -2837,6 +2841,9 @@ msgstr ""
 msgid "This feedback cycle no longer collects this kind of review."
 msgstr ""
 
+msgid "This feedback round has reached its maximum number of reviewers. Contact the person who sent you this link."
+msgstr ""
+
 msgid "This review cycle has been closed. Feedback can no longer be submitted."
 msgstr ""
 
@@ -2972,9 +2979,6 @@ msgstr "Dein %(site_name)s-Abonnement ist beendet"
 msgid "Your %(site_name)s subscription is canceled"
 msgstr "Dein %(site_name)s-Abonnement ist gekündigt"
 
-msgid "You already have a Blik360 account"
-msgstr "Du hast bereits ein Blik360-Konto"
-
 msgid "EU SaaS"
 msgstr ""
 
@@ -3081,6 +3085,12 @@ msgstr ""
 msgid "review cycles remaining"
 msgstr ""
 
+msgid "free signup inbox"
+msgstr ""
+
+msgid "Set on the free signup credit: the inbox it was given to. One free credit per inbox."
+msgstr ""
+
 msgid "round purchase"
 msgstr ""
 
@@ -3106,6 +3116,10 @@ msgstr ""
 
 #, python-format
 msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy more on the Billing page, or start a subscription there."
+msgstr ""
+
+#, python-format
+msgid "Free accounts can invite up to %(max)s reviewers per review cycle. Buy review credits on the Billing page to invite more."
 msgstr ""
 
 msgid "The card was declined: not enough funds."
@@ -3164,8 +3178,8 @@ msgstr "Deine Zahlung wird verarbeitet. Du erhältst eine E-Mail, sobald sie ein
 msgid "Payment received. Your purchase has been added to your account."
 msgstr "Zahlung erhalten. Dein Kauf wurde deinem Konto gutgeschrieben."
 
-msgid "This email address already has an account. The new subscription was cancelled and nothing was charged. Sign in and choose a plan under Settings."
-msgstr "Für diese E-Mail-Adresse gibt es bereits ein Konto. Das neue Abonnement wurde storniert, es wurde nichts berechnet. Melde dich an und wähle unter Einstellungen einen Tarif."
+msgid "This email address already has an account. The new subscription was cancelled and nothing was charged. Sign in and start the subscription from the Billing page."
+msgstr "Für diese E-Mail-Adresse gibt es bereits ein Konto. Das neue Abonnement wurde storniert, es wurde nichts berechnet. Melde dich an und starte das Abonnement auf der Seite Abrechnung."
 
 msgid "This organization already has a subscription. The new one was cancelled and nothing was charged."
 msgstr ""
@@ -3198,6 +3212,22 @@ msgstr ""
 msgid "Back to Login"
 msgstr ""
 
+msgid "Sign up - Blik 360 Feedback"
+msgstr ""
+
+msgid "Create Account"
+msgstr ""
+
+msgid "Free, with one review cycle. No card needed."
+msgstr ""
+
+msgid "We send your sign-in details to this address."
+msgstr ""
+
+#, python-format
+msgid "Already have an account? <a href=\"%(login_url)s\">Sign in</a>"
+msgstr ""
+
 msgid "Login - Blik 360 Feedback"
 msgstr ""
 
@@ -3214,6 +3244,9 @@ msgid "Sign In"
 msgstr ""
 
 msgid "Forgot your password?"
+msgstr ""
+
+msgid "No account yet? Sign up free"
 msgstr ""
 
 msgid "Welcome to Blik"
@@ -3382,9 +3415,6 @@ msgstr ""
 msgid "Register - Blik 360 Feedback"
 msgstr ""
 
-msgid "Create Account"
-msgstr ""
-
 #, python-format
 msgid "Join %(name)s"
 msgstr ""
@@ -3399,10 +3429,6 @@ msgid "At least 8 characters"
 msgstr ""
 
 msgid "Re-enter your password"
-msgstr ""
-
-#, python-format
-msgid "Already have an account? <a href=\"%(login_url)s\">Sign in</a>"
 msgstr ""
 
 msgid "Reset Password - Blik 360 Feedback"
@@ -3464,9 +3490,6 @@ msgid "Your subscription has ended. You cannot add reviewees or start review cyc
 msgstr ""
 
 msgid "Your last payment failed. Update your payment method to keep your subscription."
-msgstr ""
-
-msgid "Go to Billing"
 msgstr ""
 
 msgid "Your plan, payments and invoices"
@@ -3567,6 +3590,14 @@ msgid "Start Enterprise subscription"
 msgstr ""
 
 msgid "Buy review credits"
+msgstr ""
+
+#, python-format
+msgid "Purchase %(count)s review slots"
+msgstr ""
+
+#, python-format
+msgid "€%(price)s, excluding VAT"
 msgstr ""
 
 #, python-format
@@ -5843,13 +5874,7 @@ msgstr ""
 msgid "When enabled, reviewees automatically receive an email with a link to their report when all feedback is collected."
 msgstr ""
 
-msgid "User Registration"
-msgstr ""
-
-msgid "Allow user registration"
-msgstr ""
-
-msgid "When enabled, new users can register at /accounts/register/"
+msgid "New Users"
 msgstr ""
 
 msgid "New users can create cycles for others"

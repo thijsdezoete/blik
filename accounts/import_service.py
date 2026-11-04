@@ -479,30 +479,32 @@ def import_review_cycles(organization, cycles_data, questionnaire_map, conflict_
                 result['skipped'] += 1
                 continue
 
-            # Create cycle (always create new - don't try to match existing)
-            cycle = ReviewCycle.objects.create(
-                reviewee=reviewee,
-                questionnaire=questionnaire,
-                status=cycle_data.get('status', 'active'),
-            )
-
-            # Import tokens
-            for token_data in cycle_data.get('tokens', []):
-                invitation_sent_at = token_data.get('invitation_sent_at')
-                completed_at = token_data.get('completed_at')
-
-                # Parse timestamps if they're strings
-                if invitation_sent_at and isinstance(invitation_sent_at, str):
-                    invitation_sent_at = timezone.datetime.fromisoformat(invitation_sent_at.replace('Z', '+00:00'))
-                if completed_at and isinstance(completed_at, str):
-                    completed_at = timezone.datetime.fromisoformat(completed_at.replace('Z', '+00:00'))
-
-                ReviewerToken.objects.create(
-                    cycle=cycle,
-                    category=token_data['category'],
-                    invitation_sent_at=invitation_sent_at,
-                    completed_at=completed_at,
+            # The cycle and its tokens together: a token past the free reviewer cap fails the row.
+            with transaction.atomic():
+                # Create cycle (always create new - don't try to match existing)
+                cycle = ReviewCycle.objects.create(
+                    reviewee=reviewee,
+                    questionnaire=questionnaire,
+                    status=cycle_data.get('status', 'active'),
                 )
+
+                # Import tokens
+                for token_data in cycle_data.get('tokens', []):
+                    invitation_sent_at = token_data.get('invitation_sent_at')
+                    completed_at = token_data.get('completed_at')
+
+                    # Parse timestamps if they're strings
+                    if invitation_sent_at and isinstance(invitation_sent_at, str):
+                        invitation_sent_at = timezone.datetime.fromisoformat(invitation_sent_at.replace('Z', '+00:00'))
+                    if completed_at and isinstance(completed_at, str):
+                        completed_at = timezone.datetime.fromisoformat(completed_at.replace('Z', '+00:00'))
+
+                    ReviewerToken.objects.create(
+                        cycle=cycle,
+                        category=token_data['category'],
+                        invitation_sent_at=invitation_sent_at,
+                        completed_at=completed_at,
+                    )
 
             # Note: Response import is intentionally skipped in this version
             # Responses reference question IDs which change on import

@@ -134,11 +134,11 @@
                     <tbody>
                         <tr class="table-row-success">
                             <td data-label="Tool"><strong>Blik360</strong></td>
-                            <td data-label="Truly Free?" class="highlight-green">&#10003; Self-host free</td>
+                            <td data-label="Truly Free?" class="highlight-green">&#10003; Self-host free; one free hosted review</td>
                             <td data-label="Self-Hosted?" class="highlight-green">&#10003;</td>
                             <td data-label="Anonymous?" class="highlight-green">&#10003; Token-based</td>
                             <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
-                            <td data-label="Pricing"><strong>Free</strong> (self-host) / €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees (managed)</td>
+                            <td data-label="Pricing"><strong>Free</strong> (self-host, or one hosted review) / €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees (managed)</td>
                         </tr>
                         <tr>
                             <td data-label="Tool"><strong>Google Forms</strong></td>
@@ -199,7 +199,7 @@
                 <div class="feature-card feature-card-success">
                     <h3>Blik360</h3>
                     <p class="mb-4">
-                        This is our product. Blik is an AGPL-3.0 360° feedback platform you can self-host without license fees, or use managed hosting for €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees.
+                        This is our product. Blik is an AGPL-3.0 360° feedback platform you can self-host without license fees, or use managed hosting for €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. One hosted review is free, with no credit card.
                     </p>
                     <p class="mb-4">
                         Self-hosting puts the data on your infrastructure. Blik uses token-based review access and aggregated reports. Invitation emails may be associated with tokens, so it does not guarantee anonymity against database administrators. Four questionnaire templates are included.
@@ -344,7 +344,7 @@
                     Include the work needed to configure, maintain, and administer the process. Hosted and self-hosted products divide those responsibilities differently.
                 </p>
                 <p class="comparison-no-bottom">
-                    Self-hosting Blik has no software license fee but requires infrastructure and maintenance. Managed EU hosting starts at €{{ plan_single_price }} per {{ plan_single_max }} employees for a single review round, or €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees.
+                    Self-hosting Blik has no software license fee but requires infrastructure and maintenance. Managed EU hosting starts with one free review. After that, it costs €{{ plan_single_price }} per {{ plan_single_max }} employees for a single review round, or €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees.
                 </p>
             </div>
         </div>
@@ -354,10 +354,11 @@
     <section class="cta-section">
         <div class="container">
             <h2>Self-Host Blik360 for Free, or Get Managed Hosting at €{{ plan_saas_price }}/mo</h2>
-            <p>Open-source multi-rater reviews, or managed EU hosting for up to {{ plan_saas_max }} employees. {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
+            <p>Open-source multi-rater reviews, or managed EU hosting for up to {{ plan_saas_max }} employees. Start with one free hosted review, no credit card. Subscriptions have a {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
             <div class="hero-cta">
                 <a href="https://github.com/thijsdezoete/blik" class="btn btn-primary" target="_blank" rel="noopener">View on GitHub</a>
-                <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Start Free Trial</a>
+                <a href="{{ main_app_url }}/accounts/register/" class="btn btn-secondary">Start free</a>
+                <a href="{% landing_url 'signup' %}" class="btn btn-secondary">Try Hosted ({{ trial_days }}-Day Trial)</a>
             </div>
         </div>
     </section>

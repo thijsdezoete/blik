@@ -70,7 +70,7 @@
                 "name": "How much does Blik cost?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Self-hosting is free forever under AGPL license. A single hosted review round is €{{ plan_single_price }} per {{ plan_single_max }} employees, once, with no subscription. Managed hosting subscriptions are €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime."
+                    "text": "Self-hosting is free forever under AGPL license. One hosted review is free, with no credit card. A single hosted review round is €{{ plan_single_price }} per {{ plan_single_max }} employees, once, with no subscription. Managed hosting subscriptions are €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime."
                 }
             },
             {
@@ -251,7 +251,7 @@
             <div class="faq-grid">
                 <details class="faq-item">
                     <summary>How much does Blik cost?</summary>
-                    <p>Self-hosting is free forever under AGPL license. A single hosted review round is €{{ plan_single_price }} per {{ plan_single_max }} employees, once, with no subscription. Managed hosting subscriptions are €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime. <a href="{% landing_url 'pricing' %}" class="product-link-primary">See full pricing details →</a></p>
+                    <p>Self-hosting is free forever under AGPL license. One hosted review is free, with no credit card. A single hosted review round is €{{ plan_single_price }} per {{ plan_single_max }} employees, once, with no subscription. Managed hosting subscriptions are €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees, or €{{ plan_ent_price }}/month for up to {{ plan_ent_max }} employees. No per-user fees, no hidden costs, cancel anytime. <a href="{% landing_url 'pricing' %}" class="product-link-primary">See full pricing details →</a></p>
                 </details>
 
                 <details class="faq-item">
@@ -271,7 +271,7 @@
 
                 <details class="faq-item">
                     <summary>Can I try the hosted version before committing?</summary>
-                    <p>{{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
+                    <p>Yes. <a href="{{ main_app_url }}/accounts/register/">Start free</a> with one review: one person, one questionnaire, up to 10 reviewers. No credit card. Subscriptions also have a {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
                 </details>
 
                 <details class="faq-item">

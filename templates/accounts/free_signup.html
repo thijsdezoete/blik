@@ -1,0 +1,33 @@
+{% extends 'base_public.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Sign up - Blik 360 Feedback' %}{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-header">
+        <h1>{% trans 'Create Account' %}</h1>
+        <p>{% trans 'Free, with one review cycle. No card needed.' %}</p>
+    </div>
+
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            <label for="id_email">{% trans 'Email' %}</label>
+            <input type="email" name="email" id="id_email" class="form-control"
+                   value="{{ form.email.value|default:'' }}" maxlength="150" required autofocus>
+            {{ form.email.errors }}
+            <span class="form-text">{% trans 'We send your sign-in details to this address.' %}</span>
+        </div>
+
+        <button type="submit" class="btn-primary">{% trans 'Create Account' %}</button>
+    </form>
+
+    <div class="login-link">
+        {% url 'login' as login_url %}
+        <p>{% blocktrans trimmed %}Already have an account? <a href="{{ login_url }}">Sign in</a>{% endblocktrans %}</p>
+    </div>
+</div>
+{% endblock %}

@@ -269,6 +269,11 @@ AXES_FAILURE_LIMIT = 5  # Lock after 5 failed attempts
 AXES_COOLOFF_TIME = 1  # Hours
 AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]  # Lock by combination
 AXES_RESET_ON_SUCCESS = True
+# Visitor IP behind Cloudflare: set to HTTP_CF_CONNECTING_IP in production.
+# Empty (default) uses REMOTE_ADDR and never trusts a header.
+TRUSTED_CLIENT_IP_HEADER = env('TRUSTED_CLIENT_IP_HEADER', default='')
+AXES_CLIENT_IP_CALLABLE = 'core.client_ip.client_ip'
+RATELIMIT_IP_META_KEY = 'core.client_ip.client_ip'
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',  # AxesStandaloneBackend should be first
     'django.contrib.auth.backends.ModelBackend',

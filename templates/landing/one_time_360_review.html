@@ -163,14 +163,15 @@
     <!-- Which Option Fits -->
     <section id="compare" class="section section-alt">
         <div class="container">
-            <h2 class="section-title">Single Round, Subscription, or Self-Hosted?</h2>
-            <p class="section-intro section-intro--narrow">All three are the same product. They differ in who runs it and how you pay.</p>
+            <h2 class="section-title">Free, Single Round, Subscription, or Self-Hosted?</h2>
+            <p class="section-intro section-intro--narrow">All four are the same product. They differ in who runs it and how you pay.</p>
 
             <div class="table-container">
                 <table class="comparison-table">
                     <thead>
                         <tr>
                             <th>Plan</th>
+                            <th>Free</th>
                             <th>Single Round</th>
                             <th>EU Hosted subscription</th>
                             <th>Self-Hosted</th>
@@ -179,30 +180,35 @@
                     <tbody>
                         <tr>
                             <td><strong>Price</strong></td>
+                            <td>€0</td>
                             <td class="highlight-green">€{{ plan_single_price }} once</td>
                             <td>€{{ plan_saas_price }} per month</td>
                             <td>€0</td>
                         </tr>
                         <tr>
                             <td><strong>Review cycles</strong></td>
+                            <td>One</td>
                             <td>{{ plan_single_max }} per pack, buy as many packs as you need</td>
                             <td>Unlimited</td>
                             <td>Unlimited</td>
                         </tr>
                         <tr>
                             <td><strong>Team size</strong></td>
+                            <td>One person, one questionnaire, up to 10 reviewers</td>
                             <td>Any size: one pack per {{ plan_single_max }} employees</td>
                             <td>Up to {{ plan_saas_max }} employees ({{ plan_ent_max }} on Enterprise)</td>
                             <td>Unlimited</td>
                         </tr>
                         <tr>
                             <td><strong>Commitment</strong></td>
+                            <td>None</td>
                             <td>None; pay again when you want another round</td>
                             <td>Monthly; cancel anytime</td>
                             <td>None</td>
                         </tr>
                         <tr>
                             <td><strong>Trial</strong></td>
+                            <td>No trial needed; no credit card</td>
                             <td>No trial; one payment</td>
                             <td>{{ trial_days }}-day free trial, credit card required</td>
                             <td>Not applicable</td>
@@ -211,10 +217,12 @@
                             <td><strong>Hosting and email</strong></td>
                             <td>Managed by us, in the EU</td>
                             <td>Managed by us, in the EU</td>
+                            <td>Managed by us, in the EU</td>
                             <td>Your servers, your mail provider</td>
                         </tr>
                         <tr>
                             <td><strong>Fits when</strong></td>
+                            <td>You want to try one real review first</td>
                             <td>You run feedback once or twice a year, or want to try a real round with a small team</td>
                             <td>You review continuously or have a larger team</td>
                             <td>You have someone to run a server and want full control</td>
@@ -224,6 +232,7 @@
             </div>
 
             <div class="hosting-comparison-link">
+                <a href="{{ main_app_url }}/accounts/register/" class="btn btn-secondary">Start free</a>
                 <a href="{% landing_url 'pricing' %}" class="btn btn-secondary">See All Pricing Details →</a>
             </div>
         </div>

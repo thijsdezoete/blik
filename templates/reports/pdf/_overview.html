@@ -1,0 +1,17 @@
+{% load i18n feedback_tags %}
+<section class="page overview-page">
+    <h2>{% trans 'Performance Overview' %}</h2>
+    <p class="lead muted">{% trans 'Visual comparison of your performance across all competency areas' %}</p>
+    <div class="radar-card">
+        {% include "reports/pdf/_radar_series.svg.html" with series=radar_groups numbered=True fill_opacity='0.06' %}
+        <div class="legend">{% for group in radar_groups %}<span class="legend-item"><span class="key line{% if group.dashed %} dashed{% endif %}" style="border-color: {{ group.colour }}"></span> {% if group.dashed %}{% trans 'Self-assessment' %}{% else %}{{ group.category|category_label }}{% endif %}</span>{% endfor %}</div>
+    </div>
+    <div class="multiples">
+        {% for group in radar_groups %}
+        <div class="multiple">
+            <div class="multiple-head" style="color: {{ group.colour }}">{% if group.dashed %}{% trans 'Self-assessment' %}{% else %}{{ group.category|category_label }}{% endif %}</div>
+            {% include "reports/pdf/_radar_series.svg.html" with series=group.alone numbers=True view_box="12 12 216 216" font="12" %}
+        </div>
+        {% endfor %}
+    </div>
+</section>

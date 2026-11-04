@@ -6,25 +6,20 @@ from reports.pdf_charts import radar_chart
 class RadarChartTests(SimpleTestCase):
     def test_radar_point_for_score_5_on_first_axis_is_straight_up(self):
         chart = radar_chart({'A': {'peer': 5.0}, 'B': {'peer': 5.0}, 'C': {'peer': 5.0}}, size=200)
-        x, y = chart['others'].split(' ')[0].split(',')
+        x, y = chart['groups'][0]['points'].split(' ')[0].split(',')
         self.assertAlmostEqual(float(x), 100)
         self.assertAlmostEqual(float(y), 100 - 76)
 
     def test_radar_without_self_has_no_self_polygon(self):
         chart = radar_chart({'A': {'peer': 4}, 'B': {'manager': 3}, 'C': {'peer': 2}})
-        self.assertIsNone(chart['self'])
+        self.assertEqual([group['category'] for group in chart['groups']], ['peer', 'manager'])
         self.assertEqual(len(chart['rings']), 5)
         self.assertEqual(len(chart['axes']), 3)
 
-    def test_radar_single_section(self):
-        chart = radar_chart({'Only': {'self': 3, 'peer': 4}})
-        self.assertEqual(len(chart['axes']), 1)
-        self.assertTrue(chart['others'])
-        self.assertTrue(chart['self'])
-
-    def test_radar_section_without_others_counts_as_zero(self):
+    def test_radar_section_without_a_group_score_counts_as_zero(self):
         chart = radar_chart({'A': {'self': 3}, 'B': {'peer': 4}}, size=200)
-        self.assertEqual(chart['others'].split(' ')[0], '100.0,100.0')
+        peer = chart['groups'][1]
+        self.assertEqual(peer['points'].split(' ')[0], '100.0,100.0')
 
     def test_radar_truncates_long_labels(self):
         chart = radar_chart({'x' * 40: {'peer': 3}})
@@ -50,7 +45,23 @@ class SvgPartialTests(SimpleTestCase):
         from django.utils import translation
         data = {'A': {'self': 3.3, 'peer': 4.1}, 'B': {'peer': 2.2}}
         with translation.override('de'):
-            radar = render_to_string('reports/pdf/_radar.svg.html', {'radar': radar_chart(data)})
+            chart = radar_chart(data)
+            radar = render_to_string('reports/pdf/_radar_series.svg.html', {'radar': chart, 'series': chart['groups']})
         self.assertIn('<svg', radar)
         self.assertNotRegex(radar, r'(?:x|y|width|x2|y2)="[^"]*,')
         self.assertIn('viewBox="-90 -34 420 308"', radar)
+
+
+class GroupRadarTests(SimpleTestCase):
+    def test_one_polygon_per_visible_group_with_self_and_none_for_a_hidden_group(self):
+        hidden = {'insufficient': True, 'message': 'Insufficient responses (minimum 3 required)'}
+        chart = radar_chart({
+            'A': {'self': 3.0, 'peer': hidden, 'manager': 4.0, 'others_avg': 4.0},
+            'B': {'self': 2.0, 'peer': hidden, 'manager': 5.0, 'others_avg': 5.0},
+            'C': {'self': 4.0, 'manager': 3.0},
+        })
+
+        self.assertEqual([group['category'] for group in chart['groups']], ['self', 'manager'])
+        self.assertEqual(chart['groups'][1]['points'], radar_chart({
+            'A': {'manager': 4.0}, 'B': {'manager': 5.0}, 'C': {'manager': 3.0},
+        })['groups'][0]['points'])

@@ -25,6 +25,8 @@ from .pdf_summary import executive_summary
 
 FONT_DIR = settings.BASE_DIR / 'static' / 'fonts' / 'roboto'
 RADAR_MIN_SECTIONS = 3  # a radar of one or two axes is a line, the bars show those
+# One colour per reviewer group in the radars; self is a dashed dark outline
+GROUP_COLOURS = {'self': '#111827', 'peer': '#4f46e5', 'manager': '#0891b2', 'direct_report': '#db2777'}
 
 # What it takes to reach an agency level: the same texts as the web report (_dreyfus_profile.html)
 AGENCY_NEXT_STEPS = {
@@ -139,6 +141,7 @@ def _pdf_context(report):
     section_scores = (data.get('charts') or {}).get('section_scores') or {}
 
     figures = executive_summary(context)
+    radar = radar_chart(section_scores) if len(section_scores) >= RADAR_MIN_SECTIONS else None
     if figures['overall'] and figures['overall']['trend']:
         figures['overall']['trend_class'] = _trend_class(figures['overall']['trend'])
 
@@ -151,7 +154,8 @@ def _pdf_context(report):
         ),
         'show_trends': bool(comparison.get('show_trends')),
         'previous_date': _iso_date(comparison.get('previous_cycle_date')) if comparison.get('has_previous') else None,
-        'radar': radar_chart(section_scores) if len(section_scores) >= RADAR_MIN_SECTIONS else None,
+        'radar': radar,
+        'radar_groups': _radar_groups(radar),
         'sections': _section_table(data, insights, comparison),
         'rating_ranges': list(RATING_RANGES.items()),
         'agency': _agency(insights.get('agency_profile')),
@@ -160,6 +164,19 @@ def _pdf_context(report):
         'font_dir': FONT_DIR.as_uri(),
     })
     return context
+
+
+def _radar_groups(radar):
+    """The radar's group polygons with their colours, each also alone for its own small radar."""
+    if not radar:
+        return []
+    groups = [
+        dict(group, colour=GROUP_COLOURS.get(group['category'], '#6b7280'), dashed=group['category'] == 'self')
+        for group in radar['groups']
+    ]
+    for group in groups:
+        group['alone'] = [group]
+    return groups
 
 
 def _iso_date(value):
@@ -186,7 +203,8 @@ def _feedback_groups(summary, hidden, message):
         elif category == 'self':
             lines.append({'category': category, 'text': gettext('Self-assessment')})
         else:
-            lines.append({'category': category, 'text': groups[category](counts[category]) % {'count': counts[category]}})
+            text = groups[category](counts[category]) % {'count': counts[category]}
+            lines.append({'category': category, 'text': text})
     return lines
 
 

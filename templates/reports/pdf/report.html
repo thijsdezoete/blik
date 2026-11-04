@@ -90,14 +90,13 @@ li { margin-bottom: 0.6mm; }
 .lvl-developing { --lvl: #64748b; }
 .lvl-needs_support { --lvl: #b45309; }
 .points { margin: 0 0 6mm; }
-.point { display: flex; gap: 4mm; padding: 2mm 0 2mm 3mm; border-left: 2pt solid #d1d5db; margin-bottom: 1.6mm; break-inside: avoid; }
-.point-label { flex: none; width: 44mm; font-weight: 500; color: #374151; }
-.point-text { flex: 1; }
+.point { display: grid; grid-template-columns: 44mm 1fr; column-gap: 4mm; padding: 1.6mm 0 1.6mm 3mm; border-left: 2pt solid #d1d5db; margin-bottom: 1.6mm; break-inside: avoid; }
+.point-label { font-weight: 500; color: #374151; }
 .point.blind { border-left-color: #4f46e5; } .point.blind .point-label { color: #4338ca; }
 .point.strength { border-left-color: #047857; } .point.strength .point-label { color: #047857; }
 .point.grow { border-left-color: #f59e0b; } .point.grow .point-label { color: #b45309; }
 .point.step { border-left-color: #111827; }
-.pairs { width: auto; } .pairs td { padding: 0; } .pairs td.num { padding-left: 10mm; text-align: right; font-weight: 700; }
+.pairs { width: auto; } .pairs td { padding: 0; width: 75mm; } .pairs td.num { width: 12mm; text-align: right; font-weight: 700; }
 .sub-head { font-size: 10.5pt; margin: 0 0 1.5mm; }
 .mini-sections th { padding: 0 1.5mm 1mm; border-bottom: 0.8pt solid #1f2937; }
 .mini-sections td { padding: 1.3mm 1.5mm; border-bottom: 0.5pt solid #eef0f4; vertical-align: middle; }
@@ -113,6 +112,16 @@ li { margin-bottom: 0.6mm; }
 .key.others { background: #4f46e5; opacity: 0.8; }
 .key.self { border-top: 1pt dashed #10b981; height: 0; border-radius: 0; }
 .key.neutral { background: #9ca3af; }
+/* Performance overview: radars */
+.radar-card { border: 0.5pt solid #e5e7eb; border-radius: 2.5mm; padding: 2mm 4mm 3mm; margin-bottom: 4mm; break-inside: avoid; }
+.radar-card svg { display: block; width: 125mm; height: auto; margin: 0 auto; }
+.legend-item { margin: 0 3mm; white-space: nowrap; }
+.key.line { width: 5mm; height: 0; border-top: 1.6pt solid; border-radius: 0; }
+.key.line.dashed { border-top-style: dashed; }
+.multiples { display: flex; flex-wrap: wrap; justify-content: center; gap: 2mm 12mm; }
+.multiple { flex: 0 0 58mm; text-align: center; break-inside: avoid; }
+.multiple svg { display: block; width: 100%; height: auto; }
+.multiple-head { font-weight: 700; font-size: 9pt; margin-bottom: 1mm; }
 .lvl-text { color: var(--lvl); }
 /* Cover */
 .cover { position: relative; height: 255mm; }
@@ -228,6 +237,7 @@ th { font-weight: 500; font-size: 7.5pt; color: #6b7280; text-align: left; verti
 {% include "reports/pdf/_cover.html" %}
 {% include "reports/pdf/_summary.html" %}
 {% if report_data.insights.skill_profile %}{% include "reports/pdf/_development.html" with insights=report_data.insights %}{% endif %}
+{% if radar %}{% include "reports/pdf/_overview.html" %}{% endif %}
 {% include "reports/pdf/_others.html" %}
 {% include "reports/pdf/_detail.html" %}
 </body>

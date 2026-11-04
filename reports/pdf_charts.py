@@ -1,6 +1,8 @@
 """Geometry for the report PDF charts. Templates only draw what is computed here."""
 import math
 
+from reviews.models import CATEGORY_ORDER
+
 MAX_LABEL = 22
 RADAR_PAD_X = 90
 RADAR_PAD_Y = 34
@@ -23,12 +25,6 @@ def _wrap(title, width=RADAR_LINE):
     if not rest:
         return [first]
     return [first, rest if len(rest) <= width else rest[:width - 1] + '…']
-
-
-def _scores(categories):
-    """(others mean, self) for one section; None where nothing was scored."""
-    others = [v for k, v in categories.items() if k not in ('self', 'others_avg') and v is not None]
-    return (sum(others) / len(others) if others else None), categories.get('self')
 
 
 def radar_chart(section_scores, size=240):
@@ -60,20 +56,33 @@ def radar_chart(section_scores, size=240):
         # Labels above the centre grow upwards, so a second line never covers the chart
         ly += 2 - (len(lines) - 1) * 11 * (1 if cos > 0.2 else 0.5 if cos > -0.2 else 0)
         axes.append({
-            'x1': c, 'y1': c, 'x2': round(x2, 1), 'y2': round(y2, 1),
+            'number': i + 1, 'x1': c, 'y1': c, 'x2': round(x2, 1), 'y2': round(y2, 1),
+            'nx': round(point(i, 5.55)[0], 1), 'ny': round(point(i, 5.55)[1] + 3, 1),
             'label': _short(title), 'lines': lines, 'lx': round(lx, 1), 'ly': round(ly, 1),
             'anchor': 'middle' if abs(sin) < 0.2 else ('start' if sin > 0 else 'end'),
         })
 
-    pairs = [_scores(cats) for cats in section_scores.values()]
-    # ponytail: a section without a score is drawn at 0 (the centre), not skipped;
-    # skipping would change the polygon's axes. Ceiling: a missing category looks like a score of 0.
-    others = polygon([o or 0 for o, _ in pairs])
-    self_points = polygon([s or 0 for _, s in pairs]) if any(s is not None for _, s in pairs) else None
     return {
         'size': size, 'center': c, 'rings': rings, 'axes': axes,
-        'others': others, 'self': self_points,
+        'groups': _group_polygons(section_scores, polygon),
         'view_box': '%d %d %d %d' % (-RADAR_PAD_X, -RADAR_PAD_Y,
                                      size + 2 * RADAR_PAD_X, size + 2 * RADAR_PAD_Y),
         'width': size + 2 * RADAR_PAD_X, 'height': size + 2 * RADAR_PAD_Y,
     }
+
+
+def _group_polygons(section_scores, polygon):
+    """One polygon per reviewer group with a score, self included, in the usual group order.
+
+    A section without a score of the group is drawn at 0 (the centre), not skipped: skipping would change the
+    polygon's axes.
+
+    A group hidden for anonymity has no scores here, or an 'insufficient' marker instead of a number: it gets none.
+    """
+    groups = []
+    for category in CATEGORY_ORDER:
+        scores = [cats.get(category) for cats in section_scores.values()]
+        scores = [score if isinstance(score, (int, float)) else None for score in scores]
+        if any(score is not None for score in scores):
+            groups.append({'category': category, 'points': polygon([score or 0 for score in scores])})
+    return groups

@@ -2464,6 +2464,16 @@ def settings_view(request):
                 except (ValueError, TypeError):
                     organization.min_responses_for_anonymity = 3
                 organization.auto_send_report_email = request.POST.get('auto_send_report_email') == 'on'
+                organization.attach_report_pdf = request.POST.get('attach_report_pdf') == 'on'
+                retention = request.POST.get('report_pdf_retention_days', '').strip()
+                if not retention:
+                    organization.report_pdf_retention_days = None
+                else:
+                    try:
+                        if int(retention) >= 1:
+                            organization.report_pdf_retention_days = int(retention)
+                    except ValueError:
+                        pass
                 organization.save()
                 messages.success(request, _('Report settings updated successfully.'))
 
@@ -2526,6 +2536,7 @@ def settings_view(request):
         'new_token': new_token,
         'new_token_name': new_token_name,
         'locked_fields': locked,
+        'default_report_pdf_retention_days': settings.REPORT_PDF_RETENTION_DAYS,
         **billing_context(organization, request.user),
     }
 

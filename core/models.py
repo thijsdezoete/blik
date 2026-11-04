@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.utils.translation import gettext, gettext_lazy as _
 from cryptography.fernet import Fernet
 
@@ -36,6 +37,19 @@ class Organization(TimeStampedModel):
         default=True,
         help_text=_('Automatically send email to reviewee when their report is generated'),
         verbose_name=_('automatically send report email')
+    )
+
+    attach_report_pdf = models.BooleanField(
+        default=True,
+        help_text=_('Attach the report as a PDF to the email sent to the reviewee'),
+        verbose_name=_('attach report PDF')
+    )
+    report_pdf_retention_days = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1)],
+        help_text=_('Days a report PDF is kept. Leave empty to use the default.'),
+        verbose_name=_('report PDF retention (days)')
     )
 
     # Billing: the one Stripe customer every checkout, invoice and portal session uses

@@ -16,7 +16,7 @@ from accounts.permissions import assign_organization_admin
 from notifications.models import CronRun
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
 
-from .finalize import cycles_to_finalize, delete_expired_pdfs, finalize_cycle
+from .finalize import MAX_PDF_ATTEMPTS, cycles_to_finalize, delete_expired_pdfs, finalize_cycle
 from .models import Report
 from .pdf import store_report_pdf
 from .services import generate_report
@@ -85,7 +85,7 @@ class FinalizeReportsTests(TestCase):
     def test_auto_send_off_finalizes_without_email(self):
         cycle = self.completed_cycle(auto_send=False)
 
-        self.assertEqual(finalize_cycle(cycle), 'finalized')
+        self.assertEqual(finalize_cycle(cycle)[0], 'finalized')
 
         self.assertEqual(mail.outbox, [])
         self.assertTrue(Report.objects.get(cycle=cycle).has_valid_pdf())
@@ -94,14 +94,14 @@ class FinalizeReportsTests(TestCase):
     def test_force_send_sends_with_auto_send_off(self):
         cycle = self.completed_cycle(auto_send=False)
 
-        self.assertEqual(finalize_cycle(cycle, force_send=True), 'sent')
+        self.assertEqual(finalize_cycle(cycle, force_send=True)[0], 'sent')
 
         self.assertEqual(len(mail.outbox), 1)
 
     def test_attach_off_sends_without_pdf(self):
         cycle = self.completed_cycle(attach=False)
 
-        self.assertEqual(finalize_cycle(cycle), 'sent_without_pdf')
+        self.assertEqual(finalize_cycle(cycle)[0], 'sent_without_pdf')
 
         self.assertEqual(mail.outbox[0].attachments, [])
         # The web version still links to a stored PDF
@@ -112,14 +112,14 @@ class FinalizeReportsTests(TestCase):
         cycle = self.completed_cycle()
 
         with self.assertLogs('reports.finalize', 'ERROR'):
-            self.assertEqual(finalize_cycle(cycle), 'waiting_for_pdf')
-            self.assertEqual(finalize_cycle(cycle), 'waiting_for_pdf')
+            self.assertEqual(finalize_cycle(cycle)[0], 'waiting_for_pdf')
+            self.assertEqual(finalize_cycle(cycle)[0], 'waiting_for_pdf')
         self.assertEqual(mail.outbox, [])
         cycle.refresh_from_db()
         self.assertIsNone(cycle.report_finalized_at)
 
         with self.assertLogs('reports.finalize', 'ERROR'):
-            self.assertEqual(finalize_cycle(cycle), 'sent_without_pdf')
+            self.assertEqual(finalize_cycle(cycle)[0], 'sent_without_pdf')
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].attachments, [])
@@ -131,20 +131,58 @@ class FinalizeReportsTests(TestCase):
         cycle = self.completed_cycle()
 
         with self.assertLogs('reports.finalize', 'ERROR'):
-            self.assertEqual(finalize_cycle(cycle, force_send=True), 'sent_without_pdf')
+            self.assertEqual(finalize_cycle(cycle, force_send=True)[0], 'sent_without_pdf')
 
         self.assertEqual(len(mail.outbox), 1)
 
-    def test_failed_email_is_retried(self):
+    def test_failed_email_is_retried_with_its_errors(self):
+        cycle = self.completed_cycle()
+
+        with mock.patch('reports.finalize.send_report_ready_notification',
+                        return_value={'sent': 0, 'errors': ['SMTP down']}), \
+                self.assertLogs('reports.finalize', 'ERROR'):
+            self.assertEqual(finalize_cycle(cycle), ('failed', ['SMTP down']))
+
+        cycle.refresh_from_db()
+        self.assertIsNone(cycle.report_finalized_at)
+
+    def test_reviewee_without_email_is_retried_without_a_cron_error(self):
         cycle = self.completed_cycle()
         cycle.reviewee.email = ''
         cycle.reviewee.save()
 
-        with self.assertLogs('reports.finalize', 'ERROR'):
-            self.assertEqual(finalize_cycle(cycle), 'failed')
+        with self.assertLogs('reports.finalize', 'WARNING') as logs:
+            self.run_command()
+            self.run_command()
 
+        self.assertEqual([r.levelname for r in logs.records], ['WARNING', 'WARNING'])
         cycle.refresh_from_db()
         self.assertIsNone(cycle.report_finalized_at)
+        self.assertFalse(CronRun.objects.filter(command='finalize_reports').exists())
+
+    def test_run_that_did_nothing_is_not_recorded(self):
+        self.run_command()
+
+        self.assertFalse(CronRun.objects.filter(command='finalize_reports').exists())
+
+    def test_pdf_that_stays_invalid_after_storing_counts_as_failed_attempt(self):
+        cycle = self.completed_cycle()
+
+        with mock.patch.object(Report, 'has_valid_pdf', return_value=False), \
+                self.assertLogs('reports.finalize', 'ERROR'):
+            self.assertEqual(finalize_cycle(cycle)[0], 'waiting_for_pdf')
+
+        self.assertEqual(Report.objects.get(cycle=cycle).pdf_attempts, 1)
+
+    def test_regenerated_report_gets_its_pdf_attempts_again(self):
+        cycle = self.completed_cycle()
+        report = generate_report(cycle)
+        Report.objects.filter(pk=report.pk).update(pdf_attempts=MAX_PDF_ATTEMPTS)
+
+        report = generate_report(cycle)
+
+        report.refresh_from_db()
+        self.assertEqual(report.pdf_attempts, 0)
 
     def test_one_failing_cycle_does_not_block_others(self):
         failing = self.completed_cycle()
@@ -224,3 +262,59 @@ class FinalizeReportsTests(TestCase):
         cycle.refresh_from_db()
         self.assertEqual(cycle.status, 'completed')
         self.assertIsNotNone(cycle.report_finalized_at)
+
+
+@override_settings(LANGUAGE_CODE='en')
+class AdminReportEmailMessageTests(TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        override = override_settings(PRIVATE_MEDIA_ROOT=tmp.name)
+        override.enable()
+        self.addCleanup(override.disable)
+        render = mock.patch('reports.pdf.render_report_pdf', return_value=b'%PDF-1.7 test')
+        render.start()
+        self.addCleanup(render.stop)
+
+        self.cycle = ReviewCycleFactory(status='completed', reviewee__name='Anna de Vries')
+        # A profile makes a reviewee for its user too, so the admin needs an address of their own
+        admin = User.objects.create_user(username='admin', email='admin@example.org')
+        UserProfile.objects.create(user=admin, organization=self.cycle.reviewee.organization)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+    def messages(self, response):
+        return [str(m) for m in response.context['messages']]
+
+    def without_email(self):
+        self.cycle.reviewee.email = ''
+        self.cycle.reviewee.save()
+
+    def generate(self):
+        return self.client.get(reverse('generate_report', args=[self.cycle.uuid]), follow=True)
+
+    def send(self):
+        generate_report(self.cycle)
+        return self.client.post(reverse('send_report_email', args=[self.cycle.uuid]), follow=True)
+
+    def test_generate_report_says_email_sent(self):
+        self.assertEqual(self.messages(self.generate()),
+                         ['Report generated successfully for Anna de Vries. Notification email sent.'])
+
+    def test_generate_report_shows_the_email_errors(self):
+        self.without_email()
+
+        self.assertEqual(self.messages(self.generate()), [
+            'Report generated successfully for Anna de Vries. '
+            '(Email errors: No email address for reviewee Anna de Vries)'])
+
+    def test_send_report_email_says_sent(self):
+        email = self.cycle.reviewee.email
+
+        self.assertEqual(self.messages(self.send()), [f'Report email sent to Anna de Vries at {email}.'])
+
+    def test_send_report_email_shows_each_error(self):
+        self.without_email()
+
+        self.assertEqual(self.messages(self.send()),
+                         ['Failed to send email: No email address for reviewee Anna de Vries'])

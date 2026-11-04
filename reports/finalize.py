@@ -28,7 +28,8 @@ def finalize_cycle(cycle, *, force_send=False):
     """
     Make sure the cycle has a current report and a stored PDF, and send the report-ready email when wanted.
 
-    Returns 'sent', 'sent_without_pdf', 'waiting_for_pdf', 'finalized' (no email to send) or 'failed'.
+    Returns (result, errors). result is 'sent', 'sent_without_pdf', 'waiting_for_pdf', 'finalized'
+    (no email to send) or 'failed'; errors are the email errors of send_report_ready_notification.
     force_send is an admin's explicit action: it sends even with auto_send_report_email off, and doesn't
     hold the email back for a failed PDF, because the admin expects the email now.
     """
@@ -37,10 +38,14 @@ def finalize_cycle(cycle, *, force_send=False):
     if not report.has_valid_pdf():
         try:
             store_report_pdf(report)
-            report.pdf_attempts = 0
+            stored = report.has_valid_pdf()
         except Exception:
-            report.pdf_attempts += 1
-            logger.exception('PDF build failed for cycle %s (attempt %s)', cycle.id, report.pdf_attempts)
+            stored = False
+            logger.exception('PDF build failed for cycle %s', cycle.id)
+        # A stored PDF that still isn't valid counts as a failure too, or the email waits forever
+        report.pdf_attempts = 0 if stored else report.pdf_attempts + 1
+        if not stored:
+            logger.error('No valid PDF for cycle %s after attempt %s', cycle.id, report.pdf_attempts)
         report.save(update_fields=['pdf_attempts'])
 
     organization = cycle.organization
@@ -49,15 +54,17 @@ def finalize_cycle(cycle, *, force_send=False):
         has_pdf = report.has_valid_pdf()
         if (organization.attach_report_pdf and not has_pdf and not force_send
                 and report.pdf_attempts < MAX_PDF_ATTEMPTS):
-            return 'waiting_for_pdf'
+            return 'waiting_for_pdf', []
         pdf = None
         if organization.attach_report_pdf and has_pdf:
             with report.pdf_file.open('rb') as stored:
                 pdf = stored.read()
         stats = send_report_ready_notification(report, pdf=pdf)
         if not stats['sent']:
-            logger.error('Report email for cycle %s not sent: %s', cycle.id, stats['errors'])
-            return 'failed'
+            # A missing address is the admin's to fix; the cron reports those once per run
+            if cycle.reviewee.email:
+                logger.error('Report email for cycle %s not sent: %s', cycle.id, stats['errors'])
+            return 'failed', stats['errors']
         result = 'sent' if pdf else 'sent_without_pdf'
         if not pdf and organization.attach_report_pdf:
             logger.error('Report email for cycle %s sent without the PDF: the build failed', cycle.id)
@@ -66,7 +73,7 @@ def finalize_cycle(cycle, *, force_send=False):
     if cycle.status == 'completed':
         cycle.report_finalized_at = timezone.now()
         cycle.save(update_fields=['report_finalized_at'])
-    return result
+    return result, []
 
 
 def _current_report(cycle):

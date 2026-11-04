@@ -2004,13 +2004,13 @@ def generate_report_view(request, cycle_uuid):
             cycle = lock_cycle(cycle)
             generate_report(cycle)
             # Stores the PDF and sends the email now, the admin expects it
-            result = finalize_cycle(cycle, force_send=True)
+            result, email_errors = finalize_cycle(cycle, force_send=True)
 
         success_msg = _('Report generated successfully for %(name)s.') % {'name': cycle.reviewee.name}
         if result in EMAIL_SENT:
             success_msg += ' ' + _('Notification email sent.')
-        else:
-            success_msg += ' ' + _('Failed to send email.')
+        if email_errors:
+            success_msg += ' ' + _('(Email errors: %(errors)s)') % {'errors': ', '.join(map(str, email_errors))}
 
         messages.success(request, success_msg)
     except Exception as e:
@@ -2057,7 +2057,7 @@ def close_cycle(request, cycle_uuid):
             # A failed report leaves the cycle closed; the cron tries again
             with transaction.atomic():
                 generate_report(cycle)
-                result = finalize_cycle(cycle, force_send=True)
+                result, _errors = finalize_cycle(cycle, force_send=True)
         except Exception as e:
             logger.exception('Error finalising the report of cycle %s', cycle.id)
             error = e
@@ -2397,7 +2397,7 @@ def send_report_email(request, cycle_uuid):
     # Send notification email, with the PDF stored first when there is none
     try:
         with transaction.atomic():
-            result = finalize_cycle(lock_cycle(cycle), force_send=True)
+            result, email_errors = finalize_cycle(lock_cycle(cycle), force_send=True)
     except Exception as e:
         logger.exception('Error sending the report email of cycle %s', cycle.id)
         messages.error(request, _('Failed to send email: %(error)s') % {'error': str(e)})
@@ -2405,6 +2405,9 @@ def send_report_email(request, cycle_uuid):
 
     if result in EMAIL_SENT:
         messages.success(request, _('Report email sent to %(name)s at %(email)s.') % {'name': cycle.reviewee.name, 'email': cycle.reviewee.email})
+    elif email_errors:
+        for error in email_errors:
+            messages.error(request, _('Failed to send email: %(error)s') % {'error': error})
     else:
         messages.error(request, _('Failed to send email.'))
 

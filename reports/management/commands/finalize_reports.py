@@ -22,6 +22,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sent = 0
         errors = []
+        without_email = []
         for cycle_id in list(cycles_to_finalize().values_list('id', flat=True)):
             try:
                 with transaction.atomic():
@@ -29,22 +30,30 @@ class Command(BaseCommand):
                     cycle = cycles_to_finalize().select_for_update(skip_locked=True).filter(id=cycle_id).first()
                     if cycle is None:
                         continue
-                    result = finalize_cycle(cycle)
+                    result, email_errors = finalize_cycle(cycle)
             except Exception as e:
                 logger.exception('Finalising cycle %s failed', cycle_id)
                 errors.append(f'Cycle {cycle_id}: {e}')
                 continue
             if result in ('sent', 'sent_without_pdf'):
                 sent += 1
+            elif result == 'failed' and not cycle.reviewee.email:
+                # Retried every run until an admin adds the address, so not an error of this run
+                without_email.append(cycle_id)
             elif result == 'failed':
-                errors.append(f'Cycle {cycle_id}: report email not sent')
+                errors.append(f'Cycle {cycle_id}: {", ".join(map(str, email_errors))}')
             self.stdout.write(f'Cycle {cycle_id}: {result}')
+
+        if without_email:
+            logger.warning('Report email waits for a reviewee email address: cycles %s', without_email)
 
         deleted = delete_expired_pdfs()
         if deleted:
             self.stdout.write(f'Deleted {deleted} expired PDFs')
 
-        record_run('finalize_reports', sent, errors)
+        # Every 5 minutes: record only runs that did something, so the cron log stays readable
+        if sent or errors:
+            record_run('finalize_reports', sent, errors)
 
         for error in errors:
             self.stderr.write(self.style.ERROR(f'  {error}'))

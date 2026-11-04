@@ -52,8 +52,9 @@ class RevieweeOverviewTests(TestCase):
 
     def report(self, cycle, own, others, count=3):
         return Report.objects.create(cycle=cycle, access_token=uuid.uuid4(), report_data={
-            'insights': {'overall_sentiment': {'self_avg': own, 'score': others}},
-            'by_section': {'1': {'questions': {'1': {'by_category': {'peer': {'count': count}}}}}},
+            'by_section': {'1': {'questions': {'1': {'question_type': 'rating', 'by_category': {
+                'self': {'count': 1, 'avg': own}, 'peer': {'count': count, 'avg': others},
+            }}}}},
         })
 
     def people(self, response):

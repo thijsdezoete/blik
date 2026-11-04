@@ -1,0 +1,13 @@
+{% load l10n %}{% localize off %}<svg width="{{ radar.width }}" height="{{ radar.height }}" viewBox="{{ view_box|default:radar.view_box }}" xmlns="http://www.w3.org/2000/svg" font-family="Roboto">
+  <g fill="none" stroke="#e5e7eb" stroke-width="0.6">
+    {% for ring in radar.rings %}<polygon points="{{ ring }}"/>{% endfor %}
+    {% for a in radar.axes %}<line x1="{{ a.x1 }}" y1="{{ a.y1 }}" x2="{{ a.x2 }}" y2="{{ a.y2 }}"/>{% endfor %}
+  </g>
+  {% for s in series %}<polygon points="{{ s.points }}" fill="{% if s.dashed %}none{% else %}{{ s.colour }}{% endif %}" fill-opacity="{{ fill_opacity|default:'0.12' }}" stroke="{{ s.colour }}" stroke-width="{{ stroke|default:'1.4' }}"{% if s.dashed %} stroke-dasharray="4 2.5"{% endif %}/>{% for d in s.dots %}<circle cx="{{ d.x }}" cy="{{ d.y }}" r="2" fill="{{ s.colour }}"/>{% endfor %}{% endfor %}
+  {% if numbers %}<g font-size="{{ font|default:'13' }}" fill="#6b7280" text-anchor="middle">
+    {% for a in radar.axes %}<text x="{{ a.nx }}" y="{{ a.ny }}">{{ a.number }}</text>{% endfor %}
+  </g>{% else %}<g font-size="{{ font|default:'10' }}" fill="#374151">
+    {% for a in radar.axes %}<text x="{{ a.lx }}" y="{{ a.ly }}" text-anchor="{{ a.anchor }}">{% for line in a.lines %}<tspan x="{{ a.lx }}"{% if not forloop.first %} dy="11"{% endif %}>{% if forloop.first and numbered %}{{ a.number }}. {% endif %}{{ line }}</tspan>{% endfor %}</text>{% endfor %}
+  </g>{% endif %}
+</svg>
+{% endlocalize %}

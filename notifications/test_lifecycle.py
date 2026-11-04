@@ -15,6 +15,7 @@ from notifications import lifecycle
 from notifications.models import SentEmail
 from questionnaires.factories import QuestionnaireFactory
 from reports.models import Report
+from reports.services import REPORT_SCHEMA
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
 from reviews.models import ReviewCycle
 from subscriptions.testing import subscribe
@@ -211,12 +212,9 @@ class PerceptionGapTests(LifecycleTestCase):
         self.org.save()
         report = self.report(self.cycle(self.org, status='completed'))
         report.report_data = {
-            'insights': {
-                'perception_gaps': perception_gaps,
-                'overall_sentiment': {'score': 3.0, 'self_avg': 4.0},
-            },
-            'by_section': {'1': {'questions': {'10': {'by_category': {
-                'self': {'count': 1}, 'peer': {'count': peer_count},
+            'insights': {'perception_gaps': perception_gaps},
+            'by_section': {'1': {'questions': {'10': {'question_type': 'rating', 'by_category': {
+                'self': {'count': 1, 'avg': 4.0}, 'peer': {'count': peer_count, 'avg': 3.0},
             }}}}},
         }
         return report
@@ -229,6 +227,21 @@ class PerceptionGapTests(LifecycleTestCase):
 
     def test_a_gap_below_the_anonymity_threshold_does_not_count(self):
         self.assertFalse(lifecycle.has_perception_gap(self.report_with([{'type': 'overconfidence'}], peer_count=2)))
+
+    def test_a_gap_from_a_hidden_group_does_not_count(self):
+        # The stored gap comes from two peers below the threshold; without them, self and manager agree
+        self.org.min_responses_for_anonymity = 3
+        self.org.save()
+        report = self.report(self.cycle(self.org, status='completed'))
+        report.report_data = {
+            'schema': REPORT_SCHEMA,
+            'insights': {'perception_gaps': [{'type': 'overconfidence'}]},
+            'by_section': {'1': {'title': 'Growth', 'questions': {'10': {'question_type': 'rating', 'by_category': {
+                'self': {'count': 1, 'avg': 4.0}, 'manager': {'count': 1, 'avg': 4.0},
+                'peer': {'count': 2, 'avg': 2.0},
+            }}}}},
+        }
+        self.assertFalse(lifecycle.has_perception_gap(report))
 
     def test_empty_report_data(self):
         self.assertFalse(lifecycle.has_perception_gap(self.report(self.cycle(self.org, status='completed'))))

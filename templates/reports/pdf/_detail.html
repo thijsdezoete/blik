@@ -1,0 +1,82 @@
+{% load i18n feedback_tags %}
+<section class="page detail-pages">
+    <h2>{% trans 'Detailed Feedback' %}</h2>
+    {% for section in detail_sections %}
+    <div class="detail-section">
+        <h3 class="section-title">{{ section.title }}</h3>
+        {% for question in section.questions %}{% with q=question.data %}
+        {% if question.type == 'text' %}
+        <div class="question">
+            <h4>{{ q.question_text }}</h4>
+            {% for row in question.rows %}{% include "reports/pdf/_comments.html" %}{% endfor %}
+            {% if question.self %}{% include "reports/pdf/_comments.html" with row=question.self own=True %}{% endif %}
+        </div>
+        {% else %}
+        <div class="question keep">
+            <h4>{{ q.question_text }}</h4>
+            {% if q.question_type == 'rating' and q|report_labels %}
+            <div class="scale">{% trans 'Scale:' %} {% for rating in "12345" %}{% with label=q|get_rating_label:rating %}{% if label %}{{ rating }} = {{ label }}{% if not forloop.last %} · {% endif %}{% endif %}{% endwith %}{% endfor %}</div>
+            {% elif q.question_type == 'scale' %}
+            <div class="scale">{% blocktrans trimmed with min=q.question_config.min|default:1 max=q.question_config.max|default:100 %}Scale: {{ min }} to {{ max }}{% endblocktrans %}</div>
+            {% endif %}
+            <table class="answers{% if question.type == 'rating' %} rating{% endif %}">
+                <thead><tr>
+                    <th class="who"></th>
+                    <th class="n">{% trans 'Responses' %}</th>
+                    {% if question.has_avg %}<th class="n">{% trans 'Average' %}</th>{% endif %}
+                    {% for column in question.columns %}<th class="c">{{ column }}</th>{% endfor %}
+                    {% if question.has_positive %}<th class="n">{% trans 'Positive' %}</th>{% endif %}
+                </tr></thead>
+                <tbody>
+                {% for row in question.rows %}
+                <tr>
+                    <td class="who">{{ row.category|category_label }}</td>
+                    <td class="n muted">{{ row.count }}</td>
+                    {% if row.group.insufficient %}
+                    <td class="insufficient" colspan="{{ question.span }}">{{ row.group.message }}</td>
+                    {% else %}
+                    {% if question.has_avg %}<td class="n avg">{% if row.avg is not None %}{{ row.avg|floatformat:1 }}{% endif %}</td>{% endif %}
+                    {% for cell in row.cells %}<td class="c{% if cell.dark %} dark{% endif %}"{% if cell.count %} style="background: rgba(79, 70, 229, {{ cell.shade }})"{% endif %}>{{ cell.count|default_if_none:'' }}</td>{% endfor %}
+                    {% if question.has_positive %}<td class="n">{{ row.positive }}%</td>{% endif %}
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+                {% if question.self %}{% with row=question.self %}
+                {# As on the web, the self-assessment is set against the others' average, not listed as one more group #}
+                <tbody class="own">
+                {% if question.others_avg is not None %}
+                <tr class="others-avg">
+                    <td class="who">{% trans 'Others' %}</td><td class="n"></td>
+                    <td class="n avg">{{ question.others_avg|floatformat:1 }}</td>
+                    {% if question.answer_span %}<td colspan="{{ question.answer_span }}"></td>{% endif %}
+                </tr>
+                {% endif %}
+                <tr class="self">
+                    <td class="who">{% trans 'Self-assessment' %}{% if row.gap is not None %}
+                        <div class="gap-note {% if row.gap < 0 %}down{% else %}up{% endif %}">{% if row.gap > 0 %}{% blocktrans trimmed with gap=row.gap|floatformat:1 %}(+{{ gap }} compared to others){% endblocktrans %}{% else %}{% blocktrans trimmed with gap=row.gap|floatformat:1 %}({{ gap }} compared to others){% endblocktrans %}{% endif %}</div>{% endif %}</td>
+                    <td class="n"></td>
+                    {% if question.has_avg %}<td class="n avg">{% if row.avg is not None %}{{ row.avg|floatformat:1 }}{% endif %}</td>{% endif %}
+                    {% for cell in row.cells %}<td class="c">{% if cell.count %}<span class="own-mark">{% if row.count > 1 %}{{ cell.count }}{% else %}&#10003;{% endif %}</span>{% endif %}</td>{% endfor %}
+                    {% if question.has_positive %}<td class="n">{{ row.positive }}%</td>{% endif %}
+                </tr>
+                </tbody>
+                {% endwith %}{% endif %}
+            </table>
+            {% for row in question.rows %}{% if row.group.unmapped and not row.group.insufficient %}
+            <div class="note">{{ row.category|category_label }}: {% blocktrans trimmed count counter=row.group.unmapped %}
+                    {{ counter }} answer could not be matched to an option, because the question changed
+                    after it was given.
+                {% plural %}
+                    {{ counter }} answers could not be matched to an option, because the question changed
+                    after they were given.
+                {% endblocktrans %}</div>
+            {% endif %}{% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}{% endfor %}
+    </div>
+    {% endfor %}
+
+    <p class="muted small closing">{% trans 'If you have questions about this report, please contact your manager or HR department.' %}</p>
+</section>

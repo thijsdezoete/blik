@@ -162,6 +162,10 @@ docker compose logs -f web
 
 Then visit `http://localhost:8000/setup/` to complete setup.
 
+Running `manage.py` outside Docker on macOS: report PDFs use WeasyPrint, which needs Pango
+(`brew install pango`). Set `export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib` first, or the
+startup check `reports.E001` stops every `manage.py` command.
+
 ### Translations
 
 After changing texts, update the catalogues with

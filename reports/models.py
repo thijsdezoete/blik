@@ -1,4 +1,6 @@
 import uuid
+from datetime import timedelta
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -6,6 +8,7 @@ from django.utils.translation import gettext, gettext_lazy as _
 from core.models import TimeStampedModel
 from core.managers import ReportManager
 from reviews.models import ReviewCycle
+from reports.storage import get_private_storage, private_storage
 
 
 class Report(TimeStampedModel):
@@ -67,6 +70,11 @@ class Report(TimeStampedModel):
     last_accessed = models.DateTimeField(_('last accessed'), null=True, blank=True, help_text=_('Last time report was accessed'))
     access_count = models.IntegerField(_('access count'), default=0, help_text=_('Number of times report has been accessed'))
 
+    # Rendered PDF of the report, kept only for the retention period
+    pdf_file = models.FileField(storage=get_private_storage, upload_to='report_pdfs/', blank=True)
+    pdf_generated_at = models.DateTimeField(null=True, blank=True)
+    pdf_attempts = models.PositiveSmallIntegerField(default=0)
+
     objects = ReportManager()
 
     class Meta:
@@ -77,6 +85,23 @@ class Report(TimeStampedModel):
 
     def __str__(self):
         return gettext('Report for %(cycle)s') % {'cycle': self.cycle}
+
+    @property
+    def pdf_retention_days(self):
+        return self.cycle.organization.report_pdf_retention_days or settings.REPORT_PDF_RETENTION_DAYS
+
+    @property
+    def pdf_expires_at(self):
+        if not self.pdf_generated_at:
+            return None
+        return self.pdf_generated_at + timedelta(days=self.pdf_retention_days)
+
+    def has_valid_pdf(self, now=None):
+        if not self.pdf_file or not self.pdf_expires_at:
+            return False
+        if self.pdf_expires_at <= (now or timezone.now()):
+            return False
+        return private_storage.exists(self.pdf_file.name)
 
     @cached_property
     def access_token_expired(self):

@@ -1,0 +1,73 @@
+{% load i18n l10n %}
+<section class="page development-page">
+    <h2>{% trans 'Your Development Path' %}</h2>
+
+    <div class="group skill">
+        <div class="group-head">
+            <div class="eyebrow">{% trans 'Skill Level' %} · {% trans 'Dreyfus model' %}</div>
+            <span class="big">{{ insights.skill_profile.skill_stage }}</span>
+            <span class="muted">{% blocktrans trimmed with level=insights.skill_profile.skill_level %}Level {{ level }}/5.0{% endblocktrans %}</span>
+            <div class="muted small">{{ insights.skill_profile.stage_info.description }}</div>
+        </div>
+        <div class="tile white diamonds">
+            {% include "components/dreyfus_model_svg.html" with current_stage=insights.skill_profile.stage_key view_box="30 115 860 345" font_family="Roboto" %}
+        </div>
+        {% if insights.development_plan and insights.skill_profile.stage_info.next_stage %}
+        <div class="tile white next-steps">
+            <h3>{% blocktrans trimmed with stage=insights.skill_profile.stage_info.next_stage %}To Reach {{ stage }}{% endblocktrans %}</h3>
+            {% if insights.development_plan.next_level_requirements %}
+            <ul class="marks">{% for requirement in insights.development_plan.next_level_requirements %}<li>{{ requirement }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% if insights.development_plan.quick_wins %}
+            <div class="sub">{% trans 'Action Items' %}</div>
+            <ul class="marks">{% for win in insights.development_plan.quick_wins|slice:":3" %}<li>{{ win }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if agency %}
+    <div class="group agency">
+        <div class="group-head">
+            <div class="eyebrow">{% trans 'Agency & Initiative' %}</div>
+            <span class="big">{{ insights.agency_profile.agency_stage }}</span>
+            <span class="muted">{% blocktrans trimmed with level=insights.agency_profile.agency_level %}Level {{ level }}/5.0{% endblocktrans %}</span>
+            <div class="muted small">{{ insights.agency_profile.description }}</div>
+        </div>
+        <div class="grid">
+            <div class="tile white{% if not agency.next_name %} span{% endif %}">
+                <div class="ladder">{% for step in agency.steps %}<span{% if step.on %} class="on"{% endif %}></span>{% endfor %}</div>
+                <div class="steps">{% for step in agency.steps %}<span{% if step.current %} class="current"{% endif %}>{{ step.name }}</span>{% endfor %}</div>
+                {% if matrix %}
+                <div class="matrix">
+                    {% localize off %}
+                    <svg width="40mm" height="40mm" viewBox="-12 0 112 112" xmlns="http://www.w3.org/2000/svg" font-family="Roboto">
+                        {% for cell in matrix.cells %}<rect x="{{ cell.x }}" y="{{ cell.y }}" width="50" height="50" fill="{% if cell.current %}#e0e7ff{% else %}#f3f4f6{% endif %}" stroke="#fff" stroke-width="1"/>{% endfor %}
+                        <g font-size="6.4" text-anchor="middle">
+                        {% for cell in matrix.cells %}<text x="{{ cell.text_x }}" y="{{ cell.text_y }}" fill="{% if cell.current %}#4338ca{% else %}#6b7280{% endif %}"{% if cell.current %} font-weight="700"{% endif %}>{% for line in cell.lines %}<tspan x="{{ cell.text_x }}"{% if not forloop.first %} dy="7.2"{% endif %}>{{ line }}</tspan>{% endfor %}</text>{% endfor %}
+                        </g>
+                        <circle cx="{{ matrix.dot_x }}" cy="{{ matrix.dot_y }}" r="3.6" fill="#4f46e5" stroke="#fff" stroke-width="1.2"/>
+                        <text x="50" y="109" font-size="6" fill="#9ca3af" text-anchor="middle">{% trans 'Skill' %} →</text>
+                        <text x="-5" y="50" font-size="6" fill="#9ca3af" text-anchor="middle" transform="rotate(-90 -5 50)">{% trans 'Agency' %} →</text>
+                    </svg>
+                    {% endlocalize %}
+                    <div class="matrix-text">
+                        <div class="eyebrow">{% trans 'Performance matrix' %}</div>
+                        <b class="quadrant-name">{{ insights.dreyfus_quadrant.name }}</b>
+                        <div class="muted small">{{ insights.dreyfus_quadrant.description }}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% if agency.next_name %}
+            <div class="tile white next-steps">
+                <h3>{% blocktrans trimmed with stage=agency.next_name %}To Reach {{ stage }}{% endblocktrans %}</h3>
+                <ul class="marks">{% for requirement in agency.next_steps.requirements %}<li>{{ requirement }}</li>{% endfor %}</ul>
+                <div class="sub">{% trans 'Action Items' %}</div>
+                <ul class="marks">{% for action in agency.next_steps.actions %}<li>{{ action }}</li>{% endfor %}</ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</section>

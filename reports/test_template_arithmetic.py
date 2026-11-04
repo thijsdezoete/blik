@@ -9,13 +9,14 @@ from types import SimpleNamespace
 
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import UserProfile
 from accounts.permissions import assign_organization_admin, ensure_permission_groups
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
+from reviews.templatetags.feedback_tags import strong_rating, top_share
 
 
 class PendingCountTests(TestCase):
@@ -56,11 +57,12 @@ class ReportArithmeticTests(TestCase):
             }},
         })
 
-        # The report views always pass the cycle and the report data along with the report.
+        # The report views always pass the cycle, the report data and its display data along with the report.
         cycle = SimpleNamespace(organization=SimpleNamespace(min_responses_for_anonymity=3))
 
         html = render_to_string('reports/_report_content.html', {
-            'report': report, 'report_data': report.report_data, 'cycle': cycle, 'is_admin_view': False,
+            'report': report, 'report_data': report.report_data, 'display_data': report.report_data,
+            'cycle': cycle, 'is_admin_view': False,
         })
 
         self.assertIn('Top 15% in organization', html)
@@ -77,3 +79,16 @@ class ReportArithmeticTests(TestCase):
         html = render_to_string('reports/_question_response.html', {'question_data': question_data})
 
         self.assertIn('Strong consensus: 75% positive (3 of 4 respondents)', html)
+
+
+class BenchmarkFilterTests(SimpleTestCase):
+    def test_top_share_of_the_top_scorer_is_one_percent(self):
+        self.assertEqual(top_share(100), 1)
+
+    def test_top_share(self):
+        self.assertEqual(top_share(85), 15)
+
+    def test_strong_rating_starts_at_strong(self):
+        self.assertFalse(strong_rating(3.29))
+        self.assertTrue(strong_rating(3.5))
+        self.assertTrue(strong_rating(4.8))

@@ -7,7 +7,7 @@
 {% trans 'View your report:' %}
 {{ report_url }}
 
-{% trans 'Privacy:' %} {% trans 'Your report is confidential. The secure link above opens it.' %}
+{% trans 'Privacy:' %} {% if has_attachment %}{% trans 'The attached PDF holds your full report. Forward it only to people you want to read it.' %}{% else %}{% trans 'Your report is confidential. The secure link above opens it.' %}{% endif %}
 
 {% trans 'Questionnaire:' %} {{ questionnaire_name }}
 

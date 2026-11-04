@@ -934,6 +934,10 @@ def generate_report(cycle):
             'access_token': access_token
         }
     )
+    # Late import: pdf.py pulls in the template tags, which import this module
+    from .pdf import drop_report_pdf
+    # A stored PDF must never show the data this replaced
+    drop_report_pdf(report)
 
     return report
 

@@ -56,11 +56,12 @@ class ReportArithmeticTests(TestCase):
             }},
         })
 
-        # The report views always pass the cycle and the report data along with the report.
+        # The report views always pass the cycle, the report data and its display data along with the report.
         cycle = SimpleNamespace(organization=SimpleNamespace(min_responses_for_anonymity=3))
 
         html = render_to_string('reports/_report_content.html', {
-            'report': report, 'report_data': report.report_data, 'cycle': cycle, 'is_admin_view': False,
+            'report': report, 'report_data': report.report_data, 'display_data': report.report_data,
+            'cycle': cycle, 'is_admin_view': False,
         })
 
         self.assertIn('Top 15% in organization', html)

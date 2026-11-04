@@ -241,10 +241,11 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
     """
     Apply anonymization filtering to report data for display purposes.
 
-    This function adds 'insufficient' flags to categories that don't meet
-    the anonymization threshold, while preserving the underlying data.
-    Charts and insights should use the raw data; only detailed report
-    displays should use this filtered version.
+    A reviewer group (category) below the threshold doesn't show its own
+    score anywhere: per question in 'by_section', per section in
+    'section_summary', and in the chart series. Values that combine all
+    groups into one (insights, overall sentiment, the charts' 'others_avg')
+    stay as they are, because they don't expose one person.
 
     Args:
         report_data: The raw report data structure
@@ -252,13 +253,18 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
         exempt_categories: List of categories exempt from threshold (default: ['self', 'manager'])
 
     Returns:
-        Copy of report_data with 'insufficient' flags added where applicable
+        Copy of report_data where, for each category below the threshold:
+        - per-question entries in 'by_section' are marked 'insufficient' and lose their responses
+        - 'section_summary' entries become {'insufficient': True, 'message': ...}
+        - the category is removed from charts['section_scores'] and charts['overall']
     """
     if exempt_categories is None:
         exempt_categories = ['self', 'manager']
 
     # Deep copy to avoid modifying original data
     filtered_data = copy.deepcopy(report_data)
+
+    message = _('Insufficient responses (minimum %(count)s required)') % {'count': min_threshold}
 
     # Walk through all questions and apply threshold
     for section_id, section_data in filtered_data.get('by_section', {}).items():
@@ -270,14 +276,39 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
                 if category not in exempt_categories and count < min_threshold:
                     # Mark as insufficient for display
                     cat_data['insufficient'] = True
-                    cat_data['message'] = _('Insufficient responses (minimum %(count)s required)') % {'count': min_threshold}
+                    cat_data['message'] = message
                     # Remove detailed responses and distributions for privacy
                     if 'responses' in cat_data:
                         del cat_data['responses']
                     if 'distribution' in cat_data:
                         del cat_data['distribution']
 
+    # Section scores and chart series per reviewer group use the group's reviewer count
+    hidden = {
+        category for category, count in reviewer_counts(report_data).items()
+        if category not in exempt_categories and count < min_threshold
+    }
+
+    for categories in (filtered_data.get('section_summary') or {}).values():
+        for category in hidden & categories.keys():
+            categories[category] = {'insufficient': True, 'message': message}
+
+    charts = filtered_data.get('charts') or {}
+    for scores in [*(charts.get('section_scores') or {}).values(), charts.get('overall') or {}]:
+        for category in hidden & scores.keys():
+            del scores[category]
+
     return filtered_data
+
+
+def reviewer_counts(report_data):
+    """Reviewer count per category: its highest count on any question."""
+    counts = defaultdict(int)
+    for section in report_data.get('by_section', {}).values():
+        for question in section.get('questions', {}).values():
+            for category, cat_data in question.get('by_category', {}).items():
+                counts[category] = max(counts[category], cat_data.get('count', 0))
+    return dict(counts)
 
 
 def _calculate_insights(report_data):
@@ -899,13 +930,8 @@ def self_vs_others_gap(report_data, min_threshold):
     if self_avg is None or others_avg is None:
         return None
 
-    # Reviewer count per category = its highest count on any question.
-    reviewers = defaultdict(int)
-    for section in report_data.get('by_section', {}).values():
-        for question in section.get('questions', {}).values():
-            for category, cat_data in question.get('by_category', {}).items():
-                reviewers[category] = max(reviewers[category], cat_data.get('count', 0))
-    if sum(reviewers[c] for c in OTHERS_CATEGORIES) < min_threshold:
+    reviewers = reviewer_counts(report_data)
+    if sum(reviewers.get(c, 0) for c in OTHERS_CATEGORIES) < min_threshold:
         return None
 
     return round(self_avg - others_avg, 2)

@@ -129,6 +129,7 @@ class TrendChangeTest(TestCase):
         return render_to_string('reports/_report_content.html', {
             'report': SimpleNamespace(report_data=report_data),
             'report_data': report_data,
+            'display_data': report_data,
             'cycle': cycle,
         })
 

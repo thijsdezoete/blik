@@ -22,7 +22,7 @@ from core.languages import user_language
 from core.models import Organization
 from core.url import get_absolute_url
 from reports.models import Report
-from reports.services import self_vs_others_gap
+from reports.services import apply_display_anonymization, self_vs_others_gap
 from reviews.models import ReviewCycle, ReviewerToken
 from reviews.services import reviewee_language
 
@@ -250,9 +250,9 @@ def has_perception_gap(report):
     """
     data = report.report_data or {}
     threshold = report.cycle.reviewee.organization.min_responses_for_anonymity
-    return bool((data.get('insights') or {}).get('perception_gaps')) and (
-        self_vs_others_gap(data, threshold) is not None
-    )
+    # The stored gaps include hidden groups; the anonymized insights don't
+    insights = apply_display_anonymization(data, threshold).get('insights') or {}
+    return bool(insights.get('perception_gaps')) and self_vs_others_gap(data, threshold) is not None
 
 
 def send_report_follow_up(report):

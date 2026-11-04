@@ -544,6 +544,17 @@ It builds the report and the PDF for every cycle the migration already marked as
 sends no email. It exits with a non-zero status if a cycle failed, and it is safe to run again.
 Add `--dry-run` to only count what is missing.
 Add `--regenerate` to recalculate existing reports with the current scoring rules and questionnaire texts.
+It sends no `report.generated` webhook. It keeps a report as it is when a new one would lose answers
+(for example of a deleted question), prints a warning that names the cycle, and still stores its PDF.
+
+After this release, run this once:
+
+```bash
+docker compose exec web python manage.py backfill_report_pdfs --regenerate
+```
+
+This release changes the definition of "others" (direct reports count in every others score). Without
+`--regenerate`, stored reports mix the old and the new definition in one PDF.
 
 The entrypoint now also installs a cron line that finalises reports every 5 minutes:
 

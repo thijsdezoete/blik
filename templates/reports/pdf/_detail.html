@@ -5,95 +5,67 @@
     <div class="detail-section">
         <h3 class="section-title">{{ section.title }}</h3>
         {% for question in section.questions %}{% with q=question.data %}
-        <div class="tile question{% if q.question_type == 'text' %} text-question{% endif %}">
-            <div class="question-head">
-                <div class="tile-head">
-                    <h4>{{ q.question_text }}</h4>
-                    {% if question.score %}<span class="chip">{{ question.score|floatformat:1 }}<small>/5.0</small></span>{% endif %}
-                </div>
-                {% if question.score %}<div class="bar"><i style="width: {% widthratio question.score 5 100 %}%"></i></div>{% endif %}
-                <div class="format tiny muted">{% trans 'Question Format:' %} {{ q.question_type|question_type_label }}{% if q.question_type == 'single_choice' %} · {% trans 'Single choice (select one):' %} {% for option in q|report_options %}{{ option.label }}{% if not forloop.last %} · {% endif %}{% endfor %}{% elif q.question_type == 'multiple_choice' %} · {% trans 'Multiple choice (select all that apply):' %} {% for option in q|report_options %}{{ option.label }}{% if not forloop.last %} · {% endif %}{% endfor %}{% elif q.question_type == 'scale' %} · {% blocktrans trimmed with min=q.question_config.min|default:1 max=q.question_config.max|default:100 %}Scale: {{ min }} to {{ max }}{% endblocktrans %}{% elif q.question_type == 'text' %} · {% trans 'Open-ended text response' %}{% elif q.question_type == 'rating' and not q|report_labels %} · {% trans 'Rating scale: 1 to 5' %}{% endif %}</div>
-                {% if q.question_type == 'rating' and q|report_labels %}
-                <div class="scale tiny muted">{% trans 'Scale:' %} {% for rating in "12345" %}{% with label=q|get_rating_label:rating %}{% if label %}{{ rating }} = {{ label }}{% if not forloop.last %} · {% endif %}{% endif %}{% endwith %}{% endfor %}</div>
-                {% elif q.question_type == 'likert' %}
-                <div class="scale tiny muted">{% trans 'Scale:' %} {% for option in q|report_options %}{{ option.label }}{% if not forloop.last %} · {% endif %}{% endfor %}</div>
-                {% endif %}
-            </div>
-
-            {% if q.question_type == 'text' %}
-                {% for category, cat_data, top in question.groups %}
-                <div class="text-group">
-                    <div class="keep"><div class="group-label"><span class="badge badge-{{ category }}">{{ category|category_label }}</span> <span class="muted tiny">{% blocktrans trimmed count counter=cat_data.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span></div>
-                    {# The label keeps its first row of quotes, so a page never ends with a lone label #}
-                    {% if cat_data.insufficient %}
-                    <div class="insufficient">{{ cat_data.message }}</div></div>
+        {% if question.type == 'text' %}
+        <div class="question">
+            <h4>{{ q.question_text }}</h4>
+            {% for row in question.rows %}
+            <div class="comments">
+                {# The group name keeps its first comment, so a page never ends with a lone name #}
+                <div class="keep">
+                    <div class="who">{{ row.category|category_label }} <span class="faint">· {% blocktrans trimmed count counter=row.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span></div>
+                    {% if row.group.insufficient %}
+                    <div class="insufficient">{{ row.group.message }}</div>
                     {% else %}
-                    <div class="quotes">{% for response in cat_data.responses|slice:":2" %}{% if response %}<div class="quote">{{ response }}</div>{% endif %}{% endfor %}</div></div>
-                    {% if cat_data.responses|length > 2 %}<div class="quotes">{% for response in cat_data.responses|slice:"2:" %}{% if response %}<div class="quote">{{ response }}</div>{% endif %}{% endfor %}</div>{% endif %}
+                    {% for response in row.group.responses|slice:":1" %}{% if response %}<p class="quote">{{ response }}</p>{% endif %}{% endfor %}
                     {% endif %}
                 </div>
-                {% endfor %}
-            {% else %}
-            <div class="groups">
-                {% for category, cat_data, top in question.groups %}
-                <div class="group-col">
-                    <div class="group-label"><span class="badge badge-{{ category }}">{{ category|category_label }}</span> <span class="muted tiny">{% blocktrans trimmed count counter=cat_data.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span></div>
-                    {% if cat_data.insufficient %}
-                    <div class="insufficient">{{ cat_data.message }}</div>
-                    {% else %}
-                    {% if cat_data.unmapped %}
-                    <div class="insufficient">{% blocktrans trimmed count counter=cat_data.unmapped %}
-                            {{ counter }} answer could not be matched to an option, because the question changed
-                            after it was given.
-                        {% plural %}
-                            {{ counter }} answers could not be matched to an option, because the question changed
-                            after they were given.
-                        {% endblocktrans %}</div>
-                    {% endif %}
-
-                    {% if q.question_type == 'rating' and cat_data.avg %}
-                        <div class="avg">{{ cat_data.avg }}<small> / 5.0</small></div>
-                        {% if cat_data.distribution %}
-                        {% with positive=top positive_pct=top|percentage:cat_data.count %}
-                        {% if positive_pct >= 70 and cat_data.count > 1 %}<div class="consensus">{% blocktrans trimmed with pct=positive_pct positive=positive total=cat_data.count %}Strong consensus: {{ pct }}% positive ({{ positive }} of {{ total }} respondents){% endblocktrans %}</div>{% endif %}
-                        {% endwith %}
-                        <div class="dist">
-                        {% for rating in "54321" %}{% with rating_int=rating|add:"0" %}{% with count=cat_data.distribution|get_item:rating_int|default:0 %}{% if count > 0 %}{% with pct=count|percentage:cat_data.count %}
-                            <div class="dist-row"><div class="dist-head"><span class="dist-label">{{ rating_int }} - {{ q|get_rating_label:rating_int }}</span><span class="dist-count">{{ count }} ({{ pct }}%)</span></div><div class="dist-bar"><i style="width: {{ pct }}%"></i></div></div>
-                        {% endwith %}{% endif %}{% endwith %}{% endwith %}{% endfor %}
-                        </div>
-                        {% endif %}
-
-                    {% elif q.question_type == 'scale' and cat_data.avg %}
-                        <div class="avg">{{ cat_data.avg|floatformat:1 }}<small> / {{ q.question_config.max|default:"100" }}</small></div>
-
-                    {% elif q.question_type == 'likert' and cat_data.distribution %}
-                        {% with scale=q|report_options total=cat_data.count %}{% with positive=cat_data.distribution|likert_positive_count:scale %}{% with positive_pct=positive|percentage:total %}
-                        {% if positive_pct >= 70 %}<div class="consensus">{% blocktrans trimmed with pct=positive_pct positive=positive total=total %}Strong consensus: {{ pct }}% positive ({{ positive }} of {{ total }} respondents){% endblocktrans %}</div>
-                        {% elif positive_pct >= 50 %}<div class="consensus">{% blocktrans trimmed with pct=positive_pct positive=positive total=total %}Mostly positive: {{ pct }}% ({{ positive }} of {{ total }} respondents){% endblocktrans %}</div>{% endif %}
-                        <div class="dist">
-                        {% for option in scale %}{% with count=cat_data.distribution|option_count:option %}{% with pct=count|percentage:total %}
-                            <div class="dist-row"><div class="dist-head"><span class="dist-label">{{ option.label }}</span><span class="dist-count">{% blocktrans trimmed count counter=count %}{{ counter }} respondent{% plural %}{{ counter }} respondents{% endblocktrans %} ({{ pct }}%)</span></div><div class="dist-bar"><i style="width: {{ pct }}%"></i></div></div>
-                        {% endwith %}{% endwith %}{% endfor %}
-                        </div>
-                        {% endwith %}{% endwith %}{% endwith %}
-
-                    {% elif q.question_type == 'single_choice' or q.question_type == 'multiple_choice' %}
-                        {% if cat_data.avg and q.question_config.scoring_enabled %}<div class="avg">{{ cat_data.avg|floatformat:1 }}<small> {% trans 'weighted avg' %}</small></div>{% endif %}
-                        {% if cat_data.distribution %}
-                        <div class="dist">
-                        {% for option, count in cat_data.distribution|sort_by_frequency %}{% with pct=count|percentage:cat_data.count %}
-                            <div class="dist-row"><div class="dist-head"><span class="dist-label">{{ option|option_label:q }}</span><span class="dist-count">{% if q.question_type == 'multiple_choice' %}{% blocktrans trimmed with selected=count count counter=cat_data.count %}{{ selected }} of {{ counter }} respondent{% plural %}{{ selected }} of {{ counter }} respondents{% endblocktrans %}{% else %}{% blocktrans trimmed count counter=count %}{{ counter }} respondent{% plural %}{{ counter }} respondents{% endblocktrans %}{% endif %} ({{ pct }}%)</span></div><div class="dist-bar"><i style="width: {{ pct }}%"></i></div></div>
-                        {% endwith %}{% endfor %}
-                        </div>
-                        {% endif %}
-                    {% endif %}
-                    {% endif %}
-                </div>
-                {% endfor %}
+                {% if not row.group.insufficient %}{% for response in row.group.responses|slice:"1:" %}{% if response %}<p class="quote">{{ response }}</p>{% endif %}{% endfor %}{% endif %}
             </div>
-            {% endif %}
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="question keep">
+            <h4>{{ q.question_text }}</h4>
+            {% if q.question_type == 'rating' and q|report_labels %}
+            <div class="scale">{% trans 'Scale:' %} {% for rating in "12345" %}{% with label=q|get_rating_label:rating %}{% if label %}{{ rating }} = {{ label }}{% if not forloop.last %} · {% endif %}{% endif %}{% endwith %}{% endfor %}</div>
+            {% elif q.question_type == 'scale' %}
+            <div class="scale">{% blocktrans trimmed with min=q.question_config.min|default:1 max=q.question_config.max|default:100 %}Scale: {{ min }} to {{ max }}{% endblocktrans %}</div>
+            {% endif %}
+            <table class="answers{% if question.type == 'rating' %} rating{% endif %}">
+                <thead><tr>
+                    <th class="who"></th>
+                    <th class="n">{% trans 'Responses' %}</th>
+                    {% if question.has_avg %}<th class="n">{% trans 'Average' %}</th>{% endif %}
+                    {% for column in question.columns %}<th class="c">{{ column }}</th>{% endfor %}
+                    {% if question.has_positive %}<th class="n">{% trans 'Positive' %}</th>{% endif %}
+                </tr></thead>
+                <tbody>
+                {% for row in question.rows %}
+                <tr>
+                    <td class="who">{{ row.category|category_label }}</td>
+                    <td class="n muted">{{ row.count }}</td>
+                    {% if row.group.insufficient %}
+                    <td class="insufficient" colspan="{{ question.span }}">{{ row.group.message }}</td>
+                    {% else %}
+                    {% if question.has_avg %}<td class="n avg">{% if row.avg is not None %}{{ row.avg|floatformat:1 }}{% endif %}</td>{% endif %}
+                    {% for cell in row.cells %}<td class="c{% if cell.dark %} dark{% endif %}"{% if cell.count %} style="background: rgba(79, 70, 229, {{ cell.shade }})"{% endif %}>{{ cell.count|default_if_none:'' }}</td>{% endfor %}
+                    {% if question.has_positive %}<td class="n">{{ row.positive }}%</td>{% endif %}
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% for row in question.rows %}{% if row.group.unmapped and not row.group.insufficient %}
+            <div class="note">{{ row.category|category_label }}: {% blocktrans trimmed count counter=row.group.unmapped %}
+                    {{ counter }} answer could not be matched to an option, because the question changed
+                    after it was given.
+                {% plural %}
+                    {{ counter }} answers could not be matched to an option, because the question changed
+                    after they were given.
+                {% endblocktrans %}</div>
+            {% endif %}{% endfor %}
+        </div>
+        {% endif %}
         {% endwith %}{% endfor %}
     </div>
     {% endfor %}

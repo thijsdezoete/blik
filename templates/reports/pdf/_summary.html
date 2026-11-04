@@ -54,11 +54,11 @@
 
             {% if s.strengths %}
             <h4>{% trans 'Strengths' %}</h4>
-            <ul>{% for item in s.strengths %}<li>{{ item.area }}, {{ item.others_avg }}</li>{% endfor %}</ul>
+            <ul>{% for item in s.strengths %}<li>{{ item.area }}, {{ item.others_avg|floatformat:1 }}</li>{% endfor %}</ul>
             {% endif %}
             {% if s.growth %}
             <h4>{% trans 'Areas to grow' %}</h4>
-            <ul>{% for item in s.growth %}<li>{{ item.area }}, {{ item.others_avg }}</li>{% endfor %}</ul>
+            <ul>{% for item in s.growth %}<li>{{ item.area }}, {{ item.others_avg|floatformat:1 }}</li>{% endfor %}</ul>
             {% endif %}
             {% if s.next_steps %}
             <h4>{% trans 'Next step' %}</h4>

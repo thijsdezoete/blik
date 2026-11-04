@@ -1,8 +1,6 @@
 """Geometry for the report PDF charts. Templates only draw what is computed here."""
 import math
 
-LABEL_COL = 120
-ROW_H = 22
 MAX_LABEL = 22
 RADAR_PAD_X = 90
 RADAR_PAD_Y = 34
@@ -79,24 +77,3 @@ def radar_chart(section_scores, size=240):
                                      size + 2 * RADAR_PAD_X, size + 2 * RADAR_PAD_Y),
         'width': size + 2 * RADAR_PAD_X, 'height': size + 2 * RADAR_PAD_Y,
     }
-
-
-def self_vs_others_bars(section_scores, width=480, label_col=LABEL_COL, max_label=MAX_LABEL, value_col=0):
-    """One row per section: others/self scores and bar widths (score 5 = full bar).
-
-    value_col reserves room right of the bars for the scores.
-    """
-    full = width - label_col - value_col
-
-    def bar(score):
-        return score / 5 * full if score is not None else 0
-
-    rows = []
-    for i, (title, cats) in enumerate(section_scores.items()):
-        others, own = _scores(cats)
-        rows.append({
-            'label': title if len(title) <= max_label else title[:max_label - 1] + '…',
-            'others': others, 'self': own, 'x': label_col,
-            'others_w': bar(others), 'self_w': bar(own), 'y': i * ROW_H,
-        })
-    return rows

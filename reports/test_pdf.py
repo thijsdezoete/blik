@@ -4,7 +4,7 @@ import tempfile
 from datetime import datetime, timezone as dt_timezone
 from unittest import mock
 
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 
 from accounts.models import Reviewee
 from core.models import Organization
@@ -12,12 +12,20 @@ from questionnaires.models import AnswerOption, Question, Questionnaire, Questio
 from reviews.models import ReviewCycle, ReviewerToken, Response
 
 from .models import Report
-from .pdf import drop_report_pdf, pdf_filename, render_report_pdf, report_pdf_document, report_pdf_html, \
-    reviewee_language, store_report_pdf
+from .pdf import _detail_question, _section_table, drop_report_pdf, pdf_filename, render_report_pdf, \
+    report_pdf_document, report_pdf_html, reviewee_language, store_report_pdf
 from .services import generate_report
 
 LABELS = {'1': 'Waits for instructions', '2': 'Needs help', '3': 'Works alone', '4': 'Leads', '5': 'Self-driven'}
 MAPPED = {'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 1.0, 'agency': 1.0}}
+
+
+def table_rows(html):
+    """The text of each table row's cells."""
+    return [
+        [re.sub(r'<[^>]+>', '', cell).strip() for cell in re.findall(r'<td[^>]*>(.*?)</td>', row, re.S)]
+        for row in re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.S)
+    ]
 
 
 class ReportPdfTests(TestCase):
@@ -122,16 +130,18 @@ class ReportPdfTests(TestCase):
 
         html = report_pdf_html(report, 'en')
 
-        self.assertIn('67%', html)  # two of three peers rated 5
-        self.assertIn('Strong consensus: 100% positive (3 of 3 respondents)', html)  # peers on Teamwork
-        self.assertNotIn('(1 of 1 respondents)', html)  # a group of one has no consensus
+        rows = table_rows(html)
+        # Solves problems: three peers, average 4.7, one rated 4 and two rated 5
+        self.assertIn(['Peer', '3', '4.7', '', '', '', '1', '2'], rows)
+        self.assertIn(['Manager', '1', '5.0', '', '', '', '', '1'], rows)
         self.assertRegex(html, r'Scale:[^<]*1 = Waits for instructions[^<]*5 = Self-driven')
-        self.assertIn('3 responses', html)
         strengths = report.report_data['insights']['strengths']
         self.assertTrue(strengths)
         for strength in strengths:
             self.assertIn(strength['area'], html)
         self.assertIn('Gives credit', html)
+        self.assertIn(['Peer', '3', '1', '3'], rows)  # Traits: one listens well, three give credit
+        self.assertIn('Top 1% in organization', html)
         self.assertRegex(html, r'higher than \d+% of peers')
 
     def test_store_and_drop_report_pdf(self):
@@ -186,3 +196,62 @@ class ReportPdfTests(TestCase):
         report.cycle.reviewee.language = 'de'
 
         self.assertEqual(reviewee_language(report), 'de')
+
+
+class SectionTableTests(SimpleTestCase):
+    def test_rows_mark_strengths_and_areas_to_grow_and_name_a_hidden_group_once(self):
+        hidden = {'insufficient': True, 'message': 'Insufficient responses (minimum 3 required)'}
+        data = {'section_summary': {
+            'Craft': {'self': 3.0, 'peer': hidden, 'manager': 4.5},
+            'Teamwork': {'self': 3.0, 'peer': hidden, 'manager': 2.0},
+        }}
+        insights = {
+            'strengths': [{'area': 'Craft', 'others_avg': 4.5}],
+            'development_areas': [{'area': 'Teamwork', 'others_avg': 2.0, 'priority': 'high'}],
+        }
+
+        table = _section_table(data, insights, {})
+
+        self.assertEqual(table['groups'], ['peer', 'manager'])
+        craft, team = table['rows']
+        self.assertTrue(craft['strength'])
+        self.assertIsNone(craft['growth'])
+        self.assertEqual(team['growth']['priority'], 'high')
+        self.assertEqual(craft['score'], 4.5)  # the hidden peers are left out
+        self.assertEqual(craft['gap'], -1.5)
+        self.assertEqual(craft['cells'], [{'score': None, 'hidden': True}, {'score': 4.5, 'hidden': False}])
+        self.assertEqual(table['hidden'], [('peer', 'Insufficient responses (minimum 3 required)')])
+
+
+class DetailQuestionTests(SimpleTestCase):
+    def test_rating_counts_per_answer_and_hidden_group_has_no_cells(self):
+        question = {
+            'question_type': 'rating', 'category_order': ['peer', 'manager'],
+            'by_category': {
+                'peer': {'count': 4, 'avg': 4.25, 'distribution': {'4': 3, '5': 1}},
+                'manager': {'count': 1, 'insufficient': True, 'message': 'Insufficient'},
+            },
+        }
+
+        detail = _detail_question(question)
+
+        self.assertEqual(detail['columns'], ['1', '2', '3', '4', '5'])
+        self.assertEqual(detail['span'], 6)
+        peer, manager = detail['rows']
+        self.assertEqual([cell['count'] for cell in peer['cells']], [None, None, None, 3, 1])
+        self.assertTrue(peer['cells'][3]['dark'])
+        self.assertEqual(peer['avg'], 4.25)
+        self.assertNotIn('cells', manager)
+
+    def test_likert_has_the_positive_share(self):
+        question = {
+            'question_type': 'likert', 'category_order': ['peer'],
+            'question_config': {'scale': ['Disagree', 'Neutral', 'Agree', 'Strongly Agree']},
+            'by_category': {'peer': {'count': 4, 'distribution': {'Strongly Agree': 2, 'Agree': 1, 'Neutral': 1}}},
+        }
+
+        detail = _detail_question(question)
+
+        self.assertEqual(detail['columns'], ['Disagree', 'Neutral', 'Agree', 'Strongly Agree'])
+        self.assertFalse(detail['has_avg'])
+        self.assertEqual(detail['rows'][0]['positive'], 75)

@@ -1,81 +1,60 @@
-{% load i18n l10n feedback_tags %}{% with insights=report_data.insights %}
+{% load i18n feedback_tags %}{% with insights=report_data.insights %}
 <section class="page others-page">
     <h2>{% trans 'How others see you' %}</h2>
-    <p class="lead muted small">{% trans 'Section scores:' %} {% trans 'Overall score (excluding self-assessment)' %}</p>
-    <div class="grid">
-        {% for gap in insights.perception_gaps %}
-        <div class="tile span indigo gap-tile">
-            <div class="gap-text">
-                <h3>{% if gap.type == 'imposter_syndrome' %}{% trans "Blind Spot: You're Better Than You Think" %}{% else %}{% trans 'Calibration Opportunity' %}{% endif %}
-                    <span class="tag {% if gap.severity == 'high' %}red{% else %}amber{% endif %}">{% if gap.severity == 'high' %}{% trans 'high' context 'severity' %}{% else %}{% trans 'moderate' context 'severity' %}{% endif %}</span></h3>
-                <p><b>{{ gap.interpretation }}</b></p>
-                <p class="muted small"><b>{% trans 'Action:' %}</b> {% if gap.type == 'imposter_syndrome' %}{% trans 'Consider acknowledging your strengths more openly. Your team already recognizes your capabilities.' %}{% else %}{% trans "Seek specific feedback on areas where you rated yourself highly to understand others' perspectives." %}{% endif %}</p>
-            </div>
-            <div class="gap-bars">
-                <div class="gap-row"><span class="muted">{% trans 'You see yourself' %}</span><span class="gap-bar"><i class="self" style="width: {% widthratio gap.self_score 5 100 %}%"></i></span><b>{{ gap.self_score }}</b></div>
-                <div class="gap-row"><span class="muted">{% trans 'Others see you' %}</span><span class="gap-bar"><i style="width: {% widthratio gap.others_score 5 100 %}%"></i></span><b>{{ gap.others_score }}</b></div>
-            </div>
-        </div>
-        {% endfor %}
 
-        {% if insights.strengths %}
-        <div class="tile{% if not insights.development_areas %} span{% endif %}">
-            <h3>{% trans 'Key Strengths' %}</h3>
-            <ul class="items">
-                {% for strength in insights.strengths %}
-                <li><b>{{ strength.area }}</b>
-                    <div class="muted small">{% trans "Others' avg:" %} <b>{{ strength.others_avg }}/5.0</b>{% if strength.self_score %} · {% trans 'Self:' %} <b>{{ strength.self_score }}/5.0</b> · {% trans 'Gap:' %} <b class="{% if strength.gap < 0 %}down{% else %}up{% endif %}">{% if strength.gap > 0 %}+{% endif %}{{ strength.gap }}</b>{% endif %}</div>
-                </li>
-                {% endfor %}
-            </ul>
+    {% for gap in insights.perception_gaps %}
+    <div class="gap">
+        <div class="gap-text">
+            <h3>{% if gap.type == 'imposter_syndrome' %}{% trans "Blind Spot: You're Better Than You Think" %}{% else %}{% trans 'Calibration Opportunity' %}{% endif %}
+                <span class="muted light">· {% if gap.severity == 'high' %}{% trans 'high' context 'severity' %}{% else %}{% trans 'moderate' context 'severity' %}{% endif %}</span></h3>
+            <p>{{ gap.interpretation }}</p>
+            <p class="muted"><b>{% trans 'Action:' %}</b> {% if gap.type == 'imposter_syndrome' %}{% trans 'Consider acknowledging your strengths more openly. Your team already recognizes your capabilities.' %}{% else %}{% trans "Seek specific feedback on areas where you rated yourself highly to understand others' perspectives." %}{% endif %}</p>
         </div>
-        {% endif %}
-
-        {% if insights.development_areas %}
-        <div class="tile amber{% if not insights.strengths %} span{% endif %}">
-            <h3>{% trans 'Development Opportunities' %}</h3>
-            <ul class="items">
-                {% for area in insights.development_areas %}
-                <li><b>{{ area.area }}</b> <span class="tag {% if area.priority == 'high' %}red{% else %}amber{% endif %}">{% if area.priority == 'high' %}{% trans 'high priority' %}{% else %}{% trans 'medium priority' %}{% endif %}</span>
-                    <div class="muted small">{% trans "Others' avg:" %} <b>{{ area.others_avg }}/5.0</b>{% if area.self_score %} · {% trans 'Self:' %} <b>{{ area.self_score }}/5.0</b> · {% trans 'Gap:' %} <b class="{% if area.gap < 0 %}down{% else %}up{% endif %}">{% if area.gap > 0 %}+{% endif %}{{ area.gap }}</b>{% endif %}</div>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-
-        {% for tile in section_tiles %}
-        <div class="tile section-tile{% if tile.weakest %} span amber{% endif %}">
-            <div class="tile-head">
-                <h3>{{ tile.name }}{% if tile.weakest %} <span class="tag amber">{% trans 'area to grow' %}</span>{% endif %}</h3>
-                {% if tile.score %}<span class="chip">{{ tile.score|floatformat:1 }}<small>/5.0</small></span>{% endif %}
-            </div>
-            {% if tile.score %}
-            <div class="bar"><i style="width: {% widthratio tile.score 5 100 %}%"></i></div>
-            <div class="small muted"><b>{{ tile.score|rating_with_range }}</b>
-                {% if tile.trend %} · <span class="{{ tile.trend_class }}">{{ tile.trend.symbol }} {% if tile.trend.change > 0 %}+{% endif %}{{ tile.trend.change|floatformat:1 }} {{ tile.trend.label }}</span>{% endif %}
-            </div>
-            {% endif %}
-            {% if tile.benchmark %}
-            <div class="small benchmark"><span class="tag indigo">{% blocktrans trimmed with top=100|subtract:tile.benchmark.percentile|floatformat:0 %}Top {{ top }}% in organization{% endblocktrans %}</span>
-                {% trans 'Strong performance' %}. {% blocktrans trimmed with score=tile.benchmark.current_score percentile=tile.benchmark.percentile %}You scored {{ score }}/5.0, higher than {{ percentile }}% of peers{% endblocktrans %}</div>
-            {% endif %}
-            <div class="cats small muted">
-                {% for category, score in tile.categories %}<span>{{ category|category_label }} {% if score.insufficient %}<i>{{ score.message }}</i>{% else %}<b>{{ score|floatformat:1 }}</b>{% endif %}</span>{% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-
-        {% if bars %}
-        <div class="tile span">
-            <h3>{% trans 'Self vs Others Comparison' %}</h3>
-            {% include "reports/pdf/_self_vs_others.svg.html" with width=bars_width show_values=True %}
-            <div class="legend muted"><span class="key others"></span> {% trans 'Others' %} &nbsp; <span class="key self-bar"></span> {% trans 'You' %}</div>
-        </div>
-        {% endif %}
+        <div class="gap-fig"><span class="muted small">{% trans 'You see yourself' %}</span><b>{{ gap.self_score }}</b></div>
+        <div class="gap-fig"><span class="muted small">{% trans 'Others see you' %}</span><b class="indigo">{{ gap.others_score }}</b></div>
     </div>
+    {% endfor %}
 
-    <p class="notice muted small"><b>{% trans 'Privacy Notice:' %}</b> {% trans 'All responses are anonymous and aggregated. Individual reviewers cannot be identified.' %} {% blocktrans trimmed count counter=cycle.organization.min_responses_for_anonymity %}
+    {% if sections %}
+    <table class="sections">
+        <thead><tr>
+            <th class="name">{% trans 'Sections' %}</th>
+            <th class="score" colspan="2">{% trans 'Others' %}</th>
+            {% if sections.has_self %}<th class="num">{% trans 'You' %}</th>{% endif %}
+            {% for category in sections.groups %}<th class="num">{{ category|category_label }}</th>{% endfor %}
+        </tr></thead>
+        {% for row in sections.rows %}
+        <tbody class="row{% if row.growth %} grow{% endif %}">
+        <tr>
+            <td class="name"><b>{{ row.name }}</b>
+                {% if row.strength %}<div class="mark">{% trans 'strength' %}</div>
+                {% elif row.growth %}<div class="mark grow">{% trans 'area to grow' %} · {% if row.growth.priority == 'high' %}{% trans 'high priority' %}{% else %}{% trans 'medium priority' %}{% endif %}</div>{% endif %}
+            </td>
+            <td class="value">{% if row.score %}{{ row.score|floatformat:1 }}{% endif %}</td>
+            <td class="track-cell">{% if row.score %}
+                <div class="track"><i style="width: {{ row.bar }}%"></i>{% if row.tick %}<s style="left: {{ row.tick }}%"></s>{% endif %}</div>
+                <div class="small muted">{{ row.rating }}{% if row.trend %} · <span class="{{ row.trend_class }}">{{ row.trend.symbol }} {% if row.trend.change > 0 %}+{% endif %}{{ row.trend.change|floatformat:1 }}</span>{% endif %}</div>
+            {% endif %}</td>
+            {% if sections.has_self %}<td class="num">{% if row.self is not None %}{{ row.self|floatformat:1 }}{% if row.gap is not None %}<div class="small muted">{% if row.gap > 0 %}+{% endif %}{{ row.gap|floatformat:1 }}</div>{% endif %}{% endif %}</td>{% endif %}
+            {% for cell in row.cells %}<td class="num">{% if cell.hidden %}<span class="faint">–</span>{% elif cell.score is not None %}{{ cell.score|floatformat:1 }}{% endif %}</td>{% endfor %}
+        </tr>
+        {% if row.benchmark %}
+        <tr class="bench"><td colspan="{{ sections.groups|length|add:4 }}">{% blocktrans trimmed with top=row.benchmark.percentile|top_share %}Top {{ top }}% in organization{% endblocktrans %}.
+            {% if row.score|strong_rating %}{% trans 'Strong performance' %}. {% endif %}{% blocktrans trimmed with score=row.benchmark.current_score percentile=row.benchmark.percentile %}You scored {{ score }}/5.0, higher than {{ percentile }}% of peers{% endblocktrans %}.</td></tr>
+        {% endif %}
+        </tbody>
+        {% endfor %}
+    </table>
+
+    <div class="key-line small muted">
+        <span class="key others"></span> {% trans 'Others' %}{% if sections.has_self %} &nbsp; <span class="key tick"></span> {% trans 'You' %}{% endif %}
+        &nbsp;·&nbsp; {% for range in rating_ranges %}{{ range }}{% if not forloop.last %} · {% endif %}{% endfor %}
+        {% if previous_date and show_trends %}<br>{% blocktrans trimmed with date=previous_date|date:'DATE_FORMAT' %}Compared to {{ date }}{% endblocktrans %}{% endif %}
+        {% for category, message in sections.hidden %}<br>– {{ category|category_label }}: {{ message }}{% endfor %}
+    </div>
+    {% endif %}
+
+    <p class="notice small muted"><b>{% trans 'Privacy Notice:' %}</b> {% trans 'All responses are anonymous and aggregated. Individual reviewers cannot be identified.' %} {% blocktrans trimmed count counter=cycle.organization.min_responses_for_anonymity %}
         Results are only shown when there are at least {{ counter }} response per category to protect anonymity.
         {% plural %}
         Results are only shown when there are at least {{ counter }} responses per category to protect anonymity.

@@ -12,16 +12,18 @@ from weasyprint.urls import URLFetcher
 
 from core.languages import recipient_language
 from reviews.models import CATEGORY_ORDER
-from reviews.templatetags.feedback_tags import others_average, sort_categories
+from reviews.templatetags.feedback_tags import distribution_key, likert_positive_count, others_average, percentage, \
+    report_options
+
+from .report_texts import RATING_RANGES, RATINGS
+from .services import get_rating_key
 
 from .context import build_report_context
 from .dreyfus_service import AGENCY_STAGES, QUADRANTS
-from .pdf_charts import radar_chart, self_vs_others_bars
+from .pdf_charts import radar_chart
 from .pdf_summary import executive_summary
 
 FONT_DIR = settings.BASE_DIR / 'static' / 'fonts' / 'roboto'
-BARS_WIDTH = 560
-BARS_LABEL_COL = 170  # room for most section names in full
 RADAR_MIN_SECTIONS = 3  # a radar of one or two axes is a line, the bars show those
 
 # What it takes to reach an agency level: the same texts as the web report (_dreyfus_profile.html)
@@ -148,11 +150,8 @@ def _pdf_context(report):
         'show_trends': bool(comparison.get('show_trends')),
         'previous_date': _iso_date(comparison.get('previous_cycle_date')) if comparison.get('has_previous') else None,
         'radar': radar_chart(section_scores) if len(section_scores) >= RADAR_MIN_SECTIONS else None,
-        'bars': self_vs_others_bars(
-            section_scores, width=BARS_WIDTH, label_col=BARS_LABEL_COL, max_label=34, value_col=24,
-        ) if section_scores else None,
-        'bars_width': BARS_WIDTH,
-        'section_tiles': _section_tiles(data, comparison),
+        'sections': _section_table(data, insights, comparison),
+        'rating_ranges': list(RATING_RANGES.values()),
         'agency': _agency(insights.get('agency_profile')),
         'matrix': _matrix(insights.get('dreyfus_quadrant')),
         'detail_sections': _detail_sections(data),
@@ -189,30 +188,57 @@ def _trend_class(trend):
     return 'up' if direction.endswith('up') else 'down' if direction.endswith('down') else 'muted'
 
 
-def _section_tiles(data, comparison):
+def _section_table(data, insights, comparison):
+    """One row per section: the others' score, your own, and the score of each reviewer group."""
+    summary = data.get('section_summary') or {}
     trends = (comparison.get('section_trends') or {}) if comparison.get('show_trends') else {}
     benchmarks = data.get('peer_benchmarks') or {}
-    tiles = []
-    for name, categories in (data.get('section_summary') or {}).items():
+    strengths = {item['area'] for item in insights.get('strengths') or []}
+    growth = {item['area']: item for item in insights.get('development_areas') or []}
+    groups = [c for c in CATEGORY_ORDER if c != 'self' and any(c in cats for cats in summary.values())]
+    hidden = {}
+    rows = []
+    for name, categories in summary.items():
+        score = others_average(categories) or None
+        own = categories.get('self')
+        own = own if isinstance(own, (int, float)) else None
+        cells = []
+        for category in groups:
+            value = categories.get(category)
+            hidden_group = isinstance(value, dict)
+            if hidden_group:
+                hidden.setdefault(category, value.get('message'))
+            cells.append({'score': None if hidden_group else value, 'hidden': hidden_group})
         benchmark = benchmarks.get(name)
-        tiles.append({
+        rows.append({
             'name': name,
-            'score': others_average(categories) or None,
-            'categories': sort_categories(categories),
+            'score': score,
+            'rating': RATINGS[get_rating_key(score)] if score else None,
+            'bar': _percent(score),
+            'self': own,
+            'tick': _percent(own),
+            'gap': round(own - score, 1) if own is not None and score else None,
+            'cells': cells,
             'trend': trends.get(name),
             'trend_class': _trend_class(trends.get(name)),
+            'strength': name in strengths,
+            'growth': growth.get(name),
             # The reviewee sees a benchmark only when it is a good one, as on the web
             'benchmark': benchmark if benchmark and benchmark.get('show_percentile') else None,
-            'weakest': False,
         })
-    scored = [tile for tile in tiles if tile['score']]
-    if len(scored) > 1:
-        weakest = min(scored, key=lambda tile: tile['score'])
-        weakest['weakest'] = True
-        # The wide tile goes first, so it leaves no gap in the two-column grid
-        tiles.remove(weakest)
-        tiles.insert(0, weakest)
-    return tiles
+    if not rows:
+        return None
+    return {
+        'groups': groups,
+        'has_self': any(row['self'] is not None for row in rows),
+        'rows': rows,
+        'hidden': list(hidden.items()),
+    }
+
+
+def _percent(score, top=5):
+    """A score as a share of the top score, as text for a CSS width."""
+    return None if score is None else '%.1f' % (max(0, min(score, top)) / top * 100)
 
 
 def _agency(profile):
@@ -271,33 +297,49 @@ def _two_lines(name):
 def _detail_sections(data):
     sections = []
     for section in (data.get('by_section') or {}).values():
-        questions = []
-        for question in (section.get('questions') or {}).values():
-            by_category = question.get('by_category') or {}
-            order = question.get('category_order') or list(by_category)
-            groups = [
-                (category, by_category[category], _top_ratings(question, by_category[category]))
-                for category in order if category in by_category
-            ]
-            questions.append({'data': question, 'groups': groups, 'score': _question_score(question, groups)})
+        questions = [_detail_question(question) for question in (section.get('questions') or {}).values()]
         sections.append({'title': section.get('title'), 'questions': questions})
     return sections
 
 
-def _top_ratings(question, group):
-    """How many in a group rated 4 or 5, the "positive" answers of a rating question."""
-    if question.get('question_type') != 'rating':
-        return None
-    distribution = group.get('distribution') or {}
-    return distribution.get('4', 0) + distribution.get('5', 0)
+def _detail_question(question):
+    """A question with one row per reviewer group; a column per answer holds how many gave it."""
+    by_category = question.get('by_category') or {}
+    order = [c for c in (question.get('category_order') or list(by_category)) if c in by_category]
+    qtype = question.get('question_type')
+    options = report_options(question)
+    if qtype == 'rating':
+        columns = [(str(rating), str(rating)) for rating in range(1, 6)]
+    elif qtype in ('likert', 'single_choice', 'multiple_choice'):
+        columns = [(distribution_key(option), option['label']) for option in options]
+    else:
+        columns = []
+    has_avg = qtype in ('rating', 'scale') or (
+        qtype in ('single_choice', 'multiple_choice') and (question.get('question_config') or {}).get('scoring_enabled')
+    )
+
+    rows = []
+    for category in order:
+        group = by_category[category]
+        count = group.get('count') or 0
+        row = {'category': category, 'group': group, 'count': count, 'avg': group.get('avg') if has_avg else None}
+        if not group.get('insufficient'):
+            distribution = group.get('distribution') or {}
+            row['cells'] = [_cell(distribution.get(key, 0), count) for key, _label in columns]
+            if qtype == 'likert':
+                # The share in the two highest options, which the web report calls positive
+                row['positive'] = percentage(likert_positive_count(distribution, options), count)
+        rows.append(row)
+    return {
+        'data': question, 'type': qtype, 'columns': [label for _key, label in columns],
+        'has_avg': has_avg, 'has_positive': qtype == 'likert', 'rows': rows,
+        'span': len(columns) + bool(has_avg) + (qtype == 'likert'),
+    }
 
 
-def _question_score(question, groups):
-    """The others' average of a rating question, from the groups that are shown."""
-    if question.get('question_type') != 'rating':
-        return None
-    scores = [
-        group['avg'] for category, group, _top in groups
-        if category != 'self' and not group.get('insufficient') and group.get('avg') is not None
-    ]
-    return round(sum(scores) / len(scores), 2) if scores else None
+def _cell(count, total):
+    """How many gave an answer, shaded by their share of the group."""
+    if not count:
+        return {'count': None}
+    share = count / total if total else 0
+    return {'count': count, 'shade': '%.2f' % (0.08 + 0.72 * share), 'dark': share >= 0.5}

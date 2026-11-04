@@ -993,13 +993,14 @@ def self_vs_others_gap(report_data, min_threshold):
     return round(round(mean(ratings['self']), 2) - round(mean(others), 2), 2)
 
 
-def send_report_ready_notification(report, request=None):
+def send_report_ready_notification(report, request=None, pdf=None):
     """
     Send email to reviewee when their report is ready
 
     Args:
         report: Report instance
         request: Optional request object for building absolute URLs
+        pdf: Optional PDF bytes, attached to the email when given
 
     Returns:
         dict: Statistics about email sent
@@ -1008,6 +1009,8 @@ def send_report_ready_notification(report, request=None):
         'sent': 0,
         'errors': []
     }
+
+    from .pdf import pdf_filename
 
     cycle = report.cycle
     reviewee = cycle.reviewee
@@ -1035,6 +1038,7 @@ def send_report_ready_notification(report, request=None):
                 'questionnaire_name': questionnaire.name,
                 'report_url': report_url,
                 'response_count': response_count,
+                'has_attachment': pdf is not None,
             }
 
             html_message = render_to_string('emails/report_ready.html', context)
@@ -1045,6 +1049,7 @@ def send_report_ready_notification(report, request=None):
                 message=text_message,
                 recipient_list=[reviewee.email],
                 html_message=html_message,
+                attachments=[(pdf_filename(report), pdf, 'application/pdf')] if pdf else None,
             )
 
         stats['sent'] += 1

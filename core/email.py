@@ -52,7 +52,7 @@ def get_from_email():
     return settings.DEFAULT_FROM_EMAIL
 
 
-def send_email(subject, message, recipient_list, html_message=None, from_email=None):
+def send_email(subject, message, recipient_list, html_message=None, from_email=None, attachments=None):
     """
     Send email using Organization SMTP settings.
 
@@ -62,6 +62,7 @@ def send_email(subject, message, recipient_list, html_message=None, from_email=N
         recipient_list: List of recipient email addresses
         html_message: Optional HTML version of message
         from_email: Optional from email (defaults to organization setting)
+        attachments: Optional list of (filename, content, mimetype)
 
     Returns:
         Number of emails sent (0 or 1)
@@ -81,6 +82,9 @@ def send_email(subject, message, recipient_list, html_message=None, from_email=N
 
     if html_message:
         email.attach_alternative(html_message, 'text/html')
+
+    for attachment in attachments or []:
+        email.attach(*attachment)
 
     return email.send()
 

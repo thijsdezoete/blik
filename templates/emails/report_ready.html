@@ -9,5 +9,5 @@
 <p>{% blocktrans trimmed count counter=response_count %}Your 360 feedback report is ready. It is based on <strong>{{ counter }}</strong> response.{% plural %}Your 360 feedback report is ready. It is based on <strong>{{ counter }}</strong> responses.{% endblocktrans %}</p>
 <p>{% trans 'Feedback can feel personal. Read it once now, then again in two days. The second reading is usually the useful one.' %}</p>
 {% trans 'View your report' as cta %}{% include 'emails/_button.html' with url=report_url label=cta %}
-<p style="font-size:14px; color:#64748b;"><strong>{% trans 'Privacy:' %}</strong> {% trans 'Your report is confidential. The secure link above opens it.' %}</p>
+<p style="font-size:14px; color:#64748b;"><strong>{% trans 'Privacy:' %}</strong> {% if has_attachment %}{% trans 'The attached PDF holds your full report. Forward it only to people you want to read it.' %}{% else %}{% trans 'Your report is confidential. The secure link above opens it.' %}{% endif %}</p>
 {% endblock %}

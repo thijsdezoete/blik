@@ -45,6 +45,10 @@ class RadarChartTests(SimpleTestCase):
 
 
 class SelfVsOthersBarsTests(SimpleTestCase):
+    def test_others_is_the_group_mean_not_the_stored_others_avg(self):
+        bars = self_vs_others_bars({'A': {'self': 3, 'peer': 4, 'manager': 2, 'others_avg': 5}})
+        self.assertEqual(bars[0]['others'], 3.0)
+
     def test_bars_scale_to_width(self):
         bars = self_vs_others_bars(
             {'A': {'self': 5, 'peer': 2, 'manager': 4}, 'B': {'self': 2.5}}, width=480)

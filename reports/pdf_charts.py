@@ -29,7 +29,7 @@ def _wrap(title, width=RADAR_LINE):
 
 def _scores(categories):
     """(others mean, self) for one section; None where nothing was scored."""
-    others = [v for k, v in categories.items() if k != 'self' and v is not None]
+    others = [v for k, v in categories.items() if k not in ('self', 'others_avg') and v is not None]
     return (sum(others) / len(others) if others else None), categories.get('self')
 
 

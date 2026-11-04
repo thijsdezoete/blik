@@ -18,6 +18,9 @@ from . import dreyfus_service
 # Version of report_data's layout: 2 stores codes and numbers where version 1 stored English text
 REPORT_SCHEMA = 2
 
+# Everyone but the reviewee: every "others" score is about these groups, as the section scores are
+OTHERS_CATEGORIES = tuple(category for category in CATEGORY_ORDER if category != 'self')
+
 # Overall ratings, see report_texts.py for their texts
 RATING_OUTSTANDING = 'outstanding'
 RATING_EXCELLENT = 'excellent'
@@ -404,18 +407,15 @@ def _calculate_insights(report_data):
     # Collect all rating averages by section and category
     section_averages = defaultdict(lambda: defaultdict(list))
     all_self_ratings = []
-    all_peer_ratings = []
-    all_manager_ratings = []
+    others_ratings = []
 
     for section_title, category, avg in _numeric_category_averages(report_data):
         section_averages[section_title][category].append(avg)
 
         if category == 'self':
             all_self_ratings.append(avg)
-        elif category == 'peer':
-            all_peer_ratings.append(avg)
-        elif category == 'manager':
-            all_manager_ratings.append(avg)
+        elif category in OTHERS_CATEGORIES:
+            others_ratings.append(avg)
 
     # Calculate section-level averages
     # Ensure 'self' is always listed first
@@ -436,22 +436,19 @@ def _calculate_insights(report_data):
                 section_summary[section_title][category] = round(mean(ratings), 2)
 
     # Identify perception gaps (self vs others)
-    if all_self_ratings and (all_peer_ratings or all_manager_ratings):
+    if all_self_ratings and others_ratings:
         self_avg = mean(all_self_ratings)
-        others_ratings = all_peer_ratings + all_manager_ratings
-        others_avg = mean(others_ratings) if others_ratings else None
+        others_avg = mean(others_ratings)
+        gap = self_avg - others_avg
 
-        if others_avg is not None:
-            gap = self_avg - others_avg
-
-            if gap_type := get_gap_type(gap):
-                insights['perception_gaps'].append({
-                    'type': gap_type,
-                    'severity': get_gap_severity(gap),
-                    'self_score': round(self_avg, 2),
-                    'others_score': round(others_avg, 2),
-                    'gap': round(gap, 2),
-                })
+        if gap_type := get_gap_type(gap):
+            insights['perception_gaps'].append({
+                'type': gap_type,
+                'severity': get_gap_severity(gap),
+                'self_score': round(self_avg, 2),
+                'others_score': round(others_avg, 2),
+                'gap': round(gap, 2),
+            })
 
     # Identify strengths (avg >= 4.0) and development areas (avg < 3.0)
     for section_title, categories in section_summary.items():
@@ -514,7 +511,6 @@ def _calculate_insights(report_data):
         )
 
     # Overall sentiment - based on others only (exclude self)
-    others_ratings = all_peer_ratings + all_manager_ratings
     if others_ratings:
         overall_avg = mean(others_ratings)
         insights['overall_sentiment'] = {
@@ -967,9 +963,6 @@ def get_report_summary(report):
     return summary
 
 
-OTHERS_CATEGORIES = ('peer', 'manager')  # same "others" as insights['overall_sentiment']
-
-
 def self_vs_others_gap(report_data, min_threshold):
     """
     Self-assessment minus the others' average, from the stored report data.
@@ -978,8 +971,8 @@ def self_vs_others_gap(report_data, min_threshold):
     The others' average only counts groups that are visible at the threshold
     (the manager always is), so a hidden group cannot be solved from this
     number. None when there is no self-assessment, no visible others' score,
-    or fewer other reviewers (peer + manager, hidden or not) than the
-    organization's anonymity threshold.
+    or fewer other reviewers (all of OTHERS_CATEGORIES, hidden or not) than
+    the organization's anonymity threshold.
     """
     reviewers = reviewer_counts(report_data)
     if sum(reviewers.get(c, 0) for c in OTHERS_CATEGORIES) < min_threshold:
@@ -990,7 +983,7 @@ def self_vs_others_gap(report_data, min_threshold):
     for _title, category, avg in _numeric_category_averages(_without_groups(report_data, hidden)):
         ratings[category].append(avg)
 
-    others = ratings['peer'] + ratings['manager']
+    others = [avg for category in OTHERS_CATEGORIES for avg in ratings[category]]
     if not ratings['self'] or not others:
         return None
 

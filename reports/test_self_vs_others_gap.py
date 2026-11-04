@@ -1,6 +1,6 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
 
-from .services import REPORT_SCHEMA, self_vs_others_gap
+from .services import REPORT_SCHEMA, _calculate_insights, apply_display_anonymization, self_vs_others_gap
 
 
 def _report_data(self_avg, others_score, counts):
@@ -63,3 +63,44 @@ class HiddenGroupGapTests(SimpleTestCase):
 
         self.assertEqual(self_vs_others_gap(data, min_threshold=3), 1.0)
         self.assertEqual(self_vs_others_gap(data, min_threshold=2), 0.0)
+
+
+def _three_groups(direct_report_count):
+    """Self 2.0, three peers 3.0, a manager 4.0 and direct reports 5.0 on one rating question."""
+    return {
+        'schema': REPORT_SCHEMA,
+        'by_section': {'1': {'title': 'Craft', 'questions': {'10': {'question_type': 'rating', 'by_category': {
+            'self': {'count': 1, 'avg': 2.0}, 'peer': {'count': 3, 'avg': 3.0}, 'manager': {'count': 1, 'avg': 4.0},
+            'direct_report': {'count': direct_report_count, 'avg': 5.0},
+        }}}}},
+    }
+
+
+class OthersIncludeDirectReportsTests(TestCase):
+    """Every "others" score counts peers, managers and direct reports, never self; a hidden group is left out."""
+
+    def test_overall_score_and_perception_gap_include_direct_reports(self):
+        insights, _summary = _calculate_insights(_three_groups(direct_report_count=3))
+
+        self.assertEqual(insights['overall_sentiment']['score'], 4.0)  # (3 + 4 + 5) / 3; peers and manager only: 3.5
+        self.assertEqual(insights['overall_sentiment']['self_avg'], 2.0)
+        gap, = insights['perception_gaps']
+        self.assertEqual((gap['self_score'], gap['others_score'], gap['gap']), (2.0, 4.0, -2.0))
+
+    def test_self_vs_others_gap_includes_direct_reports(self):
+        self.assertEqual(self_vs_others_gap(_three_groups(direct_report_count=3), min_threshold=3), -2.0)
+
+    def test_direct_reports_count_towards_the_reviewer_gate(self):
+        data = _three_groups(direct_report_count=3)
+        del data['by_section']['1']['questions']['10']['by_category']['peer']
+        # A manager and three direct reports are four others, enough at threshold 3; a manager alone is not
+        self.assertEqual(self_vs_others_gap(data, min_threshold=3), -2.5)
+
+    def test_hidden_direct_reports_are_left_out(self):
+        data = _three_groups(direct_report_count=2)
+
+        displayed = apply_display_anonymization(data, min_threshold=3)
+
+        self.assertEqual(displayed['insights']['overall_sentiment']['score'], 3.5)  # peers and manager only
+        self.assertEqual(displayed['insights']['perception_gaps'][0]['others_score'], 3.5)
+        self.assertEqual(self_vs_others_gap(data, min_threshold=3), -1.5)

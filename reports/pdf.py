@@ -154,7 +154,6 @@ def _pdf_context(report):
         'agency': _agency(insights.get('agency_profile')),
         'matrix': _matrix(insights.get('dreyfus_quadrant')),
         'detail_sections': _detail_sections(data),
-        'top_ratings': [{'id': 4}, {'id': 5}],  # the "positive" ratings, counted like the two top likert options
         'font_dir': FONT_DIR.as_uri(),
     })
     return context
@@ -274,10 +273,21 @@ def _detail_sections(data):
         for question in (section.get('questions') or {}).values():
             by_category = question.get('by_category') or {}
             order = question.get('category_order') or list(by_category)
-            groups = [(category, by_category[category]) for category in order if category in by_category]
+            groups = [
+                (category, by_category[category], _top_ratings(question, by_category[category]))
+                for category in order if category in by_category
+            ]
             questions.append({'data': question, 'groups': groups, 'score': _question_score(question, groups)})
         sections.append({'title': section.get('title'), 'questions': questions})
     return sections
+
+
+def _top_ratings(question, group):
+    """How many in a group rated 4 or 5, the "positive" answers of a rating question."""
+    if question.get('question_type') != 'rating':
+        return None
+    distribution = group.get('distribution') or {}
+    return distribution.get('4', 0) + distribution.get('5', 0)
 
 
 def _question_score(question, groups):
@@ -285,7 +295,7 @@ def _question_score(question, groups):
     if question.get('question_type') != 'rating':
         return None
     scores = [
-        group['avg'] for category, group in groups
+        group['avg'] for category, group, _top in groups
         if category != 'self' and not group.get('insufficient') and group.get('avg') is not None
     ]
     return round(sum(scores) / len(scores), 2) if scores else None

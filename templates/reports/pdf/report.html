@@ -1,5 +1,5 @@
 {% load i18n %}<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+{% get_current_language as LANGUAGE_CODE %}<html lang="{{ LANGUAGE_CODE }}">
 <head>
 <meta charset="utf-8">
 <title>{% trans '360 Feedback Report' %} · {{ reviewee_name }}</title>
@@ -108,7 +108,7 @@ li { margin-bottom: 0.6mm; }
 .group > .tile { margin-bottom: 3mm; }
 .group > .tile:last-child { margin-bottom: 0; }
 .diamonds { padding: 1.5mm 3mm; }
-.diamonds svg { display: block; width: 100%; height: auto; }
+.diamonds svg { display: block; width: 78%; height: auto; margin: 0 auto; }  /* stage labels at about body size */
 .two-col { display: flex; gap: 6mm; }
 .two-col > div { flex: 1; }
 .sub { font-weight: 500; margin-top: 1.5mm; }
@@ -146,7 +146,8 @@ li { margin-bottom: 0.6mm; }
 .detail-section { margin-bottom: 2mm; }
 .section-title { font-size: 11.5pt; margin: 4mm 0 2mm; padding-bottom: 1mm; border-bottom: 0.5pt solid #e5e7eb; }
 .question { margin-bottom: 2.5mm; }
-.text-question { break-inside: auto; }
+.keep { break-inside: avoid; }
+.keep .quotes { margin-bottom: 2mm; }
 .question-head { break-inside: avoid; break-after: avoid; }
 .question h4 { margin: 0 0 1mm; font-size: 9.5pt; }
 .question .bar { width: 60%; }
@@ -164,9 +165,9 @@ li { margin-bottom: 0.6mm; }
 .consensus { font-size: 6.8pt; color: #047857; margin: 0.5mm 0; }
 .dist { margin-top: 1mm; }
 .dist-row { font-size: 6.8pt; margin-bottom: 0.8mm; break-inside: avoid; }
-.dist-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1.5mm; }
-.dist-label { color: #374151; }
-.dist-count { flex: none; color: #6b7280; }
+.dist-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; column-gap: 1.5mm; }  /* a long count drops under the label */
+.dist-label { flex: 1 1 auto; max-width: 100%; color: #374151; }
+.dist-count { flex: none; margin-left: auto; white-space: nowrap; color: #6b7280; }
 .dist-bar { height: 1.1mm; background: #e5e7eb; border-radius: 0.6mm; }
 .dist-bar i { display: block; height: 100%; background: #4f46e5; border-radius: 0.6mm; }
 .insufficient { font-size: 7pt; color: #9ca3af; font-style: italic; margin: 0.5mm 0; }

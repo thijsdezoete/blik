@@ -123,6 +123,8 @@ class ReportPdfTests(TestCase):
         html = report_pdf_html(report, 'en')
 
         self.assertIn('67%', html)  # two of three peers rated 5
+        self.assertIn('Strong consensus: 100% positive (3 of 3 respondents)', html)  # peers on Teamwork
+        self.assertNotIn('(1 of 1 respondents)', html)  # a group of one has no consensus
         self.assertRegex(html, r'Scale:[^<]*1 = Waits for instructions[^<]*5 = Self-driven')
         self.assertIn('3 responses', html)
         strengths = report.report_data['insights']['strengths']

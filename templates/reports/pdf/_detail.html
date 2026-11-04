@@ -21,19 +21,21 @@
             </div>
 
             {% if q.question_type == 'text' %}
-                {% for category, cat_data in question.groups %}
+                {% for category, cat_data, top in question.groups %}
                 <div class="text-group">
-                    <div class="group-label"><span class="badge badge-{{ category }}">{{ category|category_label }}</span> <span class="muted tiny">{% blocktrans trimmed count counter=cat_data.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span></div>
+                    <div class="keep"><div class="group-label"><span class="badge badge-{{ category }}">{{ category|category_label }}</span> <span class="muted tiny">{% blocktrans trimmed count counter=cat_data.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span></div>
+                    {# The label keeps its first row of quotes, so a page never ends with a lone label #}
                     {% if cat_data.insufficient %}
-                    <div class="insufficient">{{ cat_data.message }}</div>
+                    <div class="insufficient">{{ cat_data.message }}</div></div>
                     {% else %}
-                    <div class="quotes">{% for response in cat_data.responses %}{% if response %}<div class="quote">{{ response }}</div>{% endif %}{% endfor %}</div>
+                    <div class="quotes">{% for response in cat_data.responses|slice:":2" %}{% if response %}<div class="quote">{{ response }}</div>{% endif %}{% endfor %}</div></div>
+                    {% if cat_data.responses|length > 2 %}<div class="quotes">{% for response in cat_data.responses|slice:"2:" %}{% if response %}<div class="quote">{{ response }}</div>{% endif %}{% endfor %}</div>{% endif %}
                     {% endif %}
                 </div>
                 {% endfor %}
             {% else %}
             <div class="groups">
-                {% for category, cat_data in question.groups %}
+                {% for category, cat_data, top in question.groups %}
                 <div class="group-col">
                     <div class="group-label"><span class="badge badge-{{ category }}">{{ category|category_label }}</span> <span class="muted tiny">{% blocktrans trimmed count counter=cat_data.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span></div>
                     {% if cat_data.insufficient %}
@@ -52,9 +54,9 @@
                     {% if q.question_type == 'rating' and cat_data.avg %}
                         <div class="avg">{{ cat_data.avg }}<small> / 5.0</small></div>
                         {% if cat_data.distribution %}
-                        {% with positive=cat_data.distribution|likert_positive_count:top_ratings %}{% with positive_pct=positive|percentage:cat_data.count %}
-                        {% if positive_pct >= 70 and category != 'self' %}<div class="consensus">{% blocktrans trimmed with pct=positive_pct positive=positive total=cat_data.count %}Strong consensus: {{ pct }}% positive ({{ positive }} of {{ total }} respondents){% endblocktrans %}</div>{% endif %}
-                        {% endwith %}{% endwith %}
+                        {% with positive=top positive_pct=top|percentage:cat_data.count %}
+                        {% if positive_pct >= 70 and cat_data.count > 1 %}<div class="consensus">{% blocktrans trimmed with pct=positive_pct positive=positive total=cat_data.count %}Strong consensus: {{ pct }}% positive ({{ positive }} of {{ total }} respondents){% endblocktrans %}</div>{% endif %}
+                        {% endwith %}
                         <div class="dist">
                         {% for rating in "54321" %}{% with rating_int=rating|add:"0" %}{% with count=cat_data.distribution|get_item:rating_int|default:0 %}{% if count > 0 %}{% with pct=count|percentage:cat_data.count %}
                             <div class="dist-row"><div class="dist-head"><span class="dist-label">{{ rating_int }} - {{ q|get_rating_label:rating_int }}</span><span class="dist-count">{{ count }} ({{ pct }}%)</span></div><div class="dist-bar"><i style="width: {{ pct }}%"></i></div></div>

@@ -100,4 +100,16 @@ class ExecutiveSummaryTests(TestCase):
         self.assertIsNone(summary['self_gap'])
         self.assertEqual(summary['strengths'], [])
         self.assertEqual(summary['growth'], [])
-        self.assertEqual(summary['sections_below_self_count'], 0)
+        self.assertIsNone(summary['sections_below_self_count'])
+
+    def test_sections_below_self_skips_sections_without_visible_others(self):
+        self.organization.min_responses_for_anonymity = 3
+        self.organization.save()
+        # Peers are hidden everywhere, so only the section with a manager score can be compared
+        self.add_section('Craft', {'self': [5], 'peer': [2, 2], 'manager': [3]})
+        self.add_section('Teamwork', {'self': [1], 'peer': [4, 4]})
+
+        summary = self.summary()
+
+        self.assertEqual(summary['sections_below_self_count'], 1)
+

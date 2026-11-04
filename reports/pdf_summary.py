@@ -41,14 +41,12 @@ def executive_summary(context):
 
 
 def _sections_below_self(section_summary):
-    """Sections where the visible others score lower than self, or None when nobody has a self score."""
+    """Sections where the visible others score lower than self, or None when no section has both."""
     count = None
     for categories in section_summary.values():
         scores = {c: v for c, v in categories.items() if not isinstance(v, dict)}
         self_score = scores.pop('self', None)
-        if self_score is None:
+        if self_score is None or not scores:
             continue
-        count = count or 0
-        if scores and mean(scores.values()) < self_score:
-            count += 1
+        count = (count or 0) + (mean(scores.values()) < self_score)
     return count

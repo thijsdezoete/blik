@@ -101,7 +101,7 @@ def delete_expired_pdfs(now=None):
     """Delete stored PDFs past their retention period. Returns how many."""
     now = now or timezone.now()
     deleted = 0
-    for report in Report.objects.exclude(pdf_file='').select_related('cycle__reviewee__organization'):
+    for report in Report.objects.exclude(pdf_file='').select_related('cycle__reviewee__organization').defer('report_data'):
         if report.pdf_expires_at is None or report.pdf_expires_at <= now:
             drop_report_pdf(report)
             deleted += 1

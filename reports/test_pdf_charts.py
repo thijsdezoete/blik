@@ -31,6 +31,18 @@ class RadarChartTests(SimpleTestCase):
         self.assertEqual(len(chart['axes'][0]['label']), 22)
         self.assertTrue(chart['axes'][0]['label'].endswith('…'))
 
+    def test_radar_wraps_labels_on_two_lines(self):
+        chart = radar_chart({'Industry Fit & Problem Solving': {'peer': 3}, 'B': {'peer': 3}, 'C': {'peer': 3}})
+        self.assertEqual(chart['axes'][0]['lines'], ['Industry Fit &', 'Problem Solving'])
+        self.assertEqual(chart['axes'][1]['lines'], ['B'])
+
+    def test_radar_cuts_the_second_line_short(self):
+        chart = radar_chart({'Knowledge Sharing & Mentorship of the whole team': {'peer': 3}})
+        first, second = chart['axes'][0]['lines']
+        self.assertEqual(first, 'Knowledge Sharing')
+        self.assertEqual(len(second), 18)
+        self.assertTrue(second.endswith('…'))
+
 
 class SelfVsOthersBarsTests(SimpleTestCase):
     def test_bars_scale_to_width(self):
@@ -57,4 +69,4 @@ class SvgPartialTests(SimpleTestCase):
         for svg in (radar, bars):
             self.assertIn('<svg', svg)
             self.assertNotRegex(svg, r'(?:x|y|width|x2|y2)="[^"]*,')
-        self.assertIn('viewBox="-90 -24 420 288"', radar)
+        self.assertIn('viewBox="-90 -34 420 308"', radar)

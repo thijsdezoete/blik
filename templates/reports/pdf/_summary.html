@@ -1,0 +1,79 @@
+{% load i18n feedback_tags %}{% with s=summary_figures sentiment=report_data.insights.overall_sentiment %}
+<section class="summary-page">
+    <header class="masthead">
+        <div>
+            <div class="eyebrow">{% trans '360 Feedback Report' %} · {% trans 'Confidential' %}</div>
+            <h1>{{ reviewee_name }}</h1>
+            <div class="muted">{{ questionnaire.name }} · {% trans 'Review Date' %} {{ cycle.created_at|date:'DATE_FORMAT' }} · {{ responses_line }}</div>
+        </div>
+        <div class="brand">Blik360</div>
+    </header>
+    <div class="rule"></div>
+
+    <div class="figs">
+        {% if s.overall %}
+        <div class="fig">
+            <span class="muted">{% trans 'Overall Rating' %}</span>
+            <b>{{ s.overall.score }}<small> /5</small></b>
+            <span class="fig-label">{{ s.overall.rating }}</span>
+            {% if show_trends and s.overall.trend %}
+            <span class="{{ s.overall.trend_class }}">{{ s.overall.trend.symbol }} {% if s.overall.trend.change > 0 %}+{% endif %}{{ s.overall.trend.change|floatformat:1 }} {{ s.overall.trend.label }}</span>
+            {% endif %}
+            {% if previous_date %}<span class="muted tiny">{% blocktrans trimmed with date=previous_date|date:'DATE_FORMAT' %}Compared to {{ date }}{% endblocktrans %}</span>{% endif %}
+        </div>
+        {% endif %}
+        {% if s.self_gap %}
+        <div class="fig">
+            <span class="muted">{% trans 'You see yourself' %}</span>
+            <b>{{ s.self_gap.self_avg }}<small> /5</small></b>
+            <span class="muted">{% with gap=s.self_gap.gap %}{% if gap >= 0.05 %}{% blocktrans trimmed with gap=gap|floatformat:1 %}{{ gap }} above others{% endblocktrans %}{% elif gap <= -0.05 %}{% blocktrans trimmed with gap=s.self_gap.size|floatformat:1 %}{{ gap }} below others{% endblocktrans %}{% else %}{% trans 'Same as others' %}{% endif %}{% endwith %}</span>
+        </div>
+        {% endif %}
+        {% if s.skill %}
+        <div class="fig">
+            <span class="muted">{% trans 'Skill Level' %}</span>
+            <b class="stage skill">{{ s.skill.stage }}</b>
+            <span class="muted">{% blocktrans trimmed with level=s.skill.level %}Level {{ level }}/5.0{% endblocktrans %}</span>
+        </div>
+        {% endif %}
+        {% if s.agency %}
+        <div class="fig">
+            <span class="muted">{% trans 'Agency & Initiative' %}</span>
+            <b class="stage agency">{{ s.agency.stage }}</b>
+            <span class="muted">{% blocktrans trimmed with level=s.agency.level %}Level {{ level }}/5.0{% endblocktrans %}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="summary-columns">
+        <div class="summary-text">
+            <h2>{% trans 'Summary' %}</h2>
+            {% if s.overall %}<p>{% blocktrans trimmed with rating=s.overall.rating %}Others rate you <b>{{ rating }}</b> overall.{% endblocktrans %}
+            {% if s.quadrant %}{% blocktrans trimmed with name=s.quadrant.name description=s.quadrant.description %}You are a <b>{{ name }}</b>: {{ description }}.{% endblocktrans %}{% endif %}</p>{% endif %}
+            {% if s.sections_below_self_count is not None %}<p>{% if s.sections_below_self_count %}{% blocktrans trimmed count counter=s.sections_below_self_count %}On {{ counter }} section, others score you lower than you score yourself.{% plural %}On {{ counter }} sections, others score you lower than you score yourself.{% endblocktrans %}{% else %}{% trans 'Others score you at least as high as you score yourself in every section.' %}{% endif %}</p>{% endif %}
+
+            {% if s.strengths %}
+            <h4>{% trans 'Strengths' %}</h4>
+            <ul>{% for item in s.strengths %}<li>{{ item.area }}, {{ item.others_avg }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% if s.growth %}
+            <h4>{% trans 'Areas to grow' %}</h4>
+            <ul>{% for item in s.growth %}<li>{{ item.area }}, {{ item.others_avg }}</li>{% endfor %}</ul>
+            {% endif %}
+            {% if s.next_steps %}
+            <h4>{% trans 'Next step' %}</h4>
+            <ul>{% for step in s.next_steps %}<li>{{ step }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        {% if radar %}
+        <div class="summary-radar">
+            <h2>{% trans 'Sections' %}</h2>
+            {% include "reports/pdf/_radar.svg.html" %}
+            <div class="legend muted"><span class="key others"></span> {% trans 'Others' %} &nbsp; <span class="key self"></span> {% trans 'You' %}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="read-twice muted">{% trans 'Feedback can feel personal. Read it once now, then again in two days. The second reading is usually the useful one.' %}</div>
+</section>
+{% endwith %}

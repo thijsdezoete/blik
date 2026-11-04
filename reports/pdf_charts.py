@@ -5,11 +5,26 @@ LABEL_COL = 120
 ROW_H = 22
 MAX_LABEL = 22
 RADAR_PAD_X = 90
-RADAR_PAD_Y = 24
+RADAR_PAD_Y = 34
+RADAR_LINE = 18  # characters per line of a wrapped axis label
 
 
 def _short(title):
     return title if len(title) <= MAX_LABEL else title[:MAX_LABEL - 1] + '…'
+
+
+def _wrap(title, width=RADAR_LINE):
+    """The title on at most two lines of about `width` characters; the second line is cut short when needed."""
+    words = title.split()
+    first = ''
+    while words and len(f'{first} {words[0]}'.strip()) <= width:
+        first = f'{first} {words.pop(0)}'.strip()
+    if not first:  # one long word
+        return [_short(title)]
+    rest = ' '.join(words)
+    if not rest:
+        return [first]
+    return [first, rest if len(rest) <= width else rest[:width - 1] + '…']
 
 
 def _scores(categories):
@@ -42,9 +57,13 @@ def radar_chart(section_scores, size=240):
         x2, y2 = point(i, 5)
         lx, ly = point(i, 5.6)
         sin = math.sin(2 * math.pi * i / n)
+        cos = math.cos(2 * math.pi * i / n)
+        lines = _wrap(title)
+        # Labels above the centre grow upwards, so a second line never covers the chart
+        ly += 2 - (len(lines) - 1) * 11 * (1 if cos > 0.2 else 0.5 if cos > -0.2 else 0)
         axes.append({
             'x1': c, 'y1': c, 'x2': round(x2, 1), 'y2': round(y2, 1),
-            'label': _short(title), 'lx': round(lx, 1), 'ly': round(ly + 2, 1),
+            'label': _short(title), 'lines': lines, 'lx': round(lx, 1), 'ly': round(ly, 1),
             'anchor': 'middle' if abs(sin) < 0.2 else ('start' if sin > 0 else 'end'),
         })
 
@@ -62,9 +81,12 @@ def radar_chart(section_scores, size=240):
     }
 
 
-def self_vs_others_bars(section_scores, width=480):
-    """One row per section: others/self scores and bar widths (score 5 = full bar)."""
-    full = width - LABEL_COL
+def self_vs_others_bars(section_scores, width=480, label_col=LABEL_COL, max_label=MAX_LABEL, value_col=0):
+    """One row per section: others/self scores and bar widths (score 5 = full bar).
+
+    value_col reserves room right of the bars for the scores.
+    """
+    full = width - label_col - value_col
 
     def bar(score):
         return score / 5 * full if score is not None else 0
@@ -73,7 +95,8 @@ def self_vs_others_bars(section_scores, width=480):
     for i, (title, cats) in enumerate(section_scores.items()):
         others, own = _scores(cats)
         rows.append({
-            'label': _short(title), 'others': others, 'self': own,
+            'label': title if len(title) <= max_label else title[:max_label - 1] + '…',
+            'others': others, 'self': own, 'x': label_col,
             'others_w': bar(others), 'self_w': bar(own), 'y': i * ROW_H,
         })
     return rows

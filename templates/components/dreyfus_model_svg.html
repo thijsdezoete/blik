@@ -1,6 +1,6 @@
 {% load i18n diagram_tags %}
 {% with current_stage=current_stage|default:'' %}
-<svg class="dreyfus-model framework-diagram framework-diagram--outlined" data-current-stage="{{ current_stage|default:'' }}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 912 516">
+<svg class="dreyfus-model framework-diagram framework-diagram--outlined" data-current-stage="{{ current_stage|default:'' }}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="{{ view_box|default:'0 0 912 516' }}">
     <g id="items" class="framework-diagram-layers">
         <g id="blend" class="framework-diagram-blend">
             <g id="g-root-cp_1_container_40cazz18dfq-fill"{{ 1|stage_opacity:current_stage }} data-item-order="-362867" transform="translate(52, 129)"></g>
@@ -10,57 +10,57 @@
             <g id="g-root-cp_5_container_4_1hdudsbz18flu-fill"{{ 5|stage_opacity:current_stage }} data-item-order="-362835" transform="translate(734, 151)"></g>
             <g id="g-root-tx_dreyfusm_1430ci3z18e0z-fill" data-item-order="0" transform="translate(248, 38)">
                 <g id="tx_dreyfusm_1430ci3z18e0z-fill-merged" stroke="none" fill="var(--text-primary)" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-title" transform="translate(208, 28)" font-weight="bold" font-size="25px" font-family="sans-serif"><tspan x="0" y="14.5" dominant-baseline="ideographic">{% trans 'Dreyfus Model of Skill Acquisition' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-title" transform="translate(208, 28)" font-weight="bold" font-size="25px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="14.5" dominant-baseline="ideographic">{% trans 'Dreyfus Model of Skill Acquisition' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_novice_hwjayzz18d8s-fill" data-item-order="0" transform="translate(74, 326)">
                 <g id="tx_novice_hwjayzz18d8s-fill-merged" stroke="none" fill="{% if current_stage == 'novice' %}#3b82f6{% else %}var(--text-primary){% endif %}" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(46, 22)" font-weight="bold" font-size="20px" font-family="sans-serif"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Novice' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(46, 22)" font-weight="bold" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Novice' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_advanced_59ah7z18fly-fill" data-item-order="0" transform="translate(230, 302)">
                 <g id="tx_advanced_59ah7z18fly-fill-merged" stroke="none" fill="{% if current_stage == 'advanced_beginner' %}#3b82f6{% else %}var(--text-primary){% endif %}" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(64, 34)" font-weight="bold" font-size="20px" font-family="sans-serif"><tspan x="0" y="-0.5" dominant-baseline="ideographic">{% trans 'Advanced' %}</tspan><tspan x="0" y="23.5" dominant-baseline="ideographic">{% trans 'Beginner' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(64, 34)" font-weight="bold" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="-0.5" dominant-baseline="ideographic">{% trans 'Advanced' %}</tspan><tspan x="0" y="23.5" dominant-baseline="ideographic">{% trans 'Beginner' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_competen_1hfpt1nz18em8-fill" data-item-order="0" transform="translate(392, 302)">
                 <g id="tx_competen_1hfpt1nz18em8-fill-merged" stroke="none" fill="{% if current_stage == 'competent' %}#3b82f6{% else %}var(--text-primary){% endif %}" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(64, 22)" font-weight="bold" font-size="20px" font-family="sans-serif"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Competent' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(64, 22)" font-weight="bold" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Competent' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_proficie_144vrrfz18d1e-fill" data-item-order="0" transform="translate(566, 314)">
                 <g id="tx_proficie_144vrrfz18d1e-fill-merged" stroke="none" fill="{% if current_stage == 'proficient' %}#3b82f6{% else %}var(--text-primary){% endif %}" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(58, 22)" font-weight="bold" font-size="20px" font-family="sans-serif"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Proficient' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(58, 22)" font-weight="bold" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Proficient' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_expert_hxs957z18ff0-fill" data-item-order="0" transform="translate(746, 314)">
                 <g id="tx_expert_hxs957z18ff0-fill-merged" stroke="none" fill="{% if current_stage == 'expert' %}#3b82f6{% else %}var(--text-primary){% endif %}" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(46, 22)" font-weight="bold" font-size="20px" font-family="sans-serif"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Expert' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-label" transform="translate(46, 22)" font-weight="bold" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'Expert' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_rigidrul_4l2slnz18etp-fill" data-item-order="0" transform="translate(62, 362)">
                 <g id="tx_rigidrul_4l2slnz18etp-fill-merged" stroke="none" fill="var(--text-primary)" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(58, 34)" font-size="20px" font-family="sans-serif"><tspan x="0" y="-0.5" dominant-baseline="ideographic">{% trans 'Rigid rule' %}</tspan><tspan x="0" y="23.5" dominant-baseline="ideographic">{% trans 'follower' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(58, 34)" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="-0.5" dominant-baseline="ideographic">{% trans 'Rigid rule' %}</tspan><tspan x="0" y="23.5" dominant-baseline="ideographic">{% trans 'follower' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_recogniz_1lvjb63z18dtz-fill" data-item-order="0" transform="translate(206, 362)">
                 <g id="tx_recogniz_1lvjb63z18dtz-fill-merged" stroke="none" fill="var(--text-primary)" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(88, 46)" font-size="20px" font-family="sans-serif"><tspan x="0" y="-12.5" dominant-baseline="ideographic">{% trans 'Recognizes' %}</tspan><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'patterns, needs' %}</tspan><tspan x="0" y="35.5" dominant-baseline="ideographic">{% trans 'guidelines' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(88, 46)" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="-12.5" dominant-baseline="ideographic">{% trans 'Recognizes' %}</tspan><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'patterns, needs' %}</tspan><tspan x="0" y="35.5" dominant-baseline="ideographic">{% trans 'guidelines' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_develops_18k2ssrz18fex-fill" data-item-order="0" transform="translate(374, 338)">
                 <g id="tx_develops_18k2ssrz18fex-fill-merged" stroke="none" fill="var(--text-primary)" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(82, 58)" font-size="20px" font-family="sans-serif"><tspan x="0" y="-24.5" dominant-baseline="ideographic">{% trans 'Develops' %}</tspan><tspan x="0" y="-0.5" dominant-baseline="ideographic">{% trans 'mental models,' %}</tspan><tspan x="0" y="23.5" dominant-baseline="ideographic">{% trans 'takes' %}</tspan><tspan x="0" y="47.5" dominant-baseline="ideographic">{% trans 'responsibility' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(82, 58)" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="-24.5" dominant-baseline="ideographic">{% trans 'Develops' %}</tspan><tspan x="0" y="-0.5" dominant-baseline="ideographic">{% trans 'mental models,' %}</tspan><tspan x="0" y="23.5" dominant-baseline="ideographic">{% trans 'takes' %}</tspan><tspan x="0" y="47.5" dominant-baseline="ideographic">{% trans 'responsibility' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_seestheb_qtf9e3z18emb-fill" data-item-order="0" transform="translate(542, 350)">
                 <g id="tx_seestheb_qtf9e3z18emb-fill-merged" stroke="none" fill="var(--text-primary)" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(82, 46)" font-size="20px" font-family="sans-serif"><tspan x="0" y="-12.5" dominant-baseline="ideographic">{% trans 'Sees the big' %}</tspan><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'picture, learns' %}</tspan><tspan x="0" y="35.5" dominant-baseline="ideographic">{% trans 'from others' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(82, 46)" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="-12.5" dominant-baseline="ideographic">{% trans 'Sees the big' %}</tspan><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'picture, learns' %}</tspan><tspan x="0" y="35.5" dominant-baseline="ideographic">{% trans 'from others' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-tx_intuitiv_dil83vz18d1h-fill" data-item-order="0" transform="translate(722, 350)">
                 <g id="tx_intuitiv_dil83vz18d1h-fill-merged" stroke="none" fill="var(--text-primary)" fill-opacity="1">
-                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(70, 46)" font-size="20px" font-family="sans-serif"><tspan x="0" y="-12.5" dominant-baseline="ideographic">{% trans 'Intuitive,' %}</tspan><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'creates new' %}</tspan><tspan x="0" y="35.5" dominant-baseline="ideographic">{% trans 'approaches' %}</tspan></text></g>
+                    <g><text text-anchor="middle" class="framework-diagram-caption" transform="translate(70, 46)" font-size="20px" font-family="{{ font_family|default:'sans-serif' }}"><tspan x="0" y="-12.5" dominant-baseline="ideographic">{% trans 'Intuitive,' %}</tspan><tspan x="0" y="11.5" dominant-baseline="ideographic">{% trans 'creates new' %}</tspan><tspan x="0" y="35.5" dominant-baseline="ideographic">{% trans 'approaches' %}</tspan></text></g>
                 </g>
             </g>
             <g id="g-root-cp_1_container_40cazz18dfq-stroke"{{ 1|stage_opacity:current_stage }} data-item-order="-362867" transform="translate(52, 129)">

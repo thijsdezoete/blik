@@ -190,6 +190,9 @@ LANGUAGES = [
     ('en', 'English'),
     ('de', 'Deutsch (Sie)'),
     ('de-informal', 'Deutsch (Du)'),
+    ('fr', 'Français'),
+    ('es', 'Español'),
+    ('it', 'Italiano'),
 ]
 
 LOCALE_PATHS = [BASE_DIR / 'locale']
@@ -284,7 +287,6 @@ ORGANIZATION_NAME = env('ORGANIZATION_NAME', default='Blik')
 SITE_NAME = 'Blik360'
 SITE_DOMAIN = env('SITE_DOMAIN', default='localhost:8000' if DEBUG else 'blik360.com')
 SITE_PROTOCOL = env('SITE_PROTOCOL', default='http' if DEBUG else 'https')
-SITE_URL = f'{SITE_PROTOCOL}://{SITE_DOMAIN}'
 SITE_DESCRIPTION = 'Open source 360-degree feedback and performance review platform. Anonymous, secure, and easy to deploy.'
 SITE_KEYWORDS = '360 feedback, performance review, peer review, employee feedback, open source, self-hosted'
 

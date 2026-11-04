@@ -1,5 +1,5 @@
 {% extends "admin_dashboard/base.html" %}
-{% load i18n %}
+{% load i18n url_tags %}
 
 {% block title %}{% blocktrans trimmed with name=cycle.reviewee.name %}Send Reminders - {{ name }}{% endblocktrans %}{% endblock %}
 
@@ -55,7 +55,7 @@
                             {{ token.token }}
                         </td>
                         <td>
-                            <button onclick="copyToken('{{ token.token }}')" class="btn btn-sm btn-secondary">
+                            <button data-url="{% absolute_url 'reviews:feedback_form' token.token %}" onclick="copyLink(this.dataset.url)" class="btn btn-sm btn-secondary">
                                 {% trans 'Copy Link' %}
                             </button>
                         </td>
@@ -125,8 +125,7 @@
 
 {% blocktrans trimmed asvar copy_failed_msg with url='%(url)s' %}Failed to copy. URL: {{ url }}{% endblocktrans %}
 <script>
-function copyToken(token) {
-    const url = `${window.location.origin}/feedback/${token}/`;
+function copyLink(url) {
     navigator.clipboard.writeText(url).then(() => {
         showCopyFeedback('{{ _('Link copied to clipboard')|escapejs }}');
     }).catch(() => {

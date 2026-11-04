@@ -97,6 +97,17 @@
         </div>
         {% endif %}
 
+        <div class="actions">
+            {% if pdf_valid %}
+            <a href="{% if is_admin_view %}{% url 'reports:report_pdf' cycle.uuid %}{% else %}{% url 'reports:reviewee_report_pdf' report.access_token %}{% endif %}" class="btn btn-primary">{% trans 'Download PDF' %}</a>
+            {% else %}
+            <form method="post" action="{% if is_admin_view %}{% url 'reports:report_pdf' cycle.uuid %}{% else %}{% url 'reports:reviewee_report_pdf' report.access_token %}{% endif %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">{% trans 'Regenerate PDF' %}</button>
+            </form>
+            {% endif %}
+        </div>
+
         {% block report_content %}
         {# Content will be included here #}
         {% endblock %}

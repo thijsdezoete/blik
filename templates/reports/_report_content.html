@@ -133,7 +133,7 @@
 </div>
 {% endif %}
 
-{% if report_data.charts.section_scores %}
+{% if display_data.charts.section_scores %}
 <div class="report-section">
     <h2>{% trans 'Performance Overview' %}</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
@@ -163,7 +163,7 @@
         {% trans 'Performance breakdown by competency area' %}
     </p>
     <div style="display: grid; gap: 1.5rem;">
-        {% for section_name, categories in report_data.section_summary.items %}
+        {% for section_name, categories in display_data.section_summary.items %}
         <div class="section-performance-card">
             <h3 class="section-performance-title">
                 {{ section_name }}
@@ -236,7 +236,11 @@
                 {% for category, score in categories|sort_categories %}
                 <div class="category-score-item">
                     <span class="badge badge-{{ category }}">{{ category|category_label }}</span>
+                    {% if score.insufficient %}
+                    <span class="insufficient-data insufficient-data-inline">{{ score.message }}</span>
+                    {% else %}
                     <span class="category-score-value">{{ score|floatformat:1 }}</span>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>

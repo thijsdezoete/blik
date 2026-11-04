@@ -41,11 +41,14 @@ def average(values):
 
 @register.filter
 def others_average(categories):
-    """Calculate average of non-self categories in a dict"""
+    """Calculate average of non-self categories in a dict, without groups hidden for anonymity"""
     try:
         if not categories:
             return 0
-        others_scores = [float(v) for k, v in categories.items() if k != 'self' and v is not None]
+        others_scores = [
+            float(v) for k, v in categories.items()
+            if k != 'self' and v is not None and not isinstance(v, dict)
+        ]
         if others_scores:
             return sum(others_scores) / len(others_scores)
         return 0

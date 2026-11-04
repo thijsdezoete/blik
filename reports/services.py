@@ -241,10 +241,15 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
     """
     Apply anonymization filtering to report data for display purposes.
 
-    This function adds 'insufficient' flags to categories that don't meet
-    the anonymization threshold, while preserving the underlying data.
-    Charts and insights should use the raw data; only detailed report
-    displays should use this filtered version.
+    A reviewer group (category) below the threshold doesn't show its own
+    score anywhere, and no value that combines groups includes it: a mean
+    over the groups would give the hidden score away from the visible ones.
+
+    The threshold applies at two granularities:
+    - per question in 'by_section': the question's own count for the category
+    - everywhere else: the category's report-level count, see reviewer_counts()
+
+    When no group is hidden, the result has the same numbers as report_data.
 
     Args:
         report_data: The raw report data structure
@@ -252,13 +257,20 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
         exempt_categories: List of categories exempt from threshold (default: ['self', 'manager'])
 
     Returns:
-        Copy of report_data with 'insufficient' flags added where applicable
+        Copy of report_data (which stays unchanged) where:
+        - per-question entries in 'by_section' below the threshold are marked 'insufficient' and lose their responses
+        - for each hidden group, its 'section_summary' entries become {'insufficient': True, 'message': ...}
+        - when any group is hidden, 'insights' and 'charts' are calculated again without the hidden groups,
+          and 'peer_benchmarks' and the comparison trends are left out. A combined value without any visible
+          group is absent.
     """
     if exempt_categories is None:
         exempt_categories = ['self', 'manager']
 
     # Deep copy to avoid modifying original data
     filtered_data = copy.deepcopy(report_data)
+
+    message = _('Insufficient responses (minimum %(count)s required)') % {'count': min_threshold}
 
     # Walk through all questions and apply threshold
     for section_id, section_data in filtered_data.get('by_section', {}).items():
@@ -270,14 +282,68 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
                 if category not in exempt_categories and count < min_threshold:
                     # Mark as insufficient for display
                     cat_data['insufficient'] = True
-                    cat_data['message'] = _('Insufficient responses (minimum %(count)s required)') % {'count': min_threshold}
+                    cat_data['message'] = message
                     # Remove detailed responses and distributions for privacy
                     if 'responses' in cat_data:
                         del cat_data['responses']
                     if 'distribution' in cat_data:
                         del cat_data['distribution']
 
+    hidden = {
+        category for category, count in reviewer_counts(report_data).items()
+        if category not in exempt_categories and count < min_threshold
+    }
+
+    if hidden:
+        _leave_out_hidden_groups(filtered_data, report_data, hidden, message)
+
     return filtered_data
+
+
+def _leave_out_hidden_groups(filtered_data, report_data, hidden, message):
+    """Mark the hidden groups' section scores and calculate the combined values again from the visible groups."""
+
+    # A group's section score is the mean of its own answers, so the visible ones stay as they are
+    for categories in (filtered_data.get('section_summary') or {}).values():
+        for category in hidden & categories.keys():
+            categories[category] = {'insufficient': True, 'message': message}
+
+    visible_data = copy.deepcopy(report_data)
+    for section in visible_data.get('by_section', {}).values():
+        for question in section.get('questions', {}).values():
+            by_category = question.get('by_category', {})
+            for category in hidden & by_category.keys():
+                del by_category[category]
+
+    insights, _section_summary = _calculate_insights(visible_data)
+    if report_data.get('schema') == REPORT_SCHEMA:
+        filtered_data['insights'] = insights
+    else:
+        # Reports of schema 1 have no labels, so with_texts() can't add texts to calculated insights:
+        # leave out their combined values instead. Regenerating the report restores them.
+        filtered_data['insights'] = {
+            **(filtered_data.get('insights') or {}),
+            'overall_sentiment': None, 'perception_gaps': [], 'strengths': [], 'development_areas': [],
+            'skill_profile': None, 'agency_profile': None, 'dreyfus_quadrant': None, 'development_plan': None,
+        }
+    # Uses the current question config (chart weights, exclusions), which may differ from when the report was made
+    filtered_data['charts'] = _calculate_chart_data(visible_data)
+
+    # Benchmarks and trends compare combined values of this report with other reports, so they are left out
+    filtered_data.pop('peer_benchmarks', None)
+    if comparison := filtered_data.get('comparison'):
+        comparison.pop('overall_trend', None)
+        comparison.pop('section_trends', None)
+
+
+def reviewer_counts(report_data):
+    """Reviewer count per category: its highest count on any question."""
+    counts = defaultdict(int)
+    for section in report_data.get('by_section', {}).values():
+        for question in section.get('questions', {}).values():
+            for category, cat_data in question.get('by_category', {}).items():
+                counts[category] = max(counts[category], cat_data.get('count', 0))
+    return dict(counts)
 
 
 def _calculate_insights(report_data):
@@ -447,7 +513,7 @@ def _calculate_insights(report_data):
     return insights, section_summary
 
 
-def _calculate_chart_data(report_data, cycle):
+def _calculate_chart_data(report_data):
     """
     Calculate weighted section averages and prepare chart-ready data
 
@@ -777,7 +843,7 @@ def generate_report(cycle):
     report_data['section_summary'] = section_summary
 
     # Generate chart data
-    chart_data = _calculate_chart_data(report_data, cycle)
+    chart_data = _calculate_chart_data(report_data)
     report_data['charts'] = chart_data
 
     # Add cycle-over-cycle comparison if previous cycle exists
@@ -899,13 +965,8 @@ def self_vs_others_gap(report_data, min_threshold):
     if self_avg is None or others_avg is None:
         return None
 
-    # Reviewer count per category = its highest count on any question.
-    reviewers = defaultdict(int)
-    for section in report_data.get('by_section', {}).values():
-        for question in section.get('questions', {}).values():
-            for category, cat_data in question.get('by_category', {}).items():
-                reviewers[category] = max(reviewers[category], cat_data.get('count', 0))
-    if sum(reviewers[c] for c in OTHERS_CATEGORIES) < min_threshold:
+    reviewers = reviewer_counts(report_data)
+    if sum(reviewers.get(c, 0) for c in OTHERS_CATEGORIES) < min_threshold:
         return None
 
     return round(self_avg - others_avg, 2)

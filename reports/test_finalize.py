@@ -1,11 +1,15 @@
+import os
 import tempfile
 from datetime import timedelta
 from io import StringIO
 from unittest import mock
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.core import mail
 from django.core.management import call_command
+from django.db import DatabaseError, transaction
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -125,6 +129,28 @@ class FinalizeReportsTests(TestCase):
         self.assertEqual(mail.outbox[0].attachments, [])
         self.assertEqual(Report.objects.get(cycle=cycle).pdf_attempts, 3)
         self.assertIsNotNone(cycle.report_finalized_at)
+
+    def test_database_error_while_storing_pdf_counts_as_failed_attempt(self):
+        cycle = self.completed_cycle()
+        report = generate_report(cycle)
+
+        def fail_on_save(report):
+            # The file is written, then the database save fails: it marks the surrounding transaction for rollback
+            report.pdf_file.save('report.pdf', ContentFile(b'%PDF-1.7 test'), save=False)
+            report.pdf_generated_at = timezone.now()
+            with transaction.mark_for_rollback_on_error():
+                raise DatabaseError('disk full')
+
+        with mock.patch('reports.finalize.store_report_pdf', side_effect=fail_on_save), \
+                self.assertLogs('reports.finalize', 'ERROR'):
+            self.assertEqual(finalize_cycle(cycle, force_send=True)[0], 'sent_without_pdf')
+
+        report.refresh_from_db()
+        self.assertEqual(report.pdf_attempts, 1)
+        self.assertFalse(report.pdf_file)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].attachments, [])
+        self.assertEqual(os.listdir(os.path.join(settings.PRIVATE_MEDIA_ROOT, 'report_pdfs')), [])
 
     @mock.patch('reports.finalize.store_report_pdf', side_effect=RuntimeError('render failed'))
     def test_force_send_does_not_wait_for_the_pdf(self, _store):

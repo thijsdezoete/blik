@@ -6,6 +6,7 @@ Cycles completed before this existed have report_finalized_at set by a migration
 """
 import logging
 
+from django.db import transaction
 from django.db.models import Max
 from django.utils import timezone
 
@@ -37,11 +38,14 @@ def finalize_cycle(cycle, *, force_send=False):
 
     if not report.has_valid_pdf():
         try:
-            store_report_pdf(report)
+            # A savepoint, so a database error here doesn't break the cron's transaction for this cycle
+            with transaction.atomic():
+                store_report_pdf(report)
             stored = report.has_valid_pdf()
         except Exception:
             stored = False
             logger.exception('PDF build failed for cycle %s', cycle.id)
+            _forget_unsaved_pdf(report)
         # A stored PDF that still isn't valid counts as a failure too, or the email waits forever
         report.pdf_attempts = 0 if stored else report.pdf_attempts + 1
         if not stored:
@@ -74,6 +78,14 @@ def finalize_cycle(cycle, *, force_send=False):
         cycle.report_finalized_at = timezone.now()
         cycle.save(update_fields=['report_finalized_at'])
     return result, []
+
+
+def _forget_unsaved_pdf(report):
+    """After a failed save, use the stored PDF fields again and delete a file that only the failed save knew."""
+    unsaved_name = report.pdf_file.name
+    report.refresh_from_db(fields=['pdf_file', 'pdf_generated_at'])
+    if unsaved_name and unsaved_name != report.pdf_file.name:
+        report.pdf_file.storage.delete(unsaved_name)
 
 
 def _current_report(cycle):

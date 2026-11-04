@@ -1,3 +1,3 @@
 {% load i18n %}{% autoescape off %}{% blocktrans trimmed with email=user.email %}You started a new subscription with {{ email }}, but this address already has a Blik360 account. We cancelled the new subscription and nothing was charged.{% endblocktrans %}
 
-{% blocktrans trimmed %}To choose a plan for your existing organization, sign in at {{ site_url }} and open Settings.{% endblocktrans %}{% endautoescape %}
+{% blocktrans trimmed %}To choose a plan for your existing organization, sign in at {{ login_url }} and open Settings.{% endblocktrans %}{% endautoescape %}

@@ -1,5 +1,5 @@
 {% extends "admin_dashboard/base.html" %}
-{% load i18n static %}
+{% load i18n static url_tags %}
 
 {% block title %}{% trans 'Review Cycles' %}{% endblock %}
 {% block extra_css %}<link rel="stylesheet" href="{% static 'css/reviewees.css' %}">{% endblock %}
@@ -269,7 +269,8 @@ function createUuidModal() {
 }
 
 // Example calls for the modal: method, path, Swagger operation (tag/operationId), label.
-const API_BASE = '{{ SITE_URL|escapejs }}/api/v1';
+{% absolute_url '/api/v1' as api_base %}
+const API_BASE = '{{ api_base|escapejs }}';
 const API_EXAMPLES = [
     ['GET', ids => `/cycles/${ids.cycle}/`, 'cycles/cycles_retrieve', '{{ _("Cycle details")|escapejs }}'],
     ['GET', ids => `/cycles/${ids.cycle}/progress/`, 'cycles/cycles_progress_retrieve', '{{ _("Response progress per group")|escapejs }}'],

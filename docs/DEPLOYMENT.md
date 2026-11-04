@@ -115,6 +115,8 @@ REPORT_PDF_RETENTION_DAYS=30
 
 The PDFs are a cache of the stored report. If `privatefiles/` is lost, nothing breaks: the
 report shows "Regenerate PDF" instead of "Download PDF".
+Put `privatefiles/` on a persistent volume to keep the PDFs after a redeploy. If you do not, each
+report shows "Regenerate PDF" after each deploy.
 
 #### Port Configuration (Optional)
 ```env
@@ -529,6 +531,9 @@ This release adds system libraries (Pango, for WeasyPrint) and a Python dependen
 must be rebuilt. In Dokploy, click **"Redeploy"** so it rebuilds the image. A `git pull` and a
 container restart are not enough: every `manage.py` command then stops with check `reports.E001`.
 
+Stop the old container before the migration runs. If you do not, a cycle that completes during the
+redeploy can get its report email two times.
+
 After the deploy, run once:
 
 ```bash
@@ -545,7 +550,7 @@ The entrypoint now also installs a cron line that finalises reports every 5 minu
 */5 * * * * . /app/.env.cron && cd /app && flock -n /tmp/finalize_reports.lock python manage.py finalize_reports >> /var/log/cron.log 2>&1
 ```
 
-You don't add it yourself. If you run Blik without the entrypoint, add it to your own crontab.
+Do not add it to your own crontab when the entrypoint runs. Without the entrypoint, add it to the crontab.
 
 ### View Logs
 

@@ -543,6 +543,7 @@ docker compose exec web python manage.py backfill_report_pdfs
 It builds the report and the PDF for every cycle the migration already marked as finalised. It
 sends no email. It exits with a non-zero status if a cycle failed, and it is safe to run again.
 Add `--dry-run` to only count what is missing.
+Add `--regenerate` to recalculate existing reports with the current scoring rules and questionnaire texts.
 
 The entrypoint now also installs a cron line that finalises reports every 5 minutes:
 

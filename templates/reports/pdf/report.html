@@ -145,7 +145,7 @@ th { font-weight: 500; font-size: 7.5pt; color: #6b7280; text-align: left; verti
 .sections .name { width: 50mm; padding-left: 0; }
 .sections .value { width: 10mm; font-size: 11pt; font-weight: 700; line-height: 1.1; text-align: right; padding-right: 0.5mm; }
 .sections .track-cell { width: 40mm; padding-top: 3.2mm; }
-.sections .num { text-align: right; width: 17mm; }
+.sections .num { text-align: right; width: 14mm; }
 .sections th.num { text-align: right; white-space: nowrap; }
 .sections th.score { text-align: left; padding-left: 4mm; }
 .sections tbody.grow .value, .sections tbody.grow .mark { color: #b45309; }
@@ -170,7 +170,7 @@ th { font-weight: 500; font-size: 7.5pt; color: #6b7280; text-align: left; verti
 .answers th, .answers td { padding: 0.8mm 1.5mm; }
 .answers th { border-bottom: 0.5pt solid #d1d5db; }
 .answers td { border-bottom: 0.5pt solid #f1f2f5; }
-.answers .who { width: 30mm; padding-left: 0; font-weight: 400; }
+.answers .who { width: 38mm; padding-left: 0; font-weight: 400; }
 .answers .n { width: 18mm; text-align: right; }
 .answers .avg { font-weight: 700; }
 .answers .c { text-align: center; font-size: 8.5pt; border-left: 1.2pt solid #fff; }
@@ -179,6 +179,16 @@ th { font-weight: 500; font-size: 7.5pt; color: #6b7280; text-align: left; verti
 .answers td.c.dark { color: #fff; font-weight: 500; }
 .answers td.insufficient, .insufficient { color: #9ca3af; font-style: italic; font-size: 8pt; }
 .note { font-size: 8pt; color: #6b7280; margin-top: 1mm; }
+.answers tbody.own tr:first-child td { border-top: 0.8pt solid #9ca3af; }
+.answers tr.others-avg td { color: #4f46e5; }
+.answers tr.others-avg .who { font-weight: 500; }
+.answers tr.self .who { font-weight: 500; }
+.answers tr.self td { border-bottom: 0; }
+.gap-note { font-size: 7.5pt; font-weight: 400; }
+.own-mark { display: inline-block; min-width: 5mm; padding: 0 1mm; border: 1pt solid #111827; border-radius: 1mm; font-size: 8pt; color: #111827; line-height: 1.3; }
+.comments.own { margin-top: 3mm; padding-top: 2mm; border-top: 0.8pt solid #9ca3af; }
+.comments.own .quote { border-left-color: #111827; }
+
 .comments { margin-top: 2mm; }
 .who { font-weight: 500; }
 .comments .who { margin-bottom: 0.8mm; }

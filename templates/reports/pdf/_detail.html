@@ -8,20 +8,8 @@
         {% if question.type == 'text' %}
         <div class="question">
             <h4>{{ q.question_text }}</h4>
-            {% for row in question.rows %}
-            <div class="comments">
-                {# The group name keeps its first comment, so a page never ends with a lone name #}
-                <div class="keep">
-                    <div class="who">{{ row.category|category_label }} <span class="faint">· {% blocktrans trimmed count counter=row.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span></div>
-                    {% if row.group.insufficient %}
-                    <div class="insufficient">{{ row.group.message }}</div>
-                    {% else %}
-                    {% for response in row.group.responses|slice:":1" %}{% if response %}<p class="quote">{{ response }}</p>{% endif %}{% endfor %}
-                    {% endif %}
-                </div>
-                {% if not row.group.insufficient %}{% for response in row.group.responses|slice:"1:" %}{% if response %}<p class="quote">{{ response }}</p>{% endif %}{% endfor %}{% endif %}
-            </div>
-            {% endfor %}
+            {% for row in question.rows %}{% include "reports/pdf/_comments.html" %}{% endfor %}
+            {% if question.self %}{% include "reports/pdf/_comments.html" with row=question.self own=True %}{% endif %}
         </div>
         {% else %}
         <div class="question keep">
@@ -54,6 +42,26 @@
                 </tr>
                 {% endfor %}
                 </tbody>
+                {% if question.self %}{% with row=question.self %}
+                {# As on the web, the self-assessment is set against the others' average, not listed as one more group #}
+                <tbody class="own">
+                {% if question.others_avg is not None %}
+                <tr class="others-avg">
+                    <td class="who">{% trans 'Others' %}</td><td class="n"></td>
+                    <td class="n avg">{{ question.others_avg|floatformat:1 }}</td>
+                    {% if question.answer_span %}<td colspan="{{ question.answer_span }}"></td>{% endif %}
+                </tr>
+                {% endif %}
+                <tr class="self">
+                    <td class="who">{% trans 'Self-assessment' %}{% if row.gap is not None %}
+                        <div class="gap-note {% if row.gap < 0 %}down{% else %}up{% endif %}">{% if row.gap > 0 %}{% blocktrans trimmed with gap=row.gap|floatformat:1 %}(+{{ gap }} compared to others){% endblocktrans %}{% else %}{% blocktrans trimmed with gap=row.gap|floatformat:1 %}({{ gap }} compared to others){% endblocktrans %}{% endif %}</div>{% endif %}</td>
+                    <td class="n"></td>
+                    {% if question.has_avg %}<td class="n avg">{% if row.avg is not None %}{{ row.avg|floatformat:1 }}{% endif %}</td>{% endif %}
+                    {% for cell in row.cells %}<td class="c">{% if cell.count %}<span class="own-mark">{% if row.count > 1 %}{{ cell.count }}{% else %}&#10003;{% endif %}</span>{% endif %}</td>{% endfor %}
+                    {% if question.has_positive %}<td class="n">{{ row.positive }}%</td>{% endif %}
+                </tr>
+                </tbody>
+                {% endwith %}{% endif %}
             </table>
             {% for row in question.rows %}{% if row.group.unmapped and not row.group.insufficient %}
             <div class="note">{{ row.category|category_label }}: {% blocktrans trimmed count counter=row.group.unmapped %}

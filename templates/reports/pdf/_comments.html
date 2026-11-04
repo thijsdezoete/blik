@@ -1,0 +1,12 @@
+{% load i18n feedback_tags %}<div class="comments{% if own %} own{% endif %}">
+    {# The group name keeps its first comment, so a page never ends with a lone name #}
+    <div class="keep">
+        <div class="who">{% if own %}{% trans 'Self-assessment' %}{% else %}{{ row.category|category_label }} <span class="faint">· {% blocktrans trimmed count counter=row.count %}{{ counter }} response{% plural %}{{ counter }} responses{% endblocktrans %}</span>{% endif %}</div>
+        {% if row.group.insufficient %}
+        <div class="insufficient">{{ row.group.message }}</div>
+        {% else %}
+        {% for response in row.group.responses|slice:":1" %}{% if response %}<p class="quote">{{ response }}</p>{% endif %}{% endfor %}
+        {% endif %}
+    </div>
+    {% if not row.group.insufficient %}{% for response in row.group.responses|slice:"1:" %}{% if response %}<p class="quote">{{ response }}</p>{% endif %}{% endfor %}{% endif %}
+</div>

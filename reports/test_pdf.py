@@ -134,6 +134,9 @@ class ReportPdfTests(TestCase):
         # Solves problems: three peers, average 4.7, one rated 4 and two rated 5
         self.assertIn(['Peer', '3', '4.7', '', '', '', '1', '2'], rows)
         self.assertIn(['Manager', '1', '5.0', '', '', '', '', '1'], rows)
+        # Self is set against the others' average (4.8 from peers 4.67 and manager 5), not listed as a group
+        self.assertIn(['Others', '', '4.8', ''], rows)
+        self.assertIn('(-1.8 compared to others)', html)
         self.assertRegex(html, r'Scale:[^<]*1 = Waits for instructions[^<]*5 = Self-driven')
         strengths = report.report_data['insights']['strengths']
         self.assertTrue(strengths)
@@ -255,3 +258,21 @@ class DetailQuestionTests(SimpleTestCase):
         self.assertEqual(detail['columns'], ['Disagree', 'Neutral', 'Agree', 'Strongly Agree'])
         self.assertFalse(detail['has_avg'])
         self.assertEqual(detail['rows'][0]['positive'], 75)
+
+    def test_self_is_compared_with_the_others_average_which_leaves_self_and_hidden_groups_out(self):
+        question = {
+            'question_type': 'rating', 'category_order': ['self', 'peer', 'manager', 'direct_report'],
+            'by_category': {
+                'self': {'count': 1, 'avg': 2.0, 'distribution': {'2': 1}},
+                'peer': {'count': 3, 'avg': 4.0, 'distribution': {'4': 3}},
+                'manager': {'count': 1, 'avg': 5.0, 'distribution': {'5': 1}},
+                'direct_report': {'count': 2, 'insufficient': True, 'message': 'Insufficient'},
+            },
+        }
+
+        detail = _detail_question(question)
+
+        self.assertEqual([row['category'] for row in detail['rows']], ['peer', 'manager', 'direct_report'])
+        self.assertEqual(detail['others_avg'], 4.5)
+        self.assertEqual(detail['self']['avg'], 2.0)
+        self.assertEqual(detail['self']['gap'], -2.5)

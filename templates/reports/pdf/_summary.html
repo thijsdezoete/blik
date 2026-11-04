@@ -24,9 +24,10 @@
         {% endif %}
         {% if s.self_gap %}
         <div class="fig">
-            <span class="muted">{% trans 'You see yourself' %}</span>
+            <span class="muted">{% trans 'Self-assessment' %}</span>
             <b>{{ s.self_gap.self_avg }}<small> /5</small></b>
-            <span class="muted">{% with gap=s.self_gap.gap %}{% if gap >= 0.05 %}{% blocktrans trimmed with gap=gap|floatformat:1 %}{{ gap }} above others{% endblocktrans %}{% elif gap <= -0.05 %}{% blocktrans trimmed with gap=s.self_gap.size|floatformat:1 %}{{ gap }} below others{% endblocktrans %}{% else %}{% trans 'Same as others' %}{% endif %}{% endwith %}</span>
+            {# The web's wording: the gap of the self-assessment to the others' overall rating #}
+            <span class="{% if s.self_gap.gap < 0 %}down{% else %}up{% endif %}">{% with gap=s.self_gap.gap %}{% if gap > 0 %}{% blocktrans trimmed with gap=gap|floatformat:1 %}(+{{ gap }} compared to others){% endblocktrans %}{% else %}{% blocktrans trimmed with gap=gap|floatformat:1 %}({{ gap }} compared to others){% endblocktrans %}{% endif %}{% endwith %}</span>
         </div>
         {% endif %}
         {% if s.skill %}
@@ -69,7 +70,7 @@
         <div class="summary-radar">
             <h2>{% trans 'Sections' %}</h2>
             {% include "reports/pdf/_radar.svg.html" %}
-            <div class="legend muted"><span class="key others"></span> {% trans 'Others' %} &nbsp; <span class="key self"></span> {% trans 'You' %}</div>
+            <div class="legend muted"><span class="key others"></span> {% trans 'Others' %} &nbsp; <span class="key self"></span> {% trans 'Self-assessment' %}</div>
         </div>
         {% endif %}
     </div>

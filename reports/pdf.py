@@ -140,8 +140,6 @@ def _pdf_context(report):
     figures = executive_summary(context)
     if figures['overall'] and figures['overall']['trend']:
         figures['overall']['trend_class'] = _trend_class(figures['overall']['trend'])
-    if figures['self_gap']:
-        figures['self_gap']['size'] = abs(figures['self_gap']['gap'])
 
     context.update({
         'reviewee_name': context['cycle'].reviewee.name,
@@ -330,11 +328,28 @@ def _detail_question(question):
                 # The share in the two highest options, which the web report calls positive
                 row['positive'] = percentage(likert_positive_count(distribution, options), count)
         rows.append(row)
+
+    # As on the web, the self-assessment is compared with the others: it is not one more reviewer group
+    own = next((row for row in rows if row['category'] == 'self'), None)
+    others = [row for row in rows if row['category'] != 'self']
+    others_avg = _others_avg(others) if has_avg else None
+    if own and own['avg'] is not None and others_avg is not None:
+        own['gap'] = round(own['avg'] - others_avg, 2)
     return {
         'data': question, 'type': qtype, 'columns': [label for _key, label in columns],
-        'has_avg': has_avg, 'has_positive': qtype == 'likert', 'rows': rows,
-        'span': len(columns) + bool(has_avg) + (qtype == 'likert'),
+        'has_avg': has_avg, 'has_positive': qtype == 'likert', 'rows': others, 'self': own,
+        'others_avg': others_avg, 'span': len(columns) + bool(has_avg) + (qtype == 'likert'),
+        'answer_span': len(columns) + (qtype == 'likert'),
     }
+
+
+def _others_avg(rows):
+    """The mean of the shown reviewer groups' averages, as the section scores; never the self-assessment."""
+    scores = [
+        row['avg'] for row in rows
+        if row['category'] != 'self' and not row['group'].get('insufficient') and row['avg'] is not None
+    ]
+    return round(sum(scores) / len(scores), 2) if scores else None
 
 
 def _cell(count, total):

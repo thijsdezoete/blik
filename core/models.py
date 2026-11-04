@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext, gettext_lazy as _
 from cryptography.fernet import Fernet
 
@@ -47,7 +47,7 @@ class Organization(TimeStampedModel):
     report_pdf_retention_days = models.PositiveIntegerField(
         null=True,
         blank=True,
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1), MaxValueValidator(3650)],
         help_text=_('Days a report PDF is kept. Leave empty to use the default.'),
         verbose_name=_('report PDF retention (days)')
     )

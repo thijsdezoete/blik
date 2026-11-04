@@ -1,3 +1,5 @@
+import os
+import tempfile
 from datetime import timedelta
 from unittest import mock
 
@@ -66,6 +68,10 @@ class PrivateStorageTests(TestCase):
         with self.assertRaises(ValueError):
             private_storage.url('report_pdfs/x.pdf')
 
+    def test_location_follows_private_media_root_setting(self):
+        with tempfile.TemporaryDirectory() as tmp, override_settings(PRIVATE_MEDIA_ROOT=tmp):
+            self.assertEqual(private_storage.path('x'), os.path.join(os.path.abspath(tmp), 'x'))
+
 
 class ReportSettingsFormTests(TestCase):
     def setUp(self):
@@ -92,7 +98,7 @@ class ReportSettingsFormTests(TestCase):
     def test_invalid_retention_keeps_current_value(self):
         self.org.report_pdf_retention_days = 14
         self.org.save()
-        for bad in ('0', '-3', 'abc'):
+        for bad in ('0', '-3', 'abc', '3651', '99999999999999999999'):
             self.post(report_pdf_retention_days=bad)
             self.assertEqual(self.org.report_pdf_retention_days, 14)
 

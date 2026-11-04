@@ -156,6 +156,7 @@
                             class="form-control"
                             value="{{ organization.report_pdf_retention_days|default_if_none:'' }}"
                             min="1"
+                            max="3650"
                             placeholder="{{ default_report_pdf_retention_days }}"
                             {% if not perms.accounts.can_manage_organization %}disabled readonly{% endif %}
                         >

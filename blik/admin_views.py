@@ -2470,10 +2470,13 @@ def settings_view(request):
                     organization.report_pdf_retention_days = None
                 else:
                     try:
-                        if int(retention) >= 1:
-                            organization.report_pdf_retention_days = int(retention)
+                        days = int(retention)
                     except ValueError:
-                        pass
+                        days = None
+                    if days is not None and 1 <= days <= 3650:
+                        organization.report_pdf_retention_days = days
+                    else:
+                        messages.error(request, _('Report PDF retention must be a number of days from 1 to 3650.'))
                 organization.save()
                 messages.success(request, _('Report settings updated successfully.'))
 

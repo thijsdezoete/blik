@@ -12,7 +12,25 @@ from django.core.management.base import BaseCommand, CommandError
 from reports.models import Report
 from reports.pdf import store_report_pdf
 from reports.services import generate_report
-from reviews.models import ReviewCycle
+from reviews.models import Response, ReviewCycle
+
+
+def answers_that_would_vanish(report):
+    """Answer counts the stored report holds that the cycle's current responses no longer have.
+
+    Deleting a question deletes its responses, so a report generated now would lack those answers.
+    """
+    current = {}
+    for question_id, category in Response.objects.filter(cycle=report.cycle).values_list('question_id', 'category'):
+        current[(question_id, category)] = current.get((question_id, category), 0) + 1
+    lost = {}
+    for section in (report.report_data.get('by_section') or {}).values():
+        for question_id, question in (section.get('questions') or {}).items():
+            for category, data in (question.get('by_category') or {}).items():
+                missing = data.get('count', 0) - current.get((int(question_id), category), 0)
+                if missing > 0:
+                    lost[(question_id, category)] = missing
+    return lost
 
 
 class Command(BaseCommand):
@@ -52,13 +70,20 @@ class Command(BaseCommand):
                     reports_recalculated += regenerate and report is not None
                     pdfs_stored += regenerate or report is None or not report.has_valid_pdf()
                     continue
-                if report is None or regenerate:
-                    # generate_report sends no email and drops the old PDF
+                keep_stored = regenerate and report is not None and answers_that_would_vanish(report)
+                if keep_stored:
+                    self.stdout.write(self.style.WARNING(
+                        f'Cycle {cycle.pk}: kept the stored report, because it holds answers '
+                        f'(for example of a deleted question) that a new report would lose'
+                    ))
+                elif report is None or regenerate:
+                    # generate_report sends no email and drops the old PDF.
+                    # A recalculated report is not news: no report.generated webhook
                     existed = report is not None
-                    report = generate_report(cycle)
+                    report = generate_report(cycle, notify=not existed)
                     reports_made += not existed
                     reports_recalculated += existed
-                if not report.has_valid_pdf():
+                if keep_stored or not report.has_valid_pdf():
                     store_report_pdf(report)
                     pdfs_stored += 1
             except Exception as e:

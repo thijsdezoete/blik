@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 from django.db.models import Avg, Count
 from collections import Counter, defaultdict
 from django.template.loader import render_to_string
@@ -657,8 +658,13 @@ def count_answers(option_ids):
     return {f'{option_id}': count for option_id, count in Counter(option_ids).items()}
 
 
-def generate_report(cycle):
-    """Generate aggregated report for a review cycle"""
+# Set while generate_report saves a report that must not fire the report.generated webhook
+report_webhook_suppressed = ContextVar('report_webhook_suppressed', default=False)
+
+
+def generate_report(cycle, notify=True):
+    """Generate aggregated report for a review cycle. notify=False keeps the report.generated webhook quiet."""
+
 
     questionnaire = cycle.questionnaire
 
@@ -922,14 +928,18 @@ def generate_report(cycle):
         access_token = uuid.uuid4()
 
     # Create or update report with access_token included
-    report, created = Report.objects.update_or_create(
-        cycle=cycle,
-        defaults={
-            'report_data': report_data,
-            'available': True,
-            'access_token': access_token
-        }
-    )
+    suppressed = report_webhook_suppressed.set(not notify)
+    try:
+        report, created = Report.objects.update_or_create(
+            cycle=cycle,
+            defaults={
+                'report_data': report_data,
+                'available': True,
+                'access_token': access_token
+            }
+        )
+    finally:
+        report_webhook_suppressed.reset(suppressed)
     # Late import: pdf.py pulls in the template tags, which import this module
     from .pdf import drop_report_pdf
     # A stored PDF must never show the data this replaced

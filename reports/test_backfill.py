@@ -7,8 +7,11 @@ from django.core.management import CommandError, call_command
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
+from api.models import WebhookDelivery, WebhookEndpoint
 from notifications.models import SentEmail
+from questionnaires.models import Question, QuestionSection
 from reviews.factories import ReviewCycleFactory
+from reviews.models import Response, ReviewerToken
 
 from .models import Report
 
@@ -82,3 +85,52 @@ class BackfillReportPdfsTests(TestCase):
             self.run_command()
 
         self.assertTrue(Report.objects.get(cycle=other).has_valid_pdf())
+
+    def add_answers(self):
+        questionnaire = self.cycle.questionnaire
+        section = QuestionSection.objects.create(questionnaire=questionnaire, title='Craft', order=0)
+        self.kept = Question.objects.create(
+            section=section, question_text='Kept', question_type='rating', config={'min': 1, 'max': 5},
+        )
+        self.dropped = Question.objects.create(
+            section=section, question_text='Dropped', question_type='rating', order=1, config={'min': 1, 'max': 5},
+        )
+        token = ReviewerToken.objects.create(cycle=self.cycle, category='self')
+        for question in (self.kept, self.dropped):
+            Response.objects.create(
+                cycle=self.cycle, question=question, token=token, category='self', answer_data={'value': 4},
+            )
+
+    def test_regenerate_keeps_a_report_whose_question_was_deleted(self):
+        self.add_answers()
+        self.run_command()
+        stored = Report.objects.get(cycle=self.cycle).report_data
+        self.dropped.delete()
+
+        output = self.run_command('--regenerate')
+
+        report = Report.objects.get(cycle=self.cycle)
+        self.assertEqual(report.report_data, stored)
+        self.assertIn(f'Cycle {self.cycle.pk}', output)
+        self.assertTrue(report.has_valid_pdf())
+
+    def test_regenerate_recalculates_a_report_that_lost_nothing(self):
+        self.add_answers()
+        self.run_command()
+        Report.objects.filter(cycle=self.cycle).update(report_data={'by_section': {}})
+
+        self.run_command('--regenerate')
+
+        self.assertTrue(Report.objects.get(cycle=self.cycle).report_data['by_section'])
+
+    def test_regenerate_fires_no_webhook(self):
+        self.add_answers()
+        self.run_command()
+        endpoint = WebhookEndpoint.objects.create(
+            organization=self.cycle.reviewee.organization, name='Hook', url='https://example.com/hook',
+            events=['report.generated'], is_active=True,
+        )
+
+        self.run_command('--regenerate')
+
+        self.assertFalse(WebhookDelivery.objects.filter(endpoint=endpoint).exists())

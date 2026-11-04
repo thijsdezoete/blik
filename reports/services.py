@@ -954,13 +954,17 @@ OTHERS_CATEGORIES = ('peer', 'manager')  # same "others" as insights['overall_se
 
 def self_vs_others_gap(report_data, min_threshold):
     """
-    Self-assessment minus the others' average, from the stored report insights.
+    Self-assessment minus the others' average, from the display-anonymized insights.
+
+    The stored insights include hidden groups, so a hidden group could be
+    solved from this number.
 
     Positive: rates self higher than others do. Negative: rates self lower.
     None when there is no self-assessment, no others' score, or fewer other
     reviewers (peer + manager) than the organization's anonymity threshold.
     """
-    sentiment = (report_data.get('insights') or {}).get('overall_sentiment') or {}
+    anonymized = apply_display_anonymization(report_data, min_threshold)
+    sentiment = (anonymized.get('insights') or {}).get('overall_sentiment') or {}
     self_avg, others_avg = sentiment.get('self_avg'), sentiment.get('score')
     if self_avg is None or others_avg is None:
         return None

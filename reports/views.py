@@ -6,8 +6,8 @@ from django.utils.translation import gettext as _
 from accounts.permissions import can_view_all_reports
 from reviews.models import ReviewCycle
 from .models import Report
-from .report_texts import with_texts
-from .services import generate_report, get_report_summary, apply_display_anonymization
+from .context import build_report_context
+from .services import generate_report
 import uuid
 
 
@@ -54,26 +54,7 @@ def view_report(request, cycle_uuid):
     except Report.DoesNotExist:
         report = generate_report(cycle)
 
-    summary = get_report_summary(report)
-
-    # Apply display-level anonymization based on organization settings
-    # Anonymize the stored data first: with_texts() adds the texts to the insights calculated without hidden groups
-    min_threshold = cycle.organization.min_responses_for_anonymity
-    display_data = with_texts(
-        apply_display_anonymization(report.report_data, min_threshold=min_threshold),
-        cycle.questionnaire,
-        cycle.reviewee.name,
-    )
-
-    context = {
-        'cycle': cycle,
-        'report': report,
-        'report_data': display_data,
-        'display_data': display_data,
-        'summary': summary,
-        'questionnaire': cycle.questionnaire.translated(),
-        'is_admin_view': True,
-    }
+    context = build_report_context(report, is_admin_view=True)
 
     return render(request, 'reports/view_report.html', context)
 
@@ -122,25 +103,7 @@ def reviewee_report(request, access_token):
             'cycle': cycle,
         })
 
-    summary = get_report_summary(report)
-
-    # Apply display-level anonymization based on organization settings
-    # Anonymize the stored data first: with_texts() adds the texts to the insights calculated without hidden groups
-    min_threshold = cycle.organization.min_responses_for_anonymity
-    display_data = with_texts(
-        apply_display_anonymization(report.report_data, min_threshold=min_threshold),
-        cycle.questionnaire,
-        cycle.reviewee.name,
-    )
-
-    context = {
-        'cycle': cycle,
-        'report': report,
-        'report_data': display_data,
-        'display_data': display_data,
-        'summary': summary,
-        'questionnaire': cycle.questionnaire.translated(),
-        'is_public_view': True,
-    }
+    context = build_report_context(report, is_admin_view=False)
+    context['is_public_view'] = True
 
     return render(request, 'reports/reviewee_report.html', context)

@@ -5,17 +5,19 @@ Creates a single organization with carefully crafted data for visual appeal.
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from accounts.models import Reviewee, UserProfile
+from accounts.models import OrgUnit, OrgUnitMembership, Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin, assign_organization_member
 from accounts.services import create_user_with_email_as_username
 from questionnaires.models import Questionnaire, Question
 from reviews.models import ReviewCycle, ReviewerToken, Response
+from reviews.services import feedback_overview_url
 from reports.services import generate_report
 from reports.models import Report
 from core.models import Organization
 import uuid
 import json
 from datetime import timedelta
+from urllib.parse import urlparse
 
 User = get_user_model()
 
@@ -38,6 +40,7 @@ class Command(BaseCommand):
             Response.objects.all().delete()
             ReviewerToken.objects.all().delete()
             ReviewCycle.objects.all().delete()
+            OrgUnit.objects.all().delete()
             Reviewee.objects.all().delete()
 
             # Delete Acme Corporation organization and its users
@@ -156,6 +159,7 @@ class Command(BaseCommand):
         cycles_output = []
         questionnaire_cycles = {}
         feedback_token_for_screenshots = None
+        partial_cycles = {}  # reviewee name -> active cycle, for the overview reviewer below
 
         # Create completed cycles with different questionnaires
         for name, email, dept, questionnaire_name, self_rating in reviewees_data:
@@ -201,6 +205,7 @@ class Command(BaseCommand):
             if cycle_type.startswith('partial_'):
                 completion_pct = int(cycle_type.split('_')[1])
                 cycle = self._create_partial_cycle(reviewee, default_questionnaire, admin, completion_pct)
+                partial_cycles[name] = cycle
                 cycles_output.append({
                     'reviewee': name,
                     'questionnaire': default_questionnaire.name,
@@ -222,6 +227,7 @@ class Command(BaseCommand):
             elif cycle_type.startswith('new_'):
                 claim_pct = int(cycle_type.split('_')[1])
                 cycle = self._create_new_cycle(reviewee, default_questionnaire, admin, claim_pct)
+                partial_cycles[name] = cycle
                 cycles_output.append({
                     'reviewee': name,
                     'questionnaire': default_questionnaire.name,
@@ -232,6 +238,10 @@ class Command(BaseCommand):
                 })
 
         self.stdout.write(self.style.SUCCESS(f'Created {len(cycles_output)} review cycles'))
+
+        org_units = self._create_org_chart(org)
+        overview_email, overview_path = self._create_overview_reviewer(
+            org, default_questionnaire, admin, partial_cycles)
 
         # Get report access tokens for all completed cycles
         report_tokens = {}
@@ -273,6 +283,10 @@ class Command(BaseCommand):
             'translated_feedback_token': str(translated_token.token) if translated_token else None,
             'questionnaire_id': default_questionnaire.id,
             'questionnaire_uuid': str(default_questionnaire.uuid),
+            'org_units': org_units,
+            # The reviewer overview is a signed link; the path goes on the capture's base URL
+            'overview_email': overview_email,
+            'overview_path': overview_path,
             'team_count': len(team_members) + 1,
             'base_url': 'http://localhost:8000'
         }
@@ -288,6 +302,70 @@ class Command(BaseCommand):
             json.dump(output_data, f, indent=2)
 
         self.stdout.write(self.style.SUCCESS('\nConfiguration saved to: /tmp/blik_screenshot_config.json'))
+
+    # Org chart: (unit, manager, members) by reviewee email. The heads of the two
+    # departments are members of Leadership, so the units stack under the CEO.
+    ORG_CHART = [
+        ('Leadership', 'rachel.whitfield@acme.example.com',
+         ['morgan.taylor@acme.example.com', 'casey.johnson@acme.example.com']),
+        ('Engineering', 'morgan.taylor@acme.example.com',
+         ['alex.rivera@acme.example.com', 'jordan.chen@acme.example.com',
+          'sophia.garcia@acme.example.com', 'priya.natarajan@acme.example.com']),
+        ('Product & Design', 'casey.johnson@acme.example.com',
+         ['emma.davis@acme.example.com', 'robert.brown@acme.example.com',
+          'nathan.hughes@acme.example.com']),
+    ]
+    # People who are only in the chart (no cycle of their own yet)
+    CHART_ONLY_PEOPLE = [
+        ('Rachel Whitfield', 'rachel.whitfield@acme.example.com', 'Leadership'),
+        ('Priya Natarajan', 'priya.natarajan@acme.example.com', 'Engineering'),
+        ('Nathan Hughes', 'nathan.hughes@acme.example.com', 'Design'),
+    ]
+
+    def _create_org_chart(self, org):
+        """Three stacked units for the org chart page; returns the unit names."""
+        for name, email, dept in self.CHART_ONLY_PEOPLE:
+            Reviewee.objects.get_or_create(
+                organization=org, email=email, defaults={'name': name, 'department': dept})
+        people = {r.email: r for r in Reviewee.objects.filter(organization=org)}
+
+        for order, (unit_name, manager, members) in enumerate(self.ORG_CHART):
+            unit = OrgUnit.objects.create(organization=org, name=unit_name, display_order=order)
+            OrgUnitMembership.objects.create(unit=unit, reviewee=people[manager], row=0, col=0)
+            for col, member in enumerate(members):
+                OrgUnitMembership.objects.create(unit=unit, reviewee=people[member], row=1, col=col)
+
+        self.stdout.write(self.style.SUCCESS(f'Created {len(self.ORG_CHART)} org chart units'))
+        return [unit_name for unit_name, _, _ in self.ORG_CHART]
+
+    def _create_overview_reviewer(self, org, questionnaire, admin, partial_cycles):
+        """
+        One reviewer with four forms for the overview page: her own self-assessment
+        (started), a colleague she has finished, one she has started and one she has
+        not opened. Returns (email, path of the signed overview link).
+        """
+        email = 'priya.natarajan@acme.example.com'
+        priya = Reviewee.objects.get(organization=org, email=email)
+        own_cycle = self._create_new_cycle(priya, questionnaire, admin, 30)
+        own_cycle.tokens.filter(category='self').update(reviewer_email=email)
+
+        # (cycle, token filter): done, continue, start
+        picks = [
+            ('Emma Davis', {'category': 'peer', 'completed_at__isnull': False}),
+            ('Sophia Garcia', {'category': 'peer', 'claimed_at__isnull': False, 'completed_at__isnull': True}),
+            ('Robert Brown', {'category': 'peer', 'claimed_at__isnull': True}),
+        ]
+        for reviewee_name, token_filter in picks:
+            cycle = partial_cycles.get(reviewee_name)
+            if cycle is None:
+                continue
+            token = cycle.tokens.filter(reviewer_email__isnull=True, **token_filter).last()
+            if token:
+                token.reviewer_email = email
+                token.save(update_fields=['reviewer_email'])
+
+        self.stdout.write(self.style.SUCCESS(f'Reviewer overview for {email}'))
+        return email, urlparse(feedback_overview_url(email, org)).path
 
     # Self rating per pattern: (1-5 rating from the question seed, share of a scale range).
     # Others average about 4.2, so these give gaps of about -1.5, -0.5, 0 and +0.8.

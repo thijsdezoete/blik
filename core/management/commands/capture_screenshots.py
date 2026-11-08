@@ -72,6 +72,38 @@ CYCLE_FORM_JS = '''() => {
         ['michael.chen', 'emily.rodriguez', 'david.kim'].map(n => n + '@acme.example.com').join(', ');
 }'''
 
+# Switch the cycle form to bulk creation with reviewers from the org chart and
+# submit it; the server redirects to the bulk send preview.
+BULK_FORM_JS = '''() => {
+    const check = (name, value) => {
+        const input = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        input.checked = true;
+        input.dispatchEvent(new Event('change'));
+    };
+    check('creation_mode', 'bulk');
+    check('bulk_source', 'chart');
+    const sel = document.getElementById('questionnaire');
+    sel.value = (Array.from(sel.options).find(o => o.text.includes('Software Engineering')) || sel.options[1]).value;
+    document.getElementById('cycleForm').requestSubmit();
+}'''
+
+# A small org chart for the CSV import's column-mapping step. Rows are
+# (name, email, department, manager); the heads report to the CEO.
+IMPORT_CSV_ROWS = [
+    ('Rachel Whitfield', 'rachel.whitfield@acme.example.com', 'Leadership', ''),
+    ('Morgan Taylor', 'morgan.taylor@acme.example.com', 'Engineering', 'rachel.whitfield@acme.example.com'),
+    ('Casey Johnson', 'casey.johnson@acme.example.com', 'Product', 'rachel.whitfield@acme.example.com'),
+    ('Alex Rivera', 'alex.rivera@acme.example.com', 'Engineering', 'morgan.taylor@acme.example.com'),
+    ('Jordan Chen', 'jordan.chen@acme.example.com', 'Engineering', 'morgan.taylor@acme.example.com'),
+    ('Emma Davis', 'emma.davis@acme.example.com', 'Product', 'casey.johnson@acme.example.com'),
+]
+IMPORT_CSV = 'Name,Email,Department,Manager\n' + ''.join(','.join(row) + '\n' for row in IMPORT_CSV_ROWS)
+
+# A4 at 96 dpi, with the PDF's page margin as body padding (the browser has no
+# @page) and only the cover, which is the first page, showing
+A4_VIEWPORT = {'width': 794, 'height': 1123}
+A4_SCREEN_CSS = 'body { padding: 15mm 15mm 17mm; } .cover ~ * { display: none; }'
+
 # Width the email templates are laid out for (600px table plus 20px padding).
 EMAIL_WIDTH = 640
 
@@ -801,6 +833,8 @@ class Command(BaseCommand):
                     await page.close()
 
             await self._capture_emails(browser, output_path)
+            # Last: the bulk preview creates cycles, which must not show in the shots above
+            await self._capture_org_chart_flow(browser, cookies, config, base_url, output_path)
 
             await browser.close()
 
@@ -827,6 +861,101 @@ class Command(BaseCommand):
         if not self.only:
             return configs
         return [c for c in configs if c['name'].startswith(tuple(self.only))]
+
+    async def _capture_org_chart_flow(self, browser, cookies, config, base_url, output_path):
+        """
+        Org chart, CSV import mapping, bulk send preview, the reviewer's overview
+        and the first page of the PDF report. Desktop, light theme. Each step
+        drives the page itself (upload, form post), so they do not fit the
+        config list above.
+        """
+        steps = [
+            ('org_chart', self._open_org_chart),
+            ('org_chart_import', self._open_import_mapping),
+            ('feedback_overview', self._open_feedback_overview),
+            ('report_pdf', self._open_report_pdf),
+            # Last: this creates cycles and tokens, which the overview must not show
+            ('bulk_preview', self._open_bulk_preview),
+        ]
+        for name, open_page in steps:
+            if self.only and not name.startswith(tuple(self.only)):
+                continue
+            self.stdout.write(f'\nCapturing: {name}')
+            viewport = A4_VIEWPORT if name == 'report_pdf' else {'width': 1920, 'height': 1080}
+            page = await browser.new_page(viewport=viewport, device_scale_factor=1)
+            await page.context.add_cookies(cookies)
+            await page.add_init_script('''
+                localStorage.setItem('theme', 'light');
+                localStorage.setItem('blik_welcome_seen', 'true');
+            ''')
+            try:
+                ok = await open_page(page, config, base_url)
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f'  Skipped: {e}'))
+                ok = False
+            if ok is not False:
+                await page.wait_for_timeout(1000)
+                output_file = output_path / f'{name}.png'
+                await page.screenshot(path=str(output_file), full_page=False, type='png')
+                self.stdout.write(self.style.SUCCESS(f'  ✓ Saved: {output_file}'))
+            await page.close()
+
+    async def _open_org_chart(self, page, config, base_url):
+        await page.goto(f'{base_url}/dashboard/org-chart/')
+        await page.wait_for_selector('.oc-tree', timeout=15000)
+        # Show the people in every unit, then fit the chart to the viewport
+        await page.evaluate("document.querySelectorAll('details.oc-members').forEach(d => d.open = true)")
+        await page.click('[data-oc-zoom="fit"]')
+
+    async def _open_import_mapping(self, page, config, base_url):
+        """Upload a CSV from the org chart page; the server shows the column mapping."""
+        await page.goto(f'{base_url}/dashboard/org-chart/')
+        await page.wait_for_selector('#ocImportFile', state='attached', timeout=15000)
+        await page.set_input_files('#ocImportFile', {
+            'name': 'people.csv', 'mimeType': 'text/csv', 'buffer': IMPORT_CSV.encode(),
+        })
+        async with page.expect_navigation():
+            await page.evaluate("document.getElementById('ocImportFile').form.requestSubmit()")
+        await page.wait_for_selector('form.card', timeout=15000)
+
+    async def _open_bulk_preview(self, page, config, base_url):
+        """Bulk-create cycles with reviewers from the org chart, land on the preview."""
+        await page.goto(f'{base_url}/dashboard/cycles/create/')
+        await page.wait_for_selector('#cycleForm', timeout=15000)
+        async with page.expect_navigation():
+            await page.evaluate(BULK_FORM_JS)
+        if '/bulk/' not in page.url:
+            raise RuntimeError(f'bulk creation did not reach the preview: {page.url}')
+        await page.wait_for_selector('.page-header', timeout=15000)
+
+    async def _open_feedback_overview(self, page, config, base_url):
+        if not config.get('overview_path'):
+            raise RuntimeError('no overview_path in the config; rerun generate_screenshot_data')
+        await page.goto(f'{base_url}{config["overview_path"]}')
+        await page.wait_for_selector('.overview', timeout=15000)
+
+    async def _open_report_pdf(self, page, config, base_url):
+        """The PDF report's HTML at A4 width, rendered from the database directly."""
+        import tempfile
+        from asgiref.sync import sync_to_async
+        from reports.models import Report
+        from reports.pdf import report_pdf_html
+
+        def render():
+            cycles = list(config.get('questionnaire_cycles', {}).values())
+            report = Report.objects.filter(cycle_id=cycles[0]['cycle_id']).first() if cycles else None
+            if report is None:
+                raise RuntimeError('no report to render')
+            return report_pdf_html(report, 'en')
+
+        html = (await sync_to_async(render)()).replace('</head>', f'<style>{A4_SCREEN_CSS}</style></head>', 1)
+        with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False) as f:
+            f.write(html)
+        try:
+            await page.goto(f'file://{f.name}')
+            await page.wait_for_load_state('load')
+        finally:
+            os.unlink(f.name)
 
     async def _capture_emails(self, browser, output_path):
         """Render email templates locally in an inbox frame; nothing is sent."""

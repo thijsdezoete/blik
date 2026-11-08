@@ -380,15 +380,36 @@ def reviewer_relation(category):
     return REVIEWER_RELATION.get(category, '')
 
 
+# How long the signed overview link opens the overview. After that the page offers a new link.
+OVERVIEW_LINK_MAX_AGE = timedelta(days=30)
+
+
 def feedback_overview_url(email, organization):
     """The reviewer's personal overview of every form they have to fill in, in this organization.
 
     The link is signed, not stored: nothing ties the address to a token beyond the token's own
-    `reviewer_email`. It does not expire, as invitations do not either.
+    `reviewer_email`. It works for OVERVIEW_LINK_MAX_AGE; an expired link offers a fresh one.
     """
 
     signed = signing.dumps({'e': email.lower(), 'o': organization.id}, salt='feedback-overview')
     return get_absolute_url('reviews:feedback_overview', signed)
+
+
+def send_overview_link_email(email, organization, language):
+    """Send a reviewer a fresh overview link, after the one in their invitation expired."""
+
+    with translation.override(language):
+        context = {
+            'organization_name': organization.name,
+            'overview_url': feedback_overview_url(email, organization),
+            'days': OVERVIEW_LINK_MAX_AGE.days,
+        }
+        send_email(
+            subject=_('Your feedback forms for %(organization)s') % {'organization': organization.name},
+            message=render_to_string('emails/feedback_overview_link.txt', context),
+            recipient_list=[email],
+            html_message=render_to_string('emails/feedback_overview_link.html', context),
+        )
 
 
 def send_bundle_email(email, tokens):
@@ -416,6 +437,7 @@ def send_bundle_email(email, tokens):
             'items': items,
             'total_minutes': sum(item['estimated_minutes'] or 0 for item in items) or None,
             'overview_url': feedback_overview_url(email, organization),
+            'days': OVERVIEW_LINK_MAX_AGE.days,
         }
 
         send_email(

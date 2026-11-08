@@ -10,7 +10,9 @@ from django_ratelimit.decorators import ratelimit
 from core.languages import is_language, request_language
 from core.models import Organization
 from .models import ReviewerToken, Response, ReviewCycle
-from .services import self_assessment_token, reviewer_relation, estimated_minutes
+from .services import (
+    OVERVIEW_LINK_MAX_AGE, self_assessment_token, reviewer_relation, estimated_minutes, send_overview_link_email,
+)
 from subscriptions.utils import ReviewerLimit
 from questionnaires.answer_options import OPTION_TYPES, resolve_answer
 from questionnaires.models import Question
@@ -379,14 +381,21 @@ def feedback_language(request, token):
     return redirect('reviews:feedback_form', token=token)
 
 
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def feedback_overview(request, signed):
     """Every form one reviewer has to fill in, from the link in the bundled invitation.
 
     The link carries the address and the organization, signed. It shows only this person's own
-    forms: no other reviewers, no results.
+    forms: no other reviewers, no results. An expired link offers to mail a new one; a POST sends
+    it, but only says that it did when the address has forms, so the page does not tell who is a
+    reviewer.
     """
     try:
+        data = signing.loads(signed, salt='feedback-overview', max_age=OVERVIEW_LINK_MAX_AGE)
+        expired = False
+    except signing.SignatureExpired:
         data = signing.loads(signed, salt='feedback-overview')
+        expired = True
     except signing.BadSignature:
         raise Http404
 
@@ -401,6 +410,15 @@ def feedback_overview(request, signed):
     language = request_language(request, *(t.language for t in tokens[:1]), organization=organization)
     translation.activate(language)
     request.LANGUAGE_CODE = language
+
+    if expired:
+        sent = request.method == 'POST'
+        if sent and tokens:
+            send_overview_link_email(data['e'], organization, language)
+        return render(request, 'reviews/feedback_overview_expired.html', {
+            'sent': sent,
+            'days': OVERVIEW_LINK_MAX_AGE.days,
+        })
 
     items = []
     for token in tokens:

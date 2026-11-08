@@ -7,7 +7,7 @@ from django.core import signing
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.utils import translation
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, gettext_lazy
 from core.email import send_email
 from core.languages import recipient_language
 from core.url import get_absolute_url
@@ -366,6 +366,20 @@ def send_reviewer_invitations(cycle, token_ids=None):
     return stats
 
 
+# What the reviewee is to the reviewer. The token category names the reviewer's role
+# ("direct report review" = a direct report reviews), which reads backwards to the reviewer.
+REVIEWER_RELATION = {
+    'peer': gettext_lazy('your colleague'),
+    'manager': gettext_lazy('your direct report'),
+    'direct_report': gettext_lazy('your manager'),
+}
+
+
+def reviewer_relation(category):
+    """'your manager', 'your colleague' or 'your direct report'; empty for the self-assessment."""
+    return REVIEWER_RELATION.get(category, '')
+
+
 def feedback_overview_url(email, organization):
     """The reviewer's personal overview of every form they have to fill in, in this organization.
 
@@ -390,7 +404,7 @@ def send_bundle_email(email, tokens):
             cycle = token.cycle
             items.append({
                 'reviewee_name': cycle.reviewee.name,
-                'category': token.get_category_display(),
+                'relation': reviewer_relation(token.category),
                 'is_self': token.category == 'self',
                 'questionnaire_name': cycle.questionnaire.translated().name,
                 'feedback_url': get_absolute_url('reviews:feedback_form', token.token),

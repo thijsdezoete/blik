@@ -10,7 +10,7 @@ from django_ratelimit.decorators import ratelimit
 from core.languages import is_language, request_language
 from core.models import Organization
 from .models import ReviewerToken, Response, ReviewCycle
-from .services import self_assessment_token
+from .services import self_assessment_token, reviewer_relation, estimated_minutes
 from subscriptions.utils import ReviewerLimit
 from questionnaires.answer_options import OPTION_TYPES, resolve_answer
 from questionnaires.models import Question
@@ -415,8 +415,18 @@ def feedback_overview(request, signed):
         items.append({
             'token': token,
             'questionnaire_name': token.cycle.questionnaire.translated().name,
+            'relation': reviewer_relation(token.category),
+            'minutes': estimated_minutes(token.cycle.questionnaire),
             'state': state,
         })
     items.sort(key=lambda item: item['state'] in ('done', 'closed'))
 
-    return render(request, 'reviews/feedback_overview.html', {'items': items})
+    open_items = [item for item in items if item['state'] in ('start', 'continue')]
+    return render(request, 'reviews/feedback_overview.html', {
+        'items': items,
+        'self_items': [item for item in items if item['token'].category == 'self'],
+        'other_items': [item for item in items if item['token'].category != 'self'],
+        'done_count': sum(1 for item in items if item['state'] == 'done'),
+        'total_count': sum(1 for item in items if item['state'] != 'closed'),
+        'open_minutes': sum(item['minutes'] or 0 for item in open_items),
+    })

@@ -6,7 +6,7 @@
 
 {% trans 'Your answers are anonymous. The people you review never see your name with them. So you can be honest.' %}
 {% for item in items %}
-- {% if item.is_self %}{% blocktrans trimmed with questionnaire=item.questionnaire_name %}Your own self-assessment ({{ questionnaire }}){% endblocktrans %}{% else %}{% blocktrans trimmed with name=item.reviewee_name category=item.category questionnaire=item.questionnaire_name %}{{ name }}: {{ category }} ({{ questionnaire }}){% endblocktrans %}{% endif %}{% if item.estimated_minutes %} - {% blocktrans trimmed count minutes=item.estimated_minutes %}about {{ minutes }} minute{% plural %}about {{ minutes }} minutes{% endblocktrans %}{% endif %}
+- {% if item.is_self %}{% blocktrans trimmed with questionnaire=item.questionnaire_name %}Your own self-assessment ({{ questionnaire }}){% endblocktrans %}{% else %}{% blocktrans trimmed with name=item.reviewee_name relation=item.relation questionnaire=item.questionnaire_name %}{{ name }}, {{ relation }} ({{ questionnaire }}){% endblocktrans %}{% endif %}{% if item.estimated_minutes %} - {% blocktrans trimmed count minutes=item.estimated_minutes %}about {{ minutes }} minute{% plural %}about {{ minutes }} minutes{% endblocktrans %}{% endif %}
   {{ item.feedback_url }}
 {% endfor %}
 {% trans 'You can stop and continue later. Your personal overview shows which forms are still open:' %}

@@ -33,39 +33,63 @@
             });
         })();
     </script>
+    <style>
+        .overview { max-width: 640px; margin: 0 auto; }
+        .overview h1 { font-size: 1.75rem; font-weight: 700; color: var(--text-primary, #111827); margin: 0 0 8px; }
+        .overview .progress-text { color: var(--text-secondary, #6b7280); margin: 0 0 12px; }
+        .overview .bar { height: 6px; border-radius: 3px; background: var(--border, #e5e7eb); overflow: hidden; margin-bottom: 32px; }
+        .overview .bar > div { height: 100%; background: var(--success, #10b981); }
+        .overview h2 { text-align: left; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary, #6b7280); margin: 24px 0 8px; }
+        .overview .row { text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px; margin-bottom: 8px; border-radius: 10px; background: var(--bg-card, #fff); border: 1px solid var(--border, #e5e7eb); }
+        .overview .row.muted { opacity: 0.6; }
+        .overview .row .title { font-weight: 600; color: var(--text-primary, #111827); }
+        .overview .row .meta { font-size: 0.875rem; color: var(--text-secondary, #6b7280); margin-top: 2px; }
+        .overview .row .btn-primary { display: inline-block; width: auto; padding: 8px 16px; text-decoration: none; white-space: nowrap; }
+        .overview .state { font-weight: 600; white-space: nowrap; }
+        .overview .state.done { color: var(--success, #10b981); }
+        .overview .state.closed { color: var(--text-tertiary, #9ca3af); }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="complete-title">{% trans 'Your feedback forms' %}</h1>
-        <p class="complete-message" style="margin-bottom: 32px;">{% trans 'This list shows the forms you were asked to fill in. Open forms come first.' %}</p>
+        <div class="overview">
+            <h1>{% trans 'Your feedback forms' %}</h1>
+            <p class="progress-text">
+                {% blocktrans trimmed with done=done_count total=total_count %}{{ done }} of {{ total }} done.{% endblocktrans %}
+                {% if open_minutes %}{% blocktrans trimmed count minutes=open_minutes %}The open forms take about {{ minutes }} minute.{% plural %}The open forms take about {{ minutes }} minutes.{% endblocktrans %}{% endif %}
+            </p>
+            {% if total_count %}<div class="bar"><div style="width: {% widthratio done_count total_count 100 %}%;"></div></div>{% endif %}
 
-        {% for item in items %}
-        <div class="section" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-            <div>
-                <div class="section-description" style="margin: 0 0 4px;">{{ item.questionnaire_name }}</div>
-                <div class="section-title" style="margin: 0;">
-                    {% if item.token.category == 'self' %}
-                        {% trans 'Your own self-assessment' %}
-                    {% else %}
-                        {% blocktrans trimmed with name=item.token.cycle.reviewee.name category=item.token.get_category_display %}{{ name }}: {{ category }}{% endblocktrans %}
-                    {% endif %}
+            {% if self_items %}
+            <h2>{% trans 'About you' %}</h2>
+            {% for item in self_items %}
+            <div class="row{% if item.state == 'done' or item.state == 'closed' %} muted{% endif %}">
+                <div>
+                    <div class="title">{{ item.questionnaire_name }}</div>
+                    <div class="meta">{% trans 'Your self-assessment' %}{% if item.minutes and item.state != 'done' %} · {% blocktrans trimmed count minutes=item.minutes %}about {{ minutes }} minute{% plural %}about {{ minutes }} minutes{% endblocktrans %}{% endif %}</div>
                 </div>
+                {% include 'reviews/_overview_action.html' %}
             </div>
-            <div>
-                {% if item.state == 'start' %}
-                    <a class="btn-primary" style="display: inline-block; width: auto; text-decoration: none; text-align: center;" href="{% url 'reviews:feedback_form' token=item.token.token %}">{% trans 'Start' %}</a>
-                {% elif item.state == 'continue' %}
-                    <a class="btn-primary" style="display: inline-block; width: auto; text-decoration: none; text-align: center;" href="{% url 'reviews:feedback_form' token=item.token.token %}">{% trans 'Continue' %}</a>
-                {% elif item.state == 'done' %}
-                    <span style="color: var(--success, #10b981); font-weight: 600;">&#10003; {% trans 'Done' %}</span>
-                {% else %}
-                    <span style="color: var(--text-tertiary, #9ca3af); font-weight: 600;">{% trans 'Closed' %}</span>
-                {% endif %}
+            {% endfor %}
+            {% endif %}
+
+            {% if other_items %}
+            <h2>{% trans 'About others' %}</h2>
+            {% for item in other_items %}
+            <div class="row{% if item.state == 'done' or item.state == 'closed' %} muted{% endif %}">
+                <div>
+                    <div class="title">{{ item.token.cycle.reviewee.name }}</div>
+                    <div class="meta">{{ item.relation|capfirst }} · {{ item.questionnaire_name }}{% if item.minutes and item.state != 'done' %} · {% blocktrans trimmed count minutes=item.minutes %}about {{ minutes }} minute{% plural %}about {{ minutes }} minutes{% endblocktrans %}{% endif %}</div>
+                </div>
+                {% include 'reviews/_overview_action.html' %}
             </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if not items %}
+            <p class="progress-text">{% trans 'There are no forms for you at the moment.' %}</p>
+            {% endif %}
         </div>
-        {% empty %}
-        <p class="complete-message">{% trans 'There are no forms for you at the moment.' %}</p>
-        {% endfor %}
     </div>
 </body>
 </html>

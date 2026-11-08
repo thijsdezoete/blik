@@ -11,7 +11,7 @@
 {% for item in items %}
 <div style="margin:24px 0; padding:16px 20px; border:1px solid #e2e8f0; border-radius:8px;">
   <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#64748b; margin-bottom:6px;">{{ item.questionnaire_name }}</div>
-  <div style="font-size:16px; font-weight:600; color:#0f172a;">{% if item.is_self %}{% trans 'Your own self-assessment' %}{% else %}{% blocktrans trimmed with name=item.reviewee_name category=item.category %}{{ name }}: {{ category }}{% endblocktrans %}{% endif %}</div>
+  <div style="font-size:16px; font-weight:600; color:#0f172a;">{% if item.is_self %}{% trans 'Your own self-assessment' %}{% else %}{% blocktrans trimmed with name=item.reviewee_name relation=item.relation %}{{ name }}, {{ relation }}{% endblocktrans %}{% endif %}</div>
   {% if item.estimated_minutes %}<div style="font-size:14px; color:#64748b; margin-top:4px;">{% blocktrans trimmed count minutes=item.estimated_minutes %}About {{ minutes }} minute.{% plural %}About {{ minutes }} minutes.{% endblocktrans %}</div>{% endif %}
   {% include 'emails/_button.html' with url=item.feedback_url label=cta %}
 </div>

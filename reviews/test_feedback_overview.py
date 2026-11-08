@@ -90,3 +90,14 @@ class FeedbackOverviewTests(TestCase):
         response = self.client.get(overview_path(self.email, self.org))
 
         self.assertEqual(response.context['items'][0]['state'], 'continue')
+
+    def test_groups_own_self_assessments_apart_from_the_others(self):
+        own = ReviewerTokenFactory(cycle=self.cycle('Carol'), category='self', reviewer_email=self.email)
+        boss = ReviewerTokenFactory(cycle=self.cycle('Dave'), category='direct_report', reviewer_email=self.email)
+
+        response = self.client.get(overview_path(self.email, self.org))
+
+        self.assertEqual([item['token'] for item in response.context['self_items']], [own])
+        self.assertEqual([item['token'] for item in response.context['other_items']], [boss])
+        self.assertEqual(str(response.context['other_items'][0]['relation']), 'your manager')
+        self.assertEqual(response.context['total_count'], 2)

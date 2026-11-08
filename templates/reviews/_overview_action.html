@@ -1,0 +1,9 @@
+{% load i18n %}{% if item.state == 'start' %}
+    <a class="btn-primary" href="{% url 'reviews:feedback_form' token=item.token.token %}">{% trans 'Start' %}</a>
+{% elif item.state == 'continue' %}
+    <a class="btn-primary" href="{% url 'reviews:feedback_form' token=item.token.token %}">{% trans 'Continue' %}</a>
+{% elif item.state == 'done' %}
+    <span class="state done">&#10003; {% trans 'Done' %}</span>
+{% else %}
+    <span class="state closed">{% trans 'Closed' %}</span>
+{% endif %}

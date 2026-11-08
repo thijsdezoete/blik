@@ -16,6 +16,6 @@
   {% include 'emails/_button.html' with url=item.feedback_url label=cta %}
 </div>
 {% endfor %}
-<p style="font-size:14px; color:#64748b;">{% blocktrans trimmed with url=overview_url %}You can stop and continue later. <a href="{{ url }}">Your personal overview</a> shows which forms are still open.{% endblocktrans %}</p>
+<p style="font-size:14px; color:#64748b;">{% blocktrans trimmed with url=overview_url %}You can stop and continue later. <a href="{{ url }}">Your personal overview</a> shows which forms are still open.{% endblocktrans %} {% blocktrans trimmed %}This link works for {{ days }} days.{% endblocktrans %}</p>
 <p>{% trans 'Thank you.' %}</p>
 {% endblock %}

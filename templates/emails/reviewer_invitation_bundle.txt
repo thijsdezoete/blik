@@ -11,6 +11,7 @@
 {% endfor %}
 {% trans 'You can stop and continue later. Your personal overview shows which forms are still open:' %}
 {{ overview_url }}
+{% blocktrans trimmed %}This link works for {{ days }} days.{% endblocktrans %}
 
 {% trans 'Thank you.' %}
 

@@ -1,0 +1,59 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans 'This link has expired' %}</title>
+    {% include 'components/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/feedback.css' %}">
+    <script>
+        // Theme detection and initialization
+        (function() {
+            const getPreferredTheme = () => {
+                const stored = localStorage.getItem('theme');
+                if (stored) return stored;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+
+            const setTheme = (theme) => {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            };
+
+            setTheme(getPreferredTheme());
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        })();
+    </script>
+    <style>
+        .overview { max-width: 640px; margin: 0 auto; }
+        .overview h1 { font-size: 1.75rem; font-weight: 700; color: var(--text-primary, #111827); margin: 0 0 8px; }
+        .overview p { color: var(--text-secondary, #6b7280); margin: 0 0 24px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="overview">
+            {% if sent %}
+            <h1>{% trans 'Check your inbox' %}</h1>
+            <p>{% trans 'If we have forms for this address, a new link is on its way.' %}</p>
+            {% else %}
+            <h1>{% trans 'This link has expired' %}</h1>
+            <p>{% blocktrans trimmed %}For your safety, the overview link works for {{ days }} days. Request a new one and it arrives by email within a minute.{% endblocktrans %}</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn-primary">{% trans 'Send me a new link' %}</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

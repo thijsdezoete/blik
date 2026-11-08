@@ -1,0 +1,11 @@
+{% load i18n %}{% trans 'Your feedback forms' %}
+
+{% trans 'Hello,' %}
+
+{% blocktrans trimmed %}Here is a new link to your personal overview of the feedback forms for {{ organization_name }}.{% endblocktrans %} {% blocktrans trimmed %}This link works for {{ days }} days.{% endblocktrans %}
+{{ overview_url }}
+
+{% trans 'Thank you.' %}
+
+---
+{% trans 'This is an automated message from Blik.' %}

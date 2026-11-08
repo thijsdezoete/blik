@@ -1,0 +1,12 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Your feedback forms' %}{% endblock %}
+{% block preheader %}{% blocktrans trimmed %}Here is a new link to your personal overview of the feedback forms for {{ organization_name }}.{% endblocktrans %}{% endblock %}
+{% block heading %}{% trans 'Your feedback forms' %}{% endblock %}
+{% block content %}
+<p>{% trans 'Hello,' %}</p>
+<p>{% blocktrans trimmed %}Here is a new link to your personal overview of the feedback forms for {{ organization_name }}.{% endblocktrans %} {% blocktrans trimmed %}This link works for {{ days }} days.{% endblocktrans %}</p>
+{% trans 'Show my forms' as cta %}
+{% include 'emails/_button.html' with url=overview_url label=cta %}
+<p>{% trans 'Thank you.' %}</p>
+{% endblock %}

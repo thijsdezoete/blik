@@ -147,6 +147,17 @@
 
             {% include "landing/includes/pricing_plans.html" %}
 
+            <div class="feature-card mt-12">
+                <h3>In every plan, the free one too</h3>
+                <p>Blik is open source. These are not add-ons. They come with the free plan, the Single Round, the subscriptions and the self-hosted version.</p>
+                <ul class="pricing-features">
+                    <li>Org chart: upload a CSV with name, email, department and manager, or build it by hand</li>
+                    <li>One round for everyone from the org chart, with a preview before anything is sent</li>
+                    <li>One email per person with every link they need, and a personal overview page</li>
+                    <li>PDF report, emailed when a round completes; download or regenerate it from the report page</li>
+                </ul>
+            </div>
+
             <div class="cta-box mt-12">
                 <p class="hosting-trial">Subscriptions: {{ trial_days }}-day free trial — credit card required; cancel before it ends and you won't be charged.</p>
                 <p class="hosting-retention">Single Round: €{{ plan_single_price }} per pack of {{ plan_single_max }} review cycles, buy as many packs as you need, no trial, reports stay available. Subscriptions: cancel anytime, data export available, 30-day data retention after cancellation. All prices exclude VAT.</p>
@@ -253,6 +264,11 @@
                 <details class="faq-item">
                     <summary>Are there any hidden costs?</summary>
                     <p>None. €{{ plan_saas_price }} is €{{ plan_saas_price }}. No setup fees, no per-user charges, no feature restrictions, no surprise renewal increases. The only way your bill goes up is if you grow past {{ plan_saas_max }} employees and need the larger plan.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Are the org chart, bulk rounds and PDF reports extra?</summary>
+                    <p>No. Every plan has them, the free one too. You upload a CSV, Blik builds the org chart, one form starts a round for everyone, and each report comes as a PDF. The free plan is limited to one round for up to 10 reviewees, not in features.</p>
                 </details>
 
                 <details class="faq-item">

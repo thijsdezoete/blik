@@ -33,6 +33,7 @@
 
 {% block nav_links %}
     <a href="#how-it-works">How It Works</a>
+    <a href="#org-chart">Org chart</a>
     <a href="#benefits">Benefits</a>
     <a href="#reporting">Reporting</a>
     <a href="#pricing">Pricing</a>
@@ -83,7 +84,7 @@
                 <div class="feature-card">
                     <div class="audience-step-number">2</div>
                     <h3>Create Review Cycles</h3>
-                    <p>Select employees to review, choose peers/managers/reports as reviewers, and send anonymous invite links. Pre-built questionnaires included.</p>
+                    <p>Select employees to review, choose peers/managers/reports as reviewers, and send anonymous invite links. Or upload your org chart and start a round for everyone at once. Pre-built questionnaires included.</p>
                 </div>
 
                 <div class="feature-card">
@@ -95,15 +96,98 @@
                 <div class="feature-card">
                     <div class="audience-step-number">4</div>
                     <h3>Professional Reports</h3>
-                    <p>Rich, visual reports show aggregated feedback by category (peers, managers, reports). Built-in privacy thresholds protect anonymity.</p>
+                    <p>Rich, visual reports show aggregated feedback by category (peers, managers, reports). Built-in privacy thresholds protect anonymity. Download each report as a PDF, or let Blik email it when the round completes.</p>
                 </div>
             </div>
             {% include 'landing/includes/hiw_teaser.html' with url_name='how_it_works_hr' %}
         </div>
     </section>
 
+
+    <!-- Org Chart Section -->
+    <section id="org-chart" class="section">
+        <div class="container">
+            <h2 class="section-title">One Round for the Whole Company</h2>
+            <p class="section-intro">Upload your org chart once. Blik works out who reviews whom, starts every round, and sends each person one email.</p>
+
+            <div class="split">
+                <div class="split-text">
+                    <span class="eyebrow">Org chart</span>
+                    <h2>Upload a CSV. Blik builds the chart.</h2>
+                    <p>Export your people from your HR system or a spreadsheet. The file needs a name, an email, a department and a manager. The manager can be an email or a name.</p>
+                    <ul>
+                        <li>Blik recognises the column names in English, German and Dutch</li>
+                        <li>You check the mapping on a preview of the first rows, then import</li>
+                        <li>Each manager gets a unit with the people who report to them</li>
+                        <li>Units stack: a team lead sits in the department head's unit and manages their own</li>
+                    </ul>
+                    <p>Import again and Blik replaces the chart. People who left stay in Blik with their history. They only leave their unit.</p>
+                </div>
+                <div class="browser-frame">
+                    <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                    <picture>
+                        <source srcset="{% static 'img/screenshots/org_chart_import.webp' %}" type="image/webp">
+                        <img src="{% static 'img/screenshots/org_chart_import.png' %}" alt="Importing an org chart from a CSV: the column mapping and a preview of the first rows" loading="lazy">
+                    </picture>
+                </div>
+            </div>
+
+            <div class="split split--reverse">
+                <div class="split-text">
+                    <span class="eyebrow">By hand too</span>
+                    <h2>Or build the chart yourself</h2>
+                    <p>No CSV? Create units, drag people between them, and drag a unit under another. Rename or delete a unit when the company changes.</p>
+                    <p>From the chart Blik derives for every person who their managers, peers and direct reports are. You never type a reviewer list again.</p>
+                </div>
+                <div class="browser-frame">
+                    <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                    <picture>
+                        <source srcset="{% static 'img/screenshots/org_chart.webp' %}" type="image/webp">
+                        <img src="{% static 'img/screenshots/org_chart.png' %}" alt="The org chart in Blik: units with their managers and members" loading="lazy">
+                    </picture>
+                </div>
+            </div>
+
+            <div class="split">
+                <div class="split-text">
+                    <span class="eyebrow">Bulk rounds</span>
+                    <h2>One form starts a round for everyone</h2>
+                    <p>Pick a questionnaire. Tick the feedback categories. Choose "from the org chart".</p>
+                    <ul>
+                        <li>Blik creates one cycle per person, with the reviewers already filled in</li>
+                        <li>Blik skips people the chart gives no reviewers, and tells you who</li>
+                        <li>You see a preview before anything is sent</li>
+                    </ul>
+                </div>
+                <div class="browser-frame">
+                    <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                    <picture>
+                        <source srcset="{% static 'img/screenshots/bulk_preview.webp' %}" type="image/webp">
+                        <img src="{% static 'img/screenshots/bulk_preview.png' %}" alt="The preview before a bulk round starts: one cycle per person with their reviewers" loading="lazy">
+                    </picture>
+                </div>
+            </div>
+
+            <div class="split split--reverse">
+                <div class="split-text">
+                    <span class="eyebrow">One email per person</span>
+                    <h2>Nobody has to hunt through their inbox</h2>
+                    <p>Everyone who has to fill in forms gets one email with every link they need. Their own self-assessment is in it too. The forms are grouped per questionnaire, with the estimated minutes. A person with a single form gets a normal invitation.</p>
+                    <p>The email also carries a personal overview page. It lists the person's forms in two groups, "about you" and "about others", with progress and Start, Continue or Done. The link is signed, and Blik stores nothing for it. It works for 30 days. After that, the page sends a fresh link on request.</p>
+                </div>
+                <div class="browser-frame">
+                    <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                    <picture>
+                        <source srcset="{% static 'img/screenshots/feedback_overview.webp' %}" type="image/webp">
+                        <img src="{% static 'img/screenshots/feedback_overview.png' %}" alt="The personal overview page: forms about you and about others, with progress" loading="lazy">
+                    </picture>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Benefits Section -->
-    <section id="benefits" class="section">
+    <section id="benefits" class="section section-alt">
         <div class="container">
             <h2 class="section-title">Why HR Managers Choose Blik</h2>
 
@@ -142,7 +226,7 @@
     </section>
 
     <!-- Product Showcase Section -->
-    <section id="reporting" class="section section-alt product-showcase">
+    <section id="reporting" class="section product-showcase">
         <div class="container">
             <h2 class="section-title">Professional Reports That Drive Growth</h2>
             <p class="section-intro">Rich visualizations and actionable insights from 360-degree feedback</p>
@@ -235,6 +319,32 @@
                 <p class="audience-mobile-caption">
                     Reviewers complete feedback on any device—desktop, tablet, or phone
                 </p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- PDF Reports Section -->
+    <section id="pdf-reports" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">The Report as a PDF</h2>
+            <p class="section-intro">Every report is also a file you can hand over, print or archive. In every plan, the free one too.</p>
+
+            <div class="features-grid features-grid--three">
+                <div class="feature-card">
+                    <h3>Ready within five minutes</h3>
+                    <p>When a round completes, Blik finalises the report within five minutes and emails it. You choose whether the PDF goes along as an attachment.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>What is in it</h3>
+                    <p>A cover page, an executive summary, a radar per reviewer group (self, manager, peers, direct reports), the section scores, and the question details with the self-versus-others gap.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Download or regenerate</h3>
+                    <p>Admins download or regenerate the PDF from the report page. We keep PDFs for 30 days by default and then delete them. You can change the period for your organisation. The report data stays. <a href="{{ main_app_url }}/reports/sample.pdf" target="_blank" rel="noopener">See a sample report (PDF)</a>.</p>
+                </div>
             </div>
         </div>
     </section>

@@ -96,6 +96,38 @@
                     "@type": "Answer",
                     "text": "Blik includes four templates: Professional Skills 360 Review (27 questions in 8 sections), Software Engineering 360 Review (35 questions in 10 sections), Manager 360 Review (17 questions in 7 sections), and 360 Degree Feedback (12 questions in 4 sections). You can also create custom questionnaires."
                 }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I import my people from a spreadsheet?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Upload a CSV with a name (or first and last name), an email, a department and a manager. Blik recognises the column names in English, German and Dutch. You check the mapping on a preview of the first rows, then import. Each manager gets a unit with the people who report to them, and units stack. From that org chart Blik knows for every person who their managers, peers and direct reports are. You can also build or edit the chart by hand."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do reviewers get many emails?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No. When you start a round for everyone from the org chart, each person gets one email with every link they need, their own self-assessment included. The forms are grouped per questionnaire, with the estimated minutes. A person with a single form gets a normal invitation. The email also carries a personal overview page with their forms, about you and about others, with progress. The link works for 30 days. After that, the page sends a fresh link on request."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I get the report as a PDF?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. When a round completes, Blik finalises the report within five minutes and emails it. Your organisation chooses whether the PDF goes along as an attachment. The PDF has a cover page, an executive summary, a radar per reviewer group, the section scores, and the question details with the self-versus-others gap. Admins can download or regenerate the PDF from the report page. PDFs are kept for 30 days by default and then deleted. The report data stays."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What happens to people who leave?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Import the org chart again and Blik replaces the chart. People who are no longer in the file stay in Blik with their history and reports. They only leave their unit, so they get no new rounds from the chart. If you want their data gone, delete them with the deletion tools."
+                }
             }
         ]
     }
@@ -170,7 +202,7 @@
 
                 <details class="faq-item">
                     <summary>How are reports generated and shared?</summary>
-                    <p>A report gets triggered either by all invited members finalizing the questionnaire, or by an application admin who closes the report manually. The report itself shows an executive overview plus a detailed in-depth view of all the questions and the aggregated answers per group (self, peers, managers). A report can be generated at will even if some reviewers haven't finished answering all their questions yet. It takes whatever they've filled out so far and leaves the rest of the questions blank.</p>
+                    <p>A report gets triggered either by all invited members finalizing the questionnaire, or by an application admin who closes the report manually. The report itself shows an executive overview plus a detailed in-depth view of all the questions and the aggregated answers per group (self, peers, managers). A report can be generated at will even if some reviewers haven't finished answering all their questions yet. It takes whatever they've filled out so far and leaves the rest of the questions blank. Every report is also available as a PDF, emailed when the round completes or downloaded from the report page.</p>
                 </details>
 
                 <details class="faq-item">
@@ -181,6 +213,26 @@
                 <details class="faq-item">
                     <summary>How do I invite reviewers?</summary>
                     <p>You can share a link that generates reviewer tokens or send email invitations. Email invitations can associate a token with an email address, and responses retain their token reference. Shared links do not support email reminders. Explain your invitation method and confidentiality limits to reviewers.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I import my people from a spreadsheet?</summary>
+                    <p>Yes. Upload a CSV with a name (or first and last name), an email, a department and a manager. The manager can be an email or a name. Blik recognises the column names in English, German and Dutch. You check the mapping on a preview of the first rows, then import. Each manager gets a unit with the people who report to them, and units stack. From that org chart Blik knows for every person who their managers, peers and direct reports are. You can also build or edit the chart by hand: create units, drag people, drag a unit under another.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Do reviewers get many emails?</summary>
+                    <p>No. When you start a round for everyone from the org chart, each person gets one email with every link they need, their own self-assessment included. The forms are grouped per questionnaire, with the estimated minutes. A person with a single form gets a normal invitation. The email also carries a personal overview page that lists their forms in two groups, "about you" and "about others", with progress and Start, Continue or Done. The link works for 30 days. After that, the page sends a fresh link on request.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Can I get the report as a PDF?</summary>
+                    <p>Yes. When a round completes, Blik finalises the report within five minutes and emails it. Your organisation chooses whether the PDF goes along as an attachment. The PDF has a cover page, an executive summary, a radar per reviewer group (self, manager, peers, direct reports), the section scores, and the question details with the self-versus-others gap. Admins can download or regenerate the PDF from the report page. We keep PDFs for 30 days by default, configurable per organisation, and then delete them. The report data stays. <a href="{{ main_app_url }}/reports/sample.pdf" target="_blank" rel="noopener">See a sample report (PDF)</a>.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>What happens to people who leave?</summary>
+                    <p>Import the org chart again and Blik replaces the chart. People who are no longer in the file stay in Blik with their history and reports. They only leave their unit, so they get no new rounds from the chart. If you want their data gone, delete them with the deletion tools.</p>
                 </details>
             </div>
         </div>
@@ -314,7 +366,7 @@
 
                 <details class="faq-item">
                     <summary>Can Blik integrate with our HRIS (BambooHR, Workday, etc.)?</summary>
-                    <p>Not out of the box yet, but the REST API makes this possible. You'd need to build a small integration script that syncs employee data from your HRIS to Blik. If there's demand for specific integrations, we can prioritize building them. Let us know what you need.</p>
+                    <p>Not out of the box yet. The simple route: export your people from the HRIS as a CSV and import it as an org chart in Blik. Import again when people change. For a live sync, the REST API makes this possible with a small integration script. If there's demand for specific integrations, we can prioritize building them. Let us know what you need.</p>
                 </details>
 
                 <details class="faq-item">

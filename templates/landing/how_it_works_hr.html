@@ -43,6 +43,35 @@
                 <ul class="hiw-points">
                     {% for p in step.points %}<li>{{ p }}</li>{% endfor %}
                 </ul>
+                {# Org chart, bulk rounds, one email per person and the PDF: additions per step, until they move into landing/how_it_works.py. #}
+                {% if step.slug == 'people' %}
+                <h3 class="hiw-vis-title">Or upload your org chart</h3>
+                <p class="hiw-lead">Upload a CSV with name, email, department and manager. Blik builds the org chart and knows who reviews whom.</p>
+                <ul class="hiw-points">
+                    <li>Blik recognises the column names in English, German and Dutch. You check the mapping on a preview of the first rows.</li>
+                    <li>Each manager gets a unit with the people who report to them. Units stack.</li>
+                    <li>Or build the chart by hand: create units, drag people between them, drag a unit under another.</li>
+                    <li>Import again and Blik replaces the chart. People who left keep their history and only leave their unit.</li>
+                </ul>
+                {% elif step.slug == 'round' %}
+                <h3 class="hiw-vis-title">Or start a round for everyone from the org chart</h3>
+                <p class="hiw-lead">Pick a questionnaire, tick the feedback categories, choose "from the org chart". Blik does the rest.</p>
+                <ul class="hiw-points">
+                    <li>One cycle per person, with the reviewers already filled in.</li>
+                    <li>Blik skips people the chart gives no reviewers, and tells you who.</li>
+                    <li>You see a preview before anything is sent.</li>
+                    <li>Everyone who has to fill in forms gets one email with every link they need, their own self-assessment included. A person with a single form gets a normal invitation.</li>
+                    <li>The email also carries a personal overview page: the forms "about you" and "about others", with progress. The link works for 30 days. After that, the page sends a fresh link on request.</li>
+                </ul>
+                {% elif step.slug == 'report' %}
+                <h3 class="hiw-vis-title">The report as a PDF</h3>
+                <ul class="hiw-points">
+                    <li>When the round completes, Blik finalises the report within five minutes and emails it. You choose whether the PDF goes along.</li>
+                    <li>Cover page, executive summary, a radar per reviewer group, section scores, and question details with the self-versus-others gap.</li>
+                    <li>Admins download or regenerate the PDF from the report page.</li>
+                    <li>We keep PDFs for 30 days by default and then delete them. The report data stays.</li>
+                </ul>
+                {% endif %}
                 <h3 class="hiw-vis-title">Who sees what</h3>
                 {% include 'landing/includes/hiw_visibility.html' %}
                 {% if step.note %}<p class="hiw-note">{{ step.note }}</p>{% endif %}
@@ -55,6 +84,45 @@
                 </div>
                 {% endif %}
                 {% for m in step.media %}{% include 'landing/includes/hiw_media.html' %}{% endfor %}
+                {% if step.slug == 'people' %}
+                <figure class="hiw-shot hiw-shot--browser">
+                    <a class="browser-frame" href="{% static 'img/screenshots/org_chart_import.webp' %}" target="_blank" rel="noopener" aria-label="Open: Importing an org chart from a CSV: the column mapping and a preview of the first rows">
+                        <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                        <picture>
+                            <source srcset="{% static 'img/screenshots/org_chart_import.webp' %}" type="image/webp">
+                            <img src="{% static 'img/screenshots/org_chart_import.png' %}" alt="Importing an org chart from a CSV: the column mapping and a preview of the first rows" loading="lazy">
+                        </picture>
+                    </a>
+                </figure>
+                <figure class="hiw-shot hiw-shot--browser">
+                    <a class="browser-frame" href="{% static 'img/screenshots/org_chart.webp' %}" target="_blank" rel="noopener" aria-label="Open: The org chart in Blik: units with their managers and members">
+                        <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                        <picture>
+                            <source srcset="{% static 'img/screenshots/org_chart.webp' %}" type="image/webp">
+                            <img src="{% static 'img/screenshots/org_chart.png' %}" alt="The org chart in Blik: units with their managers and members" loading="lazy">
+                        </picture>
+                    </a>
+                </figure>
+                {% elif step.slug == 'round' %}
+                <figure class="hiw-shot hiw-shot--browser">
+                    <a class="browser-frame" href="{% static 'img/screenshots/bulk_preview.webp' %}" target="_blank" rel="noopener" aria-label="Open: The preview before a bulk round starts: one cycle per person with their reviewers">
+                        <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                        <picture>
+                            <source srcset="{% static 'img/screenshots/bulk_preview.webp' %}" type="image/webp">
+                            <img src="{% static 'img/screenshots/bulk_preview.png' %}" alt="The preview before a bulk round starts: one cycle per person with their reviewers" loading="lazy">
+                        </picture>
+                    </a>
+                </figure>
+                <figure class="hiw-shot hiw-shot--browser">
+                    <a class="browser-frame" href="{% static 'img/screenshots/feedback_overview.webp' %}" target="_blank" rel="noopener" aria-label="Open: The personal overview page: forms about you and about others, with progress">
+                        <div class="browser-frame-bar"><span></span><span></span><span></span></div>
+                        <picture>
+                            <source srcset="{% static 'img/screenshots/feedback_overview.webp' %}" type="image/webp">
+                            <img src="{% static 'img/screenshots/feedback_overview.png' %}" alt="The personal overview page: forms about you and about others, with progress" loading="lazy">
+                        </picture>
+                    </a>
+                </figure>
+                {% endif %}
             </div>
         </li>
         {% endfor %}

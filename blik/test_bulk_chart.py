@@ -135,16 +135,19 @@ class BulkChartDerivationTests(TestCase):
             self.assertEqual(
                 cycle.tokens.filter(reviewer_email__isnull=False).count(), 0)
 
-    def test_unplaced_reviewees_get_only_self_token_in_chart_mode(self):
+    def test_unplaced_reviewees_get_no_cycle_in_chart_mode(self):
         """
-        A reviewee not on any unit should still get a cycle — with only a
-        self-assessment token and no external reviewer tokens.
+        A reviewee the chart gives no reviewers gets no cycle: a lone
+        self-assessment is noise in the reports and costs a credit.
         """
         on_unit = RevieweeFactory(organization=self.org, name='OnUnit')
         loner = RevieweeFactory(organization=self.org, name='Loner')
 
+        report = RevieweeFactory(organization=self.org, name='Report')
+
         unit = OrgUnitFactory(organization=self.org)
         OrgUnitMembershipFactory(unit=unit, reviewee=on_unit, row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=report, row=1, col=0)
 
         self.client.post(reverse('review_cycle_create'), {
             'creation_mode': 'bulk',
@@ -152,11 +155,8 @@ class BulkChartDerivationTests(TestCase):
             'questionnaire': str(self.questionnaire.id),
         })
 
-        loner_cycle = ReviewCycle.objects.get(reviewee=loner)
-        non_self_tokens = loner_cycle.tokens.filter(
-            reviewer_email__isnull=False,
-        ).exclude(category='self')
-        self.assertEqual(non_self_tokens.count(), 0)
+        self.assertFalse(ReviewCycle.objects.filter(reviewee=loner).exists())
+        self.assertTrue(ReviewCycle.objects.filter(reviewee=on_unit).exists())
 
 
 @override_settings(STORAGES=NON_HASHING_STORAGES)
@@ -194,20 +194,6 @@ class BulkPreviewPageTests(TestCase):
         self.assertContains(resp, 'CEO')
         self.assertContains(resp, 'Alice')
 
-    def test_preview_flags_unplaced(self):
-        loner = RevieweeFactory(organization=self.org, name='Loner')
-        # Ensure at least one unit exists so chart mode can be chosen.
-        OrgUnitFactory(organization=self.org, name='OtherUnit')
-
-        self.client.post(reverse('review_cycle_create'), {
-            'creation_mode': 'bulk',
-            'bulk_source': 'chart',
-            'questionnaire': str(self.questionnaire.id),
-        })
-
-        resp = self.client.get(reverse('bulk_send_invitations'))
-        self.assertContains(resp, 'Unplaced')
-        self.assertContains(resp, 'aren')  # "aren't on any org-chart unit yet"
 
     def test_preview_post_schedules_sends_and_clears_session(self):
         RevieweeFactory(organization=self.org)

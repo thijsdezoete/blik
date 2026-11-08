@@ -1878,8 +1878,28 @@ def review_cycle_create(request):
                 derived_count = 0
                 unplaced_count = 0
 
+                # The categories this run collects, read off an unsaved cycle
+                # so the defaults match what the created cycles will have.
+                active_categories = ReviewCycle(**category_flags).active_categories
+
                 with transaction.atomic():
                     for reviewee in reviewees:
+                        email_assignments = None
+                        if bulk_source == 'chart':
+                            buckets = derive_reviewers(reviewee)
+                            # Build the email_assignments dict the existing
+                            # helper expects: emails only, no Reviewee FK.
+                            email_assignments = {
+                                code: [p.email.lower() for p in buckets.get(code, []) if p.email]
+                                for code in active_categories
+                            }
+                            # Nobody but the reviewee: a worker in an upward run,
+                            # a professor in a peer run. No cycle, no lone
+                            # self-assessment, no credit spent.
+                            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                                unplaced_count += 1
+                                continue
+
                         cycle = ReviewCycle.objects.create(
                             reviewee=reviewee,
                             questionnaire=questionnaire,
@@ -1889,22 +1909,12 @@ def review_cycle_create(request):
                         )
                         created_cycles.append(cycle)
 
-                        if bulk_source == 'chart':
-                            buckets = derive_reviewers(reviewee)
-                            # Build the email_assignments dict the existing
-                            # helper expects: emails only, no Reviewee FK.
-                            email_assignments = {
-                                code: [p.email.lower() for p in buckets.get(code, []) if p.email]
-                                for code in cycle.active_categories
-                            }
-                            if any(email_assignments.values()):
-                                for cat_code, emails in email_assignments.items():
-                                    for _email in emails:
-                                        ReviewerToken.objects.create(cycle=cycle, category=cat_code)
-                                assign_tokens_to_emails(cycle, email_assignments)
-                                derived_count += 1
-                            else:
-                                unplaced_count += 1
+                        if email_assignments:
+                            for cat_code, emails in email_assignments.items():
+                                for _email in emails:
+                                    ReviewerToken.objects.create(cycle=cycle, category=cat_code)
+                            assign_tokens_to_emails(cycle, email_assignments)
+                            derived_count += 1
 
                 # Stash the cycle UUIDs in the session for the send-invitations
                 # confirmation step. Session avoids URL-length limits when the
@@ -1917,8 +1927,8 @@ def review_cycle_create(request):
                 if bulk_source == 'chart':
                     messages.success(
                         request,
-                        _('Created %(count)s review cycles. %(derived)s got reviewers from the org chart. %(unplaced)s reviewee(s) are not in a unit yet.')
-                        % {'count': len(created_cycles), 'derived': derived_count, 'unplaced': unplaced_count}
+                        _('Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories.')
+                        % {'count': len(created_cycles), 'unplaced': unplaced_count}
                     )
                 else:
                     messages.success(
@@ -2128,32 +2138,20 @@ def bulk_send_invitations(request):
             )
         return redirect('review_cycle_list')
 
-    # Build per-cycle reviewer count summary so the preview can flag cycles
-    # whose reviewees aren't meaningfully on the chart. "Unplaced" here means
-    # no external reviewers derived — self-assessment alone doesn't count,
-    # because every cycle has one and it would mask truly empty cycles.
+    # Per-cycle reviewer counts for the preview table.
     cycle_summaries = []
     for cycle in cycles:
-        tokens = list(cycle.tokens.all())
         counts = {'self': 0, 'manager': 0, 'peer': 0, 'direct_report': 0}
-        for t in tokens:
+        for t in cycle.tokens.all():
             if t.category in counts and t.reviewer_email:
                 counts[t.category] += 1
-        total = sum(counts.values())
-        non_self_total = counts['manager'] + counts['peer'] + counts['direct_report']
-        cycle_summaries.append({
-            'cycle': cycle,
-            'counts': counts,
-            'total': total,
-            'is_unplaced': (bulk_source == 'chart' and non_self_total == 0),
-        })
+        cycle_summaries.append({'cycle': cycle, 'counts': counts, 'total': sum(counts.values())})
 
     context = {
         'cycles': cycles,
         'cycle_summaries': cycle_summaries,
         'bulk_source': bulk_source,
         'derived_from_chart': bulk_source == 'chart',
-        'unplaced_count': sum(1 for s in cycle_summaries if s['is_unplaced']),
     }
     return render(request, 'admin_dashboard/bulk_send_invitations.html', context)
 

@@ -3744,7 +3744,8 @@ def org_chart_import(request):
 @login_required
 def org_chart_import_map(request):
     """Map the columns of the uploaded CSV file, then import it."""
-    from accounts.org_import import FIELDS, guess_mapping, import_org_chart, map_rows
+    from accounts.org_import import FIELDS, count_new_people, guess_mapping, import_org_chart, map_rows
+    from subscriptions.utils import employee_headroom
 
     if not request.user.has_perm('accounts.can_manage_organization'):
         messages.error(request, _('You do not have permission to edit the org chart.'))
@@ -3755,6 +3756,7 @@ def org_chart_import_map(request):
     headers, rows = upload['headers'], upload['rows']
 
     errors = []
+    over_limit = None
     if request.method == 'POST':
         mapping = {}
         for field, _label in FIELDS:
@@ -3764,6 +3766,13 @@ def org_chart_import_map(request):
                 mapping[field] = None
         mapped, errors = map_rows(headers, rows, mapping)
         if not errors:
+            # Say up front how far the file exceeds the plan, instead of
+            # failing on the first person past the cap.
+            headroom = employee_headroom(request.organization)
+            new_people = count_new_people(request.organization, mapped)
+            if headroom is not None and new_people > headroom:
+                over_limit = {'new': new_people, 'allowed': headroom}
+        if not errors and not over_limit:
             stats, errors = import_org_chart(request.organization, mapped)
             if not errors:
                 del request.session['org_import']
@@ -3783,6 +3792,7 @@ def org_chart_import_map(request):
         'fields': [(field, label, mapping.get(field)) for field, label in FIELDS],
         'errors': errors[:20],
         'more_errors': max(0, len(errors) - 20),
+        'over_limit': over_limit,
         'has_units': OrgUnit.objects.filter(organization=request.organization).exists(),
     })
 

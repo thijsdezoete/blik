@@ -197,6 +197,14 @@ def check_user_limit(request):
     return True, None
 
 
+def employee_headroom(organization):
+    """How many more reviewees the plan allows; None when no cap applies (credits, self-hosted)."""
+    if not organization or entitlement(organization) != 'subscription':
+        return None
+    active = Reviewee.objects.filter(organization=organization, is_active=True).count()
+    return max(0, organization.subscription.plan.max_employees - active)
+
+
 def check_employee_limit(organization):
     """(allowed, message) for adding one reviewee."""
     if not organization:

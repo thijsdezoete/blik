@@ -12,6 +12,14 @@
     </div>
 </div>
 
+{% if over_limit %}
+<div class="alert alert-error" role="alert">
+    <strong>{% blocktrans trimmed count counter=over_limit.new %}The file adds {{ counter }} new person.{% plural %}The file adds {{ counter }} new people.{% endblocktrans %}</strong>
+    {% blocktrans trimmed count counter=over_limit.allowed %}Your plan has room for {{ counter }} more.{% plural %}Your plan has room for {{ counter }} more.{% endblocktrans %}
+    <a href="{% url 'billing' %}">{% trans 'Upgrade your plan' %}</a> {% trans 'or remove people from the file.' %}
+</div>
+{% endif %}
+
 {% if errors %}
 <div class="alert alert-error" role="alert">
     <strong>{% trans 'The file cannot be imported yet.' %}</strong>

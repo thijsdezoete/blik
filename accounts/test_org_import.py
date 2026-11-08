@@ -150,3 +150,29 @@ class ImportViewTests(TestCase):
             [('Board', 'ada@x.example', 'manager'), ('Board', 'bob@x.example', 'member')],
         )
         self.assertNotIn('org_import', self.client.session)
+
+    def test_a_file_past_the_plan_limit_is_refused_up_front(self):
+        from accounts.factories import UserProfileFactory
+        from accounts.permissions import assign_organization_admin, ensure_permission_groups
+        from core.factories import UserFactory
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from subscriptions.testing import subscribe
+
+        ensure_permission_groups()
+        org = OrganizationFactory()
+        subscribe(org, max_employees=3)  # the admin's own reviewee row and Ada fill two seats
+        RevieweeFactory(organization=org, email='ada@x.example')
+        user = UserFactory()
+        UserProfileFactory(user=user, organization=org)
+        assign_organization_admin(user)
+        self.client.force_login(user)
+        csv = 'Name;Email;Manager\nAda;ada@x.example;\nBob;bob@x.example;Ada\nCy;cy@x.example;Ada\n'
+        self.client.post(reverse('org_chart_import'), {'file': SimpleUploadedFile('people.csv', csv.encode())})
+
+        page = self.client.post(reverse('org_chart_import_map'), {'name': '0', 'email': '1', 'manager': '2'})
+
+        self.assertEqual(page.status_code, 200)
+        self.assertEqual(page.context['over_limit'], {'new': 2, 'allowed': 1})
+        self.assertContains(page, reverse('billing'))
+        self.assertFalse(OrgUnit.objects.filter(organization=org).exists())
+        self.assertFalse(Reviewee.objects.filter(email__in=['bob@x.example', 'cy@x.example']).exists())

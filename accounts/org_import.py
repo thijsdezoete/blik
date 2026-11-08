@@ -153,6 +153,13 @@ def check_rows(rows):
     return errors
 
 
+def count_new_people(organization, rows):
+    """How many people in `rows` are not yet reviewees of the organization."""
+    emails = {row['email'].lower() for row in rows}
+    known = set(Reviewee.objects.filter(organization=organization, email__in=emails).values_list('email', flat=True))
+    return len(emails - {e.lower() for e in known})
+
+
 def import_org_chart(organization, rows):
     """Replace the organization's org chart with the one in `rows`.
 

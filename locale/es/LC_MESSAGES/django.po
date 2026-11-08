@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 22:09+0000\n"
+"POT-Creation-Date: 2026-11-08 22:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
@@ -516,52 +516,45 @@ msgstr "Nombre"
 msgid "Department"
 msgstr "Departamento"
 
-#, fuzzy
-#| msgid "Name, email or department"
 msgid "Manager (email or name)"
-msgstr "Nombre, correo electrónico o departamento"
+msgstr "Responsable (correo electrónico o nombre)"
 
-#, fuzzy
-#| msgid "Use your invited email address"
 msgid "Choose the column with the email addresses."
-msgstr "Utiliza tu dirección de correo electrónico invitada"
+msgstr "Elige la columna con las direcciones de correo electrónico."
 
 msgid "Choose the column with the names, or the columns with first and last names."
-msgstr ""
+msgstr "Elige la columna con los nombres, o las columnas con nombre y apellido."
 
 #, python-format
 msgid "Line %(line)s: manager \"%(name)s\" is not in the file."
-msgstr ""
+msgstr "Línea %(line)s: el responsable \"%(name)s\" no está en el archivo."
 
 #, python-format
 msgid "Line %(line)s: more than one person is called \"%(name)s\". Use the email of the manager."
-msgstr ""
+msgstr "Línea %(line)s: más de una persona se llama \"%(name)s\". Usa el correo electrónico del responsable."
 
-#, fuzzy
-#| msgid "This cycle has no links to send."
 msgid "The file has no rows."
-msgstr "Este ciclo no tiene enlaces que enviar."
+msgstr "El archivo no tiene filas."
 
-#, fuzzy, python-format
-#| msgid "You must use the invited email: %(email)s"
+#, python-format
 msgid "Line %(line)s: invalid email \"%(email)s\"."
-msgstr "Debes usar el correo invitado: %(email)s"
+msgstr "Línea %(line)s: correo electrónico no válido \"%(email)s\"."
 
 #, python-format
 msgid "Line %(line)s: %(email)s is in the file twice."
-msgstr ""
+msgstr "Línea %(line)s: %(email)s aparece dos veces en el archivo."
 
 #, python-format
 msgid "Line %(line)s: the name is empty."
-msgstr ""
+msgstr "Línea %(line)s: el nombre está vacío."
 
 #, python-format
 msgid "Line %(line)s: manager %(email)s is not in the file."
-msgstr ""
+msgstr "Línea %(line)s: el responsable %(email)s no está en el archivo."
 
 #, python-format
 msgid "Line %(line)s: a person cannot be their own manager."
-msgstr ""
+msgstr "Línea %(line)s: una persona no puede ser su propio responsable."
 
 msgid "Authentication required"
 msgstr "Autenticación requerida"
@@ -591,10 +584,9 @@ msgstr "Usuario con %(email)s de correo electrónico ya existe"
 msgid "Please use the signup page to create an account."
 msgstr "Por favor, utiliza la página de registro para crear una cuenta."
 
-#, fuzzy, python-format
-#| msgid "Report email sent to %(name)s at %(email)s."
+#, python-format
 msgid "Check your email. We sent your sign-in details to %(email)s."
-msgstr "Reporta el correo enviado a %(name)s en %(email)s."
+msgstr "Revisa tu correo. Hemos enviado tus datos de acceso a %(email)s."
 
 msgid "You already have a Blik360 account"
 msgstr "Ya tienes una cuenta en Blik360"
@@ -863,16 +855,14 @@ msgid "Something went wrong."
 msgstr "Algo salió mal."
 
 msgid "Go to Billing"
-msgstr ""
+msgstr "Ir a Facturación"
 
 #, python-format
 msgid "Invalid email skipped in %(category)s: %(email)s"
 msgstr "Correo electrónico inválido omitido en %(category)s: %(email)s"
 
-#, fuzzy
-#| msgid "You do not have permission to manage organization members."
 msgid "You do not have permission to manage user permissions."
-msgstr "No tienes permiso para gestionar a los miembros de la organización."
+msgstr "No tienes permiso para gestionar los permisos de usuario."
 
 msgid "Invalid request: missing required fields."
 msgstr "Solicitud inválida: faltan campos requeridos."
@@ -959,20 +949,14 @@ msgstr "No tienes permiso para eliminar a los revisados. Solo los administradore
 msgid "Reviewee \"%(name)s\" deactivated."
 msgstr "Revisado \"%(name)s\" desactivado."
 
-#, fuzzy
-#| msgid "You do not have permission to delete reviewees."
 msgid "You do not have permission to create reviewees."
-msgstr "No tienes permiso para eliminar a los revisados."
+msgstr "No tienes permiso para crear evaluados."
 
-#, fuzzy
-#| msgid "No organization found."
 msgid "No organization context."
-msgstr "No se encontró ninguna organización."
+msgstr "Sin contexto de organización."
 
-#, fuzzy
-#| msgid "Use your invited email address"
 msgid "Invalid email address."
-msgstr "Utiliza tu dirección de correo electrónico invitada"
+msgstr "Dirección de correo electrónico no válida."
 
 msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
 msgstr "No tienes permiso para crear ciclos de revisión. Solo los administradores de la organización pueden acceder a esta función."
@@ -1138,8 +1122,8 @@ msgid "Fewest responses"
 msgstr "Menos respuestas"
 
 #, python-format
-msgid "Created %(count)s review cycles. %(derived)s got reviewers from the org chart. %(unplaced)s reviewee(s) are not in a unit yet."
-msgstr ""
+msgid "Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories."
+msgstr "Se han creado %(count)s ciclos de revisión con revisores del organigrama. Se omitieron %(unplaced)s evaluado(s): el organigrama no les asigna revisores en las categorías seleccionadas."
 
 #, python-format
 msgid "Created %(count)s review cycles. No invitations have been sent yet."
@@ -1296,10 +1280,8 @@ msgstr "No tienes permiso para modificar la configuración de organización."
 msgid "Organization details updated successfully."
 msgstr "Los detalles de la organización se actualizaron con éxito."
 
-#, fuzzy
-#| msgid "Report settings updated successfully."
 msgid "New user settings updated successfully."
-msgstr "Configuración del informe actualizada con éxito."
+msgstr "Configuración de nuevos usuarios actualizada con éxito."
 
 msgid "Report PDF retention must be a number of days from 1 to 3650."
 msgstr "La conservación del PDF del informe debe ser un número de días entre 1 y 3650."
@@ -1462,37 +1444,32 @@ msgstr "Webhook \"%(name)s\" eliminado con éxito."
 msgid "Error deleting webhook: %(error)s"
 msgstr "Error al eliminar el webhook: %(error)s"
 
-#, fuzzy
-#| msgid "You do not have permission to create organizations."
 msgid "You do not have permission to edit the org chart."
-msgstr "No tienes permiso para crear organizaciones."
+msgstr "No tienes permiso para editar el organigrama."
 
 msgid "Choose a CSV file."
-msgstr ""
+msgstr "Elige un archivo CSV."
 
 msgid "The file is too large."
-msgstr ""
+msgstr "El archivo es demasiado grande."
 
 msgid "The file is not a readable CSV file. Save it as CSV (UTF-8)."
-msgstr ""
+msgstr "El archivo no es un CSV legible. Guárdalo como CSV (UTF-8)."
 
 #, python-format
 msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
-msgstr ""
+msgstr "Se han importado %(units)s unidades: %(created)s personas nuevas, %(updated)s actualizadas."
 
 #, python-format
 msgid "%(name)s is already in this unit."
-msgstr ""
+msgstr "%(name)s ya está en esta unidad."
 
-#, fuzzy, python-format
-#| msgid "%(count)s created"
+#, python-format
 msgid "%(count)s credits left"
-msgstr "%(count)s creado"
+msgstr "%(count)s créditos restantes"
 
-#, fuzzy
-#| msgid "rate limit"
 msgid "Free, no limits"
-msgstr "Límite de tasa"
+msgstr "Gratis, sin límites"
 
 msgid "You do not have permission to create organizations."
 msgstr "No tienes permiso para crear organizaciones."
@@ -1505,7 +1482,7 @@ msgstr "Se requiere correo de administrador."
 
 #, python-format
 msgid "Review credits must be a number from 0 to %(max)s."
-msgstr ""
+msgstr "Los créditos de revisión deben ser un número de 0 a %(max)s."
 
 #, python-format
 msgid "Organization \"%(name)s\" already exists."
@@ -1790,13 +1767,11 @@ msgstr "No se han generado datos de demostración: %(error)s"
 
 #, python-format
 msgid "%(command)s: last run %(time)s"
-msgstr ""
+msgstr "%(command)s: última ejecución %(time)s"
 
-#, fuzzy, python-format
-#| msgid "%(count)s review in"
-#| msgid_plural "%(count)s reviews in"
+#, python-format
 msgid "%(command)s: never ran"
-msgstr "%(count)s reseña en"
+msgstr "%(command)s: nunca se ha ejecutado"
 
 msgid "Notifications"
 msgstr "Notificaciones"
@@ -1858,42 +1833,32 @@ msgstr "correo enviado"
 msgid "sent emails"
 msgstr "envió correos electrónicos"
 
-#, fuzzy
-#| msgid "Proficient"
 msgid "recipient"
-msgstr "Competente"
+msgstr "destinatario"
 
-#, fuzzy
-#| msgid "Emails Sent"
 msgid "email log entry"
-msgstr "Correos electrónicos enviados"
+msgstr "entrada del registro de correos"
 
-#, fuzzy
-#| msgid "email"
 msgid "email log"
-msgstr "Correo electrónico"
+msgstr "registro de correos"
 
 msgid "command"
-msgstr ""
+msgstr "comando"
 
 msgid "ran at"
-msgstr ""
+msgstr "ejecutado el"
 
-#, fuzzy
-#| msgid "sent at"
 msgid "sent"
-msgstr "enviado en"
+msgstr "enviados"
 
-#, fuzzy
-#| msgid "error"
 msgid "errors"
-msgstr "Error"
+msgstr "errores"
 
 msgid "cron run"
-msgstr ""
+msgstr "ejecución de cron"
 
 msgid "cron runs"
-msgstr ""
+msgstr "ejecuciones de cron"
 
 #, python-format
 msgid "360 Feedback Request for %(name)s"
@@ -3074,7 +3039,7 @@ msgid "This feedback cycle no longer collects this kind of review."
 msgstr "Este ciclo de retroalimentación ya no recoge este tipo de reseñas."
 
 msgid "This feedback round has reached its maximum number of reviewers. Contact the person who sent you this link."
-msgstr ""
+msgstr "Esta ronda de feedback ha alcanzado el número máximo de revisores. Contacta con la persona que te envió este enlace."
 
 msgid "This review cycle has been closed. Feedback can no longer be submitted."
 msgstr "Este ciclo de revisión ha sido cerrado. Ya no se pueden enviar comentarios."
@@ -3107,15 +3072,11 @@ msgstr "Valor de escala inválido"
 msgid "Something went wrong. Please try again."
 msgstr "Algo salió mal. Por favor, inténtalo de nuevo."
 
-#, fuzzy
-#| msgid "Next cycle reminder"
 msgid "Next trial reminder"
-msgstr "Recordatorio del próximo ciclo"
+msgstr "Próximo recordatorio de la prueba"
 
-#, fuzzy
-#| msgid "Invite %(email)s to %(organization)s"
 msgid "Emails to this organization"
-msgstr "Invítate a %(email)s a %(organization)s"
+msgstr "Correos a esta organización"
 
 msgid "Used"
 msgstr "Usados"
@@ -3322,10 +3283,10 @@ msgid "review cycles remaining"
 msgstr "Ciclos de revisión restantes"
 
 msgid "free signup inbox"
-msgstr ""
+msgstr "buzón del registro gratuito"
 
 msgid "Set on the free signup credit: the inbox it was given to. One free credit per inbox."
-msgstr ""
+msgstr "Se establece en el crédito del registro gratuito: el buzón al que se concedió. Un crédito gratuito por buzón."
 
 msgid "round purchase"
 msgstr "Compra por ronda"
@@ -3350,37 +3311,34 @@ msgstr "Tokens de inicio de sesión de un solo uso"
 msgid "Login token for %(email)s"
 msgstr "Token de inicio de sesión para %(email)s"
 
-#, fuzzy, python-format
-#| msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy another round or start a subscription under Settings."
+#, python-format
 msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy more on the Billing page, or start a subscription there."
-msgstr "Esto necesita %(needed)s crédito(s) de ciclo de revisión y tienes %(available)s. Compra otra ronda o crea una suscripción en Configuración."
+msgstr "Esto necesita %(needed)s crédito(s) de ciclo de revisión y tienes %(available)s. Compra más en la página de Facturación, o inicia allí una suscripción."
 
 #, python-format
 msgid "Free accounts can invite up to %(max)s reviewers per review cycle. Buy review credits on the Billing page to invite more."
-msgstr ""
+msgstr "Las cuentas gratuitas pueden invitar hasta %(max)s revisores por ciclo de revisión. Compra créditos de revisión en la página de Facturación para invitar a más."
 
 msgid "The card was declined: not enough funds."
-msgstr ""
+msgstr "La tarjeta fue rechazada: fondos insuficientes."
 
-#, fuzzy
-#| msgid "This invitation has expired."
 msgid "The card has expired."
-msgstr "Esta invitación ha expirado."
+msgstr "La tarjeta ha caducado."
 
 msgid "The card was declined by the bank."
-msgstr ""
+msgstr "El banco rechazó la tarjeta."
 
 msgid "The card was reported lost."
-msgstr ""
+msgstr "La tarjeta fue declarada perdida."
 
 msgid "The card was reported stolen."
-msgstr ""
+msgstr "La tarjeta fue declarada robada."
 
 msgid "The security code (CVC) is wrong."
-msgstr ""
+msgstr "El código de seguridad (CVC) es incorrecto."
 
 msgid "The bank asks you to confirm the payment."
-msgstr ""
+msgstr "El banco te pide que confirmes el pago."
 
 msgid "Your subscription is not active. Please update your payment information."
 msgstr "Tu suscripción no está activa. Por favor, actualiza tu información de pago."
@@ -3403,7 +3361,7 @@ msgstr "Esta organización ya tiene suscripción."
 
 #, python-format
 msgid "Enter a number of reviews from 1 to %(max)s."
-msgstr ""
+msgstr "Introduce un número de revisiones de 1 a %(max)s."
 
 msgid "Could not start checkout. Please try again."
 msgstr "No se pudo iniciar el pago. Por favor, inténtalo de nuevo."
@@ -3417,31 +3375,24 @@ msgstr "Tu pago está siendo procesado. Recibirás un correo electrónico en cua
 msgid "Payment received. Your purchase has been added to your account."
 msgstr "Pago recibido. Tu compra ha sido añadida a tu cuenta."
 
-#, fuzzy
-#| msgid "This email address already has an account. The new subscription was cancelled and nothing was charged. Sign in and choose a plan under Settings."
 msgid "This email address already has an account. The new subscription was cancelled and nothing was charged. Sign in and start the subscription from the Billing page."
-msgstr "Esta dirección de correo electrónico ya tiene una cuenta. La nueva suscripción fue cancelada y no se cobró nada. Inicia sesión y elige un plan en Configuración."
+msgstr "Esta dirección de correo electrónico ya tiene una cuenta. La nueva suscripción fue cancelada y no se cobró nada. Inicia sesión y comienza la suscripción desde la página de Facturación."
 
 msgid "This organization already has a subscription. The new one was cancelled and nothing was charged."
 msgstr "Esta organización ya tiene suscripción. La nueva fue cancelada y no se cobró nada."
 
-#, fuzzy, python-format
-#| msgid "Your plan is now %(plan)s"
+#, python-format
 msgid "Your plan is now %(plan)s."
-msgstr "Tu plan ya está %(plan)s"
+msgstr "Tu plan ahora es %(plan)s."
 
-#, fuzzy
-#| msgid "Could not create checkout session. Please try again."
 msgid "Could not change the plan. Please try again, or contact us."
-msgstr "No se pudo crear la sesión de préstamo. Por favor, inténtalo de nuevo."
+msgstr "No se pudo cambiar el plan. Inténtalo de nuevo o contacta con nosotros."
 
 msgid "There are no billing details yet. They are made with your first purchase."
-msgstr ""
+msgstr "Aún no hay datos de facturación. Se crean con tu primera compra."
 
-#, fuzzy
-#| msgid "Could not start checkout. Please try again."
 msgid "Could not open the billing portal. Please try again."
-msgstr "No se pudo iniciar el pago. Por favor, inténtalo de nuevo."
+msgstr "No se pudo abrir el portal de facturación. Inténtalo de nuevo."
 
 msgid "Forgot Password - Blik 360 Feedback"
 msgstr "Olvidé la contraseña - Comentarios sobre Blik 360"
@@ -3458,21 +3409,17 @@ msgstr "Enviar enlace de restablecimiento"
 msgid "Back to Login"
 msgstr "Volver al inicio de sesión"
 
-#, fuzzy
-#| msgid "Login - Blik 360 Feedback"
 msgid "Sign up - Blik 360 Feedback"
-msgstr "Iniciar sesión - Comentarios sobre Blik 360"
+msgstr "Registrarse - Blik 360 Feedback"
 
 msgid "Create Account"
 msgstr "Crear cuenta"
 
 msgid "Free, with one review cycle. No card needed."
-msgstr ""
+msgstr "Gratis, con un ciclo de revisión. Sin tarjeta."
 
-#, fuzzy
-#| msgid "Use your invited email address"
 msgid "We send your sign-in details to this address."
-msgstr "Utiliza tu dirección de correo electrónico invitada"
+msgstr "Enviamos tus datos de acceso a esta dirección."
 
 #, python-format
 msgid "Already have an account? <a href=\"%(login_url)s\">Sign in</a>"
@@ -3497,7 +3444,7 @@ msgid "Forgot your password?"
 msgstr "¿Olvidaste tu contraseña?"
 
 msgid "No account yet? Sign up free"
-msgstr ""
+msgstr "¿Aún no tienes cuenta? Regístrate gratis"
 
 msgid "Welcome to Blik"
 msgstr "Bienvenido a Blik"
@@ -3708,15 +3655,13 @@ msgid "Team"
 msgstr "Equipo"
 
 msgid "Org chart"
-msgstr ""
+msgstr "Organigrama"
 
 msgid "Settings"
 msgstr "Escenarios"
 
-#, fuzzy
-#| msgid "Brilliant"
 msgid "Billing"
-msgstr "Brillante"
+msgstr "Facturación"
 
 msgid "Platform"
 msgstr "Andén"
@@ -3741,124 +3686,101 @@ msgid "Toggle theme"
 msgstr "Interruptor de tema"
 
 msgid "Your subscription has ended. You cannot add reviewees or start review cycles."
-msgstr ""
+msgstr "Tu suscripción ha terminado. No puedes añadir evaluados ni iniciar ciclos de revisión."
 
 msgid "Your last payment failed. Update your payment method to keep your subscription."
-msgstr ""
+msgstr "Tu último pago falló. Actualiza tu método de pago para mantener tu suscripción."
 
 msgid "Your plan, payments and invoices"
-msgstr ""
+msgstr "Tu plan, pagos y facturas"
 
 msgid "Live payment details are not available right now. Try again in a few minutes."
-msgstr ""
+msgstr "Los datos de pago en tiempo real no están disponibles ahora mismo. Inténtalo de nuevo en unos minutos."
 
-#, fuzzy, python-format
-#| msgid "€%(price)s/month"
+#, python-format
 msgid "€%(price)s/month, excluding VAT"
-msgstr "%(price)s€ /mes"
+msgstr "%(price)s €/mes, sin IVA"
 
-#, fuzzy, python-format
-#| msgid "Your trial ends on %(date)s. Your reports stay as they are"
+#, python-format
 msgid "Your subscription ended on %(date)s. You can start a new one below."
-msgstr "Tu juicio termina en %(date)s. Tus informes se mantienen como están"
+msgstr "Tu suscripción terminó el %(date)s. Puedes iniciar una nueva más abajo."
 
 msgid "Your last payment failed."
-msgstr ""
+msgstr "Tu último pago falló."
 
-#, fuzzy, python-format
-#| msgid "Next payment on %(date)s."
+#, python-format
 msgid "We try again on %(date)s."
-msgstr "El próximo pago es %(date)s."
+msgstr "Lo intentaremos de nuevo el %(date)s."
 
 msgid "We do not try again. Update your payment method to pay the open invoice."
-msgstr ""
+msgstr "No lo intentaremos de nuevo. Actualiza tu método de pago para pagar la factura pendiente."
 
-#, fuzzy
-#| msgid "Update your payment method"
 msgid "Update payment method"
-msgstr "Actualiza tu método de pago"
+msgstr "Actualizar método de pago"
 
-#, fuzzy, python-format
-#| msgid "Your trial ends on %(date)s"
+#, python-format
 msgid "Your subscription ends on %(date)s."
-msgstr "Tu juicio termina en %(date)s"
+msgstr "Tu suscripción termina el %(date)s."
 
-#, fuzzy
-#| msgid "No active subscription found."
 msgid "Reactivate subscription"
-msgstr "No se encontró ninguna suscripción activa."
+msgstr "Reactivar suscripción"
 
-#, fuzzy, python-format
-#| msgid "Your trial ends on %(date)s"
+#, python-format
 msgid "Your trial ends on %(date)s."
-msgstr "Tu juicio termina en %(date)s"
+msgstr "Tu prueba termina el %(date)s."
 
-#, fuzzy
-#| msgid "Create your first reviewee:"
 msgid "Then your first invoice is:"
-msgstr "Crea tu primer destinatario de la reseña:"
+msgstr "Después, tu primera factura es:"
 
-#, fuzzy, python-format
-#| msgid "Next payment on %(date)s."
+#, python-format
 msgid "Next invoice on %(date)s:"
-msgstr "El próximo pago es %(date)s."
+msgstr "Próxima factura el %(date)s:"
 
-#, fuzzy, python-format
-#| msgid "Next payment on %(date)s."
+#, python-format
 msgid "Next invoice on %(date)s."
-msgstr "El próximo pago es %(date)s."
+msgstr "Próxima factura el %(date)s."
 
 #, python-format
 msgid "%(brand)s card ending in %(last4)s, valid until %(month)s/%(year)s"
-msgstr ""
+msgstr "Tarjeta %(brand)s terminada en %(last4)s, válida hasta %(month)s/%(year)s"
 
 msgid "This card expires before your next invoice. Add a new card to avoid a failed payment."
-msgstr ""
+msgstr "Esta tarjeta caduca antes de tu próxima factura. Añade una tarjeta nueva para evitar un pago fallido."
 
-#, fuzzy
-#| msgid "Update your payment method"
 msgid "No payment method on file."
-msgstr "Actualiza tu método de pago"
+msgstr "No hay ningún método de pago registrado."
 
-#, fuzzy
-#| msgid "Update your payment method"
 msgid "Change payment method"
-msgstr "Actualiza tu método de pago"
+msgstr "Cambiar método de pago"
 
 msgid "You pay per round. There is no subscription."
-msgstr ""
+msgstr "Pagas por ronda. No hay suscripción."
 
 msgid "Usage"
 msgstr "Uso"
 
-#, fuzzy
-#| msgid "Active Reviewees"
 msgid "Active reviewees"
-msgstr "Revisores activos"
+msgstr "Evaluados activos"
 
-#, fuzzy, python-format
-#| msgid "Scale: %(min)s to %(max)s"
+#, python-format
 msgid "%(count)s of %(max)s"
-msgstr "Escala: %(min)s a %(max)s"
+msgstr "%(count)s de %(max)s"
 
-#, fuzzy
-#| msgid "Review Title"
 msgid "Review credits left"
-msgstr "Título de la reseña"
+msgstr "Créditos de revisión restantes"
 
 msgid "Not used while your subscription is active."
 msgstr "No se usa mientras tu suscripción esté activa."
 
 msgid "One credit is one reviewee with one questionnaire."
-msgstr ""
+msgstr "Un crédito es un evaluado con un cuestionario."
 
 msgid "Plan"
 msgstr "Plan"
 
-#, fuzzy, python-format
-#| msgid "%(plan)s, €%(price)s per month, for up to %(max)s people."
+#, python-format
 msgid "Switch to %(name)s: €%(price)s/month, up to %(max)s reviewees"
-msgstr "%(plan)s,%(price)s € al mes, para hasta %(max)s personas."
+msgstr "Cambiar a %(name)s: %(price)s €/mes, hasta %(max)s evaluados"
 
 msgid "Start EU Hosted subscription"
 msgstr "Inicia una suscripción alojada en EU"
@@ -3866,173 +3788,139 @@ msgstr "Inicia una suscripción alojada en EU"
 msgid "Start Enterprise subscription"
 msgstr "Suscripción Start Enterprise"
 
-#, fuzzy
-#| msgid "review cycles"
 msgid "Buy review credits"
-msgstr "Ciclos de revisión"
+msgstr "Comprar créditos de revisión"
 
-#, fuzzy, python-format
-#| msgid "%(count)s review in"
-#| msgid_plural "%(count)s reviews in"
+#, python-format
 msgid "Purchase %(count)s review slots"
-msgstr "%(count)s reseña en"
+msgstr "Comprar %(count)s plazas de revisión"
 
 #, python-format
 msgid "€%(price)s, excluding VAT"
-msgstr ""
+msgstr "%(price)s €, sin IVA"
 
 #, python-format
 msgid "%(packs)s × €%(price)s per pack = €%(total)s, excluding VAT"
-msgstr ""
+msgstr "%(packs)s × %(price)s € por paquete = %(total)s €, sin IVA"
 
 msgid "How many reviews do you need?"
-msgstr ""
+msgstr "¿Cuántas revisiones necesitas?"
 
 #, python-format
 msgid "Credits come in packs of %(per_pack)s. One credit is one reviewee with one questionnaire. Credits do not expire."
-msgstr ""
+msgstr "Los créditos vienen en paquetes de %(per_pack)s. Un crédito es un evaluado con un cuestionario. Los créditos no caducan."
 
 msgid "Buy credits"
-msgstr ""
+msgstr "Comprar créditos"
 
-#, fuzzy
-#| msgid "Choices"
 msgid "Invoices"
-msgstr "Elecciones"
+msgstr "Facturas"
 
-#, fuzzy
-#| msgid "Edit details"
 msgid "Edit billing details"
-msgstr "Detalles de edición"
+msgstr "Editar datos de facturación"
 
 msgid "Date"
-msgstr ""
+msgstr "Fecha"
 
-#, fuzzy
-#| msgid "Member"
 msgid "Number"
-msgstr "Miembro"
+msgstr "Número"
 
-#, fuzzy
-#| msgid "Accounts"
 msgid "Amount"
-msgstr "Relatos"
+msgstr "Importe"
 
 msgid "Paid"
-msgstr ""
+msgstr "Pagada"
 
 msgid "Open"
-msgstr ""
+msgstr "Pendiente"
 
 msgid "Void"
-msgstr ""
+msgstr "Anulada"
 
-#, fuzzy
-#| msgid "Not specified"
 msgid "Not paid"
-msgstr "No especificado"
+msgstr "No pagada"
 
-#, fuzzy
-#| msgid "Payload"
 msgid "Pay"
-msgstr "Carga útil"
+msgstr "Pagar"
 
 msgid "View"
 msgstr "Vista"
 
-#, fuzzy
-#| msgid "No reviewees yet"
 msgid "No invoices yet."
-msgstr "Aún no hay reseñas"
+msgstr "Aún no hay facturas."
 
 msgid "Invoices are sent by Thijs de Zoete Holding BV, trading as Blik360, the Netherlands. Prices are excluding VAT."
-msgstr ""
+msgstr "Las facturas las emite Thijs de Zoete Holding BV, que opera como Blik360, Países Bajos. Los precios no incluyen IVA."
 
 #, python-format
 msgid "Companies in the Netherlands pay 21%% VAT."
-msgstr ""
+msgstr "Las empresas de los Países Bajos pagan un 21%% de IVA."
 
 msgid "Companies in another EU country with a valid VAT number: VAT reverse charged."
-msgstr ""
+msgstr "Empresas de otro país de la UE con un número de IVA válido: inversión del sujeto pasivo."
 
 msgid "Companies outside the EU: no VAT."
-msgstr ""
+msgstr "Empresas fuera de la UE: sin IVA."
 
 msgid "To change the company name, address or VAT number on new invoices, use \"Edit billing details\"."
-msgstr ""
+msgstr "Para cambiar el nombre de la empresa, la dirección o el número de IVA en las nuevas facturas, usa \"Editar datos de facturación\"."
 
-#, fuzzy
-#| msgid "Cancel Subscription"
 msgid "Cancel subscription"
 msgstr "Cancelar suscripción"
 
-#, fuzzy
-#| msgid "What happens on %(date)s"
 msgid "What happens when I cancel?"
-msgstr "¿Qué ocurre en %(date)s"
+msgstr "¿Qué pasa si cancelo?"
 
-#, fuzzy, python-format
-#| msgid "Your data stays available until %(date)s. You pay nothing more."
+#, python-format
 msgid "You keep full access until %(date)s. You pay nothing more."
-msgstr "Tus datos permanecen disponibles hasta %(date)s. No pagas nada más."
+msgstr "Conservas el acceso completo hasta el %(date)s. No pagas nada más."
 
 msgid "After that, you cannot add reviewees or start review cycles. Reports stay available."
-msgstr ""
+msgstr "Después, no puedes añadir evaluados ni iniciar ciclos de revisión. Los informes siguen disponibles."
 
 #, python-format
 msgid "%(days)s days after the end, we delete your data."
-msgstr ""
+msgstr "%(days)s días después del final, eliminamos tus datos."
 
-#, fuzzy
-#| msgid "Export your data"
 msgid "Export your data first"
-msgstr "Exporta tus datos"
+msgstr "Exporta tus datos primero"
 
-#, fuzzy
-#| msgid "Questions"
 msgid "Questions?"
-msgstr "Preguntas"
+msgstr "¿Preguntas?"
 
 msgid "Send us an email about billing, invoices or your plan:"
-msgstr ""
+msgstr "Envíanos un correo sobre facturación, facturas o tu plan:"
 
-#, fuzzy
-#| msgid "Change password"
 msgid "Change plan"
-msgstr "Cambiar la contraseña"
+msgstr "Cambiar plan"
 
-#, fuzzy, python-format
-#| msgid "Send Report to %(name)s"
+#, python-format
 msgid "Switch to %(name)s"
-msgstr "Enviar el informe a %(name)s"
+msgstr "Cambiar a %(name)s"
 
-#, fuzzy, python-format
-#| msgid "Your feedback for %(name)s"
+#, python-format
 msgid "You are on %(name)s now."
-msgstr "Vuestro feedback para %(name)s"
+msgstr "Ahora estás en %(name)s."
 
-#, fuzzy, python-format
-#| msgid "%(plan)s, €%(price)s per month, for up to %(max)s people."
+#, python-format
 msgid "€%(price)s/month, excluding VAT, for up to %(max)s active reviewees."
-msgstr "%(plan)s,%(price)s € al mes, para hasta %(max)s personas."
+msgstr "%(price)s €/mes, sin IVA, para hasta %(max)s evaluados activos."
 
 #, python-format
 msgid "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewee first."
 msgid_plural "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewees first."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Este plan permite %(max)s evaluados activos. Desactiva primero %(count)s evaluado."
+msgstr[1] "Este plan permite %(max)s evaluados activos. Desactiva primero %(count)s evaluados."
 
-#, fuzzy
-#| msgid "Reviewees"
 msgid "Go to Reviewees"
-msgstr "Reseñadores"
+msgstr "Ir a Evaluados"
 
 #, python-format
 msgid "The change starts now. Your next invoice, on %(date)s, is"
-msgstr ""
+msgstr "El cambio empieza ahora. Tu próxima factura, el %(date)s, es de"
 
 msgid "It includes the price difference for the rest of this month."
-msgstr ""
+msgstr "Incluye la diferencia de precio por el resto de este mes."
 
 msgid "Back"
 msgstr "Atrás"
@@ -4044,7 +3932,7 @@ msgid "Send invitations"
 msgstr "Envía invitaciones"
 
 msgid "Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct."
-msgstr ""
+msgstr "Revisa los ciclos que acabas de crear. Los revisores vienen del organigrama. Si algo no es correcto, edita el ciclo después."
 
 msgid "Review the cycles you just created, then send invitation emails."
 msgstr "Revisa los ciclos que acabas de crear y luego envía correos de invitación."
@@ -4056,7 +3944,7 @@ msgid "No emails have been sent yet."
 msgstr "Aún no se ha enviado ningún correo."
 
 msgid "Click <em>Send all invitations</em> to send an email to each reviewee and to the reviewers from the org chart."
-msgstr ""
+msgstr "Haz clic en <em>Enviar todas las invitaciones</em> para enviar un correo a cada evaluado y a los revisores del organigrama."
 
 msgid "Review the list below and click <em>Send invitations now</em> to notify every reviewee."
 msgstr "Revisa la lista a continuación y haz clic <em>en Enviar invitaciones ahora</em> para notificar a todos los evaluados."
@@ -4070,21 +3958,17 @@ msgstr "Reseñado"
 msgid "Peers"
 msgstr "Pares"
 
-#, fuzzy
-#| msgid "Direct Reports"
 msgid "Direct reports"
-msgstr "Reportes directos"
+msgstr "Colaboradores directos"
 
 msgid "Created"
 msgstr "Creación"
 
-#, fuzzy, python-format
-#| msgid "Send invitations for all %(counter)s reviewee"
-#| msgid_plural "Send invitations for all %(counter)s reviewees"
+#, python-format
 msgid "Send all invitations (%(counter)s reviewee)"
 msgid_plural "Send all invitations (%(counter)s reviewees)"
-msgstr[0] "Envía invitaciones a todos los %(counter)s reseñados"
-msgstr[1] "Envía invitaciones a todos los %(counter)s reseñados"
+msgstr[0] "Enviar todas las invitaciones (%(counter)s evaluado)"
+msgstr[1] "Enviar todas las invitaciones (%(counter)s evaluados)"
 
 #, python-format
 msgid "Send invitations for all %(counter)s reviewee"
@@ -4395,7 +4279,7 @@ msgid "Invite Reviewers by Email"
 msgstr "Invita a los revisores por correo electrónico"
 
 msgid "Pick reviewers from your existing people, or add someone new. The system makes anonymous tokens and sends invitations. Names of reviewers are never stored with their responses."
-msgstr ""
+msgstr "Elige revisores entre tus personas existentes, o añade a alguien nuevo. El sistema crea tokens anónimos y envía las invitaciones. Los nombres de los revisores nunca se guardan con sus respuestas."
 
 msgid "The self-assessment goes to this address. Send the invitation or a reminder from the cycle page."
 msgstr "La autoevaluación va a esta dirección. Envía la invitación o un recordatorio desde la página del ciclo."
@@ -4403,26 +4287,20 @@ msgstr "La autoevaluación va a esta dirección. Envía la invitación o un reco
 msgid "Your email is automatically assigned for self-assessment"
 msgstr "Tu correo electrónico se asigna automáticamente para autoevaluación"
 
-#, fuzzy
-#| msgid "Usually the reviewee's own email"
 msgid "Usually the reviewee themselves"
-msgstr "Normalmente el correo electrónico del evaluado"
+msgstr "Normalmente el propio evaluado"
 
-#, fuzzy
-#| msgid "Usually the reviewee's own email"
 msgid "Usually the reviewee's own record"
-msgstr "Normalmente el correo electrónico del evaluado"
+msgstr "Normalmente el propio registro del evaluado"
 
 msgid "Manager/Supervisor"
 msgstr "Gerente/Supervisor"
 
-#, fuzzy
-#| msgid "For your manager."
 msgid "Search for a manager…"
-msgstr "Para tu jefe."
+msgstr "Buscar un responsable…"
 
 msgid "Search for a peer…"
-msgstr ""
+msgstr "Buscar un compañero…"
 
 msgid "Colleagues at the same level"
 msgstr "Colegas al mismo nivel"
@@ -4430,11 +4308,8 @@ msgstr "Colegas al mismo nivel"
 msgid "Direct Reports"
 msgstr "Reportes directos"
 
-#, fuzzy
-#| msgid "%(count)s direct report"
-#| msgid_plural "%(count)s direct reports"
 msgid "Search for a direct report…"
-msgstr "%(count)s colaborador directo"
+msgstr "Buscar un colaborador directo…"
 
 msgid "People who report to this reviewee"
 msgstr "Personas que reportan a este revisado"
@@ -4447,12 +4322,10 @@ msgid "Language of the invitations and reminders to the reviewers above, and of 
 msgstr "Lenguaje de las invitaciones y recordatorios a los críticos mencionados arriba, y de su forma"
 
 msgid "Add by email (advanced)"
-msgstr ""
+msgstr "Añadir por correo electrónico (avanzado)"
 
-#, fuzzy
-#| msgid "Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines."
 msgid "For reviewers who are not in Blik yet. Separate multiple emails with commas or newlines."
-msgstr "Introduce ahora las direcciones de correo electrónico de los revisores, o sáltalas y añádelas más tarde. Separa varios correos con comas o nuevas líneas."
+msgstr "Para revisores que aún no están en Blik. Separa varios correos con comas o saltos de línea."
 
 msgid "Save & Send Invitations"
 msgstr "Guardar y enviar invitaciones"
@@ -4520,230 +4393,193 @@ msgstr "Enviar invitaciones pendientes"
 msgid "Back to Cycle Details"
 msgstr "Volver a los detalles del ciclo"
 
-#, fuzzy
-#| msgid "Member"
 msgid "Members"
-msgstr "Miembro"
+msgstr "Miembros"
 
-#, fuzzy, python-format
-#| msgid "%(counter)s question"
-#| msgid_plural "%(counter)s questions"
+#, python-format
 msgid "%(counter)s unit below"
 msgid_plural "%(counter)s units below"
-msgstr[0] "%(counter)s pregunta"
-msgstr[1] "%(counter)s preguntas"
+msgstr[0] "%(counter)s unidad debajo"
+msgstr[1] "%(counter)s unidades debajo"
 
-#, fuzzy
-#| msgid "Not used yet"
 msgid "No units yet"
-msgstr "Aún no se ha usado"
+msgstr "Aún no hay unidades"
 
 msgid "Import a CSV file with your people and their managers, or create the first unit yourself."
-msgstr ""
+msgstr "Importa un archivo CSV con tus personas y sus responsables, o crea tú mismo la primera unidad."
 
-#, fuzzy
-#| msgid "Import Data"
 msgid "Import CSV"
-msgstr "Datos de importación"
+msgstr "Importar CSV"
 
 msgid "New unit"
-msgstr ""
+msgstr "Nueva unidad"
 
 msgid "Drag onto another unit to place it below that unit"
-msgstr ""
+msgstr "Arrastra sobre otra unidad para colocarla debajo de esa unidad"
 
 msgid "Show or hide"
-msgstr ""
+msgstr "Mostrar u ocultar"
 
-#, fuzzy
-#| msgid "Can manage cycles"
 msgid "No manager yet"
-msgstr "Puede gestionar ciclos"
+msgstr "Aún sin responsable"
 
-#, fuzzy, python-format
-#| msgid "%(count)s peer"
-#| msgid_plural "%(count)s peers"
+#, python-format
 msgid "%(counter)s member"
 msgid_plural "%(counter)s members"
-msgstr[0] "%(count)s compañero"
-msgstr[1] "%(count)s compañeros"
+msgstr[0] "%(counter)s miembro"
+msgstr[1] "%(counter)s miembros"
 
-#, fuzzy, python-format
-#| msgid "%(counter)s question"
-#| msgid_plural "%(counter)s questions"
+#, python-format
 msgid "%(counter)s unit"
 msgid_plural "%(counter)s units"
-msgstr[0] "%(counter)s pregunta"
-msgstr[1] "%(counter)s preguntas"
+msgstr[0] "%(counter)s unidad"
+msgstr[1] "%(counter)s unidades"
 
 #, python-format
 msgid "Also in: %(units)s"
-msgstr ""
+msgstr "También en: %(units)s"
 
-#, fuzzy, python-format
-#| msgid "Review from %(name)s"
+#, python-format
 msgid "Remove %(name)s from %(unit)s"
-msgstr "Reseña de %(name)s"
+msgstr "Quitar a %(name)s de %(unit)s"
 
-#, fuzzy
-#| msgid "No reviewers yet"
 msgid "No members yet"
-msgstr "Todavía no hay críticos"
+msgstr "Aún no hay miembros"
 
-#, fuzzy
-#| msgid "Manager"
 msgid "Add manager"
-msgstr "Entrenador"
+msgstr "Añadir responsable"
 
-#, fuzzy
-#| msgid "Member"
 msgid "Add member"
-msgstr "Miembro"
+msgstr "Añadir miembro"
 
-#, fuzzy
-#| msgid "name"
 msgid "Rename"
-msgstr "Nombre"
+msgstr "Renombrar"
 
 msgid "Place under another unit"
-msgstr ""
+msgstr "Colocar bajo otra unidad"
 
-#, fuzzy
-#| msgid "Delete Account"
 msgid "Delete unit"
-msgstr "Eliminar cuenta"
+msgstr "Eliminar unidad"
 
 msgid "Not in a unit"
-msgstr ""
+msgstr "Sin unidad"
 
 msgid "Find a person"
 msgstr "Encuentra a una persona"
 
 msgid "Find a person who is not in a unit"
-msgstr ""
+msgstr "Buscar una persona que no está en ninguna unidad"
 
 msgid "Drag a person onto a unit. Drag a person here to take them out of a unit."
-msgstr ""
+msgstr "Arrastra una persona sobre una unidad. Arrastra una persona aquí para sacarla de una unidad."
 
 msgid "Everyone is in a unit. Drag a person here to take them out of a unit."
-msgstr ""
+msgstr "Todos están en una unidad. Arrastra una persona aquí para sacarla de una unidad."
 
-#, fuzzy, python-format
-#| msgid "%(selected)s of %(counter)s respondent"
-#| msgid_plural "%(selected)s of %(counter)s respondents"
+#, python-format
 msgid "%(filename)s · %(counter)s person"
 msgid_plural "%(filename)s · %(counter)s people"
-msgstr[0] "%(selected)s de %(counter)s encuestado"
-msgstr[1] "%(selected)s de %(counter)s encuestados"
+msgstr[0] "%(filename)s · %(counter)s persona"
+msgstr[1] "%(filename)s · %(counter)s personas"
 
-#, fuzzy
-#| msgid "The report has not been generated yet"
 msgid "The file cannot be imported yet."
-msgstr "El informe aún no se ha generado"
+msgstr "El archivo aún no se puede importar."
 
-#, fuzzy, python-format
-#| msgid "%(counter)s reviewer"
-#| msgid_plural "%(counter)s reviewers"
+#, python-format
 msgid "And %(counter)s more error."
 msgid_plural "And %(counter)s more errors."
-msgstr[0] "%(counter)s crítico"
-msgstr[1] "%(counter)s reseñadores"
+msgstr[0] "Y %(counter)s error más."
+msgstr[1] "Y %(counter)s errores más."
 
 msgid "Which column is which?"
-msgstr ""
+msgstr "¿Qué columna es cuál?"
 
 msgid "Blik guessed from the column names. Check the choices against the first rows below."
-msgstr ""
+msgstr "Blik lo ha deducido de los nombres de las columnas. Comprueba la selección con las primeras filas de abajo."
 
 msgid "Not in the file"
-msgstr ""
+msgstr "No está en el archivo"
 
 msgid "Or choose first and last name."
-msgstr ""
+msgstr "O elige nombre y apellido."
 
 msgid "Each manager gets a unit with the people who report to them."
-msgstr ""
+msgstr "Cada responsable recibe una unidad con las personas a su cargo."
 
-#, fuzzy
-#| msgid "First"
 msgid "First rows"
-msgstr "Primera"
+msgstr "Primeras filas"
 
 msgid "First rows of the file"
-msgstr ""
+msgstr "Primeras filas del archivo"
 
 msgid "This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit."
-msgstr ""
+msgstr "Esto sustituye el organigrama actual. Las personas que no están en el archivo permanecen en Blik, pero ya no están en ninguna unidad."
 
-#, fuzzy
-#| msgid "Import Data"
 msgid "Import"
-msgstr "Datos de importación"
+msgstr "Importar"
 
 msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
-msgstr ""
+msgstr "Quién está en qué unidad y quién la dirige. Blik lo usa para sugerir responsables, compañeros y colaboradores directos para cada revisión."
 
 msgid "Chart"
-msgstr ""
+msgstr "Diagrama"
 
 msgid "Outline"
-msgstr ""
+msgstr "Esquema"
 
 msgid "Zoom out"
-msgstr ""
+msgstr "Alejar"
 
 msgid "Zoom in"
-msgstr ""
+msgstr "Acercar"
 
 msgid "Fit to screen"
-msgstr ""
+msgstr "Ajustar a la pantalla"
 
 msgid "Drag the background to move around."
-msgstr ""
+msgstr "Arrastra el fondo para desplazarte."
 
 msgid "Expand all"
-msgstr ""
+msgstr "Expandir todo"
 
 msgid "Collapse all"
-msgstr ""
+msgstr "Contraer todo"
 
 msgid "Drag a unit onto another unit to place it below."
-msgstr ""
+msgstr "Arrastra una unidad sobre otra para colocarla debajo."
 
 msgid "Drag a person to move them. Hold Alt to copy."
-msgstr ""
+msgstr "Arrastra una persona para moverla. Mantén pulsada Alt para copiarla."
 
 msgid "Rename unit"
-msgstr ""
+msgstr "Renombrar unidad"
 
 msgid "Close"
 msgstr "Cierre"
 
 msgid "For example: Optics, Chair of Physics"
-msgstr ""
+msgstr "Por ejemplo: Óptica, Cátedra de Física"
 
-#, fuzzy
-#| msgid "Saved"
 msgid "Save"
-msgstr "Salvado"
+msgstr "Guardar"
 
 msgid "Find a person, or type a name and email to add someone new."
-msgstr ""
+msgstr "Busca una persona, o escribe un nombre y un correo para añadir a alguien nuevo."
 
 msgid "Unit above"
-msgstr ""
+msgstr "Unidad superior"
 
 msgid "The manager of this unit becomes a member of the unit above."
-msgstr ""
+msgstr "El responsable de esta unidad pasa a ser miembro de la unidad superior."
 
 msgid "The people in this unit stay in Blik. People who are in no other unit move to \"Not in a unit\"."
-msgstr ""
+msgstr "Las personas de esta unidad permanecen en Blik. Las que no están en ninguna otra unidad pasan a \"Sin unidad\"."
 
 msgid "A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which."
-msgstr ""
+msgstr "Un archivo CSV con una fila por persona: nombre, correo electrónico y, opcionalmente, departamento y responsable. Los nombres de las columnas pueden ser cualesquiera: en el siguiente paso eliges qué columna es cuál."
 
 msgid "File"
-msgstr ""
+msgstr "Archivo"
 
 msgid "Buy a round"
 msgstr "Compra una ronda"
@@ -4756,7 +4592,7 @@ msgstr "Pide a un administrador de la organización que invite a otra ronda."
 
 #, python-format
 msgid "€%(amount)s"
-msgstr ""
+msgstr "%(amount)s €"
 
 msgid "Move section up"
 msgstr "Sube la sección"
@@ -6450,10 +6286,8 @@ msgstr "Conservación del PDF del informe (días)"
 msgid "How long a report PDF is kept before it is deleted. Leave empty to use the default."
 msgstr "Cuánto tiempo se conserva el PDF de un informe antes de eliminarlo. Déjalo vacío para usar el valor predeterminado."
 
-#, fuzzy
-#| msgid "Users"
 msgid "New Users"
-msgstr "Usuarios"
+msgstr "Nuevos usuarios"
 
 msgid "New users can create cycles for others"
 msgstr "Los nuevos usuarios pueden crear ciclos para otros"
@@ -6462,7 +6296,7 @@ msgid "If disabled, new users can only create cycles for themselves"
 msgstr "Si se desactiva, los nuevos usuarios solo pueden crear ciclos para sí mismos"
 
 msgid "Your plan, payment method, invoices and review credits."
-msgstr ""
+msgstr "Tu plan, método de pago, facturas y créditos de revisión."
 
 msgid "Email (SMTP) Settings"
 msgstr "Configuración de correo electrónico (SMTP)"
@@ -7339,10 +7173,9 @@ msgstr "¿No lo cambiaste? Entonces puede que alguien más tenga acceso a tu cue
 msgid "You started a new subscription with %(email)s, but this address already has a Blik360 account. We cancelled the new subscription and nothing was charged."
 msgstr "Empezaste una nueva suscripción con %(email)s, pero esta dirección ya tiene una cuenta en Blik360. Cancelamos la nueva suscripción y no se cobró nada."
 
-#, fuzzy, python-format
-#| msgid "To choose a plan for your existing organization, sign in at %(site_url)s and open Settings."
+#, python-format
 msgid "To choose a plan for your existing organization, sign in at %(login_url)s and open Settings."
-msgstr "Para elegir un plan para tu organización actual, inicia sesión en %(site_url)s y abre Configuración."
+msgstr "Para elegir un plan para tu organización actual, inicia sesión en %(login_url)s y abre Configuración."
 
 #, python-format
 msgid "Someone tried to sign up with %(email)s, but this inbox already has a Blik360 account. We did not create a new account."
@@ -8937,10 +8770,8 @@ msgstr "Continuar con la configuración del correo electrónico"
 msgid "Create Organization"
 msgstr "Crear organización"
 
-#, fuzzy
-#| msgid "Create a new organization without a payment plan for testing"
 msgid "Create an organization without a payment, for testing or for a customer you invoice yourself."
-msgstr "Crear una nueva organización sin un plan de pago para las pruebas"
+msgstr "Crear una organización sin pago, para pruebas o para un cliente al que facturas tú mismo."
 
 msgid "New Organization Details"
 msgstr "Nuevos detalles de la organización"
@@ -8960,13 +8791,11 @@ msgstr "Correo electrónico de administración"
 msgid "An invitation will be sent to this email address. The user will be set up as the organization administrator."
 msgstr "Se enviará una invitación a esta dirección de correo electrónico. El usuario será configurado como administrador de la organización."
 
-#, fuzzy
-#| msgid "Review Cycles"
 msgid "Review credits"
-msgstr "Ciclos de reseñas"
+msgstr "Créditos de revisión"
 
 msgid "Leave empty for an account without limits. With credits, the account works like a Single Round customer: one credit is one review cycle, and the admin can buy more on the Billing page."
-msgstr ""
+msgstr "Déjalo vacío para una cuenta sin límites. Con créditos, la cuenta funciona como un cliente de Ronda única: un crédito es un ciclo de revisión, y el administrador puede comprar más en la página de Facturación."
 
 msgid "Create Organization & Send Invitation"
 msgstr "Crear organización y enviar invitación"

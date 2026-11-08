@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 22:09+0000\n"
+"POT-Creation-Date: 2026-11-08 22:20+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -505,52 +505,45 @@ msgstr "Name"
 msgid "Department"
 msgstr "Bereich"
 
-#, fuzzy
-#| msgid "Name, email or department"
 msgid "Manager (email or name)"
-msgstr "Name, E-Mail oder Bereich"
+msgstr "Führungskraft (E-Mail oder Name)"
 
-#, fuzzy
-#| msgid "Use your invited email address"
 msgid "Choose the column with the email addresses."
-msgstr "Die E-Mail-Adresse verwenden, an die die Einladung ging"
+msgstr "Die Spalte mit den E-Mail-Adressen auswählen."
 
 msgid "Choose the column with the names, or the columns with first and last names."
-msgstr ""
+msgstr "Die Spalte mit den Namen auswählen, oder die Spalten mit Vor- und Nachnamen."
 
 #, python-format
 msgid "Line %(line)s: manager \"%(name)s\" is not in the file."
-msgstr ""
+msgstr "Zeile %(line)s: Führungskraft „%(name)s“ ist nicht in der Datei."
 
 #, python-format
 msgid "Line %(line)s: more than one person is called \"%(name)s\". Use the email of the manager."
-msgstr ""
+msgstr "Zeile %(line)s: Mehr als eine Person heißt „%(name)s“. Die E-Mail-Adresse der Führungskraft verwenden."
 
-#, fuzzy
-#| msgid "This cycle has no links to send."
 msgid "The file has no rows."
-msgstr "Für diese Feedbackrunde gibt es keine Links zum Senden."
+msgstr "Die Datei enthält keine Zeilen."
 
-#, fuzzy, python-format
-#| msgid "You must use the invited email: %(email)s"
+#, python-format
 msgid "Line %(line)s: invalid email \"%(email)s\"."
-msgstr "Es muss die eingeladene E-Mail-Adresse verwendet werden: %(email)s"
+msgstr "Zeile %(line)s: Ungültige E-Mail-Adresse „%(email)s“."
 
 #, python-format
 msgid "Line %(line)s: %(email)s is in the file twice."
-msgstr ""
+msgstr "Zeile %(line)s: %(email)s kommt in der Datei zweimal vor."
 
 #, python-format
 msgid "Line %(line)s: the name is empty."
-msgstr ""
+msgstr "Zeile %(line)s: Der Name ist leer."
 
 #, python-format
 msgid "Line %(line)s: manager %(email)s is not in the file."
-msgstr ""
+msgstr "Zeile %(line)s: Führungskraft %(email)s ist nicht in der Datei."
 
 #, python-format
 msgid "Line %(line)s: a person cannot be their own manager."
-msgstr ""
+msgstr "Zeile %(line)s: Eine Person kann nicht ihre eigene Führungskraft sein."
 
 msgid "Authentication required"
 msgstr "Anmeldung erforderlich"
@@ -945,20 +938,14 @@ msgstr "Keine Berechtigung, Feedbacknehmende zu löschen. Nur Organisations-Admi
 msgid "Reviewee \"%(name)s\" deactivated."
 msgstr "Feedbacknehmende Person „%(name)s“ deaktiviert."
 
-#, fuzzy
-#| msgid "You do not have permission to delete reviewees."
 msgid "You do not have permission to create reviewees."
-msgstr "Keine Berechtigung zum Löschen von Feedbacknehmenden."
+msgstr "Keine Berechtigung zum Anlegen von Feedbacknehmenden."
 
-#, fuzzy
-#| msgid "No organization found."
 msgid "No organization context."
-msgstr "Keine Organisation gefunden."
+msgstr "Kein Organisationskontext."
 
-#, fuzzy
-#| msgid "Use your invited email address"
 msgid "Invalid email address."
-msgstr "Die E-Mail-Adresse verwenden, an die die Einladung ging"
+msgstr "Ungültige E-Mail-Adresse."
 
 msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
 msgstr "Keine Berechtigung, Feedbackrunden anzulegen. Nur Organisations-Admins können diese Funktion nutzen."
@@ -1124,8 +1111,8 @@ msgid "Fewest responses"
 msgstr "Wenigste Antworten"
 
 #, python-format
-msgid "Created %(count)s review cycles. %(derived)s got reviewers from the org chart. %(unplaced)s reviewee(s) are not in a unit yet."
-msgstr ""
+msgid "Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories."
+msgstr "%(count)s Feedbackrunden mit Feedbackgebenden aus dem Organigramm erstellt. %(unplaced)s Feedbacknehmende übersprungen: Das Organigramm liefert für sie keine Feedbackgebenden in den gewählten Kategorien."
 
 #, python-format
 msgid "Created %(count)s review cycles. No invitations have been sent yet."
@@ -1446,27 +1433,25 @@ msgstr "Der Webhook „%(name)s“ wurde gelöscht."
 msgid "Error deleting webhook: %(error)s"
 msgstr "Fehler beim Löschen des Webhooks: %(error)s"
 
-#, fuzzy
-#| msgid "You do not have permission to create organizations."
 msgid "You do not have permission to edit the org chart."
-msgstr "Keine Berechtigung, Organisationen zu erstellen."
+msgstr "Keine Berechtigung, das Organigramm zu bearbeiten."
 
 msgid "Choose a CSV file."
-msgstr ""
+msgstr "Eine CSV-Datei auswählen."
 
 msgid "The file is too large."
-msgstr ""
+msgstr "Die Datei ist zu groß."
 
 msgid "The file is not a readable CSV file. Save it as CSV (UTF-8)."
-msgstr ""
+msgstr "Die Datei ist keine lesbare CSV-Datei. Als CSV (UTF-8) speichern."
 
 #, python-format
 msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
-msgstr ""
+msgstr "%(units)s Einheiten importiert: %(created)s neue Personen, %(updated)s aktualisiert."
 
 #, python-format
 msgid "%(name)s is already in this unit."
-msgstr ""
+msgstr "%(name)s ist bereits in dieser Einheit."
 
 #, python-format
 msgid "%(count)s credits left"
@@ -3660,7 +3645,7 @@ msgid "Team"
 msgstr "Team"
 
 msgid "Org chart"
-msgstr ""
+msgstr "Organigramm"
 
 msgid "Settings"
 msgstr "Einstellungen"
@@ -3937,7 +3922,7 @@ msgid "Send invitations"
 msgstr "Einladungen senden"
 
 msgid "Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct."
-msgstr ""
+msgstr "Prüfen Sie die gerade erstellten Feedbackrunden. Die Feedbackgebenden stammen aus dem Organigramm. Wenn etwas nicht stimmt, bearbeiten Sie die Feedbackrunde anschließend."
 
 msgid "Review the cycles you just created, then send invitation emails."
 msgstr "Gerade angelegte Feedbackrunden prüfen und dann die Einladungen per E-Mail senden."
@@ -3949,7 +3934,7 @@ msgid "No emails have been sent yet."
 msgstr "Es wurden noch keine E-Mails versendet."
 
 msgid "Click <em>Send all invitations</em> to send an email to each reviewee and to the reviewers from the org chart."
-msgstr ""
+msgstr "Klicken Sie auf <em>Alle Einladungen senden</em>, um eine E-Mail an jede feedbacknehmende Person und an die Feedbackgebenden aus dem Organigramm zu senden."
 
 msgid "Review the list below and click <em>Send invitations now</em> to notify every reviewee."
 msgstr "Prüfen Sie die Liste unten und klicken Sie auf <em>Einladungen jetzt senden</em>, um alle Feedbacknehmenden zu benachrichtigen."
@@ -3963,21 +3948,17 @@ msgstr "Feedbacknehmende Person"
 msgid "Peers"
 msgstr "Kolleg:innen"
 
-#, fuzzy
-#| msgid "Direct Reports"
 msgid "Direct reports"
 msgstr "Direkte Mitarbeitende"
 
 msgid "Created"
 msgstr "Angelegt"
 
-#, fuzzy, python-format
-#| msgid "Send invitations for all %(counter)s reviewee"
-#| msgid_plural "Send invitations for all %(counter)s reviewees"
+#, python-format
 msgid "Send all invitations (%(counter)s reviewee)"
 msgid_plural "Send all invitations (%(counter)s reviewees)"
-msgstr[0] "Einladung an %(counter)s feedbacknehmende Person senden"
-msgstr[1] "Einladungen an alle %(counter)s Feedbacknehmenden senden"
+msgstr[0] "Alle Einladungen senden (%(counter)s feedbacknehmende Person)"
+msgstr[1] "Alle Einladungen senden (%(counter)s Feedbacknehmende)"
 
 #, python-format
 msgid "Send invitations for all %(counter)s reviewee"
@@ -4288,7 +4269,7 @@ msgid "Invite Reviewers by Email"
 msgstr "Feedbackgebende per E-Mail einladen"
 
 msgid "Pick reviewers from your existing people, or add someone new. The system makes anonymous tokens and sends invitations. Names of reviewers are never stored with their responses."
-msgstr ""
+msgstr "Wählen Sie Feedbackgebende aus den vorhandenen Personen oder fügen Sie jemand Neues hinzu. Blik erstellt anonyme Tokens und versendet die Einladungen. Namen von Feedbackgebenden werden nie zusammen mit ihren Antworten gespeichert."
 
 msgid "The self-assessment goes to this address. Send the invitation or a reminder from the cycle page."
 msgstr "Die Selbsteinschätzung geht an diese Adresse. Einladung und Erinnerung lassen sich auf der Seite der Feedbackrunde versenden."
@@ -4296,26 +4277,20 @@ msgstr "Die Selbsteinschätzung geht an diese Adresse. Einladung und Erinnerung 
 msgid "Your email is automatically assigned for self-assessment"
 msgstr "Ihre E-Mail-Adresse wird automatisch für die Selbsteinschätzung verwendet"
 
-#, fuzzy
-#| msgid "Usually the reviewee's own email"
 msgid "Usually the reviewee themselves"
-msgstr "Meist die eigene E-Mail-Adresse der feedbacknehmenden Person"
+msgstr "Meist die feedbacknehmende Person selbst"
 
-#, fuzzy
-#| msgid "Usually the reviewee's own email"
 msgid "Usually the reviewee's own record"
-msgstr "Meist die eigene E-Mail-Adresse der feedbacknehmenden Person"
+msgstr "Meist der eigene Eintrag der feedbacknehmenden Person"
 
 msgid "Manager/Supervisor"
 msgstr "Führungskraft"
 
-#, fuzzy
-#| msgid "For your manager."
 msgid "Search for a manager…"
-msgstr "Für Ihre Führungskraft."
+msgstr "Führungskraft suchen…"
 
 msgid "Search for a peer…"
-msgstr ""
+msgstr "Kolleg:in suchen…"
 
 msgid "Colleagues at the same level"
 msgstr "Kolleg:innen auf gleicher Ebene"
@@ -4323,11 +4298,8 @@ msgstr "Kolleg:innen auf gleicher Ebene"
 msgid "Direct Reports"
 msgstr "Direkte Mitarbeitende"
 
-#, fuzzy
-#| msgid "%(count)s direct report"
-#| msgid_plural "%(count)s direct reports"
 msgid "Search for a direct report…"
-msgstr "%(count)s direkte:r Mitarbeitende:r"
+msgstr "Direkte Mitarbeitende suchen…"
 
 msgid "People who report to this reviewee"
 msgstr "Personen, die direkt an die feedbacknehmende Person berichten"
@@ -4340,12 +4312,10 @@ msgid "Language of the invitations and reminders to the reviewers above, and of 
 msgstr "Sprache der Einladungen und Erinnerungen an die oben eingetragenen Feedbackgebenden und ihres Formulars"
 
 msgid "Add by email (advanced)"
-msgstr ""
+msgstr "Per E-Mail hinzufügen (erweitert)"
 
-#, fuzzy
-#| msgid "Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines."
 msgid "For reviewers who are not in Blik yet. Separate multiple emails with commas or newlines."
-msgstr "E-Mail-Adressen der Feedbackgebenden jetzt eintragen oder später hinzufügen. Mehrere Adressen durch Kommas oder Zeilenumbrüche trennen."
+msgstr "Für Feedbackgebende, die noch nicht in Blik sind. Mehrere Adressen durch Kommas oder Zeilenumbrüche trennen."
 
 msgid "Save & Send Invitations"
 msgstr "Speichern & Einladungen senden"
@@ -4413,230 +4383,193 @@ msgstr "Ausstehende Einladungen senden"
 msgid "Back to Cycle Details"
 msgstr "Zurück zur Feedbackrunde"
 
-#, fuzzy
-#| msgid "Member"
 msgid "Members"
-msgstr "Mitglied"
+msgstr "Mitglieder"
 
-#, fuzzy, python-format
-#| msgid "%(counter)s question"
-#| msgid_plural "%(counter)s questions"
+#, python-format
 msgid "%(counter)s unit below"
 msgid_plural "%(counter)s units below"
-msgstr[0] "%(counter)s Frage"
-msgstr[1] "%(counter)s Fragen"
+msgstr[0] "%(counter)s Einheit darunter"
+msgstr[1] "%(counter)s Einheiten darunter"
 
-#, fuzzy
-#| msgid "Not used yet"
 msgid "No units yet"
-msgstr "Noch nicht verwendet"
+msgstr "Noch keine Einheiten"
 
 msgid "Import a CSV file with your people and their managers, or create the first unit yourself."
-msgstr ""
+msgstr "Importieren Sie eine CSV-Datei mit Ihren Mitarbeitenden und deren Führungskräften, oder legen Sie die erste Einheit selbst an."
 
-#, fuzzy
-#| msgid "Import Data"
 msgid "Import CSV"
-msgstr "Daten importieren"
+msgstr "CSV importieren"
 
 msgid "New unit"
-msgstr ""
+msgstr "Neue Einheit"
 
 msgid "Drag onto another unit to place it below that unit"
-msgstr ""
+msgstr "Auf eine andere Einheit ziehen, um sie darunter einzuordnen"
 
 msgid "Show or hide"
-msgstr ""
+msgstr "Ein- oder ausklappen"
 
-#, fuzzy
-#| msgid "Can manage cycles"
 msgid "No manager yet"
-msgstr "Darf Feedbackrunden verwalten"
+msgstr "Noch keine Führungskraft"
 
-#, fuzzy, python-format
-#| msgid "%(count)s peer"
-#| msgid_plural "%(count)s peers"
+#, python-format
 msgid "%(counter)s member"
 msgid_plural "%(counter)s members"
-msgstr[0] "%(count)s Kolleg:in"
-msgstr[1] "%(count)s Kolleg:innen"
+msgstr[0] "%(counter)s Mitglied"
+msgstr[1] "%(counter)s Mitglieder"
 
-#, fuzzy, python-format
-#| msgid "%(counter)s question"
-#| msgid_plural "%(counter)s questions"
+#, python-format
 msgid "%(counter)s unit"
 msgid_plural "%(counter)s units"
-msgstr[0] "%(counter)s Frage"
-msgstr[1] "%(counter)s Fragen"
+msgstr[0] "%(counter)s Einheit"
+msgstr[1] "%(counter)s Einheiten"
 
 #, python-format
 msgid "Also in: %(units)s"
-msgstr ""
+msgstr "Auch in: %(units)s"
 
-#, fuzzy, python-format
-#| msgid "Review from %(name)s"
+#, python-format
 msgid "Remove %(name)s from %(unit)s"
-msgstr "Bewertung von %(name)s"
+msgstr "%(name)s aus %(unit)s entfernen"
 
-#, fuzzy
-#| msgid "No reviewers yet"
 msgid "No members yet"
-msgstr "Noch keine Feedbackgebenden"
+msgstr "Noch keine Mitglieder"
 
-#, fuzzy
-#| msgid "Manager"
 msgid "Add manager"
-msgstr "Führungskraft"
+msgstr "Führungskraft hinzufügen"
 
-#, fuzzy
-#| msgid "Member"
 msgid "Add member"
-msgstr "Mitglied"
+msgstr "Mitglied hinzufügen"
 
-#, fuzzy
-#| msgid "name"
 msgid "Rename"
-msgstr "Name"
+msgstr "Umbenennen"
 
 msgid "Place under another unit"
-msgstr ""
+msgstr "Unter eine andere Einheit einordnen"
 
-#, fuzzy
-#| msgid "Delete Account"
 msgid "Delete unit"
-msgstr "Konto löschen"
+msgstr "Einheit löschen"
 
 msgid "Not in a unit"
-msgstr ""
+msgstr "In keiner Einheit"
 
 msgid "Find a person"
 msgstr "Person suchen"
 
 msgid "Find a person who is not in a unit"
-msgstr ""
+msgstr "Eine Person finden, die in keiner Einheit ist"
 
 msgid "Drag a person onto a unit. Drag a person here to take them out of a unit."
-msgstr ""
+msgstr "Eine Person auf eine Einheit ziehen. Eine Person hierher ziehen, um sie aus einer Einheit zu nehmen."
 
 msgid "Everyone is in a unit. Drag a person here to take them out of a unit."
-msgstr ""
+msgstr "Alle sind in einer Einheit. Eine Person hierher ziehen, um sie aus einer Einheit zu nehmen."
 
-#, fuzzy, python-format
-#| msgid "%(selected)s of %(counter)s respondent"
-#| msgid_plural "%(selected)s of %(counter)s respondents"
+#, python-format
 msgid "%(filename)s · %(counter)s person"
 msgid_plural "%(filename)s · %(counter)s people"
-msgstr[0] "%(selected)s von %(counter)s befragten Person"
-msgstr[1] "%(selected)s von %(counter)s Befragten"
+msgstr[0] "%(filename)s · %(counter)s Person"
+msgstr[1] "%(filename)s · %(counter)s Personen"
 
-#, fuzzy
-#| msgid "The report has not been generated yet"
 msgid "The file cannot be imported yet."
-msgstr "Der Bericht wurde noch nicht erstellt"
+msgstr "Die Datei kann noch nicht importiert werden."
 
-#, fuzzy, python-format
-#| msgid "%(counter)s reviewer"
-#| msgid_plural "%(counter)s reviewers"
+#, python-format
 msgid "And %(counter)s more error."
 msgid_plural "And %(counter)s more errors."
-msgstr[0] "%(counter)s feedbackgebende Person"
-msgstr[1] "%(counter)s Feedbackgebende"
+msgstr[0] "Und %(counter)s weiterer Fehler."
+msgstr[1] "Und %(counter)s weitere Fehler."
 
 msgid "Which column is which?"
-msgstr ""
+msgstr "Welche Spalte ist was?"
 
 msgid "Blik guessed from the column names. Check the choices against the first rows below."
-msgstr ""
+msgstr "Blik hat anhand der Spaltennamen geraten. Prüfen Sie die Auswahl anhand der ersten Zeilen unten."
 
 msgid "Not in the file"
-msgstr ""
+msgstr "Nicht in der Datei"
 
 msgid "Or choose first and last name."
-msgstr ""
+msgstr "Oder Vor- und Nachname wählen."
 
 msgid "Each manager gets a unit with the people who report to them."
-msgstr ""
+msgstr "Jede Führungskraft erhält eine Einheit mit den Personen, die ihr unterstellt sind."
 
-#, fuzzy
-#| msgid "First"
 msgid "First rows"
-msgstr "Erste"
+msgstr "Erste Zeilen"
 
 msgid "First rows of the file"
-msgstr ""
+msgstr "Erste Zeilen der Datei"
 
 msgid "This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit."
-msgstr ""
+msgstr "Dies ersetzt das aktuelle Organigramm. Personen, die nicht in der Datei stehen, bleiben in Blik, sind aber in keiner Einheit mehr."
 
-#, fuzzy
-#| msgid "Import Data"
 msgid "Import"
-msgstr "Daten importieren"
+msgstr "Importieren"
 
 msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
-msgstr ""
+msgstr "Wer in welcher Einheit ist und wer sie leitet. Blik schlägt daraus für jedes Feedback Führungskraft, Kolleg:innen und direkte Mitarbeitende vor."
 
 msgid "Chart"
-msgstr ""
+msgstr "Diagramm"
 
 msgid "Outline"
-msgstr ""
+msgstr "Gliederung"
 
 msgid "Zoom out"
-msgstr ""
+msgstr "Verkleinern"
 
 msgid "Zoom in"
-msgstr ""
+msgstr "Vergrößern"
 
 msgid "Fit to screen"
-msgstr ""
+msgstr "An Bildschirm anpassen"
 
 msgid "Drag the background to move around."
-msgstr ""
+msgstr "Den Hintergrund ziehen, um die Ansicht zu verschieben."
 
 msgid "Expand all"
-msgstr ""
+msgstr "Alle ausklappen"
 
 msgid "Collapse all"
-msgstr ""
+msgstr "Alle einklappen"
 
 msgid "Drag a unit onto another unit to place it below."
-msgstr ""
+msgstr "Eine Einheit auf eine andere Einheit ziehen, um sie darunter einzuordnen."
 
 msgid "Drag a person to move them. Hold Alt to copy."
-msgstr ""
+msgstr "Eine Person ziehen, um sie zu verschieben. Alt gedrückt halten, um sie zu kopieren."
 
 msgid "Rename unit"
-msgstr ""
+msgstr "Einheit umbenennen"
 
 msgid "Close"
 msgstr "Schließen"
 
 msgid "For example: Optics, Chair of Physics"
-msgstr ""
+msgstr "Zum Beispiel: Optik, Lehrstuhl für Physik"
 
-#, fuzzy
-#| msgid "Saved"
 msgid "Save"
-msgstr "Gespeichert"
+msgstr "Speichern"
 
 msgid "Find a person, or type a name and email to add someone new."
-msgstr ""
+msgstr "Eine Person finden, oder Name und E-Mail-Adresse eingeben, um jemand Neues hinzuzufügen."
 
 msgid "Unit above"
-msgstr ""
+msgstr "Übergeordnete Einheit"
 
 msgid "The manager of this unit becomes a member of the unit above."
-msgstr ""
+msgstr "Die Führungskraft dieser Einheit wird Mitglied der übergeordneten Einheit."
 
 msgid "The people in this unit stay in Blik. People who are in no other unit move to \"Not in a unit\"."
-msgstr ""
+msgstr "Die Personen in dieser Einheit bleiben in Blik. Personen, die in keiner anderen Einheit sind, wandern zu „In keiner Einheit“."
 
 msgid "A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which."
-msgstr ""
+msgstr "Eine CSV-Datei mit einer Zeile pro Person: Name, E-Mail-Adresse und optional Bereich und Führungskraft. Die Spaltennamen sind beliebig: Im nächsten Schritt wählen Sie, welche Spalte was enthält."
 
 msgid "File"
-msgstr ""
+msgstr "Datei"
 
 msgid "Buy a round"
 msgstr "Paket kaufen"

@@ -317,10 +317,11 @@ fetch(`${BASE_URL}/cycles/`, {
                             <tr>
                                 <td><code>POST</code></td>
                                 <td><code>/api/v1/cycles/{uuid}/complete/</code></td>
-                                <td>Mark as complete & generate report</td>
+                                <td>Mark as complete and build the report now. Returns <code>report_uuid</code> and <code>report_url</code>, the reviewee's link to the report</td>
                             </tr>
                         </tbody>
                     </table>
+                    <p class="mt-6">A cycle says which reviewer groups it collects (<code>include_self</code>, <code>include_peer</code>, <code>include_manager</code>, <code>include_direct_report</code>) and where its report stands: <code>report_uuid</code> is the report to fetch, or <code>null</code> while there is none yet, and <code>report_finalized_at</code> is set once the report and its PDF are built.</p>
                 </div>
 
                 <!-- Questionnaires -->
@@ -376,12 +377,19 @@ fetch(`${BASE_URL}/cycles/`, {
                                 <td>Get report data with access token</td>
                             </tr>
                             <tr>
+                                <td><code>GET</code></td>
+                                <td><code>/api/v1/reports/{uuid}/pdf/</code></td>
+                                <td>Download the PDF (built on request when none is stored)</td>
+                            </tr>
+                            <tr>
                                 <td><code>POST</code></td>
                                 <td><code>/api/v1/reports/{uuid}/regenerate/</code></td>
-                                <td>Regenerate report with fresh data</td>
+                                <td>Recalculate the report and rebuild its PDF</td>
                             </tr>
                         </tbody>
                     </table>
+                    <p class="mt-6">List the reports of one cycle with <code>?cycle__uuid=</code>. A report carries <code>pdf_url</code> (the download above), <code>pdf_generated_at</code> and <code>pdf_expires_at</code>: the stored PDF is deleted after the retention period, and the download builds it again.</p>
+                    <p>A report is built by a job that runs up to about 5 minutes after the last submission completes a cycle. Right after <code>cycle.completed</code>, <code>GET /api/v1/reports/{uuid}/</code> can return 404: poll <code>report_uuid</code> on the cycle, or wait for the <code>report.generated</code> webhook.</p>
                 </div>
             </div>
         </div>
@@ -410,9 +418,23 @@ fetch(`${BASE_URL}/cycles/`, {
                             <code>feedback.submitted</code> - Fired when a reviewer completes feedback
                         </li>
                         <li>
-                            <code>report.generated</code> - Fired when a report is generated
+                            <code>report.generated</code> - Fired when a report is built. This happens up to about 5 minutes after <code>cycle.completed</code>, and again when a late submission arrives after the report was built. When a cycle is completed through <code>POST /api/v1/cycles/{uuid}/complete/</code>, the report is built first, so <code>report.generated</code> comes before <code>cycle.completed</code>.
                         </li>
                     </ul>
+
+                    <h4 class="mt-6 mb-2">report.generated data</h4>
+                    <pre class="code-block developer-code-block">{
+  "report_id": "e9304f84-67e3-46b7-a1b5-67b242bae82d",
+  "cycle_id": "a8b7c6d5-e4f3-4a2b-9c1d-8e7f6a5b4c3d",
+  "reviewee": {
+    "id": "7a44880e-2f99-4593-b3a7-58109af8a468",
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "generated_at": "{% now 'Y' %}-10-01T22:18:34Z",
+  "access_url": "https://blik360.com/my-report/d1a917a4-0dda-47d2-acdf-7dff7e440a40/"
+}</pre>
+                    <p><code>report_id</code> is the report's UUID for <code>GET /api/v1/reports/{uuid}/</code>; <code>access_url</code> is the reviewee's login-free link to the report, the same URL <code>complete</code> returns as <code>report_url</code>.</p>
                 </div>
 
                 <div class="feature-card mb-8">

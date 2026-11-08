@@ -9,6 +9,7 @@ from rest_framework import serializers
 from django.db import transaction
 from django.db.models import Count, Q
 from accounts.models import Reviewee
+from core.url import get_absolute_url
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken, Response
 from questionnaires.answer_options import DEFAULT_RATING_LABELS
 from questionnaires.legacy_config import config_with_texts
@@ -256,6 +257,11 @@ class ReviewerTokenWithUUIDSerializer(serializers.ModelSerializer):
 # =============================================================================
 
 
+def report_uuid(cycle):
+    """The uuid of the cycle's report, or None when none is generated yet (the viewset selects it with the cycle)."""
+    return str(cycle.report.uuid) if hasattr(cycle, "report") else None
+
+
 class ReviewCycleSerializer(serializers.ModelSerializer):
     """
     Full review cycle serializer with related data.
@@ -268,6 +274,7 @@ class ReviewCycleSerializer(serializers.ModelSerializer):
     tokens = ReviewerTokenSerializer(many=True, read_only=True)
     categories = serializers.SerializerMethodField()
     completion_stats = serializers.SerializerMethodField()
+    report_uuid = serializers.SerializerMethodField()
 
     class Meta:
         model = ReviewCycle
@@ -278,18 +285,31 @@ class ReviewCycleSerializer(serializers.ModelSerializer):
             "questionnaire",
             "questionnaire_detail",
             "status",
+            "include_self",
+            "include_peer",
+            "include_manager",
+            "include_direct_report",
             "created_by",
             "created_at",
             "updated_at",
+            "report_finalized_at",
+            "report_uuid",
             "tokens",
             "completion_stats",
             "categories",
         ]
-        read_only_fields = ["uuid", "created_at", "updated_at", "created_by"]
+        read_only_fields = [
+            "uuid", "include_self", "include_peer", "include_manager", "include_direct_report",
+            "created_at", "updated_at", "created_by", "report_finalized_at",
+        ]
 
     def get_categories(self, obj):
         """The feedback categories this cycle collects, in report order."""
         return obj.active_categories
+
+    def get_report_uuid(self, obj) -> str | None:
+        """The cycle's report, or null while the finalize_reports cron has not built it yet."""
+        return report_uuid(obj)
 
     def get_completion_stats(self, obj):
         """Calculate completion statistics."""
@@ -460,6 +480,7 @@ class ReviewCycleListSerializer(serializers.ModelSerializer):
     questionnaire = serializers.UUIDField(source="questionnaire.uuid", read_only=True)
     questionnaire_name = serializers.CharField(source="questionnaire.name", read_only=True)
     completion_percentage = serializers.SerializerMethodField()
+    report_uuid = serializers.SerializerMethodField()
 
     class Meta:
         model = ReviewCycle
@@ -470,9 +491,19 @@ class ReviewCycleListSerializer(serializers.ModelSerializer):
             "questionnaire",
             "questionnaire_name",
             "status",
+            "include_self",
+            "include_peer",
+            "include_manager",
+            "include_direct_report",
             "created_at",
+            "report_finalized_at",
+            "report_uuid",
             "completion_percentage",
         ]
+        read_only_fields = fields
+
+    def get_report_uuid(self, obj) -> str | None:
+        return report_uuid(obj)
 
     def get_completion_percentage(self, obj):
         """Calculate completion percentage."""
@@ -496,6 +527,8 @@ class ReportSerializer(serializers.ModelSerializer):
 
     cycle_uuid = serializers.UUIDField(source="cycle.uuid", read_only=True)
     reviewee_name = serializers.CharField(source="cycle.reviewee.name", read_only=True)
+    pdf_url = serializers.SerializerMethodField()
+    pdf_expires_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Report
@@ -509,9 +542,18 @@ class ReportSerializer(serializers.ModelSerializer):
             "access_token_expires",
             "last_accessed",
             "access_count",
+            "pdf_url",
+            "pdf_generated_at",
+            "pdf_expires_at",
             "report_data",
         ]
         read_only_fields = fields  # All fields are read-only
+
+    def get_pdf_url(self, obj) -> str | None:
+        """Where to download the PDF; the endpoint builds it when none is stored. Null for an unavailable report."""
+        if not obj.available:
+            return None
+        return get_absolute_url("api:report-pdf", uuid=obj.uuid)
 
     def to_representation(self, instance):
         """

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.views.decorators.http import require_http_methods
 from django.utils import translation
 from django.utils.translation import gettext as _
@@ -9,7 +9,7 @@ from accounts.permissions import can_view_all_reports, reviewee_emails_below
 from reviews.models import ReviewCycle
 from .models import Report
 from .context import build_report_context
-from .pdf import pdf_filename, render_report_pdf, reviewee_language, store_report_pdf
+from .pdf import pdf_response, render_report_pdf, reviewee_language, store_report_pdf, stored_pdf_bytes
 from .services import generate_report
 import uuid
 
@@ -130,17 +130,6 @@ def reviewee_report(request, access_token):
     return render(request, 'reports/reviewee_report.html', context)
 
 
-def _serve_pdf(report, data):
-    response = HttpResponse(data, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{pdf_filename(report)}"'
-    return response
-
-
-def _stored_pdf_bytes(report):
-    with report.pdf_file.open('rb') as stored:
-        return stored.read()
-
-
 @ratelimit(key='ip', rate='10/h', method='POST', block=True)
 def reviewee_report_pdf(request, access_token):
     """Download (GET) or regenerate (POST) the stored PDF behind a reviewee token"""
@@ -153,7 +142,7 @@ def reviewee_report_pdf(request, access_token):
     elif not report.has_valid_pdf():
         # The report page offers "Regenerate PDF"
         return redirect('reports:reviewee_report', access_token=access_token)
-    return _serve_pdf(report, _stored_pdf_bytes(report))
+    return pdf_response(report, stored_pdf_bytes(report))
 
 
 @login_required
@@ -178,10 +167,10 @@ def report_pdf(request, cycle_uuid):
     # A stored file is in the reviewee's language; an admin in another one gets a fresh render
     language = translation.get_language()
     if language != reviewee_language(report):
-        return _serve_pdf(report, render_report_pdf(report, language))
+        return pdf_response(report, render_report_pdf(report, language))
 
     if request.method == 'POST':
         store_report_pdf(report)
     elif not report.has_valid_pdf():
         return redirect('reports:view_report', cycle_uuid=cycle.uuid)
-    return _serve_pdf(report, _stored_pdf_bytes(report))
+    return pdf_response(report, stored_pdf_bytes(report))

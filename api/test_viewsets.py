@@ -1,7 +1,10 @@
 """
 Tests for API viewsets.
 """
-from django.test import TestCase
+import tempfile
+from unittest import mock
+
+from django.test import TestCase, override_settings
 from rest_framework.test import APIClient
 from accounts.models import Organization, User, Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin
@@ -412,6 +415,52 @@ class ReviewCycleViewSetTest(TestCase):
         self.assertIn('overall', response.data)
         self.assertIn('by_category', response.data)
         self.assertEqual(response.data['overall']['total'], 2)
+
+    def test_cycle_shows_categories_and_report_fields(self):
+        """Detail and list say which categories a cycle collects and whether its report exists."""
+        cycle = ReviewCycle.objects.create(
+            reviewee=self.reviewee, questionnaire=self.questionnaire, created_by=self.user,
+            include_manager=False, status='completed',
+        )
+
+        detail = self.client.get(f'/api/v1/cycles/{cycle.uuid}/').data
+        listed = self.client.get('/api/v1/cycles/').data['results'][0]
+
+        for data in (detail, listed):
+            self.assertTrue(data['include_self'])
+            self.assertFalse(data['include_manager'])
+            self.assertIsNone(data['report_finalized_at'])
+            self.assertIsNone(data['report_uuid'])
+
+    def test_cycle_report_uuid_set_once_finalized(self):
+        from reports.finalize import finalize_cycle
+        from reports.models import Report
+        cycle = ReviewCycle.objects.create(
+            reviewee=self.reviewee, questionnaire=self.questionnaire, created_by=self.user, status='completed',
+        )
+        with tempfile.TemporaryDirectory() as tmp, override_settings(PRIVATE_MEDIA_ROOT=tmp), \
+                mock.patch('reports.pdf.render_report_pdf', return_value=b'%PDF-1.7 test'):
+            finalize_cycle(cycle)
+
+        data = self.client.get(f'/api/v1/cycles/{cycle.uuid}/').data
+
+        self.assertEqual(data['report_uuid'], str(Report.objects.get(cycle=cycle).uuid))
+        self.assertIsNotNone(data['report_finalized_at'])
+
+    @override_settings(SITE_PROTOCOL='https', SITE_DOMAIN='blik.example')
+    def test_complete_returns_report_uuid_and_reviewee_url(self):
+        from reports.models import Report
+        cycle = ReviewCycle.objects.create(
+            reviewee=self.reviewee, questionnaire=self.questionnaire, created_by=self.user,
+        )
+
+        response = self.client.post(f'/api/v1/cycles/{cycle.uuid}/complete/')
+
+        self.assertEqual(response.status_code, 200)
+        report = Report.objects.get(cycle=cycle)
+        self.assertEqual(response.data['report_uuid'], str(report.uuid))
+        self.assertEqual(response.data['report_url'], f'https://blik.example/my-report/{report.access_token}/')
+        self.assertEqual(response.data['report_id'], report.id)
 
 
 class QuestionnaireViewSetTest(TestCase):

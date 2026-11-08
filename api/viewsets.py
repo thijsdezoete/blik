@@ -24,6 +24,7 @@ from questionnaires.answer_options import OPTION_TYPES, resolve_answer
 from questionnaires.models import Question, QuestionSection, Questionnaire
 from questionnaires.ordering import save_layout
 from reports.models import Report
+from reports.pdf import pdf_response, store_report_pdf, stored_pdf_bytes
 
 from .serializers import (
     RevieweeSerializer,
@@ -343,7 +344,7 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         return visible_cycles(
             self.request.user,
             ReviewCycle.objects.for_organization(org)
-            .select_related("reviewee", "questionnaire", "created_by")
+            .select_related("reviewee", "questionnaire", "created_by", "report")
             .prefetch_related("tokens"),
         )
 
@@ -403,7 +404,10 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         tags=["cycles"],
-        description="Manually mark cycle as complete and generate report",
+        description="Mark the cycle as complete and build its report now. The report.generated webhook fires "
+        "before cycle.completed here, because the report is built first. The response holds report_uuid "
+        "(for GET /reports/{uuid}/) and report_url, the reviewee's link to the report, the same as the "
+        "webhook's access_url. report_id (an integer) is deprecated and goes away in a later release.",
     )
     @action(detail=True, methods=["post"])
     def complete(self, request, uuid=None):
@@ -429,8 +433,9 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         return Response(
             {
                 "message": "Cycle completed",
-                "report_id": report.id,
-                "report_url": f"/my-report/{report.access_token}/",
+                "report_id": report.id,  # deprecated: use report_uuid
+                "report_uuid": str(report.uuid),
+                "report_url": report.reviewee_url,
             }
         )
 
@@ -792,14 +797,24 @@ class QuestionnaireViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
 # =============================================================================
 
 
+REPORT_TIMING = (
+    "A report is built by a cron job up to about 5 minutes after the last submission completes the cycle, "
+    "so right after cycle.completed the report can still be a 404: poll report_uuid on the cycle, or wait "
+    "for the report.generated webhook. "
+)
+
+
 @extend_schema_view(
     list=extend_schema(
         tags=["reports"],
-        description="List all reports (access tokens hidden)",
+        description="List all reports (access tokens and report data hidden). Filter with ?cycle__uuid=. "
+        + REPORT_TIMING,
     ),
     retrieve=extend_schema(
         tags=["reports"],
-        description="Get full report with data and access token",
+        description="Get the full report with its data, access token and PDF fields. pdf_url is where to download "
+        "the PDF, pdf_expires_at when the stored file is deleted (the download endpoint builds it again). "
+        + REPORT_TIMING,
         parameters=[LANGUAGE_PARAMETER],
     ),
 )
@@ -813,7 +828,7 @@ class ReportViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsOrganizationMember]
     serializer_class = ReportSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ["available"]
+    filterset_fields = ["available", "cycle__uuid"]
     ordering = ["-generated_at"]
     lookup_field = "uuid"
 
@@ -834,7 +849,8 @@ class ReportViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
 
     @extend_schema(
         tags=["reports"],
-        description="Regenerate report with updated data",
+        description="Recalculate the report from the current submissions and build its PDF again. "
+        "Fires report.generated. Returns the refreshed report.",
     )
     @action(detail=True, methods=["post"], permission_classes=[IsOrganizationMember, CanManageOrganization])
     def regenerate(self, request, uuid=None):
@@ -848,10 +864,30 @@ class ReportViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
         # Regenerate
         from reports.services import generate_report
 
-        new_report = generate_report(report.cycle, force=True)
+        new_report = generate_report(report.cycle)
+        # generate_report drops the stored PDF, as it must never show replaced data
+        store_report_pdf(new_report)
 
         serializer = self.get_serializer(new_report)
         return Response(serializer.data)
+
+    @extend_schema(
+        tags=["reports"],
+        description="Download the report as a PDF, in the reviewee's language. Builds and stores the PDF "
+        "when none is stored, for example after a regenerate or after the retention period.",
+        responses={(200, "application/pdf"): OpenApiTypes.BINARY},
+    )
+    @action(detail=True, methods=["get"])
+    def pdf(self, request, uuid=None):
+        """
+        Download the stored PDF, building it first when needed.
+
+        GET /api/v1/reports/{uuid}/pdf/
+        """
+        report = self.get_object()
+        if not report.has_valid_pdf():
+            store_report_pdf(report)
+        return pdf_response(report, stored_pdf_bytes(report))
 
 
 # =============================================================================

@@ -7,6 +7,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext, gettext_lazy as _
 from core.models import TimeStampedModel
 from core.managers import ReportManager
+from core.url import get_absolute_url
 from reviews.models import ReviewCycle
 from reports.storage import get_private_storage, private_storage
 
@@ -85,6 +86,11 @@ class Report(TimeStampedModel):
 
     def __str__(self):
         return gettext('Report for %(cycle)s') % {'cycle': self.cycle}
+
+    @property
+    def reviewee_url(self):
+        """The reviewee's login-free link to the report, as sent in emails, webhooks and the API."""
+        return get_absolute_url('reports:reviewee_report', access_token=self.access_token)
 
     @property
     def pdf_retention_days(self):

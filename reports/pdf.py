@@ -4,6 +4,7 @@ from datetime import date
 import weasyprint
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils import timezone, translation
 from django.utils.text import slugify
@@ -120,6 +121,18 @@ def store_report_pdf(report):
     report.save(update_fields=['pdf_file', 'pdf_generated_at'])
     if old_name and old_name != report.pdf_file.name:
         report.pdf_file.storage.delete(old_name)
+
+
+def stored_pdf_bytes(report):
+    with report.pdf_file.open('rb') as stored:
+        return stored.read()
+
+
+def pdf_response(report, data):
+    """The PDF bytes as a download named after the reviewee and the report date."""
+    response = HttpResponse(data, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{pdf_filename(report)}"'
+    return response
 
 
 def drop_report_pdf(report):

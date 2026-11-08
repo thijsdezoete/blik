@@ -124,7 +124,7 @@ def report_generated(sender, instance, created, update_fields, **kwargs):
                         "email": instance.cycle.reviewee.email,
                     },
                     "generated_at": instance.generated_at.isoformat(),
-                    "access_url": f"/reports/view/{instance.access_token}/",
+                    "access_url": instance.reviewee_url,
                 },
             )
     except Exception as e:

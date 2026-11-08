@@ -544,7 +544,8 @@ It builds the report and the PDF for every cycle the migration already marked as
 sends no email. It exits with a non-zero status if a cycle failed, and it is safe to run again.
 Add `--dry-run` to only count what is missing.
 Add `--regenerate` to recalculate existing reports with the current scoring rules and questionnaire texts.
-It sends no `report.generated` webhook. It keeps a report as it is when a new one would lose answers
+It sends the `report.generated` webhook only for reports that did not exist yet; a recalculated report
+sends none. It keeps a report as it is when a new one would lose answers
 (for example of a deleted question), prints a warning that names the cycle, and still stores its PDF.
 
 After this release, run this once:

@@ -2104,26 +2104,26 @@ def bulk_send_invitations(request):
             messages.info(request, _('No pending cycles to send invitations for.'))
             return redirect('review_cycle_list')
 
-        # Always send the reviewee's own self-assessment + invite-links email.
-        for cycle in cycles:
-            transaction.on_commit(
-                lambda c=cycle: send_reviewee_notifications(c, request)
-            )
-
-        # When the bulk was derived from the chart, tokens already have
-        # reviewer_emails — also schedule those invitations, one email per
-        # address across all the cycles, so a person who reviews several
-        # colleagues gets a single mail with every link. The queryset is
-        # evaluated on commit, after the self-assessments above are marked sent.
+        # Chart-derived cycles already hold every reviewer's address, the
+        # reviewee's own self-assessment included. Everything goes out as one
+        # email per address across all the cycles, so a person who reviews
+        # several colleagues on several questionnaires gets a single mail
+        # with every link. Other bulk runs keep the per-cycle reviewee email
+        # with the self-assessment and the links to share.
         reviewer_tokens = 0
         reviewer_emails = 0
-        if bulk_source == 'chart':
+        if bulk_source != 'chart':
+            for cycle in cycles:
+                transaction.on_commit(
+                    lambda c=cycle: send_reviewee_notifications(c, request)
+                )
+        else:
             pending_tokens = ReviewerToken.objects.filter(
                 cycle__in=cycles,
                 reviewer_email__isnull=False,
                 invitation_sent_at__isnull=True,
                 completed_at__isnull=True,
-            ).exclude(category='self')
+            )
             addresses = {email.lower() for email in pending_tokens.values_list('reviewer_email', flat=True)}
             reviewer_tokens = len(pending_tokens)
             reviewer_emails = len(addresses)

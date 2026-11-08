@@ -381,6 +381,8 @@ def send_bundle_email(email, tokens):
     """Send one reviewer a single email with every form they have to fill in."""
 
     organization = tokens[0].cycle.organization
+    # Per questionnaire, the person's own self-assessment first, then the colleagues by name.
+    tokens = sorted(tokens, key=lambda t: (t.cycle.questionnaire.name, t.category != 'self', t.cycle.reviewee.name))
 
     with translation.override(token_language(tokens[0])):
         items = []

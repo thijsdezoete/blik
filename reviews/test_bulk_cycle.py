@@ -113,15 +113,20 @@ class BulkCycleCreationTestCase(TestCase):
         tokens = [
             ReviewerTokenFactory(cycle=cycle, category='peer', reviewer_email='carol@example.com')
             for cycle in cycles
+        ] + [
+            ReviewerTokenFactory(cycle=cycle, category='self', reviewer_email=cycle.reviewee.email)
+            for cycle in cycles
         ]
         session = self.client.session
         session['pending_invitation_cycles'] = [str(c.uuid) for c in cycles]
         session['pending_bulk_source'] = 'chart'
         session.save()
 
-        with patch(NOTIFY_PATH), patch('blik.admin_views.send_grouped_invitations') as grouped:
+        with patch(NOTIFY_PATH) as notify, patch('blik.admin_views.send_grouped_invitations') as grouped:
             with self.captureOnCommitCallbacks(execute=True):
                 self.client.post(reverse('bulk_send_invitations'))
 
+        # The self-assessments ride along in the bundle; no separate reviewee mail.
         grouped.assert_called_once()
         self.assertEqual(set(grouped.call_args.args[0]), set(tokens))
+        notify.assert_not_called()

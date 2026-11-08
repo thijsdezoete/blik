@@ -12,4 +12,7 @@ urlpatterns = [
     path('feedback/<uuid:token>/submit/', views.submit_feedback, name='submit_feedback'),
     path('feedback/<uuid:token>/complete/', views.feedback_complete, name='feedback_complete'),
     path('feedback/<uuid:token>/language/', views.feedback_language, name='feedback_language'),
+
+    # One reviewer's list of forms, from the bundled invitation (signed, nothing stored)
+    path('feedback/overview/<str:signed>/', views.feedback_overview, name='feedback_overview'),
 ]

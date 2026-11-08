@@ -1,3 +1,4 @@
+from django.core import signing
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_http_methods
@@ -7,6 +8,7 @@ from django.db import transaction
 from django.utils.translation import gettext as _
 from django_ratelimit.decorators import ratelimit
 from core.languages import is_language, request_language
+from core.models import Organization
 from .models import ReviewerToken, Response, ReviewCycle
 from .services import self_assessment_token
 from subscriptions.utils import ReviewerLimit
@@ -375,3 +377,46 @@ def feedback_language(request, token):
         reviewer_token.save(update_fields=['language'])
 
     return redirect('reviews:feedback_form', token=token)
+
+
+def feedback_overview(request, signed):
+    """Every form one reviewer has to fill in, from the link in the bundled invitation.
+
+    The link carries the address and the organization, signed. It shows only this person's own
+    forms: no other reviewers, no results.
+    """
+    try:
+        data = signing.loads(signed, salt='feedback-overview')
+    except signing.BadSignature:
+        raise Http404
+
+    organization = get_object_or_404(Organization, pk=data['o'])
+    tokens = list(
+        ReviewerToken.objects
+        .filter(reviewer_email__iexact=data['e'], cycle__reviewee__organization=organization)
+        .select_related('cycle__reviewee', 'cycle__questionnaire')
+        .order_by('cycle__reviewee__name', 'cycle__questionnaire__name')
+    )
+
+    language = request_language(request, *(t.language for t in tokens[:1]), organization=organization)
+    translation.activate(language)
+    request.LANGUAGE_CODE = language
+
+    items = []
+    for token in tokens:
+        if token.is_completed:
+            state = 'done'
+        elif token.cycle.status != 'active':
+            state = 'closed'
+        elif token.claimed_at:
+            state = 'continue'
+        else:
+            state = 'start'
+        items.append({
+            'token': token,
+            'questionnaire_name': token.cycle.questionnaire.translated().name,
+            'state': state,
+        })
+    items.sort(key=lambda item: item['state'] in ('done', 'closed'))
+
+    return render(request, 'reviews/feedback_overview.html', {'items': items})

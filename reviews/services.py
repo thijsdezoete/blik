@@ -3,6 +3,7 @@ Service functions for review cycles
 """
 import math
 import random
+from django.core import signing
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.utils import translation
@@ -361,6 +362,94 @@ def send_reviewer_invitations(cycle, token_ids=None):
 
         except Exception as e:
             stats['errors'].append(_('Failed to send to %(email)s: %(error)s') % {'email': token.reviewer_email, 'error': str(e)})
+
+    return stats
+
+
+def feedback_overview_url(email, organization):
+    """The reviewer's personal overview of every form they have to fill in, in this organization.
+
+    The link is signed, not stored: nothing ties the address to a token beyond the token's own
+    `reviewer_email`. It does not expire, as invitations do not either.
+    """
+
+    signed = signing.dumps({'e': email.lower(), 'o': organization.id}, salt='feedback-overview')
+    return get_absolute_url('reviews:feedback_overview', signed)
+
+
+def send_bundle_email(email, tokens):
+    """Send one reviewer a single email with every form they have to fill in."""
+
+    organization = tokens[0].cycle.organization
+
+    with translation.override(token_language(tokens[0])):
+        items = []
+        for token in tokens:
+            cycle = token.cycle
+            items.append({
+                'reviewee_name': cycle.reviewee.name,
+                'category': token.get_category_display(),
+                'is_self': token.category == 'self',
+                'questionnaire_name': cycle.questionnaire.translated().name,
+                'feedback_url': get_absolute_url('reviews:feedback_form', token.token),
+                'estimated_minutes': estimated_minutes(cycle.questionnaire),
+            })
+
+        context = {
+            'organization_name': organization.name,
+            'items': items,
+            'total_minutes': sum(item['estimated_minutes'] or 0 for item in items) or None,
+            'overview_url': feedback_overview_url(email, organization),
+        }
+
+        send_email(
+            subject=_('Your feedback forms for %(organization)s') % {'organization': organization.name},
+            message=render_to_string('emails/reviewer_invitation_bundle.txt', context),
+            recipient_list=[email],
+            html_message=render_to_string('emails/reviewer_invitation_bundle.html', context),
+        )
+
+
+def send_grouped_invitations(tokens):
+    """Send pending invitations, one email per address.
+
+    A person who reviews several colleagues, or one colleague on several questionnaires, gets
+    one email with every link instead of one email per token. An address with a single token
+    gets the usual invitation.
+
+    Args:
+        tokens: ReviewerTokens with an email, not yet invited and not completed
+
+    Returns:
+        dict: emails sent, tokens they covered, and errors
+    """
+    stats = {
+        'sent': 0,
+        'tokens': 0,
+        'errors': []
+    }
+
+    groups = {}
+    for token in tokens:
+        groups.setdefault(token.reviewer_email.lower(), []).append(token)
+
+    for email, group in groups.items():
+        try:
+            if len(group) == 1:
+                send_token_email(group[0])
+            else:
+                send_bundle_email(email, group)
+
+            now = timezone.now()
+            for token in group:
+                token.invitation_sent_at = now
+                token.save(update_fields=['invitation_sent_at'])
+
+            stats['sent'] += 1
+            stats['tokens'] += len(group)
+
+        except Exception as e:
+            stats['errors'].append(_('Failed to send to %(email)s: %(error)s') % {'email': email, 'error': str(e)})
 
     return stats
 

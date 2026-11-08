@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 18:47+0000\n"
+"POT-Creation-Date: 2026-11-08 22:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French\n"
@@ -510,6 +510,59 @@ msgstr "Reseñado"
 msgid "reviewees"
 msgstr "Reseñados"
 
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Department"
+msgstr "Departamento"
+
+#, fuzzy
+#| msgid "Name, email or department"
+msgid "Manager (email or name)"
+msgstr "Nombre, correo electrónico o departamento"
+
+#, fuzzy
+#| msgid "Use your invited email address"
+msgid "Choose the column with the email addresses."
+msgstr "Utiliza tu dirección de correo electrónico invitada"
+
+msgid "Choose the column with the names, or the columns with first and last names."
+msgstr ""
+
+#, python-format
+msgid "Line %(line)s: manager \"%(name)s\" is not in the file."
+msgstr ""
+
+#, python-format
+msgid "Line %(line)s: more than one person is called \"%(name)s\". Use the email of the manager."
+msgstr ""
+
+#, fuzzy
+#| msgid "This cycle has no links to send."
+msgid "The file has no rows."
+msgstr "Este ciclo no tiene enlaces que enviar."
+
+#, fuzzy, python-format
+#| msgid "You must use the invited email: %(email)s"
+msgid "Line %(line)s: invalid email \"%(email)s\"."
+msgstr "Debes usar el correo invitado: %(email)s"
+
+#, python-format
+msgid "Line %(line)s: %(email)s is in the file twice."
+msgstr ""
+
+#, python-format
+msgid "Line %(line)s: the name is empty."
+msgstr ""
+
+#, python-format
+msgid "Line %(line)s: manager %(email)s is not in the file."
+msgstr ""
+
+#, python-format
+msgid "Line %(line)s: a person cannot be their own manager."
+msgstr ""
+
 msgid "Authentication required"
 msgstr "Autenticación requerida"
 
@@ -812,6 +865,10 @@ msgstr "Algo salió mal."
 msgid "Go to Billing"
 msgstr ""
 
+#, python-format
+msgid "Invalid email skipped in %(category)s: %(email)s"
+msgstr "Correo electrónico inválido omitido en %(category)s: %(email)s"
+
 #, fuzzy
 #| msgid "You do not have permission to manage organization members."
 msgid "You do not have permission to manage user permissions."
@@ -901,6 +958,21 @@ msgstr "No tienes permiso para eliminar a los revisados. Solo los administradore
 #, python-format
 msgid "Reviewee \"%(name)s\" deactivated."
 msgstr "Revisado \"%(name)s\" desactivado."
+
+#, fuzzy
+#| msgid "You do not have permission to delete reviewees."
+msgid "You do not have permission to create reviewees."
+msgstr "No tienes permiso para eliminar a los revisados."
+
+#, fuzzy
+#| msgid "No organization found."
+msgid "No organization context."
+msgstr "No se encontró ninguna organización."
+
+#, fuzzy
+#| msgid "Use your invited email address"
+msgid "Invalid email address."
+msgstr "Utiliza tu dirección de correo electrónico invitada"
 
 msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
 msgstr "No tienes permiso para crear ciclos de revisión. Solo los administradores de la organización pueden acceder a esta función."
@@ -1066,15 +1138,15 @@ msgid "Fewest responses"
 msgstr "Menos respuestas"
 
 #, python-format
+msgid "Created %(count)s review cycles. %(derived)s got reviewers from the org chart. %(unplaced)s reviewee(s) are not in a unit yet."
+msgstr ""
+
+#, python-format
 msgid "Created %(count)s review cycles. No invitations have been sent yet."
 msgstr "Creada %(count)s ciclos de revisión. Aún no se han enviado invitaciones."
 
 msgid "Reviewee is required for single cycle creation."
 msgstr "Se requiere un revisado para la creación de un solo ciclo."
-
-#, python-format
-msgid "Invalid email skipped in %(category)s: %(email)s"
-msgstr "Correo electrónico inválido omitido en %(category)s: %(email)s"
 
 #, python-format
 msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. Invitation emails are being sent."
@@ -1094,6 +1166,10 @@ msgstr "Ciclo de revisión que crea errores: %(error)s"
 
 msgid "No pending cycles to send invitations for."
 msgstr "No hay ciclos pendientes para enviar invitaciones."
+
+#, python-format
+msgid "Invitations are being sent for %(count)s review cycle(s). %(tokens)s reviewer invitations go out in %(emails)s emails, one per address."
+msgstr "Se están enviando invitaciones para %(count)s ciclo(s) de revisión. %(tokens)s invitaciones a evaluadores salen en %(emails)s correos, uno por dirección."
 
 #, python-format
 msgid "Invitations are being sent for %(count)s review cycle(s)."
@@ -1385,6 +1461,28 @@ msgstr "Webhook \"%(name)s\" eliminado con éxito."
 #, python-format
 msgid "Error deleting webhook: %(error)s"
 msgstr "Error al eliminar el webhook: %(error)s"
+
+#, fuzzy
+#| msgid "You do not have permission to create organizations."
+msgid "You do not have permission to edit the org chart."
+msgstr "No tienes permiso para crear organizaciones."
+
+msgid "Choose a CSV file."
+msgstr ""
+
+msgid "The file is too large."
+msgstr ""
+
+msgid "The file is not a readable CSV file. Save it as CSV (UTF-8)."
+msgstr ""
+
+#, python-format
+msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
+msgstr ""
+
+#, python-format
+msgid "%(name)s is already in this unit."
+msgstr ""
 
 #, fuzzy, python-format
 #| msgid "%(count)s created"
@@ -2110,9 +2208,6 @@ msgstr "Comentarios escritos"
 
 msgid "Read comments and examples from reviewers."
 msgstr "Lee comentarios y ejemplos de los reseñadores."
-
-msgid "Name"
-msgstr "Nombre"
 
 msgid "Description"
 msgstr "Descripción"
@@ -2941,6 +3036,10 @@ msgid "Failed to send to %(email)s: %(error)s"
 msgstr "No se envió a %(email)s: %(error)s"
 
 #, python-format
+msgid "Your feedback forms for %(organization)s"
+msgstr "Tus formularios de feedback para %(organization)s"
+
+#, python-format
 msgid "Failed to send reminder to %(email)s: %(error)s"
 msgstr "No envié el recordatorio a %(email)s: %(error)s"
 
@@ -3608,6 +3707,9 @@ msgstr "Salpicadero"
 msgid "Team"
 msgstr "Equipo"
 
+msgid "Org chart"
+msgstr ""
+
 msgid "Settings"
 msgstr "Escenarios"
 
@@ -3941,6 +4043,9 @@ msgstr "Envía invitaciones masivas"
 msgid "Send invitations"
 msgstr "Envía invitaciones"
 
+msgid "Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct."
+msgstr ""
+
 msgid "Review the cycles you just created, then send invitation emails."
 msgstr "Revisa los ciclos que acabas de crear y luego envía correos de invitación."
 
@@ -3949,6 +4054,9 @@ msgstr "Volver a los ciclos"
 
 msgid "No emails have been sent yet."
 msgstr "Aún no se ha enviado ningún correo."
+
+msgid "Click <em>Send all invitations</em> to send an email to each reviewee and to the reviewers from the org chart."
+msgstr ""
 
 msgid "Review the list below and click <em>Send invitations now</em> to notify every reviewee."
 msgstr "Revisa la lista a continuación y haz clic <em>en Enviar invitaciones ahora</em> para notificar a todos los evaluados."
@@ -3959,8 +4067,24 @@ msgstr "También puedes saltarte por ahora y enviar invitaciones individuales m�
 msgid "Reviewee"
 msgstr "Reseñado"
 
+msgid "Peers"
+msgstr "Pares"
+
+#, fuzzy
+#| msgid "Direct Reports"
+msgid "Direct reports"
+msgstr "Reportes directos"
+
 msgid "Created"
 msgstr "Creación"
+
+#, fuzzy, python-format
+#| msgid "Send invitations for all %(counter)s reviewee"
+#| msgid_plural "Send invitations for all %(counter)s reviewees"
+msgid "Send all invitations (%(counter)s reviewee)"
+msgid_plural "Send all invitations (%(counter)s reviewees)"
+msgstr[0] "Envía invitaciones a todos los %(counter)s reseñados"
+msgstr[1] "Envía invitaciones a todos los %(counter)s reseñados"
 
 #, python-format
 msgid "Send invitations for all %(counter)s reviewee"
@@ -4135,9 +4259,6 @@ msgstr "<strong>Eliminación Completa (Eliminación Completa):</strong> Elimina 
 msgid "Reviewees (%(count)s)"
 msgstr "Reseñados (%(count)s)"
 
-msgid "Department"
-msgstr "Departamento"
-
 msgid "Inactive"
 msgstr "Inactivo"
 
@@ -4273,8 +4394,8 @@ msgstr "Correos electrónicos enviados"
 msgid "Invite Reviewers by Email"
 msgstr "Invita a los revisores por correo electrónico"
 
-msgid "Enter email addresses for each reviewer category. The system will generate anonymous tokens and send invitations. Separate multiple emails with commas or newlines."
-msgstr "Introduce direcciones de correo electrónico para cada categoría de revisores. El sistema generará tokens anónimos y enviará invitaciones. Separa varios correos electrónicos con comas o nuevas líneas."
+msgid "Pick reviewers from your existing people, or add someone new. The system makes anonymous tokens and sends invitations. Names of reviewers are never stored with their responses."
+msgstr ""
 
 msgid "The self-assessment goes to this address. Send the invitation or a reminder from the cycle page."
 msgstr "La autoevaluación va a esta dirección. Envía la invitación o un recordatorio desde la página del ciclo."
@@ -4282,23 +4403,38 @@ msgstr "La autoevaluación va a esta dirección. Envía la invitación o un reco
 msgid "Your email is automatically assigned for self-assessment"
 msgstr "Tu correo electrónico se asigna automáticamente para autoevaluación"
 
-msgid "Usually the reviewee's own email"
+#, fuzzy
+#| msgid "Usually the reviewee's own email"
+msgid "Usually the reviewee themselves"
+msgstr "Normalmente el correo electrónico del evaluado"
+
+#, fuzzy
+#| msgid "Usually the reviewee's own email"
+msgid "Usually the reviewee's own record"
 msgstr "Normalmente el correo electrónico del evaluado"
 
 msgid "Manager/Supervisor"
 msgstr "Gerente/Supervisor"
 
-msgid "Direct manager or supervisor"
-msgstr "Responsable o supervisor directo"
+#, fuzzy
+#| msgid "For your manager."
+msgid "Search for a manager…"
+msgstr "Para tu jefe."
 
-msgid "Peers"
-msgstr "Pares"
+msgid "Search for a peer…"
+msgstr ""
 
 msgid "Colleagues at the same level"
 msgstr "Colegas al mismo nivel"
 
 msgid "Direct Reports"
 msgstr "Reportes directos"
+
+#, fuzzy
+#| msgid "%(count)s direct report"
+#| msgid_plural "%(count)s direct reports"
+msgid "Search for a direct report…"
+msgstr "%(count)s colaborador directo"
 
 msgid "People who report to this reviewee"
 msgstr "Personas que reportan a este revisado"
@@ -4309,6 +4445,14 @@ msgstr "Organización por defecto (%(language)s)"
 
 msgid "Language of the invitations and reminders to the reviewers above, and of their form"
 msgstr "Lenguaje de las invitaciones y recordatorios a los críticos mencionados arriba, y de su forma"
+
+msgid "Add by email (advanced)"
+msgstr ""
+
+#, fuzzy
+#| msgid "Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines."
+msgid "For reviewers who are not in Blik yet. Separate multiple emails with commas or newlines."
+msgstr "Introduce ahora las direcciones de correo electrónico de los revisores, o sáltalas y añádelas más tarde. Separa varios correos con comas o nuevas líneas."
 
 msgid "Save & Send Invitations"
 msgstr "Guardar y enviar invitaciones"
@@ -4375,6 +4519,231 @@ msgstr "Enviar invitaciones pendientes"
 
 msgid "Back to Cycle Details"
 msgstr "Volver a los detalles del ciclo"
+
+#, fuzzy
+#| msgid "Member"
+msgid "Members"
+msgstr "Miembro"
+
+#, fuzzy, python-format
+#| msgid "%(counter)s question"
+#| msgid_plural "%(counter)s questions"
+msgid "%(counter)s unit below"
+msgid_plural "%(counter)s units below"
+msgstr[0] "%(counter)s pregunta"
+msgstr[1] "%(counter)s preguntas"
+
+#, fuzzy
+#| msgid "Not used yet"
+msgid "No units yet"
+msgstr "Aún no se ha usado"
+
+msgid "Import a CSV file with your people and their managers, or create the first unit yourself."
+msgstr ""
+
+#, fuzzy
+#| msgid "Import Data"
+msgid "Import CSV"
+msgstr "Datos de importación"
+
+msgid "New unit"
+msgstr ""
+
+msgid "Drag onto another unit to place it below that unit"
+msgstr ""
+
+msgid "Show or hide"
+msgstr ""
+
+#, fuzzy
+#| msgid "Can manage cycles"
+msgid "No manager yet"
+msgstr "Puede gestionar ciclos"
+
+#, fuzzy, python-format
+#| msgid "%(count)s peer"
+#| msgid_plural "%(count)s peers"
+msgid "%(counter)s member"
+msgid_plural "%(counter)s members"
+msgstr[0] "%(count)s compañero"
+msgstr[1] "%(count)s compañeros"
+
+#, fuzzy, python-format
+#| msgid "%(counter)s question"
+#| msgid_plural "%(counter)s questions"
+msgid "%(counter)s unit"
+msgid_plural "%(counter)s units"
+msgstr[0] "%(counter)s pregunta"
+msgstr[1] "%(counter)s preguntas"
+
+#, python-format
+msgid "Also in: %(units)s"
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "Review from %(name)s"
+msgid "Remove %(name)s from %(unit)s"
+msgstr "Reseña de %(name)s"
+
+#, fuzzy
+#| msgid "No reviewers yet"
+msgid "No members yet"
+msgstr "Todavía no hay críticos"
+
+#, fuzzy
+#| msgid "Manager"
+msgid "Add manager"
+msgstr "Entrenador"
+
+#, fuzzy
+#| msgid "Member"
+msgid "Add member"
+msgstr "Miembro"
+
+#, fuzzy
+#| msgid "name"
+msgid "Rename"
+msgstr "Nombre"
+
+msgid "Place under another unit"
+msgstr ""
+
+#, fuzzy
+#| msgid "Delete Account"
+msgid "Delete unit"
+msgstr "Eliminar cuenta"
+
+msgid "Not in a unit"
+msgstr ""
+
+msgid "Find a person"
+msgstr "Encuentra a una persona"
+
+msgid "Find a person who is not in a unit"
+msgstr ""
+
+msgid "Drag a person onto a unit. Drag a person here to take them out of a unit."
+msgstr ""
+
+msgid "Everyone is in a unit. Drag a person here to take them out of a unit."
+msgstr ""
+
+#, fuzzy, python-format
+#| msgid "%(selected)s of %(counter)s respondent"
+#| msgid_plural "%(selected)s of %(counter)s respondents"
+msgid "%(filename)s · %(counter)s person"
+msgid_plural "%(filename)s · %(counter)s people"
+msgstr[0] "%(selected)s de %(counter)s encuestado"
+msgstr[1] "%(selected)s de %(counter)s encuestados"
+
+#, fuzzy
+#| msgid "The report has not been generated yet"
+msgid "The file cannot be imported yet."
+msgstr "El informe aún no se ha generado"
+
+#, fuzzy, python-format
+#| msgid "%(counter)s reviewer"
+#| msgid_plural "%(counter)s reviewers"
+msgid "And %(counter)s more error."
+msgid_plural "And %(counter)s more errors."
+msgstr[0] "%(counter)s crítico"
+msgstr[1] "%(counter)s reseñadores"
+
+msgid "Which column is which?"
+msgstr ""
+
+msgid "Blik guessed from the column names. Check the choices against the first rows below."
+msgstr ""
+
+msgid "Not in the file"
+msgstr ""
+
+msgid "Or choose first and last name."
+msgstr ""
+
+msgid "Each manager gets a unit with the people who report to them."
+msgstr ""
+
+#, fuzzy
+#| msgid "First"
+msgid "First rows"
+msgstr "Primera"
+
+msgid "First rows of the file"
+msgstr ""
+
+msgid "This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit."
+msgstr ""
+
+#, fuzzy
+#| msgid "Import Data"
+msgid "Import"
+msgstr "Datos de importación"
+
+msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
+msgstr ""
+
+msgid "Chart"
+msgstr ""
+
+msgid "Outline"
+msgstr ""
+
+msgid "Zoom out"
+msgstr ""
+
+msgid "Zoom in"
+msgstr ""
+
+msgid "Fit to screen"
+msgstr ""
+
+msgid "Drag the background to move around."
+msgstr ""
+
+msgid "Expand all"
+msgstr ""
+
+msgid "Collapse all"
+msgstr ""
+
+msgid "Drag a unit onto another unit to place it below."
+msgstr ""
+
+msgid "Drag a person to move them. Hold Alt to copy."
+msgstr ""
+
+msgid "Rename unit"
+msgstr ""
+
+msgid "Close"
+msgstr "Cierre"
+
+msgid "For example: Optics, Chair of Physics"
+msgstr ""
+
+#, fuzzy
+#| msgid "Saved"
+msgid "Save"
+msgstr "Salvado"
+
+msgid "Find a person, or type a name and email to add someone new."
+msgstr ""
+
+msgid "Unit above"
+msgstr ""
+
+msgid "The manager of this unit becomes a member of the unit above."
+msgstr ""
+
+msgid "The people in this unit stay in Blik. People who are in no other unit move to \"Not in a unit\"."
+msgstr ""
+
+msgid "A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which."
+msgstr ""
+
+msgid "File"
+msgstr ""
 
 msgid "Buy a round"
 msgstr "Compra una ronda"
@@ -4443,9 +4812,6 @@ msgid "%(counter)s question"
 msgid_plural "%(counter)s questions"
 msgstr[0] "%(counter)s pregunta"
 msgstr[1] "%(counter)s preguntas"
-
-msgid "Close"
-msgstr "Cierre"
 
 msgid "About this questionnaire"
 msgstr "Sobre este cuestionario"
@@ -5679,9 +6045,6 @@ msgstr "Crear en masa"
 msgid "Create for all active reviewees"
 msgstr "Crear para todos los revisados activos"
 
-msgid "Bulk creation does not send any emails. You'll review the new cycles and send invitations in the next step."
-msgstr "La creación masiva no envía ningún correo. Revisarás los nuevos ciclos y enviarás invitaciones en el siguiente paso."
-
 msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
 msgstr "Solo puedes crear ciclos de revisión para ti mismo. Contacta con un administrador para crear ciclos para otros miembros del equipo."
 
@@ -5709,17 +6072,14 @@ msgstr "¿Quién da feedback en este ciclo? Las categorías que eliminas quedan 
 msgid "The reviewee rates themselves"
 msgstr "El evaluado se valora a sí mismo"
 
+msgid "Direct manager or supervisor"
+msgstr "Responsable o supervisor directo"
+
 msgid "Select at least one category."
 msgstr "Selecciona al menos una categoría."
 
 msgid "Invite Reviewers (Optional)"
 msgstr "Revisores de invitación (opcional)"
-
-msgid "Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines."
-msgstr "Introduce ahora las direcciones de correo electrónico de los revisores, o sáltalas y añádelas más tarde. Separa varios correos con comas o nuevas líneas."
-
-msgid "Usually the reviewee's own email (auto-filled when reviewee selected)"
-msgstr "Normalmente el correo electrónico del evaluado (rellenado automáticamente cuando seleccionaba al evaluado)"
 
 msgid "Send invitation emails immediately after creating cycle"
 msgstr "Envía correos de invitación inmediatamente después del ciclo de creación"
@@ -5884,9 +6244,6 @@ msgstr "Todas las personas"
 
 msgid "Name, email or department"
 msgstr "Nombre, correo electrónico o departamento"
-
-msgid "Find a person"
-msgstr "Encuentra a una persona"
 
 msgid "All departments"
 msgstr "Todos los departamentos"
@@ -7420,6 +7777,62 @@ msgstr "%(organization_name)s pide tu opinión sincera sobre %(reviewee_name)s. 
 msgid "Start the review:"
 msgstr "Empieza la reseña:"
 
+msgid "Your feedback forms"
+msgstr "Tus formularios de feedback"
+
+#, python-format
+msgid "%(organization_name)s asks for your honest feedback. Your answers are anonymous."
+msgstr "%(organization_name)s pide tu feedback honesto. Tus respuestas son anónimas."
+
+#, python-format
+msgid "%(organization_name)s asks for your honest feedback. You have %(count)s form to fill in."
+msgid_plural "%(organization_name)s asks for your honest feedback. You have %(count)s forms to fill in."
+msgstr[0] "%(organization_name)s pide tu feedback honesto. Tienes %(count)s formulario por rellenar."
+msgstr[1] "%(organization_name)s pide tu feedback honesto. Tienes %(count)s formularios por rellenar."
+
+#, python-format
+msgid "Together they take about %(minutes)s minute."
+msgid_plural "Together they take about %(minutes)s minutes."
+msgstr[0] "En total llevan aproximadamente %(minutes)s minuto."
+msgstr[1] "En total llevan aproximadamente %(minutes)s minutos."
+
+msgid "Your answers are anonymous. The people you review never see your name with them. So you can be honest."
+msgstr "Tus respuestas son anónimas. Las personas que evalúas nunca ven tu nombre junto a ellas. Así que puedes ser honesto."
+
+msgid "Your own self-assessment"
+msgstr "Tu propia autoevaluación"
+
+#, python-format
+msgid "%(name)s: %(category)s"
+msgstr "%(name)s: %(category)s"
+
+#, python-format
+msgid "About %(minutes)s minute."
+msgid_plural "About %(minutes)s minutes."
+msgstr[0] "Aproximadamente %(minutes)s minuto."
+msgstr[1] "Aproximadamente %(minutes)s minutos."
+
+#, python-format
+msgid "You can stop and continue later. <a href=\"%(url)s\">Your personal overview</a> shows which forms are still open."
+msgstr "Puedes parar y continuar más tarde. <a href=\"%(url)s\">Tu resumen personal</a> muestra qué formularios siguen abiertos."
+
+#, python-format
+msgid "Your own self-assessment (%(questionnaire)s)"
+msgstr "Tu propia autoevaluación (%(questionnaire)s)"
+
+#, python-format
+msgid "%(name)s: %(category)s (%(questionnaire)s)"
+msgstr "%(name)s: %(category)s (%(questionnaire)s)"
+
+#, python-format
+msgid "about %(minutes)s minute"
+msgid_plural "about %(minutes)s minutes"
+msgstr[0] "aproximadamente %(minutes)s minuto"
+msgstr[1] "aproximadamente %(minutes)s minutos"
+
+msgid "You can stop and continue later. Your personal overview shows which forms are still open:"
+msgstr "Puedes parar y continuar más tarde. Tu resumen personal muestra qué formularios siguen abiertos:"
+
 #, python-format
 msgid "Your feedback for %(reviewee_name)s is still open"
 msgstr "Vuestro feedback para %(reviewee_name)s sigue abierto"
@@ -8360,6 +8773,24 @@ msgstr "Selecciona una opción"
 
 msgid "Submit Feedback"
 msgstr "Enviar comentarios"
+
+msgid "This list shows the forms you were asked to fill in. Open forms come first."
+msgstr "Esta lista muestra los formularios que te han pedido rellenar. Los formularios abiertos van primero."
+
+msgid "Start"
+msgstr "Empezar"
+
+msgid "Continue"
+msgstr "Continuar"
+
+msgid "Done"
+msgstr "Hecho"
+
+msgid "Closed"
+msgstr "Cerrado"
+
+msgid "There are no forms for you at the moment."
+msgstr "Ahora mismo no hay formularios para ti."
 
 msgid "What does each score mean?"
 msgstr "¿Qué significa cada puntuación?"

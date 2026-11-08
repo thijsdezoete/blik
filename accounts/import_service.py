@@ -482,10 +482,13 @@ def import_review_cycles(organization, cycles_data, questionnaire_map, conflict_
             # The cycle and its tokens together: a token past the free reviewer cap fails the row.
             with transaction.atomic():
                 # Create cycle (always create new - don't try to match existing)
+                status = cycle_data.get('status', 'active')
                 cycle = ReviewCycle.objects.create(
                     reviewee=reviewee,
                     questionnaire=questionnaire,
-                    status=cycle_data.get('status', 'active'),
+                    status=status,
+                    # History: the finalize_reports cron must not email about it
+                    report_finalized_at=timezone.now() if status == 'completed' else None,
                 )
 
                 # Import tokens
@@ -762,6 +765,7 @@ def import_reports(organization, reports_data, questionnaire_map, conflict_resol
                     reviewee=reviewee,
                     questionnaire=questionnaire,
                     status='completed',  # Reports are for completed cycles
+                    report_finalized_at=timezone.now(),  # history: the finalize_reports cron must not email about it
                 )
 
             # Check if report already exists for this cycle

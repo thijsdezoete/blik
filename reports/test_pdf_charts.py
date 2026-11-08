@@ -1,0 +1,70 @@
+from django.test import SimpleTestCase
+
+from reports.pdf_charts import radar_chart
+
+
+class RadarChartTests(SimpleTestCase):
+    def test_radar_point_for_score_5_on_first_axis_is_straight_up(self):
+        chart = radar_chart({'A': {'peer': 5.0}, 'B': {'peer': 5.0}, 'C': {'peer': 5.0}}, size=200)
+        x, y = chart['groups'][0]['points'].split(' ')[0].split(',')
+        self.assertAlmostEqual(float(x), 100)
+        self.assertAlmostEqual(float(y), 100 - 76)
+
+    def test_radar_without_self_has_no_self_polygon(self):
+        chart = radar_chart({'A': {'peer': 4}, 'B': {'manager': 3}, 'C': {'peer': 2}})
+        self.assertEqual([group['category'] for group in chart['groups']], ['peer', 'manager'])
+        self.assertEqual(len(chart['rings']), 5)
+        self.assertEqual(len(chart['axes']), 3)
+
+    def test_radar_leaves_out_a_section_without_a_group_score(self):
+        chart = radar_chart({'A': {'self': 3}, 'B': {'peer': 4}, 'C': {'peer': 5}}, size=200)
+        peer = chart['groups'][1]
+        # Two scored axes, none at the centre
+        self.assertEqual(len(peer['points'].split(' ')), 2)
+        self.assertNotIn('100.0,100.0', peer['points'])
+        self.assertEqual(len(peer['dots']), 2)
+
+    def test_radar_truncates_long_labels(self):
+        chart = radar_chart({'x' * 40: {'peer': 3}})
+        self.assertEqual(len(chart['axes'][0]['label']), 22)
+        self.assertTrue(chart['axes'][0]['label'].endswith('…'))
+
+    def test_radar_wraps_labels_on_two_lines(self):
+        chart = radar_chart({'Industry Fit & Problem Solving': {'peer': 3}, 'B': {'peer': 3}, 'C': {'peer': 3}})
+        self.assertEqual(chart['axes'][0]['lines'], ['Industry Fit &', 'Problem Solving'])
+        self.assertEqual(chart['axes'][1]['lines'], ['B'])
+
+    def test_radar_cuts_the_second_line_short(self):
+        chart = radar_chart({'Knowledge Sharing & Mentorship of the whole team': {'peer': 3}})
+        first, second = chart['axes'][0]['lines']
+        self.assertEqual(first, 'Knowledge Sharing')
+        self.assertEqual(len(second), 18)
+        self.assertTrue(second.endswith('…'))
+
+
+class SvgPartialTests(SimpleTestCase):
+    def test_partials_render_dot_decimals_in_any_locale(self):
+        from django.template.loader import render_to_string
+        from django.utils import translation
+        data = {'A': {'self': 3.3, 'peer': 4.1}, 'B': {'peer': 2.2}}
+        with translation.override('de'):
+            chart = radar_chart(data)
+            radar = render_to_string('reports/pdf/_radar_series.svg.html', {'radar': chart, 'series': chart['groups']})
+        self.assertIn('<svg', radar)
+        self.assertNotRegex(radar, r'(?:x|y|width|x2|y2)="[^"]*,')
+        self.assertIn('viewBox="-90 -34 420 308"', radar)
+
+
+class GroupRadarTests(SimpleTestCase):
+    def test_one_polygon_per_visible_group_with_self_and_none_for_a_hidden_group(self):
+        hidden = {'insufficient': True, 'message': 'Insufficient responses (minimum 3 required)'}
+        chart = radar_chart({
+            'A': {'self': 3.0, 'peer': hidden, 'manager': 4.0, 'others_avg': 4.0},
+            'B': {'self': 2.0, 'peer': hidden, 'manager': 5.0, 'others_avg': 5.0},
+            'C': {'self': 4.0, 'manager': 3.0},
+        })
+
+        self.assertEqual([group['category'] for group in chart['groups']], ['self', 'manager'])
+        self.assertEqual(chart['groups'][1]['points'], radar_chart({
+            'A': {'manager': 4.0}, 'B': {'manager': 5.0}, 'C': {'manager': 3.0},
+        })['groups'][0]['points'])

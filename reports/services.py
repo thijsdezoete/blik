@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 from django.db.models import Avg, Count
 from collections import Counter, defaultdict
 from django.template.loader import render_to_string
@@ -17,6 +18,9 @@ from . import dreyfus_service
 
 # Version of report_data's layout: 2 stores codes and numbers where version 1 stored English text
 REPORT_SCHEMA = 2
+
+# Everyone but the reviewee: every "others" score is about these groups, as the section scores are
+OTHERS_CATEGORIES = tuple(category for category in CATEGORY_ORDER if category != 'self')
 
 # Overall ratings, see report_texts.py for their texts
 RATING_OUTSTANDING = 'outstanding'
@@ -241,10 +245,15 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
     """
     Apply anonymization filtering to report data for display purposes.
 
-    This function adds 'insufficient' flags to categories that don't meet
-    the anonymization threshold, while preserving the underlying data.
-    Charts and insights should use the raw data; only detailed report
-    displays should use this filtered version.
+    A reviewer group (category) below the threshold doesn't show its own
+    score anywhere, and no value that combines groups includes it: a mean
+    over the groups would give the hidden score away from the visible ones.
+
+    The threshold applies at two granularities:
+    - per question in 'by_section': the question's own count for the category
+    - everywhere else: the category's report-level count, see reviewer_counts()
+
+    When no group is hidden, the result has the same numbers as report_data.
 
     Args:
         report_data: The raw report data structure
@@ -252,13 +261,20 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
         exempt_categories: List of categories exempt from threshold (default: ['self', 'manager'])
 
     Returns:
-        Copy of report_data with 'insufficient' flags added where applicable
+        Copy of report_data (which stays unchanged) where:
+        - per-question entries in 'by_section' below the threshold are marked 'insufficient' and lose their responses
+        - for each hidden group, its 'section_summary' entries become {'insufficient': True, 'message': ...}
+        - when any group is hidden, 'insights' and 'charts' are calculated again without the hidden groups,
+          and 'peer_benchmarks' and the comparison trends are left out. A combined value without any visible
+          group is absent.
     """
     if exempt_categories is None:
         exempt_categories = ['self', 'manager']
 
     # Deep copy to avoid modifying original data
     filtered_data = copy.deepcopy(report_data)
+
+    message = _('Insufficient responses (minimum %(count)s required)') % {'count': min_threshold}
 
     # Walk through all questions and apply threshold
     for section_id, section_data in filtered_data.get('by_section', {}).items():
@@ -270,14 +286,110 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
                 if category not in exempt_categories and count < min_threshold:
                     # Mark as insufficient for display
                     cat_data['insufficient'] = True
-                    cat_data['message'] = _('Insufficient responses (minimum %(count)s required)') % {'count': min_threshold}
+                    cat_data['message'] = message
                     # Remove detailed responses and distributions for privacy
                     if 'responses' in cat_data:
                         del cat_data['responses']
                     if 'distribution' in cat_data:
                         del cat_data['distribution']
 
+    hidden = _hidden_groups(report_data, min_threshold, exempt_categories)
+
+    if hidden:
+        _leave_out_hidden_groups(filtered_data, report_data, hidden, message)
+
     return filtered_data
+
+
+def _hidden_groups(report_data, min_threshold, exempt_categories):
+    """Categories whose reviewer count is below the threshold and that are not exempt."""
+    return {
+        category for category, count in reviewer_counts(report_data).items()
+        if category not in exempt_categories and count < min_threshold
+    }
+
+
+def _without_groups(report_data, groups):
+    """Copy of report_data without the answers of the given categories."""
+    visible_data = copy.deepcopy(report_data)
+    for section in visible_data.get('by_section', {}).values():
+        for question in section.get('questions', {}).values():
+            by_category = question.get('by_category', {})
+            for category in groups & by_category.keys():
+                del by_category[category]
+    return visible_data
+
+
+def _leave_out_hidden_groups(filtered_data, report_data, hidden, message):
+    """Mark the hidden groups' section scores and calculate the combined values again from the visible groups."""
+
+    # A group's section score is the mean of its own answers, so the visible ones stay as they are
+    for categories in (filtered_data.get('section_summary') or {}).values():
+        for category in hidden & categories.keys():
+            categories[category] = {'insufficient': True, 'message': message}
+
+    visible_data = _without_groups(report_data, hidden)
+
+    insights, _section_summary = _calculate_insights(visible_data)
+    if report_data.get('schema') == REPORT_SCHEMA:
+        filtered_data['insights'] = insights
+    else:
+        # Reports of schema 1 have no labels, so with_texts() can't add texts to calculated insights:
+        # leave out their combined values instead. Regenerating the report restores them.
+        filtered_data['insights'] = {
+            **(filtered_data.get('insights') or {}),
+            'overall_sentiment': None, 'perception_gaps': [], 'strengths': [], 'development_areas': [],
+            'skill_profile': None, 'agency_profile': None, 'dreyfus_quadrant': None, 'development_plan': None,
+        }
+    # Uses the current question config (chart weights, exclusions), which may differ from when the report was made
+    filtered_data['charts'] = _calculate_chart_data(visible_data)
+
+    # Benchmarks and trends compare combined values of this report with other reports, so they are left out
+    filtered_data.pop('peer_benchmarks', None)
+    if comparison := filtered_data.get('comparison'):
+        comparison.pop('overall_trend', None)
+        comparison.pop('section_trends', None)
+
+
+def reviewer_counts(report_data):
+    """Reviewer count per category: its highest count on any question."""
+    counts = defaultdict(int)
+    for section in report_data.get('by_section', {}).values():
+        for question in section.get('questions', {}).values():
+            for category, cat_data in question.get('by_category', {}).items():
+                counts[category] = max(counts[category], cat_data.get('count', 0))
+    return dict(counts)
+
+
+def _numeric_category_averages(report_data):
+    """Yield (section title, category, average) for each category average that is valid to use in scores."""
+    for section_data in report_data.get('by_section', {}).values():
+        section_title = section_data.get('title', '')
+
+        for question_data in section_data.get('questions', {}).values():
+            question_type = question_data.get('question_type')
+
+            # Process numeric questions: rating, scale, and choice questions with scoring
+            if question_type in ('rating', 'scale'):
+                pass
+            elif question_type in ('single_choice', 'multiple_choice'):
+                # Only include if scoring is enabled
+                if not question_data.get('question_config', {}).get('scoring_enabled'):
+                    continue
+            else:
+                # Skip text, likert (text-based), and other non-numeric types
+                continue
+
+            for category, cat_data in question_data.get('by_category', {}).items():
+                # Statistical validity check: need 2+ responses for meaningful average
+                # Exception: self and manager categories can use 1+ (single assessor)
+                min_valid = 1 if category in ['self', 'manager'] else 2
+                if cat_data.get('count', 0) < min_valid:
+                    continue
+
+                avg = cat_data.get('avg')
+                if avg is not None:
+                    yield section_title, category, avg
 
 
 def _calculate_insights(report_data):
@@ -296,46 +408,15 @@ def _calculate_insights(report_data):
     # Collect all rating averages by section and category
     section_averages = defaultdict(lambda: defaultdict(list))
     all_self_ratings = []
-    all_peer_ratings = []
-    all_manager_ratings = []
+    others_ratings = []
 
-    for section_id, section_data in report_data.get('by_section', {}).items():
-        section_title = section_data.get('title', '')
+    for section_title, category, avg in _numeric_category_averages(report_data):
+        section_averages[section_title][category].append(avg)
 
-        for question_id, question_data in section_data.get('questions', {}).items():
-            question_type = question_data.get('question_type')
-
-            # Process numeric questions: rating, scale, and choice questions with scoring
-            if question_type == 'rating' or question_type == 'scale':
-                # Direct numeric types
-                pass
-            elif question_type in ['single_choice', 'multiple_choice']:
-                # Only include if scoring is enabled
-                config = question_data.get('question_config', {})
-                if not config.get('scoring_enabled'):
-                    continue
-            else:
-                # Skip text, likert (text-based), and other non-numeric types
-                continue
-
-            for category, cat_data in question_data.get('by_category', {}).items():
-                # Statistical validity check: need 2+ responses for meaningful average
-                # Exception: self and manager categories can use 1+ (single assessor)
-                count = cat_data.get('count', 0)
-                min_valid = 1 if category in ['self', 'manager'] else 2
-                if count < min_valid:
-                    continue
-
-                avg = cat_data.get('avg')
-                if avg is not None:
-                    section_averages[section_title][category].append(avg)
-
-                    if category == 'self':
-                        all_self_ratings.append(avg)
-                    elif category == 'peer':
-                        all_peer_ratings.append(avg)
-                    elif category == 'manager':
-                        all_manager_ratings.append(avg)
+        if category == 'self':
+            all_self_ratings.append(avg)
+        elif category in OTHERS_CATEGORIES:
+            others_ratings.append(avg)
 
     # Calculate section-level averages
     # Ensure 'self' is always listed first
@@ -356,22 +437,19 @@ def _calculate_insights(report_data):
                 section_summary[section_title][category] = round(mean(ratings), 2)
 
     # Identify perception gaps (self vs others)
-    if all_self_ratings and (all_peer_ratings or all_manager_ratings):
+    if all_self_ratings and others_ratings:
         self_avg = mean(all_self_ratings)
-        others_ratings = all_peer_ratings + all_manager_ratings
-        others_avg = mean(others_ratings) if others_ratings else None
+        others_avg = mean(others_ratings)
+        gap = self_avg - others_avg
 
-        if others_avg is not None:
-            gap = self_avg - others_avg
-
-            if gap_type := get_gap_type(gap):
-                insights['perception_gaps'].append({
-                    'type': gap_type,
-                    'severity': get_gap_severity(gap),
-                    'self_score': round(self_avg, 2),
-                    'others_score': round(others_avg, 2),
-                    'gap': round(gap, 2),
-                })
+        if gap_type := get_gap_type(gap):
+            insights['perception_gaps'].append({
+                'type': gap_type,
+                'severity': get_gap_severity(gap),
+                'self_score': round(self_avg, 2),
+                'others_score': round(others_avg, 2),
+                'gap': round(gap, 2),
+            })
 
     # Identify strengths (avg >= 4.0) and development areas (avg < 3.0)
     for section_title, categories in section_summary.items():
@@ -434,7 +512,6 @@ def _calculate_insights(report_data):
         )
 
     # Overall sentiment - based on others only (exclude self)
-    others_ratings = all_peer_ratings + all_manager_ratings
     if others_ratings:
         overall_avg = mean(others_ratings)
         insights['overall_sentiment'] = {
@@ -447,7 +524,7 @@ def _calculate_insights(report_data):
     return insights, section_summary
 
 
-def _calculate_chart_data(report_data, cycle):
+def _calculate_chart_data(report_data):
     """
     Calculate weighted section averages and prepare chart-ready data
 
@@ -581,8 +658,13 @@ def count_answers(option_ids):
     return {f'{option_id}': count for option_id, count in Counter(option_ids).items()}
 
 
-def generate_report(cycle):
-    """Generate aggregated report for a review cycle"""
+# Set while generate_report saves a report that must not fire the report.generated webhook
+report_webhook_suppressed = ContextVar('report_webhook_suppressed', default=False)
+
+
+def generate_report(cycle, notify=True):
+    """Generate aggregated report for a review cycle. notify=False keeps the report.generated webhook quiet."""
+
 
     questionnaire = cycle.questionnaire
 
@@ -777,7 +859,7 @@ def generate_report(cycle):
     report_data['section_summary'] = section_summary
 
     # Generate chart data
-    chart_data = _calculate_chart_data(report_data, cycle)
+    chart_data = _calculate_chart_data(report_data)
     report_data['charts'] = chart_data
 
     # Add cycle-over-cycle comparison if previous cycle exists
@@ -846,14 +928,22 @@ def generate_report(cycle):
         access_token = uuid.uuid4()
 
     # Create or update report with access_token included
-    report, created = Report.objects.update_or_create(
-        cycle=cycle,
-        defaults={
-            'report_data': report_data,
-            'available': True,
-            'access_token': access_token
-        }
-    )
+    suppressed = report_webhook_suppressed.set(not notify)
+    try:
+        report, created = Report.objects.update_or_create(
+            cycle=cycle,
+            defaults={
+                'report_data': report_data,
+                'available': True,
+                'access_token': access_token
+            }
+        )
+    finally:
+        report_webhook_suppressed.reset(suppressed)
+    # Late import: pdf.py pulls in the template tags, which import this module
+    from .pdf import drop_report_pdf
+    # A stored PDF must never show the data this replaced
+    drop_report_pdf(report)
 
     return report
 
@@ -883,41 +973,41 @@ def get_report_summary(report):
     return summary
 
 
-OTHERS_CATEGORIES = ('peer', 'manager')  # same "others" as insights['overall_sentiment']
-
-
 def self_vs_others_gap(report_data, min_threshold):
     """
-    Self-assessment minus the others' average, from the stored report insights.
+    Self-assessment minus the others' average, from the stored report data.
 
     Positive: rates self higher than others do. Negative: rates self lower.
-    None when there is no self-assessment, no others' score, or fewer other
-    reviewers (peer + manager) than the organization's anonymity threshold.
+    The others' average only counts groups that are visible at the threshold
+    (the manager always is), so a hidden group cannot be solved from this
+    number. None when there is no self-assessment, no visible others' score,
+    or fewer other reviewers (all of OTHERS_CATEGORIES, hidden or not) than
+    the organization's anonymity threshold.
     """
-    sentiment = (report_data.get('insights') or {}).get('overall_sentiment') or {}
-    self_avg, others_avg = sentiment.get('self_avg'), sentiment.get('score')
-    if self_avg is None or others_avg is None:
+    reviewers = reviewer_counts(report_data)
+    if sum(reviewers.get(c, 0) for c in OTHERS_CATEGORIES) < min_threshold:
         return None
 
-    # Reviewer count per category = its highest count on any question.
-    reviewers = defaultdict(int)
-    for section in report_data.get('by_section', {}).values():
-        for question in section.get('questions', {}).values():
-            for category, cat_data in question.get('by_category', {}).items():
-                reviewers[category] = max(reviewers[category], cat_data.get('count', 0))
-    if sum(reviewers[c] for c in OTHERS_CATEGORIES) < min_threshold:
+    hidden = _hidden_groups(report_data, min_threshold, ['self', 'manager'])
+    ratings = defaultdict(list)
+    for _title, category, avg in _numeric_category_averages(_without_groups(report_data, hidden)):
+        ratings[category].append(avg)
+
+    others = [avg for category in OTHERS_CATEGORIES for avg in ratings[category]]
+    if not ratings['self'] or not others:
         return None
 
-    return round(self_avg - others_avg, 2)
+    return round(round(mean(ratings['self']), 2) - round(mean(others), 2), 2)
 
 
-def send_report_ready_notification(report, request=None):
+def send_report_ready_notification(report, request=None, pdf=None):
     """
     Send email to reviewee when their report is ready
 
     Args:
         report: Report instance
         request: Optional request object for building absolute URLs
+        pdf: Optional PDF bytes, attached to the email when given
 
     Returns:
         dict: Statistics about email sent
@@ -926,6 +1016,8 @@ def send_report_ready_notification(report, request=None):
         'sent': 0,
         'errors': []
     }
+
+    from .pdf import pdf_filename
 
     cycle = report.cycle
     reviewee = cycle.reviewee
@@ -944,6 +1036,9 @@ def send_report_ready_notification(report, request=None):
     summary = get_report_summary(report)
     response_count = summary.get('total_responses', 0)
 
+    # One decision for the text and the attachment, so an empty PDF doesn't promise an attachment
+    attach = bool(pdf)
+
     try:
         with translation.override(recipient_language(reviewee.language, organization=reviewee.organization)):
             questionnaire = cycle.questionnaire.translated()
@@ -953,6 +1048,7 @@ def send_report_ready_notification(report, request=None):
                 'questionnaire_name': questionnaire.name,
                 'report_url': report_url,
                 'response_count': response_count,
+                'has_attachment': attach,
             }
 
             html_message = render_to_string('emails/report_ready.html', context)
@@ -963,6 +1059,7 @@ def send_report_ready_notification(report, request=None):
                 message=text_message,
                 recipient_list=[reviewee.email],
                 html_message=html_message,
+                attachments=[(pdf_filename(report), pdf, 'application/pdf')] if attach else None,
             )
 
         stats['sent'] += 1

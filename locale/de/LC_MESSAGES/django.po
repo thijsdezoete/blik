@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 19:23+0000\n"
+"POT-Creation-Date: 2026-11-04 18:47+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1179,8 +1179,8 @@ msgstr "nicht eingelöster Token"
 msgid "Removed %(category)s reviewer (%(email)s) from cycle."
 msgstr "Feedbackgebende Person (%(email)s, %(category)s) aus der Feedbackrunde entfernt."
 
-msgid "Cycle automatically closed and report generated (all remaining reviewers completed)."
-msgstr "Feedbackrunde automatisch abgeschlossen und Bericht erstellt (alle übrigen Feedbackgebenden sind fertig)."
+msgid "Cycle automatically closed (all remaining reviewers completed). The report is ready within a few minutes."
+msgstr "Feedbackrunde automatisch abgeschlossen (alle übrigen Feedbackgebenden sind fertig). Der Bericht ist in wenigen Minuten bereit."
 
 #, python-format
 msgid "Error removing reviewer: %(error)s"
@@ -1190,12 +1190,12 @@ msgid "No report found for this cycle. Please generate the report first."
 msgstr "Für diese Feedbackrunde gibt es keinen Bericht. Bitte zuerst den Bericht erstellen."
 
 #, python-format
-msgid "Report email sent to %(name)s at %(email)s."
-msgstr "Bericht per E-Mail an %(name)s (%(email)s) gesendet."
-
-#, python-format
 msgid "Failed to send email: %(error)s"
 msgstr "E-Mail konnte nicht gesendet werden: %(error)s"
+
+#, python-format
+msgid "Report email sent to %(name)s at %(email)s."
+msgstr "Bericht per E-Mail an %(name)s (%(email)s) gesendet."
 
 msgid "Failed to send email."
 msgstr "E-Mail konnte nicht gesendet werden."
@@ -1208,6 +1208,9 @@ msgstr "Die Organisationsdaten wurden aktualisiert."
 
 msgid "New user settings updated successfully."
 msgstr "Die Einstellungen für neue Benutzer:innen wurden aktualisiert."
+
+msgid "Report PDF retention must be a number of days from 1 to 3650."
+msgstr "Aufbewahrung des Berichts-PDF: eine Anzahl Tage zwischen 1 und 3650 eingeben."
 
 msgid "Report settings updated successfully."
 msgstr "Die Berichtseinstellungen wurden aktualisiert."
@@ -1555,6 +1558,18 @@ msgstr "Der feedbacknehmenden Person automatisch eine E-Mail senden, sobald ihr 
 
 msgid "automatically send report email"
 msgstr "Berichts-E-Mail automatisch senden"
+
+msgid "Attach the report as a PDF to the email sent to the reviewee"
+msgstr "Bericht als PDF an die E-Mail an die feedbacknehmende Person anhängen"
+
+msgid "attach report PDF"
+msgstr "Bericht als PDF anhängen"
+
+msgid "Days a report PDF is kept. Leave empty to use the default."
+msgstr "Anzahl der Tage, die ein Berichts-PDF gespeichert bleibt. Leer lassen, um den Standardwert zu verwenden."
+
+msgid "report PDF retention (days)"
+msgstr "Aufbewahrung des Berichts-PDF (Tage)"
 
 msgid "Stripe customer ID"
 msgstr "Stripe-Kunden-ID"
@@ -2588,6 +2603,91 @@ msgstr "Berichte"
 msgid "Report for %(cycle)s"
 msgstr "Bericht für %(cycle)s"
 
+msgid "When reporting problems, investigate root causes"
+msgstr "Bei gemeldeten Problemen die Ursachen untersuchen"
+
+msgid "Respond to guidance with thoughtful analysis"
+msgstr "Auf Hinweise mit durchdachter Analyse reagieren"
+
+msgid "Ask clarifying questions before escalating"
+msgstr "Vor dem Eskalieren klärende Fragen stellen"
+
+msgid "Next time you spot an issue, spend 10 minutes investigating before reporting"
+msgstr "Beim nächsten entdeckten Problem erst 10 Minuten nachforschen, bevor es gemeldet wird"
+
+msgid "When given a task, propose at least one way to approach it"
+msgstr "Bei einer neuen Aufgabe mindestens einen Lösungsansatz vorschlagen"
+
+msgid "Research multiple solution options before asking for help"
+msgstr "Mehrere Lösungswege recherchieren, bevor um Hilfe gebeten wird"
+
+msgid "Take ownership of problems you discover"
+msgstr "Verantwortung für selbst entdeckte Probleme übernehmen"
+
+msgid "Present tradeoffs of different approaches"
+msgstr "Vor- und Nachteile verschiedener Ansätze aufzeigen"
+
+msgid "When facing a problem, list 2-3 possible solutions before asking for help"
+msgstr "Bei einem Problem 2–3 mögliche Lösungen notieren, bevor um Hilfe gebeten wird"
+
+msgid "Volunteer to own a small problem end-to-end this sprint"
+msgstr "In diesem Sprint ein kleines Problem von Anfang bis Ende übernehmen"
+
+msgid "Make clear recommendations backed by reasoning"
+msgstr "Klare, begründete Empfehlungen geben"
+
+msgid "Proactively identify improvements before issues arise"
+msgstr "Verbesserungen proaktiv erkennen, bevor Probleme entstehen"
+
+msgid "Build confidence in decision-making through successful recommendations"
+msgstr "Durch erfolgreiche Empfehlungen Sicherheit bei Entscheidungen gewinnen"
+
+msgid "Present your next problem-solution with a specific recommendation and why"
+msgstr "Den nächsten Lösungsvorschlag mit einer konkreten Empfehlung und Begründung vorstellen"
+
+msgid "Identify one process improvement opportunity this week"
+msgstr "Diese Woche eine Möglichkeit zur Prozessverbesserung finden"
+
+msgid "Execute solutions autonomously within your domain"
+msgstr "Lösungen im eigenen Verantwortungsbereich selbstständig umsetzen"
+
+msgid "Inform stakeholders after implementing fixes"
+msgstr "Beteiligte nach der Umsetzung von Korrekturen informieren"
+
+msgid "Drive systemic improvements, not just point solutions"
+msgstr "Systematische Verbesserungen vorantreiben, nicht nur Einzellösungen"
+
+msgid "Fix the next issue you discover without asking permission (inform after)"
+msgstr "Das nächste entdeckte Problem ohne Rückfrage beheben (und danach informieren)"
+
+msgid "Document your decision-making process for others to learn from"
+msgstr "Den eigenen Entscheidungsweg dokumentieren, damit andere daraus lernen können"
+
+#, python-format
+msgid "Insufficient responses (minimum %(count)s required)"
+msgstr "Zu wenige Antworten (mindestens %(count)s erforderlich)"
+
+#, python-format
+msgid "%(count)s peer"
+msgid_plural "%(count)s peers"
+msgstr[0] "%(count)s Kolleg:in"
+msgstr[1] "%(count)s Kolleg:innen"
+
+#, python-format
+msgid "%(count)s manager"
+msgid_plural "%(count)s managers"
+msgstr[0] "%(count)s Führungskraft"
+msgstr[1] "%(count)s Führungskräfte"
+
+#, python-format
+msgid "%(count)s direct report"
+msgid_plural "%(count)s direct reports"
+msgstr[0] "%(count)s direkte:r Mitarbeitende:r"
+msgstr[1] "%(count)s direkte Mitarbeitende"
+
+msgid "Self-assessment"
+msgstr "Selbsteinschätzung"
+
 msgid "Improved"
 msgstr "Verbessert"
 
@@ -2648,10 +2748,6 @@ msgid "Needs Support"
 msgstr "Braucht Unterstützung"
 
 #, python-format
-msgid "Insufficient responses (minimum %(count)s required)"
-msgstr "Zu wenige Antworten (mindestens %(count)s erforderlich)"
-
-#, python-format
 msgid "No email address for reviewee %(name)s"
 msgstr "Keine E-Mail-Adresse für die feedbacknehmende Person %(name)s"
 
@@ -2701,6 +2797,12 @@ msgstr "Zeitpunkt, zu dem die Abschluss-Rückfrage an die feedbacknehmende Perso
 
 msgid "close check sent at"
 msgstr "Abschluss-Rückfrage gesendet am"
+
+msgid "When the cycle was finalised and its report emailed"
+msgstr "Zeitpunkt, zu dem die Feedbackrunde abgeschlossen und ihr Bericht per E-Mail versendet wurde"
+
+msgid "report finalized at"
+msgstr "Bericht abgeschlossen am"
 
 msgid "Self assessment"
 msgstr "Selbsteinschätzung"
@@ -5874,6 +5976,18 @@ msgstr "Bericht nach dem Erstellen automatisch per E-Mail senden"
 msgid "When enabled, reviewees automatically receive an email with a link to their report when all feedback is collected."
 msgstr "Wenn aktiviert, erhalten Feedbacknehmende automatisch eine E-Mail mit einem Link zu ihrem Bericht, sobald alles Feedback vorliegt."
 
+msgid "Attach the report as a PDF to the email"
+msgstr "Bericht als PDF an die E-Mail anhängen"
+
+msgid "When enabled, the report email to the reviewee includes the report as a PDF file."
+msgstr "Wenn aktiviert, enthält die Berichts-E-Mail an die feedbacknehmende Person den Bericht als PDF-Datei."
+
+msgid "Report PDF Retention (days)"
+msgstr "Aufbewahrung des Berichts-PDF (Tage)"
+
+msgid "How long a report PDF is kept before it is deleted. Leave empty to use the default."
+msgstr "Wie lange ein Berichts-PDF gespeichert bleibt, bevor es gelöscht wird. Leer lassen, um den Standardwert zu verwenden."
+
 msgid "New Users"
 msgstr "Neue Benutzer:innen"
 
@@ -6765,6 +6879,14 @@ msgstr "Sie haben ein neues Abonnement mit %(email)s abgeschlossen, für diese A
 msgid "To choose a plan for your existing organization, sign in at %(login_url)s and open Settings."
 msgstr "Um einen Tarif für Ihre bestehende Organisation zu wählen, melden Sie sich unter %(login_url)s an und öffnen Sie die Einstellungen."
 
+#, python-format
+msgid "Someone tried to sign up with %(email)s, but this inbox already has a Blik360 account. We did not create a new account."
+msgstr "Jemand hat versucht, sich mit %(email)s zu registrieren, für dieses Postfach gibt es aber bereits ein Blik360-Konto. Wir haben kein neues Konto angelegt."
+
+#, python-format
+msgid "Sign in at %(site_url)s. If you forgot your password, use \"Forgot your password?\" on the sign-in page."
+msgstr "Melden Sie sich unter %(site_url)s an. Falls Sie Ihr Passwort vergessen haben, nutzen Sie „Passwort vergessen?“ auf der Anmeldeseite."
+
 msgid "Five steps to turn the first report into a good conversation."
 msgstr "Fünf Schritte, damit aus dem ersten Bericht ein gutes Gespräch wird."
 
@@ -7083,6 +7205,9 @@ msgstr "Bericht ansehen"
 
 msgid "Privacy:"
 msgstr "Datenschutz:"
+
+msgid "The attached PDF holds your full report. Forward it only to people you want to read it."
+msgstr "Das angehängte PDF enthält Ihren vollständigen Bericht. Leiten Sie es nur an Personen weiter, die ihn lesen sollen."
 
 msgid "Your report is confidential. The secure link above opens it."
 msgstr "Ihr Bericht ist vertraulich. Er öffnet sich über den sicheren Link oben."
@@ -7772,66 +7897,6 @@ msgstr "Weg zur Stufe %(stage)s"
 msgid "To Reach Level %(level)s:"
 msgstr "Weg zu Stufe %(level)s:"
 
-msgid "When reporting problems, investigate root causes"
-msgstr "Bei gemeldeten Problemen die Ursachen untersuchen"
-
-msgid "Respond to guidance with thoughtful analysis"
-msgstr "Auf Hinweise mit durchdachter Analyse reagieren"
-
-msgid "Ask clarifying questions before escalating"
-msgstr "Vor dem Eskalieren klärende Fragen stellen"
-
-msgid "Research multiple solution options before asking for help"
-msgstr "Mehrere Lösungswege recherchieren, bevor um Hilfe gebeten wird"
-
-msgid "Take ownership of problems you discover"
-msgstr "Verantwortung für selbst entdeckte Probleme übernehmen"
-
-msgid "Present tradeoffs of different approaches"
-msgstr "Vor- und Nachteile verschiedener Ansätze aufzeigen"
-
-msgid "Make clear recommendations backed by reasoning"
-msgstr "Klare, begründete Empfehlungen geben"
-
-msgid "Proactively identify improvements before issues arise"
-msgstr "Verbesserungen proaktiv erkennen, bevor Probleme entstehen"
-
-msgid "Build confidence in decision-making through successful recommendations"
-msgstr "Durch erfolgreiche Empfehlungen Sicherheit bei Entscheidungen gewinnen"
-
-msgid "Execute solutions autonomously within your domain"
-msgstr "Lösungen im eigenen Verantwortungsbereich selbstständig umsetzen"
-
-msgid "Inform stakeholders after implementing fixes"
-msgstr "Beteiligte nach der Umsetzung von Korrekturen informieren"
-
-msgid "Drive systemic improvements, not just point solutions"
-msgstr "Systematische Verbesserungen vorantreiben, nicht nur Einzellösungen"
-
-msgid "Next time you spot an issue, spend 10 minutes investigating before reporting"
-msgstr "Beim nächsten entdeckten Problem erst 10 Minuten nachforschen, bevor es gemeldet wird"
-
-msgid "When given a task, propose at least one way to approach it"
-msgstr "Bei einer neuen Aufgabe mindestens einen Lösungsansatz vorschlagen"
-
-msgid "When facing a problem, list 2-3 possible solutions before asking for help"
-msgstr "Bei einem Problem 2–3 mögliche Lösungen notieren, bevor um Hilfe gebeten wird"
-
-msgid "Volunteer to own a small problem end-to-end this sprint"
-msgstr "In diesem Sprint ein kleines Problem von Anfang bis Ende übernehmen"
-
-msgid "Present your next problem-solution with a specific recommendation and why"
-msgstr "Den nächsten Lösungsvorschlag mit einer konkreten Empfehlung und Begründung vorstellen"
-
-msgid "Identify one process improvement opportunity this week"
-msgstr "Diese Woche eine Möglichkeit zur Prozessverbesserung finden"
-
-msgid "Fix the next issue you discover without asking permission (inform after)"
-msgstr "Das nächste entdeckte Problem ohne Rückfrage beheben (und danach informieren)"
-
-msgid "Document your decision-making process for others to learn from"
-msgstr "Den eigenen Entscheidungsweg dokumentieren, damit andere daraus lernen können"
-
 msgid "Learn more about the Performance Matrix"
 msgstr "Mehr über die Leistungsmatrix"
 
@@ -7920,9 +7985,6 @@ msgstr "hoch"
 msgctxt "severity"
 msgid "moderate"
 msgstr "mittel"
-
-msgid "Self-assessment"
-msgstr "Selbsteinschätzung"
 
 msgid "You see yourself"
 msgstr "So sehen Sie sich"
@@ -8033,23 +8095,99 @@ msgstr "Sie haben keine Berechtigung, diesen Bericht anzusehen. Bitte prüfen Si
 msgid "Go Home"
 msgstr "Zur Startseite"
 
-msgid "Feedback Report"
-msgstr "Feedbackbericht"
-
 msgid "360 Feedback Report"
 msgstr "360°-Feedbackbericht"
 
-msgid "Toggle Theme"
-msgstr "Farbschema wechseln"
+msgid "Confidential"
+msgstr "Vertraulich"
 
 msgid "Review Date"
 msgstr "Datum der Feedbackrunde"
 
-msgid "Total Responses"
-msgstr "Antworten gesamt"
+msgid "Feedback from"
+msgstr "Feedback von"
+
+msgid "This report brings together the feedback from your reviewers: a summary, your scores per section and every answer per question. Individual reviewers cannot be identified."
+msgstr "Dieser Bericht fasst das Feedback Ihrer Feedbackgebenden zusammen: eine Zusammenfassung, Ihre Werte je Abschnitt und jede Antwort je Frage. Einzelne Feedbackgebende lassen sich nicht identifizieren."
+
+msgid "Scale:"
+msgstr "Skala:"
+
+msgid "Average"
+msgstr "Durchschnitt"
+
+msgid "Positive"
+msgstr "Positiv"
+
+msgid "Others"
+msgstr "Andere"
+
+msgid "Dreyfus model"
+msgstr "Dreyfus-Modell"
+
+msgid "Skill"
+msgstr "Kompetenz"
+
+msgid "Agency"
+msgstr "Eigeninitiative"
+
+msgid "Performance matrix"
+msgstr "Leistungsmatrix"
+
+msgid "How others see you"
+msgstr "So sehen andere Sie"
+
+msgid "Sections"
+msgstr "Abschnitte"
+
+msgid "Gap"
+msgstr "Abweichung"
+
+msgid "strength"
+msgstr "Stärke"
+
+msgid "area to grow"
+msgstr "Entwicklungsfeld"
+
+msgid "Summary"
+msgstr "Zusammenfassung"
 
 msgid "Overall Rating"
 msgstr "Gesamtbewertung"
+
+#, python-format
+msgid "Others rate you <b>%(rating)s</b> overall."
+msgstr "Andere bewerten Sie insgesamt mit <b>%(rating)s</b>."
+
+#, python-format
+msgid "On %(counter)s section, others score you lower than you score yourself."
+msgid_plural "On %(counter)s sections, others score you lower than you score yourself."
+msgstr[0] "In %(counter)s Abschnitt bewerten andere Sie niedriger als Sie sich selbst."
+msgstr[1] "In %(counter)s Abschnitten bewerten andere Sie niedriger als Sie sich selbst."
+
+msgid "Others score you at least as high as you score yourself in every section."
+msgstr "In jedem Abschnitt bewerten andere Sie mindestens so hoch wie Sie sich selbst."
+
+msgid "Strengths"
+msgstr "Stärken"
+
+msgid "Areas to grow"
+msgstr "Entwicklungsfelder"
+
+msgid "Feedback Report"
+msgstr "Feedbackbericht"
+
+msgid "Toggle Theme"
+msgstr "Farbschema wechseln"
+
+msgid "Total Responses"
+msgstr "Antworten gesamt"
+
+msgid "Download PDF"
+msgstr "PDF herunterladen"
+
+msgid "Regenerate PDF"
+msgstr "PDF neu erstellen"
 
 msgid "Report Not Ready"
 msgstr "Bericht noch nicht verfügbar"

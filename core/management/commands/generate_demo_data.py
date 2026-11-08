@@ -350,6 +350,7 @@ class Command(BaseCommand):
             questionnaire=questionnaire,
             created_by=admin_user,
             status='completed',
+            report_finalized_at=timezone.now(),  # demo data: the finalize_reports cron must not email it
         )
 
         categories = ['self', 'peer', 'peer', 'peer', 'manager',
@@ -566,7 +567,8 @@ class Command(BaseCommand):
             reviewee=reviewee,
             questionnaire=questionnaire,
             created_by=admin_user,
-            status='completed'
+            status='completed',
+            report_finalized_at=timezone.now(),  # demo data: the finalize_reports cron must not email it
         )
 
         # Create 5-9 tokens (varied team sizes)

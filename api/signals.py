@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from reviews.models import ReviewCycle, Response
 from reports.models import Report
+from reports.services import report_webhook_suppressed
 from .webhooks import send_webhook
 import logging
 
@@ -109,7 +110,7 @@ def report_generated(sender, instance, created, update_fields, **kwargs):
         )
 
         # Also ensure the report is ready (has access_token and is available)
-        if should_fire and instance.available and instance.access_token:
+        if should_fire and not report_webhook_suppressed.get() and instance.available and instance.access_token:
             logger.info(f"Sending report.generated webhook for report {instance.id}")
             send_webhook(
                 organization=instance.cycle.reviewee.organization,

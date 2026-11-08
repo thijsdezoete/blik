@@ -20,6 +20,10 @@ def send_logged(organization, kind, **email):
 
 
 def record_run(command, sent, errors):
-    """Record one run of a daily email command. Runs that tried nothing are kept too: the last one shows cron runs."""
-    # ponytail: three small rows a day, never pruned; add a cleanup when the table matters
+    """
+    Record one run of a cron email command. The daily commands record every run, also those that tried nothing,
+    so the last one shows cron runs. finalize_reports runs every 5 minutes and records only runs that did something.
+    """
+    # ponytail: a few small rows a day (the daily commands, plus finalize_reports runs that did something),
+    # never pruned; add a cleanup when the table matters
     return CronRun.objects.create(command=command, sent=sent, errors='\n'.join(errors))

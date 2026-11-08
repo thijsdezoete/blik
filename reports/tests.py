@@ -394,95 +394,6 @@ class AnonymizationArchitectureTestCase(TestCase):
                         "Distribution should be removed for privacy")
 
 
-class ReportViewAnonymizationTestCase(TestCase):
-    """Test that views properly apply anonymization filtering"""
-
-    def setUp(self):
-        """Set up test data"""
-        self.org = Organization.objects.create(
-            name="Test Org",
-            email="test@example.com",
-            min_responses_for_anonymity=3
-        )
-
-        self.admin = User.objects.create_user(
-            username="admin",
-            email="admin@example.com",
-            password="password"
-        )
-        profile = UserProfile.objects.create(user=self.admin, organization=self.org)
-
-        # Give admin permissions
-        from django.contrib.auth.models import Permission
-        from django.contrib.contenttypes.models import ContentType
-        from accounts.models import UserProfile as ProfileModel
-
-        ct = ContentType.objects.get_for_model(ProfileModel)
-        perm = Permission.objects.get_or_create(
-            codename='can_manage_organization',
-            content_type=ct,
-            defaults={'name': 'Can manage organization'}
-        )[0]
-        self.admin.user_permissions.add(perm)
-
-        self.reviewee = Reviewee.objects.create(
-            name="Test Reviewee",
-            email="reviewee@example.com",
-            organization=self.org
-        )
-
-        self.questionnaire = Questionnaire.objects.create(
-            name="Test Q",
-            organization=self.org
-        )
-
-        self.section = QuestionSection.objects.create(
-            questionnaire=self.questionnaire,
-            title="Skills",
-            order=1
-        )
-
-        self.question = Question.objects.create(
-            section=self.section,
-            question_text="Rate ability",
-            question_type="rating",
-            config={"min": 1, "max": 5},
-            order=1
-        )
-
-        self.cycle = ReviewCycle.objects.create(
-            reviewee=self.reviewee,
-            questionnaire=self.questionnaire,
-            created_by=self.admin,
-            status='completed'
-        )
-
-        # Create 2 peer responses
-        for val in [3, 4]:
-            token = ReviewerToken.objects.create(cycle=self.cycle, category='peer')
-            Response.objects.create(
-                cycle=self.cycle,
-                token=token,
-                question=self.question,
-                category=token.category,  # Denormalized from token
-                answer_data={'value': val}
-            )
-
-    def test_view_report_applies_anonymization_filter(self):
-        """Test that view_report view applies display anonymization"""
-        # Generate report first
-        report = generate_report(self.cycle)
-
-        # The view logic is covered by unit tests above
-        # This is an integration test that would require full URL routing setup
-        # The critical logic (apply_display_anonymization) is tested in unit tests
-
-        # Verify the view imports and uses the function correctly
-        from reports import views
-        self.assertTrue(hasattr(views, 'apply_display_anonymization'),
-                       "views module should import apply_display_anonymization")
-
-
 class ReportAccessControlTestCase(TestCase):
     """
     A plain org member must not reach another member's cycle or report.
@@ -580,3 +491,76 @@ class ReportEmailUrlTestCase(TestCase):
         )
         self.assertIn('https://public.example.com/', rendered)
         self.assertNotIn('proxy.internal', rendered)
+
+
+class RegenerateReportPdfsTestCase(TestCase):
+    """backfill_report_pdfs --regenerate recalculates stored reports and touches nothing else."""
+
+    def setUp(self):
+        self.org = Organization.objects.create(name="Org", email="org@example.org")
+        self.user = User.objects.create_user(username="admin", email="admin@example.org")
+        self.reviewee = Reviewee.objects.create(
+            name="R", email="r@example.org", organization=self.org)
+        self.questionnaire = Questionnaire.objects.create(name="Q", organization=self.org)
+        section = QuestionSection.objects.create(
+            questionnaire=self.questionnaire, title="Skills", order=1)
+        self.question = Question.objects.create(
+            section=section, question_text="Rate", question_type="rating",
+            config={"min": 1, "max": 5}, order=1)
+
+    def _finalised_cycle(self, created_at, answers):
+        cycle = ReviewCycle.objects.create(
+            reviewee=self.reviewee, questionnaire=self.questionnaire,
+            created_by=self.user, status='completed')
+        ReviewCycle.objects.filter(pk=cycle.pk).update(
+            created_at=created_at, report_finalized_at=created_at)
+        for category, value in answers:
+            token = ReviewerToken.objects.create(cycle=cycle, category=category)
+            Response.objects.create(
+                cycle=cycle, token=token, question=self.question,
+                category=category, answer_data={'value': value})
+        return ReviewCycle.objects.get(pk=cycle.pk)
+
+    def _run(self):
+        from django.core.management import call_command
+        from io import StringIO
+        out = StringIO()
+        with patch('reports.management.commands.backfill_report_pdfs.store_report_pdf'):
+            call_command('backfill_report_pdfs', '--regenerate', stdout=out)
+        return out.getvalue()
+
+    def test_recalculates_overall_score_with_direct_reports(self):
+        from django.utils import timezone
+        cycle = self._finalised_cycle(
+            timezone.now(), [('self', 5), ('peer', 2), ('peer', 2), ('direct_report', 4), ('direct_report', 4)])
+        report = generate_report(cycle)
+        # A report from before the fix: the direct report was left out of the overall score
+        report.report_data['insights']['overall_sentiment']['score'] = 2.0
+        report.save()
+        finalized_at = cycle.report_finalized_at
+
+        output = self._run()
+
+        report.refresh_from_db()
+        self.assertEqual(report.report_data['insights']['overall_sentiment']['score'], 3.0)
+        self.assertIn('Reports recalculated: 1', output)
+        cycle.refresh_from_db()
+        self.assertEqual(cycle.report_finalized_at, finalized_at)
+
+    def test_oldest_cycle_first_and_no_email(self):
+        from datetime import timedelta
+        from django.core import mail
+        from django.utils import timezone
+        now = timezone.now()
+        # The newer cycle gets the lower pk, so pk order would be wrong
+        newer = self._finalised_cycle(now, [('self', 3), ('peer', 3), ('peer', 3)])
+        older = self._finalised_cycle(now - timedelta(days=90), [('self', 3), ('peer', 3), ('peer', 3)])
+        generate_report(newer)
+        generate_report(older)
+
+        with patch('reports.management.commands.backfill_report_pdfs.generate_report',
+                   wraps=generate_report) as spy:
+            self._run()
+
+        self.assertEqual([call.args[0].pk for call in spy.call_args_list], [older.pk, newer.pk])
+        self.assertEqual(mail.outbox, [])

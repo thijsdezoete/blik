@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from questionnaires.models import Question
 from questionnaires.placeholders import personalize as personalize_text
 from reports.report_texts import RATING_RANGES
-from reports.services import get_rating_key
+from reports.services import RATING_EXCELLENT, RATING_OUTSTANDING, RATING_STRONG, get_rating_key
 from reviews.models import CATEGORY_ORDER
 
 register = template.Library()
@@ -41,11 +41,14 @@ def average(values):
 
 @register.filter
 def others_average(categories):
-    """Calculate average of non-self categories in a dict"""
+    """Calculate average of non-self categories in a dict, without groups hidden for anonymity"""
     try:
         if not categories:
             return 0
-        others_scores = [float(v) for k, v in categories.items() if k != 'self' and v is not None]
+        others_scores = [
+            float(v) for k, v in categories.items()
+            if k != 'self' and v is not None and not isinstance(v, dict)
+        ]
         if others_scores:
             return sum(others_scores) / len(others_scores)
         return 0
@@ -150,6 +153,20 @@ def rating_key(score):
     """The overall rating of an average score; reports colour a score by it."""
 
     return get_rating_key(score)
+
+
+@register.filter
+def strong_rating(score):
+    """Whether an average score is rated Strong or better; only such a score is called "strong performance"."""
+
+    return get_rating_key(score) in (RATING_OUTSTANDING, RATING_EXCELLENT, RATING_STRONG)
+
+
+@register.filter
+def top_share(percentile):
+    """The "Top x%" of a peer benchmark percentile. The top scorer is in the top 1%, not the top 0%."""
+
+    return max(1, 100 - round(float(percentile)))
 
 
 @register.filter

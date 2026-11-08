@@ -64,7 +64,8 @@ from reports.dreyfus_service import (
     _level_to_stage,
 )
 from reports.models import Report
-from reports.services import generate_report, self_vs_others_gap, send_report_ready_notification
+from reports.finalize import finalize_cycle
+from reports.services import generate_report, self_vs_others_gap
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.services import (
     assign_tokens_to_emails,
@@ -1985,22 +1986,31 @@ def review_cycle_detail(request, cycle_uuid):
     return render(request, 'admin_dashboard/review_cycle_detail.html', context)
 
 
+EMAIL_SENT = ('sent', 'sent_without_pdf')
+
+
+def lock_cycle(cycle):
+    """The cycle, locked until the transaction ends: the finalize_reports cron skips it meanwhile."""
+    return ReviewCycle.objects.select_for_update().get(pk=cycle.pk)
+
+
 @login_required
 def generate_report_view(request, cycle_uuid):
     """Generate or regenerate report for a review cycle"""
     cycle = get_cycle_or_404(request, cycle_uuid)
 
     try:
-        report = generate_report(cycle)
-
-        # Send notification email to reviewee
-        email_stats = send_report_ready_notification(report, request)
+        with transaction.atomic():
+            cycle = lock_cycle(cycle)
+            generate_report(cycle)
+            # Stores the PDF and sends the email now, the admin expects it
+            result, email_errors = finalize_cycle(cycle, force_send=True)
 
         success_msg = _('Report generated successfully for %(name)s.') % {'name': cycle.reviewee.name}
-        if email_stats['sent'] > 0:
+        if result in EMAIL_SENT:
             success_msg += ' ' + _('Notification email sent.')
-        if email_stats['errors']:
-            success_msg += ' ' + _('(Email errors: %(errors)s)') % {'errors': ', '.join(email_stats['errors'])}
+        if email_errors:
+            success_msg += ' ' + _('(Email errors: %(errors)s)') % {'errors': ', '.join(map(str, email_errors))}
 
         messages.success(request, success_msg)
     except Exception as e:
@@ -2037,24 +2047,29 @@ def close_cycle(request, cycle_uuid):
     unclaimed_count = unclaimed_tokens.count()
     unclaimed_tokens.delete()
 
-    # Mark cycle as completed
-    cycle.status = 'completed'
-    cycle.save()
+    # Close and finalise under one lock, so the finalize_reports cron can't email the same report too
+    error = None
+    with transaction.atomic():
+        cycle = lock_cycle(cycle)
+        cycle.status = 'completed'
+        cycle.save()
+        try:
+            # A failed report leaves the cycle closed; the cron tries again
+            with transaction.atomic():
+                generate_report(cycle)
+                result, _errors = finalize_cycle(cycle, force_send=True)
+        except Exception as e:
+            logger.exception('Error finalising the report of cycle %s', cycle.id)
+            error = e
 
-    # Generate report
-    try:
-        report = generate_report(cycle)
-
-        # Send notification email to reviewee
-        email_stats = send_report_ready_notification(report, request)
-
+    if error is None:
         success_msg = _('Cycle closed and report generated for %(name)s.') % {'name': cycle.reviewee.name}
-        if email_stats['sent'] > 0:
+        if result in EMAIL_SENT:
             success_msg += ' ' + _('Notification email sent.')
 
         messages.success(request, success_msg)
-    except Exception as e:
-        messages.error(request, _('Cycle closed but error generating report: %(error)s') % {'error': str(e)})
+    else:
+        messages.error(request, _('Cycle closed but error generating report: %(error)s') % {'error': str(error)})
 
     send_cycle_summary(cycle, summary)
 
@@ -2351,26 +2366,10 @@ def remove_reviewer_token(request, cycle_uuid, token_id):
             all_completed = not remaining_tokens.filter(completed_at__isnull=True).exists()
 
             if all_completed and cycle.status == 'active':
-                # Auto-close the cycle
+                # Auto-close the cycle. The finalize_reports cron makes the report and emails it.
                 cycle.status = 'completed'
                 cycle.save()
-
-                # Auto-generate report
-                try:
-                    report = generate_report(cycle)
-
-                    # Send notification email if organization setting enabled
-                    organization = cycle.reviewee.organization
-                    if organization and organization.auto_send_report_email:
-                        email_stats = send_report_ready_notification(report, request)
-                        if email_stats.get('errors'):
-                            logger.error("Errors sending report email for cycle %s: %s", cycle.id, email_stats['errors'])
-
-                    messages.success(request, _('Cycle automatically closed and report generated (all remaining reviewers completed).'))
-                except Exception as e:
-                    # Log error but don't fail the removal
-                    logger.exception("Error auto-generating report for cycle %s", cycle.id)
-                    messages.warning(request, _('Cycle closed but error generating report: %(error)s') % {'error': str(e)})
+                messages.success(request, _('Cycle automatically closed (all remaining reviewers completed). The report is ready within a few minutes.'))
 
                 send_cycle_summary(cycle)
 
@@ -2395,17 +2394,22 @@ def send_report_email(request, cycle_uuid):
         messages.error(request, _('No report found for this cycle. Please generate the report first.'))
         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
-    # Send notification email
-    email_stats = send_report_ready_notification(report, request)
+    # Send notification email, with the PDF stored first when there is none
+    try:
+        with transaction.atomic():
+            result, email_errors = finalize_cycle(lock_cycle(cycle), force_send=True)
+    except Exception as e:
+        logger.exception('Error sending the report email of cycle %s', cycle.id)
+        messages.error(request, _('Failed to send email: %(error)s') % {'error': str(e)})
+        return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
-    if email_stats['sent'] > 0:
+    if result in EMAIL_SENT:
         messages.success(request, _('Report email sent to %(name)s at %(email)s.') % {'name': cycle.reviewee.name, 'email': cycle.reviewee.email})
+    elif email_errors:
+        for error in email_errors:
+            messages.error(request, _('Failed to send email: %(error)s') % {'error': error})
     else:
-        if email_stats['errors']:
-            for error in email_stats['errors']:
-                messages.error(request, _('Failed to send email: %(error)s') % {'error': error})
-        else:
-            messages.error(request, _('Failed to send email.'))
+        messages.error(request, _('Failed to send email.'))
 
     return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
@@ -2464,6 +2468,19 @@ def settings_view(request):
                 except (ValueError, TypeError):
                     organization.min_responses_for_anonymity = 3
                 organization.auto_send_report_email = request.POST.get('auto_send_report_email') == 'on'
+                organization.attach_report_pdf = request.POST.get('attach_report_pdf') == 'on'
+                retention = request.POST.get('report_pdf_retention_days', '').strip()
+                if not retention:
+                    organization.report_pdf_retention_days = None
+                else:
+                    try:
+                        days = int(retention)
+                    except ValueError:
+                        days = None
+                    if days is not None and 1 <= days <= 3650:
+                        organization.report_pdf_retention_days = days
+                    else:
+                        messages.error(request, _('Report PDF retention must be a number of days from 1 to 3650.'))
                 organization.save()
                 messages.success(request, _('Report settings updated successfully.'))
 
@@ -2526,6 +2543,7 @@ def settings_view(request):
         'new_token': new_token,
         'new_token_name': new_token_name,
         'locked_fields': locked,
+        'default_report_pdf_retention_days': settings.REPORT_PDF_RETENTION_DAYS,
         **billing_context(organization, request.user),
     }
 

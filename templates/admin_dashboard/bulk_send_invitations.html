@@ -23,7 +23,7 @@
     <div>
         <strong>{% trans 'No emails have been sent yet.' %}</strong>
         {% if derived_from_chart %}
-            {% blocktrans trimmed %}Click <em>Send all invitations</em> to send an email to each reviewee and to the reviewers from the org chart.{% endblocktrans %}
+            {% blocktrans trimmed %}Click <em>Send all invitations</em> to send every person one email with all the forms they have to fill in, their own self-assessment included.{% endblocktrans %}
         {% else %}
             {% blocktrans trimmed %}Review the list below and click <em>Send invitations now</em> to notify every reviewee.{% endblocktrans %}
             {% trans 'You can also skip for now and send individual invitations later from the cycles list.' %}

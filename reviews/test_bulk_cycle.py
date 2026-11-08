@@ -98,3 +98,30 @@ class BulkCycleCreationTestCase(TestCase):
 
         # Session cleared after sends are scheduled.
         self.assertNotIn('pending_invitation_cycles', self.client.session)
+
+    def test_chart_bulk_send_groups_reviewer_invitations_across_cycles(self):
+        """Chart-derived cycles carry reviewer emails. One person reviewing several
+        colleagues gets one grouped email, not one per cycle: the view hands every
+        pending token of the batch to send_grouped_invitations in a single call.
+        """
+        from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
+
+        cycles = [
+            ReviewCycleFactory(reviewee=reviewee, questionnaire=self.questionnaire, created_by=self.user)
+            for reviewee in self.reviewees[:2]
+        ]
+        tokens = [
+            ReviewerTokenFactory(cycle=cycle, category='peer', reviewer_email='carol@example.com')
+            for cycle in cycles
+        ]
+        session = self.client.session
+        session['pending_invitation_cycles'] = [str(c.uuid) for c in cycles]
+        session['pending_bulk_source'] = 'chart'
+        session.save()
+
+        with patch(NOTIFY_PATH), patch('blik.admin_views.send_grouped_invitations') as grouped:
+            with self.captureOnCommitCallbacks(execute=True):
+                self.client.post(reverse('bulk_send_invitations'))
+
+        grouped.assert_called_once()
+        self.assertEqual(set(grouped.call_args.args[0]), set(tokens))

@@ -1,0 +1,71 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans 'Your feedback forms' %}</title>
+    {% include 'components/favicon.html' %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/feedback.css' %}">
+    <script>
+        // Theme detection and initialization
+        (function() {
+            const getPreferredTheme = () => {
+                const stored = localStorage.getItem('theme');
+                if (stored) return stored;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            };
+
+            const setTheme = (theme) => {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            };
+
+            setTheme(getPreferredTheme());
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="complete-title">{% trans 'Your feedback forms' %}</h1>
+        <p class="complete-message" style="margin-bottom: 32px;">{% trans 'This list shows the forms you were asked to fill in. Open forms come first.' %}</p>
+
+        {% for item in items %}
+        <div class="section" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div>
+                <div class="section-description" style="margin: 0 0 4px;">{{ item.questionnaire_name }}</div>
+                <div class="section-title" style="margin: 0;">
+                    {% if item.token.category == 'self' %}
+                        {% trans 'Your own self-assessment' %}
+                    {% else %}
+                        {% blocktrans trimmed with name=item.token.cycle.reviewee.name category=item.token.get_category_display %}{{ name }}: {{ category }}{% endblocktrans %}
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                {% if item.state == 'start' %}
+                    <a class="btn-primary" style="display: inline-block; width: auto; text-decoration: none; text-align: center;" href="{% url 'reviews:feedback_form' token=item.token.token %}">{% trans 'Start' %}</a>
+                {% elif item.state == 'continue' %}
+                    <a class="btn-primary" style="display: inline-block; width: auto; text-decoration: none; text-align: center;" href="{% url 'reviews:feedback_form' token=item.token.token %}">{% trans 'Continue' %}</a>
+                {% elif item.state == 'done' %}
+                    <span style="color: var(--success, #10b981); font-weight: 600;">&#10003; {% trans 'Done' %}</span>
+                {% else %}
+                    <span style="color: var(--text-tertiary, #9ca3af); font-weight: 600;">{% trans 'Closed' %}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="complete-message">{% trans 'There are no forms for you at the moment.' %}</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

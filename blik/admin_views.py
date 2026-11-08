@@ -74,6 +74,7 @@ from reviews.services import (
     derive_reviewers,
     send_invitation_links_email,
     send_reminder_emails,
+    send_grouped_invitations,
     send_reviewee_notifications,
     send_reviewer_invitations,
 )
@@ -2110,26 +2111,38 @@ def bulk_send_invitations(request):
             )
 
         # When the bulk was derived from the chart, tokens already have
-        # reviewer_emails — also schedule those invitations so the admin gets
-        # a truly one-click bulk experience.
-        reviewer_invites_sent = 0
+        # reviewer_emails — also schedule those invitations, one email per
+        # address across all the cycles, so a person who reviews several
+        # colleagues gets a single mail with every link. The queryset is
+        # evaluated on commit, after the self-assessments above are marked sent.
+        reviewer_tokens = 0
+        reviewer_emails = 0
         if bulk_source == 'chart':
-            for cycle in cycles:
-                if cycle.tokens.filter(reviewer_email__isnull=False).exists():
-                    reviewer_invites_sent += 1
-                    transaction.on_commit(
-                        lambda c=cycle: send_reviewer_invitations(c)
+            pending_tokens = ReviewerToken.objects.filter(
+                cycle__in=cycles,
+                reviewer_email__isnull=False,
+                invitation_sent_at__isnull=True,
+                completed_at__isnull=True,
+            ).exclude(category='self')
+            addresses = {email.lower() for email in pending_tokens.values_list('reviewer_email', flat=True)}
+            reviewer_tokens = len(pending_tokens)
+            reviewer_emails = len(addresses)
+            if addresses:
+                transaction.on_commit(
+                    lambda: send_grouped_invitations(
+                        pending_tokens.all().select_related('cycle__reviewee', 'cycle__questionnaire')
                     )
+                )
 
         # Clear the session once we've scheduled the sends.
         request.session.pop('pending_invitation_cycles', None)
         request.session.pop('pending_bulk_source', None)
 
-        if reviewer_invites_sent:
+        if reviewer_tokens:
             messages.success(
                 request,
-                _('Invitations are being sent for %(count)s review cycle(s), with reviewer invitations for %(reviewers)s of them.')
-                % {'count': len(cycles), 'reviewers': reviewer_invites_sent}
+                _('Invitations are being sent for %(count)s review cycle(s). %(tokens)s reviewer invitations go out in %(emails)s emails, one per address.')
+                % {'count': len(cycles), 'tokens': reviewer_tokens, 'emails': reviewer_emails}
             )
         else:
             messages.success(

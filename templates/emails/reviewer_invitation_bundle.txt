@@ -1,0 +1,18 @@
+{% load i18n %}{% trans 'Your feedback forms' %}
+
+{% trans 'Hello,' %}
+
+{% blocktrans trimmed count count=items|length %}{{ organization_name }} asks for your honest feedback. You have {{ count }} form to fill in.{% plural %}{{ organization_name }} asks for your honest feedback. You have {{ count }} forms to fill in.{% endblocktrans %}{% if total_minutes %} {% blocktrans trimmed count minutes=total_minutes %}Together they take about {{ minutes }} minute.{% plural %}Together they take about {{ minutes }} minutes.{% endblocktrans %}{% endif %}
+
+{% trans 'Your answers are anonymous. The people you review never see your name with them. So you can be honest.' %}
+{% for item in items %}
+- {% if item.is_self %}{% blocktrans trimmed with questionnaire=item.questionnaire_name %}Your own self-assessment ({{ questionnaire }}){% endblocktrans %}{% else %}{% blocktrans trimmed with name=item.reviewee_name category=item.category questionnaire=item.questionnaire_name %}{{ name }}: {{ category }} ({{ questionnaire }}){% endblocktrans %}{% endif %}{% if item.estimated_minutes %} - {% blocktrans trimmed count minutes=item.estimated_minutes %}about {{ minutes }} minute{% plural %}about {{ minutes }} minutes{% endblocktrans %}{% endif %}
+  {{ item.feedback_url }}
+{% endfor %}
+{% trans 'You can stop and continue later. Your personal overview shows which forms are still open:' %}
+{{ overview_url }}
+
+{% trans 'Thank you.' %}
+
+---
+{% trans 'This is an automated message from Blik.' %}

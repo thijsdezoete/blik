@@ -1,0 +1,21 @@
+{% extends 'emails/_base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Your feedback forms' %}{% endblock %}
+{% block preheader %}{% blocktrans trimmed %}{{ organization_name }} asks for your honest feedback. Your answers are anonymous.{% endblocktrans %}{% endblock %}
+{% block heading %}{% trans 'Your feedback forms' %}{% endblock %}
+{% block content %}
+<p>{% trans 'Hello,' %}</p>
+<p>{% blocktrans trimmed count count=items|length %}{{ organization_name }} asks for your honest feedback. You have {{ count }} form to fill in.{% plural %}{{ organization_name }} asks for your honest feedback. You have {{ count }} forms to fill in.{% endblocktrans %}{% if total_minutes %} {% blocktrans trimmed count minutes=total_minutes %}Together they take about {{ minutes }} minute.{% plural %}Together they take about {{ minutes }} minutes.{% endblocktrans %}{% endif %}</p>
+<p>{% trans 'Your answers are anonymous. The people you review never see your name with them. So you can be honest.' %}</p>
+{% trans 'Start the review' as cta %}
+{% for item in items %}
+<div style="margin:24px 0; padding:16px 20px; border:1px solid #e2e8f0; border-radius:8px;">
+  <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#64748b; margin-bottom:6px;">{{ item.questionnaire_name }}</div>
+  <div style="font-size:16px; font-weight:600; color:#0f172a;">{% if item.is_self %}{% trans 'Your own self-assessment' %}{% else %}{% blocktrans trimmed with name=item.reviewee_name category=item.category %}{{ name }}: {{ category }}{% endblocktrans %}{% endif %}</div>
+  {% if item.estimated_minutes %}<div style="font-size:14px; color:#64748b; margin-top:4px;">{% blocktrans trimmed count minutes=item.estimated_minutes %}About {{ minutes }} minute.{% plural %}About {{ minutes }} minutes.{% endblocktrans %}</div>{% endif %}
+  {% include 'emails/_button.html' with url=item.feedback_url label=cta %}
+</div>
+{% endfor %}
+<p style="font-size:14px; color:#64748b;">{% blocktrans trimmed with url=overview_url %}You can stop and continue later. <a href="{{ url }}">Your personal overview</a> shows which forms are still open.{% endblocktrans %}</p>
+<p>{% trans 'Thank you.' %}</p>
+{% endblock %}

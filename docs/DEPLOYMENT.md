@@ -564,6 +564,35 @@ The entrypoint now also installs a cron line that finalises reports every 5 minu
 
 Do not add it to your own crontab when the entrypoint runs. Without the entrypoint, add it to the crontab.
 
+### Upgrading to the org chart and one-email release
+
+This release ships with the report PDF release above, so do its steps first: redeploy so the image
+is rebuilt, then run the PDF backfill once.
+
+What is new for operators:
+
+- **Migrations.** `accounts.0011_org_units` creates the `org_units` and `org_unit_memberships` tables.
+  The entrypoint runs it.
+- **No new environment variables.** `REPORT_PDF_RETENTION_DAYS` (default 30) is the only new
+  setting, from the PDF release.
+- **Signed links depend on `SECRET_KEY`.** The personal overview link in the bundled invitation email
+  is a signed URL. If you rotate `SECRET_KEY`, every overview link that is out there stops working.
+  Reviewers then see the "link expired" page and can request a new one. The form links themselves
+  are not affected.
+- **Translations compile on start.** The catalogues changed a lot. If a German, Spanish or Italian
+  screen shows English after the deploy, run `docker compose exec web python manage.py compilemessages`
+  and restart.
+
+Check after the deploy:
+
+1. `curl -sI https://<app>/reports/sample.pdf | head -1` returns `200`. This renders a report with the
+   current code and stores nothing. The landing pages link to it.
+2. The cron line for `finalize_reports` is installed: `docker compose exec web crontab -l`.
+3. In a test organization: import a small CSV on **Organization → Org chart**, create a bulk round with
+   **Derive from org chart**, and send. Every address gets one email. The overview link in it opens.
+4. Organizations with small teams: set **Minimum responses for anonymity** to 2 in Settings → Reports,
+   or the direct-report group stays hidden for a head with two reports.
+
 ### View Logs
 
 ```bash

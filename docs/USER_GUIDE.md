@@ -33,6 +33,8 @@ When a feedback cycle is created for you, you'll receive **two emails**:
    - Each link can be shared with multiple people
    - You choose who receives these links
 
+**If your organization uses its org chart:** your administrator picks your reviewers from the chart. You then receive **one email** with all your forms instead: your self-assessment and the reviews you give to others. See [Your Personal Overview Page](#your-personal-overview-page).
+
 ### Completing Your Self-Assessment
 
 1. Click the link in your **Self-Assessment Email**
@@ -103,9 +105,10 @@ You've been asked to provide feedback for a colleague. Your honest, constructive
 
 ### What You'll Receive
 
-You'll receive either:
+You'll receive one of these:
 - **An invitation link** shared directly from the reviewee
 - **An email invitation** from the system (if email-based invitations are used)
+- **One bundled email** with all your forms, when your organization assigns reviewers from its org chart. It lists each form with a **Start the review** button and links to your personal overview page.
 
 ### Providing Feedback
 
@@ -122,6 +125,22 @@ You'll receive either:
    - Your browser remembers your feedback link
    - You can close and return later
 5. **Submit** when complete
+
+### Your Personal Overview Page
+
+The bundled email contains a link to your personal overview page. The page lists every form you were asked to fill in for this organization, in two groups:
+
+- **About you** - your own self-assessments
+- **About others** - the reviews you give to colleagues, with the person's name, your relation to them (manager, peer, direct report) and the questionnaire
+
+At the top, the page shows how many forms are done and about how many minutes the open forms take. Each form has a button or a state:
+
+- **Start** - you have not opened this form yet
+- **Continue** - you opened this form; your saved answers are kept
+- **Done** - you submitted this form
+- **Closed** - the cycle was closed before you submitted this form
+
+The link works for 30 days. After that, the page offers a button that sends a new link to the same email address. The link is a signed URL that carries your email address and the organization; nothing is stored for it. Anyone with the link sees only which forms you were asked to fill in, never your answers or any results. Keep the link to yourself.
 
 ### Writing Effective Feedback
 

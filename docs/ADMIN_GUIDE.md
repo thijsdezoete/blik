@@ -8,6 +8,7 @@ Complete guide for administrators setting up and managing the 360 feedback syste
 - [Organization Settings](#organization-settings)
 - [Who Can See What](#who-can-see-what)
 - [Managing Reviewees](#managing-reviewees)
+- [Org Chart](#org-chart)
 - [Creating Review Cycles](#creating-review-cycles)
 - [Managing Invitations](#managing-invitations)
 - [Closing Cycles & Generating Reports](#closing-cycles--generating-reports)
@@ -77,7 +78,11 @@ registration options) are always editable in the UI.
 - **Minimum Responses for Anonymity** - Minimum number of responses required to display results
   - Set to `1` for small teams where anonymity is less critical
   - Set to `3+` for larger teams to protect reviewer anonymity
-  - Self-assessments are always shown regardless of this setting
+  - Groups with fewer responses than the threshold are hidden in reports. A department with two staff members needs a threshold of 2, or the direct-report group is hidden for its head.
+  - Self-assessments are always shown regardless of this setting. The manager group is also exempt from the threshold: the report shows it with one response.
+- **Automatically send report email when generated** - Send the reviewee the report-ready email when the cycle completes
+- **Attach the report as a PDF to the email** - Add the report PDF to the report-ready email. On by default.
+- **Report PDF Retention (days)** - How long Blik keeps a stored report PDF. Leave it empty to use the default from `REPORT_PDF_RETENTION_DAYS` (30 days). After this period the PDF is deleted. The report page then shows **Regenerate PDF** instead of **Download PDF**. See [Report PDFs](#report-pdfs).
 
 ---
 
@@ -131,6 +136,69 @@ would see in the dashboard.
 
 ---
 
+## Org Chart
+
+The org chart records who is in which unit and who manages it. Blik uses it to suggest managers, peers and direct reports for a review cycle, and to fill the reviewers of bulk-created cycles. Open it at **Dashboard → Organization → Org chart**. Only users with the permission to manage the organization can edit it.
+
+### How Units Work
+
+- A **unit** is a department, a team or a professor's area. It has a name. Unit names are unique in an organization.
+- A unit has a **manager row** and a **member row**. A person is in a unit once, as manager or as member.
+- Units **stack**: when the manager of unit B is a member of unit A, the chart shows B under A. So one person can manage one unit and be a member of another.
+- People who are in no unit are listed under **Not in a unit**.
+
+### Editing the Chart
+
+The page has two views. Use the **Chart** and **Outline** tabs to switch.
+
+- **Chart** shows the units as boxes in a tree. Use **+**, **−** and **Fit to screen** to zoom. Drag the background to move around. Click **N units below** on a unit to collapse or expand the units under it.
+- **Outline** shows the units as a list. Use **Expand all** and **Collapse all**. Drag a unit onto another unit to place it below that unit.
+
+Actions:
+
+1. Click **New unit** and enter a name.
+2. Open the **⋯** menu of a unit for **Add manager**, **Add member**, **Rename**, **Place under another unit** and **Delete unit**.
+   - **Add manager** and **Add member** open a picker. Find a person, or type a name and email to add someone new.
+   - **Place under another unit** makes the manager of this unit a member of the unit above. Blik refuses this when the unit has no manager, when the target unit is below this unit in the tree, or when the manager already manages the target unit.
+   - **Delete unit** keeps the people in Blik. People who are in no other unit move to **Not in a unit**.
+3. Drag a person onto the manager row or the member row of a unit to move them there. Hold **Alt** (or **Ctrl**) while you drag to copy the person, so they stay in the first unit too. Drag a person from **Not in a unit** onto a unit to place them. Drag a person onto **Not in a unit**, or click **×** on the person, to take them out of a unit.
+
+### Importing a CSV File
+
+1. Click **Import CSV**, choose the file and click **Next**. The file must be a UTF-8 CSV file smaller than 1 MB. Comma, semicolon and tab separators work.
+2. On the **Import CSV** page, check **Which column is which?**. Blik guesses the mapping from the column names. Correct a choice where needed. The first five rows of the file show which column goes to which field.
+3. Click **Import**.
+
+The file has one row per person. Give the email column and a name column, or a first-name column and a last-name column. The department column and the manager column are optional. The manager column holds the manager's email, or the manager's name as it is written in the file.
+
+| Name | Email | Department | Manager |
+|------|-------|------------|---------|
+| Anna Berg | anna@example.com | Optics | |
+| Tom Vos | tom@example.com | Optics | anna@example.com |
+| Lea Kuhn | lea@example.com | Optics | Anna Berg |
+
+Blik recognises common column names in English, German and Dutch, in any letter case: for example `Name`, `Vollständiger Name`, `Naam`; `First name`, `Vorname`, `Voornaam`; `Last name`, `Nachname`, `Achternaam`; `Email`, `E-Mail-Adresse`, `E-mailadres`; `Department`, `Team`, `Abteilung`, `Afdeling`; `Manager`, `Supervisor`, `Reports to`, `Vorgesetzter`, `Leidinggevende`. Other column names work too: map them by hand in step 2.
+
+Each person who is named as a manager gets one unit. They are its manager. The people who report to them are its members. The unit is named after the manager's department, or after the manager when the department is empty. So a head of department is a member of the director's unit and the manager of their own unit.
+
+Blik checks the file before it writes anything. It reports these errors with the line number: an invalid email, an email that is in the file twice, an empty name, a manager who is not in the file, a manager name that matches more than one person (use the email instead), and a person who is their own manager. Nothing is imported while there is an error.
+
+**The import replaces the chart.** All current units are deleted and built again from the file. People who are not in the file stay in Blik as reviewees, but they are no longer in a unit. People in the file are matched by email: an existing reviewee gets the name and department from the file and is set active; a new reviewee is created. The reviewee limit of your plan applies to each new person.
+
+### Who Reviews Whom
+
+When Blik derives the reviewers of a person from the chart:
+
+- **Managers** are the managers of every unit where the person is a member.
+- **Direct reports** are the members of every unit where the person is a manager.
+- **Peers** are the other members of every unit where the person is a member, and the other managers of every unit where the person is a manager.
+
+When one person lands in more than one group, the first group in this order keeps them: self, manager, direct report, peer. Within a group the names are sorted alphabetically.
+
+In single cycle creation, Blik fills the reviewer pickers from the chart when you select a reviewee who is in a unit. Blik shows a notice when the reviewee is not in the chart. You can change the lists before you create the cycle.
+
+---
+
 ## Creating Review Cycles
 
 A review cycle is a 360-degree feedback collection period for a reviewee.
@@ -151,17 +219,39 @@ A review cycle is a 360-degree feedback collection period for a reviewee.
 
 ### Bulk Cycle Creation
 
-1. Select **Bulk Creation** mode
-2. Choose questionnaire
-3. Set token counts (applies to all reviewees)
-4. Click **Create Review Cycles**
-5. Creates one cycle for each active reviewee
+Bulk creation makes one review cycle for every active reviewee. No email is sent until you confirm on the next page.
+
+1. Select **Bulk Create** mode
+2. Choose the questionnaire and the feedback categories
+3. Under **Reviewers per cycle**, choose where the reviewers come from:
+   - **Derive from org chart** - Blik fills the manager, peer and direct report reviewers of each reviewee from the [org chart](#org-chart), and adds the reviewee's own self-assessment. This option is available when the chart has at least one unit.
+   - **Leave empty** - Blik creates the cycles without reviewers. You assign reviewers per cycle afterwards.
+4. Click **Create Cycles (no emails yet)**
+
+In chart mode, Blik skips a reviewee who gets no reviewers from the chart for the selected categories. No cycle is created for them and no cycle credit is used. The success message says how many cycles were created and how many reviewees were skipped.
+
+Blik refuses the whole batch when your plan has fewer cycle credits than active reviewees.
+
+### Sending the Bulk Invitations
+
+After creation, Blik opens the **Send invitations** page. It lists the new cycles. In chart mode it shows per cycle how many self, manager, peer and direct report reviewers were found. Check the list. Edit a cycle afterwards if something is not correct.
+
+Click **Send all invitations** to send, or **Skip — I'll send later** to send per cycle from the cycle pages later.
+
+What is sent depends on where the reviewers came from:
+
+- **Derive from org chart** - Every person gets **one email** with all the forms they have to fill in across all the new cycles, their own self-assessment included. The email lists each form with the name of the person it is about, the relation (manager, peer, direct report), the questionnaire and the estimated minutes, with a **Start the review** button per form. It also links to the [personal overview page](#the-personal-overview-page). No separate self-assessment email and no invitation links email are sent. A person with a single form gets the normal single invitation email instead (for a self-assessment, the self-assessment email).
+- **Leave empty** - Every reviewee gets the two usual emails: the self-assessment email and the invitation links email with the category links to share. See [What Happens After Creation](#what-happens-after-creation).
+
+The success message says how many review cycles the invitations cover, and in chart mode how many reviewer invitations go out in how many emails.
 
 ### What Happens After Creation
 
-The reviewee automatically receives two emails:
+In single cycle creation, and in bulk creation with **Leave empty**, the reviewee receives two emails:
 1. **Self-Assessment Email** - Personal link to complete their self-assessment
 2. **Invitation Links Email** - Category links (peer/manager/direct report) to share with others
+
+In bulk creation with **Derive from org chart**, these two emails are not sent. Every person gets one bundled email instead. See [Sending the Bulk Invitations](#sending-the-bulk-invitations).
 
 ---
 
@@ -200,6 +290,10 @@ For more control over who receives invitations:
 4. Emails are randomly shuffled and assigned to tokens (maintains anonymity)
 5. Click **Send Pending Invitations** to email reviewers
 
+### The Personal Overview Page
+
+Every bundled invitation email links to a personal overview page. The page lists the forms the address was asked to fill in, in two groups: **About you** (the person's own self-assessments) and **About others**. It shows how many forms are done, about how many minutes the open forms take, and a **Start**, **Continue**, **Done** or **Closed** state per form. The link is a signed URL that carries the email address and the organization; Blik stores nothing for it. The link works for 30 days. After that, the page offers a button that sends a new link to the same address. Anyone with the link sees only which forms that address was asked to fill in, never answers or results.
+
 ### Sending Reminders
 
 1. Navigate to the cycle detail page
@@ -224,8 +318,18 @@ Close a cycle when:
 2. Click **Close Cycle & Generate Report**
 3. System validates at least one review is completed
 4. Cycle is marked as completed (no further reviews can be submitted)
-5. Report is automatically generated
-6. Reviewee receives email notification with secure report link
+5. Report is automatically generated and the report PDF is stored
+6. Reviewee receives email notification with secure report link; the PDF is attached when **Attach the report as a PDF to the email** is on
+
+You can close a cycle before the reviewee submits the self-assessment. The report then shows the results from the others without the self-assessment parts. See [Reports Without a Self-Assessment](REPORT_GUIDE.md#reports-without-a-self-assessment).
+
+### Report PDFs
+
+A cycle completes by itself when the last reviewer submits. The cron job `finalize_reports` runs every 5 minutes and finalises each completed cycle: it generates the report, stores the report PDF, and sends the report-ready email when **Automatically send report email when generated** is on. When **Attach the report as a PDF to the email** is on, the email carries the PDF. When the PDF build fails, the job tries again on its next runs. After three failed attempts it sends the email without the PDF. **Close Cycle & Generate Report** and **Regenerate Report** on the cycle page do the same at once and always send the email.
+
+On the report page, **Download PDF** downloads the stored PDF. When no valid PDF is stored, the page shows **Regenerate PDF** instead. It builds a new PDF and downloads it. The reviewee's report page has the same buttons. The stored PDF is in the reviewee's language. An admin who views the report in another language gets a fresh render in that language.
+
+A stored PDF is deleted after the retention period (**Report PDF Retention (days)**, default 30). The report itself stays. The cron job deletes expired PDFs on each run.
 
 ### Manual Report Generation
 

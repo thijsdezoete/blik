@@ -5,6 +5,8 @@ Understanding your 360-degree feedback report and using it for professional deve
 ## Table of Contents
 
 - [Report Structure](#report-structure)
+- [The Report as a PDF](#the-report-as-a-pdf)
+- [Reports Without a Self-Assessment](#reports-without-a-self-assessment)
 - [Understanding Ratings](#understanding-ratings)
 - [Perception Gap Analysis](#perception-gap-analysis)
 - [Dreyfus Skill Model](#dreyfus-skill-model)
@@ -67,6 +69,37 @@ Automatically generated insights may include:
 - **Quantitative Data** - Rating distributions and averages by question
 - **Qualitative Feedback** - Anonymous text responses
 - **Trends** - Patterns across different competency areas
+
+---
+
+## The Report as a PDF
+
+Your report is also available as a PDF. When your organization has this enabled, the PDF is attached to the report-ready email. On the report page, click **Download PDF** to download the stored PDF. When the stored PDF has expired, the page shows **Regenerate PDF** instead. Click it to build and download a new PDF.
+
+The PDF condenses the web report onto A4 pages:
+
+1. **Cover** - your name, the questionnaire, the organization, the review date and who gave feedback (for example "3 peers" and "1 manager"). A group below the anonymity threshold shows "Insufficient responses" instead of a count.
+2. **Summary** - your overall rating, your self-assessment with its gap to the others, your skill level and your agency level. Then the key points: perception gaps, self vs others, strengths, areas to grow and the next step. Then a table with your score per section.
+3. **Your Development Path** - your Dreyfus skill level with the steps to the next level, and your agency level and performance matrix when the questionnaire measures them.
+4. **Performance Overview** - a radar chart with one line per reviewer group and your self-assessment as a dashed line, plus one small radar per group. This page appears when the questionnaire has three or more sections.
+5. **How others see you** - the perception gap with "You see yourself" and "Others see you", and a table per section with the others' score, your self score, the gap and the score of each reviewer group.
+6. **Detailed Feedback** - per question, a table with one row per reviewer group: the number of responses, the average and how many reviewers gave each answer. Your own answer is set against the others' average. Text answers are listed per group.
+
+The PDF applies the same anonymity threshold as the web report. A hidden group shows "Insufficient responses" in every table. The PDF is in your language. Your organization keeps the stored PDF for a set period (30 days by default). After that, regenerate it from the report page.
+
+---
+
+## Reports Without a Self-Assessment
+
+A report can exist without your self-assessment: your administrator can close the cycle before you submit it, or the cycle does not collect a self-assessment. The report then still shows every result from the others. These parts are absent:
+
+- the self-assessment column in the section tables
+- the **Self vs Others** section, and the "Self vs others" point in the PDF summary
+- the perception gap insight (Blind Spot or Calibration Opportunity) with its action
+- the "You see yourself" and "Others see you" numbers
+- the gap marker per question that compares your answer with the others' average
+
+Your self-assessment is exempt from the anonymity threshold: the report shows it with one response. The manager group is exempt too.
 
 ---
 

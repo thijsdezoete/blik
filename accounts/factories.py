@@ -5,7 +5,7 @@ import factory
 from factory.django import DjangoModelFactory
 from django.utils import timezone
 from datetime import timedelta
-from .models import UserProfile, OrganizationInvitation, Reviewee
+from .models import UserProfile, OrganizationInvitation, Reviewee, OrgUnit, OrgUnitMembership
 from core.factories import UserFactory, OrganizationFactory
 
 
@@ -45,3 +45,27 @@ class RevieweeFactory(DjangoModelFactory):
     email = factory.Faker('email')
     department = factory.Faker('job')
     is_active = True
+
+
+class OrgUnitFactory(DjangoModelFactory):
+    """Factory for creating units in the org chart"""
+
+    class Meta:
+        model = OrgUnit
+
+    organization = factory.SubFactory(OrganizationFactory)
+    name = factory.Sequence(lambda n: f'Unit {n}')
+    display_order = 0
+
+
+class OrgUnitMembershipFactory(DjangoModelFactory):
+    """Factory for creating org unit memberships"""
+
+    class Meta:
+        model = OrgUnitMembership
+
+    unit = factory.SubFactory(OrgUnitFactory)
+    reviewee = factory.SubFactory(RevieweeFactory)
+    # role defaults are derived from row in the model's save()
+    row = 0
+    col = 0

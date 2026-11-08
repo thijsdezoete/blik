@@ -1,0 +1,5 @@
+{% load i18n %}{% if nodes %}
+<div class="oc-tree">{% for node in nodes %}{% include "admin_dashboard/org_chart/_chart_node.html" %}{% endfor %}</div>
+{% else %}
+{% include "admin_dashboard/org_chart/_empty.html" %}
+{% endif %}

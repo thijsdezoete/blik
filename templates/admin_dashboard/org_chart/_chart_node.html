@@ -1,0 +1,25 @@
+{% load i18n %}{% with unit=node.unit %}
+<div class="oc-node" data-key="children-{{ unit.uuid }}">
+    <article class="oc-unit" data-unit-uuid="{{ unit.uuid }}" data-unit-name="{{ unit.name }}">
+        <header class="oc-unit-header">
+            <h3 class="oc-unit-name">{{ unit.name }}</h3>
+            {% include "admin_dashboard/org_chart/_unit_menu.html" with prefix="c" %}
+        </header>
+        <div class="oc-unit-body">
+            <p class="oc-role">{% trans 'Manager' %}</p>
+            {% include "admin_dashboard/org_chart/_people.html" with people=node.managers role="manager" %}
+            <details class="oc-members" data-key="members-{{ unit.uuid }}">
+                <summary><span class="oc-role">{% trans 'Members' %}</span> <span class="badge badge-secondary">{{ node.members|length }}</span></summary>
+                {% include "admin_dashboard/org_chart/_people.html" with people=node.members role="member" %}
+            </details>
+        </div>
+        {% if node.children %}
+        <button type="button" class="oc-collapse" aria-expanded="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            {% blocktrans count counter=node.children|length %}{{ counter }} unit below{% plural %}{{ counter }} units below{% endblocktrans %}
+        </button>
+        {% endif %}
+    </article>
+    {% if node.children %}<div class="oc-children">{% for node in node.children %}{% include "admin_dashboard/org_chart/_chart_node.html" %}{% endfor %}</div>{% endif %}
+</div>
+{% endwith %}

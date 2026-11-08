@@ -413,3 +413,41 @@ def visible_cycles(user, queryset, email_field='reviewee__email'):
     if not user.email:
         return queryset.none()
     return queryset.filter(**{f'{email_field}__iexact': user.email})
+
+
+def reviewee_emails_below(user, organization):
+    """
+    Emails of everyone below this user in the org chart: the members of the
+    units they manage, the members of the units those members manage, and so on.
+
+    A manager may read the reports of these people (not run their cycles).
+    The user is matched to a Reviewee by email, as everywhere else.
+    """
+    from accounts.models import OrgUnitMembership
+
+    if not organization or not getattr(user, 'email', ''):
+        return set()
+
+    memberships = list(
+        OrgUnitMembership.objects
+        .filter(unit__organization=organization)
+        .values_list('unit_id', 'role', 'reviewee__email')
+    )
+    managed_units = {}  # email -> unit ids they manage
+    members = {}        # unit id -> member emails
+    for unit_id, role, email in memberships:
+        email = email.lower()
+        if role == OrgUnitMembership.MANAGER:
+            managed_units.setdefault(email, set()).add(unit_id)
+        else:
+            members.setdefault(unit_id, set()).add(email)
+
+    me = user.email.lower()
+    below, todo = set(), [me]
+    while todo:
+        for unit_id in managed_units.get(todo.pop(), ()):
+            for email in members.get(unit_id, ()):
+                if email not in below and email != me:
+                    below.add(email)
+                    todo.append(email)
+    return below

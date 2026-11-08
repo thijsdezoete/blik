@@ -1,0 +1,17 @@
+{% load i18n %}<div class="oc-pool" data-pool>
+    <div class="oc-pool-header">
+        <h2 class="card-title">{% trans 'Not in a unit' %}</h2>
+        <span class="badge badge-secondary">{{ unplaced|length }}</span>
+    </div>
+    {% if unplaced %}
+    <input type="search" class="form-control oc-pool-search" placeholder="{% trans 'Find a person' %}" aria-label="{% trans 'Find a person who is not in a unit' %}">
+    <ul class="oc-people oc-pool-list">
+        {% for r in unplaced %}
+        <li class="oc-person" draggable="true" data-reviewee-uuid="{{ r.uuid }}" data-search="{{ r.name|lower }} {{ r.email|lower }}" title="{{ r.email }}"><span class="oc-person-name">{{ r.name }}</span></li>
+        {% endfor %}
+    </ul>
+    <p class="help-text">{% trans 'Drag a person onto a unit. Drag a person here to take them out of a unit.' %}</p>
+    {% else %}
+    <p class="help-text">{% trans 'Everyone is in a unit. Drag a person here to take them out of a unit.' %}</p>
+    {% endif %}
+</div>

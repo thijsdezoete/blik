@@ -1,0 +1,8 @@
+{% load i18n %}<button type="button" class="btn btn-sm btn-secondary oc-more" popovertarget="oc-menu-{{ prefix }}-{{ unit.uuid }}" aria-label="{% trans 'Actions' %}: {{ unit.name }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
+<div id="oc-menu-{{ prefix }}-{{ unit.uuid }}" class="reviewee-popover reviewee-menu" popover="auto" aria-label="{% trans 'Actions' %}: {{ unit.name }}">
+    <button type="button" data-oc-action="add" data-role="manager">{% trans 'Add manager' %}</button>
+    <button type="button" data-oc-action="add" data-role="member">{% trans 'Add member' %}</button>
+    <button type="button" data-oc-action="rename">{% trans 'Rename' %}</button>
+    <button type="button" data-oc-action="parent">{% trans 'Place under another unit' %}</button>
+    <button type="button" data-oc-action="delete" class="reviewee-delete">{% trans 'Delete unit' %}</button>
+</div>

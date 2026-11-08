@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils import translation
 from django.utils.translation import gettext as _
 from django_ratelimit.decorators import ratelimit
-from accounts.permissions import can_view_all_reports
+from accounts.permissions import can_view_all_reports, reviewee_emails_below
 from reviews.models import ReviewCycle
 from .models import Report
 from .context import build_report_context
@@ -26,9 +26,15 @@ def get_cycle_or_404(request, cycle_uuid):
     )
     in_org = (not request.organization
               or cycle.reviewee.organization_id == request.organization.id)
-    if not in_org or not can_view_all_reports(request.user):
+    if not in_org or not can_view_report(request, cycle):
         raise Http404
     return cycle
+
+
+def can_view_report(request, cycle):
+    return can_view_all_reports(request.user) or (
+        cycle.reviewee.email.lower() in reviewee_emails_below(request.user, request.organization)
+    )
 
 
 def is_own_cycle(user, cycle):
@@ -38,12 +44,10 @@ def is_own_cycle(user, cycle):
 
 @login_required
 def view_report(request, cycle_uuid):
-    """View aggregated feedback report for a review cycle (org admins only)"""
+    """View aggregated feedback report for a review cycle (org admins and managers above the reviewee)"""
     # Reviewees reach their own report through the token URL, not the admin view.
-    if not can_view_all_reports(request.user):
-        cycle = get_object_or_404(
-            ReviewCycle.objects.select_related('reviewee'), uuid=cycle_uuid
-        )
+    cycle = get_object_or_404(ReviewCycle.objects.select_related('reviewee'), uuid=cycle_uuid)
+    if not can_view_report(request, cycle):
         if not is_own_cycle(request.user, cycle):
             raise Http404
         report = Report.objects.filter(cycle=cycle).first() or generate_report(cycle)
@@ -59,6 +63,8 @@ def view_report(request, cycle_uuid):
 
     context = build_report_context(report, is_admin_view=True)
     context['pdf_valid'] = report.has_valid_pdf()
+    # A manager reads the report but does not run the cycle.
+    context['is_manager_view'] = not can_view_all_reports(request.user)
 
     return render(request, 'reports/view_report.html', context)
 
@@ -67,6 +73,8 @@ def view_report(request, cycle_uuid):
 def regenerate_report(request, cycle_uuid):
     """Regenerate report for a review cycle"""
     cycle = get_cycle_or_404(request, cycle_uuid)
+    if not can_view_all_reports(request.user):
+        raise Http404
     generate_report(cycle)
 
     return redirect('reports:view_report', cycle_uuid=cycle.uuid)

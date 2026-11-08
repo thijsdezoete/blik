@@ -1,0 +1,11 @@
+{% load i18n %}<ul class="oc-people oc-zone" data-unit-uuid="{{ unit.uuid }}" data-role="{{ role }}">
+    {% for p in people %}
+    <li class="oc-person" draggable="true" data-reviewee-uuid="{{ p.reviewee.uuid }}" data-unit-uuid="{{ unit.uuid }}" data-membership-id="{{ p.membership.id }}" title="{{ p.reviewee.email }}{% if p.other_units %} · {% blocktrans with units=p.other_units %}Also in: {{ units }}{% endblocktrans %}{% endif %}">
+        <span class="oc-person-name">{{ p.reviewee.name }}</span>
+        {% if p.other_units %}<svg class="oc-person-also" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="{% blocktrans with units=p.other_units %}Also in: {{ units }}{% endblocktrans %}"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 16 9 5 9-5"/></svg>{% endif %}
+        <button type="button" class="oc-person-remove" aria-label="{% blocktrans with name=p.reviewee.name unit=unit.name %}Remove {{ name }} from {{ unit }}{% endblocktrans %}">&times;</button>
+    </li>
+    {% empty %}
+    <li class="oc-zone-empty">{% if role == 'manager' %}{% trans 'No manager yet' %}{% else %}{% trans 'No members yet' %}{% endif %}</li>
+    {% endfor %}
+</ul>

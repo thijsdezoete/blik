@@ -181,3 +181,80 @@ class Reviewee(TimeStampedModel):
 
     def __str__(self):
         return f"{self.name} ({self.email})"
+
+
+class OrgUnit(TimeStampedModel):
+    """
+    A unit in the org chart: a department, a professor's area, a team.
+
+    A unit has a manager row (row 0) and a member row (row 1). Units stack:
+    when the manager of unit B is a member of unit A, B shows under A. So a
+    person can manage one unit and be a member of another.
+    """
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        db_index=True,
+    )
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='org_units',
+    )
+    name = models.CharField(max_length=255)
+    display_order = models.IntegerField(default=0)
+
+    objects = OrganizationManager()
+
+    class Meta:
+        db_table = 'org_units'
+        ordering = ['display_order', 'name']
+        unique_together = ['organization', 'name']
+
+    def __str__(self):
+        return self.name
+
+
+class OrgUnitMembership(TimeStampedModel):
+    """
+    One person in a unit. `col` is the position in the row.
+
+    `role` is derived from `row` (row 0 = manager, row 1 = member) but is
+    stored denormalized so queries like "all units where Alice is a manager"
+    don't require expression indexes or per-row arithmetic.
+    """
+    MANAGER = 'manager'
+    MEMBER = 'member'
+    ROLE_CHOICES = [(MANAGER, 'Manager'), (MEMBER, 'Member')]
+
+    unit = models.ForeignKey(
+        OrgUnit,
+        on_delete=models.CASCADE,
+        related_name='memberships',
+    )
+    reviewee = models.ForeignKey(
+        Reviewee,
+        on_delete=models.CASCADE,
+        related_name='unit_memberships',
+    )
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    row = models.IntegerField()
+    col = models.IntegerField()
+
+    class Meta:
+        db_table = 'org_unit_memberships'
+        ordering = ['unit_id', 'row', 'col']
+        unique_together = [
+            ('unit', 'reviewee'),   # one slot per person per unit
+            ('unit', 'row', 'col'),  # one person per slot
+        ]
+
+    def __str__(self):
+        return f'{self.reviewee.name} @ {self.unit.name} r{self.row}c{self.col} ({self.role})'
+
+    def save(self, *args, **kwargs):
+        # Role is mechanically derived from row; enforce it here so the two
+        # can't drift via direct DB updates.
+        self.role = self.MANAGER if self.row == 0 else self.MEMBER
+        super().save(*args, **kwargs)

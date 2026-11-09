@@ -214,9 +214,10 @@ class StartDialogTests(CycleCategoryTestCase):
 
 class InvitationMailTests(CycleCategoryTestCase):
     def _send(self, cycle):
-        from reviews.services import send_reviewee_notifications
+        from reviews.outbox import queue_reviewee_notifications, send_queued_emails
+        queue_reviewee_notifications(cycle)
         with patch(SEND_MAIL) as send:
-            send_reviewee_notifications(cycle)
+            send_queued_emails()
         return send
 
     def test_self_only_cycle_sends_no_link_mail(self):

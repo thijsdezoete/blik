@@ -30,9 +30,10 @@ def cycle_saved(sender, instance, created, update_fields, **kwargs):
                 from django.db.models import Count, Q
                 cycle = ReviewCycle.objects.get(pk=instance.pk)
 
+                # Invitations go out from the outbox a few minutes later: queued counts as invited
                 reviewer_stats = cycle.tokens.values('category').annotate(
                     total=Count('id'),
-                    invited=Count('id', filter=Q(invitation_sent_at__isnull=False))
+                    invited=Count('id', filter=Q(invitation_sent_at__isnull=False) | Q(invitation_queued_at__isnull=False))
                 )
 
                 # Build reviewer summary dict

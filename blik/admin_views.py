@@ -23,7 +23,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone, translation
 from django.utils.functional import partition
-from django.utils.translation import gettext as _, gettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy, ngettext
 from django.views.decorators.http import require_POST
 
 from accounts.models import Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
@@ -69,15 +69,8 @@ from reports.models import Report
 from reports.finalize import finalize_cycle
 from reports.services import generate_report, self_vs_others_gap
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
-from reviews.services import (
-    assign_tokens_to_emails,
-    derive_reviewers,
-    send_invitation_links_email,
-    send_reminder_emails,
-    send_grouped_invitations,
-    send_reviewee_notifications,
-    send_reviewer_invitations,
-)
+from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
+from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     NoCycleCredits,
@@ -811,14 +804,12 @@ def quick_cycle_create(request, reviewee_uuid):
                 status='active',
                 **category_flags
             )
-            transaction.on_commit(lambda c=cycle: send_reviewee_notifications(c, request))
-
             total_tokens = 0
             email_invited_count = 0
 
             if previous_cycle:
                 # Copy tokens from previous cycle, including email assignments. The self-assessment
-                # token comes from send_reviewee_notifications above.
+                # token comes from queue_reviewee_notifications below.
                 previous_tokens = previous_cycle.tokens.filter(
                     category__in=cycle.active_categories).exclude(category='self')
 
@@ -848,22 +839,25 @@ def quick_cycle_create(request, reviewee_uuid):
                             category=category
                         )
                         total_tokens += 1
+
+            # The reviewee's emails go in the outbox; the cron sends them
+            queue_reviewee_notifications(cycle)
     except (NoCycleCredits, ReviewerLimit) as e:
         limit_error(request, e)
         return redirect('reviewee_list')
 
     if previous_cycle:
-        # Send invitations to all email-assigned tokens
+        # Queue the invitations of all email-assigned tokens
         if email_invited_count > 0:
-            send_stats = send_reviewer_invitations(cycle)
+            queued = queue_invitations(cycle.tokens.all())
 
             messages.success(
                 request,
                 _('Review cycle created for "%(name)s" using "%(questionnaire)s". '
                   'Copied %(count)s reviewer(s) from previous cycle. '
-                  '%(sent)s email invitation(s) sent.')
+                  '%(queued)s invitation email(s) go out within about five minutes.')
                 % {'name': reviewee.name, 'questionnaire': questionnaire.name,
-                   'count': total_tokens, 'sent': send_stats['sent']}
+                   'count': total_tokens, 'queued': queued}
             )
         else:
             messages.success(
@@ -880,7 +874,7 @@ def quick_cycle_create(request, reviewee_uuid):
             % {'name': reviewee.name, 'questionnaire': questionnaire.name, 'count': total_tokens}
         )
 
-    messages.info(request, _('Notification emails are being sent to the reviewee.'))
+    messages.info(request, _("The reviewee's emails go out within about five minutes."))
 
     # Redirect to cycle detail page
     return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
@@ -1983,25 +1977,18 @@ def review_cycle_create(request):
                         # Assign tokens to emails with randomization
                         assign_stats = assign_tokens_to_emails(cycle, email_assignments)
 
-                # Send notification emails to reviewee. Defer to after the
-                # transaction commits so a slow SMTP backend can't stall this
-                # request (matches the pattern in api/signals.py). Without a
-                # transaction it runs right here, so it has to come after the
-                # tokens: the self-assessment goes to the one the form addressed.
-                transaction.on_commit(lambda c=cycle: send_reviewee_notifications(c, request))
+                # The reviewee's emails go in the outbox. After the tokens: the
+                # self-assessment goes to the one the form addressed.
+                queue_reviewee_notifications(cycle)
 
                 if has_emails:
-                    # Check if user wants to send invitations immediately.
-                    # Defer the send to after-commit so SMTP latency never
-                    # stalls the request.
+                    # Does the user want the invitations to go out right away?
                     send_now = request.POST.get('send_invitations_now') == '1'
                     if send_now and assign_stats['assigned'] > 0:
-                        transaction.on_commit(
-                            lambda c=cycle: send_reviewer_invitations(c)
-                        )
+                        queue_invitations(cycle.tokens.all())
                         messages.success(
                             request,
-                            _('Review cycle created for "%(name)s" with %(assigned)s reviewer(s) invited. Invitation emails are being sent.')
+                            _('Review cycle created for "%(name)s" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes.')
                             % {'name': reviewee.name, 'assigned': assign_stats['assigned']}
                         )
                         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
@@ -2015,10 +2002,10 @@ def review_cycle_create(request):
                         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                 else:
                     # No emails provided, show success and redirect to invitations.
-                    # Reviewee notifications were queued via on_commit above.
+                    # The reviewee's emails were queued above.
                     messages.success(
                         request,
-                        _('Review cycle created for "%(name)s". Notification emails are being sent to the reviewee.')
+                        _('Review cycle created for "%(name)s". The reviewee\'s emails go out within about five minutes.')
                         % {'name': reviewee.name}
                     )
                     # Redirect to invitations page to add reviewers
@@ -2079,11 +2066,12 @@ def review_cycle_create(request):
 
 @login_required
 def bulk_send_invitations(request):
-    """Confirm + send reviewee notifications for cycles just created in bulk.
+    """Confirm + queue the emails for cycles just created in bulk.
 
     The `review_cycle_create` view stashes the UUIDs of freshly-bulk-created
     cycles in the session under 'pending_invitation_cycles'. This view renders
-    them for review on GET and defers the actual send on POST.
+    them for review on GET and puts the emails in the outbox on POST; the
+    send_queued_invitations cron sends them.
     """
     org = request.organization
     uuids = request.session.get('pending_invitation_cycles', [])
@@ -2105,18 +2093,16 @@ def bulk_send_invitations(request):
             return redirect('review_cycle_list')
 
         # Chart-derived cycles already hold every reviewer's address, the
-        # reviewee's own self-assessment included. Everything goes out as one
-        # email per address across all the cycles, so a person who reviews
-        # several colleagues on several questionnaires gets a single mail
-        # with every link. Other bulk runs keep the per-cycle reviewee email
-        # with the self-assessment and the links to share.
+        # reviewee's own self-assessment included. The cron sends one email
+        # per address across all the cycles, so a person who reviews several
+        # colleagues on several questionnaires gets a single mail with every
+        # link. Other bulk runs keep the per-cycle reviewee emails with the
+        # self-assessment and the links to share.
         reviewer_tokens = 0
         reviewer_emails = 0
         if bulk_source != 'chart':
             for cycle in cycles:
-                transaction.on_commit(
-                    lambda c=cycle: send_reviewee_notifications(c, request)
-                )
+                queue_reviewee_notifications(cycle)
         else:
             pending_tokens = ReviewerToken.objects.filter(
                 cycle__in=cycles,
@@ -2125,29 +2111,23 @@ def bulk_send_invitations(request):
                 completed_at__isnull=True,
             )
             addresses = {email.lower() for email in pending_tokens.values_list('reviewer_email', flat=True)}
-            reviewer_tokens = len(pending_tokens)
             reviewer_emails = len(addresses)
-            if addresses:
-                transaction.on_commit(
-                    lambda: send_grouped_invitations(
-                        pending_tokens.all().select_related('cycle__reviewee', 'cycle__questionnaire')
-                    )
-                )
+            reviewer_tokens = queue_invitations(pending_tokens)
 
-        # Clear the session once we've scheduled the sends.
+        # Clear the session once the emails are queued.
         request.session.pop('pending_invitation_cycles', None)
         request.session.pop('pending_bulk_source', None)
 
         if reviewer_tokens:
             messages.success(
                 request,
-                _('Invitations are being sent for %(count)s review cycle(s). %(tokens)s reviewer invitations go out in %(emails)s emails, one per address.')
+                _('Invitations for %(count)s review cycle(s) are queued. %(tokens)s reviewer invitations go out in %(emails)s emails, one per address, within about five minutes.')
                 % {'count': len(cycles), 'tokens': reviewer_tokens, 'emails': reviewer_emails}
             )
         else:
             messages.success(
                 request,
-                _('Invitations are being sent for %(count)s review cycle(s).') % {'count': len(cycles)}
+                _('Invitations for %(count)s review cycle(s) are queued and go out within about five minutes.') % {'count': len(cycles)}
             )
         return redirect('review_cycle_list')
 
@@ -2419,17 +2399,13 @@ def assign_invitations(request, cycle_uuid):
         # Check if user wants to send invitations immediately
         action = request.POST.get('action', 'assign')
         if action == 'assign' and stats['assigned'] > 0:
-            # Send invitations immediately
-            send_stats = send_reviewer_invitations(cycle)
+            # Put the invitations in the outbox
+            queued = queue_invitations(cycle.tokens.all())
 
-            if send_stats['sent'] > 0:
-                messages.success(request, _('Successfully invited %(assigned)s reviewer(s) and sent %(sent)s email(s).') % {'assigned': stats['assigned'], 'sent': send_stats['sent']})
+            if queued:
+                messages.success(request, _('Invited %(assigned)s reviewer(s). %(queued)s invitation email(s) go out within about five minutes.') % {'assigned': stats['assigned'], 'queued': queued})
             else:
                 messages.success(request, _('Successfully assigned %(assigned)s email(s). Invitations will be sent separately.') % {'assigned': stats['assigned']})
-
-            if send_stats['errors']:
-                for error in send_stats['errors']:
-                    messages.error(request, error)
         elif stats['assigned'] > 0:
             messages.success(request, _('Successfully assigned %(assigned)s email(s). No invitations sent yet.') % {'assigned': stats['assigned']})
 
@@ -2440,20 +2416,23 @@ def assign_invitations(request, cycle_uuid):
 
 @login_required
 def send_invitations(request, cycle_uuid):
-    """Send email invitations to assigned reviewers"""
+    """Queue the email invitations to assigned reviewers: all pending ones, or the one token posted"""
     cycle = get_cycle_or_404(request, cycle_uuid)
 
     if request.method == 'POST':
+        tokens = cycle.tokens.all()
         token_id = request.POST.get('token_id')
-        stats = send_reviewer_invitations(cycle, token_ids=[token_id] if token_id else None)
+        if token_id:
+            tokens = tokens.filter(id=token_id)
+        queued = queue_invitations(tokens)
 
-        if stats['errors']:
-            for error in stats['errors']:
-                messages.error(request, error)
-
-        if stats['sent'] > 0:
-            messages.success(request, _('Successfully sent %(sent)s invitation email(s).') % {'sent': stats['sent']})
-        elif stats['sent'] == 0 and not stats['errors']:
+        if queued:
+            messages.success(request, ngettext(
+                '%(count)s invitation email goes out within about five minutes.',
+                '%(count)s invitation emails go out within about five minutes.',
+                queued,
+            ) % {'count': queued})
+        else:
             messages.info(request, _('No pending invitations to send.'))
 
         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
@@ -2473,12 +2452,11 @@ def send_reviewee_links(request, cycle_uuid):
         messages.error(request, _('This cycle has no links to send.'))
         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
-    stats = {'sent': 0, 'errors': []}
-    send_invitation_links_email(cycle, categories, stats)
-
-    for error in stats['errors']:
-        messages.error(request, error)
-    if stats['sent']:
+    try:
+        send_links_email(cycle, categories)
+    except Exception as e:
+        messages.error(request, _('Failed to send invitation links email: %(error)s') % {'error': str(e)})
+    else:
         messages.success(request, _('The links have been sent to %(email)s.') % {'email': cycle.reviewee.email})
 
     return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
@@ -2486,20 +2464,19 @@ def send_reviewee_links(request, cycle_uuid):
 
 @login_required
 def send_reminder(request, cycle_uuid):
-    """Send reminder emails for pending reviews"""
+    """Queue reminder emails for pending reviews. The cron sends one email per reviewer."""
     cycle = get_cycle_or_404(request, cycle_uuid)
 
     if request.method == 'POST':
-        # Send reminders
-        stats = send_reminder_emails(cycle)
+        queued = queue_reminders(cycle.tokens.all())
 
-        if stats['errors']:
-            for error in stats['errors']:
-                messages.error(request, error)
-
-        if stats['sent'] > 0:
-            messages.success(request, _('Successfully sent %(sent)s reminder(s).') % {'sent': stats['sent']})
-        elif stats['sent'] == 0 and not stats['errors']:
+        if queued:
+            messages.success(request, ngettext(
+                'A reminder for %(count)s open review goes out within about five minutes.',
+                'Reminders for %(count)s open reviews go out within about five minutes, one email per reviewer.',
+                queued,
+            ) % {'count': queued})
+        else:
             messages.info(request, _('No pending reminders to send.'))
 
         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
@@ -2510,7 +2487,7 @@ def send_reminder(request, cycle_uuid):
 @login_required
 @require_POST
 def send_individual_reminder(request, cycle_uuid, token_id):
-    """Send a reminder email to a specific reviewer"""
+    """Queue a reminder email to a specific reviewer"""
     cycle = get_cycle_or_404(request, cycle_uuid)
 
     try:
@@ -2530,13 +2507,8 @@ def send_individual_reminder(request, cycle_uuid, token_id):
             messages.info(request, _('This reviewer has already completed their feedback.'))
             return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
 
-        # The shared reminder picks the reviewer's language and the organization's mail server
-        stats = send_reminder_emails(cycle, token_ids=[token.id])
-
-        if stats['sent']:
-            messages.success(request, _('Reminder sent to reviewer.'))
-        for error in stats['errors']:
-            messages.error(request, error)
+        queue_reminders(ReviewerToken.objects.filter(pk=token.pk))
+        messages.success(request, _('The reminder goes out within about five minutes.'))
 
     except ReviewerToken.DoesNotExist:
         messages.error(request, _('Reviewer token not found.'))

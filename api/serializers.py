@@ -373,7 +373,7 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
     send_invitations = serializers.BooleanField(
         default=True,
         write_only=True,
-        help_text="Automatically send invitation emails to reviewers",
+        help_text="Queue the invitation emails to the reviewers; they go out within about five minutes",
     )
 
     tokens = ReviewerTokenWithUUIDSerializer(many=True, read_only=True)
@@ -464,10 +464,10 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
                     )
                     created_tokens.append(token)
 
-        # Send invitations if requested
+        # Queue the invitations if requested; the send_queued_invitations cron sends them
         if send_invitations and created_tokens:
-            from reviews.services import send_reviewer_invitations
-            send_reviewer_invitations(cycle)
+            from reviews.outbox import queue_invitations
+            queue_invitations(cycle.tokens.all())
 
         return cycle
 

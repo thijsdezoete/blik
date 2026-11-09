@@ -367,7 +367,9 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         tags=["cycles"],
-        description="Send reminder emails to incomplete reviewers",
+        description="Queue reminder emails to incomplete reviewers. They go out within about five minutes, "
+        "one email per reviewer. `queued` is the number of reminders put in the queue; `sent` repeats it for "
+        "clients of earlier releases.",
         request={
             "application/json": {
                 "type": "object",
@@ -384,12 +386,12 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def send_reminders(self, request, uuid=None):
         """
-        Send reminder emails to incomplete reviewers.
+        Queue reminder emails to incomplete reviewers.
 
         POST /api/v1/cycles/{id}/send_reminders/
         Body: {"token_ids": [1, 2, 3]}  # Optional, all pending if not provided
         """
-        from reviews.services import send_reminder_emails
+        from reviews.outbox import queue_reminders
 
         cycle = self.get_object()
         token_ids = request.data.get("token_ids") or None
@@ -398,9 +400,9 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         if token_ids:
             pending_tokens = pending_tokens.filter(id__in=token_ids)
 
-        stats = send_reminder_emails(cycle, token_ids=token_ids)
+        queued = queue_reminders(pending_tokens)
 
-        return Response({"sent": stats["sent"], "total_pending": pending_tokens.count(), "errors": stats["errors"]})
+        return Response({"queued": queued, "sent": queued, "total_pending": pending_tokens.count(), "errors": []})
 
     @extend_schema(
         tags=["cycles"],

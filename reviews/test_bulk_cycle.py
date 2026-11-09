@@ -7,16 +7,13 @@ from accounts.models import Reviewee
 from core.factories import OrganizationFactory, UserFactory
 from accounts.factories import UserProfileFactory, RevieweeFactory
 from questionnaires.factories import QuestionnaireFactory
-from reviews.models import ReviewCycle
+from reviews.models import ReviewCycle, ReviewerToken
 
 
-# core.email bypasses Django's test email backend (it builds a live SMTP
-# EmailBackend directly), so mail.outbox stays empty even in tests. Instead we
-# assert on calls to send_reviewee_notifications — the single integration
-# seam between the bulk flow and the email machinery. Patched where it is
-# used: admin_views binds the name at import time, so patching the source
-# module would not reach it. admin_views is its only caller.
-NOTIFY_PATH = 'blik.admin_views.send_reviewee_notifications'
+# The bulk views put the emails in the outbox; the send_queued_invitations cron sends them.
+# So the tests assert on the queue, and that the request itself sends nothing:
+# `reviews.services.send_email` is the one seam every email goes through.
+SEND_MAIL = 'reviews.services.send_email'
 
 
 class BulkCycleCreationTestCase(TestCase):
@@ -46,15 +43,18 @@ class BulkCycleCreationTestCase(TestCase):
         self.client = Client()
         self.client.force_login(self.user)
 
-    def test_bulk_create_does_not_send_emails(self):
-        with patch(NOTIFY_PATH) as notify:
-            response = self.client.post(
-                reverse('review_cycle_create'),
-                {
-                    'creation_mode': 'bulk',
-                    'questionnaire': str(self.questionnaire.id),
-                },
-            )
+    def create_bulk(self):
+        return self.client.post(
+            reverse('review_cycle_create'),
+            {'creation_mode': 'bulk', 'questionnaire': str(self.questionnaire.id)},
+        )
+
+    def queued_tokens(self):
+        return ReviewerToken.objects.filter(invitation_queued_at__isnull=False)
+
+    def test_bulk_create_does_not_send_or_queue_emails(self):
+        with patch(SEND_MAIL) as send:
+            response = self.create_bulk()
 
         self.assertRedirects(response, reverse('bulk_send_invitations'))
         self.assertEqual(
@@ -62,48 +62,42 @@ class BulkCycleCreationTestCase(TestCase):
             self.expected_cycle_count,
         )
         # Critical: bulk create must not trigger the send path.
-        notify.assert_not_called()
+        send.assert_not_called()
+        self.assertFalse(self.queued_tokens().exists())
+        self.assertFalse(ReviewCycle.objects.filter(links_email_queued_at__isnull=False).exists())
 
         # Session carries the new cycle uuids for the confirmation step.
         pending = self.client.session.get('pending_invitation_cycles', [])
         self.assertEqual(len(pending), self.expected_cycle_count)
 
     def test_bulk_send_invitations_get_lists_pending_cycles(self):
-        with patch(NOTIFY_PATH):
-            self.client.post(
-                reverse('review_cycle_create'),
-                {'creation_mode': 'bulk', 'questionnaire': str(self.questionnaire.id)},
-            )
+        self.create_bulk()
         response = self.client.get(reverse('bulk_send_invitations'))
         self.assertEqual(response.status_code, 200)
         for reviewee in self.reviewees:
             self.assertContains(response, reviewee.name)
 
-    def test_bulk_send_invitations_post_fires_notifications(self):
-        with patch(NOTIFY_PATH):
-            self.client.post(
-                reverse('review_cycle_create'),
-                {'creation_mode': 'bulk', 'questionnaire': str(self.questionnaire.id)},
-            )
+    def test_bulk_send_invitations_post_queues_the_reviewee_emails(self):
+        """Without reviewer addresses, every reviewee gets their self-assessment and the links
+        to share. Both wait in the outbox; the request sends nothing."""
+        self.create_bulk()
 
-        with patch(NOTIFY_PATH) as notify:
-            with self.captureOnCommitCallbacks(execute=True):
-                response = self.client.post(reverse('bulk_send_invitations'))
+        with patch(SEND_MAIL) as send:
+            response = self.client.post(reverse('bulk_send_invitations'))
 
         self.assertRedirects(response, reverse('review_cycle_list'))
-        self.assertEqual(
-            notify.call_count, self.expected_cycle_count,
-            'One notification call per cycle should be scheduled via on_commit',
-        )
+        send.assert_not_called()
+        cycles = ReviewCycle.objects.filter(questionnaire=self.questionnaire)
+        self.assertEqual(cycles.filter(links_email_queued_at__isnull=False).count(), self.expected_cycle_count)
+        self.assertEqual(self.queued_tokens().filter(category='self').count(), self.expected_cycle_count)
 
-        # Session cleared after sends are scheduled.
+        # Session cleared once the emails are queued.
         self.assertNotIn('pending_invitation_cycles', self.client.session)
 
-    def test_chart_bulk_send_groups_reviewer_invitations_across_cycles(self):
-        """Chart-derived cycles carry reviewer emails. One person reviewing several
-        colleagues gets one grouped email, not one per cycle: the view hands every
-        pending token of the batch to send_grouped_invitations in a single call.
-        """
+    def test_chart_bulk_send_queues_every_reviewer_invitation_and_no_reviewee_email(self):
+        """Chart-derived cycles carry reviewer emails. Every pending token goes in the outbox,
+        where the cron groups them per address; the reviewee gets no separate self-assessment
+        or links email, their self-assessment rides along in their bundle."""
         from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
 
         cycles = [
@@ -122,11 +116,11 @@ class BulkCycleCreationTestCase(TestCase):
         session['pending_bulk_source'] = 'chart'
         session.save()
 
-        with patch(NOTIFY_PATH) as notify, patch('blik.admin_views.send_grouped_invitations') as grouped:
-            with self.captureOnCommitCallbacks(execute=True):
-                self.client.post(reverse('bulk_send_invitations'))
+        with patch(SEND_MAIL) as send:
+            response = self.client.post(reverse('bulk_send_invitations'), follow=True)
 
-        # The self-assessments ride along in the bundle; no separate reviewee mail.
-        grouped.assert_called_once()
-        self.assertEqual(set(grouped.call_args.args[0]), set(tokens))
-        notify.assert_not_called()
+        send.assert_not_called()
+        self.assertEqual(set(self.queued_tokens()), set(tokens))
+        self.assertFalse(ReviewCycle.objects.filter(links_email_queued_at__isnull=False).exists())
+        # Four invitations, three addresses: carol's two forms go in one email
+        self.assertContains(response, '4 reviewer invitations go out in 3 emails')

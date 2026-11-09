@@ -14,7 +14,7 @@ from accounts.permissions import assign_organization_admin, ensure_permission_gr
 from core.factories import OrganizationFactory
 from core.languages import get_base_language, request_language, translation_languages
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
-from reviews.services import send_reminder_emails, send_reviewer_invitations
+from reviews.outbox import queue_invitations, queue_reminders, send_queued_emails
 
 
 class VariantTests(SimpleTestCase):
@@ -147,8 +147,10 @@ class EmailLanguageTests(TestCase):
         ReviewerTokenFactory(cycle=self.cycle, reviewer_email='a@example.com', language='en')
         ReviewerTokenFactory(cycle=self.cycle, reviewer_email='b@example.com')
 
+        queue_invitations(self.cycle.tokens.all())
+
         with patch('reviews.services.send_email', side_effect=self.capture):
-            send_reviewer_invitations(self.cycle)
+            send_queued_emails()
 
         self.assertEqual(sorted(self.languages), ['de', 'en'])
 
@@ -156,16 +158,20 @@ class EmailLanguageTests(TestCase):
         ReviewerTokenFactory(cycle=self.cycle, reviewer_email='a@example.com', language='de-informal',
                              invitation_sent_at=timezone.now())
 
+        queue_reminders(self.cycle.tokens.all())
+
         with patch('reviews.services.send_email', side_effect=self.capture):
-            send_reminder_emails(self.cycle)
+            send_queued_emails()
 
         self.assertEqual(self.languages, ['de-informal'])
 
     def test_the_language_is_restored_after_sending(self):
         ReviewerTokenFactory(cycle=self.cycle, reviewer_email='a@example.com', language='de')
 
+        queue_invitations(self.cycle.tokens.all())
+
         with translation.override(settings.LANGUAGE_CODE), patch('reviews.services.send_email', side_effect=self.capture):
-            send_reviewer_invitations(self.cycle)
+            send_queued_emails()
             self.assertEqual(translation.get_language(), settings.LANGUAGE_CODE)
 
 

@@ -328,46 +328,6 @@ def send_token_email(token, reminder=False, connection=None):
         )
 
 
-def send_reviewer_invitations(cycle, token_ids=None):
-    """
-    Send email invitations to reviewers.
-
-    Args:
-        cycle: ReviewCycle instance
-        token_ids: Optional list of specific token IDs to send (defaults to all with emails)
-
-    Returns:
-        dict: Statistics about emails sent
-    """
-    stats = {
-        'sent': 0,
-        'errors': []
-    }
-
-    tokens = cycle.tokens.filter(reviewer_email__isnull=False)
-
-    if token_ids:
-        tokens = tokens.filter(id__in=token_ids)
-    else:
-        # Bulk send: only tokens that haven't been sent yet and aren't completed.
-        tokens = tokens.filter(invitation_sent_at__isnull=True, completed_at__isnull=True)
-
-    for token in tokens:
-        try:
-            send_token_email(token)
-
-            # Mark as sent
-            token.invitation_sent_at = timezone.now()
-            token.save()
-
-            stats['sent'] += 1
-
-        except Exception as e:
-            stats['errors'].append(_('Failed to send to %(email)s: %(error)s') % {'email': token.reviewer_email, 'error': str(e)})
-
-    return stats
-
-
 # What the reviewee is to the reviewer. The token category names the reviewer's role
 # ("direct report review" = a direct report reviews), which reads backwards to the reviewer.
 REVIEWER_RELATION = {
@@ -460,135 +420,6 @@ def send_bundle_email(email, tokens, reminder=False, connection=None):
         )
 
 
-def send_grouped_invitations(tokens):
-    """Send pending invitations, one email per address.
-
-    A person who reviews several colleagues, or one colleague on several questionnaires, gets
-    one email with every link instead of one email per token. An address with a single token
-    gets the usual invitation.
-
-    Args:
-        tokens: ReviewerTokens with an email, not yet invited and not completed
-
-    Returns:
-        dict: emails sent, tokens they covered, and errors
-    """
-    stats = {
-        'sent': 0,
-        'tokens': 0,
-        'errors': []
-    }
-
-    groups = {}
-    for token in tokens:
-        groups.setdefault(token.reviewer_email.lower(), []).append(token)
-
-    for email, group in groups.items():
-        try:
-            if len(group) == 1:
-                send_token_email(group[0])
-            else:
-                send_bundle_email(email, group)
-
-            now = timezone.now()
-            for token in group:
-                token.invitation_sent_at = now
-                token.save(update_fields=['invitation_sent_at'])
-
-            stats['sent'] += 1
-            stats['tokens'] += len(group)
-
-        except Exception as e:
-            stats['errors'].append(_('Failed to send to %(email)s: %(error)s') % {'email': email, 'error': str(e)})
-
-    return stats
-
-
-def send_reminder_emails(cycle, token_ids=None):
-    """
-    Send reminder emails to reviewers who haven't completed feedback.
-
-    Args:
-        cycle: ReviewCycle instance
-        token_ids: Optional list of specific token IDs to remind
-
-    Returns:
-        dict: Statistics about reminders sent
-    """
-    stats = {
-        'sent': 0,
-        'errors': []
-    }
-
-    # Get incomplete tokens with emails that have been invited
-    tokens = cycle.tokens.filter(
-        reviewer_email__isnull=False,
-        invitation_sent_at__isnull=False,
-        completed_at__isnull=True
-    )
-
-    if token_ids:
-        tokens = tokens.filter(id__in=token_ids)
-
-    for token in tokens:
-        try:
-            send_token_email(token, reminder=True)
-
-            # Update last reminder sent timestamp
-            token.last_reminder_sent_at = timezone.now()
-            token.save(update_fields=['last_reminder_sent_at'])
-
-            stats['sent'] += 1
-
-        except Exception as e:
-            stats['errors'].append(_('Failed to send reminder to %(email)s: %(error)s') % {'email': token.reviewer_email, 'error': str(e)})
-
-    return stats
-
-
-def send_reviewee_notifications(cycle, request=None):
-    """
-    Send emails to reviewee when a cycle is created:
-    1. Self-assessment link
-    2. Invitation links to share with others
-
-    Args:
-        cycle: ReviewCycle instance
-        request: Optional request object for building absolute URLs
-
-    Returns:
-        dict: Statistics about emails sent
-    """
-    stats = {
-        'sent': 0,
-        'errors': []
-    }
-
-    if not cycle.reviewee.email:
-        stats['errors'].append(_('No email address for reviewee %(name)s') % {'name': cycle.reviewee.name})
-        return stats
-
-    # 1. Send the self-assessment email, unless this cycle skips self review
-    if cycle.collects('self'):
-        send_assessment_email(cycle, stats)
-
-    # 2. Send the links the reviewee shares with everyone else. Self is not
-    # among them: the reviewee got their own link above.
-    link_categories = [c for c in cycle.active_categories if c != 'self']
-
-    if link_categories:
-        send_invitation_links_email(cycle, link_categories, stats)
-
-    return stats
-
-
-def send_assessment_email(cycle, stats):
-    """Send the reviewee their self-assessment token. Records into `stats`."""
-    sent = send_reviewer_invitations(cycle, token_ids=[self_assessment_token(cycle).id])
-    stats['sent'] += sent['sent']
-    stats['errors'] += sent['errors']
-
-
 def send_links_email(cycle, categories, connection=None):
     """Send the reviewee the links to share, one per category."""
     with translation.override(reviewee_language(cycle.reviewee)):
@@ -609,15 +440,6 @@ def send_links_email(cycle, categories, connection=None):
             html_message=render_to_string('emails/reviewee_invitation_links.html', context),
             connection=connection,
         )
-
-
-def send_invitation_links_email(cycle, categories, stats):
-    """Send the reviewee the links to share, one per category. Records into `stats`."""
-    try:
-        send_links_email(cycle, categories)
-        stats['sent'] += 1
-    except Exception as e:
-        stats['errors'].append(_('Failed to send invitation links email: %(error)s') % {'error': str(e)})
 
 
 def send_close_check_emails(dry_run=False):

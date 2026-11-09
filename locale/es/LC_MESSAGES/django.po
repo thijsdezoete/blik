@@ -3,20 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Blik\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 07:26+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: French\n"
-"Language: fr\n"
+"POT-Creation-Date: 2026-11-02 10:20+0000\n"
+
+
+"Language-Team: Spanish\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "GDPR: Soft delete (anonymize identifiable data)"
 msgstr "RGPD: Eliminación suave (anonimizar datos identificables)"
@@ -27,7 +26,7 @@ msgstr "Error de anonimización %(name)s: %(error)s"
 
 #, python-format
 msgid "Successfully anonymized %(count)s reviewee(s). Personal data removed, review cycles preserved."
-msgstr "Anonimizado con éxito %(count)s o los revisados. Datos personales eliminados, ciclos de revisión preservados."
+msgstr "Anonimizado con éxito %(count)s o los personas evaluadas. Datos personales eliminados, ciclos de evaluación preservados."
 
 msgid "GDPR: Hard delete (complete removal with all data)"
 msgstr "RGPD: Eliminación completa (eliminación completa con todos los datos)"
@@ -38,10 +37,10 @@ msgstr "Error al eliminar %(name)s: %(error)s"
 
 #, python-format
 msgid "Successfully deleted %(count)s reviewee(s) and %(cycles)s review cycle(s) with all related data."
-msgstr "Eliminado con éxito %(count)s o destinatarios de la revisión y %(cycles)s ciclo(s) de revisión con todos los datos relacionados."
+msgstr "Eliminado con éxito %(count)s o persona evaluada y %(cycles)s ciclo(s) de evaluación con todos los datos relacionados."
 
 msgid "GDPR: Full anonymization (reviewee + reviewer emails)"
-msgstr "RGPD: Anonimización total (correos electrónicos del revisado + del revisor)"
+msgstr "RGPD: anonimización completa (correos electrónicos de la persona evaluada y de los evaluadores)"
 
 #, python-format
 msgid "Error in full anonymization for %(name)s: %(error)s"
@@ -49,14 +48,14 @@ msgstr "Error en la anonimización total para %(name)s: %(error)s"
 
 #, python-format
 msgid "Successfully fully anonymized %(count)s reviewee(s) including reviewer emails."
-msgstr "Autorizado con éxito %(count)s o los revisados, incluidos los correos electrónicos de los revisores."
+msgstr "Autorizado con éxito %(count)s o los personas evaluadas, incluidos los correos electrónicos de los evaluadores."
 
 msgid "Show GDPR data summary"
 msgstr "Mostrar resumen de los datos del RGPD"
 
 #, python-format
 msgid "Reviewee %(name)s: %(cycles)s cycles, %(tokens)s tokens, %(responses)s responses, %(reports)s reports"
-msgstr "Revisado %(name)s: %(cycles)s ciclos, tokens %(tokens)s , respuestas %(responses)s %(reports)s informes"
+msgstr "Persona evaluada %(name)s: %(cycles)s ciclos, %(tokens)s tokens, %(responses)s respuestas, %(reports)s informes"
 
 #, python-format
 msgid "Error getting summary for %(name)s: %(error)s"
@@ -86,7 +85,7 @@ msgstr "Eliminé con éxito %(count)s usuario(s) y sus perfiles."
 
 #, python-format
 msgid "User %(username)s: Created %(cycles)s review cycles"
-msgstr "%(username)sde usuario: Creado %(cycles)s ciclos de revisión"
+msgstr "%(username)sde usuario: Creado %(cycles)s ciclos de evaluación"
 
 msgid "Accepted"
 msgstr "Aceptado"
@@ -107,7 +106,7 @@ msgstr "Estado"
 
 #, python-format
 msgid "Accepted on %(date)s"
-msgstr "Aceptado en %(date)s"
+msgstr "Aceptado el %(date)s"
 
 #, python-format
 msgid "EXPIRED on %(date)s"
@@ -121,7 +120,7 @@ msgid "Invitation Expiration"
 msgstr "Expiración de la invitación"
 
 msgid "Accounts"
-msgstr "Relatos"
+msgstr "Cuentas"
 
 msgid "First Name"
 msgstr "Nombre de pila"
@@ -148,7 +147,7 @@ msgid "Used for the dashboard and for emails to you."
 msgstr "Se usa para el panel de control y para los correos electrónicos que te envía."
 
 msgid "Browser language"
-msgstr "Lenguaje del navegador"
+msgstr "Idioma del navegador"
 
 msgid "This email address is already in use."
 msgstr "Esta dirección de correo electrónico ya está en uso."
@@ -210,7 +209,7 @@ msgstr "Usuario en el índice %(index)s campo requerido faltante: '%(field)s'"
 
 #, python-format
 msgid "Reviewee at index %(index)s must be an object"
-msgstr "El revisado en el índice %(index)s debe ser un objeto"
+msgstr "El persona evaluada en el índice %(index)s debe ser un objeto"
 
 #, python-format
 msgid "Reviewee at index %(index)s missing required field: '%(field)s'"
@@ -242,11 +241,11 @@ msgstr "El cuestionario %(index)s sección %(section)s '%(field)s' debe ser un a
 
 #, python-format
 msgid "Review cycle at index %(index)s must be an object"
-msgstr "El ciclo de revisión en el índice %(index)s debe ser un objeto"
+msgstr "El ciclo de evaluación en el índice %(index)s debe ser un objeto"
 
 #, python-format
 msgid "Review cycle at index %(index)s missing '%(field)s'"
-msgstr "Ciclo de revisión en el índice %(index)s falta: '%(field)s'"
+msgstr "ciclo de evaluación en el índice %(index)s falta: '%(field)s'"
 
 #, python-format
 msgid "Report at index %(index)s must be an object"
@@ -271,11 +270,11 @@ msgstr "Sin nombre"
 
 #, python-format
 msgid "Created duplicate reviewee: %(name)s with email %(email)s (original: %(original)s)"
-msgstr "Creado duplicado de la revisión: %(name)s con correo electrónico %(email)s (original: %(original)s)"
+msgstr "Persona evaluada duplicada creada: %(name)s con el correo electrónico %(email)s (original: %(original)s)"
 
 #, python-format
 msgid "Failed to import reviewee %(reviewee)s: %(error)s"
-msgstr "No se ha importado el destinatario de la reseña %(reviewee)s: %(error)s"
+msgstr "No se pudo importar la persona evaluada %(reviewee)s: %(error)s"
 
 msgid "unknown"
 msgstr "Desconocido"
@@ -294,11 +293,11 @@ msgstr "No se importó el cuestionario %(questionnaire)s: %(error)s"
 
 #, python-format
 msgid "Reviewee '%(name)s' not found - skipping cycle"
-msgstr "Revisado '%(name)s' no encontrado - saltándose el ciclo"
+msgstr "persona evaluada '%(name)s' no encontrado - saltándose el ciclo"
 
 #, python-format
 msgid "Questionnaire '%(name)s' not found - skipping cycle"
-msgstr "Cuestionario '%(name)s' no encontrado - salto el ciclo"
+msgstr "Cuestionario '%(name)s' no encontrado: se omite el ciclo"
 
 #, python-format
 msgid "Skipped %(count)s responses for cycle - response import requires UUID-based question matching"
@@ -306,7 +305,7 @@ msgstr "Omití %(count)s respuestas para el ciclo: la importación de respuestas
 
 #, python-format
 msgid "Failed to import review cycle: %(error)s"
-msgstr "No se ha importado el ciclo de revisión: %(error)s"
+msgstr "No se ha importado el ciclo de evaluación: %(error)s"
 
 #, python-format
 msgid "Username '%(username)s' belongs to another organization - skipped"
@@ -326,11 +325,11 @@ msgstr "El usuario '%(username)s' se creó con una contraseña aleatoria. Tendr�
 
 #, python-format
 msgid "Failed to import user %(username)s: %(error)s"
-msgstr "No se pudo importar %(username)sde usuario : %(error)s"
+msgstr "No se pudo importar el usuario %(username)s: %(error)s"
 
 #, python-format
 msgid "Reviewee '%(name)s' not found for report - skipping"
-msgstr "Revisado '%(name)s' no encontrado para el informe - saltándose"
+msgstr "persona evaluada '%(name)s' no encontrado para el informe - saltándose"
 
 #, python-format
 msgid "No questionnaire found for report (reviewee: %(name)s) - skipping"
@@ -341,10 +340,10 @@ msgid "Failed to import report: %(error)s"
 msgstr "No se ha incluido el informe de importación: %(error)s"
 
 msgid "Skipped cycle import: requires both reviewees and questionnaires to be imported"
-msgstr "Importación de ciclos saltados: requiere importar tanto a los revisados como a los cuestionarios"
+msgstr "Importación de ciclos saltados: requiere importar tanto a los personas evaluadas como a los cuestionarios"
 
 msgid "Reviewees"
-msgstr "Reseñadores"
+msgstr "Personas evaluadas"
 
 msgid "Questionnaires"
 msgstr "Cuestionarios"
@@ -408,11 +407,11 @@ msgstr "Esta invitación ha expirado o se ha utilizado."
 
 #, python-format
 msgid "Your account is already linked to %(organization)s. Please contact support for multi-organization access."
-msgstr "Tu cuenta ya está vinculada a %(organization)s. Por favor, contacta con soporte para acceso multiorganización."
+msgstr "Tu cuenta ya está vinculada a %(organization)s. Contacta con soporte para solicitar acceso a varias organizaciones."
 
 #, python-format
 msgid "Welcome to %(organization)s! Please log in."
-msgstr "¡Bienvenido a %(organization)s! Por favor, inicia sesión."
+msgstr "¡Te damos la bienvenida a %(organization)s! Inicia sesión."
 
 #, python-format
 msgid "Welcome! Create your account to join %(organization)s"
@@ -422,7 +421,7 @@ msgid "user"
 msgstr "usuario"
 
 msgid "organization"
-msgstr "Organización"
+msgstr "organización"
 
 msgid "If False, user can only create cycles for themselves"
 msgstr "Si es falso, el usuario solo puede crear ciclos para sí mismo"
@@ -464,7 +463,7 @@ msgid "expires at"
 msgstr "expira en"
 
 msgid "invitation"
-msgstr "Invitación"
+msgstr "invitación"
 
 msgid "invitations"
 msgstr "Invitaciones"
@@ -505,56 +504,10 @@ msgid "active"
 msgstr "Activo"
 
 msgid "reviewee"
-msgstr "Reseñado"
+msgstr "persona evaluada"
 
 msgid "reviewees"
-msgstr "Reseñados"
-
-msgid "Name"
-msgstr "Nombre"
-
-msgid "Department"
-msgstr "Departamento"
-
-msgid "Manager (email or name)"
-msgstr "Responsable (correo electrónico o nombre)"
-
-msgid "Choose the column with the email addresses."
-msgstr "Elige la columna con las direcciones de correo electrónico."
-
-msgid "Choose the column with the names, or the columns with first and last names."
-msgstr "Elige la columna con los nombres, o las columnas con nombre y apellido."
-
-#, python-format
-msgid "Line %(line)s: manager \"%(name)s\" is not in the file."
-msgstr "Línea %(line)s: el responsable \"%(name)s\" no está en el archivo."
-
-#, python-format
-msgid "Line %(line)s: more than one person is called \"%(name)s\". Use the email of the manager."
-msgstr "Línea %(line)s: más de una persona se llama \"%(name)s\". Usa el correo electrónico del responsable."
-
-msgid "The file has no rows."
-msgstr "El archivo no tiene filas."
-
-#, python-format
-msgid "Line %(line)s: invalid email \"%(email)s\"."
-msgstr "Línea %(line)s: correo electrónico no válido \"%(email)s\"."
-
-#, python-format
-msgid "Line %(line)s: %(email)s is in the file twice."
-msgstr "Línea %(line)s: %(email)s aparece dos veces en el archivo."
-
-#, python-format
-msgid "Line %(line)s: the name is empty."
-msgstr "Línea %(line)s: el nombre está vacío."
-
-#, python-format
-msgid "Line %(line)s: manager %(email)s is not in the file."
-msgstr "Línea %(line)s: el responsable %(email)s no está en el archivo."
-
-#, python-format
-msgid "Line %(line)s: a person cannot be their own manager."
-msgstr "Línea %(line)s: una persona no puede ser su propio responsable."
+msgstr "personas evaluadas"
 
 msgid "Authentication required"
 msgstr "Autenticación requerida"
@@ -582,17 +535,10 @@ msgid "User with email %(email)s already exists"
 msgstr "Usuario con %(email)s de correo electrónico ya existe"
 
 msgid "Please use the signup page to create an account."
-msgstr "Por favor, utiliza la página de registro para crear una cuenta."
-
-#, python-format
-msgid "Check your email. We sent your sign-in details to %(email)s."
-msgstr "Revisa tu correo. Hemos enviado tus datos de acceso a %(email)s."
-
-msgid "You already have a Blik360 account"
-msgstr "Ya tienes una cuenta en Blik360"
+msgstr "Utiliza la página de registro para crear una cuenta."
 
 msgid "Invalid signup link. Please use your invitation email."
-msgstr "Enlace de registro inválido. Por favor, usa tu correo de invitación."
+msgstr "El enlace de registro no es válido. Utiliza el enlace incluido en el correo electrónico de invitación."
 
 msgid "This invitation has expired."
 msgstr "Esta invitación ha expirado."
@@ -615,13 +561,13 @@ msgid "Invalid or expired password reset link."
 msgstr "Enlace de restablecimiento de contraseña inválido o caducado."
 
 msgid "This password reset link has expired. Please request a new one."
-msgstr "Este enlace de restablecimiento de contraseña ha caducado. Por favor, solicite uno nuevo."
+msgstr "Este enlace para restablecer la contraseña ha caducado. Solicita uno nuevo."
 
 msgid "Your password has been reset successfully. Please log in."
-msgstr "Tu contraseña ha sido restablecida con éxito. Por favor, inicia sesión."
+msgstr "Tu contraseña se ha restablecido correctamente. Inicia sesión."
 
 msgid "Profile not found. Please contact support."
-msgstr "Perfil no encontrado. Por favor, contacta con el soporte."
+msgstr "No se ha encontrado el perfil. Contacta con soporte."
 
 msgid "Your password has been changed."
 msgstr "Tu contraseña ha sido cambiada."
@@ -633,7 +579,7 @@ msgid "Basic Info"
 msgstr "Información básica"
 
 msgid "Token"
-msgstr "Ficha"
+msgstr "token"
 
 msgid "Permissions"
 msgstr "Permisos"
@@ -794,7 +740,7 @@ msgid "Organization not found"
 msgstr "Organización no encontrada"
 
 msgid "Export failed. Please try again."
-msgstr "Exportación fallida. Por favor, inténtalo de nuevo."
+msgstr "No se pudo exportar. Inténtalo de nuevo."
 
 msgid "Only organization administrators can import data"
 msgstr "Solo los administradores de organizaciones pueden importar datos"
@@ -810,10 +756,10 @@ msgid "Only JSON files are allowed"
 msgstr "Solo se permiten archivos JSON"
 
 msgid "Invalid JSON format. Please check your file."
-msgstr "Formato JSON inválido. Por favor, revisa tu archivo."
+msgstr "El formato JSON no es válido. Revisa el archivo."
 
 msgid "Preview failed. Please try again."
-msgstr "Vista previa fallida. Por favor, inténtalo de nuevo."
+msgstr "No se pudo generar la vista previa. Inténtalo de nuevo."
 
 #, python-format
 msgid "Invalid JSON format: %(error)s"
@@ -854,15 +800,9 @@ msgstr "Error al eliminar organización: %(error)s"
 msgid "Something went wrong."
 msgstr "Algo salió mal."
 
-msgid "Go to Billing"
-msgstr "Ir a Facturación"
-
-#, python-format
-msgid "Invalid email skipped in %(category)s: %(email)s"
-msgstr "Correo electrónico inválido omitido en %(category)s: %(email)s"
-
+#| msgid "You do not have permission to manage organization members."
 msgid "You do not have permission to manage user permissions."
-msgstr "No tienes permiso para gestionar los permisos de usuario."
+msgstr "No tienes permiso para gestionar a los miembros de la organización."
 
 msgid "Invalid request: missing required fields."
 msgstr "Solicitud inválida: faltan campos requeridos."
@@ -886,7 +826,7 @@ msgstr "Actualizado con éxito %(username)s a rol de Miembro."
 
 #, python-format
 msgid "%(username)s can now create review cycles for others."
-msgstr "%(username)s ahora puede crear ciclos de revisión para otros."
+msgstr "%(username)s ahora puede crear ciclos de evaluación para otros."
 
 #, python-format
 msgid "%(username)s can now view all reports."
@@ -915,14 +855,14 @@ msgid "Largest self/others difference"
 msgstr "La mayor diferencia entre uno y otros"
 
 msgid "No organization found. Please run setup first."
-msgstr "No se encontró ninguna organización. Por favor, ejecuta primero la configuración."
+msgstr "No se ha encontrado ninguna organización. Ejecuta primero la configuración."
 
 msgid "You can only create a reviewee profile for yourself."
 msgstr "Solo puedes crear un perfil de evaluado para ti mismo."
 
 #, python-format
 msgid "Reviewee \"%(name)s\" created successfully."
-msgstr "El reseñador \"%(name)s\" se ha creado con éxito."
+msgstr "Persona evaluada \"%(name)s\" creada correctamente."
 
 #, python-format
 msgid "Error creating reviewee: %(error)s"
@@ -932,34 +872,25 @@ msgid "Name and email are required."
 msgstr "Se requiere nombre y correo electrónico."
 
 msgid "You do not have permission to edit reviewees. Only organization administrators can access this feature."
-msgstr "No tienes permiso para editar a los revisados. Solo los administradores de organizaciones pueden acceder a esta función."
+msgstr "No tienes permiso para editar a los personas evaluadas. Solo los administradores de organizaciones pueden acceder a esta función."
 
 #, python-format
 msgid "Reviewee \"%(name)s\" updated successfully."
-msgstr "Revisado \"%(name)s\" actualizado con éxito."
+msgstr "persona evaluada \"%(name)s\" actualizado con éxito."
 
 #, python-format
 msgid "Error updating reviewee: %(error)s"
-msgstr "Revisión de actualización de error: %(error)s"
+msgstr "Error al actualizar la persona evaluada: %(error)s"
 
 msgid "You do not have permission to delete reviewees. Only organization administrators can access this feature."
-msgstr "No tienes permiso para eliminar a los revisados. Solo los administradores de organizaciones pueden acceder a esta función."
+msgstr "No tienes permiso para eliminar a los personas evaluadas. Solo los administradores de organizaciones pueden acceder a esta función."
 
 #, python-format
 msgid "Reviewee \"%(name)s\" deactivated."
-msgstr "Revisado \"%(name)s\" desactivado."
-
-msgid "You do not have permission to create reviewees."
-msgstr "No tienes permiso para crear evaluados."
-
-msgid "No organization context."
-msgstr "Sin contexto de organización."
-
-msgid "Invalid email address."
-msgstr "Dirección de correo electrónico no válida."
+msgstr "persona evaluada \"%(name)s\" desactivado."
 
 msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
-msgstr "No tienes permiso para crear ciclos de revisión. Solo los administradores de la organización pueden acceder a esta función."
+msgstr "No tienes permiso para crear ciclos de evaluación. Solo los administradores de la organización pueden acceder a esta función."
 
 msgid "Questionnaire is required."
 msgstr "Se requiere un cuestionario."
@@ -971,15 +902,15 @@ msgid "Select at least one feedback category."
 msgstr "Selecciona al menos una categoría de feedback."
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Copied %(count)s reviewer(s) from previous cycle. %(queued)s invitation email(s) go out within about five minutes."
-msgstr "Ciclo de revisión creado para \"%(name)s\" usando \"%(questionnaire)s\". Copiado(s) %(count)s revisor(es) del ciclo anterior. %(queued)s correo(s) de invitación salen en unos cinco minutos."
+msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Copied %(count)s reviewer(s) from previous cycle. %(sent)s email invitation(s) sent."
+msgstr "ciclo de evaluación creado para \"%(name)s\" usando \"%(questionnaire)s\". Copiado %(count)s evaluador del ciclo anterior. %(sent)s enviada(s) invitación(es) por correo electrónico."
 
 #, python-format
 msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\" with %(count)s reviewer token(s). Go to the cycle details to assign reviewers and send invitations."
-msgstr "Ciclo de revisión creado para \"%(name)s\" usando \"%(questionnaire)s\" con %(count)s token(s) de revisor(es). Ve a los detalles del ciclo para asignar revisores y enviar invitaciones."
+msgstr "Ciclo de evaluación creado para \"%(name)s\" con \"%(questionnaire)s\" y %(count)s token(s) de evaluador. Ve a los detalles del ciclo para asignar evaluadores y enviar invitaciones."
 
-msgid "The reviewee's emails go out within about five minutes."
-msgstr "Los correos a la persona evaluada salen en unos cinco minutos."
+msgid "Notification emails are being sent to the reviewee."
+msgstr "Se están enviando correos electrónicos de notificación a la persona evaluada."
 
 msgid "Pair with a more senior teammate on a challenging problem this sprint"
 msgstr "Empareja con un compañero más veterano en un problema desafiante en esta carrera"
@@ -1045,7 +976,7 @@ msgid "Question added successfully."
 msgstr "Pregunta añadida con éxito."
 
 msgid "Error adding question. Please try again."
-msgstr "Error añadiendo pregunta. Por favor, inténtalo de nuevo."
+msgstr "Error añadiendo pregunta. inténtalo de nuevo."
 
 #, python-format
 msgid "Section \"%(title)s\" deleted."
@@ -1066,7 +997,7 @@ msgid "Question updated successfully."
 msgstr "Pregunta actualizada con éxito."
 
 msgid "Error updating question. Please try again."
-msgstr "Error actualización de pregunta. Por favor, inténtalo de nuevo."
+msgstr "Error actualización de pregunta. inténtalo de nuevo."
 
 msgid "Dreyfus/Agency configuration updated successfully."
 msgstr "La configuración de Dreyfus/Agencia se actualizó con éxito."
@@ -1083,7 +1014,7 @@ msgstr "Traducción guardada."
 
 #, python-format
 msgid "Questionnaire \"%(name)s\" archived. It is used by %(count)s review cycle(s) and cannot be deleted."
-msgstr "Cuestionario \"%(name)s\" archivado. Es utilizado por %(count)s ciclo(s) de revisión y no puede ser eliminado."
+msgstr "Cuestionario \"%(name)s\" archivado. Es utilizado por %(count)s ciclo(s) de evaluación y no puede ser eliminado."
 
 #, python-format
 msgid "Questionnaire \"%(name)s\" is now in use and was archived instead of deleted."
@@ -1116,48 +1047,44 @@ msgid "Oldest first"
 msgstr "Primero el más antiguo"
 
 msgid "Reviewee A–Z"
-msgstr "Reseñador A–Z"
+msgstr "Personas evaluadas A–Z"
 
 msgid "Fewest responses"
 msgstr "Menos respuestas"
 
 #, python-format
-msgid "Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories."
-msgstr "Se han creado %(count)s ciclos de revisión con revisores del organigrama. Se omitieron %(unplaced)s evaluado(s): el organigrama no les asigna revisores en las categorías seleccionadas."
-
-#, python-format
 msgid "Created %(count)s review cycles. No invitations have been sent yet."
-msgstr "Creada %(count)s ciclos de revisión. Aún no se han enviado invitaciones."
+msgstr "Creada %(count)s ciclos de evaluación. Aún no se han enviado invitaciones."
 
 msgid "Reviewee is required for single cycle creation."
-msgstr "Se requiere un revisado para la creación de un solo ciclo."
+msgstr "Se requiere un persona evaluada para la creación de un solo ciclo."
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes."
-msgstr "Ciclo de revisión creado para \"%(name)s\" con %(assigned)s revisor(es) invitado(s). Los correos de invitación salen en unos cinco minutos."
+msgid "Invalid email skipped in %(category)s: %(email)s"
+msgstr "Correo electrónico inválido omitido en %(category)s: %(email)s"
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. Invitation emails are being sent."
+msgstr "Ciclo de reseñas creado para \"%(name)s\" con %(assigned)s evaluador invitado. Se están enviando correos de invitación."
 
 #, python-format
 msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails."
-msgstr "Ciclo de revisión creado para \"%(name)s\" con %(assigned)s revisor asignado. Visita la página de invitaciones para enviar correos electrónicos."
+msgstr "ciclo de evaluación creado para \"%(name)s\" con %(assigned)s evaluador asignado. Visita la página de invitaciones para enviar correos electrónicos."
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\". The reviewee's emails go out within about five minutes."
-msgstr "Ciclo de revisión creado para \"%(name)s\". Los correos a la persona evaluada salen en unos cinco minutos."
+msgid "Review cycle created for \"%(name)s\". Notification emails are being sent to the reviewee."
+msgstr "Ciclo de evaluación creado para \"%(name)s\". Se están enviando correos electrónicos de notificación a la persona evaluada."
 
 #, python-format
 msgid "Error creating review cycle: %(error)s"
-msgstr "Ciclo de revisión que crea errores: %(error)s"
+msgstr "ciclo de evaluación que crea errores: %(error)s"
 
 msgid "No pending cycles to send invitations for."
 msgstr "No hay ciclos pendientes para enviar invitaciones."
 
 #, python-format
-msgid "Invitations for %(count)s review cycle(s) are queued. %(tokens)s reviewer invitations go out in %(emails)s emails, one per address, within about five minutes."
-msgstr "Las invitaciones para %(count)s ciclo(s) de revisión están en cola. %(tokens)s invitaciones a revisores salen en %(emails)s correos, uno por dirección, en unos cinco minutos."
-
-#, python-format
-msgid "Invitations for %(count)s review cycle(s) are queued and go out within about five minutes."
-msgstr "Las invitaciones para %(count)s ciclo(s) de revisión están en cola y salen en unos cinco minutos."
+msgid "Invitations are being sent for %(count)s review cycle(s)."
+msgstr "Se están enviando invitaciones para %(count)s ciclo(s) de evaluación."
 
 #, python-format
 msgid "Report generated successfully for %(name)s."
@@ -1189,8 +1116,8 @@ msgid "Cycle closed but error generating report: %(error)s"
 msgstr "Ciclo cerrado pero informe generador de errores: %(error)s"
 
 #, python-format
-msgid "Invited %(assigned)s reviewer(s). %(queued)s invitation email(s) go out within about five minutes."
-msgstr "%(assigned)s revisor(es) invitado(s). %(queued)s correo(s) de invitación salen en unos cinco minutos."
+msgid "Successfully invited %(assigned)s reviewer(s) and sent %(sent)s email(s)."
+msgstr "Invité con éxito %(assigned)s evaluador y envié %(sent)s correo electrónico."
 
 #, python-format
 msgid "Successfully assigned %(assigned)s email(s). Invitations will be sent separately."
@@ -1201,10 +1128,8 @@ msgid "Successfully assigned %(assigned)s email(s). No invitations sent yet."
 msgstr "Asignado con éxito %(assigned)s correo electrónico(s). Aún no se han enviado invitaciones."
 
 #, python-format
-msgid "%(count)s invitation email goes out within about five minutes."
-msgid_plural "%(count)s invitation emails go out within about five minutes."
-msgstr[0] "%(count)s correo de invitación sale en unos cinco minutos."
-msgstr[1] "%(count)s correos de invitación salen en unos cinco minutos."
+msgid "Successfully sent %(sent)s invitation email(s)."
+msgstr "Envié con éxito %(sent)s correo electrónico de invitación."
 
 msgid "No pending invitations to send."
 msgstr "No hay invitaciones pendientes que enviar."
@@ -1213,71 +1138,65 @@ msgid "This cycle has no links to send."
 msgstr "Este ciclo no tiene enlaces que enviar."
 
 #, python-format
-msgid "Failed to send invitation links email: %(error)s"
-msgstr "No se envió el correo con los enlaces de invitación: %(error)s"
-
-#, python-format
 msgid "The links have been sent to %(email)s."
 msgstr "Los enlaces se han enviado a %(email)s."
 
 #, python-format
-msgid "A reminder for %(count)s open review goes out within about five minutes."
-msgid_plural "Reminders for %(count)s open reviews go out within about five minutes, one email per reviewer."
-msgstr[0] "Un recordatorio para %(count)s revisión abierta sale en unos cinco minutos."
-msgstr[1] "Los recordatorios para %(count)s revisiones abiertas salen en unos cinco minutos, un correo por revisor."
+msgid "Successfully sent %(sent)s reminder(s)."
+msgstr "Envié con éxito %(sent)s recordatorio(s)."
 
 msgid "No pending reminders to send."
 msgstr "No hay recordatorios pendientes que enviar."
 
 msgid "Cannot send reminder: no email assigned to this reviewer."
-msgstr "No se puede enviar un recordatorio: no se asigna ningún correo electrónico a este revisor."
+msgstr "No se puede enviar un recordatorio: no se asigna ningún correo electrónico a este evaluador."
 
 msgid "Cannot send reminder: invitation not sent yet."
 msgstr "No se puede enviar el recordatorio: la invitación aún no se ha enviado."
 
 msgid "This reviewer has already completed their feedback."
-msgstr "Este revisor ya ha completado su comentario."
+msgstr "Este evaluador ya ha completado su comentario."
 
-msgid "The reminder goes out within about five minutes."
-msgstr "El recordatorio sale en unos cinco minutos."
+msgid "Reminder sent to reviewer."
+msgstr "Recordatorio enviado al evaluador."
 
 msgid "Reviewer token not found."
-msgstr "Token de revisor no encontrado."
+msgstr "Token de evaluador no encontrado."
 
 #, python-format
 msgid "Error sending reminder: %(error)s"
 msgstr "Recordatorio de envío de errores: %(error)s"
 
 msgid "You do not have permission to remove reviewers."
-msgstr "No tienes permiso para eliminar a los revisores."
+msgstr "No tienes permiso para eliminar a los evaluadores."
 
 msgid "Cannot remove: reviewer has already started or completed their feedback."
-msgstr "No se puede eliminar: el revisor ya ha comenzado o completado su feedback."
+msgstr "No se puede eliminar: el evaluador ya ha comenzado o completado su feedback."
 
 msgid "unclaimed token"
-msgstr "Ficha no reclamada"
+msgstr "token no reclamada"
 
 #, python-format
 msgid "Removed %(category)s reviewer (%(email)s) from cycle."
-msgstr "He eliminado %(category)s revisor (%(email)s) del ciclo."
+msgstr "He eliminado %(category)s evaluador (%(email)s) del ciclo."
 
-msgid "Cycle automatically closed (all remaining reviewers completed). The report is ready within a few minutes."
-msgstr "Ciclo cerrado automáticamente (todas las personas evaluadoras restantes han terminado). El informe estará listo en unos minutos."
+msgid "Cycle automatically closed and report generated (all remaining reviewers completed)."
+msgstr "El ciclo se cerró automáticamente y se generó el informe (todos los evaluadores restantes completados)."
 
 #, python-format
 msgid "Error removing reviewer: %(error)s"
-msgstr "Error eliminando revisor: %(error)s"
+msgstr "Error eliminando evaluador: %(error)s"
 
 msgid "No report found for this cycle. Please generate the report first."
-msgstr "No se ha encontrado ningún informe para este ciclo. Por favor, generen el informe primero."
-
-#, python-format
-msgid "Failed to send email: %(error)s"
-msgstr "No envié el correo: %(error)s"
+msgstr "No se ha encontrado ningún informe para este ciclo. generen el informe primero."
 
 #, python-format
 msgid "Report email sent to %(name)s at %(email)s."
 msgstr "Reporta el correo enviado a %(name)s en %(email)s."
+
+#, python-format
+msgid "Failed to send email: %(error)s"
+msgstr "No envié el correo: %(error)s"
 
 msgid "Failed to send email."
 msgstr "No envié el correo."
@@ -1288,11 +1207,8 @@ msgstr "No tienes permiso para modificar la configuración de organización."
 msgid "Organization details updated successfully."
 msgstr "Los detalles de la organización se actualizaron con éxito."
 
-msgid "New user settings updated successfully."
-msgstr "Configuración de nuevos usuarios actualizada con éxito."
-
-msgid "Report PDF retention must be a number of days from 1 to 3650."
-msgstr "La conservación del PDF del informe debe ser un número de días entre 1 y 3650."
+msgid "Registration settings updated successfully."
+msgstr "La configuración de registro se actualizó con éxito."
 
 msgid "Report settings updated successfully."
 msgstr "Configuración del informe actualizada con éxito."
@@ -1333,29 +1249,29 @@ msgid "Error deleting user: %(error)s"
 msgstr "Error al eliminar al usuario: %(error)s"
 
 msgid "You do not have permission to delete reviewees."
-msgstr "No tienes permiso para eliminar a los revisados."
+msgstr "No tienes permiso para eliminar a los personas evaluadas."
 
 #, python-format
 msgid "Reviewee %(name)s and all associated reviewer emails have been anonymized. %(count)s reviewer email(s) anonymized."
-msgstr "El destinatario %(name)s y todos los correos electrónicos asociados de los revisores han sido anonimizados. %(count)s correo(s) del revisor han sido anonimizados."
+msgstr "La persona evaluada %(name)s y todos los correos electrónicos asociados de los evaluadores se han anonimizado. %(count)s correo(s) electrónico(s) de evaluador anonimizados."
 
 #, python-format
 msgid "Reviewee %(name)s has been permanently deleted along with %(count)s review cycle(s) and all associated data."
-msgstr "El %(name)s revisado ha sido eliminado permanentemente junto con %(count)s ciclo(s) de revisión y todos los datos asociados."
+msgstr "El %(name)s persona evaluada ha sido eliminado permanentemente junto con %(count)s ciclo(s) de evaluación y todos los datos asociados."
 
 #, python-format
 msgid "Reviewee %(name)s has been anonymized. %(count)s review cycle(s) preserved."
-msgstr "El destinatario %(name)s ha sido anonimizado. %(count)s ciclo(s) de revisión se conserva."
+msgstr "La persona evaluada %(name)s se ha anonimizado. Se han conservado %(count)s ciclo(s) de evaluación."
 
 #, python-format
 msgid "Error deleting reviewee: %(error)s"
-msgstr "Error al eliminar el destinatario de la reseña: %(error)s"
+msgstr "Error al eliminar la persona evaluada: %(error)s"
 
 msgid "You do not have permission to create product reviews."
 msgstr "No tienes permiso para crear reseñas de productos."
 
 msgid "Please fill in all required fields."
-msgstr "Por favor, rellena todos los campos requeridos."
+msgstr "rellena todos los campos requeridos."
 
 msgid "Invalid rating value."
 msgstr "Valor de valoración inválido."
@@ -1378,7 +1294,7 @@ msgid "Product review from \"%(name)s\" has been deleted."
 msgstr "La reseña del producto de \"%(name)s\" ha sido eliminada."
 
 msgid "Please select a rating."
-msgstr "Por favor, selecciona una clasificación."
+msgstr "selecciona una clasificación."
 
 msgid "Your review has been updated and is pending approval. Thank you!"
 msgstr "Tu reseña ha sido actualizada y está pendiente de aprobación. ¡Gracias!"
@@ -1452,33 +1368,6 @@ msgstr "Webhook \"%(name)s\" eliminado con éxito."
 msgid "Error deleting webhook: %(error)s"
 msgstr "Error al eliminar el webhook: %(error)s"
 
-msgid "You do not have permission to edit the org chart."
-msgstr "No tienes permiso para editar el organigrama."
-
-msgid "Choose a CSV file."
-msgstr "Elige un archivo CSV."
-
-msgid "The file is too large."
-msgstr "El archivo es demasiado grande."
-
-msgid "The file is not a readable CSV file. Save it as CSV (UTF-8)."
-msgstr "El archivo no es un CSV legible. Guárdalo como CSV (UTF-8)."
-
-#, python-format
-msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
-msgstr "Se han importado %(units)s unidades: %(created)s personas nuevas, %(updated)s actualizadas."
-
-#, python-format
-msgid "%(name)s is already in this unit."
-msgstr "%(name)s ya está en esta unidad."
-
-#, python-format
-msgid "%(count)s credits left"
-msgstr "%(count)s créditos restantes"
-
-msgid "Free, no limits"
-msgstr "Gratis, sin límites"
-
 msgid "You do not have permission to create organizations."
 msgstr "No tienes permiso para crear organizaciones."
 
@@ -1487,10 +1376,6 @@ msgstr "Se requiere el nombre de la organización."
 
 msgid "Admin email is required."
 msgstr "Se requiere correo de administrador."
-
-#, python-format
-msgid "Review credits must be a number from 0 to %(max)s."
-msgstr "Los créditos de revisión deben ser un número de 0 a %(max)s."
 
 #, python-format
 msgid "Organization \"%(name)s\" already exists."
@@ -1656,25 +1541,16 @@ msgid "minimum responses for anonymity"
 msgstr "Respuestas mínimas para anonimato"
 
 msgid "Automatically send email to reviewee when their report is generated"
-msgstr "Envía automáticamente un correo electrónico al revisado cuando se genere su informe"
+msgstr "Envía automáticamente un correo electrónico al persona evaluada cuando se genere su informe"
 
 msgid "automatically send report email"
 msgstr "Enviar automáticamente un correo electrónico de reporte"
 
-msgid "Attach the report as a PDF to the email sent to the reviewee"
-msgstr "Adjuntar el informe en PDF al correo que recibe la persona evaluada"
+msgid "Allow new users to register for this organization"
+msgstr "Permitir que nuevos usuarios se registren en esta organización"
 
-msgid "attach report PDF"
-msgstr "adjuntar el informe en PDF"
-
-msgid "Days a report PDF is kept. Leave empty to use the default."
-msgstr "Días que se conserva el PDF de un informe. Déjalo vacío para usar el valor predeterminado."
-
-msgid "report PDF retention (days)"
-msgstr "conservación del PDF del informe (días)"
-
-msgid "Stripe customer ID"
-msgstr "ID de cliente Stripe"
+msgid "allow user registration"
+msgstr "permitir el registro de usuarios"
 
 msgid "By default, new users can create cycles for others (not just themselves)"
 msgstr "Por defecto, los nuevos usuarios pueden crear ciclos para otros (no solo para ellos mismos)"
@@ -1698,7 +1574,7 @@ msgid "title"
 msgstr "Título"
 
 msgid "The fact content. Can include HTML tags like <strong> for emphasis."
-msgstr "El contenido de hechos. Puede incluir etiquetas HTML <strong> para enfatizar.</strong>"
+msgstr "El contenido puede incluir etiquetas HTML como <strong> para dar énfasis."
 
 msgid "content"
 msgstr "Contenido"
@@ -1748,7 +1624,7 @@ msgid "Organization \"%(name)s\" configured successfully!"
 msgstr "¡Organización \"%(name)s\" configurada correctamente!"
 
 msgid "No organization found. Please complete organization setup first."
-msgstr "No se encontró ninguna organización. Por favor, complete primero la configuración de la organización."
+msgstr "No se encontró ninguna organización. complete primero la configuración de la organización."
 
 msgid "Using Blik's managed email service. All set!"
 msgstr "Usando el servicio de correo gestionado de Blik. ¡Todo listo!"
@@ -1767,25 +1643,17 @@ msgid "Could not load default questionnaires: %(error)s"
 msgstr "No se pudieron cargar los cuestionarios por defecto: %(error)s"
 
 msgid "Demo data generated successfully! Created 15 reviewees with diverse review cycles in various states. Check the dashboard to explore."
-msgstr "¡Datos de demostración generados con éxito! Creé 15 evaluados con ciclos de revisión diversos en varios estados. Consulta el panel de control para explorar."
+msgstr "¡Datos de demostración generados con éxito! Creé 15 evaluados con ciclos de evaluación diversos en varios estados. Consulta el panel de control para explorar."
 
 #, python-format
 msgid "Failed to generate demo data: %(error)s"
 msgstr "No se han generado datos de demostración: %(error)s"
 
-#, python-format
-msgid "%(command)s: last run %(time)s"
-msgstr "%(command)s: última ejecución %(time)s"
-
-#, python-format
-msgid "%(command)s: never ran"
-msgstr "%(command)s: nunca se ha ejecutado"
-
 msgid "Notifications"
 msgstr "Notificaciones"
 
 msgid "Your account is ready. One step left."
-msgstr "Tu cuenta está lista. Un paso a la izquierda."
+msgstr "Tu cuenta está lista. Solo falta un paso."
 
 #, python-format
 msgid "%(name)s's cycle is set up. Invite the reviewers."
@@ -1806,7 +1674,7 @@ msgid "The first 360 report of %(organization)s is ready"
 msgstr "El primer informe 360 de %(organization)s está listo"
 
 msgid "No review cycle yet"
-msgstr "Todavía no hay ciclo de revisión"
+msgstr "Todavía no hay ciclo de evaluación"
 
 msgid "No reviewers yet"
 msgstr "Todavía no hay críticos"
@@ -1827,7 +1695,7 @@ msgid "Report follow-up"
 msgstr "Seguimiento del informe"
 
 msgid "kind"
-msgstr "amable"
+msgstr "tipo"
 
 msgid "object id"
 msgstr "Id de objeto"
@@ -1841,33 +1709,6 @@ msgstr "correo enviado"
 msgid "sent emails"
 msgstr "envió correos electrónicos"
 
-msgid "recipient"
-msgstr "destinatario"
-
-msgid "email log entry"
-msgstr "entrada del registro de correos"
-
-msgid "email log"
-msgstr "registro de correos"
-
-msgid "command"
-msgstr "comando"
-
-msgid "ran at"
-msgstr "ejecutado el"
-
-msgid "sent"
-msgstr "enviados"
-
-msgid "errors"
-msgstr "errores"
-
-msgid "cron run"
-msgstr "ejecución de cron"
-
-msgid "cron runs"
-msgstr "ejecuciones de cron"
-
 #, python-format
 msgid "360 Feedback Request for %(name)s"
 msgstr "Solicitud de comentarios 360 para %(name)s"
@@ -1876,7 +1717,7 @@ msgid "Review Content"
 msgstr "Contenido de la reseña"
 
 msgid "Reviewer Information"
-msgstr "Información del revisor"
+msgstr "Información del evaluador"
 
 msgid "Status & Publishing"
 msgstr "Estado y Publicación"
@@ -1952,22 +1793,22 @@ msgid "reviewer name"
 msgstr "Nombre del crítico"
 
 msgid "Job title of the reviewer (e.g., \"HR Manager\")"
-msgstr "Título del puesto del revisor (por ejemplo, \"Responsable de RRHH\")"
+msgstr "Título del puesto del evaluador (por ejemplo, \"Responsable de RRHH\")"
 
 msgid "reviewer title"
 msgstr "Título del crítico"
 
 msgid "Company/organization the reviewer works for"
-msgstr "Empresa/organización para la que trabaja el revisor"
+msgstr "Empresa/organización para la que trabaja el evaluador"
 
 msgid "company"
 msgstr "Compañía"
 
 msgid "Email address of the reviewer (not shown publicly)"
-msgstr "Dirección de correo electrónico del revisor (no mostrada públicamente)"
+msgstr "Dirección de correo electrónico del evaluador (no mostrada públicamente)"
 
 msgid "reviewer email"
-msgstr "Correo electrónico del revisor"
+msgstr "Correo electrónico del evaluador"
 
 msgid "Verified as actual customer/subscriber"
 msgstr "Verificado como cliente/suscriptor real"
@@ -2042,7 +1883,7 @@ msgid "template key"
 msgstr "Clave de plantilla"
 
 msgid "questionnaire"
-msgstr "Cuestionario"
+msgstr "cuestionario"
 
 msgid "questionnaires"
 msgstr "Cuestionarios"
@@ -2159,7 +2000,7 @@ msgid "Compare strengths across topics in a radar chart."
 msgstr "Compara las fortalezas de los distintos temas en un gráfico de radar."
 
 msgid "Skill level"
-msgstr "Nivel de habilidad"
+msgstr "Nivel de competencia"
 
 msgid "See the stage of skill development (Dreyfus model)."
 msgstr "Consulta la etapa de desarrollo de habilidades (modelo de Dreyfus)."
@@ -2180,7 +2021,10 @@ msgid "Written feedback"
 msgstr "Comentarios escritos"
 
 msgid "Read comments and examples from reviewers."
-msgstr "Lee comentarios y ejemplos de los reseñadores."
+msgstr "Lee comentarios y ejemplos de los evaluadores."
+
+msgid "Name"
+msgstr "Nombre"
 
 msgid "Description"
 msgstr "Descripción"
@@ -2657,13 +2501,13 @@ msgid "Continue developing expertise"
 msgstr "Sigue desarrollando experiencia"
 
 msgid "review cycle"
-msgstr "Ciclo de revisión"
+msgstr "ciclo de evaluación"
 
 msgid "Secure token for reviewee access to their report"
-msgstr "Token seguro para el acceso de los revisados a su informe"
+msgstr "Token seguro para el acceso de los personas evaluadas a su informe"
 
 msgid "access token"
-msgstr "Token de acceso"
+msgstr "token de acceso"
 
 msgid "report data"
 msgstr "Datos del informe"
@@ -2693,99 +2537,14 @@ msgid "Number of times report has been accessed"
 msgstr "Número de veces que se ha consultado el informe"
 
 msgid "report"
-msgstr "Informe"
+msgstr "informe"
 
 msgid "reports"
-msgstr "Informes"
+msgstr "informes"
 
 #, python-format
 msgid "Report for %(cycle)s"
 msgstr "Informe para %(cycle)s"
-
-msgid "When reporting problems, investigate root causes"
-msgstr "Al reportar problemas, investiga las causas raíz"
-
-msgid "Respond to guidance with thoughtful analysis"
-msgstr "Responde a la orientación con un análisis reflexivo"
-
-msgid "Ask clarifying questions before escalating"
-msgstr "Haz preguntas aclaratorias antes de escalar"
-
-msgid "Next time you spot an issue, spend 10 minutes investigating before reporting"
-msgstr "La próxima vez que detectes un problema, dedica 10 minutos a investigar antes de denunciar"
-
-msgid "When given a task, propose at least one way to approach it"
-msgstr "Cuando se te asigne una tarea, propone al menos una forma de abordarla"
-
-msgid "Research multiple solution options before asking for help"
-msgstr "Investiga varias opciones de solución antes de pedir ayuda"
-
-msgid "Take ownership of problems you discover"
-msgstr "Asume la responsabilidad de los problemas que descubras"
-
-msgid "Present tradeoffs of different approaches"
-msgstr "Compensaciones actuales de diferentes enfoques"
-
-msgid "When facing a problem, list 2-3 possible solutions before asking for help"
-msgstr "Cuando te enfrentes a un problema, enumera 2 o 3 posibles soluciones antes de pedir ayuda"
-
-msgid "Volunteer to own a small problem end-to-end this sprint"
-msgstr "Ofrécete voluntario para asumir un pequeño problema de principio a fin en este sprint"
-
-msgid "Make clear recommendations backed by reasoning"
-msgstr "Haz recomendaciones claras respaldadas por un razonamiento"
-
-msgid "Proactively identify improvements before issues arise"
-msgstr "Identifica proactivamente mejoras antes de que surjan problemas"
-
-msgid "Build confidence in decision-making through successful recommendations"
-msgstr "Fomenta la confianza en la toma de decisiones mediante recomendaciones exitosas"
-
-msgid "Present your next problem-solution with a specific recommendation and why"
-msgstr "Presenta tu próxima solución problemática con una recomendación específica y por qué"
-
-msgid "Identify one process improvement opportunity this week"
-msgstr "Identifica una oportunidad de mejora de procesos esta semana"
-
-msgid "Execute solutions autonomously within your domain"
-msgstr "Ejecuta soluciones de forma autónoma dentro de tu dominio"
-
-msgid "Inform stakeholders after implementing fixes"
-msgstr "Informar a las partes interesadas tras implementar las correcciones"
-
-msgid "Drive systemic improvements, not just point solutions"
-msgstr "Impulsa mejoras sistémicas, no solo soluciones puntuales"
-
-msgid "Fix the next issue you discover without asking permission (inform after)"
-msgstr "Soluciona el siguiente problema que descubras sin pedir permiso (informa después)"
-
-msgid "Document your decision-making process for others to learn from"
-msgstr "Documenta tu proceso de toma de decisiones para que otros puedan aprender de ellos"
-
-#, python-format
-msgid "Insufficient responses (minimum %(count)s required)"
-msgstr "Respuestas insuficientes (mínimo %(count)s requerido)"
-
-#, python-format
-msgid "%(count)s peer"
-msgid_plural "%(count)s peers"
-msgstr[0] "%(count)s compañero"
-msgstr[1] "%(count)s compañeros"
-
-#, python-format
-msgid "%(count)s manager"
-msgid_plural "%(count)s managers"
-msgstr[0] "%(count)s responsable"
-msgstr[1] "%(count)s responsables"
-
-#, python-format
-msgid "%(count)s direct report"
-msgid_plural "%(count)s direct reports"
-msgstr[0] "%(count)s colaborador directo"
-msgstr[1] "%(count)s colaboradores directos"
-
-msgid "Self-assessment"
-msgstr "Autoevaluación"
 
 msgid "Improved"
 msgstr "Mejorado"
@@ -2847,8 +2606,12 @@ msgid "Needs Support"
 msgstr "Necesita apoyo"
 
 #, python-format
+msgid "Insufficient responses (minimum %(count)s required)"
+msgstr "Respuestas insuficientes (mínimo %(count)s requerido)"
+
+#, python-format
 msgid "No email address for reviewee %(name)s"
-msgstr "No hay dirección de correo electrónico para el reseñado %(name)s"
+msgstr "No hay dirección de correo electrónico para el persona evaluada %(name)s"
 
 msgid "Report does not have an access token"
 msgstr "El informe no tiene un token de acceso"
@@ -2861,11 +2624,11 @@ msgid "Failed to send report ready email: %(error)s"
 msgstr "No envié el correo de lista para reportar: %(error)s"
 
 msgid "This report link has expired. Please contact your administrator for a new link."
-msgstr "Este enlace de informe ha expirado. Por favor, contacte con su administrador para obtener un nuevo enlace."
+msgstr "Este enlace de informe ha expirado. contacte con su administrador para obtener un nuevo enlace."
 
 #, python-format
 msgid "Token %(token)s generated. Copy feedback URL and send to reviewer manually: %(url)s"
-msgstr "Se genera %(token)s token. Copia la URL de feedback y envíala manualmente al revisor: %(url)s"
+msgstr "Se genera %(token)s token. Copia la URL de feedback y envíala manualmente al evaluador: %(url)s"
 
 #, python-format
 msgid "Error with token %(token)s: %(error)s"
@@ -2892,73 +2655,49 @@ msgid "Active"
 msgstr "Activo"
 
 msgid "When the close check-in email was sent to the reviewee"
-msgstr "Cuando se envió el correo de registro de cierre al revisado"
+msgstr "Cuando se envió el correo de registro de cierre al persona evaluada"
 
 msgid "close check sent at"
 msgstr "Comprobación de cierre enviada en"
-
-msgid "When the cycle was finalised and its report emailed"
-msgstr "Cuándo se finalizó el ciclo y se envió su informe por correo"
-
-msgid "report finalized at"
-msgstr "informe finalizado el"
-
-msgid "When the links-to-share email to the reviewee was put in the outbox. Empty once it is sent."
-msgstr "Cuándo se puso en la bandeja de salida el correo con los enlaces para compartir a la persona evaluada. Vacío una vez enviado."
-
-msgid "links email queued at"
-msgstr "correo de enlaces en cola desde"
-
-msgid "Why the last attempt to send the links-to-share email failed"
-msgstr "Por qué falló el último intento de enviar el correo con los enlaces para compartir"
-
-msgid "links email error"
-msgstr "error del correo de enlaces"
-
-msgid "Failed attempts to send the links-to-share email"
-msgstr "Intentos fallidos de enviar el correo con los enlaces para compartir"
-
-msgid "links email attempts"
-msgstr "intentos del correo de enlaces"
 
 msgid "Self assessment"
 msgstr "Autoevaluación"
 
 msgid "Peer review"
-msgstr "Revisión por pares"
+msgstr "Evaluación por pares"
 
 msgid "Manager review"
-msgstr "Revisión del entrenador"
+msgstr "Evaluación del manager"
 
 msgid "Direct report review"
-msgstr "Revisión de reportes directos"
+msgstr "Evaluación del colaborador directo"
 
 msgid "self assessment invitation token"
-msgstr "Ficha de Invitación de Autoevaluación"
+msgstr "token de Invitación de Autoevaluación"
 
 msgid "peer review invitation token"
-msgstr "Token de invitación para revisión por pares"
+msgstr "Token de invitación a la evaluación por un par"
 
 msgid "manager review invitation token"
-msgstr "Token de invitación para revisión del manager"
+msgstr "Token de invitación a la evaluación del manager"
 
 msgid "direct report review invitation token"
-msgstr "Token de invitación para revisión de reportes directos"
+msgstr "Token de invitación a la evaluación del colaborador directo"
 
 msgid "review cycles"
-msgstr "Ciclos de revisión"
+msgstr "ciclos de evaluación"
 
 msgid "Self Assessment"
 msgstr "Autoevaluación"
 
 msgid "Peer Review"
-msgstr "Revisión por pares"
+msgstr "Evaluación por pares"
 
 msgid "Manager Review"
-msgstr "Revisión del entrenador"
+msgstr "Evaluación del manager"
 
 msgid "Direct Report Review"
-msgstr "Revisión de Reporte Directo"
+msgstr "Evaluación del colaborador directo"
 
 msgid "feedback category"
 msgstr "Categoría de retroalimentación"
@@ -2970,34 +2709,10 @@ msgid "invitation sent at"
 msgstr "invitación enviada en"
 
 msgid "When the last reminder email was sent to this reviewer"
-msgstr "Cuando se envió el último correo recordatorio a este revisor"
+msgstr "Cuando se envió el último correo recordatorio a este evaluador"
 
 msgid "last reminder sent at"
 msgstr "Último recordatorio enviado en"
-
-msgid "When the invitation was put in the outbox. Empty once it is sent."
-msgstr "Cuándo se puso la invitación en la bandeja de salida. Vacío una vez enviada."
-
-msgid "invitation queued at"
-msgstr "invitación en cola desde"
-
-msgid "When a reminder was put in the outbox. Empty once it is sent."
-msgstr "Cuándo se puso un recordatorio en la bandeja de salida. Vacío una vez enviado."
-
-msgid "reminder queued at"
-msgstr "recordatorio en cola desde"
-
-msgid "Why the last attempt to send the queued email failed"
-msgstr "Por qué falló el último intento de enviar el correo en cola"
-
-msgid "email error"
-msgstr "error del correo"
-
-msgid "Failed attempts to send the queued email"
-msgstr "Intentos fallidos de enviar el correo en cola"
-
-msgid "email attempts"
-msgstr "intentos del correo"
 
 msgid "When someone claimed this token by clicking the invitation link"
 msgstr "Cuando alguien reclamó este token haciendo clic en el enlace de invitación"
@@ -3009,13 +2724,13 @@ msgid "completed at"
 msgstr "completado en"
 
 msgid "Language of the form and of emails to this reviewer. Empty until the form is first opened."
-msgstr "Lenguaje del formulario y de los correos electrónicos a este revisor. Vacío hasta que el formulario se abra por primera vez."
+msgstr "Lenguaje del formulario y de los correos electrónicos a este evaluador. Vacío hasta que el formulario se abra por primera vez."
 
 msgid "reviewer token"
-msgstr "Token revisor"
+msgstr "Token evaluador"
 
 msgid "reviewer tokens"
-msgstr "Tokens revisores"
+msgstr "Tokens evaluadores"
 
 msgid "answer data"
 msgstr "Datos de respuestas"
@@ -3027,20 +2742,8 @@ msgid "responses"
 msgstr "Respuestas"
 
 #, python-format
-msgid "Could not connect to the mail server: %(error)s"
-msgstr "No se pudo conectar con el servidor de correo: %(error)s"
-
-#, python-format
-msgid "Failed to send to %(email)s: %(error)s"
-msgstr "No se envió a %(email)s: %(error)s"
-
-#, python-format
-msgid "Failed to send the links to %(email)s: %(error)s"
-msgstr "No se enviaron los enlaces a %(email)s: %(error)s"
-
-#, python-format
 msgid "Not enough tokens for %(category)s: need %(needed)s, have %(available)s"
-msgstr "No hay suficientes fichas para %(category)s: necesito %(needed)s, tengo %(available)s"
+msgstr "No hay suficientes tokens para %(category)s: necesito %(needed)s, tengo %(available)s"
 
 #, python-format
 msgid "Your self-assessment is still open: %(questionnaire)s"
@@ -3058,42 +2761,37 @@ msgstr "Vuestro feedback para %(name)s sigue abierto"
 msgid "Your feedback for %(name)s"
 msgstr "Vuestro feedback para %(name)s"
 
-msgid "your colleague"
-msgstr "tu colega"
-
-msgid "your direct report"
-msgstr "tu colaborador directo"
-
-msgid "your manager"
-msgstr "tu responsable"
+#, python-format
+msgid "Failed to send to %(email)s: %(error)s"
+msgstr "No se envió a %(email)s: %(error)s"
 
 #, python-format
-msgid "Your feedback forms for %(organization)s"
-msgstr "Tus formularios de feedback para %(organization)s"
-
-#, python-format
-msgid "Your feedback forms for %(organization)s are still open"
-msgstr "Tus formularios de feedback para %(organization)s siguen abiertos"
+msgid "Failed to send reminder to %(email)s: %(error)s"
+msgstr "No envié el recordatorio a %(email)s: %(error)s"
 
 #, python-format
 msgid "Your links to share with reviewers: %(questionnaire)s"
 msgstr "Tus enlaces para compartir con los críticos: %(questionnaire)s"
 
 #, python-format
+msgid "Failed to send invitation links email: %(error)s"
+msgstr "No se enviaron los enlaces de invitación por correo electrónico: %(error)s"
+
+#, python-format
 msgid "Check your feedback cycle: %(questionnaire)s"
 msgstr "Revisa tu ciclo de retroalimentación: %(questionnaire)s"
 
 msgid "Self"
-msgstr "Yo"
+msgstr "Autoevaluación"
 
 msgid "Peer"
-msgstr "Par"
+msgstr "Colega"
 
 msgid "Manager"
-msgstr "Entrenador"
+msgstr "Responsable"
 
 msgid "Direct Report"
-msgstr "Reporte directo"
+msgstr "Colaborador directo"
 
 msgid "Invalid or expired invitation link."
 msgstr "Enlace de invitación inválido o caducado."
@@ -3101,11 +2799,8 @@ msgstr "Enlace de invitación inválido o caducado."
 msgid "This feedback cycle no longer collects this kind of review."
 msgstr "Este ciclo de retroalimentación ya no recoge este tipo de reseñas."
 
-msgid "This feedback round has reached its maximum number of reviewers. Contact the person who sent you this link."
-msgstr "Esta ronda de feedback ha alcanzado el número máximo de revisores. Contacta con la persona que te envió este enlace."
-
 msgid "This review cycle has been closed. Feedback can no longer be submitted."
-msgstr "Este ciclo de revisión ha sido cerrado. Ya no se pueden enviar comentarios."
+msgstr "Este ciclo de evaluación ha sido cerrado. Ya no se pueden enviar comentarios."
 
 msgid "Feedback already submitted"
 msgstr "Ya se ha enviado el feedback"
@@ -3133,13 +2828,7 @@ msgid "Invalid scale value"
 msgstr "Valor de escala inválido"
 
 msgid "Something went wrong. Please try again."
-msgstr "Algo salió mal. Por favor, inténtalo de nuevo."
-
-msgid "Next trial reminder"
-msgstr "Próximo recordatorio de la prueba"
-
-msgid "Emails to this organization"
-msgstr "Correos a esta organización"
+msgstr "Algo salió mal. inténtalo de nuevo."
 
 msgid "Used"
 msgstr "Usados"
@@ -3167,7 +2856,7 @@ msgstr "Suscripciones"
 
 #, python-format
 msgid "Your %(site_name)s trial ends on %(date)s"
-msgstr "Tu juicio %(site_name)s termina en %(date)s"
+msgstr "Tu periodo de prueba %(site_name)s termina en %(date)s"
 
 msgid "Before your trial ends: try one test cycle"
 msgstr "Antes de que termine tu prueba: prueba un ciclo de prueba"
@@ -3180,7 +2869,7 @@ msgstr[1] "Tu prueba termina en %(date)s. Tus %(count)s ciclos abiertos siguen f
 
 #, python-format
 msgid "Your trial ends on %(date)s. Your reports stay as they are"
-msgstr "Tu juicio termina en %(date)s. Tus informes se mantienen como están"
+msgstr "Tu periodo de prueba termina en %(date)s. Tus informes se mantienen como están"
 
 #. Translators: the two parts below, e.g. "41 reviews in, 2 reports on the way"
 #, python-format
@@ -3217,7 +2906,7 @@ msgstr "Tu primer pago %(site_name)s no se realizó"
 
 #, python-format
 msgid "Your %(site_name)s trial has started"
-msgstr "Tu %(site_name)s juicio ha comenzado"
+msgstr "Tu %(site_name)s periodo de prueba ha comenzado"
 
 #, python-format
 msgid "Your %(site_name)s plan is now %(plan)s"
@@ -3238,6 +2927,9 @@ msgstr "Tu suscripción %(site_name)s ha terminado"
 #, python-format
 msgid "Your %(site_name)s subscription is canceled"
 msgstr "Tu suscripción %(site_name)s queda cancelada"
+
+msgid "You already have a Blik360 account"
+msgstr "Ya tienes una cuenta en Blik360"
 
 msgid "EU SaaS"
 msgstr "SaaS de la UE"
@@ -3274,7 +2966,7 @@ msgid "%(name)s (€%(price)s/mo)"
 msgstr "%(name)s (€%(price)s/mes)"
 
 msgid "Trial"
-msgstr "Juicio"
+msgstr "periodo de prueba"
 
 msgid "Past Due"
 msgstr "Atraso"
@@ -3284,6 +2976,9 @@ msgstr "Cancelado"
 
 msgid "Unpaid"
 msgstr "No remunerado"
+
+msgid "Stripe customer ID"
+msgstr "ID de cliente Stripe"
 
 msgid "Stripe subscription ID"
 msgstr "ID de suscripción Stripe"
@@ -3301,16 +2996,16 @@ msgid "canceled at"
 msgstr "Cancelado en"
 
 msgid "trial start"
-msgstr "Inicio del juicio"
+msgstr "Inicio del periodo de prueba"
 
 msgid "trial end"
-msgstr "Fin del juicio"
+msgstr "Fin del periodo de prueba"
 
 msgid "3-day trial reminder sent at"
-msgstr "Recordatorio de juicio de 3 días enviado en"
+msgstr "Recordatorio de periodo de prueba de 3 días enviado en"
 
 msgid "1-day trial reminder sent at"
-msgstr "Recordatorio de juicio de 1 día enviado en"
+msgstr "Recordatorio de periodo de prueba de 1 día enviado en"
 
 msgid "subscription"
 msgstr "suscripción"
@@ -3343,13 +3038,7 @@ msgid "checkout fulfilments"
 msgstr "Cumplimiento de pagos"
 
 msgid "review cycles remaining"
-msgstr "Ciclos de revisión restantes"
-
-msgid "free signup inbox"
-msgstr "buzón del registro gratuito"
-
-msgid "Set on the free signup credit: the inbox it was given to. One free credit per inbox."
-msgstr "Se establece en el crédito del registro gratuito: el buzón al que se concedió. Un crédito gratuito por buzón."
+msgstr "ciclos de evaluación restantes"
 
 msgid "round purchase"
 msgstr "Compra por ronda"
@@ -3375,46 +3064,21 @@ msgid "Login token for %(email)s"
 msgstr "Token de inicio de sesión para %(email)s"
 
 #, python-format
-msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy more on the Billing page, or start a subscription there."
-msgstr "Esto necesita %(needed)s crédito(s) de ciclo de revisión y tienes %(available)s. Compra más en la página de Facturación, o inicia allí una suscripción."
-
-#, python-format
-msgid "Free accounts can invite up to %(max)s reviewers per review cycle. Buy review credits on the Billing page to invite more."
-msgstr "Las cuentas gratuitas pueden invitar hasta %(max)s revisores por ciclo de revisión. Compra créditos de revisión en la página de Facturación para invitar a más."
-
-msgid "The card was declined: not enough funds."
-msgstr "La tarjeta fue rechazada: fondos insuficientes."
-
-msgid "The card has expired."
-msgstr "La tarjeta ha caducado."
-
-msgid "The card was declined by the bank."
-msgstr "El banco rechazó la tarjeta."
-
-msgid "The card was reported lost."
-msgstr "La tarjeta fue declarada perdida."
-
-msgid "The card was reported stolen."
-msgstr "La tarjeta fue declarada robada."
-
-msgid "The security code (CVC) is wrong."
-msgstr "El código de seguridad (CVC) es incorrecto."
-
-msgid "The bank asks you to confirm the payment."
-msgstr "El banco te pide que confirmes el pago."
+msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy another round or start a subscription under Settings."
+msgstr "Esto necesita %(needed)s crédito(s) de ciclo de evaluación y tienes %(available)s. Compra otra ronda o crea una suscripción en Configuración."
 
 msgid "Your subscription is not active. Please update your payment information."
-msgstr "Tu suscripción no está activa. Por favor, actualiza tu información de pago."
+msgstr "Tu suscripción no está activa. actualiza tu información de pago."
 
 #, python-format
 msgid "You've reached your plan limit of %(max_employees)s reviewees. Please upgrade your plan."
-msgstr "Has alcanzado el límite de tu plan de %(max_employees)s revisados. Por favor, mejora tu plan."
+msgstr "Has alcanzado el límite de tu plan de %(max_employees)s personas evaluadas. mejora tu plan."
 
 msgid "Unknown plan"
 msgstr "Plan desconocido"
 
 msgid "Could not create checkout session. Please try again."
-msgstr "No se pudo crear la sesión de préstamo. Por favor, inténtalo de nuevo."
+msgstr "No se pudo crear la sesión de préstamo. inténtalo de nuevo."
 
 msgid "Only organization administrators can manage billing."
 msgstr "Solo los administradores de organizaciones pueden gestionar la facturación."
@@ -3422,12 +3086,8 @@ msgstr "Solo los administradores de organizaciones pueden gestionar la facturaci
 msgid "This organization already has a subscription."
 msgstr "Esta organización ya tiene suscripción."
 
-#, python-format
-msgid "Enter a number of reviews from 1 to %(max)s."
-msgstr "Introduce un número de revisiones de 1 a %(max)s."
-
 msgid "Could not start checkout. Please try again."
-msgstr "No se pudo iniciar el pago. Por favor, inténtalo de nuevo."
+msgstr "No se pudo iniciar el pago. inténtalo de nuevo."
 
 msgid "Payment received. We're finishing your setup; you'll get an email shortly."
 msgstr "Pago recibido. Estamos terminando tu montaje; recibirás un correo electrónico en breve."
@@ -3438,24 +3098,11 @@ msgstr "Tu pago está siendo procesado. Recibirás un correo electrónico en cua
 msgid "Payment received. Your purchase has been added to your account."
 msgstr "Pago recibido. Tu compra ha sido añadida a tu cuenta."
 
-msgid "This email address already has an account. The new subscription was cancelled and nothing was charged. Sign in and start the subscription from the Billing page."
-msgstr "Esta dirección de correo electrónico ya tiene una cuenta. La nueva suscripción fue cancelada y no se cobró nada. Inicia sesión y comienza la suscripción desde la página de Facturación."
+msgid "This email address already has an account. The new subscription was cancelled and nothing was charged. Sign in and choose a plan under Settings."
+msgstr "Esta dirección de correo electrónico ya tiene una cuenta. La nueva suscripción fue cancelada y no se cobró nada. Inicia sesión y elige un plan en Configuración."
 
 msgid "This organization already has a subscription. The new one was cancelled and nothing was charged."
 msgstr "Esta organización ya tiene suscripción. La nueva fue cancelada y no se cobró nada."
-
-#, python-format
-msgid "Your plan is now %(plan)s."
-msgstr "Tu plan ahora es %(plan)s."
-
-msgid "Could not change the plan. Please try again, or contact us."
-msgstr "No se pudo cambiar el plan. Inténtalo de nuevo o contacta con nosotros."
-
-msgid "There are no billing details yet. They are made with your first purchase."
-msgstr "Aún no hay datos de facturación. Se crean con tu primera compra."
-
-msgid "Could not open the billing portal. Please try again."
-msgstr "No se pudo abrir el portal de facturación. Inténtalo de nuevo."
 
 msgid "Forgot Password - Blik 360 Feedback"
 msgstr "Olvidé la contraseña - Comentarios sobre Blik 360"
@@ -3471,22 +3118,6 @@ msgstr "Enviar enlace de restablecimiento"
 
 msgid "Back to Login"
 msgstr "Volver al inicio de sesión"
-
-msgid "Sign up - Blik 360 Feedback"
-msgstr "Registrarse - Blik 360 Feedback"
-
-msgid "Create Account"
-msgstr "Crear cuenta"
-
-msgid "Free, with one review cycle. No card needed."
-msgstr "Gratis, con un ciclo de revisión. Sin tarjeta."
-
-msgid "We send your sign-in details to this address."
-msgstr "Enviamos tus datos de acceso a esta dirección."
-
-#, python-format
-msgid "Already have an account? <a href=\"%(login_url)s\">Sign in</a>"
-msgstr "¿Ya tienes una cuenta? <a href=\"<span class=\" notranslate\"=\"\">%(login_url)s\">Iniciar sesión</a>"
 
 msgid "Login - Blik 360 Feedback"
 msgstr "Iniciar sesión - Comentarios sobre Blik 360"
@@ -3505,9 +3136,6 @@ msgstr "Iniciar sesión"
 
 msgid "Forgot your password?"
 msgstr "¿Olvidaste tu contraseña?"
-
-msgid "No account yet? Sign up free"
-msgstr "¿Aún no tienes cuenta? Regístrate gratis"
 
 msgid "Welcome to Blik"
 msgstr "Bienvenido a Blik"
@@ -3535,16 +3163,16 @@ msgid "Getting started is simple:"
 msgstr "Empezar es sencillo:"
 
 msgid "Add reviewees"
-msgstr "Añadir reseñados"
+msgstr "Añadir personas evaluadas"
 
 msgid "People who will receive 360° feedback"
 msgstr "Personas que recibirán retroalimentación de 360°"
 
 msgid "Create a review cycle"
-msgstr "Crea un ciclo de revisión"
+msgstr "Crea un ciclo de evaluación"
 
 msgid "Choose a questionnaire and invite reviewers"
-msgstr "Elige un cuestionario e invita a los revisores"
+msgstr "Elige un cuestionario e invita a los evaluadores"
 
 msgid "Share anonymous invite links"
 msgstr "Comparte enlaces de invitación anónima"
@@ -3556,7 +3184,7 @@ msgid "Review the report"
 msgstr "Revisa el informe"
 
 msgid "View aggregated insights and share with reviewees"
-msgstr "Consulta los análisis agregados y compártelos con los revisados"
+msgstr "Consulta los análisis agregados y compártelos con los personas evaluadas"
 
 msgid "Get Started"
 msgstr "Empieza"
@@ -3592,19 +3220,19 @@ msgid "Change password"
 msgstr "Cambiar la contraseña"
 
 msgid "Review cycle access"
-msgstr "Acceso al ciclo de revisión"
+msgstr "Acceso al ciclo de evaluación"
 
 msgid "You can create review cycles for yourself and others."
-msgstr "Puedes crear ciclos de revisión para ti y para otros."
+msgstr "Puedes crear ciclos de evaluación para ti y para otros."
 
 msgid "You can create review cycles for yourself."
-msgstr "Puedes crear ciclos de revisión para ti mismo."
+msgstr "Puedes crear ciclos de evaluación para ti mismo."
 
 msgid "My feedback"
 msgstr "Mis comentarios"
 
 msgid "Review cycles where you receive feedback."
-msgstr "Ciclos de revisión donde recibas comentarios."
+msgstr "ciclos de evaluación donde recibas comentarios."
 
 msgid "Questionnaire"
 msgstr "Cuestionario"
@@ -3660,10 +3288,10 @@ msgid "Report available when the cycle is completed"
 msgstr "Informe disponible cuando termine el ciclo"
 
 msgid "No review cycles found for your account."
-msgstr "No se han encontrado ciclos de revisión para tu cuenta."
+msgstr "No se han encontrado ciclos de evaluación para tu cuenta."
 
 msgid "Review cycles will appear here when they're created for your email address."
-msgstr "Aquí aparecerán ciclos de revisión cuando se creen para tu dirección de correo electrónico."
+msgstr "Aquí aparecerán ciclos de evaluación cuando se creen para tu dirección de correo electrónico."
 
 msgid "You stay signed in here. Other devices are signed out."
 msgstr "Tú permaneces conectado aquí. Los demás dispositivos están desconectados."
@@ -3673,6 +3301,9 @@ msgstr "Cancelar"
 
 msgid "Register - Blik 360 Feedback"
 msgstr "Registro - Comentarios de Blik 360"
+
+msgid "Create Account"
+msgstr "Crear cuenta"
 
 #, python-format
 msgid "Join %(name)s"
@@ -3689,6 +3320,10 @@ msgstr "Al menos 8 personajes"
 
 msgid "Re-enter your password"
 msgstr "Vuelve a introducir tu contraseña"
+
+#, python-format
+msgid "Already have an account? <a href=\"%(login_url)s\">Sign in</a>"
+msgstr "¿Ya tienes una cuenta? <a href=\"%(login_url)s\">Iniciar sesión</a>"
 
 msgid "Reset Password - Blik 360 Feedback"
 msgstr "Restablecer contraseña - Feedback de Blik 360"
@@ -3712,19 +3347,13 @@ msgid "Toggle menu"
 msgstr "Menú alterno"
 
 msgid "Dashboard"
-msgstr "Salpicadero"
+msgstr "Panel de control"
 
 msgid "Team"
 msgstr "Equipo"
 
-msgid "Org chart"
-msgstr "Organigrama"
-
 msgid "Settings"
-msgstr "Escenarios"
-
-msgid "Billing"
-msgstr "Facturación"
+msgstr "Configuración"
 
 msgid "Platform"
 msgstr "Andén"
@@ -3748,257 +3377,14 @@ msgstr "Cierre de sesión"
 msgid "Toggle theme"
 msgstr "Interruptor de tema"
 
-msgid "Your subscription has ended. You cannot add reviewees or start review cycles."
-msgstr "Tu suscripción ha terminado. No puedes añadir evaluados ni iniciar ciclos de revisión."
-
-msgid "Your last payment failed. Update your payment method to keep your subscription."
-msgstr "Tu último pago falló. Actualiza tu método de pago para mantener tu suscripción."
-
-msgid "Your plan, payments and invoices"
-msgstr "Tu plan, pagos y facturas"
-
-msgid "Live payment details are not available right now. Try again in a few minutes."
-msgstr "Los datos de pago en tiempo real no están disponibles ahora mismo. Inténtalo de nuevo en unos minutos."
-
-#, python-format
-msgid "€%(price)s/month, excluding VAT"
-msgstr "%(price)s €/mes, sin IVA"
-
-#, python-format
-msgid "Your subscription ended on %(date)s. You can start a new one below."
-msgstr "Tu suscripción terminó el %(date)s. Puedes iniciar una nueva más abajo."
-
-msgid "Your last payment failed."
-msgstr "Tu último pago falló."
-
-#, python-format
-msgid "We try again on %(date)s."
-msgstr "Lo intentaremos de nuevo el %(date)s."
-
-msgid "We do not try again. Update your payment method to pay the open invoice."
-msgstr "No lo intentaremos de nuevo. Actualiza tu método de pago para pagar la factura pendiente."
-
-msgid "Update payment method"
-msgstr "Actualizar método de pago"
-
-#, python-format
-msgid "Your subscription ends on %(date)s."
-msgstr "Tu suscripción termina el %(date)s."
-
-msgid "Reactivate subscription"
-msgstr "Reactivar suscripción"
-
-#, python-format
-msgid "Your trial ends on %(date)s."
-msgstr "Tu prueba termina el %(date)s."
-
-msgid "Then your first invoice is:"
-msgstr "Después, tu primera factura es:"
-
-#, python-format
-msgid "Next invoice on %(date)s:"
-msgstr "Próxima factura el %(date)s:"
-
-#, python-format
-msgid "Next invoice on %(date)s."
-msgstr "Próxima factura el %(date)s."
-
-#, python-format
-msgid "%(brand)s card ending in %(last4)s, valid until %(month)s/%(year)s"
-msgstr "Tarjeta %(brand)s terminada en %(last4)s, válida hasta %(month)s/%(year)s"
-
-msgid "This card expires before your next invoice. Add a new card to avoid a failed payment."
-msgstr "Esta tarjeta caduca antes de tu próxima factura. Añade una tarjeta nueva para evitar un pago fallido."
-
-msgid "No payment method on file."
-msgstr "No hay ningún método de pago registrado."
-
-msgid "Change payment method"
-msgstr "Cambiar método de pago"
-
-msgid "You pay per round. There is no subscription."
-msgstr "Pagas por ronda. No hay suscripción."
-
-msgid "Usage"
-msgstr "Uso"
-
-msgid "Active reviewees"
-msgstr "Evaluados activos"
-
-#, python-format
-msgid "%(count)s of %(max)s"
-msgstr "%(count)s de %(max)s"
-
-msgid "Review credits left"
-msgstr "Créditos de revisión restantes"
-
-msgid "Not used while your subscription is active."
-msgstr "No se usa mientras tu suscripción esté activa."
-
-msgid "One credit is one reviewee with one questionnaire."
-msgstr "Un crédito es un evaluado con un cuestionario."
-
-msgid "Plan"
-msgstr "Plan"
-
-#, python-format
-msgid "Switch to %(name)s: €%(price)s/month, up to %(max)s reviewees"
-msgstr "Cambiar a %(name)s: %(price)s €/mes, hasta %(max)s evaluados"
-
-msgid "Start EU Hosted subscription"
-msgstr "Inicia una suscripción alojada en EU"
-
-msgid "Start Enterprise subscription"
-msgstr "Suscripción Start Enterprise"
-
-msgid "Buy review credits"
-msgstr "Comprar créditos de revisión"
-
-#, python-format
-msgid "Purchase %(count)s review slots"
-msgstr "Comprar %(count)s plazas de revisión"
-
-#, python-format
-msgid "€%(price)s, excluding VAT"
-msgstr "%(price)s €, sin IVA"
-
-#, python-format
-msgid "%(packs)s × €%(price)s per pack = €%(total)s, excluding VAT"
-msgstr "%(packs)s × %(price)s € por paquete = %(total)s €, sin IVA"
-
-msgid "How many reviews do you need?"
-msgstr "¿Cuántas revisiones necesitas?"
-
-#, python-format
-msgid "Credits come in packs of %(per_pack)s. One credit is one reviewee with one questionnaire. Credits do not expire."
-msgstr "Los créditos vienen en paquetes de %(per_pack)s. Un crédito es un evaluado con un cuestionario. Los créditos no caducan."
-
-msgid "Buy credits"
-msgstr "Comprar créditos"
-
-msgid "Invoices"
-msgstr "Facturas"
-
-msgid "Edit billing details"
-msgstr "Editar datos de facturación"
-
-msgid "Date"
-msgstr "Fecha"
-
-msgid "Number"
-msgstr "Número"
-
-msgid "Amount"
-msgstr "Importe"
-
-msgid "Paid"
-msgstr "Pagada"
-
-msgid "Open"
-msgstr "Pendiente"
-
-msgid "Void"
-msgstr "Anulada"
-
-msgid "Not paid"
-msgstr "No pagada"
-
-msgid "Pay"
-msgstr "Pagar"
-
-msgid "View"
-msgstr "Vista"
-
-msgid "No invoices yet."
-msgstr "Aún no hay facturas."
-
-msgid "Invoices are sent by Thijs de Zoete Holding BV, trading as Blik360, the Netherlands. Prices are excluding VAT."
-msgstr "Las facturas las emite Thijs de Zoete Holding BV, que opera como Blik360, Países Bajos. Los precios no incluyen IVA."
-
-#, python-format
-msgid "Companies in the Netherlands pay 21%% VAT."
-msgstr "Las empresas de los Países Bajos pagan un 21%% de IVA."
-
-msgid "Companies in another EU country with a valid VAT number: VAT reverse charged."
-msgstr "Empresas de otro país de la UE con un número de IVA válido: inversión del sujeto pasivo."
-
-msgid "Companies outside the EU: no VAT."
-msgstr "Empresas fuera de la UE: sin IVA."
-
-msgid "To change the company name, address or VAT number on new invoices, use \"Edit billing details\"."
-msgstr "Para cambiar el nombre de la empresa, la dirección o el número de IVA en las nuevas facturas, usa \"Editar datos de facturación\"."
-
-msgid "Cancel subscription"
-msgstr "Cancelar suscripción"
-
-msgid "What happens when I cancel?"
-msgstr "¿Qué pasa si cancelo?"
-
-#, python-format
-msgid "You keep full access until %(date)s. You pay nothing more."
-msgstr "Conservas el acceso completo hasta el %(date)s. No pagas nada más."
-
-msgid "After that, you cannot add reviewees or start review cycles. Reports stay available."
-msgstr "Después, no puedes añadir evaluados ni iniciar ciclos de revisión. Los informes siguen disponibles."
-
-#, python-format
-msgid "%(days)s days after the end, we delete your data."
-msgstr "%(days)s días después del final, eliminamos tus datos."
-
-msgid "Export your data first"
-msgstr "Exporta tus datos primero"
-
-msgid "Questions?"
-msgstr "¿Preguntas?"
-
-msgid "Send us an email about billing, invoices or your plan:"
-msgstr "Envíanos un correo sobre facturación, facturas o tu plan:"
-
-msgid "Change plan"
-msgstr "Cambiar plan"
-
-#, python-format
-msgid "Switch to %(name)s"
-msgstr "Cambiar a %(name)s"
-
-#, python-format
-msgid "You are on %(name)s now."
-msgstr "Ahora estás en %(name)s."
-
-#, python-format
-msgid "€%(price)s/month, excluding VAT, for up to %(max)s active reviewees."
-msgstr "%(price)s €/mes, sin IVA, para hasta %(max)s evaluados activos."
-
-#, python-format
-msgid "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewee first."
-msgid_plural "This plan allows %(max)s active reviewees. Deactivate %(count)s reviewees first."
-msgstr[0] "Este plan permite %(max)s evaluados activos. Desactiva primero %(count)s evaluado."
-msgstr[1] "Este plan permite %(max)s evaluados activos. Desactiva primero %(count)s evaluados."
-
-msgid "Go to Reviewees"
-msgstr "Ir a Evaluados"
-
-#, python-format
-msgid "The change starts now. Your next invoice, on %(date)s, is"
-msgstr "El cambio empieza ahora. Tu próxima factura, el %(date)s, es de"
-
-msgid "It includes the price difference for the rest of this month."
-msgstr "Incluye la diferencia de precio por el resto de este mes."
-
-msgid "Back"
-msgstr "Atrás"
-
 msgid "Send Bulk Invitations"
 msgstr "Envía invitaciones masivas"
 
 msgid "Send invitations"
 msgstr "Envía invitaciones"
 
-msgid "Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct."
-msgstr "Revisa los ciclos que acabas de crear. Los revisores vienen del organigrama. Si algo no es correcto, edita el ciclo después."
-
-msgid "Review the cycles you just created, then queue the invitation emails."
-msgstr "Revisa los ciclos que acabas de crear y luego pon en cola los correos de invitación."
+msgid "Review the cycles you just created, then send invitation emails."
+msgstr "Revisa los ciclos que acabas de crear y luego envía correos de invitación."
 
 msgid "Back to cycles"
 msgstr "Volver a los ciclos"
@@ -4006,32 +3392,17 @@ msgstr "Volver a los ciclos"
 msgid "No emails have been sent yet."
 msgstr "Aún no se ha enviado ningún correo."
 
-msgid "Click <em>Send all invitations</em> to queue the emails. Every person gets one email with all the forms they have to fill in, their own self-assessment included. The emails go out within about five minutes."
-msgstr "Haz clic en <em>Enviar todas las invitaciones</em> para poner los correos en cola. Cada persona recibe un correo con todos los formularios que debe rellenar, incluida su propia autoevaluación. Los correos salen en unos cinco minutos."
-
-msgid "Review the list below and click <em>Send invitations</em> to queue the emails to every reviewee. They go out within about five minutes."
-msgstr "Revisa la lista a continuación y haz clic en <em>Enviar invitaciones</em> para poner en cola los correos a todos los evaluados. Salen en unos cinco minutos."
+msgid "Review the list below and click <em>Send invitations now</em> to notify every reviewee."
+msgstr "Revisa la lista a continuación y haz clic <em>en Enviar invitaciones ahora</em> para notificar a todos los evaluados."
 
 msgid "You can also skip for now and send individual invitations later from the cycles list."
 msgstr "También puedes saltarte por ahora y enviar invitaciones individuales más adelante desde la lista de ciclos."
 
 msgid "Reviewee"
-msgstr "Reseñado"
-
-msgid "Peers"
-msgstr "Pares"
-
-msgid "Direct reports"
-msgstr "Colaboradores directos"
+msgstr "Persona evaluada"
 
 msgid "Created"
 msgstr "Creación"
-
-#, python-format
-msgid "Send all invitations (%(counter)s reviewee)"
-msgid_plural "Send all invitations (%(counter)s reviewees)"
-msgstr[0] "Enviar todas las invitaciones (%(counter)s evaluado)"
-msgstr[1] "Enviar todas las invitaciones (%(counter)s evaluados)"
 
 #, python-format
 msgid "Send invitations for all %(counter)s reviewee"
@@ -4044,7 +3415,7 @@ msgstr "Salta — te lo enviaré más tarde"
 
 #, python-format
 msgid "No pending bulk invitations. If you just created cycles, they're already in the <a href=\"%(cycles_url)s\">cycles list</a>."
-msgstr "No hay invitaciones en bloque pendientes. Si acabas de crear ciclos, ya están en la <a href=\"<span class=\" notranslate\"=\"\">lista de ciclos %(cycles_url)s\"></a>."
+msgstr "No hay invitaciones masivas pendientes. Si acabas de crear ciclos, ya están en la <a href=\"%(cycles_url)s\">lista de ciclos</a>."
 
 msgid "Skip for now"
 msgstr "Salta por ahora"
@@ -4076,6 +3447,9 @@ msgstr "Enviar una reseña"
 msgid "Subscription & Limits"
 msgstr "Suscripción y límites"
 
+msgid "Plan"
+msgstr "Plan"
+
 #, python-format
 msgid "Renews %(renewal_date)s"
 msgstr "Renovaciones %(renewal_date)s"
@@ -4095,7 +3469,7 @@ msgstr "Acercándose:"
 
 #, python-format
 msgid "You're nearing your plan limit of %(max_employees)s reviewees. Contact us to upgrade your plan."
-msgstr "Estás cerca del límite de tu plan de %(max_employees)s reseñados. Contáctanos para actualizar tu plan."
+msgstr "Estás cerca del límite de tu plan de %(max_employees)s personas evaluadas. Contáctanos para actualizar tu plan."
 
 msgid "Quick Actions"
 msgstr "Acciones rápidas"
@@ -4104,7 +3478,7 @@ msgid "New Review Cycle"
 msgstr "Nuevo ciclo de reseñas"
 
 msgid "Add Reviewee"
-msgstr "Añadir reseñador"
+msgstr "Añadir persona evaluada"
 
 msgid "All Cycles"
 msgstr "Todos los ciclos"
@@ -4115,6 +3489,9 @@ msgstr "Progreso"
 msgid "Actions"
 msgstr "Acciones"
 
+msgid "View"
+msgstr "Vista"
+
 msgid "Recent Review Cycles"
 msgstr "Ciclos de reseñas recientes"
 
@@ -4122,13 +3499,13 @@ msgid "View All"
 msgstr "Ver todo"
 
 msgid "No review cycles yet"
-msgstr "Aún no hay ciclos de revisión"
+msgstr "Aún no hay ciclos de evaluación"
 
 msgid "Create your first review cycle to get started"
-msgstr "Crea tu primer ciclo de revisión para empezar"
+msgstr "Crea tu primer ciclo de evaluación para empezar"
 
 msgid "Create Review Cycle"
-msgstr "Ciclo de Creación de Revisión"
+msgstr "Crear ciclo de evaluación"
 
 msgid "Share Your Experience"
 msgstr "Comparte tu experiencia"
@@ -4204,7 +3581,10 @@ msgstr "<strong>Eliminación Completa (Eliminación Completa):</strong> Elimina 
 
 #, python-format
 msgid "Reviewees (%(count)s)"
-msgstr "Reseñados (%(count)s)"
+msgstr "personas evaluadas (%(count)s)"
+
+msgid "Department"
+msgstr "Departamento"
 
 msgid "Inactive"
 msgstr "Inactivo"
@@ -4220,7 +3600,7 @@ msgid "%(cycles)s cycles, %(responses)s responses"
 msgstr "%(cycles)s ciclos, %(responses)s respuestas"
 
 msgid "No reviewees found"
-msgstr "No se han encontrado reseñadores"
+msgstr "No se han encontrado persona evaluada"
 
 msgid "Items per page:"
 msgstr "Elementos por página:"
@@ -4242,22 +3622,22 @@ msgid "Last"
 msgstr "Última"
 
 msgid "Delete Reviewee Data"
-msgstr "Eliminar los datos de los revisados"
+msgstr "Eliminar los datos de los personas evaluadas"
 
 #, python-format
 msgid "Delete or anonymize data for <strong id=\"%(name_id)s\"></strong>"
-msgstr "Elimina o anonimiza los datos de <strong id=\"<span class=\" notranslate\"=\"\">%(name_id)s\"></strong>"
+msgstr "Elimina o anonimiza los datos de <strong id=\"%(name_id)s\"></strong>"
 
 msgid "Affected Data"
 msgstr "Datos afectados"
 
 #, python-format
 msgid "<span id=\"%(count_id)s\"></span> review cycle(s)"
-msgstr "Ciclo(s) de revisión<span id=\"<span class=\" notranslate\"=\"\">> %(count_id)s</span>"
+msgstr "<span id=\"%(count_id)s\"></span> ciclo(s) de evaluación"
 
 #, python-format
 msgid "<span id=\"%(count_id)s\"></span> feedback response(s)"
-msgstr "<span id=\"<span class=\" notranslate\"=\"\">%(count_id)s</span>\"> respuesta(s) de retroalimentación"
+msgstr "<span id=\"%(count_id)s\"></span> respuesta(s) de feedback"
 
 msgid "Associated reports and tokens"
 msgstr "Informes y tokens asociados"
@@ -4269,19 +3649,19 @@ msgid "Soft Delete (Anonymization) - Recommended"
 msgstr "Eliminación suave (Anonimización) - Recomendado"
 
 msgid "Anonymizes name, email, and department. Preserves review cycles, responses, and reports for analytics."
-msgstr "Anonimiza nombre, correo electrónico y departamento. Conserva ciclos de revisión, respuestas e informes para análisis."
+msgstr "Anonimiza nombre, correo electrónico y departamento. Conserva ciclos de evaluación, respuestas e informes para análisis."
 
 msgid "Full Anonymization"
 msgstr "Anonimización total"
 
 msgid "Anonymizes reviewee AND all reviewer emails in their cycles. Maximum privacy protection."
-msgstr "Anonimiza a los revisados Y a todos los correos electrónicos de los revisores en sus ciclos. Máxima protección de privacidad."
+msgstr "Anonimiza a los personas evaluadas Y a todos los correos electrónicos de los evaluadores en sus ciclos. Máxima protección de privacidad."
 
 msgid "Hard Delete (Complete Removal)"
 msgstr "Eliminación Completa (Eliminación Completa)"
 
 msgid "Permanently deletes ALL data including review cycles, responses, and reports. Cannot be undone."
-msgstr "Elimina permanentemente TODOS los datos, incluidos los ciclos de revisión, respuestas e informes. No se puede deshacer."
+msgstr "Elimina permanentemente TODOS los datos, incluidos los ciclos de evaluación, respuestas e informes. No se puede deshacer."
 
 #, python-format
 msgid "Users (%(count)s)"
@@ -4304,14 +3684,14 @@ msgstr "Eliminar datos de usuario"
 
 #, python-format
 msgid "Delete or anonymize data for user <strong id=\"%(name_id)s\"></strong>"
-msgstr "Elimina o anonimiza los datos del usuario <strong id=\"<span class=\" notranslate\"=\"\">%(name_id)s\"></strong>"
+msgstr "Elimina o anonimiza los datos del usuario <strong id=\"%(name_id)s\"></strong>"
 
 msgid "User account and profile"
 msgstr "Cuenta de usuario y perfil"
 
 #, python-format
 msgid "<span id=\"%(count_id)s\"></span> created review cycle(s)"
-msgstr "<span id=\"<span class=\" notranslate\"=\"\">%(count_id)s</span>\"> ciclo(s) de revisión creado(s)"
+msgstr "<span id=\"%(count_id)s\"></span> ciclo(s) de evaluación creado(s)"
 
 msgid "Login history and security logs"
 msgstr "Historial de inicio de sesión y registros de seguridad"
@@ -4339,10 +3719,10 @@ msgid "Emails Sent"
 msgstr "Correos electrónicos enviados"
 
 msgid "Invite Reviewers by Email"
-msgstr "Invita a los revisores por correo electrónico"
+msgstr "Invita a los evaluadores por correo electrónico"
 
-msgid "Pick reviewers from your existing people, or add someone new. The system makes anonymous tokens and sends invitations. Names of reviewers are never stored with their responses."
-msgstr "Elige revisores entre tus personas existentes, o añade a alguien nuevo. El sistema crea tokens anónimos y envía las invitaciones. Los nombres de los revisores nunca se guardan con sus respuestas."
+msgid "Enter email addresses for each reviewer category. The system will generate anonymous tokens and send invitations. Separate multiple emails with commas or newlines."
+msgstr "Introduce direcciones de correo electrónico para cada categoría de evaluadores. El sistema generará tokens anónimos y enviará invitaciones. Separa varios correos electrónicos con comas o saltos de línea."
 
 msgid "The self-assessment goes to this address. Send the invitation or a reminder from the cycle page."
 msgstr "La autoevaluación va a esta dirección. Envía la invitación o un recordatorio desde la página del ciclo."
@@ -4350,32 +3730,26 @@ msgstr "La autoevaluación va a esta dirección. Envía la invitación o un reco
 msgid "Your email is automatically assigned for self-assessment"
 msgstr "Tu correo electrónico se asigna automáticamente para autoevaluación"
 
-msgid "Usually the reviewee themselves"
-msgstr "Normalmente el propio evaluado"
-
-msgid "Usually the reviewee's own record"
-msgstr "Normalmente el propio registro del evaluado"
+msgid "Usually the reviewee's own email"
+msgstr "Normalmente el correo electrónico del evaluado"
 
 msgid "Manager/Supervisor"
 msgstr "Gerente/Supervisor"
 
-msgid "Search for a manager…"
-msgstr "Buscar un responsable…"
+msgid "Direct manager or supervisor"
+msgstr "Responsable o supervisor directo"
 
-msgid "Search for a peer…"
-msgstr "Buscar un compañero…"
+msgid "Peers"
+msgstr "Colegas"
 
 msgid "Colleagues at the same level"
 msgstr "Colegas al mismo nivel"
 
 msgid "Direct Reports"
-msgstr "Reportes directos"
-
-msgid "Search for a direct report…"
-msgstr "Buscar un colaborador directo…"
+msgstr "Colaboradores directos"
 
 msgid "People who report to this reviewee"
-msgstr "Personas que reportan a este revisado"
+msgstr "Personas que reportan a este persona evaluada"
 
 #, python-format
 msgid "Organization default (%(language)s)"
@@ -4384,12 +3758,6 @@ msgstr "Organización por defecto (%(language)s)"
 msgid "Language of the invitations and reminders to the reviewers above, and of their form"
 msgstr "Lenguaje de las invitaciones y recordatorios a los críticos mencionados arriba, y de su forma"
 
-msgid "Add by email (advanced)"
-msgstr "Añadir por correo electrónico (avanzado)"
-
-msgid "For reviewers who are not in Blik yet. Separate multiple emails with commas or newlines."
-msgstr "Para revisores que aún no están en Blik. Separa varios correos con comas o saltos de línea."
-
 msgid "Save & Send Invitations"
 msgstr "Guardar y enviar invitaciones"
 
@@ -4397,16 +3765,16 @@ msgid "Save Without Sending"
 msgstr "Guardar sin enviar"
 
 msgid "Reviewer Response Status"
-msgstr "Estado de la respuesta del revisor"
+msgstr "Estado de la respuesta del evaluador"
 
 msgid "Privacy Notice"
 msgstr "Aviso de privacidad"
 
 msgid "Email addresses are never displayed to protect reviewer anonymity. Only response status is shown."
-msgstr "Las direcciones de correo electrónico nunca se muestran para proteger el anonimato del revisor. Solo se muestra el estado de la respuesta."
+msgstr "Las direcciones de correo electrónico nunca se muestran para proteger el anonimato del evaluador. Solo se muestra el estado de la respuesta."
 
 msgid "Reviewer"
-msgstr "Reseñador"
+msgstr "Evaluador"
 
 msgid "Response Status"
 msgstr "Estado de la respuesta"
@@ -4421,6 +3789,13 @@ msgid "Awaiting claim"
 msgstr "Esperando reclamación"
 
 #, python-format
+msgid "Sent %(date)s"
+msgstr "Enviado %(date)s"
+
+msgid "Ready to send"
+msgstr "Listo para enviar"
+
+#, python-format
 msgid "Completed %(date)s"
 msgstr "Completados %(date)s"
 
@@ -4431,13 +3806,17 @@ msgid "Pending"
 msgstr "Pendiente"
 
 #, python-format
+msgid "Reminder sent %(date)s"
+msgstr "Recordatorio enviado %(date)s"
+
+#, python-format
 msgid "%(counter)s pending invitation"
 msgid_plural "%(counter)s pending invitations"
 msgstr[0] "%(counter)s invitación pendiente"
 msgstr[1] "%(counter)s invitaciones pendientes"
 
-msgid "Queue the email invitations to reviewers who haven't received one yet. They go out within about five minutes."
-msgstr "Pon en cola las invitaciones por correo a los revisores que aún no hayan recibido una. Salen en unos cinco minutos."
+msgid "Send email invitations to reviewers who haven't received one yet"
+msgstr "Envía invitaciones por correo electrónico a los evaluadores que aún no hayan recibido una"
 
 msgid "Send Pending Invitations"
 msgstr "Enviar invitaciones pendientes"
@@ -4445,224 +3824,20 @@ msgstr "Enviar invitaciones pendientes"
 msgid "Back to Cycle Details"
 msgstr "Volver a los detalles del ciclo"
 
-msgid "Members"
-msgstr "Miembros"
-
-#, python-format
-msgid "%(counter)s unit below"
-msgid_plural "%(counter)s units below"
-msgstr[0] "%(counter)s unidad debajo"
-msgstr[1] "%(counter)s unidades debajo"
-
-msgid "No units yet"
-msgstr "Aún no hay unidades"
-
-msgid "Import a CSV file with your people and their managers, or create the first unit yourself."
-msgstr "Importa un archivo CSV con tus personas y sus responsables, o crea tú mismo la primera unidad."
-
-msgid "Import CSV"
-msgstr "Importar CSV"
-
-msgid "New unit"
-msgstr "Nueva unidad"
-
-msgid "Drag onto another unit to place it below that unit"
-msgstr "Arrastra sobre otra unidad para colocarla debajo de esa unidad"
-
-msgid "Show or hide"
-msgstr "Mostrar u ocultar"
-
-msgid "No manager yet"
-msgstr "Aún sin responsable"
-
-#, python-format
-msgid "%(counter)s member"
-msgid_plural "%(counter)s members"
-msgstr[0] "%(counter)s miembro"
-msgstr[1] "%(counter)s miembros"
-
-#, python-format
-msgid "%(counter)s unit"
-msgid_plural "%(counter)s units"
-msgstr[0] "%(counter)s unidad"
-msgstr[1] "%(counter)s unidades"
-
-#, python-format
-msgid "Also in: %(units)s"
-msgstr "También en: %(units)s"
-
-#, python-format
-msgid "Remove %(name)s from %(unit)s"
-msgstr "Quitar a %(name)s de %(unit)s"
-
-msgid "No members yet"
-msgstr "Aún no hay miembros"
-
-msgid "Add manager"
-msgstr "Añadir responsable"
-
-msgid "Add member"
-msgstr "Añadir miembro"
-
-msgid "Rename"
-msgstr "Renombrar"
-
-msgid "Place under another unit"
-msgstr "Colocar bajo otra unidad"
-
-msgid "Delete unit"
-msgstr "Eliminar unidad"
-
-msgid "Not in a unit"
-msgstr "Sin unidad"
-
-msgid "Find a person"
-msgstr "Encuentra a una persona"
-
-msgid "Find a person who is not in a unit"
-msgstr "Buscar una persona que no está en ninguna unidad"
-
-msgid "Drag a person onto a unit. Drag a person here to take them out of a unit."
-msgstr "Arrastra una persona sobre una unidad. Arrastra una persona aquí para sacarla de una unidad."
-
-msgid "Everyone is in a unit. Drag a person here to take them out of a unit."
-msgstr "Todos están en una unidad. Arrastra una persona aquí para sacarla de una unidad."
-
-#, python-format
-msgid "%(filename)s · %(counter)s person"
-msgid_plural "%(filename)s · %(counter)s people"
-msgstr[0] "%(filename)s · %(counter)s persona"
-msgstr[1] "%(filename)s · %(counter)s personas"
-
-#, python-format
-msgid "The file adds %(counter)s new person."
-msgid_plural "The file adds %(counter)s new people."
-msgstr[0] "El archivo añade %(counter)s persona nueva."
-msgstr[1] "El archivo añade %(counter)s personas nuevas."
-
-#, python-format
-msgid "Your plan has room for %(counter)s more."
-msgid_plural "Your plan has room for %(counter)s more."
-msgstr[0] "Tu plan tiene espacio para %(counter)s persona más."
-msgstr[1] "Tu plan tiene espacio para %(counter)s personas más."
-
-msgid "Upgrade your plan"
-msgstr "Mejora tu plan"
-
-msgid "or remove people from the file."
-msgstr "o quita personas del archivo."
-
-msgid "The file cannot be imported yet."
-msgstr "El archivo aún no se puede importar."
-
-#, python-format
-msgid "And %(counter)s more error."
-msgid_plural "And %(counter)s more errors."
-msgstr[0] "Y %(counter)s error más."
-msgstr[1] "Y %(counter)s errores más."
-
-msgid "Which column is which?"
-msgstr "¿Qué columna es cuál?"
-
-msgid "Blik guessed from the column names. Check the choices against the first rows below."
-msgstr "Blik lo ha deducido de los nombres de las columnas. Comprueba la selección con las primeras filas de abajo."
-
-msgid "Not in the file"
-msgstr "No está en el archivo"
-
-msgid "Or choose first and last name."
-msgstr "O elige nombre y apellido."
-
-msgid "Each manager gets a unit with the people who report to them."
-msgstr "Cada responsable recibe una unidad con las personas a su cargo."
-
-msgid "First rows"
-msgstr "Primeras filas"
-
-msgid "First rows of the file"
-msgstr "Primeras filas del archivo"
-
-msgid "This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit."
-msgstr "Esto sustituye el organigrama actual. Las personas que no están en el archivo permanecen en Blik, pero ya no están en ninguna unidad."
-
-msgid "Import"
-msgstr "Importar"
-
-msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
-msgstr "Quién está en qué unidad y quién la dirige. Blik lo usa para sugerir responsables, compañeros y colaboradores directos para cada revisión."
-
-msgid "Chart"
-msgstr "Diagrama"
-
-msgid "Outline"
-msgstr "Esquema"
-
-msgid "Zoom out"
-msgstr "Alejar"
-
-msgid "Zoom in"
-msgstr "Acercar"
-
-msgid "Fit to screen"
-msgstr "Ajustar a la pantalla"
-
-msgid "Drag the background to move around."
-msgstr "Arrastra el fondo para desplazarte."
-
-msgid "Expand all"
-msgstr "Expandir todo"
-
-msgid "Collapse all"
-msgstr "Contraer todo"
-
-msgid "Drag a unit onto another unit to place it below."
-msgstr "Arrastra una unidad sobre otra para colocarla debajo."
-
-msgid "Drag a person to move them. Hold Alt to copy."
-msgstr "Arrastra una persona para moverla. Mantén pulsada Alt para copiarla."
-
-msgid "Rename unit"
-msgstr "Renombrar unidad"
-
-msgid "Close"
-msgstr "Cierre"
-
-msgid "For example: Optics, Chair of Physics"
-msgstr "Por ejemplo: Óptica, Cátedra de Física"
-
-msgid "Save"
-msgstr "Guardar"
-
-msgid "Find a person, or type a name and email to add someone new."
-msgstr "Busca una persona, o escribe un nombre y un correo para añadir a alguien nuevo."
-
-msgid "Unit above"
-msgstr "Unidad superior"
-
-msgid "The manager of this unit becomes a member of the unit above."
-msgstr "El responsable de esta unidad pasa a ser miembro de la unidad superior."
-
-msgid "The people in this unit stay in Blik. People who are in no other unit move to \"Not in a unit\"."
-msgstr "Las personas de esta unidad permanecen en Blik. Las que no están en ninguna otra unidad pasan a \"Sin unidad\"."
-
-msgid "A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which."
-msgstr "Un archivo CSV con una fila por persona: nombre, correo electrónico y, opcionalmente, departamento y responsable. Los nombres de las columnas pueden ser cualesquiera: en el siguiente paso eliges qué columna es cuál."
-
-msgid "File"
-msgstr "Archivo"
-
 msgid "Buy a round"
 msgstr "Compra una ronda"
 
 msgid "Buy another round"
 msgstr "Compra otra ronda"
 
+msgid "Start EU Hosted subscription"
+msgstr "Inicia una suscripción alojada en EU"
+
+msgid "Start Enterprise subscription"
+msgstr "Suscripción Start Enterprise"
+
 msgid "Ask an organization administrator to buy another round."
 msgstr "Pide a un administrador de la organización que invite a otra ronda."
-
-#, python-format
-msgid "€%(amount)s"
-msgstr "%(amount)s €"
 
 msgid "Move section up"
 msgstr "Sube la sección"
@@ -4719,6 +3894,9 @@ msgid_plural "%(counter)s questions"
 msgstr[0] "%(counter)s pregunta"
 msgstr[1] "%(counter)s preguntas"
 
+msgid "Close"
+msgstr "Cierre"
+
 msgid "About this questionnaire"
 msgstr "Sobre este cuestionario"
 
@@ -4738,7 +3916,7 @@ msgid "Loading questions…"
 msgstr "Cargando preguntas..."
 
 msgid "The questions could not be loaded. Please try again."
-msgstr "Las preguntas no podían cargarse. Por favor, inténtalo de nuevo."
+msgstr "Las preguntas no podían cargarse. inténtalo de nuevo."
 
 msgid "Try again"
 msgstr "Inténtalo de nuevo"
@@ -4782,6 +3960,9 @@ msgstr "Este cuestionario aún no tiene secciones ni preguntas."
 msgid "Archived"
 msgstr "Archivado"
 
+msgid "Usage"
+msgstr "Uso"
+
 msgid "The default choice when no other questionnaire is selected."
 msgstr "La opción predeterminada cuando no se selecciona ningún otro cuestionario."
 
@@ -4819,7 +4000,7 @@ msgid "Describe what each score means"
 msgstr "Describe qué significa cada puntuación"
 
 msgid "Reviewers can open the descriptions below the question."
-msgstr "Los revisores pueden abrir las descripciones debajo de la pregunta."
+msgstr "Los evaluadores pueden abrir las descripciones debajo de la pregunta."
 
 msgid "Start a review"
 msgstr "Empieza una reseña"
@@ -4833,53 +4014,14 @@ msgstr "El cuestionario anterior está archivado. Se ha seleccionado un cuestion
 msgid "Feedback Categories"
 msgstr "Categorías de retroalimentación"
 
-msgid "Reviewers are copied from the previous cycle. Reviewers with an email address get their invitation within about five minutes."
-msgstr "Los revisores se copian del ciclo anterior. Los revisores con dirección de correo reciben su invitación en unos cinco minutos."
+msgid "Reviewers are copied from the previous cycle. Invitations are sent to reviewers who have an email address."
+msgstr "Los evaluadores son copiados del ciclo anterior. Se envían invitaciones a los evaluadores que tienen una dirección de correo electrónico."
 
 msgid "The cycle starts with space for a self-assessment, three peers and one manager. You can assign reviewers in the next step."
-msgstr "El ciclo comienza con espacio para una autoevaluación, tres compañeros y un responsable. Puedes asignar revisores en el siguiente paso."
+msgstr "El ciclo comienza con espacio para una autoevaluación, tres compañeros y un responsable. Puedes asignar evaluadores en el siguiente paso."
 
 msgid "The reviewee is notified by email right away."
 msgstr "El evaluado recibe una notificación por correo electrónico de inmediato."
-
-#, python-format
-msgid "Sent %(date)s"
-msgstr "Enviado %(date)s"
-
-msgid "Failed"
-msgstr "Fallido"
-
-#, python-format
-msgid "Given up after %(attempts)s attempt. Send the invitation again when the mail server works."
-msgid_plural "Given up after %(attempts)s attempts. Send the invitation again when the mail server works."
-msgstr[0] "Abandonado tras %(attempts)s intento. Envía la invitación de nuevo cuando el servidor de correo funcione."
-msgstr[1] "Abandonado tras %(attempts)s intentos. Envía la invitación de nuevo cuando el servidor de correo funcione."
-
-msgid "Blik tries again within about five minutes."
-msgstr "Blik lo intenta de nuevo en unos cinco minutos."
-
-msgid "Queued"
-msgstr "En cola"
-
-msgid "Goes out within about five minutes"
-msgstr "Sale en unos cinco minutos"
-
-msgid "Ready to send"
-msgstr "Listo para enviar"
-
-#, python-format
-msgid "Reminder failed: %(error)s"
-msgstr "Recordatorio fallido: %(error)s"
-
-msgid "Send it again when the mail server works."
-msgstr "Envíalo de nuevo cuando el servidor de correo funcione."
-
-msgid "Reminder queued, goes out within about five minutes"
-msgstr "Recordatorio en cola, sale en unos cinco minutos"
-
-#, python-format
-msgid "Reminder sent %(date)s"
-msgstr "Recordatorio enviado %(date)s"
 
 #, python-format
 msgid "%(counter)s text missing"
@@ -4973,7 +4115,7 @@ msgid "Not Published"
 msgstr "No publicado"
 
 msgid "Reviewer Details"
-msgstr "Detalles del revisor"
+msgstr "Detalles del evaluador"
 
 msgctxt "job title"
 msgid "Title"
@@ -5061,7 +4203,7 @@ msgid "Company name (optional)"
 msgstr "Nombre de la empresa (opcional)"
 
 msgid "Reviewer Email"
-msgstr "Correo electrónico del revisor"
+msgstr "Correo electrónico del evaluador"
 
 msgid "e.g., jane@example.com"
 msgstr "por ejemplo, jane@example.com"
@@ -5073,7 +4215,7 @@ msgid "Only approved reviews appear in JSON-LD structured data"
 msgstr "Solo aparecen las revisiones aprobadas en los datos estructurados JSON-LD"
 
 msgid "Mark this reviewer as a verified customer/subscriber"
-msgstr "Marca este reseñador como cliente/suscriptor verificado"
+msgstr "Marca este evaluador como cliente/suscriptor verificado"
 
 msgid "Featured Review"
 msgstr "Reseña destacada"
@@ -5128,7 +4270,7 @@ msgstr "Valoración media"
 
 msgctxt "product review"
 msgid "Reviewer"
-msgstr "Reseñador"
+msgstr "Evaluador"
 
 msgid "Approve"
 msgstr "Aprobar"
@@ -5172,7 +4314,7 @@ msgid "Deleting it would leave those cycles and their reports without the questi
 msgstr "Eliminarlo dejaría esos ciclos y sus informes sin las preguntas a las que hacen referencia sus respuestas. En su lugar, se archivará: se eliminará de todas las listas de selección, se mantendrá para los informes existentes. Puedes restaurarlo más adelante."
 
 msgid "<strong>Warning:</strong> No review cycle uses this questionnaire, so it will be deleted for good, along with its sections and questions. This cannot be undone."
-msgstr "<strong>Advertencia:</strong> Ningún ciclo de revisión utiliza este cuestionario, por lo que será eliminado definitivamente, junto con sus secciones y preguntas. Esto no se puede deshacer."
+msgstr "<strong>Advertencia:</strong> Ningún ciclo de evaluación utiliza este cuestionario, por lo que será eliminado definitivamente, junto con sus secciones y preguntas. Esto no se puede deshacer."
 
 msgid "Name:"
 msgstr "Nombre:"
@@ -5441,7 +4583,7 @@ msgid "Insights & analytics (strengths/development areas)"
 msgstr "Insights y análisis (fortalezas/áreas de desarrollo)"
 
 msgid "Comparisons across review cycles"
-msgstr "Comparaciones entre ciclos de revisión"
+msgstr "Comparaciones entre ciclos de evaluación"
 
 msgid "How It Works"
 msgstr "Cómo funciona"
@@ -5767,13 +4909,13 @@ msgid "<strong>Note:</strong> Your review will be submitted for approval before 
 msgstr "<strong>Nota:</strong> Tu reseña será enviada para su aprobación antes de ser publicada. Podemos ponernos en contacto contigo en %(email)s si tenemos alguna pregunta."
 
 msgid "Update Review"
-msgstr "Revisión de la actualización"
+msgstr "Actualizar reseña"
 
 msgid "Why we ask for reviews"
 msgstr "Por qué pedimos reseñas"
 
 msgid "Your feedback helps us improve Blik for everyone"
-msgstr "Vuestros comentarios nos ayudan a mejorar Blik para todos"
+msgstr "Tu feedback nos ayuda a mejorar Blik para todos"
 
 msgid "Reviews help other teams decide if Blik is right for them"
 msgstr "Las reseñas ayudan a otros equipos a decidir si Blik es adecuado para ellos"
@@ -5786,14 +4928,14 @@ msgstr "Leemos cada reseña y las usamos para priorizar características"
 
 #, python-format
 msgid "Review Cycle: %(name)s"
-msgstr "Ciclo de revisión: %(name)s"
+msgstr "ciclo de evaluación: %(name)s"
 
 msgid "Questionnaire:"
 msgstr "Cuestionario:"
 
 #, python-format
 msgid "Created on %(date)s"
-msgstr "Creado en %(date)s"
+msgstr "Creado el %(date)s"
 
 msgid "API Identifiers"
 msgstr "Identificadores API"
@@ -5805,7 +4947,7 @@ msgid "Copy"
 msgstr "Copiado"
 
 msgid "Reviewee UUID:"
-msgstr "UUID revisado:"
+msgstr "UUID persona evaluada:"
 
 msgid "Report Available"
 msgstr "Informe disponible"
@@ -5839,7 +4981,7 @@ msgid "View Report (Admin)"
 msgstr "Ver informe (Admin)"
 
 msgid "View Report (Reviewee View)"
-msgstr "Ver informe (Opinión del reseñado)"
+msgstr "Ver informe (Opinión del persona evaluada)"
 
 #, python-format
 msgid "Send Report to %(name)s"
@@ -5849,14 +4991,14 @@ msgid "Regenerate Report"
 msgstr "Informe Regenerar"
 
 msgid "Review Completion Details"
-msgstr "Detalles de la finalización de la revisión"
+msgstr "Detalles de finalización de la evaluación"
 
 #, python-format
 msgid "%(completed_tokens)s of %(total_tokens)s completed (%(rate)s%%)"
 msgstr "%(completed_tokens)s de %(total_tokens)s completados (%(rate)s%%)"
 
 msgid "Total Reviewers"
-msgstr "Total de revisores"
+msgstr "Total de evaluadores"
 
 msgid "Completion Rate"
 msgstr "Tasa de finalización"
@@ -5876,24 +5018,13 @@ msgid "Alternative to email invites"
 msgstr "Alternativa a las invitaciones por correo electrónico"
 
 msgid "Share these links with reviewers. Each link will randomly assign an available token from the category. Reviewers can bookmark their feedback link or return later - progress is saved automatically."
-msgstr "Comparte estos enlaces con los revisores. Cada enlace asignará aleatoriamente un token disponible de la categoría. Los revisores pueden guardar su enlace de comentarios o devolverlos más adelante; el progreso se guarda automáticamente."
+msgstr "Comparte estos enlaces con los evaluadores. Cada enlace asignará aleatoriamente un token disponible de la categoría. Los evaluadores pueden guardar su enlace de feedback y volver más tarde; el progreso se guarda automáticamente."
 
 msgid "Copy Link"
 msgstr "Copiar enlace"
 
-#, python-format
-msgid "The email with these links to %(email)s failed: %(error)s"
-msgstr "El correo con estos enlaces a %(email)s falló: %(error)s"
-
-msgid "Blik tries again within about five minutes, or send the links again below."
-msgstr "Blik lo intenta de nuevo en unos cinco minutos, o envía los enlaces de nuevo abajo."
-
-#, python-format
-msgid "The email with these links to %(email)s is queued and goes out within about five minutes."
-msgstr "El correo con estos enlaces a %(email)s está en cola y sale en unos cinco minutos."
-
 msgid "Resend the links to the reviewee"
-msgstr "Reenvía los enlaces al destinatario de la reseña"
+msgstr "Reenviar los enlaces a la persona evaluada"
 
 #, python-format
 msgid "%(counter)s reviewer"
@@ -5910,14 +5041,8 @@ msgstr "Eliminar"
 msgid "Send Reminder"
 msgstr "Enviar recordatorio"
 
-#, python-format
-msgid "%(counter)s invitation is queued and goes out within about five minutes."
-msgid_plural "%(counter)s invitations are queued and go out within about five minutes, one email per reviewer."
-msgstr[0] "%(counter)s invitación está en cola y sale en unos cinco minutos."
-msgstr[1] "%(counter)s invitaciones están en cola y salen en unos cinco minutos, un correo por revisor."
-
-msgid "Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes."
-msgstr "Pon en cola los correos de invitación a todos los revisores asignados que aún no hayan sido invitados. Salen en unos cinco minutos."
+msgid "Send invitation emails to all reviewers who have been assigned but not sent invites yet"
+msgstr "Envía correos electrónicos de invitación a todos los evaluadores que hayan sido asignados pero aún no hayan enviado invitaciones"
 
 msgid "Send All Pending Invites"
 msgstr "Envía todas las invitaciones pendientes"
@@ -5928,11 +5053,11 @@ msgid_plural "%(counter)s unfinished reviews"
 msgstr[0] "%(counter)s reseña inacabada"
 msgstr[1] "%(counter)s reseñas inacabadas"
 
-msgid "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes."
-msgstr "Pon en cola un recordatorio a cada revisor invitado que aún no haya completado su feedback. Un correo por revisor, en unos cinco minutos."
+msgid "Send reminder emails to all reviewers who have been sent invitations but haven't completed their feedback yet"
+msgstr "Enviar recordatorios por correo electrónico a todos los evaluadores que hayan recibido una invitación pero aún no hayan completado su feedback"
 
 msgid "Remind All Pending Reviewers"
-msgstr "Recuerda a todos los revisores pendientes"
+msgstr "Recuerda a todos los evaluadores pendientes"
 
 msgid "No reviewers invited yet."
 msgstr "Aún no hay críticos invitados."
@@ -5973,30 +5098,33 @@ msgstr "No se pudo copiar. URL: %(url)s"
 msgid "Invitation link copied to clipboard"
 msgstr "Enlace de invitación copiado a la carpeta"
 
+msgid "Link copied to clipboard"
+msgstr "Enlace copiado a la carpeta"
+
 msgid "UUID copied to clipboard"
 msgstr "UUID copiado a la carpeta"
 
 msgid "Are you sure you want to remove this reviewer from the cycle?"
-msgstr "¿Estás seguro de que quieres eliminar a este revisor del ciclo?"
+msgstr "¿Estás seguro de que quieres eliminar a este evaluador del ciclo?"
 
 msgid "Set up a new 360-degree feedback review cycle"
-msgstr "Establecer un nuevo ciclo de revisión de retroalimentación de 360 grados"
+msgstr "Establecer un nuevo ciclo de evaluación de retroalimentación de 360 grados"
 
 msgid "You have no review cycles left."
-msgstr "No te quedan ciclos de revisión."
+msgstr "No te quedan ciclos de evaluación."
 
 msgid "Cycles in progress continue and your reports stay available. To start a new cycle, buy another round or start a subscription."
 msgstr "Los ciclos en curso continúan y tus informes siguen disponibles. Para empezar un nuevo ciclo, compra otra ronda o inicia una suscripción."
 
 #, python-format
 msgid "Review cycles remaining: <strong>%(cycle_credits)s</strong>. Each cycle you create uses one."
-msgstr "Ciclos de revisión restantes: <strong>%(cycle_credits)s</strong>. Cada ciclo que crees utiliza uno."
+msgstr "ciclos de evaluación restantes: <strong>%(cycle_credits)s</strong>. Cada ciclo que crees utiliza uno."
 
 msgid "Creation Mode"
 msgstr "Modo de creación"
 
 msgid "Single Reviewee"
-msgstr "Reseñador único"
+msgstr "persona evaluada único"
 
 msgid "Create cycle for one person"
 msgstr "Crear ciclo para una persona"
@@ -6005,13 +5133,16 @@ msgid "Bulk Create"
 msgstr "Crear en masa"
 
 msgid "Create for all active reviewees"
-msgstr "Crear para todos los revisados activos"
+msgstr "Crear para todos los personas evaluadas activos"
+
+msgid "Bulk creation does not send any emails. You'll review the new cycles and send invitations in the next step."
+msgstr "La creación masiva no envía ningún correo. Revisarás los nuevos ciclos y enviarás invitaciones en el siguiente paso."
 
 msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
-msgstr "Solo puedes crear ciclos de revisión para ti mismo. Contacta con un administrador para crear ciclos para otros miembros del equipo."
+msgstr "Solo puedes crear ciclos de evaluación para ti mismo. Contacta con un administrador para crear ciclos para otros miembros del equipo."
 
 msgid "Select a reviewee..."
-msgstr "Selecciona a un destinatario de la crítica..."
+msgstr "Selecciona a un persona evaluada de la crítica..."
 
 msgid "Person who will receive 360-degree feedback"
 msgstr "Persona que recibirá retroalimentación de 360 grados"
@@ -6020,7 +5151,7 @@ msgid "Select a questionnaire..."
 msgstr "Selecciona un cuestionario..."
 
 msgid "Questions that reviewers will answer"
-msgstr "Preguntas que los revisores responderán"
+msgstr "Preguntas que los evaluadores responderán"
 
 msgid "Report type:"
 msgstr "Tipo de informe:"
@@ -6034,14 +5165,17 @@ msgstr "¿Quién da feedback en este ciclo? Las categorías que eliminas quedan 
 msgid "The reviewee rates themselves"
 msgstr "El evaluado se valora a sí mismo"
 
-msgid "Direct manager or supervisor"
-msgstr "Responsable o supervisor directo"
-
 msgid "Select at least one category."
 msgstr "Selecciona al menos una categoría."
 
 msgid "Invite Reviewers (Optional)"
-msgstr "Revisores de invitación (opcional)"
+msgstr "evaluadores de invitación (opcional)"
+
+msgid "Enter email addresses for reviewers now, or skip and add them later. Separate multiple emails with commas or newlines."
+msgstr "Introduce ahora las direcciones de correo electrónico de los evaluadores, o sáltalas y añádelas más tarde. Separa varios correos con comas o saltos de línea."
+
+msgid "Usually the reviewee's own email (auto-filled when reviewee selected)"
+msgstr "Normalmente el correo electrónico del evaluado (rellenado automáticamente cuando seleccionaba al evaluado)"
 
 msgid "Send invitation emails immediately after creating cycle"
 msgstr "Envía correos de invitación inmediatamente después del ciclo de creación"
@@ -6053,16 +5187,16 @@ msgid "Review Cycles"
 msgstr "Ciclos de reseñas"
 
 msgid "Manage 360-degree feedback review cycles"
-msgstr "Gestionar ciclos de revisión de feedback de 360 grados"
+msgstr "Gestionar ciclos de evaluación de feedback de 360 grados"
 
 msgid "Filter by stage"
 msgstr "Filtrar por etapa"
 
 msgid "Search reviewee name or email"
-msgstr "Buscar nombre o correo electrónico del reseñado"
+msgstr "Buscar nombre o correo electrónico del persona evaluada"
 
 msgid "Search reviewee"
-msgstr "Buscar reseñado"
+msgstr "Buscar persona evaluada"
 
 msgid "Press / to search"
 msgstr "Pulsa / para buscar"
@@ -6077,13 +5211,10 @@ msgid "Clear filters"
 msgstr "Filtros claros"
 
 msgid "No review cycles match these filters."
-msgstr "Ningún ciclo de revisión coincide con estos filtros."
+msgstr "Ningún ciclo de evaluación coincide con estos filtros."
 
 msgid "Show API Identifiers"
 msgstr "Mostrar identificadores API"
-
-msgid "Email failed"
-msgstr "Correo fallido"
 
 msgid "New Cycle"
 msgstr "Nuevo ciclo"
@@ -6093,15 +5224,15 @@ msgid "Page %(number)s of %(num_pages)s"
 msgstr "Página %(number)s de %(num_pages)s"
 
 msgid "Create your first review cycle to start collecting feedback"
-msgstr "Crea tu primer ciclo de revisión para empezar a recopilar opiniones"
+msgstr "Crea tu primer ciclo de evaluación para empezar a recopilar opiniones"
 
 #, python-format
 msgid "Use these UUIDs when accessing the REST API for <strong id=\"%(name_id)s\"></strong>"
-msgstr "Utiliza estos UUIDs al acceder a la API REST para <strong id=\"<span class=\" notranslate\"=\"\">%(name_id)s\"></strong>"
+msgstr "Utiliza estos UUID al acceder a la API REST para <strong id=\"%(name_id)s\"></strong>"
 
 #, python-format
 msgid "Replace <code>$BLIK_API_TOKEN</code> with a token from <a href=\"%(url)s\">Settings → API</a>."
-msgstr "Sustituye <code>$BLIK_API_TOKEN</code> por un token de <a href=\"<span class=\" notranslate\"=\"\">%(url)s\">Settings → API</a>."
+msgstr "Sustituye <code>$BLIK_API_TOKEN</code> por un token de <a href=\"%(url)s\">Configuración → API</a>."
 
 msgid "Replace <code>$BLIK_API_TOKEN</code> with an API token from an organization admin."
 msgstr "Sustituye <code>$BLIK_API_TOKEN</code> por un token API de un administrador de la organización."
@@ -6110,7 +5241,7 @@ msgid "Cycle UUID"
 msgstr "UUID de ciclo"
 
 msgid "Reviewee UUID"
-msgstr "UUID revisado"
+msgstr "UUID persona evaluada"
 
 msgid "Example calls"
 msgstr "Ejemplos de llamadas"
@@ -6131,7 +5262,7 @@ msgid "Close the cycle and generate the report"
 msgstr "Cierra el ciclo y genera el informe"
 
 msgid "Reviewee details"
-msgstr "Detalles de los reseñados"
+msgstr "Detalles de los personas evaluadas"
 
 msgid "All cycles of this reviewee"
 msgstr "Todos los ciclos de esta reseña"
@@ -6143,13 +5274,13 @@ msgid "Command copied to clipboard"
 msgstr "Comando copiado a la carpeta"
 
 msgid "Delete Reviewee"
-msgstr "Eliminar reseñado"
+msgstr "Eliminar persona evaluada"
 
 msgid "Are you sure you want to deactivate this reviewee?"
-msgstr "¿Estás seguro de que quieres desactivar a este destinatario de la revisión?"
+msgstr "¿Estás seguro de que quieres desactivar a este persona evaluada?"
 
 msgid "<strong>Warning:</strong> This will deactivate the reviewee. Their past review cycles will remain accessible, but they will not appear in active lists."
-msgstr "<strong>Advertencia:</strong> Esto desactivará al evaluado. Sus ciclos de revisión anteriores seguirán siendo accesibles, pero no aparecerán en las listas activas."
+msgstr "<strong>Advertencia:</strong> Esto desactivará al evaluado. Sus ciclos de evaluación anteriores seguirán siendo accesibles, pero no aparecerán en las listas activas."
 
 msgid "Email:"
 msgstr "Correo electrónico:"
@@ -6158,13 +5289,13 @@ msgid "Department:"
 msgstr "Departamento:"
 
 msgid "Deactivate Reviewee"
-msgstr "Desactivar Revisado"
+msgstr "Desactivar persona evaluada"
 
 msgid "Edit Reviewee"
-msgstr "Edición revisada"
+msgstr "Edición persona evaluada"
 
 msgid "Create Reviewee"
-msgstr "Crear reseñado"
+msgstr "Crear persona evaluada"
 
 #, python-format
 msgid "Update information for %(name)s"
@@ -6189,14 +5320,14 @@ msgid "Language of the emails to this person and of their self-assessment."
 msgstr "Lenguaje de los correos a esta persona y de su autoevaluación."
 
 msgid "Update Reviewee"
-msgstr "Actualización Revisada"
+msgstr "Actualización persona evaluada"
 
 msgid "Find people, follow their feedback, and plan the next review."
 msgstr "Encuentra personas, sigue sus comentarios y planifica la siguiente revisión."
 
 #, python-format
 msgid "%(current)s / %(max)s reviewees (%(remaining)s remaining)"
-msgstr "%(current)s / %(max)s reseñadores (%(remaining)s restantes)"
+msgstr "%(current)s / %(max)s persona evaluada (%(remaining)s restantes)"
 
 msgid "Add Myself"
 msgstr "Súmeme a mí mismo"
@@ -6209,6 +5340,9 @@ msgstr "Todas las personas"
 
 msgid "Name, email or department"
 msgstr "Nombre, correo electrónico o departamento"
+
+msgid "Find a person"
+msgstr "Encuentra a una persona"
 
 msgid "All departments"
 msgstr "Todos los departamentos"
@@ -6226,7 +5360,7 @@ msgid "Self vs others"
 msgstr "Yo contra otros"
 
 msgid "Compares self-assessment with the average of other reviewers in the latest completed report."
-msgstr "Compara la autoevaluación con la media de otros revisores en el último informe completado."
+msgstr "Compara la autoevaluación con la media de otros evaluadores en el último informe completado."
 
 msgid "Positive: rates themselves higher. Negative: rates themselves lower. Zero: the ratings agree."
 msgstr "Positivo: se valoran más. Negativo: se valoran más. Cero: las valoraciones coinciden."
@@ -6238,7 +5372,7 @@ msgid "Person"
 msgstr "Persona"
 
 msgid "Review status"
-msgstr "Estado de la revisión"
+msgstr "Estado de la evaluación"
 
 msgid "About self vs others"
 msgstr "Sobre uno mismo frente a otros"
@@ -6284,16 +5418,16 @@ msgid "Showing %(first)s–%(last)s of %(total)s people"
 msgstr "Mostrando %(first)s–%(last)s de %(total)s personas"
 
 msgid "Reviewee pages"
-msgstr "Páginas de los reseñados"
+msgstr "Páginas de los personas evaluadas"
 
 msgid "No reviewees yet"
 msgstr "Aún no hay reseñas"
 
 msgid "Add your first reviewee to start creating review cycles"
-msgstr "Añade a tu primer evaluado para empezar a crear ciclos de revisión"
+msgstr "Añade a tu primer evaluado para empezar a crear ciclos de evaluación"
 
 msgid "Add yourself as a reviewee to start receiving feedback"
-msgstr "Agrégate como persona que recibe la revisión para empezar a recibir comentarios"
+msgstr "Añádete como persona evaluada para empezar a recibir feedback"
 
 #, python-format
 msgid "Send Reminders - %(name)s"
@@ -6306,16 +5440,16 @@ msgid "Send reminder emails for pending reviews in this cycle"
 msgstr "Envía correos recordatorios para las revisiones pendientes en este ciclo"
 
 msgid "Review Cycle Details"
-msgstr "Detalles del ciclo de revisión"
+msgstr "Detalles del ciclo de evaluación"
 
 msgid "Reviewee:"
-msgstr "Reseñado:"
+msgstr "persona evaluada:"
 
 msgid "Pending Reviews:"
 msgstr "Reseñas pendientes:"
 
 msgid "Pending Reviewer Tokens"
-msgstr "Tokens revisores pendientes"
+msgstr "Tokens evaluadores pendientes"
 
 msgid "Category"
 msgstr "Categoría"
@@ -6336,15 +5470,15 @@ msgstr "Introduce una dirección de correo electrónico por línea (o separada p
 msgid "The number of emails must match the number of pending tokens (%(count)s)"
 msgstr "El número de correos debe coincidir con el número de tokens pendientes (%(count)s)"
 
-msgid "The reminders go out within about five minutes, one email per reviewer"
-msgstr "Los recordatorios salen en unos cinco minutos, un correo por revisor"
+msgid "Emails will be sent in the order shown in the table above"
+msgstr "Los correos electrónicos se enviarán en el orden mostrado en la tabla anterior"
 
 msgid "Each email will contain a unique anonymous review link"
 msgstr "Cada correo contendrá un enlace único de reseña anónima"
 
 #, python-format
 msgid "Reviewer Email Addresses (%(count)s required)"
-msgstr "Direcciones de correo electrónico del revisor (%(count)s requeridas)"
+msgstr "Direcciones de correo electrónico del evaluador (%(count)s requeridas)"
 
 #, python-format
 msgid "Enter %(count)s email address(es), one per line"
@@ -6362,9 +5496,6 @@ msgstr "No hay revisiones pendientes para este ciclo."
 
 msgid "Back to Cycle"
 msgstr "Volver al ciclo"
-
-msgid "Link copied to clipboard"
-msgstr "Enlace copiado a la carpeta"
 
 msgid "Organization configuration and preferences"
 msgstr "Configuración y preferencias de la organización"
@@ -6403,20 +5534,14 @@ msgstr "Envía automáticamente el correo electrónico del informe cuando se gen
 msgid "When enabled, reviewees automatically receive an email with a link to their report when all feedback is collected."
 msgstr "Cuando está habilitado, los evaluados reciben automáticamente un correo electrónico con un enlace a su informe cuando se recogen todos los comentarios."
 
-msgid "Attach the report as a PDF to the email"
-msgstr "Adjuntar el informe en PDF al correo"
+msgid "User Registration"
+msgstr "Registro de usuarios"
 
-msgid "When enabled, the report email to the reviewee includes the report as a PDF file."
-msgstr "Si está activado, el correo del informe a la persona evaluada incluye el informe como archivo PDF."
+msgid "Allow user registration"
+msgstr "Permitir el registro de usuarios"
 
-msgid "Report PDF Retention (days)"
-msgstr "Conservación del PDF del informe (días)"
-
-msgid "How long a report PDF is kept before it is deleted. Leave empty to use the default."
-msgstr "Cuánto tiempo se conserva el PDF de un informe antes de eliminarlo. Déjalo vacío para usar el valor predeterminado."
-
-msgid "New Users"
-msgstr "Nuevos usuarios"
+msgid "When enabled, new users can register at /accounts/register/"
+msgstr "Cuando está habilitado, los nuevos usuarios pueden registrarse en /accounts/register/"
 
 msgid "New users can create cycles for others"
 msgstr "Los nuevos usuarios pueden crear ciclos para otros"
@@ -6424,8 +5549,40 @@ msgstr "Los nuevos usuarios pueden crear ciclos para otros"
 msgid "If disabled, new users can only create cycles for themselves"
 msgstr "Si se desactiva, los nuevos usuarios solo pueden crear ciclos para sí mismos"
 
-msgid "Your plan, payment method, invoices and review credits."
-msgstr "Tu plan, método de pago, facturas y créditos de revisión."
+msgid "Subscription & Billing"
+msgstr "Suscripciones y facturación"
+
+#, python-format
+msgid "€%(price)s/month"
+msgstr "%(price)s€ /mes"
+
+msgid "Trial Ends"
+msgstr "Fin del periodo de prueba"
+
+msgid "Max Employees"
+msgstr "Empleados máximos"
+
+msgid "Current Period"
+msgstr "Periodo actual"
+
+msgid "Subscription Canceling:"
+msgstr "Cancelación de suscripción:"
+
+#, python-format
+msgid "Ends %(end_date)s"
+msgstr "Termina %(end_date)s"
+
+msgid "Manage Billing"
+msgstr "Gestionar la facturación"
+
+msgid "Review Rounds"
+msgstr "Ciclos de evaluación"
+
+msgid "Review cycles remaining"
+msgstr "ciclos de evaluación restantes"
+
+msgid "Not used while your subscription is active."
+msgstr "No se usa mientras tu suscripción esté activa."
 
 msgid "Email (SMTP) Settings"
 msgstr "Configuración de correo electrónico (SMTP)"
@@ -6527,6 +5684,26 @@ msgstr "Sube un archivo JSON previamente exportado para importar datos."
 msgid "Import Data"
 msgstr "Datos de importación"
 
+msgid "Subscription"
+msgstr "Suscripción"
+
+#, python-format
+msgid "Scheduled to cancel on %(end_date)s."
+msgstr "Está programado para cancelar %(end_date)s."
+
+msgid "Reactivate"
+msgstr "Reactivar"
+
+#, python-format
+msgid "Cancel subscription. Access until %(end_date)s."
+msgstr "Cancelar suscripción. Acceso hasta %(end_date)s."
+
+msgid "Cancel subscription? You'll retain access until end of billing period."
+msgstr "¿Cancelar la suscripción? Conservarás el acceso hasta el final del periodo de facturación."
+
+msgid "Cancel Subscription"
+msgstr "Cancelar suscripción"
+
 msgid "Delete Account"
 msgstr "Eliminar cuenta"
 
@@ -6551,7 +5728,7 @@ msgstr "Confirma tu contraseña:"
 
 #, python-format
 msgid "This will permanently delete <strong>%(name)s</strong> and all data including users, reviewees, cycles, and reports. This action cannot be undone."
-msgstr "Esto eliminará <strong> permanentemente%(name)s</strong> y todos los datos, incluidos usuarios, revisados, ciclos e informes. Esta acción no puede deshacerse."
+msgstr "Esto eliminará <strong> permanentemente%(name)s</strong> y todos los datos, incluidos usuarios, personas evaluadas, ciclos e informes. Esta acción no puede deshacerse."
 
 msgid "Type the organization name to confirm:"
 msgstr "Escribe el nombre de la organización para confirmar:"
@@ -6614,13 +5791,16 @@ msgid "All import operations are atomic - if any error occurs, no changes will b
 msgstr "Todas las operaciones de importación son atómicas: si ocurre algún error, no se realizarán cambios"
 
 msgid "Reviewer anonymity is preserved - no reviewer email addresses are restored"
-msgstr "Se mantiene el anonimato de los revisores: no se restauran direcciones de correo electrónico de los revisores"
+msgstr "Se mantiene el anonimato de los evaluadores: no se restauran direcciones de correo electrónico de los evaluadores"
 
 msgid "Response data may be skipped if question matching fails"
 msgstr "Los datos de respuesta pueden omitirse si falla la coincidencia de preguntas"
 
 msgid "Reports attach to imported cycles, or create new cycles if importing separately"
 msgstr "Los informes se adjuntan a ciclos importados, o crean nuevos ciclos si se importan por separado"
+
+msgid "Back"
+msgstr "Atrás"
 
 msgid "Confirm Import"
 msgstr "Confirmar importación"
@@ -6630,7 +5810,7 @@ msgid "%(sections)s sections, %(questions)s questions"
 msgstr "%(sections)s secciones, %(questions)s preguntas"
 
 msgid "Please select a file to import"
-msgstr "Por favor, selecciona un archivo para importar"
+msgstr "selecciona un archivo para importar"
 
 msgid "Error:"
 msgstr "Error:"
@@ -6663,7 +5843,7 @@ msgid "Copied!"
 msgstr "¡Copiado!"
 
 msgid "Failed to copy to clipboard. Please select and copy manually."
-msgstr "No se pudo copiar a la carpeta. Por favor, selecciona y copia manualmente."
+msgstr "No se pudo copiar a la carpeta. selecciona y copia manualmente."
 
 msgid "Token Name"
 msgstr "Nombre del token"
@@ -6672,7 +5852,7 @@ msgid "e.g. Slack Integration"
 msgstr "por ejemplo, integración con Slack"
 
 msgid "Descriptive name to identify this token"
-msgstr "Nombre descriptivo para identificar esta ficha"
+msgstr "Nombre descriptivo para identificar esta token"
 
 msgid "Rate Limit (requests/hour)"
 msgstr "Límite de tarifa (solicitudes/hora)"
@@ -6684,7 +5864,7 @@ msgid "Inactive tokens cannot be used for API requests"
 msgstr "No se pueden usar tokens inactivos para solicitudes de API"
 
 msgid "Save Token"
-msgstr "Guardar ficha"
+msgstr "Guardar token"
 
 msgid "API Token Created Successfully!"
 msgstr "¡API Token creado con éxito!"
@@ -6712,7 +5892,7 @@ msgstr "Revoke API Token"
 
 #, python-format
 msgid "Are you sure you want to revoke the API token \"<strong id=\"%(name_id)s\"></strong>\"?"
-msgstr "¿Estás seguro de que quieres revocar el token API \"<strong id=\"<span class=\" notranslate\"=\"\">%(name_id)s\"></strong>\"?"
+msgstr "¿Estás seguro de que quieres revocar el token de API \"<strong id=\"%(name_id)s\"></strong>\"?"
 
 msgid "Warning:"
 msgstr "Advertencia:"
@@ -6728,7 +5908,7 @@ msgstr "Eliminar Webhook"
 
 #, python-format
 msgid "Are you sure you want to delete the webhook \"<strong id=\"%(name_id)s\"></strong>\"?"
-msgstr "¿Estás seguro de que quieres borrar el webhook \"<strong id=\"<span class=\" notranslate\"=\"\">%(name_id)s\"></strong>\"?"
+msgstr "¿Estás seguro de que quieres eliminar el webhook \"<strong id=\"%(name_id)s\"></strong>\"?"
 
 msgid "This will stop all event notifications to this endpoint. This action cannot be undone."
 msgstr "Esto detendrá todas las notificaciones de eventos en este endpoint. Esta acción no puede deshacerse."
@@ -6849,7 +6029,7 @@ msgstr "Gestionar permisos de usuario"
 
 #, python-format
 msgid "Update permissions for <strong id=\"%(username_id)s\"></strong>"
-msgstr "Actualizar permisos para <strong id=\"<span class=\" notranslate\"=\"\">%(username_id)s\"></strong>"
+msgstr "Actualizar permisos para <strong id=\"%(username_id)s\"></strong>"
 
 msgid "Can invite members, manage organization settings, and delete organization"
 msgstr "Puede invitar a miembros, gestionar la configuración de la organización y eliminar la organización"
@@ -6861,7 +6041,7 @@ msgid "Additional Permissions"
 msgstr "Permisos adicionales"
 
 msgid "Can create review cycles for others"
-msgstr "Puede crear ciclos de revisión para otros"
+msgstr "Puede crear ciclos de evaluación para otros"
 
 msgid "Without this, user can only create cycles for themselves"
 msgstr "Sin esto, el usuario solo puede crear ciclos para sí mismo"
@@ -7116,7 +6296,7 @@ msgid "On %(date)s, we deleted <strong>%(organization)s</strong> from %(site_nam
 msgstr "El %(date)s, <strong> eliminamos%(organization)s</strong> de %(site_name)s, como pediste."
 
 msgid "People, review cycles, questionnaires, feedback and reports"
-msgstr "Personas, ciclos de revisión, cuestionarios, comentarios e informes"
+msgstr "Personas, ciclos de evaluación, cuestionarios, comentarios e informes"
 
 msgid "What we deleted"
 msgstr "Lo que eliminamos"
@@ -7129,7 +6309,7 @@ msgid "On %(date)s, we deleted your %(site_name)s account <strong>%(email)s</str
 msgstr "El %(date)s, eliminamos tu cuenta de <strong> %(site_name)s%(email)s</strong>, tal y como pediste. Ya no puedes iniciar sesión con ella."
 
 msgid "Feedback you gave as a reviewer is anonymous. It is not linked to your account, so it stays part of the reports it belongs to."
-msgstr "Los comentarios que diste como revisor son anónimos. No están vinculados a tu cuenta, así que siguen formando parte de los informes a los que pertenecen."
+msgstr "Los comentarios que diste como evaluador son anónimos. No están vinculados a tu cuenta, así que siguen formando parte de los informes a los que pertenecen."
 
 #, python-format
 msgid "Thank you for using %(site_name)s."
@@ -7143,7 +6323,7 @@ msgid "On %(date)s, we deleted %(organization)s from %(site_name)s, as you asked
 msgstr "El %(date)s, eliminamos %(organization)s de %(site_name)s, como pediste."
 
 msgid "We deleted all its data: people, review cycles, questionnaires, feedback and reports."
-msgstr "Eliminamos todos sus datos: personas, ciclos de revisión, cuestionarios, comentarios e informes."
+msgstr "Eliminamos todos sus datos: personas, ciclos de evaluación, cuestionarios, comentarios e informes."
 
 #, python-format
 msgid "On %(date)s, we deleted your %(site_name)s account %(email)s, as you asked. You can no longer sign in with it."
@@ -7193,11 +6373,11 @@ msgstr "Las respuestas en número, y el siguiente paso."
 
 #, python-format
 msgid "The review cycle for %(reviewee_name)s is closed"
-msgstr "El ciclo de revisión de %(reviewee_name)s está cerrado"
+msgstr "El ciclo de evaluación de %(reviewee_name)s está cerrado"
 
 #, python-format
 msgid "This is the first closed review cycle of %(organization)s."
-msgstr "Este es el primer ciclo cerrado de revisión de %(organization)s."
+msgstr "Este es el primer ciclo de evaluación cerrado de %(organization)s."
 
 #, python-format
 msgid "With this one, %(organization)s has closed %(counter)s review cycle."
@@ -7230,11 +6410,11 @@ msgstr[0] "En el siguiente ciclo, invita a más revisores. El informe muestra lo
 msgstr[1] "En el próximo ciclo, invita a más revisores. El informe muestra los resultados de un grupo cuando al menos %(counter)s revisores de ese grupo responden."
 
 msgid "View the review cycle"
-msgstr "Consulta el ciclo de revisión"
+msgstr "Consulta el ciclo de evaluación"
 
 #, python-format
 msgid "All review cycles of %(organization)s"
-msgstr "Todos los ciclos de revisión de %(organization)s"
+msgstr "Todos los ciclos de evaluación de %(organization)s"
 
 #, python-format
 msgid "%(counter)s review cycle is still open."
@@ -7243,17 +6423,17 @@ msgstr[0] "%(counter)s ciclo de revisión sigue abierto."
 msgstr[1] "%(counter)s ciclos de revisión siguen abiertos."
 
 msgid "No review cycles are open."
-msgstr "No hay ciclos de revisión abiertos."
+msgstr "No hay ciclos de evaluación abiertos."
 
 msgid "See all review cycles"
-msgstr "Ver todos los ciclos de revisión"
+msgstr "Ver todos los ciclos de evaluación"
 
 #, python-format
 msgid "The review cycle for %(reviewee_name)s is closed. The report is ready. These are the numbers."
-msgstr "El ciclo de revisión de %(reviewee_name)s está cerrado. El informe está listo. Estos son los números."
+msgstr "El ciclo de evaluación de %(reviewee_name)s está cerrado. El informe está listo. Estos son los números."
 
 msgid "View the review cycle:"
-msgstr "Consulta el ciclo de revisión:"
+msgstr "Consulta el ciclo de evaluación:"
 
 msgid "Your email address was changed"
 msgstr "Tu dirección de correo electrónico fue cambiada"
@@ -7281,7 +6461,7 @@ msgstr "¿Lo cambiaste? Entonces no necesitas hacer nada."
 
 #, python-format
 msgid "Did you not change it? Then someone else may have access to your account. Contact your organization administrator now: <a href=\"mailto:%(email)s\">%(email)s</a>."
-msgstr "¿No lo has cambiado? Entonces alguien más podría tener acceso a tu cuenta. Contacta ahora con el administrador de tu organización: <a href=\"mailto:<span class=\" notranslate\"=\"\">%(email)s\">%(email)s</a>."
+msgstr "¿No lo has cambiado? Entonces alguien más podría tener acceso a tu cuenta. Contacta ahora con el administrador de tu organización: <a href=\"mailto:%(email)s\">%(email)s</a>."
 
 msgid "Did you not change it? Then someone else may have access to your account. Contact your organization administrator now."
 msgstr "¿No lo has cambiado? Entonces alguien más podría tener acceso a tu cuenta. Contacta ahora con el administrador de tu organización."
@@ -7303,16 +6483,8 @@ msgid "You started a new subscription with %(email)s, but this address already h
 msgstr "Empezaste una nueva suscripción con %(email)s, pero esta dirección ya tiene una cuenta en Blik360. Cancelamos la nueva suscripción y no se cobró nada."
 
 #, python-format
-msgid "To choose a plan for your existing organization, sign in at %(login_url)s and open Settings."
-msgstr "Para elegir un plan para tu organización actual, inicia sesión en %(login_url)s y abre Configuración."
-
-#, python-format
-msgid "Someone tried to sign up with %(email)s, but this inbox already has a Blik360 account. We did not create a new account."
-msgstr "Alguien intentó registrarse con %(email)s, pero este buzón ya tiene una cuenta de Blik360. No hemos creado una cuenta nueva."
-
-#, python-format
-msgid "Sign in at %(site_url)s. If you forgot your password, use \"Forgot your password?\" on the sign-in page."
-msgstr "Inicia sesión en %(site_url)s. Si olvidaste tu contraseña, usa «¿Olvidaste tu contraseña?» en la página de inicio de sesión."
+msgid "To choose a plan for your existing organization, sign in at %(site_url)s and open Settings."
+msgstr "Para elegir un plan para tu organización actual, inicia sesión en %(site_url)s y abre Configuración."
 
 msgid "Five steps to turn the first report into a good conversation."
 msgstr "Cinco pasos para convertir el primer informe en una buena conversación."
@@ -7366,23 +6538,6 @@ msgstr "Acordad uno o dos objetivos. Apúntalos. Fijad una fecha para ver juntos
 msgid "Open the report:"
 msgstr "Abre el informe:"
 
-msgid "Your feedback forms"
-msgstr "Tus formularios de feedback"
-
-#, python-format
-msgid "Here is a new link to your personal overview of the feedback forms for %(organization_name)s."
-msgstr "Aquí tienes un nuevo enlace a tu resumen personal de los formularios de feedback de %(organization_name)s."
-
-#, python-format
-msgid "This link works for %(days)s days."
-msgstr "Este enlace funciona durante %(days)s días."
-
-msgid "Show my forms"
-msgstr "Ver mis formularios"
-
-msgid "Thank you."
-msgstr "Gracias."
-
 msgid "Time for the next round"
 msgstr "Hora de la siguiente ronda"
 
@@ -7397,7 +6552,7 @@ msgstr[1] "En %(organization)s, %(counter)s personas tienen una línea base: un 
 
 #, python-format
 msgid "The last review cycle closed on %(date)s. Use the same questionnaire as last time. The new report then compares the results with the earlier round."
-msgstr "El último ciclo de revisión cerró en %(date)s. Utiliza el mismo cuestionario que la última vez. El nuevo informe compara los resultados con la ronda anterior."
+msgstr "El último ciclo de evaluación cerró en %(date)s. Utiliza el mismo cuestionario que la última vez. El nuevo informe compara los resultados con la ronda anterior."
 
 msgid "Each report places a person on the Dreyfus model, from novice to expert, for skill and for agency."
 msgstr "Cada informe sitúa a una persona en el modelo Dreyfus, desde novato hasta experto, tanto en habilidad como en agencia."
@@ -7413,7 +6568,7 @@ msgstr "Empieza con un ciclo de pruebas para ti y algunos compañeros en los que
 
 #, python-format
 msgid "The Blik account of %(organization)s is ready. The last step is your first review cycle. A review cycle collects feedback for one person."
-msgstr "La cuenta de Blik de %(organization)s está lista. El último paso es tu primer ciclo de revisión. Un ciclo de revisión recoge comentarios para una persona."
+msgstr "La cuenta de Blik de %(organization)s está lista. El último paso es tu primer ciclo de evaluación. Un ciclo de evaluación recoge comentarios para una persona."
 
 msgid "Start with yourself"
 msgstr "Empieza por ti mismo"
@@ -7434,17 +6589,17 @@ msgid "All feedback is anonymous. Nobody can see who gave which answer."
 msgstr "Todos los comentarios son anónimos. Nadie puede ver quién dio qué respuesta."
 
 msgid "Create a review cycle:"
-msgstr "Crea un ciclo de revisión:"
+msgstr "Crea un ciclo de evaluación:"
 
 #, python-format
 msgid "%(reviewee_name)s's cycle is set up"
 msgstr "El ciclo de %(reviewee_name)sestá establecido"
 
 msgid "Nothing happens until the reviewers get the link."
-msgstr "No pasa nada hasta que los reseñadores reciben el enlace."
+msgstr "No pasa nada hasta que los evaluadores reciben el enlace."
 
 msgid "Reviewers who get the link early have more time to answer. More answers make the report more complete."
-msgstr "Los revisores que reciben el enlace antes tienen más tiempo para responder. Más respuestas hacen que el informe sea más completo."
+msgstr "Los evaluadores que reciben el enlace antes tienen más tiempo para responder. Más respuestas hacen que el informe sea más completo."
 
 msgid "Invite them in one of two ways:"
 msgstr "Invítalo de una de dos maneras:"
@@ -7478,7 +6633,7 @@ msgid "Invite reviewers:"
 msgstr "Invita a los críticos:"
 
 msgid "Your trial has started"
-msgstr "Tu juicio ha comenzado"
+msgstr "Tu periodo de prueba ha comenzado"
 
 #, python-format
 msgid "Your plan is now %(plan)s"
@@ -7492,7 +6647,7 @@ msgstr "Tu suscripción está activa"
 
 #, python-format
 msgid "Thank you for choosing %(site_name)s for %(organization)s. Your free trial of the %(plan)s plan runs until %(date)s. We charge nothing before that date, and we remind you before the trial ends."
-msgstr "Gracias por elegir %(site_name)s para %(organization)s. Tu prueba gratuita del plan %(plan)s dura hasta %(date)s. No cobramos nada antes de esa fecha y te lo recordamos antes de que termine la prueba."
+msgstr "Gracias por elegir %(site_name)s para %(organization)s. Tu periodo de prueba gratuito del plan %(plan)s dura hasta %(date)s. No cobramos nada antes de esa fecha y te lo recordamos antes de que termine la prueba."
 
 #, python-format
 msgid "%(organization)s now uses the %(plan)s plan. The change applies now."
@@ -7504,7 +6659,7 @@ msgstr "Has deshecho la cancelación. %(organization)s mantiene el plan %(plan)s
 
 #, python-format
 msgid "Thank you. %(organization)s is now on the paid %(plan)s plan. All your review cycles, reports and settings are in place."
-msgstr "Gracias. %(organization)s ahora está en el plan de %(plan)s de pago. Todos tus ciclos de revisión, informes y ajustes están listos."
+msgstr "Gracias. %(organization)s ahora está en el plan de %(plan)s de pago. Todos tus ciclos de evaluación, informes y ajustes están listos."
 
 msgid "Next step: follow up your open cycles"
 msgstr "Siguiente paso: haz un seguimiento de tus ciclos abiertos"
@@ -7525,7 +6680,7 @@ msgid "Choose a few colleagues you trust and ask them for feedback on you. It ta
 msgstr "Elige a algunos compañeros de confianza y pídeles feedback sobre ti. Tarda 5 minutos y verás el informe que recibiría tu equipo."
 
 msgid "Your review cycles are closed. Start the next round, so you can see how your team grows over time."
-msgstr "Tus ciclos de revisión están cerrados. Comienza la siguiente ronda para ver cómo crece tu equipo con el tiempo."
+msgstr "Tus ciclos de evaluación están cerrados. Comienza la siguiente ronda para ver cómo crece tu equipo con el tiempo."
 
 msgid "Your password was changed"
 msgstr "Tu contraseña fue cambiada"
@@ -7649,9 +6804,6 @@ msgstr "Consulta tu informe"
 msgid "Privacy:"
 msgstr "Privacidad:"
 
-msgid "The attached PDF holds your full report. Forward it only to people you want to read it."
-msgstr "El PDF adjunto contiene tu informe completo. Reenvíalo solo a las personas que quieras que lo lean."
-
 msgid "Your report is confidential. The secure link above opens it."
 msgstr "Tu informe es confidencial. El enlace seguro de arriba lo abre."
 
@@ -7741,82 +6893,20 @@ msgid "Your answers are anonymous. %(reviewee_name)s never sees your name with t
 msgstr "Tus respuestas son anónimas. %(reviewee_name)s nunca ve tu nombre junto a ellas. Así que puedes ser honesto."
 
 msgid "Start the review"
-msgstr "Empieza la reseña"
+msgstr "Iniciar la evaluación"
 
 msgid "You can stop and continue later in the same browser. Your answers stay there until you submit them."
 msgstr "Puedes parar y continuar más tarde en el mismo navegador. Tus respuestas permanecen ahí hasta que las envíes."
+
+msgid "Thank you."
+msgstr "Gracias."
 
 #, python-format
 msgid "%(organization_name)s asks for your honest feedback about %(reviewee_name)s. This is a %(category)s."
 msgstr "%(organization_name)s pide tu opinión sincera sobre %(reviewee_name)s. Esto es un %(category)s."
 
 msgid "Start the review:"
-msgstr "Empieza la reseña:"
-
-msgid "Your feedback forms are still open"
-msgstr "Tus formularios de feedback siguen abiertos"
-
-#, python-format
-msgid "%(organization_name)s asks for your honest feedback. Your answers are anonymous."
-msgstr "%(organization_name)s pide tu feedback honesto. Tus respuestas son anónimas."
-
-#, python-format
-msgid "%(organization_name)s asks for your honest feedback. You still have %(count)s form to fill in."
-msgid_plural "%(organization_name)s asks for your honest feedback. You still have %(count)s forms to fill in."
-msgstr[0] "%(organization_name)s pide tu feedback honesto. Todavía tienes %(count)s formulario por rellenar."
-msgstr[1] "%(organization_name)s pide tu feedback honesto. Todavía tienes %(count)s formularios por rellenar."
-
-#, python-format
-msgid "%(organization_name)s asks for your honest feedback. You have %(count)s form to fill in."
-msgid_plural "%(organization_name)s asks for your honest feedback. You have %(count)s forms to fill in."
-msgstr[0] "%(organization_name)s pide tu feedback honesto. Tienes %(count)s formulario por rellenar."
-msgstr[1] "%(organization_name)s pide tu feedback honesto. Tienes %(count)s formularios por rellenar."
-
-#, python-format
-msgid "Together they take about %(minutes)s minute."
-msgid_plural "Together they take about %(minutes)s minutes."
-msgstr[0] "En total llevan aproximadamente %(minutes)s minuto."
-msgstr[1] "En total llevan aproximadamente %(minutes)s minutos."
-
-msgid "Your answers are anonymous. The people you review never see your name with them. So you can be honest."
-msgstr "Tus respuestas son anónimas. Las personas que evalúas nunca ven tu nombre junto a ellas. Así que puedes ser honesto."
-
-msgid "Open the review"
-msgstr "Abre la reseña"
-
-msgid "Your own self-assessment"
-msgstr "Tu propia autoevaluación"
-
-#, python-format
-msgid "%(name)s, %(relation)s"
-msgstr "%(name)s, %(relation)s"
-
-#, python-format
-msgid "About %(minutes)s minute."
-msgid_plural "About %(minutes)s minutes."
-msgstr[0] "Aproximadamente %(minutes)s minuto."
-msgstr[1] "Aproximadamente %(minutes)s minutos."
-
-#, python-format
-msgid "You can stop and continue later. <a href=\"%(url)s\">Your personal overview</a> shows which forms are still open."
-msgstr "Puedes parar y continuar más tarde. <a href=\"%(url)s\">Tu resumen personal</a> muestra qué formularios siguen abiertos."
-
-#, python-format
-msgid "Your own self-assessment (%(questionnaire)s)"
-msgstr "Tu propia autoevaluación (%(questionnaire)s)"
-
-#, python-format
-msgid "%(name)s, %(relation)s (%(questionnaire)s)"
-msgstr "%(name)s, %(relation)s (%(questionnaire)s)"
-
-#, python-format
-msgid "about %(minutes)s minute"
-msgid_plural "about %(minutes)s minutes"
-msgstr[0] "aproximadamente %(minutes)s minuto"
-msgstr[1] "aproximadamente %(minutes)s minutos"
-
-msgid "You can stop and continue later. Your personal overview shows which forms are still open:"
-msgstr "Puedes parar y continuar más tarde. Tu resumen personal muestra qué formularios siguen abiertos:"
+msgstr "Iniciar la evaluación:"
 
 #, python-format
 msgid "Your feedback for %(reviewee_name)s is still open"
@@ -7835,6 +6925,9 @@ msgid_plural "%(counter)s colleagues already responded."
 msgstr[0] "%(counter)s compañero ya respondió."
 msgstr[1] "%(counter)s compañeros ya respondieron."
 
+msgid "Open the review"
+msgstr "Abrir la evaluación"
+
 msgid "If you started in this browser, your answers are still there."
 msgstr "Si empezaste en este navegador, tus respuestas seguirán ahí."
 
@@ -7843,7 +6936,7 @@ msgid "Your %(category)s for %(reviewee_name)s is still open."
 msgstr "Tu %(category)s para %(reviewee_name)s sigue abierta."
 
 msgid "Open the review:"
-msgstr "Abre la reseña:"
+msgstr "Abrir la evaluación:"
 
 msgid "Your subscription has ended"
 msgstr "Tu suscripción ha terminado"
@@ -7946,11 +7039,11 @@ msgid "Start a test cycle"
 msgstr "Iniciar un ciclo de pruebas"
 
 msgid "Start a new review cycle"
-msgstr "Inicia un nuevo ciclo de revisión"
+msgstr "Inicia un nuevo ciclo de evaluación"
 
 #, python-format
 msgid "<strong>%(plan)s</strong>, €%(price)s per month, for up to %(max)s people.<br> Free trial until %(date)s."
-msgstr "<strong>%(plan)s</strong>,%(price)s € al mes, para hasta %(max)s personas.<br> Prueba gratuita hasta %(date)s."
+msgstr "<strong>%(plan)s</strong>,%(price)s € al mes, para hasta %(max)s personas.<br> periodo de prueba gratuito hasta %(date)s."
 
 #, python-format
 msgid "<strong>%(plan)s</strong>, €%(price)s per month, for up to %(max)s people.<br> Next payment on %(date)s."
@@ -7961,7 +7054,7 @@ msgstr "Tu plan"
 
 #, python-format
 msgid "Team members are free on every plan. Stripe sends a receipt for each payment. Questions about your plan? Write to <a href=\"mailto:%(email)s\">%(email)s</a>."
-msgstr "Los miembros del equipo son gratuitos en todos los planes. Stripe envía un recibo por cada pago. ¿Preguntas sobre tu plan? Escribe a <a href=\"mailto:<span class=\" notranslate\"=\"\">%(email)s\">%(email)s</a>."
+msgstr "Los miembros del equipo están incluidos sin coste adicional en todos los planes. Stripe envía un recibo por cada pago. ¿Preguntas sobre tu plan? Escribe a <a href=\"mailto:%(email)s\">%(email)s</a>."
 
 msgid "Go to your open cycles:"
 msgstr "Ve a tus ciclos abiertos:"
@@ -7978,7 +7071,7 @@ msgstr "%(plan)s,%(price)s € al mes, para hasta %(max)s personas."
 
 #, python-format
 msgid "Free trial until %(date)s."
-msgstr "Prueba gratuita hasta %(date)s."
+msgstr "periodo de prueba gratuito hasta %(date)s."
 
 #, python-format
 msgid "Next payment on %(date)s."
@@ -8055,7 +7148,7 @@ msgstr "Hasta que el pago funciona, la cuenta queda pausada. No puedes añadir n
 
 #, python-format
 msgid "Does the payment still fail? Write to <a href=\"mailto:%(email)s\">%(email)s</a>. We will help."
-msgstr "¿Sigue fallando el pago? Escribe a <a href=\"mailto:<span class=\" notranslate\"=\"\">%(email)s\">%(email)s</a>. Te ayudaremos."
+msgstr "¿Sigue fallando el pago? Escribe a <a href=\"mailto:%(email)s\">%(email)s</a>. Te ayudaremos."
 
 msgid "Update your payment method:"
 msgstr "Actualiza tu método de pago:"
@@ -8065,14 +7158,14 @@ msgid "Does the payment still fail? Write to %(email)s. We will help."
 msgstr "¿Sigue fallando el pago? Escribe a %(email)s. Te ayudaremos."
 
 msgid "What your team built during the trial"
-msgstr "Lo que construyó tu equipo durante el juicio"
+msgstr "Lo que construyó tu equipo durante el periodo de prueba"
 
 #, python-format
 msgid "Your %(plan)s plan starts on %(date)s. Your work continues."
 msgstr "Tu plan %(plan)s empieza en %(date)s. Tu trabajo continúa."
 
 msgid "Trial reminder"
-msgstr "Recordatorio del juicio"
+msgstr "Recordatorio del periodo de prueba"
 
 #, python-format
 msgid "Your team gave <strong>%(counter)s review</strong> in %(site_name)s."
@@ -8087,7 +7180,7 @@ msgstr[0] "%(counter)s persona ahora tiene comentarios sobre su trabajo."
 msgstr[1] "%(counter)s personas ahora tienen feedback sobre su trabajo."
 
 msgid "Before the trial, your team did not have those perspectives."
-msgstr "Antes del juicio, tu equipo no tenía esas perspectivas."
+msgstr "Antes del periodo de prueba, tu equipo no tenía esas perspectivas."
 
 #, python-format
 msgid "You started <strong>%(counter)s review cycle</strong> in %(site_name)s."
@@ -8119,17 +7212,17 @@ msgid "Your %(plan)s plan starts, for up to %(max)s people. We charge €%(price
 msgstr "Tu plan %(plan)s comienza, para hasta %(max)s personas. Cobramos%(price)s € al mes a la tarjeta que diste en el pago."
 
 msgid "Your review cycles, reports and settings stay as they are. Open cycles keep collecting feedback."
-msgstr "Tus ciclos de revisión, informes y ajustes permanecen tal como están. Los ciclos abiertos siguen recogiendo comentarios."
+msgstr "Tus ciclos de evaluación, informes y ajustes permanecen tal como están. Los ciclos abiertos siguen recogiendo comentarios."
 
 msgid "Your review cycles, reports and settings stay as they are."
-msgstr "Tus ciclos de revisión, informes y ajustes se mantienen tal y como están."
+msgstr "Tus ciclos de evaluación, informes y ajustes se mantienen tal y como están."
 
 msgid "Go to your dashboard"
 msgstr "Ve a tu panel de control"
 
 #, python-format
 msgid "Do you want a different plan, or do you want to stop? <a href=\"%(url)s\">Change or cancel your plan</a> before %(date)s. If you cancel, we charge nothing."
-msgstr "¿Quieres otro plan o prefieres parar? <a href=\"<span class=\" notranslate\"=\"\">%(url)s\">Cambia o cancela tu plan</a> antes de %(date)s. Si cancelas, no cobramos nada."
+msgstr "¿Quieres otro plan o prefieres cancelar? <a href=\"%(url)s\">Cambia o cancela tu plan</a> antes del %(date)s. Si cancelas, no te cobraremos nada."
 
 #, python-format
 msgid "Your team gave %(counter)s review in %(site_name)s."
@@ -8164,7 +7257,7 @@ msgstr "¿Quieres otro plan o prefieres parar? Cambia o cancela tu plan antes de
 
 #, python-format
 msgid "Your trial ends on %(date)s"
-msgstr "Tu juicio termina en %(date)s"
+msgstr "Tu periodo de prueba termina en %(date)s"
 
 msgid "Before you decide, see the report your team would get."
 msgstr "Antes de decidir, mira el informe que recibiría tu equipo."
@@ -8173,17 +7266,17 @@ msgid "Last reminder"
 msgstr "Último recordatorio"
 
 msgid "There is no review cycle in your account yet. A test cycle on yourself still fits in before the trial ends. It takes 5 minutes."
-msgstr "Aún no hay un ciclo de revisión en tu cuenta. Un ciclo de prueba en ti mismo sigue encajando antes de que termine la prueba. Tarda 5 minutos."
+msgstr "Aún no hay un ciclo de evaluación en tu cuenta. Un ciclo de prueba en ti mismo sigue encajando antes de que termine la prueba. Tarda 5 minutos."
 
 msgid "There is no review cycle in your account yet. Maybe now is not the right time, and that is fine."
-msgstr "Aún no hay un ciclo de revisión en tu cuenta. Quizá ahora no sea el momento adecuado, y está bien."
+msgstr "Aún no hay un ciclo de evaluación en tu cuenta. Quizá ahora no sea el momento adecuado, y está bien."
 
 msgid "Before you decide, run one test cycle on yourself with a few colleagues you trust. It takes 5 minutes, and you see the report your team would get."
 msgstr "Antes de decidir, haz un ciclo de prueba contigo mismo con algunos compañeros de confianza. Tarda 5 minutos y verás el informe que recibiría tu equipo."
 
 #, python-format
 msgid "On %(date)s, your %(plan)s plan starts at €%(price)s per month, on the card you gave at checkout. To stop, <a href=\"%(url)s\">cancel your plan</a> before then, and we charge nothing."
-msgstr "En %(date)s, tu plan de %(plan)s empieza en%(price)s € al mes, en la tarjeta que diste al pagar. Para parar, <a href=\"<span class=\" notranslate\"=\"\">%(url)s\"> cancela tu plan</a> antes de entonces y no cobramos nada."
+msgstr "El %(date)s, tu plan %(plan)s comienza a %(price)s € al mes, con cargo a la tarjeta utilizada al pagar. Para detenerlo, <a href=\"%(url)s\">cancela tu plan</a> antes de esa fecha y no te cobraremos nada."
 
 #, python-format
 msgid "On %(date)s, your %(plan)s plan starts at €%(price)s per month, on the card you gave at checkout. To stop, cancel your plan before then, and we charge nothing:"
@@ -8195,7 +7288,7 @@ msgstr "Nada cambia en %(date)s"
 
 #, python-format
 msgid "Your trial ends on %(date)s. Your work continues."
-msgstr "Tu juicio termina en %(date)s. Tu trabajo continúa."
+msgstr "Tu periodo de prueba termina en %(date)s. Tu trabajo continúa."
 
 #, python-format
 msgid "Your <strong>%(counter)s review cycle</strong> and all its feedback stay where they are."
@@ -8209,7 +7302,7 @@ msgstr "Tu prueba termina en %(date)s. Tu trabajo continúa con el plan %(plan)s
 
 #, python-format
 msgid "Do you want to change or stop? <a href=\"%(url)s\">Change or cancel your plan</a>."
-msgstr "¿Quieres cambiar o parar? <a href=\"<span class=\" notranslate\"=\"\">%(url)s\"> Cambia o cancela tu plan</a>."
+msgstr "¿Quieres cambiar o cancelar? <a href=\"%(url)s\">Cambia o cancela tu plan</a>."
 
 #, python-format
 msgid "Your %(counter)s review cycle and all its feedback stay where they are."
@@ -8246,7 +7339,7 @@ msgstr "Empieza con un ciclo de prueba sobre ti mismo. Elige a algunos compañer
 
 #, python-format
 msgid "Questions? Write to <a href=\"mailto:%(email)s\">%(email)s</a>."
-msgstr "¿Preguntas? Escribe a <a href=\"mailto:<span class=\" notranslate\"=\"\">%(email)s\">%(email)s</a>."
+msgstr "¿Preguntas? Escribe a <a href=\"mailto:%(email)s\">%(email)s</a>."
 
 #, python-format
 msgid "This email was sent to %(email)s because an account was created for your organization."
@@ -8370,13 +7463,13 @@ msgid "You have been invited to provide %(category)s feedback for %(reviewee_nam
 msgstr "Has sido invitado a dar %(category)s feedback para %(reviewee_name)s."
 
 msgid "Please complete the feedback questionnaire at:"
-msgstr "Por favor, complete el cuestionario de comentarios en:"
+msgstr "complete el cuestionario de comentarios en:"
 
 msgid "Your Development Path"
 msgstr "Tu camino de desarrollo"
 
 msgid "Skill Level"
-msgstr "Nivel de habilidad"
+msgstr "Nivel de competencia"
 
 msgid "Learn more about the Dreyfus Model"
 msgstr "Descubre más sobre el Modelo de Dreyfus"
@@ -8398,6 +7491,66 @@ msgstr "Para llegar a %(stage)s"
 #, python-format
 msgid "To Reach Level %(level)s:"
 msgstr "Para alcanzar el nivel %(level)s:"
+
+msgid "When reporting problems, investigate root causes"
+msgstr "Al reportar problemas, investiga las causas raíz"
+
+msgid "Respond to guidance with thoughtful analysis"
+msgstr "Responde a la orientación con un análisis reflexivo"
+
+msgid "Ask clarifying questions before escalating"
+msgstr "Haz preguntas aclaratorias antes de escalar"
+
+msgid "Research multiple solution options before asking for help"
+msgstr "Investiga varias opciones de solución antes de pedir ayuda"
+
+msgid "Take ownership of problems you discover"
+msgstr "Asume la responsabilidad de los problemas que descubras"
+
+msgid "Present tradeoffs of different approaches"
+msgstr "Compensaciones actuales de diferentes enfoques"
+
+msgid "Make clear recommendations backed by reasoning"
+msgstr "Haz recomendaciones claras respaldadas por un razonamiento"
+
+msgid "Proactively identify improvements before issues arise"
+msgstr "Identifica proactivamente mejoras antes de que surjan problemas"
+
+msgid "Build confidence in decision-making through successful recommendations"
+msgstr "Fomenta la confianza en la toma de decisiones mediante recomendaciones exitosas"
+
+msgid "Execute solutions autonomously within your domain"
+msgstr "Ejecuta soluciones de forma autónoma dentro de tu dominio"
+
+msgid "Inform stakeholders after implementing fixes"
+msgstr "Informar a las partes interesadas tras implementar las correcciones"
+
+msgid "Drive systemic improvements, not just point solutions"
+msgstr "Impulsa mejoras sistémicas, no solo soluciones puntuales"
+
+msgid "Next time you spot an issue, spend 10 minutes investigating before reporting"
+msgstr "La próxima vez que detectes un problema, dedica 10 minutos a investigar antes de denunciar"
+
+msgid "When given a task, propose at least one way to approach it"
+msgstr "Cuando se te asigne una tarea, propone al menos una forma de abordarla"
+
+msgid "When facing a problem, list 2-3 possible solutions before asking for help"
+msgstr "Cuando te enfrentes a un problema, enumera 2 o 3 posibles soluciones antes de pedir ayuda"
+
+msgid "Volunteer to own a small problem end-to-end this sprint"
+msgstr "Ofrécete voluntario para asumir un pequeño problema de principio a fin en este sprint"
+
+msgid "Present your next problem-solution with a specific recommendation and why"
+msgstr "Presenta tu próxima solución problemática con una recomendación específica y por qué"
+
+msgid "Identify one process improvement opportunity this week"
+msgstr "Identifica una oportunidad de mejora de procesos esta semana"
+
+msgid "Fix the next issue you discover without asking permission (inform after)"
+msgstr "Soluciona el siguiente problema que descubras sin pedir permiso (informa después)"
+
+msgid "Document your decision-making process for others to learn from"
+msgstr "Documenta tu proceso de toma de decisiones para que otros puedan aprender de ellos"
 
 msgid "Learn more about the Performance Matrix"
 msgstr "Más información sobre la Matriz de Rendimiento"
@@ -8472,7 +7625,7 @@ msgid "(%(gap)s compared to others)"
 msgstr "(%(gap)s comparado con otros)"
 
 msgid "Blind Spot: Better Than Self-Perception"
-msgstr "Punto ciego: mejor que la autopercepción"
+msgstr "Punto ciego: mejor percepción externa que autopercepción"
 
 msgid "Blind Spot: You're Better Than You Think"
 msgstr "Punto ciego: eres mejor de lo que crees"
@@ -8487,6 +7640,9 @@ msgstr "Alto"
 msgctxt "severity"
 msgid "moderate"
 msgstr "Moderado"
+
+msgid "Self-assessment"
+msgstr "Autoevaluación"
 
 msgid "You see yourself"
 msgstr "Te ves a ti mismo"
@@ -8510,7 +7666,7 @@ msgid "Key Strengths"
 msgstr "Fortalezas clave"
 
 msgid "Others' avg:"
-msgstr "Promedio de otros:"
+msgstr "Promedio de los demás:"
 
 msgid "Self:"
 msgstr "Yo:"
@@ -8519,7 +7675,7 @@ msgid "Gap:"
 msgstr "Vacío:"
 
 msgid "Development Opportunities"
-msgstr "Oportunidades de desarrollo"
+msgstr "Áreas de desarrollo"
 
 msgid "high priority"
 msgstr "Alta prioridad"
@@ -8574,7 +7730,7 @@ msgid "Privacy Notice:"
 msgstr "Aviso de privacidad:"
 
 msgid "All responses are anonymous and aggregated. Individual reviewers cannot be identified."
-msgstr "Todas las respuestas son anónimas y agregadas. No se puede identificar a los revisores individuales."
+msgstr "Todas las respuestas son anónimas y agregadas. No se puede identificar a los evaluadores individuales."
 
 #, python-format
 msgid "Results are only shown when there are at least %(counter)s response per category to protect anonymity."
@@ -8592,104 +7748,28 @@ msgid "Access Denied"
 msgstr "Acceso denegado"
 
 msgid "You don't have permission to view this report. Please check your email for the correct access link, or contact your administrator."
-msgstr "No tienes permiso para ver este informe. Por favor, revisa tu correo electrónico para encontrar el enlace de acceso correcto o contacta con tu administrador."
+msgstr "No tienes permiso para ver este informe. revisa tu correo electrónico para encontrar el enlace de acceso correcto o contacta con tu administrador."
 
 msgid "Go Home"
 msgstr "Vete a casa"
 
-msgid "360 Feedback Report"
-msgstr "Informe de retroalimentación 360"
-
-msgid "Confidential"
-msgstr "Confidencial"
-
-msgid "Review Date"
-msgstr "Fecha de la reseña"
-
-msgid "Feedback from"
-msgstr "Comentarios de"
-
-msgid "This report brings together the feedback from your reviewers: a summary, your scores per section and every answer per question. Individual reviewers cannot be identified."
-msgstr "Este informe reúne los comentarios de tus reseñadores: un resumen, tus puntuaciones por sección y cada respuesta por pregunta. No es posible identificar a los reseñadores individuales."
-
-msgid "Scale:"
-msgstr "Escala:"
-
-msgid "Average"
-msgstr "Promedio"
-
-msgid "Positive"
-msgstr "Positivo"
-
-msgid "Others"
-msgstr "Los demás"
-
-msgid "Dreyfus model"
-msgstr "Modelo Dreyfus"
-
-msgid "Skill"
-msgstr "Habilidad"
-
-msgid "Agency"
-msgstr "Iniciativa"
-
-msgid "Performance matrix"
-msgstr "Matriz de desempeño"
-
-msgid "How others see you"
-msgstr "Cómo te ven los demás"
-
-msgid "Sections"
-msgstr "Secciones"
-
-msgid "Gap"
-msgstr "Brecha"
-
-msgid "strength"
-msgstr "fortaleza"
-
-msgid "area to grow"
-msgstr "área de mejora"
-
-msgid "Summary"
-msgstr "Resumen"
-
-msgid "Overall Rating"
-msgstr "Valoración general"
-
-#, python-format
-msgid "Others rate you <b>%(rating)s</b> overall."
-msgstr "En conjunto, los demás te valoran como <b>%(rating)s</b>."
-
-#, python-format
-msgid "On %(counter)s section, others score you lower than you score yourself."
-msgid_plural "On %(counter)s sections, others score you lower than you score yourself."
-msgstr[0] "En %(counter)s sección, los demás te puntúan por debajo de tu autoevaluación."
-msgstr[1] "En %(counter)s secciones, los demás te puntúan por debajo de tu autoevaluación."
-
-msgid "Others score you at least as high as you score yourself in every section."
-msgstr "En todas las secciones, los demás te puntúan al menos igual que tu autoevaluación."
-
-msgid "Strengths"
-msgstr "Fortalezas"
-
-msgid "Areas to grow"
-msgstr "Áreas de mejora"
-
 msgid "Feedback Report"
 msgstr "Informe de retroalimentación"
+
+msgid "360 Feedback Report"
+msgstr "Informe de retroalimentación 360"
 
 msgid "Toggle Theme"
 msgstr "Alternar Tema"
 
+msgid "Review Date"
+msgstr "Fecha de la evaluación"
+
 msgid "Total Responses"
 msgstr "Respuestas totales"
 
-msgid "Download PDF"
-msgstr "Descargar PDF"
-
-msgid "Regenerate PDF"
-msgstr "Regenerar PDF"
+msgid "Overall Rating"
+msgstr "Valoración general"
 
 msgid "Report Not Ready"
 msgstr "Informe no listo"
@@ -8698,7 +7778,7 @@ msgid "Your 360 feedback report is not yet available. This could be because:"
 msgstr "Tu informe de comentarios de 360 aún no está disponible. Esto podría deberse a que:"
 
 msgid "The review cycle is still active and waiting for responses"
-msgstr "El ciclo de revisión sigue activo y esperando respuestas"
+msgstr "El ciclo de evaluación sigue activo y esperando respuestas"
 
 msgid "The report has not been generated yet"
 msgstr "El informe aún no se ha generado"
@@ -8707,37 +7787,25 @@ msgid "There are not enough responses to generate a report"
 msgstr "No hay suficientes respuestas para generar un informe"
 
 msgid "Please check back later or contact your administrator for more information."
-msgstr "Por favor, vuelve a consultarlo más tarde o contacta con tu administrador para más información."
-
-msgid "Start"
-msgstr "Empezar"
-
-msgid "Continue"
-msgstr "Continuar"
-
-msgid "Done"
-msgstr "Hecho"
-
-msgid "Closed"
-msgstr "Cerrado"
+msgstr "vuelve a consultarlo más tarde o contacta con tu administrador para más información."
 
 msgid "Unable to Claim Token"
 msgstr "No se puede reclamar el token"
 
 msgid "Unable to Access Review"
-msgstr "No se puede acceder a la revisión"
+msgstr "No se puede acceder a la evaluación"
 
 msgid "If you believe this is an error, please contact your administrator."
 msgstr "Si crees que esto es un error, por favor contacta con tu administrador."
 
 msgid "Loading Review..."
-msgstr "Revisión de carga..."
+msgstr "Cargando la evaluación..."
 
 msgid "Checking for existing review..."
-msgstr "Comprobando la revisión existente..."
+msgstr "Comprobando si existe una evaluación..."
 
 msgid "Please wait while we locate your feedback session."
-msgstr "Por favor, esperad mientras localizamos vuestra sesión de feedback."
+msgstr "esperad mientras localizamos vuestra sesión de feedback."
 
 #, python-format
 msgid "Thank you for completing the 360 degree feedback for %(name)s."
@@ -8767,41 +7835,6 @@ msgstr "Selecciona una opción"
 
 msgid "Submit Feedback"
 msgstr "Enviar comentarios"
-
-#, python-format
-msgid "%(done)s of %(total)s done."
-msgstr "%(done)s de %(total)s completados."
-
-#, python-format
-msgid "The open forms take about %(minutes)s minute."
-msgid_plural "The open forms take about %(minutes)s minutes."
-msgstr[0] "Los formularios abiertos llevan aproximadamente %(minutes)s minuto."
-msgstr[1] "Los formularios abiertos llevan aproximadamente %(minutes)s minutos."
-
-msgid "About you"
-msgstr "Sobre ti"
-
-msgid "About others"
-msgstr "Sobre los demás"
-
-msgid "There are no forms for you at the moment."
-msgstr "Ahora mismo no hay formularios para ti."
-
-msgid "This link has expired"
-msgstr "Este enlace ha caducado"
-
-msgid "Check your inbox"
-msgstr "Revisa tu buzón"
-
-msgid "If we have forms for this address, a new link is on its way."
-msgstr "Si tenemos formularios para esta dirección, un nuevo enlace está en camino."
-
-#, python-format
-msgid "For your safety, the overview link works for %(days)s days. Request a new one and it arrives by email within a minute."
-msgstr "Por tu seguridad, el enlace al resumen funciona durante %(days)s días. Solicita uno nuevo y llegará por correo en un minuto."
-
-msgid "Send me a new link"
-msgstr "Enviarme un nuevo enlace"
 
 msgid "What does each score mean?"
 msgstr "¿Qué significa cada puntuación?"
@@ -8870,25 +7903,25 @@ msgstr "Acceder al panel de administración:"
 
 #, python-format
 msgid "<a href=\"%(dashboard_url)s\" target=\"_blank\">Go to Admin Dashboard</a> to manage reviewees, questionnaires, and review cycles"
-msgstr "<a href=\"<span class=\" notranslate\"=\"\">%(dashboard_url)s\" objetivo=\"_blank\">Ve al Panel de Administración</a> para gestionar a los evaluados, cuestionarios y ciclos de revisión"
+msgstr "<a href=\"%(dashboard_url)s\" target=\"_blank\">Ve al panel de administración</a> para gestionar evaluados, cuestionarios y ciclos de evaluación"
 
 msgid "Create your first reviewee:"
-msgstr "Crea tu primer destinatario de la reseña:"
+msgstr "Crea tu primer persona evaluada:"
 
 msgid "Add people who will receive 360-degree feedback from the dashboard"
 msgstr "Añade personas que recibirán retroalimentación de 360 grados desde el panel de control"
 
 msgid "Start a review cycle:"
-msgstr "Inicia un ciclo de revisión:"
+msgstr "Inicia un ciclo de evaluación:"
 
 msgid "Create a new review cycle and send invitations to reviewers"
-msgstr "Crea un nuevo ciclo de revisión y envía invitaciones a los revisores"
+msgstr "Crea un nuevo ciclo de evaluación y envía invitaciones a los evaluadores"
 
 msgid "Want to explore first?"
 msgstr "¿Quieres explorar primero?"
 
 msgid "Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens."
-msgstr "Genera datos de prueba para explorar el sistema sin afectar a tus datos de producción. Esto crea evaluados de muestra y un ciclo de revisión con tokens."
+msgstr "Genera datos de prueba para explorar el sistema sin afectar a tus datos de producción. Esto crea evaluados de muestra y un ciclo de evaluación con tokens."
 
 msgid "Generate Test Data"
 msgstr "Generar datos de prueba"
@@ -8898,7 +7931,7 @@ msgstr "Ve al Panel de Administración"
 
 #, python-format
 msgid "Need help? Check out the <a href=\"%(docs_url)s\">documentation</a> or <a href=\"%(issues_url)s\">report an issue</a>."
-msgstr "¿Necesitas ayuda? Consulta la <a href=\"<span class=\" notranslate\"=\"\">documentación > %(docs_url)s</a> o <a href=\"<span class=\" notranslate\"=\"\">el informe > %(issues_url)s sobre un problema</a>."
+msgstr "¿Necesitas ayuda? Consulta la <a href=\"%(docs_url)s\">documentación</a> o <a href=\"%(issues_url)s\">informa de un problema</a>."
 
 msgid "Email Configuration - Blik Setup"
 msgstr "Configuración de correo electrónico - Configuración de Blik"
@@ -8910,7 +7943,7 @@ msgid "Email Configuration"
 msgstr "Configuración del correo electrónico"
 
 msgid "Choose how Blik will send emails for review invitations and notifications."
-msgstr "Elige cómo Blik enviará los correos electrónicos para invitaciones y notificaciones de reseñas."
+msgstr "Elige cómo Blik enviará los correos electrónicos de invitación y las notificaciones de las evaluaciones."
 
 msgid "Recommended: Use Blik's Email Service"
 msgstr "Recomendado: Utilizar el servicio de correo electrónico de Blik"
@@ -8948,8 +7981,8 @@ msgstr "Continuar con la configuración del correo electrónico"
 msgid "Create Organization"
 msgstr "Crear organización"
 
-msgid "Create an organization without a payment, for testing or for a customer you invoice yourself."
-msgstr "Crear una organización sin pago, para pruebas o para un cliente al que facturas tú mismo."
+msgid "Create a new organization without a payment plan for testing"
+msgstr "Crear una nueva organización sin un plan de pago para las pruebas"
 
 msgid "New Organization Details"
 msgstr "Nuevos detalles de la organización"
@@ -8968,12 +8001,6 @@ msgstr "Correo electrónico de administración"
 
 msgid "An invitation will be sent to this email address. The user will be set up as the organization administrator."
 msgstr "Se enviará una invitación a esta dirección de correo electrónico. El usuario será configurado como administrador de la organización."
-
-msgid "Review credits"
-msgstr "Créditos de revisión"
-
-msgid "Leave empty for an account without limits. With credits, the account works like a Single Round customer: one credit is one review cycle, and the admin can buy more on the Billing page."
-msgstr "Déjalo vacío para una cuenta sin límites. Con créditos, la cuenta funciona como un cliente de Ronda única: un crédito es un ciclo de revisión, y el administrador puede comprar más en la página de Facturación."
 
 msgid "Create Organization & Send Invitation"
 msgstr "Crear organización y enviar invitación"

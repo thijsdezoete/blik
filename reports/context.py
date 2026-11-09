@@ -7,6 +7,18 @@ from .services import (
 )
 
 
+def display_report_data(report):
+    """
+    The report data anyone may see: groups below the organization's anonymity
+    threshold hidden, with texts. Every reader of report_data goes through this.
+    """
+    cycle = report.cycle
+    threshold = cycle.organization.min_responses_for_anonymity
+    anonymized = apply_display_anonymization(report.report_data, min_threshold=threshold)
+    _leave_out_trends_from_hidden_previous(anonymized, cycle, threshold)
+    return with_texts(anonymized, cycle.questionnaire, cycle.reviewee.name)
+
+
 def build_report_context(report, *, is_admin_view):
     """
     Template context for the report, shared by the web views and the PDF.
@@ -15,10 +27,7 @@ def build_report_context(report, *, is_admin_view):
     were calculated without the hidden groups.
     """
     cycle = report.cycle
-    threshold = cycle.organization.min_responses_for_anonymity
-    anonymized = apply_display_anonymization(report.report_data, min_threshold=threshold)
-    _leave_out_trends_from_hidden_previous(anonymized, cycle, threshold)
-    display_data = with_texts(anonymized, cycle.questionnaire, cycle.reviewee.name)
+    display_data = display_report_data(report)
 
     return {
         'cycle': cycle,

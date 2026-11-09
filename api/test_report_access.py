@@ -98,3 +98,28 @@ class ReportApiAccessControlTest(TestCase):
         response = self.client.get(f'/api/v1/reports/{self.report.uuid}/')
 
         self.assertEqual(response.status_code, 404)
+
+
+    def test_report_data_hides_groups_below_the_organization_threshold(self):
+        """The API returns what the web report shows, not the stored raw answers."""
+        from questionnaires.models import Question, QuestionSection
+        from reviews.models import ReviewerToken, Response
+        self.org.min_responses_for_anonymity = 3
+        self.org.save()
+        section = QuestionSection.objects.create(questionnaire=self.cycle.questionnaire, title='Growth')
+        question = Question.objects.create(
+            section=section, question_text='Solves problems', question_type='rating',
+            config={'min': 1, 'max': 5})
+        for category, rating in [('self', 2), ('peer', 4), ('peer', 5)]:
+            token = ReviewerToken.objects.create(cycle=self.cycle, category=category)
+            Response.objects.create(cycle=self.cycle, question=question, token=token,
+                                    category=category, answer_data={'value': rating})
+        report = generate_report(self.cycle)
+        self.client.force_login(self.user1)
+
+        data = self.client.get(f'/api/v1/reports/{report.uuid}/').data['report_data']
+
+        self.assertTrue(data['section_summary']['Growth']['peer']['insufficient'])
+        peer = next(iter(data['by_section'].values()))['questions'][str(question.id)]['by_category']['peer']
+        self.assertTrue(peer['insufficient'])
+        self.assertNotIn('responses', peer)

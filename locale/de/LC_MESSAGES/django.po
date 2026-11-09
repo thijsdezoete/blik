@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 23:47+0000\n"
+"POT-Creation-Date: 2026-11-09 07:26+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -960,15 +960,15 @@ msgid "Select at least one feedback category."
 msgstr "Bitte mindestens eine Feedbackkategorie auswählen."
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Copied %(count)s reviewer(s) from previous cycle. %(sent)s email invitation(s) sent."
-msgstr "Feedbackrunde für „%(name)s“ mit „%(questionnaire)s“ angelegt. %(count)s Feedbackgebende aus der vorherigen Feedbackrunde übernommen. %(sent)s Einladung(en) per E-Mail gesendet."
+msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Copied %(count)s reviewer(s) from previous cycle. %(queued)s invitation email(s) go out within about five minutes."
+msgstr "Feedbackrunde für „%(name)s“ mit „%(questionnaire)s“ angelegt. %(count)s Feedbackgebende aus der vorherigen Feedbackrunde übernommen. %(queued)s Einladung(en) gehen in etwa fünf Minuten per E-Mail hinaus."
 
 #, python-format
 msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\" with %(count)s reviewer token(s). Go to the cycle details to assign reviewers and send invitations."
 msgstr "Feedbackrunde für „%(name)s“ mit „%(questionnaire)s“ und %(count)s Token(s) für Feedbackgebende angelegt. In den Details der Feedbackrunde lassen sich Feedbackgebende zuweisen und Einladungen versenden."
 
-msgid "Notification emails are being sent to the reviewee."
-msgstr "Die feedbacknehmende Person wird per E-Mail benachrichtigt."
+msgid "The reviewee's emails go out within about five minutes."
+msgstr "Die E-Mails an die feedbacknehmende Person gehen in etwa fünf Minuten hinaus."
 
 msgid "Pair with a more senior teammate on a challenging problem this sprint"
 msgstr "In diesem Sprint gemeinsam mit einem erfahreneren Teammitglied ein anspruchsvolles Problem lösen"
@@ -1122,16 +1122,16 @@ msgid "Reviewee is required for single cycle creation."
 msgstr "Für eine einzelne Feedbackrunde muss eine feedbacknehmende Person ausgewählt werden."
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. Invitation emails are being sent."
-msgstr "Feedbackrunde für „%(name)s“ mit %(assigned)s eingeladenen Feedbackgebenden angelegt. Die Einladungen werden per E-Mail gesendet."
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes."
+msgstr "Feedbackrunde für „%(name)s“ mit %(assigned)s eingeladenen Feedbackgebenden angelegt. Die Einladungen gehen in etwa fünf Minuten per E-Mail hinaus."
 
 #, python-format
 msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails."
 msgstr "Feedbackrunde für „%(name)s“ mit %(assigned)s zugewiesenen Feedbackgebenden angelegt. Die E-Mails lassen sich auf der Seite „Einladungen“ versenden."
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\". Notification emails are being sent to the reviewee."
-msgstr "Feedbackrunde für „%(name)s“ angelegt. Die feedbacknehmende Person wird per E-Mail benachrichtigt."
+msgid "Review cycle created for \"%(name)s\". The reviewee's emails go out within about five minutes."
+msgstr "Feedbackrunde für „%(name)s“ angelegt. Die E-Mails an die feedbacknehmende Person gehen in etwa fünf Minuten hinaus."
 
 #, python-format
 msgid "Error creating review cycle: %(error)s"
@@ -1141,12 +1141,12 @@ msgid "No pending cycles to send invitations for."
 msgstr "Keine offenen Feedbackrunden, für die Einladungen gesendet werden können."
 
 #, python-format
-msgid "Invitations are being sent for %(count)s review cycle(s). %(tokens)s reviewer invitations go out in %(emails)s emails, one per address."
-msgstr "Einladungen für %(count)s Feedbackrunde(n) werden gesendet. %(tokens)s Einladungen an Feedbackgebende gehen in %(emails)s E-Mails hinaus, eine pro Adresse."
+msgid "Invitations for %(count)s review cycle(s) are queued. %(tokens)s reviewer invitations go out in %(emails)s emails, one per address, within about five minutes."
+msgstr "Einladungen für %(count)s Feedbackrunde(n) stehen im Postausgang. %(tokens)s Einladungen an Feedbackgebende gehen in etwa fünf Minuten in %(emails)s E-Mails hinaus, eine pro Adresse."
 
 #, python-format
-msgid "Invitations are being sent for %(count)s review cycle(s)."
-msgstr "Einladungen für %(count)s Feedbackrunde(n) werden gesendet."
+msgid "Invitations for %(count)s review cycle(s) are queued and go out within about five minutes."
+msgstr "Einladungen für %(count)s Feedbackrunde(n) stehen im Postausgang und gehen in etwa fünf Minuten hinaus."
 
 #, python-format
 msgid "Report generated successfully for %(name)s."
@@ -1178,8 +1178,8 @@ msgid "Cycle closed but error generating report: %(error)s"
 msgstr "Feedbackrunde abgeschlossen, aber der Bericht konnte nicht erstellt werden: %(error)s"
 
 #, python-format
-msgid "Successfully invited %(assigned)s reviewer(s) and sent %(sent)s email(s)."
-msgstr "%(assigned)s Feedbackgebende eingeladen und %(sent)s E-Mail(s) gesendet."
+msgid "Invited %(assigned)s reviewer(s). %(queued)s invitation email(s) go out within about five minutes."
+msgstr "%(assigned)s Feedbackgebende eingeladen. %(queued)s Einladung(en) gehen in etwa fünf Minuten per E-Mail hinaus."
 
 #, python-format
 msgid "Successfully assigned %(assigned)s email(s). Invitations will be sent separately."
@@ -1190,8 +1190,10 @@ msgid "Successfully assigned %(assigned)s email(s). No invitations sent yet."
 msgstr "%(assigned)s E-Mail-Adresse(n) zugewiesen. Noch keine Einladungen gesendet."
 
 #, python-format
-msgid "Successfully sent %(sent)s invitation email(s)."
-msgstr "%(sent)s Einladung(en) per E-Mail gesendet."
+msgid "%(count)s invitation email goes out within about five minutes."
+msgid_plural "%(count)s invitation emails go out within about five minutes."
+msgstr[0] "%(count)s Einladung geht in etwa fünf Minuten per E-Mail hinaus."
+msgstr[1] "%(count)s Einladungen gehen in etwa fünf Minuten per E-Mail hinaus."
 
 msgid "No pending invitations to send."
 msgstr "Keine offenen Einladungen zum Senden."
@@ -1200,12 +1202,18 @@ msgid "This cycle has no links to send."
 msgstr "Für diese Feedbackrunde gibt es keine Links zum Senden."
 
 #, python-format
+msgid "Failed to send invitation links email: %(error)s"
+msgstr "Die E-Mail mit den Einladungslinks konnte nicht gesendet werden: %(error)s"
+
+#, python-format
 msgid "The links have been sent to %(email)s."
 msgstr "Die Links wurden an %(email)s gesendet."
 
 #, python-format
-msgid "Successfully sent %(sent)s reminder(s)."
-msgstr "%(sent)s Erinnerung(en) gesendet."
+msgid "A reminder for %(count)s open review goes out within about five minutes."
+msgid_plural "Reminders for %(count)s open reviews go out within about five minutes, one email per reviewer."
+msgstr[0] "Eine Erinnerung für %(count)s offenes Feedback geht in etwa fünf Minuten hinaus."
+msgstr[1] "Erinnerungen für %(count)s offene Feedbacks gehen in etwa fünf Minuten hinaus, eine E-Mail pro feedbackgebender Person."
 
 msgid "No pending reminders to send."
 msgstr "Keine offenen Erinnerungen zum Senden."
@@ -1219,8 +1227,8 @@ msgstr "Erinnerung nicht möglich: Die Einladung wurde noch nicht gesendet."
 msgid "This reviewer has already completed their feedback."
 msgstr "Diese feedbackgebende Person hat ihr Feedback bereits abgegeben."
 
-msgid "Reminder sent to reviewer."
-msgstr "Erinnerung an die feedbackgebende Person gesendet."
+msgid "The reminder goes out within about five minutes."
+msgstr "Die Erinnerung geht in etwa fünf Minuten hinaus."
 
 msgid "Reviewer token not found."
 msgstr "Token der feedbackgebenden Person nicht gefunden."
@@ -2884,6 +2892,24 @@ msgstr "Zeitpunkt, zu dem die Feedbackrunde abgeschlossen und ihr Bericht per E-
 msgid "report finalized at"
 msgstr "Bericht abgeschlossen am"
 
+msgid "When the links-to-share email to the reviewee was put in the outbox. Empty once it is sent."
+msgstr "Wann die E-Mail mit den Links zum Teilen an die feedbacknehmende Person in den Postausgang gestellt wurde. Leer, sobald sie gesendet ist."
+
+msgid "links email queued at"
+msgstr "Link-E-Mail in den Postausgang gestellt am"
+
+msgid "Why the last attempt to send the links-to-share email failed"
+msgstr "Warum der letzte Versuch, die E-Mail mit den Links zum Teilen zu senden, fehlgeschlagen ist"
+
+msgid "links email error"
+msgstr "Fehler der Link-E-Mail"
+
+msgid "Failed attempts to send the links-to-share email"
+msgstr "Fehlgeschlagene Versuche, die E-Mail mit den Links zum Teilen zu senden"
+
+msgid "links email attempts"
+msgstr "Versuche der Link-E-Mail"
+
 msgid "Self assessment"
 msgstr "Selbsteinschätzung"
 
@@ -2938,6 +2964,30 @@ msgstr "Zeitpunkt der letzten Erinnerungs-E-Mail an diese feedbackgebende Person
 msgid "last reminder sent at"
 msgstr "letzte Erinnerung gesendet am"
 
+msgid "When the invitation was put in the outbox. Empty once it is sent."
+msgstr "Wann die Einladung in den Postausgang gestellt wurde. Leer, sobald sie gesendet ist."
+
+msgid "invitation queued at"
+msgstr "Einladung in den Postausgang gestellt am"
+
+msgid "When a reminder was put in the outbox. Empty once it is sent."
+msgstr "Wann eine Erinnerung in den Postausgang gestellt wurde. Leer, sobald sie gesendet ist."
+
+msgid "reminder queued at"
+msgstr "Erinnerung in den Postausgang gestellt am"
+
+msgid "Why the last attempt to send the queued email failed"
+msgstr "Warum der letzte Versuch, die E-Mail im Postausgang zu senden, fehlgeschlagen ist"
+
+msgid "email error"
+msgstr "E-Mail-Fehler"
+
+msgid "Failed attempts to send the queued email"
+msgstr "Fehlgeschlagene Versuche, die E-Mail im Postausgang zu senden"
+
+msgid "email attempts"
+msgstr "E-Mail-Versuche"
+
 msgid "When someone claimed this token by clicking the invitation link"
 msgstr "Zeitpunkt, zu dem jemand dieses Token über den Einladungslink übernommen hat"
 
@@ -2966,6 +3016,18 @@ msgid "responses"
 msgstr "Antworten"
 
 #, python-format
+msgid "Could not connect to the mail server: %(error)s"
+msgstr "Keine Verbindung zum Mailserver: %(error)s"
+
+#, python-format
+msgid "Failed to send to %(email)s: %(error)s"
+msgstr "Senden an %(email)s fehlgeschlagen: %(error)s"
+
+#, python-format
+msgid "Failed to send the links to %(email)s: %(error)s"
+msgstr "Die Links konnten nicht an %(email)s gesendet werden: %(error)s"
+
+#, python-format
 msgid "Not enough tokens for %(category)s: need %(needed)s, have %(available)s"
 msgstr "Nicht genug Tokens für %(category)s: benötigt %(needed)s, vorhanden %(available)s"
 
@@ -2985,10 +3047,6 @@ msgstr "Ihr Feedback zu %(name)s ist noch offen"
 msgid "Your feedback for %(name)s"
 msgstr "Bitte um Feedback zu %(name)s"
 
-#, python-format
-msgid "Failed to send to %(email)s: %(error)s"
-msgstr "Senden an %(email)s fehlgeschlagen: %(error)s"
-
 msgid "your colleague"
 msgstr "Ihre Kolleg:in"
 
@@ -3003,16 +3061,12 @@ msgid "Your feedback forms for %(organization)s"
 msgstr "Ihre Feedbackformulare für %(organization)s"
 
 #, python-format
-msgid "Failed to send reminder to %(email)s: %(error)s"
-msgstr "Die Erinnerung an %(email)s konnte nicht gesendet werden: %(error)s"
+msgid "Your feedback forms for %(organization)s are still open"
+msgstr "Ihre Feedbackformulare für %(organization)s sind noch offen"
 
 #, python-format
 msgid "Your links to share with reviewers: %(questionnaire)s"
 msgstr "Ihre Links für die Feedbackgebenden: %(questionnaire)s"
-
-#, python-format
-msgid "Failed to send invitation links email: %(error)s"
-msgstr "Die E-Mail mit den Einladungslinks konnte nicht gesendet werden: %(error)s"
 
 #, python-format
 msgid "Check your feedback cycle: %(questionnaire)s"
@@ -3933,8 +3987,8 @@ msgstr "Einladungen senden"
 msgid "Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct."
 msgstr "Prüfen Sie die gerade erstellten Feedbackrunden. Die Feedbackgebenden stammen aus dem Organigramm. Wenn etwas nicht stimmt, bearbeiten Sie die Feedbackrunde anschließend."
 
-msgid "Review the cycles you just created, then send invitation emails."
-msgstr "Gerade angelegte Feedbackrunden prüfen und dann die Einladungen per E-Mail senden."
+msgid "Review the cycles you just created, then queue the invitation emails."
+msgstr "Gerade angelegte Feedbackrunden prüfen und dann die Einladungen in den Postausgang stellen."
 
 msgid "Back to cycles"
 msgstr "Zurück zu den Feedbackrunden"
@@ -3942,11 +3996,11 @@ msgstr "Zurück zu den Feedbackrunden"
 msgid "No emails have been sent yet."
 msgstr "Es wurden noch keine E-Mails versendet."
 
-msgid "Click <em>Send all invitations</em> to send every person one email with all the forms they have to fill in, their own self-assessment included."
-msgstr "Klicken Sie auf <em>Alle Einladungen senden</em>, um jeder Person eine E-Mail mit allen auszufüllenden Formularen zu senden, die eigene Selbsteinschätzung eingeschlossen."
+msgid "Click <em>Send all invitations</em> to queue the emails. Every person gets one email with all the forms they have to fill in, their own self-assessment included. The emails go out within about five minutes."
+msgstr "Klicken Sie auf <em>Alle Einladungen senden</em>, um die E-Mails in den Postausgang zu stellen. Jede Person erhält eine E-Mail mit allen auszufüllenden Formularen, die eigene Selbsteinschätzung eingeschlossen. Die E-Mails gehen in etwa fünf Minuten hinaus."
 
-msgid "Review the list below and click <em>Send invitations now</em> to notify every reviewee."
-msgstr "Prüfen Sie die Liste unten und klicken Sie auf <em>Einladungen jetzt senden</em>, um alle Feedbacknehmenden zu benachrichtigen."
+msgid "Review the list below and click <em>Send invitations</em> to queue the emails to every reviewee. They go out within about five minutes."
+msgstr "Prüfen Sie die Liste unten und klicken Sie auf <em>Einladungen senden</em>, um die E-Mails an alle Feedbacknehmenden in den Postausgang zu stellen. Sie gehen in etwa fünf Minuten hinaus."
 
 msgid "You can also skip for now and send individual invitations later from the cycles list."
 msgstr "Sie können diesen Schritt auch überspringen und Einladungen später einzeln aus der Liste der Feedbackrunden senden."
@@ -4357,13 +4411,6 @@ msgid "Awaiting claim"
 msgstr "Noch nicht eingelöst"
 
 #, python-format
-msgid "Sent %(date)s"
-msgstr "Gesendet am %(date)s"
-
-msgid "Ready to send"
-msgstr "Bereit zum Senden"
-
-#, python-format
 msgid "Completed %(date)s"
 msgstr "Abgeschlossen am %(date)s"
 
@@ -4374,17 +4421,13 @@ msgid "Pending"
 msgstr "Ausstehend"
 
 #, python-format
-msgid "Reminder sent %(date)s"
-msgstr "Erinnerung gesendet am %(date)s"
-
-#, python-format
 msgid "%(counter)s pending invitation"
 msgid_plural "%(counter)s pending invitations"
 msgstr[0] "%(counter)s ausstehende Einladung"
 msgstr[1] "%(counter)s ausstehende Einladungen"
 
-msgid "Send email invitations to reviewers who haven't received one yet"
-msgstr "E-Mail-Einladungen an Feedbackgebende senden, die noch keine erhalten haben"
+msgid "Queue the email invitations to reviewers who haven't received one yet. They go out within about five minutes."
+msgstr "E-Mail-Einladungen an Feedbackgebende, die noch keine erhalten haben, in den Postausgang stellen. Sie gehen in etwa fünf Minuten hinaus."
 
 msgid "Send Pending Invitations"
 msgstr "Ausstehende Einladungen senden"
@@ -4780,14 +4823,53 @@ msgstr "Der vorherige Fragebogen ist archiviert. Ein aktiver Fragebogen wurde au
 msgid "Feedback Categories"
 msgstr "Feedbackkategorien"
 
-msgid "Reviewers are copied from the previous cycle. Invitations are sent to reviewers who have an email address."
-msgstr "Feedbackgebende werden aus der vorherigen Runde übernommen. Feedbackgebende mit E-Mail-Adresse erhalten eine Einladung."
+msgid "Reviewers are copied from the previous cycle. Reviewers with an email address get their invitation within about five minutes."
+msgstr "Feedbackgebende werden aus der vorherigen Runde übernommen. Feedbackgebende mit E-Mail-Adresse erhalten ihre Einladung in etwa fünf Minuten."
 
 msgid "The cycle starts with space for a self-assessment, three peers and one manager. You can assign reviewers in the next step."
 msgstr "Die Runde beginnt mit Plätzen für eine Selbsteinschätzung, drei Kolleg:innen und eine Führungskraft. Im nächsten Schritt können Sie Feedbackgebende zuweisen."
 
 msgid "The reviewee is notified by email right away."
 msgstr "Die feedbacknehmende Person wird sofort per E-Mail benachrichtigt."
+
+#, python-format
+msgid "Sent %(date)s"
+msgstr "Gesendet am %(date)s"
+
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+#, python-format
+msgid "Given up after %(attempts)s attempt. Send the invitation again when the mail server works."
+msgid_plural "Given up after %(attempts)s attempts. Send the invitation again when the mail server works."
+msgstr[0] "Nach %(attempts)s Versuch aufgegeben. Die Einladung erneut senden, sobald der Mailserver funktioniert."
+msgstr[1] "Nach %(attempts)s Versuchen aufgegeben. Die Einladung erneut senden, sobald der Mailserver funktioniert."
+
+msgid "Blik tries again within about five minutes."
+msgstr "Blik versucht es in etwa fünf Minuten erneut."
+
+msgid "Queued"
+msgstr "Im Postausgang"
+
+msgid "Goes out within about five minutes"
+msgstr "Geht in etwa fünf Minuten hinaus"
+
+msgid "Ready to send"
+msgstr "Bereit zum Senden"
+
+#, python-format
+msgid "Reminder failed: %(error)s"
+msgstr "Erinnerung fehlgeschlagen: %(error)s"
+
+msgid "Send it again when the mail server works."
+msgstr "Erneut senden, sobald der Mailserver funktioniert."
+
+msgid "Reminder queued, goes out within about five minutes"
+msgstr "Erinnerung im Postausgang, geht in etwa fünf Minuten hinaus"
+
+#, python-format
+msgid "Reminder sent %(date)s"
+msgstr "Erinnerung gesendet am %(date)s"
 
 #, python-format
 msgid "%(counter)s text missing"
@@ -5790,6 +5872,17 @@ msgstr "Diese Links an die Feedbackgebenden weitergeben. Jeder Link vergibt zuf�
 msgid "Copy Link"
 msgstr "Link kopieren"
 
+#, python-format
+msgid "The email with these links to %(email)s failed: %(error)s"
+msgstr "Die E-Mail mit diesen Links an %(email)s ist fehlgeschlagen: %(error)s"
+
+msgid "Blik tries again within about five minutes, or send the links again below."
+msgstr "Blik versucht es in etwa fünf Minuten erneut, oder die Links unten erneut senden."
+
+#, python-format
+msgid "The email with these links to %(email)s is queued and goes out within about five minutes."
+msgstr "Die E-Mail mit diesen Links an %(email)s steht im Postausgang und geht in etwa fünf Minuten hinaus."
+
 msgid "Resend the links to the reviewee"
 msgstr "Links erneut an die feedbacknehmende Person senden"
 
@@ -5808,8 +5901,14 @@ msgstr "Entfernen"
 msgid "Send Reminder"
 msgstr "Erinnerung senden"
 
-msgid "Send invitation emails to all reviewers who have been assigned but not sent invites yet"
-msgstr "Einladungs-E-Mails an alle zugewiesenen Feedbackgebenden senden, die noch keine Einladung erhalten haben"
+#, python-format
+msgid "%(counter)s invitation is queued and goes out within about five minutes."
+msgid_plural "%(counter)s invitations are queued and go out within about five minutes, one email per reviewer."
+msgstr[0] "%(counter)s Einladung steht im Postausgang und geht in etwa fünf Minuten hinaus."
+msgstr[1] "%(counter)s Einladungen stehen im Postausgang und gehen in etwa fünf Minuten hinaus, eine E-Mail pro feedbackgebender Person."
+
+msgid "Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes."
+msgstr "Einladungs-E-Mails an alle zugewiesenen Feedbackgebenden, die noch keine Einladung erhalten haben, in den Postausgang stellen. Sie gehen in etwa fünf Minuten hinaus."
 
 msgid "Send All Pending Invites"
 msgstr "Alle ausstehenden Einladungen senden"
@@ -5820,8 +5919,8 @@ msgid_plural "%(counter)s unfinished reviews"
 msgstr[0] "%(counter)s unvollständiges Feedback"
 msgstr[1] "%(counter)s unvollständige Feedbacks"
 
-msgid "Send reminder emails to all reviewers who have been sent invitations but haven't completed their feedback yet"
-msgstr "Erinnerungs-E-Mails an alle Feedbackgebenden senden, die eingeladen wurden, ihr Feedback aber noch nicht abgeschlossen haben"
+msgid "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes."
+msgstr "Eine Erinnerung an alle Feedbackgebenden, die eingeladen wurden, ihr Feedback aber noch nicht abgeschlossen haben, in den Postausgang stellen. Eine E-Mail pro feedbackgebender Person, in etwa fünf Minuten."
 
 msgid "Remind All Pending Reviewers"
 msgstr "Alle ausstehenden Feedbackgebenden erinnern"
@@ -5973,6 +6072,9 @@ msgstr "Keine Feedbackrunden entsprechen diesen Filtern."
 
 msgid "Show API Identifiers"
 msgstr "API-Kennungen anzeigen"
+
+msgid "Email failed"
+msgstr "E-Mail fehlgeschlagen"
 
 msgid "New Cycle"
 msgstr "Neue Feedbackrunde"
@@ -6226,8 +6328,8 @@ msgstr "Eine E-Mail-Adresse pro Zeile eingeben (oder durch Kommas getrennt)"
 msgid "The number of emails must match the number of pending tokens (%(count)s)"
 msgstr "Die Anzahl der E-Mail-Adressen muss der Anzahl offener Tokens entsprechen (%(count)s)"
 
-msgid "Emails will be sent in the order shown in the table above"
-msgstr "Die E-Mails werden in der Reihenfolge der Tabelle oben versendet"
+msgid "The reminders go out within about five minutes, one email per reviewer"
+msgstr "Die Erinnerungen gehen in etwa fünf Minuten hinaus, eine E-Mail pro feedbackgebender Person"
 
 msgid "Each email will contain a unique anonymous review link"
 msgstr "Jede E-Mail enthält einen eigenen anonymen Feedbacklink"
@@ -7644,9 +7746,18 @@ msgstr "%(organization_name)s bittet Sie um ehrliches Feedback zu %(reviewee_nam
 msgid "Start the review:"
 msgstr "Feedback starten:"
 
+msgid "Your feedback forms are still open"
+msgstr "Ihre Feedbackformulare sind noch offen"
+
 #, python-format
 msgid "%(organization_name)s asks for your honest feedback. Your answers are anonymous."
 msgstr "%(organization_name)s bittet Sie um ehrliches Feedback. Ihre Antworten sind anonym."
+
+#, python-format
+msgid "%(organization_name)s asks for your honest feedback. You still have %(count)s form to fill in."
+msgid_plural "%(organization_name)s asks for your honest feedback. You still have %(count)s forms to fill in."
+msgstr[0] "%(organization_name)s bittet Sie um ehrliches Feedback. Sie haben noch %(count)s Formular auszufüllen."
+msgstr[1] "%(organization_name)s bittet Sie um ehrliches Feedback. Sie haben noch %(count)s Formulare auszufüllen."
 
 #, python-format
 msgid "%(organization_name)s asks for your honest feedback. You have %(count)s form to fill in."
@@ -7662,6 +7773,9 @@ msgstr[1] "Zusammen dauern sie etwa %(minutes)s Minuten."
 
 msgid "Your answers are anonymous. The people you review never see your name with them. So you can be honest."
 msgstr "Ihre Antworten sind anonym. Die Personen, die Sie bewerten, sehen nie, von wem sie stammen. Sie können also ehrlich sein."
+
+msgid "Open the review"
+msgstr "Feedback öffnen"
 
 msgid "Your own self-assessment"
 msgstr "Ihre eigene Selbsteinschätzung"
@@ -7713,9 +7827,6 @@ msgid "%(counter)s colleague already responded."
 msgid_plural "%(counter)s colleagues already responded."
 msgstr[0] "%(counter)s feedbackgebende Person hat bereits geantwortet."
 msgstr[1] "%(counter)s Feedbackgebende haben bereits geantwortet."
-
-msgid "Open the review"
-msgstr "Feedback öffnen"
 
 msgid "If you started in this browser, your answers are still there."
 msgstr "Falls Sie in diesem Browser schon begonnen haben, sind Ihre Antworten noch da."

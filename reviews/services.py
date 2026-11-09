@@ -272,11 +272,12 @@ def responded_count(token):
     return responded
 
 
-def send_token_email(token, reminder=False):
+def send_token_email(token, reminder=False, connection=None):
     """Send a reviewer the link to their feedback form, as an invitation or a reminder.
 
     The reviewee's own self-assessment has mails of its own: the reviewer
-    mails speak of the reviewee in the third person.
+    mails speak of the reviewee in the third person. `connection` is the
+    outbox's shared email connection.
     """
 
     cycle = token.cycle
@@ -323,6 +324,7 @@ def send_token_email(token, reminder=False):
             message=render_to_string(f'{template}.txt', context),
             recipient_list=[token.reviewer_email],
             html_message=render_to_string(f'{template}.html', context),
+            connection=connection,
         )
 
 
@@ -412,8 +414,11 @@ def send_overview_link_email(email, organization, language):
         )
 
 
-def send_bundle_email(email, tokens):
-    """Send one reviewer a single email with every form they have to fill in."""
+def send_bundle_email(email, tokens, reminder=False, connection=None):
+    """Send one reviewer a single email with every form they have to fill in.
+
+    As a reminder, the same email lists the forms that are still open.
+    """
 
     organization = tokens[0].cycle.organization
     # Per questionnaire, the person's own self-assessment first, then the colleagues by name.
@@ -438,13 +443,20 @@ def send_bundle_email(email, tokens):
             'total_minutes': sum(item['estimated_minutes'] or 0 for item in items) or None,
             'overview_url': feedback_overview_url(email, organization),
             'days': OVERVIEW_LINK_MAX_AGE.days,
+            'is_reminder': reminder,
         }
 
+        if reminder:
+            subject = _('Your feedback forms for %(organization)s are still open')
+        else:
+            subject = _('Your feedback forms for %(organization)s')
+
         send_email(
-            subject=_('Your feedback forms for %(organization)s') % {'organization': organization.name},
+            subject=subject % {'organization': organization.name},
             message=render_to_string('emails/reviewer_invitation_bundle.txt', context),
             recipient_list=[email],
             html_message=render_to_string('emails/reviewer_invitation_bundle.html', context),
+            connection=connection,
         )
 
 
@@ -577,32 +589,33 @@ def send_assessment_email(cycle, stats):
     stats['errors'] += sent['errors']
 
 
+def send_links_email(cycle, categories, connection=None):
+    """Send the reviewee the links to share, one per category."""
+    with translation.override(reviewee_language(cycle.reviewee)):
+        questionnaire = cycle.questionnaire.translated()
+        context = {
+            'reviewee': cycle.reviewee,
+            'cycle': cycle,
+            'questionnaire_name': questionnaire.name,
+        }
+        for category in categories:
+            token = cycle.get_invitation_token(category)
+            context[f'{category}_url'] = get_absolute_url('reviews:claim_token', invitation_token=token)
+
+        send_email(
+            subject=_('Your links to share with reviewers: %(questionnaire)s') % {'questionnaire': questionnaire.name},
+            message=render_to_string('emails/reviewee_invitation_links.txt', context),
+            recipient_list=[cycle.reviewee.email],
+            html_message=render_to_string('emails/reviewee_invitation_links.html', context),
+            connection=connection,
+        )
+
+
 def send_invitation_links_email(cycle, categories, stats):
     """Send the reviewee the links to share, one per category. Records into `stats`."""
     try:
-        with translation.override(reviewee_language(cycle.reviewee)):
-            questionnaire = cycle.questionnaire.translated()
-            context = {
-                'reviewee': cycle.reviewee,
-                'cycle': cycle,
-                'questionnaire_name': questionnaire.name,
-            }
-            for category in categories:
-                token = cycle.get_invitation_token(category)
-                context[f'{category}_url'] = get_absolute_url('reviews:claim_token', invitation_token=token)
-
-            html_message = render_to_string('emails/reviewee_invitation_links.html', context)
-            text_message = render_to_string('emails/reviewee_invitation_links.txt', context)
-
-            send_email(
-                subject=_('Your links to share with reviewers: %(questionnaire)s') % {'questionnaire': questionnaire.name},
-                message=text_message,
-                recipient_list=[cycle.reviewee.email],
-                html_message=html_message,
-            )
-
+        send_links_email(cycle, categories)
         stats['sent'] += 1
-
     except Exception as e:
         stats['errors'].append(_('Failed to send invitation links email: %(error)s') % {'error': str(e)})
 

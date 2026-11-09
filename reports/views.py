@@ -146,6 +146,11 @@ def reviewee_report_pdf(request, access_token):
     if refusal:
         return refusal
 
+    # The stored file is in the reviewee's language; a reader in another one gets a fresh render
+    language = translation.get_language()
+    if language != reviewee_language(report):
+        return pdf_response(report, render_report_pdf(report, language))
+
     if request.method == 'POST':
         store_report_pdf(report)
     elif not report.has_valid_pdf():

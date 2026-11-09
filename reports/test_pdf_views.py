@@ -12,7 +12,7 @@ from accounts.permissions import assign_organization_admin
 from reviews.factories import ReviewCycleFactory
 
 from .models import Report
-from .pdf import pdf_filename, store_report_pdf
+from .pdf import pdf_filename, store_report_pdf, stored_pdf_bytes
 from .services import generate_report
 
 
@@ -98,6 +98,16 @@ class ReportPdfViewTests(TestCase):
         user.user_permissions.clear()
         user.groups.clear()
         self.assertRedirects(self.client.get(self.admin_url), self.token_url, fetch_redirect_response=False)
+
+    def test_reviewee_pdf_in_another_language_is_a_fresh_render(self):
+        """A reader of the report page in another language gets the PDF in that language."""
+        with mock.patch('reports.views.reviewee_language', return_value='de'), \
+                mock.patch('reports.pdf.reviewee_language', return_value='de'):
+            store_report_pdf(self.report)
+            response = self.client.get(self.token_url)
+        self.assertEqual(response.content, b'%PDF en')
+        self.report.refresh_from_db()
+        self.assertEqual(stored_pdf_bytes(self.report), b'%PDF de')
 
     def test_admin_pdf_other_language_not_stored(self):
         self.admin()

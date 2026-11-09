@@ -236,18 +236,18 @@ Blik refuses the whole batch when your plan has fewer cycle credits than active 
 
 After creation, Blik opens the **Send invitations** page. It lists the new cycles. In chart mode it shows per cycle how many self, manager, peer and direct report reviewers were found. Check the list. Edit a cycle afterwards if something is not correct.
 
-Click **Send all invitations** to send, or **Skip — I'll send later** to send per cycle from the cycle pages later.
+Click **Send all invitations** to queue the emails, or **Skip — I'll send later** to send per cycle from the cycle pages later. The emails go out within about five minutes; see [How Emails Go Out](#how-emails-go-out).
 
 What is sent depends on where the reviewers came from:
 
 - **Derive from org chart** - Every person gets **one email** with all the forms they have to fill in across all the new cycles, their own self-assessment included. The email lists each form with the name of the person it is about, the relation (manager, peer, direct report), the questionnaire and the estimated minutes, with a **Start the review** button per form. It also links to the [personal overview page](#the-personal-overview-page). No separate self-assessment email and no invitation links email are sent. A person with a single form gets the normal single invitation email instead (for a self-assessment, the self-assessment email).
 - **Leave empty** - Every reviewee gets the two usual emails: the self-assessment email and the invitation links email with the category links to share. See [What Happens After Creation](#what-happens-after-creation).
 
-The success message says how many review cycles the invitations cover, and in chart mode how many reviewer invitations go out in how many emails.
+The success message says how many review cycles the invitations cover, and in chart mode how many reviewer invitations go out in how many emails. Nothing has left yet at that point: the emails are in the outbox.
 
 ### What Happens After Creation
 
-In single cycle creation, and in bulk creation with **Leave empty**, the reviewee receives two emails:
+In single cycle creation, and in bulk creation with **Leave empty**, the reviewee receives two emails within about five minutes (see [How Emails Go Out](#how-emails-go-out)):
 1. **Self-Assessment Email** - Personal link to complete their self-assessment
 2. **Invitation Links Email** - Category links (peer/manager/direct report) to share with others
 
@@ -288,7 +288,26 @@ For more control over who receives invitations:
 2. Enter email addresses for each category (comma or newline separated)
 3. Click **Assign Emails to Tokens**
 4. Emails are randomly shuffled and assigned to tokens (maintains anonymity)
-5. Click **Send Pending Invitations** to email reviewers
+5. Click **Send Pending Invitations** to queue the emails to the reviewers
+
+### How Emails Go Out
+
+Every **Send** button for invitations and reminders puts the emails in an outbox. A background job empties the outbox every five minutes, so an email goes out within about five minutes of the click. The page says so in its success message. This keeps a slow mail server from stalling the page, and a mail problem from losing emails: an email that could not be sent stays in the outbox and is tried again.
+
+The job sends **one email per address**. A person who has several forms to fill in gets one email that lists all of them (the bundled email with the [personal overview](#the-personal-overview-page) link); a person with one form gets the normal invitation. A reviewee who also reviews colleagues gets their own self-assessment in the same email. The same goes for reminders: one reminder per person, listing their open forms.
+
+The **Invitation Status** column on the cycle page shows where each email is:
+
+- **Ready to send** - The reviewer has an address, nothing has been queued yet.
+- **Queued** - In the outbox, goes out within about five minutes. The row has no **Send** button while the email is on its way.
+- **Sent (date)** - The mail server accepted the email.
+- **Failed** - The last attempt failed. The row shows the mail server's answer, for example an authentication error or a refused connection. Blik tries again every five minutes, up to five attempts. After that the row says it has given up; fix the [Email (SMTP) Settings](#email-smtp-settings), then click **Send Invite** on the row to queue it again. The cycles list marks a cycle that has a failed email with **Email failed**.
+
+Reminders show the same states under **Response Status** ("Reminder queued", "Reminder failed: ..."). The reviewee's links-to-share email shows its state in the **Invitation Links** section of the cycle page.
+
+If an email stays **Queued** for much longer than five minutes, the background job is not running. Ask your operator to check that the `send_queued_invitations` cron job is installed (see the deployment guide).
+
+Two emails still go out at once, because they are single emails that you trigger by hand and want a result for: **Resend the links to the reviewee** on the cycle page, and the new-link button on an expired personal overview page.
 
 ### The Personal Overview Page
 
@@ -297,9 +316,10 @@ Every bundled invitation email links to a personal overview page. The page lists
 ### Sending Reminders
 
 1. Navigate to the cycle detail page
-2. Click **Send Reminders** (shows count of pending reviews)
-3. Select which tokens to remind (or all)
-4. Click **Send Reminder Emails**
+2. Click **Remind All Pending Reviewers** at the bottom of the reviewer table, or **Send Reminder** on one row
+3. The reminders go in the outbox and go out within about five minutes, one email per reviewer. A reviewer with several open forms, across your cycles, gets one reminder that lists them all.
+
+A reminder goes only to reviewers whose invitation was sent and who have not completed their form. A form that is completed before the reminder goes out is left out of it.
 
 ---
 

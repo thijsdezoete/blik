@@ -11,7 +11,7 @@
             {% if derived_from_chart %}
                 {% trans 'Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct.' %}
             {% else %}
-                {% trans 'Review the cycles you just created, then send invitation emails.' %}
+                {% trans 'Review the cycles you just created, then queue the invitation emails.' %}
             {% endif %}
         </p>
     </div>
@@ -23,9 +23,9 @@
     <div>
         <strong>{% trans 'No emails have been sent yet.' %}</strong>
         {% if derived_from_chart %}
-            {% blocktrans trimmed %}Click <em>Send all invitations</em> to send every person one email with all the forms they have to fill in, their own self-assessment included.{% endblocktrans %}
+            {% blocktrans trimmed %}Click <em>Send all invitations</em> to queue the emails. Every person gets one email with all the forms they have to fill in, their own self-assessment included. The emails go out within about five minutes.{% endblocktrans %}
         {% else %}
-            {% blocktrans trimmed %}Review the list below and click <em>Send invitations now</em> to notify every reviewee.{% endblocktrans %}
+            {% blocktrans trimmed %}Review the list below and click <em>Send invitations</em> to queue the emails to every reviewee. They go out within about five minutes.{% endblocktrans %}
             {% trans 'You can also skip for now and send individual invitations later from the cycles list.' %}
         {% endif %}
     </div>

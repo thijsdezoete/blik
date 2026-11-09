@@ -78,6 +78,9 @@
                         {% else %}
                         <span class="badge badge-success">{% trans 'Completed' %}</span>
                         {% endif %}
+                        {% if cycle.failed_emails or cycle.links_email_error %}
+                        <div style="font-size: 0.75rem; color: var(--danger); margin-top: 0.25rem;">{% trans 'Email failed' %}</div>
+                        {% endif %}
                     </td>
                     <td>
                         <div style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.25rem;">

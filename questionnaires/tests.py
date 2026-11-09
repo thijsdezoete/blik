@@ -11,7 +11,8 @@ from questionnaires.factories import (
 )
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
 from reviews.models import ReviewerToken
-from reviews.services import send_reviewer_invitations, assign_tokens_to_emails
+from reviews.outbox import queue_invitations, send_queued_emails
+from reviews.services import assign_tokens_to_emails
 import uuid
 
 
@@ -222,7 +223,7 @@ class EmailInviteTestCase(TestCase):
         self.assertEqual(peer_tokens_with_email.count(), 2)
 
     def test_send_reviewer_invitations(self):
-        """Test sending email invitations to reviewers"""
+        """Test queueing and sending email invitations to reviewers"""
         # Create token with email
         token = ReviewerTokenFactory(
             cycle=self.cycle,
@@ -230,10 +231,12 @@ class EmailInviteTestCase(TestCase):
             reviewer_email='manager@test.local'
         )
 
-        # Send invitations
-        stats = send_reviewer_invitations(self.cycle, token_ids=[token.id])
+        # Queue the invitation and let the cron send it
+        queued = queue_invitations(ReviewerToken.objects.filter(id=token.id))
+        stats = send_queued_emails()
 
         # Should send 1 email
+        self.assertEqual(queued, 1)
         self.assertEqual(stats['sent'], 1)
 
         # Token should be marked as sent
@@ -251,8 +254,10 @@ class EmailInviteTestCase(TestCase):
             completed_at=timezone.now()
         )
 
-        # Try to send invitations (without specifying token_ids)
-        stats = send_reviewer_invitations(self.cycle)
+        # Try to queue every pending invitation of the cycle
+        queued = queue_invitations(self.cycle.tokens.all())
+        stats = send_queued_emails()
 
         # Should not send to completed token
+        self.assertEqual(queued, 0)
         self.assertEqual(stats['sent'], 0)

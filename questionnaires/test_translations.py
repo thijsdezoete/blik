@@ -27,7 +27,7 @@ from questionnaires.models import (
 from questionnaires.signals import clone_questionnaire_for_organization
 from questionnaires.translations import get_checksum, get_text_translations, save_text_translations
 from reviews.models import ReviewCycle, ReviewerToken
-from reviews.services import send_reviewer_invitations
+from reviews.outbox import queue_invitations, send_queued_emails
 
 
 class TranslatedQuestionnaireTestCase(TestCase):
@@ -194,7 +194,8 @@ class TranslatedFormTest(TranslatedQuestionnaireTestCase):
         self.token.reviewer_email = 'reviewer@acme.example'
         self.token.save()
 
-        send_reviewer_invitations(self.cycle)
+        queue_invitations(self.cycle.tokens.all())
+        send_queued_emails()
 
         [invitation] = mail.outbox
         self.assertIn('Fähigkeiten', invitation.body)

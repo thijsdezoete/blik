@@ -1,8 +1,8 @@
-{% load i18n %}{% trans 'Your feedback forms' %}
+{% load i18n %}{% if is_reminder %}{% trans 'Your feedback forms are still open' %}{% else %}{% trans 'Your feedback forms' %}{% endif %}
 
 {% trans 'Hello,' %}
 
-{% blocktrans trimmed count count=items|length %}{{ organization_name }} asks for your honest feedback. You have {{ count }} form to fill in.{% plural %}{{ organization_name }} asks for your honest feedback. You have {{ count }} forms to fill in.{% endblocktrans %}{% if total_minutes %} {% blocktrans trimmed count minutes=total_minutes %}Together they take about {{ minutes }} minute.{% plural %}Together they take about {{ minutes }} minutes.{% endblocktrans %}{% endif %}
+{% if is_reminder %}{% blocktrans trimmed count count=items|length %}{{ organization_name }} asks for your honest feedback. You still have {{ count }} form to fill in.{% plural %}{{ organization_name }} asks for your honest feedback. You still have {{ count }} forms to fill in.{% endblocktrans %}{% else %}{% blocktrans trimmed count count=items|length %}{{ organization_name }} asks for your honest feedback. You have {{ count }} form to fill in.{% plural %}{{ organization_name }} asks for your honest feedback. You have {{ count }} forms to fill in.{% endblocktrans %}{% endif %}{% if total_minutes %} {% blocktrans trimmed count minutes=total_minutes %}Together they take about {{ minutes }} minute.{% plural %}Together they take about {{ minutes }} minutes.{% endblocktrans %}{% endif %}
 
 {% trans 'Your answers are anonymous. The people you review never see your name with them. So you can be honest.' %}
 {% for item in items %}

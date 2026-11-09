@@ -16,9 +16,6 @@ from reviews.models import ReviewCycle
 from subscriptions.testing import grant, subscribe
 from subscriptions.utils import NoCycleCredits, cycle_credits
 
-NOTIFY_PATH = 'reviews.services.send_reviewee_notifications'
-
-
 class CycleGateBase(TestCase):
     def setUp(self):
         self.org = OrganizationFactory()
@@ -91,19 +88,17 @@ class DashboardEntryPointTests(CycleGateBase):
         )
 
     def single(self):
-        with patch(NOTIFY_PATH):
-            return self.client.post(reverse('review_cycle_create'), {
-                'creation_mode': 'single',
-                'questionnaire': str(self.questionnaire.id),
-                'reviewee': str(self.reviewee.id),
-            })
+        return self.client.post(reverse('review_cycle_create'), {
+            'creation_mode': 'single',
+            'questionnaire': str(self.questionnaire.id),
+            'reviewee': str(self.reviewee.id),
+        })
 
     def bulk(self):
-        with patch(NOTIFY_PATH):
-            return self.client.post(reverse('review_cycle_create'), {
-                'creation_mode': 'bulk',
-                'questionnaire': str(self.questionnaire.id),
-            })
+        return self.client.post(reverse('review_cycle_create'), {
+            'creation_mode': 'bulk',
+            'questionnaire': str(self.questionnaire.id),
+        })
 
     def test_quick_create_spends_a_credit(self):
         grant(self.org, 1)

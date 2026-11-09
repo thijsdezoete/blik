@@ -25,7 +25,7 @@
                 <label class="form-check"><input type="checkbox" class="form-check-input" name="include_direct_report"{% if not item.source_cycle or item.source_cycle.include_direct_report %} checked{% endif %}>{% trans 'Direct report review' %}</label>
             </fieldset>
             {% if item.source_cycle %}
-            <p class="help-text">{% trans 'Reviewers are copied from the previous cycle. Invitations are sent to reviewers who have an email address.' %}</p>
+            <p class="help-text">{% trans 'Reviewers are copied from the previous cycle. Reviewers with an email address get their invitation within about five minutes.' %}</p>
             {% else %}
             <p class="help-text">{% trans 'The cycle starts with space for a self-assessment, three peers and one manager. You can assign reviewers in the next step.' %}</p>
             {% endif %}

@@ -317,9 +317,12 @@ class ReviewCycleViewSetTest(TestCase):
         self.assertEqual(cycle.tokens.filter(category='peer').count(), 2)
 
     def test_send_reminders_reminds_invited_pending_reviewers_only(self):
-        """POST /cycles/{id}/send_reminders/ emails invited reviewers who have not finished."""
+        """POST /cycles/{id}/send_reminders/ queues a reminder for the invited reviewers who have
+        not finished; the outbox cron sends them."""
         from django.core import mail
         from django.utils import timezone
+
+        from reviews.outbox import send_queued_emails
 
         cycle = ReviewCycle.objects.create(
             reviewee=self.reviewee, questionnaire=self.questionnaire, created_by=self.user
@@ -337,7 +340,13 @@ class ReviewCycleViewSetTest(TestCase):
         response = self.client.post(f'/api/v1/cycles/{cycle.uuid}/send_reminders/', {}, format='json')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['sent'], 1)
+        self.assertEqual(response.data['queued'], 1)
+        self.assertEqual(mail.outbox, [])
+        pending.refresh_from_db()
+        self.assertIsNotNone(pending.reminder_queued_at)
+
+        send_queued_emails()
+
         self.assertEqual([m.to for m in mail.outbox], [['pending@example.com']])
         pending.refresh_from_db()
         self.assertIsNotNone(pending.last_reminder_sent_at)

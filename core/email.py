@@ -52,7 +52,8 @@ def get_from_email():
     return settings.DEFAULT_FROM_EMAIL
 
 
-def send_email(subject, message, recipient_list, html_message=None, from_email=None, attachments=None):
+def send_email(subject, message, recipient_list, html_message=None, from_email=None, attachments=None,
+               connection=None):
     """
     Send email using Organization SMTP settings.
 
@@ -63,6 +64,8 @@ def send_email(subject, message, recipient_list, html_message=None, from_email=N
         html_message: Optional HTML version of message
         from_email: Optional from email (defaults to organization setting)
         attachments: Optional list of (filename, content, mimetype)
+        connection: Optional open email backend, so a batch reuses one SMTP connection
+            (defaults to a new connection from get_email_backend())
 
     Returns:
         Number of emails sent (0 or 1)
@@ -70,7 +73,7 @@ def send_email(subject, message, recipient_list, html_message=None, from_email=N
     if from_email is None:
         from_email = get_from_email()
 
-    backend = get_email_backend()
+    backend = connection or get_email_backend()
 
     email = EmailMultiAlternatives(
         subject=subject,

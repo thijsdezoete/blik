@@ -1,0 +1,24 @@
+{% load i18n %}{% comment %}
+The "Invitation Status" cell of a reviewer token: sent, in the outbox, failed, or ready to send.
+Expects `token`.
+{% endcomment %}
+{% if token.invitation_sent_at %}
+<span style="color: var(--success);">{% blocktrans trimmed with date=token.invitation_sent_at|date:'SHORT_DATE_FORMAT' %}Sent {{ date }}{% endblocktrans %}</span>
+{% elif token.invitation_queued_at and token.email_error %}
+<span style="color: var(--danger); font-weight: 500;">{% trans 'Failed' %}</span>
+<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; overflow-wrap: anywhere;">{{ token.email_error }}</div>
+<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+    {% if token.email_gave_up %}
+    {% blocktrans trimmed count attempts=token.email_attempts %}Given up after {{ attempts }} attempt. Send the invitation again when the mail server works.{% plural %}Given up after {{ attempts }} attempts. Send the invitation again when the mail server works.{% endblocktrans %}
+    {% else %}
+    {% trans 'Blik tries again within about five minutes.' %}
+    {% endif %}
+</div>
+{% elif token.invitation_queued_at %}
+<span style="color: var(--text-secondary);">{% trans 'Queued' %}</span>
+<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">{% trans 'Goes out within about five minutes' %}</div>
+{% elif token.reviewer_email %}
+<span style="color: var(--text-secondary);">{% trans 'Ready to send' %}</span>
+{% else %}
+<span style="color: var(--text-secondary);">—</span>
+{% endif %}

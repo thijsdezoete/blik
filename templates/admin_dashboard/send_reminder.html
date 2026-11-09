@@ -80,7 +80,7 @@
                     <ul style="margin: 0; padding-left: 1.5rem; color: #1e40af;">
                         <li>{% trans 'Enter one email address per line (or comma-separated)' %}</li>
                         <li>{% blocktrans trimmed with count=pending_tokens.count %}The number of emails must match the number of pending tokens ({{ count }}){% endblocktrans %}</li>
-                        <li>{% trans 'Emails will be sent in the order shown in the table above' %}</li>
+                        <li>{% trans 'The reminders go out within about five minutes, one email per reviewer' %}</li>
                         <li>{% trans 'Each email will contain a unique anonymous review link' %}</li>
                     </ul>
                 </div>

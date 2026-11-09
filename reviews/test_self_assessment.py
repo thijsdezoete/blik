@@ -14,10 +14,11 @@ from core.upgrade_steps import drop_orphan_self_tokens
 from questionnaires.models import Questionnaire
 from reviews.factories import ResponseFactory
 from reviews.models import ReviewCycle, ReviewerToken
-from reviews.services import (
-    send_reminder_emails,
-    send_reviewee_notifications,
-    send_reviewer_invitations,
+from reviews.outbox import (
+    queue_invitations,
+    queue_reminders,
+    queue_reviewee_notifications,
+    send_queued_emails,
 )
 
 SEND_MAIL = 'reviews.services.send_email'
@@ -43,11 +44,17 @@ class SelfAssessmentTestCase(TestCase):
     def self_tokens(self):
         return self.cycle.tokens.filter(category='self')
 
+    def notify(self, cycle=None):
+        """The reviewee's emails: queued as the views do, then sent as the cron does."""
+        queue_reviewee_notifications(cycle or self.cycle)
+        with patch(SEND_MAIL) as send:
+            send_queued_emails()
+        return send
+
 
 class InvitationTests(SelfAssessmentTestCase):
     def test_the_invitation_is_the_reviewees_token(self):
-        with patch(SEND_MAIL) as send:
-            send_reviewee_notifications(self.cycle)
+        send = self.notify()
 
         [token] = self.self_tokens()
         self.assertEqual(token.reviewer_email, 'dana@acme.example')
@@ -60,8 +67,7 @@ class InvitationTests(SelfAssessmentTestCase):
         addressed = ReviewerToken.objects.create(
             cycle=self.cycle, category='self', reviewer_email='dana@acme.example')
 
-        with patch(SEND_MAIL):
-            send_reviewee_notifications(self.cycle)
+        self.notify()
 
         self.assertEqual(list(self.self_tokens()), [addressed])
         addressed.refresh_from_db()
@@ -69,20 +75,21 @@ class InvitationTests(SelfAssessmentTestCase):
 
     def test_sending_pending_invitations_afterwards_mails_it_once(self):
         ReviewerToken.objects.create(cycle=self.cycle, category='self', reviewer_email='dana@acme.example')
+        queue_reviewee_notifications(self.cycle)
+        queue_invitations(self.cycle.tokens.all())
 
         with patch(SEND_MAIL) as send:
-            send_reviewee_notifications(self.cycle)
-            send_reviewer_invitations(self.cycle)
+            send_queued_emails()
 
         subjects = [c.kwargs['subject'] for c in send.call_args_list]
         self.assertEqual(len([s for s in subjects if 'self-assessment' in s]), 1)
 
     def test_the_reminder_speaks_to_the_reviewee(self):
-        with patch(SEND_MAIL):
-            send_reviewee_notifications(self.cycle)
+        self.notify()
+        queue_reminders(self.cycle.tokens.all())
 
         with patch(SEND_MAIL) as send:
-            stats = send_reminder_emails(self.cycle)
+            stats = send_queued_emails()
 
         self.assertEqual(stats['sent'], 1)
         kwargs = send.call_args.kwargs
@@ -94,13 +101,11 @@ class InvitationTests(SelfAssessmentTestCase):
 
 class CreateFormTests(SelfAssessmentTestCase):
     def test_the_form_makes_one_self_token(self):
-        """The form fills in the reviewee's address for the self-assessment.
-        Outside a transaction on_commit runs at once, as it does in
-        production; the reviewee's mails must still come after that token."""
+        """The form fills in the reviewee's address for the self-assessment. The reviewee's
+        emails are queued after that token, so the cron sends it once and makes no second one."""
         self.client.force_login(self.admin)
 
-        with patch(SEND_MAIL) as send, \
-                patch('django.db.transaction.on_commit', side_effect=lambda func, *args, **kwargs: func()):
+        with patch(SEND_MAIL) as send:
             self.client.post(reverse('review_cycle_create'), {
                 'creation_mode': 'single',
                 'reviewee': self.reviewee.id,
@@ -108,6 +113,8 @@ class CreateFormTests(SelfAssessmentTestCase):
                 'self_emails': 'dana@acme.example',
                 'send_invitations_now': '1',
             })
+            send.assert_not_called()
+            send_queued_emails()
 
         created = ReviewCycle.objects.exclude(pk=self.cycle.pk).get()
         [token] = created.tokens.filter(category='self')
@@ -175,6 +182,7 @@ class ManageInvitationsTests(SelfAssessmentTestCase):
         with patch(SEND_MAIL) as send:
             self.client.post(reverse('assign_invitations', args=[self.cycle.uuid]),
                              {'self_emails': 'dana@acme.example'})
+            send_queued_emails()
 
         [token] = self.self_tokens()
         self.assertIsNotNone(token.invitation_sent_at)
@@ -197,11 +205,10 @@ class CycleDetailTests(SelfAssessmentTestCase):
 
         pending_invites = self.get_detail().context['pending_invites']
 
-        with patch(SEND_MAIL):
-            stats = send_reviewer_invitations(self.cycle)
+        queued = queue_invitations(self.cycle.tokens.all())
 
         self.assertEqual(pending_invites, 2)
-        self.assertEqual(stats['sent'], pending_invites)
+        self.assertEqual(queued, pending_invites)
 
     def test_an_unsent_self_assessment_has_its_send_button(self):
         token = ReviewerToken.objects.create(cycle=self.cycle, category='self', reviewer_email='dana@acme.example')
@@ -210,6 +217,26 @@ class CycleDetailTests(SelfAssessmentTestCase):
 
         self.assertContains(response, f'name="token_id" value="{token.id}"')
 
+    def test_the_send_button_queues_that_self_assessment(self):
+        """GitHub #20: the per-reviewer "Send Invite" button on a self-assessment token said
+        "No pending invitations to send" because the view ignored token_id and the service
+        always excluded the self category."""
+        token = ReviewerToken.objects.create(cycle=self.cycle, category='self', reviewer_email='dana@acme.example')
+        ReviewerToken.objects.create(cycle=self.cycle, category='peer', reviewer_email='pat@acme.example')
+
+        with patch(SEND_MAIL) as send:
+            self.client.post(reverse('send_invitations', args=[self.cycle.uuid]), {'token_id': token.id})
+            send.assert_not_called()
+            send_queued_emails()
+
+        self.assertEqual(send.call_count, 1)
+        kwargs = send.call_args.kwargs
+        self.assertEqual(kwargs['recipient_list'], ['dana@acme.example'])
+        self.assertIn('self-assessment', kwargs['subject'])
+        self.assertIn(f'/feedback/{token.token}/', kwargs['message'])
+        token.refresh_from_db()
+        self.assertIsNotNone(token.invitation_sent_at)
+
 
 class NewCycleTests(SelfAssessmentTestCase):
     def setUp(self):
@@ -217,9 +244,11 @@ class NewCycleTests(SelfAssessmentTestCase):
         self.client.force_login(self.admin)
 
     def new_cycle(self):
-        with patch(SEND_MAIL) as send, self.captureOnCommitCallbacks(execute=True):
+        """Create the cycle as the dashboard does, then send its queued emails as the cron does."""
+        with patch(SEND_MAIL) as send:
             self.client.post(reverse('quick_cycle_create', args=[self.reviewee.uuid]),
                              {'questionnaire_id': self.cycle.questionnaire.id})
+            send_queued_emails()
         return ReviewCycle.objects.exclude(pk=self.cycle.pk).get(), send
 
     def test_the_reviewee_gets_the_self_assessment_and_the_links(self):

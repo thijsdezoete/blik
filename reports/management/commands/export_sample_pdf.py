@@ -1,4 +1,4 @@
-"""Write the sample report PDF to a file. The landing image build runs this."""
+"""Write the sample report PDF to a file. The landing container runs this at start."""
 from django.core.management.base import BaseCommand, CommandError
 
 from reports.sample import SAMPLE_QUESTIONNAIRE, build_sample_pdf

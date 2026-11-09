@@ -2,7 +2,7 @@
 
 Nothing is stored: the demo organization, cycle and answers live inside one transaction that is
 rolled back after the PDF is rendered. `manage.py export_sample_pdf` writes it when the landing
-image is built, so every deploy ships a sample with the latest report layout.
+container starts, so every deploy ships a sample with the latest report layout.
 """
 import random
 

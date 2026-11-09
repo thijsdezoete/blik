@@ -586,9 +586,10 @@ What is new for operators:
 
 Check after the deploy:
 
-1. `curl -sI https://<landing>/sample-report.pdf | head -1` returns `200`. The landing image build
-   renders this PDF with the current code, so it is fresh after every landing deploy. The HR and FAQ
-   pages link to it.
+1. `curl -sI https://<landing>/sample-report.pdf | head -1` returns `200`. The landing container
+   renders this PDF with the current code every time it starts, so it is fresh after every landing
+   deploy. The HR and FAQ pages link to it. A 404 means the render failed: look for "sample report"
+   in the landing container's log.
 2. The cron line for `finalize_reports` is installed: `docker compose exec web crontab -l`.
 3. In a test organization: import a small CSV on **Organization → Org chart**, create a bulk round with
    **Derive from org chart**, and send. Every address gets one email. The overview link in it opens.

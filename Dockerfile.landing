@@ -24,7 +24,7 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_SYSTEM_PYTHON=1
 
-# Install system dependencies including fonts for OG image generation
+# System dependencies: fonts for the OG image, Pango for the sample report PDF (WeasyPrint)
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -54,14 +54,6 @@ RUN uv pip install --system -e .
 
 # Create directory for static files
 RUN mkdir -p /app/staticfiles
-
-# Render the sample report PDF with the current code, against a throwaway database.
-# The landing app serves it at /sample-report.pdf; a failure here fails the build.
-RUN DATABASE_URL=sqlite:////tmp/build.sqlite3 DEBUG=False ALLOWED_HOSTS=* \
-    SESSION_COOKIE_SECURE=False CSRF_COOKIE_SECURE=False \
-    sh -c 'python manage.py migrate -v0 && python manage.py upgrade > /dev/null \
-        && python manage.py export_sample_pdf landing/sample-report.pdf' \
-    && rm -f /tmp/build.sqlite3
 
 # Collect static files (landing pages only need static assets)
 RUN DJANGO_SETTINGS_MODULE=landing_settings python manage.py collectstatic --noinput --clear

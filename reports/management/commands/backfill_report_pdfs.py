@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from reports.models import Report
 from reports.pdf import store_report_pdf
-from reports.services import generate_report
+from reports.services import REPORT_SCHEMA, generate_report
 from reviews.models import Response, ReviewCycle
 
 
@@ -65,18 +65,21 @@ class Command(BaseCommand):
         for cycle in cycles:
             try:
                 report = Report.objects.filter(cycle=cycle).first()
+                # A report stored by an older Blik lacks the data the PDF reads (the stage numbers,
+                # for example), so it gets recalculated like --regenerate asks for every report.
+                recalculate = regenerate or (report is not None and report.report_data.get('schema') != REPORT_SCHEMA)
                 if dry_run:
                     reports_made += report is None
-                    reports_recalculated += regenerate and report is not None
-                    pdfs_stored += regenerate or report is None or not report.has_valid_pdf()
+                    reports_recalculated += recalculate and report is not None
+                    pdfs_stored += recalculate or report is None or not report.has_valid_pdf()
                     continue
-                keep_stored = regenerate and report is not None and answers_that_would_vanish(report)
+                keep_stored = recalculate and report is not None and answers_that_would_vanish(report)
                 if keep_stored:
                     self.stdout.write(self.style.WARNING(
                         f'Cycle {cycle.pk}: kept the stored report, because it holds answers '
                         f'(for example of a deleted question) that a new report would lose'
                     ))
-                elif report is None or regenerate:
+                elif report is None or recalculate:
                     # generate_report sends no email and drops the old PDF.
                     # A recalculated report is not news: no report.generated webhook
                     existed = report is not None
@@ -91,7 +94,7 @@ class Command(BaseCommand):
 
         verb = 'to do' if dry_run else 'done'
         self.stdout.write(f'Reports created: {reports_made} {verb}')
-        if regenerate:
+        if regenerate or reports_recalculated:
             self.stdout.write(f'Reports recalculated: {reports_recalculated} {verb}')
         self.stdout.write(f'PDFs stored: {pdfs_stored} {verb}')
         for error in errors:

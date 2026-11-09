@@ -113,3 +113,13 @@ class ExecutiveSummaryTests(TestCase):
 
         self.assertEqual(summary['sections_below_self_count'], 1)
 
+    def test_summary_tolerates_a_report_stored_before_schema_2(self):
+        from .pdf import _agency
+
+        old = {'skill_profile': {'skill_stage': 'Competent', 'skill_level': 3.1},
+               'agency_profile': {'agency_stage': 'Directed', 'agency_level': 1.5}}
+
+        summary = executive_summary({'report_data': {'insights': old}})
+
+        self.assertEqual(summary['skill'], {'stage': 'Competent', 'level': 3.1})
+        self.assertIsNone(_agency(old['agency_profile']))

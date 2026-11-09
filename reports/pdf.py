@@ -281,7 +281,8 @@ def _percent(score, top=5):
 
 
 def _agency(profile):
-    if not profile:
+    # A report from before schema 2 holds the stage name, not its number: no ladder then
+    if not profile or not profile.get('stage'):
         return None
     stage = profile['stage']
     next_stage = stage + 1 if stage < 5 else None

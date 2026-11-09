@@ -123,6 +123,21 @@ class BackfillReportPdfsTests(TestCase):
 
         self.assertTrue(Report.objects.get(cycle=self.cycle).report_data['by_section'])
 
+    def test_a_report_from_an_older_version_is_recalculated_without_the_flag(self):
+        """Production holds reports stored before schema 2; the PDF reads keys they lack."""
+        self.add_answers()
+        self.run_command()
+        Report.objects.filter(cycle=self.cycle).update(
+            report_data={'by_section': {}, 'insights': {'agency_profile': {'agency_stage': 'Directed'}}},
+        )
+
+        output = self.run_command()
+
+        report = Report.objects.get(cycle=self.cycle)
+        self.assertEqual(report.report_data['schema'], 2)
+        self.assertIn('Reports recalculated: 1 done', output)
+        self.assertTrue(report.has_valid_pdf())
+
     def test_regenerate_fires_no_webhook(self):
         self.add_answers()
         self.run_command()

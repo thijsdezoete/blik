@@ -30,8 +30,9 @@ def executive_summary(context):
     return {
         'overall': {'score': sentiment['score'], 'rating': sentiment['rating'], 'trend': trend} if sentiment else None,
         'self_gap': self_gap,
-        'skill': {'stage': skill['skill_stage'], 'level': skill['skill_level']} if skill else None,
-        'agency': {'stage': agency['agency_stage'], 'level': agency['agency_level']} if agency else None,
+        # .get(): a report stored by an older Blik may lack the stage texts
+        'skill': {'stage': skill.get('skill_stage'), 'level': skill.get('skill_level')} if skill else None,
+        'agency': {'stage': agency.get('agency_stage'), 'level': agency.get('agency_level')} if agency else None,
         'quadrant': {'name': quadrant['name'], 'description': quadrant['description']} if quadrant else None,
         'strengths': (insights.get('strengths') or [])[:MAX_STRENGTHS],
         'growth': (insights.get('development_areas') or [])[:MAX_GROWTH],

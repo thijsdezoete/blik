@@ -215,13 +215,7 @@
                                 {% endif %}
                             </td>
                             <td style="padding: 0.75rem;">
-                                {% if token.invitation_sent_at %}
-                                <span style="color: var(--success);">{% blocktrans trimmed with date=token.invitation_sent_at|date:'SHORT_DATE_FORMAT' %}Sent {{ date }}{% endblocktrans %}</span>
-                                {% elif token.reviewer_email %}
-                                <span style="color: var(--text-secondary);">{% trans 'Ready to send' %}</span>
-                                {% else %}
-                                <span style="color: var(--text-secondary);">—</span>
-                                {% endif %}
+                                {% include 'admin_dashboard/partials/token_invitation_status.html' %}
                             </td>
                             <td style="padding: 0.75rem;">
                                 {% if token.completed_at %}
@@ -231,11 +225,7 @@
                                 {% elif token.invitation_sent_at %}
                                 <div>
                                     <span style="color: var(--text-secondary);">{% trans 'Pending' %}</span>
-                                    {% if token.last_reminder_sent_at %}
-                                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                                        {% blocktrans trimmed with date=token.last_reminder_sent_at|date:'SHORT_DATE_FORMAT' %}Reminder sent {{ date }}{% endblocktrans %}
-                                    </div>
-                                    {% endif %}
+                                    {% include 'admin_dashboard/partials/token_reminder_status.html' %}
                                 </div>
                                 {% else %}
                                 <span style="color: var(--text-secondary);">—</span>
@@ -259,7 +249,7 @@
             {% csrf_token %}
             <div>
                 <div style="font-weight: 600; margin-bottom: 0.25rem;">{% blocktrans trimmed count counter=unsent_tokens %}{{ counter }} pending invitation{% plural %}{{ counter }} pending invitations{% endblocktrans %}</div>
-                <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans "Send email invitations to reviewers who haven't received one yet" %}</div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans "Queue the email invitations to reviewers who haven't received one yet. They go out within about five minutes." %}</div>
             </div>
             <button type="submit" class="btn btn-primary">{% trans 'Send Pending Invitations' %}</button>
         </form>

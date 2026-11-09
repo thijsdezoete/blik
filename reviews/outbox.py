@@ -19,14 +19,14 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from core.email import get_email_backend
-from .models import ReviewCycle, ReviewerToken
+from .models import MAX_EMAIL_ATTEMPTS, ReviewCycle, ReviewerToken
 from .services import self_assessment_token, send_bundle_email, send_links_email, send_token_email
 
 logger = logging.getLogger('reviews.outbox')
 
 # After this many failed attempts the email stays in the queue as failed until an admin
 # sends it again; so a mail server that is down does not get a knock every five minutes forever.
-MAX_ATTEMPTS = 5
+MAX_ATTEMPTS = MAX_EMAIL_ATTEMPTS
 
 INVITATION = 'invitation'
 REMINDER = 'reminder'

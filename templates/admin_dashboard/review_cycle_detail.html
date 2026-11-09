@@ -273,6 +273,16 @@
         </div>
 
         {% if cycle.include_peer or cycle.include_manager or cycle.include_direct_report %}
+        {% if cycle.links_email_queued_at and cycle.links_email_error %}
+        <p style="margin: 1.5rem 0 0; font-size: 0.875rem; color: var(--danger); overflow-wrap: anywhere;">
+            {% blocktrans trimmed with email=cycle.reviewee.email error=cycle.links_email_error %}The email with these links to {{ email }} failed: {{ error }}{% endblocktrans %}
+            {% trans 'Blik tries again within about five minutes, or send the links again below.' %}
+        </p>
+        {% elif cycle.links_email_queued_at %}
+        <p style="margin: 1.5rem 0 0; font-size: 0.875rem; color: var(--text-secondary);">
+            {% blocktrans trimmed with email=cycle.reviewee.email %}The email with these links to {{ email }} is queued and goes out within about five minutes.{% endblocktrans %}
+        </p>
+        {% endif %}
         <form method="post" action="{% url 'send_reviewee_links' cycle.uuid %}" style="margin: 1.5rem 0 0;">
             {% csrf_token %}
             <button type="submit" class="btn btn-secondary">{% trans 'Resend the links to the reviewee' %}</button>
@@ -331,13 +341,7 @@
                                     {% endif %}
                                 </td>
                                 <td style="border-bottom: 1px solid var(--border); font-size: 0.875rem;">
-                                    {% if token.invitation_sent_at %}
-                                    <span style="color: var(--success);">{% blocktrans trimmed with date=token.invitation_sent_at|date:'SHORT_DATE_FORMAT' %}Sent {{ date }}{% endblocktrans %}</span>
-                                    {% elif token.reviewer_email %}
-                                    <span style="color: var(--text-secondary);">{% trans 'Ready to send' %}</span>
-                                    {% else %}
-                                    <span style="color: var(--text-secondary);">—</span>
-                                    {% endif %}
+                                    {% include 'admin_dashboard/partials/token_invitation_status.html' %}
                                 </td>
                                 <td style="border-bottom: 1px solid var(--border); font-size: 0.875rem;">
                                     {% if token.completed_at %}
@@ -345,20 +349,12 @@
                                     {% elif token.claimed_at %}
                                     <div>
                                         <span style="color: var(--warning); font-weight: 500;">{% trans 'In Progress' %}</span>
-                                        {% if token.last_reminder_sent_at %}
-                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                                            {% blocktrans trimmed with date=token.last_reminder_sent_at|date:'SHORT_DATE_FORMAT' %}Reminder sent {{ date }}{% endblocktrans %}
-                                        </div>
-                                        {% endif %}
+                                        {% include 'admin_dashboard/partials/token_reminder_status.html' %}
                                     </div>
                                     {% elif token.invitation_sent_at %}
                                     <div>
                                         <span style="color: var(--text-secondary);">{% trans 'Pending' %}</span>
-                                        {% if token.last_reminder_sent_at %}
-                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                                            {% blocktrans trimmed with date=token.last_reminder_sent_at|date:'SHORT_DATE_FORMAT' %}Reminder sent {{ date }}{% endblocktrans %}
-                                        </div>
-                                        {% endif %}
+                                        {% include 'admin_dashboard/partials/token_reminder_status.html' %}
                                     </div>
                                     {% else %}
                                     <span style="color: var(--text-secondary);">—</span>
@@ -367,6 +363,7 @@
                                 <td style="border-bottom: 1px solid var(--border);">
                                     {% if token.reviewer_email and not token.invitation_sent_at and not token.completed_at %}
                                     <div style="display: flex; gap: 0.5rem;">
+                                        {% if not token.invitation_queued_at or token.email_error %}
                                         <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: inline; margin: 0;">
                                             {% csrf_token %}
                                             <input type="hidden" name="token_id" value="{{ token.id }}">
@@ -374,6 +371,7 @@
                                                 {% trans 'Send Invite' %}
                                             </button>
                                         </form>
+                                        {% endif %}
                                         {% if perms.accounts.can_manage_organization %}
                                         <form method="post" action="{% url 'remove_reviewer_token' cycle.uuid token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
                                             {% csrf_token %}
@@ -385,12 +383,14 @@
                                     </div>
                                     {% elif token.invitation_sent_at and not token.is_completed and not token.claimed_at %}
                                     <div style="display: flex; gap: 0.5rem;">
+                                        {% if not token.reminder_queued_at or token.email_error %}
                                         <form method="post" action="{% url 'send_individual_reminder' cycle.uuid token.id %}" style="display: inline; margin: 0;">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-sm btn-warning" style="white-space: nowrap;">
                                                 {% trans 'Send Reminder' %}
                                             </button>
                                         </form>
+                                        {% endif %}
                                         {% if perms.accounts.can_manage_organization %}
                                         <form method="post" action="{% url 'remove_reviewer_token' cycle.uuid token.id %}" style="display: inline; margin: 0;" onsubmit="return confirmRemoveReviewer(this);">
                                             {% csrf_token %}
@@ -401,12 +401,14 @@
                                         {% endif %}
                                     </div>
                                     {% elif token.invitation_sent_at and not token.is_completed and token.claimed_at %}
+                                    {% if not token.reminder_queued_at or token.email_error %}
                                     <form method="post" action="{% url 'send_individual_reminder' cycle.uuid token.id %}" style="display: inline; margin: 0;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-warning" style="white-space: nowrap;">
                                             {% trans 'Send Reminder' %}
                                         </button>
                                     </form>
+                                    {% endif %}
                                     {% elif not token.reviewer_email and not token.claimed_at and not token.is_completed %}
                                     {# Unclaimed token - show Remove button only to org admins #}
                                     {% if perms.accounts.can_manage_organization %}
@@ -429,13 +431,19 @@
             {% endfor %}
         </div>
 
+        {% if queued_invites > 0 %}
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
+            {% blocktrans trimmed count counter=queued_invites %}{{ counter }} invitation is queued and goes out within about five minutes.{% plural %}{{ counter }} invitations are queued and go out within about five minutes, one email per reviewer.{% endblocktrans %}
+        </div>
+        {% endif %}
+
         {% if pending_invites > 0 %}
         <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
             <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
                 {% csrf_token %}
                 <div>
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">{% blocktrans trimmed count counter=pending_invites %}{{ counter }} pending invitation{% plural %}{{ counter }} pending invitations{% endblocktrans %}</div>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans 'Send invitation emails to all reviewers who have been assigned but not sent invites yet' %}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans 'Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes.' %}</div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="white-space: nowrap;">{% trans 'Send All Pending Invites' %}</button>
             </form>
@@ -448,7 +456,7 @@
                 {% csrf_token %}
                 <div>
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">{% blocktrans trimmed count counter=pending_reminders %}{{ counter }} unfinished review{% plural %}{{ counter }} unfinished reviews{% endblocktrans %}</div>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans "Send reminder emails to all reviewers who have been sent invitations but haven't completed their feedback yet" %}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes." %}</div>
                 </div>
                 <button type="submit" class="btn btn-secondary">{% trans 'Remind All Pending Reviewers' %}</button>
             </form>

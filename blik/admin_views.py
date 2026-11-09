@@ -1736,6 +1736,9 @@ def review_cycle_list(request):
     ).annotate(
         token_count=Count('tokens'),
         completed_count=Count('tokens', filter=Q(tokens__completed_at__isnull=False)),
+        # Queued emails the outbox could not send, so a mail problem shows in the list
+        failed_emails=Count('tokens', filter=Q(tokens__email_error__gt='') & (
+            Q(tokens__invitation_queued_at__isnull=False) | Q(tokens__reminder_queued_at__isnull=False))),
         reviewee_has_active_cycle=Exists(
             ReviewCycle.objects.filter(reviewee=OuterRef('reviewee'), status='active')),
     )
@@ -2168,11 +2171,10 @@ def review_cycle_detail(request, cycle_uuid):
     total_tokens = tokens.count()
     completed_tokens = tokens.filter(completed_at__isnull=False).count()
     claimed_tokens = tokens.filter(claimed_at__isnull=False).count()
-    pending_invites = tokens.filter(
-        reviewer_email__isnull=False,
-        invitation_sent_at__isnull=True,
-        completed_at__isnull=True,
-    ).count()
+    # An invitation in the outbox is on its way; it is pending again once it failed
+    unsent = tokens.filter(reviewer_email__isnull=False, invitation_sent_at__isnull=True, completed_at__isnull=True)
+    queued_invites = unsent.filter(invitation_queued_at__isnull=False, email_error='').count()
+    pending_invites = unsent.count() - queued_invites
     pending_reminders = tokens.filter(invitation_sent_at__isnull=False, completed_at__isnull=True).count()
     email_invited_count = tokens.filter(reviewer_email__isnull=False).exclude(category='self').count()
     completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
@@ -2195,6 +2197,7 @@ def review_cycle_detail(request, cycle_uuid):
         'pending_tokens': total_tokens - completed_tokens,
         'claimed_tokens': claimed_tokens,
         'pending_invites': pending_invites,
+        'queued_invites': queued_invites,
         'pending_reminders': pending_reminders,
         'email_invited_count': email_invited_count,
         'completion_rate': completion_rate,

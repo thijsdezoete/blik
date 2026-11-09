@@ -8,9 +8,11 @@ from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 
-from accounts.factories import RevieweeFactory
+from accounts.factories import RevieweeFactory, UserProfileFactory
+from accounts.permissions import assign_organization_admin, ensure_permission_groups
 from core.factories import OrganizationFactory, UserFactory
 from notifications.models import CronRun
 from questionnaires.factories import QuestionnaireFactory
@@ -505,3 +507,91 @@ class CommandTests(OutboxTestCase):
         call_command('send_queued_invitations', stdout=StringIO())
 
         self.assertFalse(CronRun.objects.exists())
+
+
+class AdminPagesTests(OutboxTestCase):
+    """What the admin sees of the queue on the cycle page and in the cycles list."""
+
+    def setUp(self):
+        super().setUp()
+        ensure_permission_groups()
+        admin = UserFactory(username='outboxadmin')
+        UserProfileFactory(user=admin, organization=self.org, can_create_cycles_for_others=True)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+    def detail(self):
+        return self.client.get(reverse('review_cycle_detail', args=[self.cycle_a.uuid]))
+
+    def test_a_queued_invitation_shows_as_queued_without_a_send_button(self):
+        token = ReviewerTokenFactory(cycle=self.cycle_a, reviewer_email='carol@example.com')
+        queue_invitations(ReviewerToken.objects.all())
+
+        response = self.detail()
+
+        self.assertContains(response, 'Queued')
+        self.assertNotContains(response, f'name="token_id" value="{token.id}"')
+        self.assertEqual((response.context['pending_invites'], response.context['queued_invites']), (0, 1))
+
+    def test_a_failed_invitation_shows_the_reason_and_can_be_sent_again(self):
+        token = ReviewerTokenFactory(
+            cycle=self.cycle_a, reviewer_email='carol@example.com', invitation_queued_at=timezone.now(),
+            email_error='SMTPAuthenticationError: (535, b\'Bad password\')', email_attempts=2,
+        )
+
+        response = self.detail()
+
+        self.assertContains(response, 'Failed')
+        self.assertContains(response, 'Bad password')
+        self.assertContains(response, 'Blik tries again within about five minutes.')
+        self.assertContains(response, f'name="token_id" value="{token.id}"')
+        self.assertEqual((response.context['pending_invites'], response.context['queued_invites']), (1, 0))
+
+    def test_an_invitation_the_cron_gave_up_on_says_so(self):
+        ReviewerTokenFactory(
+            cycle=self.cycle_a, reviewer_email='carol@example.com', invitation_queued_at=timezone.now(),
+            email_error='OSError: Connection refused', email_attempts=MAX_ATTEMPTS,
+        )
+
+        response = self.detail()
+
+        self.assertContains(response, f'Given up after {MAX_ATTEMPTS} attempts.')
+
+    def test_a_queued_reminder_hides_its_button_and_a_failed_one_shows_the_reason(self):
+        queued = ReviewerTokenFactory(
+            cycle=self.cycle_a, reviewer_email='carol@example.com',
+            invitation_sent_at=timezone.now(), reminder_queued_at=timezone.now(),
+        )
+        failed = ReviewerTokenFactory(
+            cycle=self.cycle_a, reviewer_email='dave@example.com',
+            invitation_sent_at=timezone.now(), reminder_queued_at=timezone.now(), email_error='OSError: Timed out',
+        )
+
+        response = self.detail()
+
+        self.assertContains(response, 'Reminder queued')
+        self.assertContains(response, 'Reminder failed: OSError: Timed out')
+        self.assertNotContains(response, reverse('send_individual_reminder', args=[self.cycle_a.uuid, queued.id]))
+        self.assertContains(response, reverse('send_individual_reminder', args=[self.cycle_a.uuid, failed.id]))
+
+    def test_a_failed_links_email_shows_on_the_cycle_page(self):
+        ReviewCycle.objects.filter(pk=self.cycle_a.pk).update(
+            links_email_queued_at=timezone.now(), links_email_error='OSError: Connection refused',
+        )
+
+        response = self.detail()
+
+        self.assertContains(response, 'The email with these links to alice@example.com failed: OSError: Connection refused')
+
+    def test_the_cycles_list_flags_a_cycle_with_a_failed_email(self):
+        ReviewerTokenFactory(
+            cycle=self.cycle_a, reviewer_email='carol@example.com',
+            invitation_queued_at=timezone.now(), email_error='OSError: Connection refused',
+        )
+        ReviewerTokenFactory(cycle=self.cycle_b, reviewer_email='dave@example.com', invitation_queued_at=timezone.now())
+
+        response = self.client.get(reverse('review_cycle_list'))
+
+        flagged = [cycle.pk for cycle in response.context['cycles'] if cycle.failed_emails]
+        self.assertEqual(flagged, [self.cycle_a.pk])
+        self.assertContains(response, 'Email failed', count=1)

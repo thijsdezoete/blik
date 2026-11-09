@@ -1,0 +1,16 @@
+{% load i18n %}{% comment %}
+The reminder line under a token's response status: in the outbox, failed, or when the last one went out.
+Expects `token`.
+{% endcomment %}
+{% if token.reminder_queued_at and token.email_error %}
+<div style="font-size: 0.75rem; color: var(--danger); margin-top: 0.25rem; overflow-wrap: anywhere;">
+    {% blocktrans trimmed with error=token.email_error %}Reminder failed: {{ error }}{% endblocktrans %}
+    {% if token.email_gave_up %}{% trans 'Send it again when the mail server works.' %}{% else %}{% trans 'Blik tries again within about five minutes.' %}{% endif %}
+</div>
+{% elif token.reminder_queued_at %}
+<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">{% trans 'Reminder queued, goes out within about five minutes' %}</div>
+{% elif token.last_reminder_sent_at %}
+<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+    {% blocktrans trimmed with date=token.last_reminder_sent_at|date:'SHORT_DATE_FORMAT' %}Reminder sent {{ date }}{% endblocktrans %}
+</div>
+{% endif %}

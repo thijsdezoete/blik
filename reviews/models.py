@@ -158,6 +158,10 @@ class ReviewCycle(TimeStampedModel):
         return token_map.get(category)
 
 
+# After this many failed attempts the outbox cron gives up on a queued email; an admin sends it again.
+MAX_EMAIL_ATTEMPTS = 5
+
+
 class ReviewerToken(TimeStampedModel):
     """Anonymous token for reviewer access"""
 
@@ -266,6 +270,11 @@ class ReviewerToken(TimeStampedModel):
     @property
     def is_completed(self):
         return self.completed_at is not None
+
+    @property
+    def email_gave_up(self):
+        """The queued email failed on every attempt: the cron stopped trying, an admin has to send it again."""
+        return bool(self.email_error) and self.email_attempts >= MAX_EMAIL_ATTEMPTS
 
 
 class Response(TimeStampedModel):

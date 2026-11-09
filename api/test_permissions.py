@@ -68,7 +68,7 @@ class IsOrganizationMemberPermissionTest(TestCase):
 
     def test_can_access_own_org_data(self):
         """Users can access their own organization's data."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token1.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token1.raw_token}')
 
         # Should see own org's reviewees
         response = self.client.get('/api/v1/reviewees/')
@@ -79,7 +79,7 @@ class IsOrganizationMemberPermissionTest(TestCase):
 
     def test_cannot_access_other_org_data(self):
         """Users cannot access other organization's data."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token1.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token1.raw_token}')
 
         # Should not see other org's reviewee
         response = self.client.get(f'/api/v1/reviewees/{self.reviewee2.uuid}/')
@@ -87,7 +87,7 @@ class IsOrganizationMemberPermissionTest(TestCase):
 
     def test_list_only_shows_own_org(self):
         """List views only show data from user's organization."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token1.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token1.raw_token}')
 
         response = self.client.get('/api/v1/reviewees/')
         self.assertEqual(response.status_code, 200)
@@ -141,7 +141,7 @@ class CanManageOrganizationPermissionTest(TestCase):
 
     def test_admin_can_create_reviewee(self):
         """Admin can create reviewees."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.admin_token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.admin_token.raw_token}')
 
         response = self.client.post('/api/v1/reviewees/', {
             'name': 'New Reviewee',
@@ -153,7 +153,7 @@ class CanManageOrganizationPermissionTest(TestCase):
 
     def test_regular_user_cannot_create_reviewee(self):
         """Regular user without permission cannot create reviewees."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.user_token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.user_token.raw_token}')
 
         response = self.client.post('/api/v1/reviewees/', {
             'name': 'New Reviewee',
@@ -221,7 +221,7 @@ class CanCreateCyclesPermissionTest(TestCase):
 
     def test_creator_can_create_cycle(self):
         """User with can_create_cycles_for_others can create cycles."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.creator_token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.creator_token.raw_token}')
 
         response = self.client.post('/api/v1/cycles/', {
             'reviewee': str(self.reviewee.uuid),
@@ -232,7 +232,7 @@ class CanCreateCyclesPermissionTest(TestCase):
 
     def test_regular_user_cannot_create_cycle(self):
         """User without permission cannot create cycles."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.user_token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.user_token.raw_token}')
 
         response = self.client.post('/api/v1/cycles/', {
             'reviewee': str(self.reviewee.uuid),

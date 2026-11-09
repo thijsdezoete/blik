@@ -667,10 +667,9 @@ class APITokenSerializer(serializers.ModelSerializer):
         """
         data = super().to_representation(instance)
 
-        # Only show token on create (when instance is new)
-        if instance.pk and not self.context.get("show_token", False):
-            # Mask the token after creation
-            data["token"] = f"{instance.token[:8]}...{instance.token[-8:]}"
+        # The token itself exists only right after creation; later only its prefix
+        raw = getattr(instance, "raw_token", None)
+        data["token"] = raw if raw and self.context.get("show_token", False) else f"{instance.prefix}..."
 
         return data
 

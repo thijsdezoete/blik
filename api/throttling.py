@@ -30,7 +30,7 @@ class APITokenRateThrottle(SimpleRateThrottle):
         if not hasattr(request, "api_token"):
             return None  # Don't throttle session auth differently
 
-        return f"throttle_api_token_{request.api_token.token}"
+        return f"throttle_api_token_{request.api_token.uuid}"
 
     def get_rate(self):
         """

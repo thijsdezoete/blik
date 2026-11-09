@@ -42,7 +42,7 @@ class RevieweeViewSetTest(TestCase):
         )
 
         self.client = APIClient()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
 
     def test_list_reviewees(self):
         """GET /reviewees/ returns list of reviewees."""
@@ -279,7 +279,7 @@ class ReviewCycleViewSetTest(TestCase):
         )
 
         self.client = APIClient()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
 
     def test_create_cycle_basic(self):
         """POST /cycles/ creates new review cycle."""
@@ -508,7 +508,7 @@ class QuestionnaireViewSetTest(TestCase):
         )
 
         self.client = APIClient()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
 
     def test_list_questionnaires(self):
         """GET /questionnaires/ returns org + shared questionnaires."""
@@ -599,7 +599,7 @@ class ReportViewSetTest(TestCase):
         )
 
         self.client = APIClient()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
 
     def test_list_reports(self):
         """GET /reports/ returns list of reports."""

@@ -43,6 +43,7 @@ from .serializers import (
 )
 from .models import WebhookEndpoint, WebhookDelivery, APIToken
 from .permissions import (
+    TokenScopeMixin,
     IsOrganizationMember,
     CanManageOrganization,
     CanManageQuestionnaires,
@@ -128,7 +129,7 @@ class RequestLanguageMixin:
         description="Soft-delete reviewee (mark as inactive) by UUID",
     ),
 )
-class RevieweeViewSet(viewsets.ModelViewSet):
+class RevieweeViewSet(TokenScopeMixin, viewsets.ModelViewSet):
     """
     API endpoints for managing reviewees (people being reviewed).
 
@@ -137,6 +138,7 @@ class RevieweeViewSet(viewsets.ModelViewSet):
     - Create/Update/Delete require organization management permission
     """
 
+    api_resource = "reviewees"
     permission_classes = [IsOrganizationMember, CanManageOrganization]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ["is_active", "department"]
@@ -310,7 +312,7 @@ class RevieweeViewSet(viewsets.ModelViewSet):
         description="Delete review cycle by UUID",
     ),
 )
-class ReviewCycleViewSet(viewsets.ModelViewSet):
+class ReviewCycleViewSet(TokenScopeMixin, viewsets.ModelViewSet):
     """
     API endpoints for managing review cycles.
 
@@ -320,6 +322,7 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
     - Update/Delete: Organization admins only
     """
 
+    api_resource = "cycles"
     permission_classes = [IsOrganizationMember]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["status", "reviewee"]
@@ -672,7 +675,7 @@ class ReviewCycleViewSet(viewsets.ModelViewSet):
         parameters=[LANGUAGE_PARAMETER],
     ),
 )
-class QuestionnaireViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
+class QuestionnaireViewSet(TokenScopeMixin, RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
     """
     API endpoints for questionnaires.
 
@@ -684,6 +687,7 @@ class QuestionnaireViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
     # The actions that change a questionnaire
     edit_actions = ["reorder", "update_question"]
 
+    api_resource = "questionnaires"
     permission_classes = [IsOrganizationMember]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "description"]
@@ -820,13 +824,14 @@ REPORT_TIMING = (
         parameters=[LANGUAGE_PARAMETER],
     ),
 )
-class ReportViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
+class ReportViewSet(TokenScopeMixin, RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
     """
     API endpoints for reports.
 
     Note: Access tokens are sensitive - only shown in detail view.
     """
 
+    api_resource = "reports"
     permission_classes = [IsOrganizationMember]
     serializer_class = ReportSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -932,13 +937,14 @@ class ReportViewSet(RequestLanguageMixin, viewsets.ReadOnlyModelViewSet):
         description="Delete webhook endpoint",
     ),
 )
-class WebhookEndpointViewSet(viewsets.ModelViewSet):
+class WebhookEndpointViewSet(TokenScopeMixin, viewsets.ModelViewSet):
     """
     Manage webhook endpoints for event notifications.
 
     Permissions: Organization admins only
     """
 
+    api_resource = "webhooks"
     permission_classes = [IsOrganizationMember, CanManageOrganization]
     serializer_class = WebhookEndpointSerializer
     lookup_field = "uuid"
@@ -1029,7 +1035,7 @@ class WebhookEndpointViewSet(viewsets.ModelViewSet):
         description="Delete API token (revoke access)",
     ),
 )
-class APITokenViewSet(viewsets.ModelViewSet):
+class APITokenViewSet(TokenScopeMixin, viewsets.ModelViewSet):
     """
     Manage API tokens for authentication.
 
@@ -1039,6 +1045,7 @@ class APITokenViewSet(viewsets.ModelViewSet):
     After creation, tokens are masked for security.
     """
 
+    api_resource = "tokens"
     permission_classes = [IsOrganizationMember, CanManageOrganization]
     serializer_class = APITokenSerializer
     lookup_field = "uuid"

@@ -35,7 +35,7 @@ class ReportPdfApiTests(TestCase):
         assign_organization_admin(admin)
         token = APIToken.objects.create(organization=organization, created_by=admin, name='Token')
         self.client = APIClient()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
         self.url = f'/api/v1/reports/{self.report.uuid}/'
 
     def test_report_has_pdf_fields(self):

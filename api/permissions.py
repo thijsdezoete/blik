@@ -134,51 +134,37 @@ class CanCreateCycles(BasePermission):
 
 class HasAPIPermission(BasePermission):
     """
-    Checks token-level permissions from JSONField.
+    Token scopes: a token with permissions may only use what they list, as
+    "read:<resource>" for safe methods and "write:<resource>" for the others,
+    where the viewset names its resource in `api_resource`.
 
-    Usage: Configure in viewset
-    permission_classes = [HasAPIPermission]
-    required_api_permissions = ['read:cycles', 'write:cycles']
-
-    Permissions format in token.permissions:
-    {
-        "read:cycles": true,
-        "write:cycles": true,
-        "read:reviewees": true,
-        "write:reviewees": false
-    }
+    A token with empty permissions keeps every right of its creator: that is how
+    the settings page creates tokens. Session auth is not affected.
     """
 
+    message = "This API token does not have the scope for this request."
+
     def has_permission(self, request, view):
-        """
-        Check if API token has required permissions.
-
-        Args:
-            request: HTTP request object
-            view: DRF view
-
-        Returns:
-            bool: True if token has all required permissions
-        """
-        # Only applies to API token auth
-        if not hasattr(request, "api_token"):
-            return True  # Session auth uses other permissions
-
-        token = request.api_token
-        required_perms = getattr(view, "required_api_permissions", [])
-
-        # If no specific perms required, allow
-        if not required_perms:
+        token = getattr(request, "api_token", None)
+        if token is None or not token.permissions:
             return True
+        resource = getattr(view, "api_resource", None)
+        if resource is None:
+            return False  # an unnamed resource is never in scope
+        access = "read" if request.method in ("GET", "HEAD", "OPTIONS") else "write"
+        return token.permissions.get(f"{access}:{resource}") is True
 
-        # Check if token has required permissions
-        token_perms = token.permissions or {}
 
-        for perm in required_perms:
-            if not token_perms.get(perm, False):
-                return False
+class TokenScopeMixin:
+    """Checks the token scope on every request, whatever permissions the action sets."""
 
-        return True
+    api_resource = None
+
+    def check_permissions(self, request):
+        super().check_permissions(request)
+        scope = HasAPIPermission()
+        if not scope.has_permission(request, self):
+            self.permission_denied(request, message=scope.message)
 
 
 class CanViewAllReports(BasePermission):

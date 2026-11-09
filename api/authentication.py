@@ -4,7 +4,7 @@ Custom API token authentication for DRF.
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from django.utils import timezone
-from .models import APIToken
+from .models import APIToken, hash_token
 
 
 class APITokenAuthentication(BaseAuthentication):
@@ -46,7 +46,7 @@ class APITokenAuthentication(BaseAuthentication):
 
         try:
             token = APIToken.objects.select_related("organization", "created_by").get(
-                token=token_value, is_active=True
+                token=hash_token(token_value), is_active=True
             )
         except APIToken.DoesNotExist:
             raise AuthenticationFailed("Invalid or inactive token")

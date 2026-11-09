@@ -93,7 +93,7 @@ class ReportApiAccessControlTest(TestCase):
         """Token auth runs as the token's creator — the same rule must hold."""
         token = APIToken.objects.create(
             organization=self.org, created_by=self.user2, name='User2 Token')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
         response = self.client.get(f'/api/v1/reports/{self.report.uuid}/')
 

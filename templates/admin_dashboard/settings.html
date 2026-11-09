@@ -374,7 +374,7 @@
                                     <div style="flex: 1;">
                                         <div style="font-weight: 500; font-size: 0.9375rem;">{{ token.name }}</div>
                                         <div style="font-family: monospace; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                                            {{ token.token|slice:":8" }}...{{ token.token|slice:"-8:" }}
+                                            {{ token.prefix }}...
                                         </div>
                                         <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
                                             {% if token.is_active %}

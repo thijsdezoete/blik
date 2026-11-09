@@ -3352,7 +3352,7 @@ def create_api_token(request):
         )
 
         # Redirect to settings with token in session (will be displayed in modal)
-        request.session['new_api_token'] = token.token
+        request.session['new_api_token'] = token.raw_token
         request.session['new_api_token_name'] = name
     except Exception as e:
         messages.error(request, _('Error creating API token: %(error)s') % {'error': str(e)})

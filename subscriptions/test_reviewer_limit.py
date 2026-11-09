@@ -79,7 +79,7 @@ class ApiLimitTests(ReviewerLimitBase):
         super().setUp()
         token = APIToken.objects.create(organization=self.org, created_by=self.user, name='t')
         self.api = APIClient()
-        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
     def test_too_many_reviewers_returns_the_message_and_creates_nothing(self):
         self.give_free_credit(credits=1)

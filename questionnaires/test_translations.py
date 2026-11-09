@@ -234,7 +234,7 @@ class TranslatedAPITest(TranslatedQuestionnaireTestCase):
         super().setUp()
         token = APIToken.objects.create(organization=self.organization, created_by=self.admin, name='T')
         self.api = APIClient()
-        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
     def get_question_texts(self, url, **headers):
         [section] = self.api.get(url, **headers).json()['sections']

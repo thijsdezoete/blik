@@ -148,7 +148,7 @@ class ApiEntryPointTests(CycleGateBase):
         super().setUp()
         token = APIToken.objects.create(organization=self.org, created_by=self.user, name='t')
         self.api = APIClient()
-        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
     def post(self):
         return self.api.post('/api/v1/cycles/', {

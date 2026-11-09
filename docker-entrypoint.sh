@@ -82,7 +82,7 @@ fi
 echo "========================================="
 echo ""
 
-# Set up cron for the daily email tasks and the report finalisation
+# Set up cron for the daily email tasks, the invitation outbox and the report finalisation
 # Cron starts jobs with an empty environment, so pass the whole container environment, quoted
 export -p | sed 's/^declare -x /export /' > /app/.env.cron
 chmod 600 /app/.env.cron
@@ -91,8 +91,9 @@ crontab - <<'EOF'
 5 9 * * * . /app/.env.cron && cd /app && python manage.py send_trial_reminders >> /var/log/cron.log 2>&1
 10 9 * * * . /app/.env.cron && cd /app && python manage.py send_lifecycle_emails >> /var/log/cron.log 2>&1
 */5 * * * * . /app/.env.cron && cd /app && flock -n /tmp/finalize_reports.lock python manage.py finalize_reports >> /var/log/cron.log 2>&1
+*/5 * * * * . /app/.env.cron && cd /app && flock -n /tmp/send_queued_invitations.lock python manage.py send_queued_invitations >> /var/log/cron.log 2>&1
 EOF
 service cron start
-echo "Cron started (report finalisation every 5 minutes; cycle reminders, trial reminders and lifecycle emails daily from 09:00 UTC)"
+echo "Cron started (queued invitation emails and report finalisation every 5 minutes; cycle reminders, trial reminders and lifecycle emails daily from 09:00 UTC)"
 
 exec "$@"

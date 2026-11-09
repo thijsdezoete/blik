@@ -430,6 +430,7 @@ Use the Docker Compose configuration with your platform's container orchestratio
 - [ ] Admin account created (via /setup/ or env vars)
 - [ ] Default questionnaires loaded
 - [ ] Static files are being served correctly
+- [ ] `docker compose exec web crontab -l` shows the `send_queued_invitations` line (invitation emails go out from a queue every 5 minutes; without it, no invitation or reminder is ever sent)
 
 ### Operations
 - [ ] Database backups configured
@@ -565,6 +566,32 @@ The entrypoint now also installs a cron line that finalises reports every 5 minu
 
 Do not add it to your own crontab when the entrypoint runs. Without the entrypoint, add it to the crontab.
 
+### Upgrading to the invitation outbox release
+
+Invitation and reminder emails no longer go out inside the web request. An admin's "send" puts
+them in a queue (timestamps on the reviewer tokens, see migration `reviews.0011_outbox`), and the
+`send_queued_invitations` command sends them, one email per address, each in its own transaction.
+The entrypoint installs its cron line next to `finalize_reports`:
+
+```cron
+*/5 * * * * . /app/.env.cron && cd /app && flock -n /tmp/send_queued_invitations.lock python manage.py send_queued_invitations >> /var/log/cron.log 2>&1
+```
+
+Without the entrypoint, add it to the crontab. **Without this job no invitation or reminder is
+ever sent**; the admin sees the emails stay "Queued" on the cycle page.
+
+A send that fails is written to the token (the admin sees the mail server's answer on the cycle
+page) and tried again on the next runs, five attempts in all. The job records a `CronRun` row
+(Django admin → Notifications → Cron runs) only for runs that sent something or hit an error, so
+the table stays small.
+
+Check after the deploy:
+
+1. `docker compose exec web crontab -l` shows the `send_queued_invitations` line.
+2. In a test organization, send an invitation from a cycle page. Within five minutes the row goes
+   from **Queued** to **Sent**, and `docker compose exec web cat /var/log/cron.log` shows
+   `Emails sent: 1`.
+
 ### Upgrading to the org chart and one-email release
 
 This release ships with the report PDF release above, so do its steps first: redeploy so the image
@@ -678,6 +705,10 @@ docker compose up -d --scale web=3
    ```
 2. Check logs: `docker compose logs web | grep -i email`
 3. Verify firewall allows outbound SMTP (port 587/465)
+4. Invitations and reminders stay **Queued** on the cycle page: the outbox cron is not running.
+   `docker compose exec web crontab -l` must list `send_queued_invitations`; `docker compose exec web
+   python manage.py send_queued_invitations` sends the queue by hand. A **Failed** state on the cycle
+   page shows the mail server's answer; `/var/log/cron.log` in the container has the traceback.
 
 ### Permission Errors
 

@@ -65,6 +65,27 @@ class ReviewCycle(TimeStampedModel):
         verbose_name=_('report finalized at')
     )
 
+    # The outbox for the reviewee's "links to share" email, sent by the send_queued_invitations
+    # cron like the reviewer invitations. It is the one email that belongs to the cycle, not to
+    # a token: a cycle without a self-assessment has no token addressed to the reviewee.
+    links_email_queued_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=_('When the links-to-share email to the reviewee was put in the outbox. Empty once it is sent.'),
+        verbose_name=_('links email queued at')
+    )
+    links_email_error = models.TextField(
+        blank=True,
+        default='',
+        help_text=_('Why the last attempt to send the links-to-share email failed'),
+        verbose_name=_('links email error')
+    )
+    links_email_attempts = models.PositiveSmallIntegerField(
+        default=0,
+        help_text=_('Failed attempts to send the links-to-share email'),
+        verbose_name=_('links email attempts')
+    )
+
     @property
     def organization(self):
         """Get organization through reviewee relationship"""
@@ -167,6 +188,32 @@ class ReviewerToken(TimeStampedModel):
         blank=True,
         help_text=_('When the last reminder email was sent to this reviewer'),
         verbose_name=_('last reminder sent at')
+    )
+    # The outbox. An admin's "send" puts an email in the queue; the send_queued_invitations
+    # cron sends it and clears the queued_at. Only one of the two can be queued: a reminder
+    # needs a sent invitation. The error and the attempts belong to whichever is queued.
+    invitation_queued_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=_('When the invitation was put in the outbox. Empty once it is sent.'),
+        verbose_name=_('invitation queued at')
+    )
+    reminder_queued_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=_('When a reminder was put in the outbox. Empty once it is sent.'),
+        verbose_name=_('reminder queued at')
+    )
+    email_error = models.TextField(
+        blank=True,
+        default='',
+        help_text=_('Why the last attempt to send the queued email failed'),
+        verbose_name=_('email error')
+    )
+    email_attempts = models.PositiveSmallIntegerField(
+        default=0,
+        help_text=_('Failed attempts to send the queued email'),
+        verbose_name=_('email attempts')
     )
     claimed_at = models.DateTimeField(
         null=True,

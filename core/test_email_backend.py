@@ -6,6 +6,8 @@ connection. Hardcoding SMTP means the console backend never prints and the
 locmem backend never fills mail.outbox, so email fails in dev and in tests
 regardless of EMAIL_BACKEND.
 """
+from unittest.mock import Mock
+
 from django.core import mail
 from django.core.mail.backends.locmem import EmailBackend as LocmemBackend
 from django.core.mail.backends.smtp import EmailBackend as SMTPBackend
@@ -46,3 +48,21 @@ class GetEmailBackendTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, ['someone@example.com'])
         self.assertEqual(mail.outbox[0].from_email, 'org@example.com')
+
+    def test_send_email_uses_the_connection_it_is_given(self):
+        """A batch (the outbox cron) passes one open connection to every send instead of
+        opening a new SMTP connection per email."""
+        OrganizationFactory(smtp_host='smtp.acme.example.com')
+        connection = Mock(spec=SMTPBackend)
+        connection.send_messages.return_value = 1
+
+        sent = send_email(
+            subject='Hello',
+            message='Body',
+            recipient_list=['someone@example.com'],
+            connection=connection,
+        )
+
+        self.assertEqual(sent, 1)
+        [message] = connection.send_messages.call_args.args[0]
+        self.assertEqual(message.to, ['someone@example.com'])

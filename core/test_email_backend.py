@@ -13,7 +13,7 @@ from django.core.mail.backends.locmem import EmailBackend as LocmemBackend
 from django.core.mail.backends.smtp import EmailBackend as SMTPBackend
 from django.test import TestCase, override_settings
 
-from core.email import get_email_backend, send_email
+from core.email import get_email_backend, get_from_email, send_email
 from core.factories import OrganizationFactory
 
 
@@ -66,3 +66,14 @@ class GetEmailBackendTests(TestCase):
         self.assertEqual(sent, 1)
         [message] = connection.send_messages.call_args.args[0]
         self.assertEqual(message.to, ['someone@example.com'])
+
+
+class PlatformOrganizationTests(TestCase):
+    """A tenant must not take over platform email by renaming its organization."""
+
+    def test_first_created_organization_carries_platform_email(self):
+        OrganizationFactory(name='Blik', smtp_host='smtp.blik.example', from_email='hi@blik.example')
+        OrganizationFactory(name='0 attacker', smtp_host='smtp.attacker.example', from_email='x@attacker.example')
+
+        self.assertEqual(get_email_backend().host, 'smtp.blik.example')
+        self.assertEqual(get_from_email(), 'hi@blik.example')

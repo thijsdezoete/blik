@@ -371,7 +371,7 @@ class ApiTests(CycleCategoryTestCase):
         token = APIToken.objects.create(
             organization=self.org, name='test', created_by=self.admin)
         self.client = APIClient()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
     def test_a_cycle_reports_the_categories_it_collects(self):
         cycle = ReviewCycle.objects.create(

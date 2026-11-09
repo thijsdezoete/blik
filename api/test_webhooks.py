@@ -278,7 +278,7 @@ class WebhookEndpointViewSetTest(TestCase):
         )
 
         self.client = APIClient()
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
 
     def test_create_webhook_endpoint(self):
         """POST /webhooks/ creates new webhook endpoint."""

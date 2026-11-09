@@ -20,8 +20,11 @@ env = environ.Env(
 environ.Env.read_env(BASE_DIR / '.env')
 
 # Security
-SECRET_KEY = env('SECRET_KEY', default='landing-minimal-key-not-used-for-auth')
 DEBUG = env('DEBUG')
+# Signs the session cookie of the assessment flow. A public default would let
+# anyone forge a session pointing at another visitor's cycle, so production
+# refuses to start without a key.
+SECRET_KEY = env('SECRET_KEY', default='landing-dev-key') if DEBUG else env('SECRET_KEY')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 # Minimal application definition - only landing app
@@ -69,6 +72,10 @@ WSGI_APPLICATION = 'landing_wsgi.application'
 
 # Session configuration (using signed cookies - no database needed)
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+# Rate limits key on the visitor's IP, not the proxy's
+TRUSTED_CLIENT_IP_HEADER = env('TRUSTED_CLIENT_IP_HEADER', default='')
+RATELIMIT_IP_META_KEY = 'core.client_ip.client_ip'
 
 # Cache configuration (for other uses)
 CACHES = {

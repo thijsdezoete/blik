@@ -38,8 +38,17 @@ def can_view_report(request, cycle):
 
 
 def is_own_cycle(user, cycle):
-    """Reviewees are matched by email — there is no FK from Reviewee to User."""
-    return bool(user.email) and cycle.reviewee.email.lower() == user.email.lower()
+    """
+    Reviewees are matched by email — there is no FK from Reviewee to User — and
+    only inside the user's own organization: emails are not unique across tenants.
+    """
+    profile = getattr(user, 'profile', None)
+    return (
+        bool(user.email)
+        and profile is not None
+        and cycle.reviewee.organization_id == profile.organization_id
+        and cycle.reviewee.email.lower() == user.email.lower()
+    )
 
 
 @login_required

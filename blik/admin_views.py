@@ -1827,11 +1827,27 @@ def selected_category_flags(request):
     }
 
 
+def may_create_for_others(user):
+    profile = getattr(user, 'profile', None)
+    return profile is not None and profile.can_create_cycles_for_others
+
+
+def creatable_reviewees(user, org):
+    """The reviewees this user may start a cycle for: everyone, or only themselves."""
+    reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
+    if not may_create_for_others(user):
+        reviewees = reviewees.filter(email=user.email)
+    return reviewees
+
+
 @login_required
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
     if request.method == 'POST':
         creation_mode = request.POST.get('creation_mode', 'single')
+        # Bulk is a cycle for everyone: only for users who may create for others.
+        if creation_mode == 'bulk' and not may_create_for_others(request.user):
+            raise Http404
         questionnaire_id = request.POST.get('questionnaire')
 
         if not questionnaire_id:
@@ -1943,7 +1959,7 @@ def review_cycle_create(request):
                     messages.error(request, _('Reviewee is required for single cycle creation.'))
                     return redirect('review_cycle_create')
 
-                reviewee = Reviewee.objects.for_organization(org).get(id=reviewee_id)
+                reviewee = creatable_reviewees(request.user, org).get(id=reviewee_id)
 
                 with transaction.atomic():
                     # The cycle and its tokens together: a refused token leaves no cycle behind.
@@ -2030,14 +2046,7 @@ def review_cycle_create(request):
     org = request.organization or (request.user.profile.organization if hasattr(request.user, 'profile') else None)
 
     # Filter reviewees based on user permissions
-    if hasattr(request.user, 'profile') and not request.user.profile.can_create_cycles_for_others:
-        # User can only create cycles for themselves
-        reviewees = Reviewee.objects.for_organization(org).filter(
-            is_active=True,
-            email=request.user.email
-        ).order_by('name')
-    else:
-        reviewees = Reviewee.objects.for_organization(org).filter(is_active=True).order_by('name')
+    reviewees = creatable_reviewees(request.user, org).order_by('name')
 
     # Only show questionnaires from user's organization.
     # Prefetch sections/questions so report_type_label doesn't N+1 per option.
@@ -2059,7 +2068,7 @@ def review_cycle_create(request):
     context = {
         'reviewees': reviewees,
         'questionnaires': questionnaires,
-        'can_create_for_others': hasattr(request.user, 'profile') and request.user.profile.can_create_cycles_for_others,
+        'can_create_for_others': may_create_for_others(request.user),
         **billing_context(org, request.user),
         'has_org_chart': has_org_chart,
     }
@@ -2946,6 +2955,9 @@ def gdpr_delete_reviewee_view(request, reviewee_uuid):
 @login_required
 def product_review_list(request):
     """List and manage product reviews"""
+    # Reviews of Blik from every customer: platform staff only.
+    if not request.user.is_superuser:
+        raise Http404
     org = request.organization
 
     # Get all product reviews (not org-scoped - these are reviews of Blik as a product)
@@ -3065,6 +3077,9 @@ def product_review_create(request):
 @login_required
 def product_review_detail(request, review_id):
     """View product review details"""
+    # Reviews of Blik from every customer: platform staff only.
+    if not request.user.is_superuser:
+        raise Http404
     review = get_object_or_404(
         ProductReview.objects,
         id=review_id
@@ -3337,7 +3352,7 @@ def create_api_token(request):
         )
 
         # Redirect to settings with token in session (will be displayed in modal)
-        request.session['new_api_token'] = token.token
+        request.session['new_api_token'] = token.raw_token
         request.session['new_api_token_name'] = name
     except Exception as e:
         messages.error(request, _('Error creating API token: %(error)s') % {'error': str(e)})

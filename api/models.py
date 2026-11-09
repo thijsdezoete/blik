@@ -1,6 +1,7 @@
 """
 API models for token authentication and webhooks.
 """
+import hashlib
 import secrets
 import uuid
 from django.db import models
@@ -11,6 +12,14 @@ from core.models import TimeStampedModel, Organization
 from core.managers import OrganizationManager
 
 User = get_user_model()
+
+
+MAX_RATE_LIMIT = 10000
+
+
+def hash_token(raw):
+    """Tokens are stored as their SHA-256: a database leak gives no working tokens."""
+    return hashlib.sha256(raw.encode()).hexdigest()
 
 
 class APIToken(TimeStampedModel):
@@ -40,7 +49,10 @@ class APIToken(TimeStampedModel):
     name = models.CharField(
         max_length=255, help_text="Descriptive name for the token (e.g., 'Slack Bot', 'Analytics Dashboard')", verbose_name=_("name")
     )
+    # The SHA-256 of the token; the token itself is shown once, on creation
     token = models.CharField(_("token"), max_length=64, unique=True, db_index=True, editable=False)
+    prefix = models.CharField(_("prefix"), max_length=8, blank=True, editable=False,
+                              help_text=_("First characters of the token, to recognize it"))
     permissions = models.JSONField(
         default=dict,
         blank=True,
@@ -68,9 +80,12 @@ class APIToken(TimeStampedModel):
         return f"{self.name} ({self.organization.name})"
 
     def save(self, *args, **kwargs):
-        """Auto-generate token if not set"""
+        """Generate the token on creation; only its hash is stored, the raw value lives on raw_token."""
         if not self.token:
-            self.token = secrets.token_urlsafe(48)  # 64 chars after encoding
+            self.raw_token = secrets.token_urlsafe(48)  # 64 chars after encoding
+            self.prefix = self.raw_token[:8]
+            self.token = hash_token(self.raw_token)
+        self.rate_limit = max(1, min(int(self.rate_limit), MAX_RATE_LIMIT))
         super().save(*args, **kwargs)
 
     @property

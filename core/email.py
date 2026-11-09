@@ -14,6 +14,15 @@ from .models import Organization
 logger = logging.getLogger(__name__)
 
 
+def platform_organization():
+    """
+    The organization whose SMTP settings carry the platform's email: the first
+    one created. Never sort by name — any tenant can rename theirs to sort first
+    and receive every other tenant's password resets.
+    """
+    return Organization.objects.filter(is_active=True).order_by('created_at', 'pk').first()
+
+
 def get_email_backend():
     """
     Get email backend configured with Organization SMTP settings.
@@ -22,7 +31,7 @@ def get_email_backend():
     and locmem (test) backends are bypassed in favour of a real SMTP connection.
     """
     try:
-        org = Organization.objects.filter(is_active=True).first()
+        org = platform_organization()
 
         if org and org.smtp_host:
             # Use organization's SMTP settings
@@ -43,7 +52,7 @@ def get_email_backend():
 def get_from_email():
     """Get the from_email from Organization or fall back to Django settings"""
     try:
-        org = Organization.objects.filter(is_active=True).first()
+        org = platform_organization()
         if org and org.from_email:
             return org.from_email
     except Exception:

@@ -436,7 +436,7 @@ class ApiTest(AnswerOptionTestCase):
         super().setUp()
         token = APIToken.objects.create(organization=self.organization, created_by=self.admin, name='T')
         self.api = APIClient()
-        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        self.api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
         self.url = f'/api/v1/cycles/{self.cycle.uuid}/submit_responses/'
 
     def submit(self, token, answers):

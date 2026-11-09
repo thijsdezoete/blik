@@ -16,7 +16,7 @@ from questionnaires.legacy_config import config_with_texts
 from questionnaires.models import AnswerOption, Questionnaire, QuestionSection, Question
 from questionnaires.placeholders import personalize
 from reports.models import Report
-from reports.report_texts import with_texts
+from reports.context import display_report_data
 from .models import APIToken, WebhookEndpoint, WebhookDelivery
 
 
@@ -567,11 +567,9 @@ class ReportSerializer(serializers.ModelSerializer):
                 data.pop("access_token", None)
                 data.pop("report_data", None)  # Too large for lists
 
-        # Clients read the texts of the report, not the codes it stores
+        # The same anonymized data as the web report, with texts instead of codes
         if "report_data" in data:
-            data["report_data"] = with_texts(
-                instance.report_data, instance.cycle.questionnaire, instance.cycle.reviewee.name
-            )
+            data["report_data"] = display_report_data(instance)
 
         return data
 
@@ -669,10 +667,9 @@ class APITokenSerializer(serializers.ModelSerializer):
         """
         data = super().to_representation(instance)
 
-        # Only show token on create (when instance is new)
-        if instance.pk and not self.context.get("show_token", False):
-            # Mask the token after creation
-            data["token"] = f"{instance.token[:8]}...{instance.token[-8:]}"
+        # The token itself exists only right after creation; later only its prefix
+        raw = getattr(instance, "raw_token", None)
+        data["token"] = raw if raw and self.context.get("show_token", False) else f"{instance.prefix}..."
 
         return data
 

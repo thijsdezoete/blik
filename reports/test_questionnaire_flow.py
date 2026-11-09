@@ -285,7 +285,7 @@ class QuestionnaireFlowTests(TestCase):
 
         api_token = APIToken.objects.create(organization=self.organization, created_by=self.admin, name='Test')
         client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer {api_token.token}')
+        client.credentials(HTTP_AUTHORIZATION=f'Bearer {api_token.raw_token}')
         reviewer = ReviewerTokenFactory(cycle=self.cycle, category='peer')
         answers = {'Gives useful feedback': 'Neutral', 'Asks for help': 'Always', 'Seniority': 'Advanced',
                    'Strong areas': ['Talks']}

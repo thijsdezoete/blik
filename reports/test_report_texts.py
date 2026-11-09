@@ -237,7 +237,7 @@ class GeneratedReportTest(TestCase):
     def test_the_api_returns_the_texts(self):
         token = APIToken.objects.create(organization=self.organization, created_by=self.admin, name='T')
         api = APIClient()
-        api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
         response = api.get(f'/api/v1/reports/{self.report.uuid}/')
 
@@ -316,7 +316,7 @@ class GeneratedReportTest(TestCase):
         self.translate()
         token = APIToken.objects.create(organization=self.organization, created_by=self.admin, name='T')
         api = APIClient()
-        api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        api.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
         response = api.get(f'/api/v1/reports/{self.report.uuid}/?lang=de')
 

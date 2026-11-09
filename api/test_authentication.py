@@ -41,7 +41,7 @@ class APITokenAuthenticationTest(TestCase):
 
     def test_valid_token_authentication(self):
         """Valid token should authenticate successfully."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
         response = self.client.get('/api/v1/reviewees/')
         self.assertEqual(response.status_code, 200)
 
@@ -60,12 +60,12 @@ class APITokenAuthenticationTest(TestCase):
     def test_malformed_authorization_header(self):
         """Malformed Authorization header should return 401."""
         # Missing 'Bearer' prefix
-        self.client.credentials(HTTP_AUTHORIZATION=self.token.token)
+        self.client.credentials(HTTP_AUTHORIZATION=self.token.raw_token)
         response = self.client.get('/api/v1/reviewees/')
         self.assertEqual(response.status_code, 401)
 
         # Wrong prefix
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.raw_token}')
         response = self.client.get('/api/v1/reviewees/')
         self.assertEqual(response.status_code, 401)
 
@@ -74,7 +74,7 @@ class APITokenAuthenticationTest(TestCase):
         self.token.is_active = False
         self.token.save()
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
         response = self.client.get('/api/v1/reviewees/')
         self.assertEqual(response.status_code, 401)
         self.assertIn('Invalid or inactive token', str(response.data))
@@ -84,7 +84,7 @@ class APITokenAuthenticationTest(TestCase):
         self.token.expires_at = timezone.now() - timedelta(days=1)
         self.token.save()
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
         response = self.client.get('/api/v1/reviewees/')
         self.assertEqual(response.status_code, 401)
         self.assertIn('Token has expired', str(response.data))
@@ -94,7 +94,7 @@ class APITokenAuthenticationTest(TestCase):
         self.token.expires_at = timezone.now() + timedelta(days=30)
         self.token.save()
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
         response = self.client.get('/api/v1/reviewees/')
         self.assertEqual(response.status_code, 200)
 
@@ -102,7 +102,7 @@ class APITokenAuthenticationTest(TestCase):
         """Token usage should update last_used_at."""
         self.assertIsNone(self.token.last_used_at)
 
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
         self.client.get('/api/v1/reviewees/')
 
         # Refresh token from database
@@ -124,7 +124,7 @@ class APITokenAuthenticationTest(TestCase):
         )
 
         # Try to access other org's reviewee
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
         response = self.client.get(f'/api/v1/reviewees/{other_reviewee.uuid}/')
 
         # Should return 404 (not 403) to avoid leaking existence
@@ -132,7 +132,7 @@ class APITokenAuthenticationTest(TestCase):
 
     def test_organization_set_on_request(self):
         """Token authentication should set request.organization."""
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.token}')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token.raw_token}')
 
         # Create a reviewee in our org
         reviewee = Reviewee.objects.create(

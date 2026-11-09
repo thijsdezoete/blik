@@ -35,7 +35,7 @@ class QuestionnaireEditingTest(TestCase):
     def client_for(self, user):
         token = APIToken.objects.create(organization=self.organization, created_by=user, name=user.username)
         client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.token}')
+        client.credentials(HTTP_AUTHORIZATION=f'Bearer {token.raw_token}')
 
         return client
 

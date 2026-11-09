@@ -1888,13 +1888,16 @@ def review_cycle_create(request):
         if creation_mode == 'bulk' and not may_create_for_others(request.user):
             raise Http404
         questionnaire_id = request.POST.get('questionnaire')
+        bulk_source = request.POST.get('bulk_source', 'empty')
+        # Reusing earlier cycles takes the questionnaire and categories from each of them.
+        reuse_previous = creation_mode == 'bulk' and bulk_source == 'previous'
 
-        if not questionnaire_id:
+        if not questionnaire_id and not reuse_previous:
             messages.error(request, _('Questionnaire is required.'))
             return redirect('review_cycle_create')
 
         category_flags = selected_category_flags(request)
-        if category_flags and not any(category_flags.values()):
+        if category_flags and not any(category_flags.values()) and not reuse_previous:
             messages.error(request, _('Select at least one feedback category.'))
             return redirect('review_cycle_create')
 
@@ -1904,7 +1907,7 @@ def review_cycle_create(request):
 
             # Filter by organization to prevent cross-org access; archived
             # ones are gone from the form and must not come back through POST.
-            questionnaire = Questionnaire.objects.get(
+            questionnaire = None if reuse_previous else Questionnaire.objects.get(
                 id=questionnaire_id,
                 organization=org,
                 is_active=True
@@ -1926,8 +1929,9 @@ def review_cycle_create(request):
 
                 # `bulk_source` controls reviewer-token pre-population:
                 #   'chart' — derive from the org chart for each reviewee
+                #   'previous' — each reviewee's latest cycle: its questionnaire,
+                #                categories and reviewer email strings (never FKs)
                 #   'empty' — no tokens yet (admins fill them in per cycle later)
-                bulk_source = request.POST.get('bulk_source', 'empty')
                 derived_count = 0
                 unplaced_count = 0
 
@@ -1938,7 +1942,26 @@ def review_cycle_create(request):
                 with transaction.atomic():
                     for reviewee in reviewees:
                         email_assignments = None
-                        if bulk_source == 'chart':
+                        cycle_questionnaire, cycle_flags = questionnaire, category_flags
+                        if bulk_source == 'previous':
+                            previous = reviewee.review_cycles.select_related('questionnaire').first()
+                            # Archived questionnaires do not come back this way either.
+                            if previous is None or not previous.questionnaire.is_active:
+                                unplaced_count += 1
+                                continue
+                            cycle_questionnaire = previous.questionnaire
+                            cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
+                            email_assignments = {code: [] for code in previous.active_categories}
+                            for category, email in previous.tokens.filter(
+                                reviewer_email__isnull=False, category__in=previous.active_categories,
+                            ).values_list('category', 'reviewer_email'):
+                                email_assignments[category].append(email.lower())
+                            if 'self' in email_assignments and not email_assignments['self'] and reviewee.email:
+                                email_assignments['self'] = [reviewee.email.lower()]
+                            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                                unplaced_count += 1
+                                continue
+                        elif bulk_source == 'chart':
                             buckets = derive_reviewers(reviewee)
                             # Build the email_assignments dict the existing
                             # helper expects: emails only, no Reviewee FK.
@@ -1955,10 +1978,10 @@ def review_cycle_create(request):
 
                         cycle = ReviewCycle.objects.create(
                             reviewee=reviewee,
-                            questionnaire=questionnaire,
+                            questionnaire=cycle_questionnaire,
                             created_by=request.user,
                             status='active',
-                            **category_flags
+                            **cycle_flags
                         )
                         created_cycles.append(cycle)
 
@@ -1982,6 +2005,12 @@ def review_cycle_create(request):
                         request,
                         _('Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories.')
                         % {'count': len(created_cycles), 'unplaced': unplaced_count}
+                    )
+                elif bulk_source == 'previous':
+                    messages.success(
+                        request,
+                        _('Created %(count)s review cycles with the questionnaire and reviewers of each person\'s previous cycle. %(skipped)s reviewee(s) were skipped: they have no previous cycle with reviewers and an active questionnaire.')
+                        % {'count': len(created_cycles), 'skipped': unplaced_count}
                     )
                 else:
                     messages.success(
@@ -2110,6 +2139,7 @@ def review_cycle_create(request):
         'can_create_for_others': may_create_for_others(request.user),
         **billing_context(org, request.user),
         'has_org_chart': has_org_chart,
+        'has_previous_cycles': org is not None and ReviewCycle.objects.filter(reviewee__organization=org).exists(),
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)
@@ -2151,7 +2181,7 @@ def bulk_send_invitations(request):
         # self-assessment and the links to share.
         reviewer_tokens = 0
         reviewer_emails = 0
-        if bulk_source != 'chart':
+        if bulk_source not in ('chart', 'previous'):
             for cycle in cycles:
                 queue_reviewee_notifications(cycle)
         else:
@@ -2195,7 +2225,7 @@ def bulk_send_invitations(request):
         'cycles': cycles,
         'cycle_summaries': cycle_summaries,
         'bulk_source': bulk_source,
-        'derived_from_chart': bulk_source == 'chart',
+        'with_reviewers': bulk_source in ('chart', 'previous'),
     }
     return render(request, 'admin_dashboard/bulk_send_invitations.html', context)
 

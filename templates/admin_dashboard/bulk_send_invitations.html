@@ -8,7 +8,9 @@
     <div>
         <h1>{% trans 'Send invitations' %}</h1>
         <p>
-            {% if derived_from_chart %}
+            {% if bulk_source == 'previous' %}
+                {% trans 'Review the cycles you just created. The questionnaire and reviewers come from the previous cycle of each person. Edit a cycle afterwards if something is not correct.' %}
+            {% elif with_reviewers %}
                 {% trans 'Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct.' %}
             {% else %}
                 {% trans 'Review the cycles you just created, then queue the invitation emails.' %}
@@ -22,7 +24,7 @@
 <div class="alert alert-warning" style="margin-bottom: 1.5rem;">
     <div>
         <strong>{% trans 'No emails have been sent yet.' %}</strong>
-        {% if derived_from_chart %}
+        {% if with_reviewers %}
             {% blocktrans trimmed %}Click <em>Send all invitations</em> to queue the emails. Every person gets one email with all the forms they have to fill in, their own self-assessment included. The emails go out within about five minutes.{% endblocktrans %}
         {% else %}
             {% blocktrans trimmed %}Review the list below and click <em>Send invitations</em> to queue the emails to every reviewee. They go out within about five minutes.{% endblocktrans %}
@@ -39,7 +41,7 @@
                 <tr>
                     <th>{% trans 'Reviewee' %}</th>
                     <th>{% trans 'Questionnaire' %}</th>
-                    {% if derived_from_chart %}
+                    {% if with_reviewers %}
                     <th style="text-align: center;">{% trans 'Self' %}</th>
                     <th style="text-align: center;">{% trans 'Manager' %}</th>
                     <th style="text-align: center;">{% trans 'Peers' %}</th>
@@ -62,7 +64,7 @@
                         {{ summary.cycle.questionnaire.name }}
                         <div style="font-size: 0.75rem; color: var(--text-secondary);">{{ summary.cycle.questionnaire.report_type_label }}</div>
                     </td>
-                    {% if derived_from_chart %}
+                    {% if with_reviewers %}
                     <td style="text-align: center; font-variant-numeric: tabular-nums;">{{ summary.counts.self }}</td>
                     <td style="text-align: center; font-variant-numeric: tabular-nums;">{{ summary.counts.manager }}</td>
                     <td style="text-align: center; font-variant-numeric: tabular-nums;">{{ summary.counts.peer }}</td>
@@ -81,7 +83,7 @@
 <form method="post" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
     {% csrf_token %}
     <button type="submit" class="btn btn-primary">
-        {% if derived_from_chart %}
+        {% if with_reviewers %}
             {% blocktrans trimmed count counter=cycles|length %}Send all invitations ({{ counter }} reviewee){% plural %}Send all invitations ({{ counter }} reviewees){% endblocktrans %}
         {% else %}
             {% blocktrans trimmed count counter=cycles|length %}Send invitations for all {{ counter }} reviewee{% plural %}Send invitations for all {{ counter }} reviewees{% endblocktrans %}

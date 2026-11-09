@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 14:11+0000\n"
+"POT-Creation-Date: 2026-11-09 13:29+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1119,6 +1119,10 @@ msgstr "Wenigste Antworten"
 #, python-format
 msgid "Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories."
 msgstr "%(count)s Feedbackrunden mit Feedbackgebenden aus dem Organigramm erstellt. %(unplaced)s Feedbacknehmende übersprungen: Das Organigramm liefert für sie keine Feedbackgebenden in den gewählten Kategorien."
+
+#, python-format
+msgid "Created %(count)s review cycles with the questionnaire and reviewers of each person's previous cycle. %(skipped)s reviewee(s) were skipped: they have no previous cycle with reviewers and an active questionnaire."
+msgstr "%(count)s Feedbackrunden mit Fragebogen und Feedbackgebenden der jeweils vorigen Feedbackrunde erstellt. %(skipped)s Feedbacknehmende übersprungen: Für diese gibt es keine vorige Feedbackrunde mit Feedbackgebenden und aktivem Fragebogen."
 
 #, python-format
 msgid "Created %(count)s review cycles. No invitations have been sent yet."
@@ -3996,6 +4000,9 @@ msgstr "Sammeleinladungen senden"
 msgid "Send invitations"
 msgstr "Einladungen senden"
 
+msgid "Review the cycles you just created. The questionnaire and reviewers come from the previous cycle of each person. Edit a cycle afterwards if something is not correct."
+msgstr "Prüfen Sie die gerade erstellten Feedbackrunden. Fragebogen und Feedbackgebende stammen aus der vorigen Feedbackrunde der jeweiligen Person. Wenn etwas nicht stimmt, bearbeiten Sie die Feedbackrunde anschließend."
+
 msgid "Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct."
 msgstr "Prüfen Sie die gerade erstellten Feedbackrunden. Die Feedbackgebenden stammen aus dem Organigramm. Wenn etwas nicht stimmt, bearbeiten Sie die Feedbackrunde anschließend."
 
@@ -6010,8 +6017,20 @@ msgstr "Mehrere anlegen"
 msgid "Create for all active reviewees"
 msgstr "Für alle aktiven Feedbacknehmenden anlegen"
 
+msgid "Reuse previous settings per cycle"
+msgstr "Einstellungen der vorigen Feedbackrunde übernehmen"
+
+msgid "no cycles yet"
+msgstr "noch keine Feedbackrunden"
+
+msgid "Copy the questionnaire, the categories and the reviewer emails of the previous cycle of each person. People without a previous cycle are skipped."
+msgstr "Fragebogen, Kategorien und E-Mail-Adressen der Feedbackgebenden aus der vorigen Feedbackrunde jeder Person übernehmen. Personen ohne vorige Feedbackrunde werden übersprungen."
+
 msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
 msgstr "Sie können Feedbackrunden nur für sich selbst anlegen. Für andere Teammitglieder legt ein Admin die Feedbackrunden an."
+
+msgid "Reviewee and questionnaire"
+msgstr "Feedbacknehmende Person und Fragebogen"
 
 msgid "Select a reviewee..."
 msgstr "Feedbacknehmende Person auswählen..."

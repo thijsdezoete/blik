@@ -273,7 +273,8 @@
 
     let pan = null;
     chart.addEventListener('pointerdown', (e) => {
-        if (e.button !== 0 || e.target.closest('.oc-unit')) return;
+        // Pointer capture would retarget the click to the viewport, so never pan from a control.
+        if (e.button !== 0 || e.target.closest('.oc-unit, button, a, input, select')) return;
         pan = { x: e.clientX, y: e.clientY, left: chart.scrollLeft, top: chart.scrollTop };
         chart.setPointerCapture(e.pointerId);
         chart.classList.add('oc-panning');

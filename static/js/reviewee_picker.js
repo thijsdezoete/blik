@@ -22,6 +22,7 @@
     const QUICK_CREATE_URL = '/dashboard/reviewees/quick-create/';
     const DEBOUNCE_MS = 250;
     const MIN_QUERY = 1;
+    const BROWSE_MAX = 20;  // an empty field lists everyone, but only for an organisation this small
 
     function getCookie(name) {
         const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -86,9 +87,7 @@
         _bind() {
             const search = debounce(() => this._search(), DEBOUNCE_MS);
             this.$input.addEventListener('input', search);
-            this.$input.addEventListener('focus', () => {
-                if (this.$input.value.trim().length >= MIN_QUERY) this._search();
-            });
+            this.$input.addEventListener('focus', () => this._search());
             this.$input.addEventListener('keydown', e => this._onKey(e));
             document.addEventListener('click', e => {
                 if (!this.root.contains(e.target)) this._closeDropdown();
@@ -138,7 +137,7 @@
 
         async _search() {
             const q = this.$input.value.trim();
-            if (q.length < MIN_QUERY) { this._closeDropdown(); return; }
+            const browsing = q.length < MIN_QUERY;
 
             let results = [];
             try {
@@ -149,10 +148,14 @@
                 if (resp.ok) {
                     const data = await resp.json();
                     results = Array.isArray(data) ? data : (data.results || []);
+                    if (browsing && (data.count ?? results.length) > BROWSE_MAX) results = null;
                 }
             } catch (e) {
                 // Network error — just show the create option.
             }
+            // Empty field: list everyone, or nothing when there are too many to scan.
+            if (browsing && !results) { this._closeDropdown(); return; }
+            if (q !== this.$input.value.trim()) return;  // the user typed on while we waited
 
             const filtered = results.filter(r => !this.selected.has(r.uuid));
             this._renderDropdown(q, filtered);
@@ -160,7 +163,7 @@
 
         _renderDropdown(query, results) {
             const frag = document.createElement('div');
-            results.slice(0, 10).forEach(r => {
+            results.slice(0, query ? 10 : BROWSE_MAX).forEach(r => {
                 const opt = document.createElement('div');
                 opt.className = 'rp-option';
                 opt.dataset.uuid = r.uuid;
@@ -310,9 +313,53 @@
         }
     }
 
+    /**
+     * SuggestField — free text with suggestions from a fixed list, in the
+     * picker's look and keys: one autocomplete style across the app.
+     *
+     *   <div data-suggest-field data-field-name="department" data-input-id="department"
+     *        data-options='["Optics","Lasers"]' data-placeholder="…"></div>
+     *
+     * The text itself is the value: the field submits as `data-field-name`.
+     */
+    class SuggestField extends RevieweePicker {
+        _buildDom() {
+            super._buildDom();
+            this.options = JSON.parse(this.root.dataset.options || '[]');
+            this.$input.name = this.fieldName;
+            if (this.root.dataset.inputId) this.$input.id = this.root.dataset.inputId;
+            this.$input.removeAttribute('aria-label');  // the form label names it
+        }
+
+        _renderHidden() {}
+
+        _search() {
+            const q = this.$input.value.trim().toLowerCase();
+            const hits = this.options.filter(o => o.toLowerCase().includes(q) && o.toLowerCase() !== q);
+            if (!hits.length) { this._closeDropdown(); return; }
+            this.$dropdown.innerHTML = '';
+            hits.forEach(o => {
+                const opt = document.createElement('div');
+                opt.className = 'rp-option';
+                opt.innerHTML = `<span class="rp-opt-name">${escapeHtml(o)}</span>`;
+                opt.addEventListener('click', () => {
+                    this.$input.value = o;
+                    this.$input.dispatchEvent(new Event('input', { bubbles: true }));
+                    this._closeDropdown();
+                });
+                this.$dropdown.appendChild(opt);
+            });
+            // No option is active until the arrow keys pick one: Enter keeps what was typed.
+            this.$dropdown.hidden = false;
+        }
+    }
+
     function initAll(scope) {
         (scope || document).querySelectorAll('[data-reviewee-picker]').forEach(el => {
             if (!el._pickerInstance) el._pickerInstance = new RevieweePicker(el);
+        });
+        (scope || document).querySelectorAll('[data-suggest-field]').forEach(el => {
+            if (!el._pickerInstance) el._pickerInstance = new SuggestField(el);
         });
     }
 

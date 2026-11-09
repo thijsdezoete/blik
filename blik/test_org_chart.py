@@ -30,6 +30,7 @@ from accounts.factories import (
     UserProfileFactory,
 )
 from accounts.models import OrgUnit, OrgUnitMembership, UserProfile
+from blik.admin_views import place_in_department
 from core.factories import OrganizationFactory, UserFactory
 
 
@@ -446,3 +447,36 @@ class DeriveReviewersEndpointTests(OrgChartAdminSetup):
         self.assertEqual(data['manager'], [])
         self.assertEqual(data['peer'], [])
         self.assertEqual(data['direct_report'], [])
+
+
+class PlaceInDepartmentTests(TestCase):
+    """The department of a new reviewee is a unit in the org chart."""
+
+    def setUp(self):
+        self.org = OrganizationFactory()
+        self.boss = RevieweeFactory(organization=self.org)
+        self.person = RevieweeFactory(organization=self.org, department='')
+        self.other = RevieweeFactory(organization=self.org)
+
+    def roles(self, unit):
+        return {(m.reviewee, m.role) for m in unit.memberships.all()}
+
+    def test_joins_an_existing_unit_by_name_as_member(self):
+        unit = OrgUnit.objects.create(organization=self.org, name='Optics')
+        place_in_department(self.org, self.person, 'optics', manager=self.boss)
+        self.assertEqual(self.roles(unit), {(self.person, OrgUnitMembership.MEMBER)})  # manager only for new units
+        self.assertEqual(self.person.department, 'Optics')
+
+    def test_new_unit_gets_the_chosen_manager(self):
+        place_in_department(self.org, self.person, 'Lasers', manager=self.boss)
+        place_in_department(self.org, self.other, 'Lasers')
+        unit = OrgUnit.objects.get(organization=self.org, name='Lasers')
+        self.assertEqual(self.roles(unit), {(self.boss, OrgUnitMembership.MANAGER),
+                                            (self.person, OrgUnitMembership.MEMBER),
+                                            (self.other, OrgUnitMembership.MEMBER)})
+        self.assertEqual(sorted(unit.memberships.filter(row=1).values_list('col', flat=True)), [0, 1])
+
+    def test_new_person_can_lead_the_new_unit(self):
+        place_in_department(self.org, self.person, 'Lasers', manager=self.boss, leads=True)
+        unit = OrgUnit.objects.get(organization=self.org, name='Lasers')
+        self.assertEqual(self.roles(unit), {(self.person, OrgUnitMembership.MANAGER)})

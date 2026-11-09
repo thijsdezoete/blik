@@ -560,13 +560,44 @@ def reviewee_list(request):
     })
 
 
+def append_membership(unit, reviewee, role):
+    """Put `reviewee` in `unit` as manager (row 0) or member (row 1), after the people already there."""
+    row = 0 if role == OrgUnitMembership.MANAGER else 1
+    last = unit.memberships.filter(row=row).aggregate(m=Max('col'))['m']
+    return OrgUnitMembership.objects.create(unit=unit, reviewee=reviewee, row=row, col=0 if last is None else last + 1)
+
+
+def place_in_department(org, reviewee, name, manager=None, leads=False):
+    """Put a new reviewee in the org chart unit called `name`, made if there is none yet.
+
+    A new unit gets `manager` as its manager, or the reviewee when they `leads` it.
+    """
+    unit = OrgUnit.objects.filter(organization=org, name__iexact=name).first()
+    if unit is None:
+        last = OrgUnit.objects.filter(organization=org).aggregate(m=Max('display_order'))['m'] or 0
+        unit = OrgUnit.objects.create(organization=org, name=name, display_order=last + 1)
+        if manager and not leads:
+            append_membership(unit, manager, OrgUnitMembership.MANAGER)
+    append_membership(unit, reviewee, OrgUnitMembership.MANAGER if leads else OrgUnitMembership.MEMBER)
+    reviewee.department = unit.name
+    reviewee.save(update_fields=['department'])
+
+
+def department_choices(request):
+    """The org chart units the department field suggests, for those who may edit the chart."""
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        return {'department_units': None}
+    units = list(OrgUnit.objects.filter(organization=request.organization).order_by('name').values_list('name', flat=True))
+    return {'department_units': units, 'department_units_json': json.dumps(units)}
+
+
 @login_required
 def reviewee_create(request):
     """Create a new reviewee"""
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
-        department = request.POST.get('department', '')
+        department = request.POST.get('department', '').strip()
         language = request.POST.get('language', '')
 
         if name and email:
@@ -588,13 +619,20 @@ def reviewee_create(request):
                 return redirect('reviewee_list')
 
             try:
-                reviewee = Reviewee.objects.create(
-                    organization=organization,
-                    name=name,
-                    email=email,
-                    department=department,
-                    language=language if is_language(language) else '',
-                )
+                with transaction.atomic():
+                    reviewee = Reviewee.objects.create(
+                        organization=organization,
+                        name=name,
+                        email=email,
+                        department=department,
+                        language=language if is_language(language) else '',
+                    )
+                    # The department is a unit in the org chart, for those who may edit the chart.
+                    if department and request.user.has_perm('accounts.can_manage_organization'):
+                        manager = Reviewee.objects.for_organization(organization).filter(
+                            uuid=request.POST.get('department_manager') or None).first()
+                        place_in_department(organization, reviewee, department, manager,
+                                            leads=request.POST.get('department_lead') == '1')
                 messages.success(request, _('Reviewee "%(name)s" created successfully.') % {'name': reviewee.name})
                 return redirect('reviewee_list')
             except Exception as e:
@@ -605,6 +643,7 @@ def reviewee_create(request):
     return render(request, 'admin_dashboard/reviewee_form.html', {
         'action': 'Create',
         'default_language_name': language_name(default_language(request.organization)),
+        **department_choices(request),
     })
 
 
@@ -4014,7 +4053,6 @@ def org_chart_membership_create(request):
             {'error': 'role must be "manager" or "member".'},
             status=400,
         )
-    row = 0 if role == OrgUnitMembership.MANAGER else 1
 
     mode = request.POST.get('mode', 'copy')
 
@@ -4036,19 +4074,7 @@ def org_chart_membership_create(request):
                 status=400,
             )
 
-        # Append at the next unused col in this row.
-        next_col = (
-            unit.memberships.filter(row=row)
-            .aggregate(m=Max('col'))['m']
-        )
-        col = 0 if next_col is None else next_col + 1
-
-        OrgUnitMembership.objects.create(
-            unit=unit,
-            reviewee=reviewee,
-            row=row,
-            col=col,
-        )
+        append_membership(unit, reviewee, role)
 
     return _chart_change_response(org)
 

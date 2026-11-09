@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django_ratelimit.decorators import ratelimit
 import uuid
 import logging
 from .seo import generate_og_image
@@ -264,6 +265,7 @@ def dreyfus_assessment_start(request):
         })
 
 
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
 def dreyfus_assessment_submit(request):
     """
     Process questionnaire submission and show preview results.
@@ -372,6 +374,7 @@ def dreyfus_assessment_submit(request):
         return redirect(_get_view_name('dreyfus_assessment_start'))
 
 
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def dreyfus_capture_email(request):
     """
     Capture email, update reviewee, complete cycle, and send report.

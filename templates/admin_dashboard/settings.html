@@ -117,6 +117,23 @@
                         <div class="form-check">
                             <input
                                 type="checkbox"
+                                id="hide_below_threshold_from_managers"
+                                name="hide_below_threshold_from_managers"
+                                class="form-check-input"
+                                {% if organization.hide_below_threshold_from_managers %}checked{% endif %}
+                                {% if not perms.accounts.can_manage_organization %}disabled{% endif %}
+                            >
+                            <label class="form-label" for="hide_below_threshold_from_managers" style="display: inline; font-weight: normal;">
+                                {% trans 'Hide answers below the threshold from managers' %}
+                            </label>
+                        </div>
+                        <small class="help-text">{% trans 'When disabled, managers see all answers in their view of the report. The report of the reviewee always hides the groups below the threshold.' %}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
                                 id="auto_send_report_email"
                                 name="auto_send_report_email"
                                 class="form-check-input"

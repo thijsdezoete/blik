@@ -27,7 +27,11 @@ def build_report_context(report, *, is_admin_view):
     were calculated without the hidden groups.
     """
     cycle = report.cycle
-    display_data = display_report_data(report)
+    if is_admin_view and not cycle.organization.hide_below_threshold_from_managers:
+        # The organization lets managers see the groups below the threshold: the reviewee's report still hides them
+        display_data = with_texts(report.report_data, cycle.questionnaire, cycle.reviewee.name)
+    else:
+        display_data = display_report_data(report)
 
     return {
         'cycle': cycle,

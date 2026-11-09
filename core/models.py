@@ -33,6 +33,11 @@ class Organization(TimeStampedModel):
         help_text=_('Minimum number of responses required to show results (for anonymity). Set to 1 for small teams.'),
         verbose_name=_('minimum responses for anonymity')
     )
+    hide_below_threshold_from_managers = models.BooleanField(
+        default=True,
+        help_text=_('Hide the answers of groups below the anonymity threshold in the manager view of a report'),
+        verbose_name=_('hide answers below the threshold from managers')
+    )
     auto_send_report_email = models.BooleanField(
         default=True,
         help_text=_('Automatically send email to reviewee when their report is generated'),

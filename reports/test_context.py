@@ -53,6 +53,16 @@ class BuildReportContextTests(TestCase):
         self.assertEqual(admin['report_data'], reviewee['report_data'])
         self.assertEqual(admin['summary'], reviewee['summary'])
 
+    def test_managers_see_groups_below_the_threshold_when_the_organization_allows_it(self):
+        self.organization.hide_below_threshold_from_managers = False
+        self.organization.save()
+
+        admin = build_report_context(self.report, is_admin_view=True)
+        reviewee = build_report_context(self.report, is_admin_view=False)
+
+        self.assertEqual(admin['report_data']['section_summary']['Growth']['peer'], 4.5)
+        self.assertTrue(reviewee['report_data']['section_summary']['Growth']['peer']['insufficient'])
+
 
 class PreviousCycleTrendTests(TestCase):
     """Trends compare with the previous report's raw combined values, which include its hidden groups."""

@@ -121,15 +121,15 @@ Uses Playwright to capture screenshots of key pages.
 
 Org chart and bulk flow (desktop, light theme only, no device or theme suffix; these steps
 drive the page themselves, see `_capture_org_chart_flow()`):
-- `org_chart.png`: `/dashboard/org-chart/` with the three units and their members open
-- `org_chart_import.png`: the column-mapping step of the CSV import, after uploading a 6-row
+- `org_chart_light.png`, `org_chart_dark.png`: `/dashboard/org-chart/` with the three units and their members open
+- `org_chart_import_light.png`, `org_chart_import_dark.png`: the column-mapping step of the CSV import, after uploading a 6-row
   CSV (`IMPORT_CSV`) through the file input on the org chart page
-- `feedback_overview.png`: the reviewer's personal overview at the signed link from the config,
+- `feedback_overview_light.png`, `feedback_overview_dark.png`: the reviewer's personal overview at the signed link from the config,
   with one form marked done
 - `report_pdf.png`: the cover of the PDF report, 794x1123 (A4 at 96 dpi). The PDF's HTML
   (`reports.pdf.report_pdf_html`) is rendered from the database into a temporary file and
   opened over `file://`; everything after the cover is hidden
-- `bulk_preview.png`: the bulk send preview after creating cycles for everyone with reviewers
+- `bulk_preview_light.png`, `bulk_preview_dark.png`: the bulk send preview after creating cycles for everyone with reviewers
   from the org chart. The page reads the new cycle UUIDs from the admin session, so the script
   submits the cycle form (`creation_mode=bulk`, `bulk_source=chart`) and lands on
   `/dashboard/cycles/bulk/send-invitations/`. This creates cycles and tokens, so it runs last:
@@ -168,7 +168,7 @@ python manage.py runserver 8010 &                     # not through nohup: SIP d
 python manage.py capture_screenshots --base-url http://localhost:8010 \
     --only org_chart,bulk_preview --output-dir /tmp/blik-shots
 python manage.py optimize_screenshots --webp --input-dir /tmp/blik-shots
-cp /tmp/blik-shots/org_chart.* static/img/screenshots/
+cp /tmp/blik-shots/org_chart*.* static/img/screenshots/
 ```
 
 `optimize_screenshots` rewrites every PNG in its directory, so run it on the scratch directory

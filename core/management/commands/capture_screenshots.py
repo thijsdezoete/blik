@@ -865,7 +865,7 @@ class Command(BaseCommand):
     async def _capture_org_chart_flow(self, browser, cookies, config, base_url, output_path):
         """
         Org chart, CSV import mapping, bulk send preview, the reviewer's overview
-        and the first page of the PDF report. Desktop, light theme. Each step
+        and the first page of the PDF report. Desktop, light and dark. Each step
         drives the page itself (upload, form post), so they do not fit the
         config list above.
         """
@@ -895,9 +895,18 @@ class Command(BaseCommand):
                 ok = False
             if ok is not False:
                 await page.wait_for_timeout(1000)
-                output_file = output_path / f'{name}.png'
-                await page.screenshot(path=str(output_file), full_page=False, type='png')
-                self.stdout.write(self.style.SUCCESS(f'  ✓ Saved: {output_file}'))
+                if name == 'report_pdf':
+                    # Paper has one theme
+                    themes = [('', 'light')]
+                else:
+                    themes = [('_light', 'light'), ('_dark', 'dark')]
+                for suffix, theme in themes:
+                    # Switch on the loaded page: bulk_preview cannot be opened twice
+                    await page.evaluate(f"document.documentElement.setAttribute('data-theme', '{theme}')")
+                    await page.wait_for_timeout(300)
+                    output_file = output_path / f'{name}{suffix}.png'
+                    await page.screenshot(path=str(output_file), full_page=False, type='png')
+                    self.stdout.write(self.style.SUCCESS(f'  ✓ Saved: {output_file}'))
             await page.close()
 
     async def _open_org_chart(self, page, config, base_url):

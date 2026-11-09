@@ -2946,6 +2946,9 @@ def gdpr_delete_reviewee_view(request, reviewee_uuid):
 @login_required
 def product_review_list(request):
     """List and manage product reviews"""
+    # Reviews of Blik from every customer: platform staff only.
+    if not request.user.is_superuser:
+        raise Http404
     org = request.organization
 
     # Get all product reviews (not org-scoped - these are reviews of Blik as a product)
@@ -3065,6 +3068,9 @@ def product_review_create(request):
 @login_required
 def product_review_detail(request, review_id):
     """View product review details"""
+    # Reviews of Blik from every customer: platform staff only.
+    if not request.user.is_superuser:
+        raise Http404
     review = get_object_or_404(
         ProductReview.objects,
         id=review_id

@@ -141,7 +141,7 @@ STRIPE_PUBLISHABLE_KEY=pk_live_your_key_here
 STRIPE_SECRET_KEY=sk_live_your_key_here
 
 # Get from Stripe Dashboard > Developers > Webhooks
-# After creating webhook endpoint at: https://yourdomain.com/api/stripe/webhook
+# After creating webhook endpoint at: https://yourdomain.com/api/stripe/webhook/
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 
 # Create products in Stripe Dashboard > Products
@@ -586,8 +586,9 @@ What is new for operators:
 
 Check after the deploy:
 
-1. `curl -sI https://<app>/reports/sample.pdf | head -1` returns `200`. This renders a report with the
-   current code and stores nothing. The landing pages link to it.
+1. `curl -sI https://<landing>/sample-report.pdf | head -1` returns `200`. The landing image build
+   renders this PDF with the current code, so it is fresh after every landing deploy. The HR and FAQ
+   pages link to it.
 2. The cron line for `finalize_reports` is installed: `docker compose exec web crontab -l`.
 3. In a test organization: import a small CSV on **Organization → Org chart**, create a bulk round with
    **Derive from org chart**, and send. Every address gets one email. The overview link in it opens.

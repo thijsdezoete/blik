@@ -432,9 +432,10 @@ fetch(`${BASE_URL}/cycles/`, {
     "email": "john@example.com"
   },
   "generated_at": "{% now 'Y' %}-10-01T22:18:34Z",
-  "access_url": "https://blik360.com/my-report/d1a917a4-0dda-47d2-acdf-7dff7e440a40/"
+  "access_url": "https://blik360.com/my-report/d1a917a4-0dda-47d2-acdf-7dff7e440a40/",
+  "pdf_url": "https://blik360.com/api/v1/reports/e9304f84-67e3-46b7-a1b5-67b242bae82d/pdf/"
 }</pre>
-                    <p><code>report_id</code> is the report's UUID for <code>GET /api/v1/reports/{uuid}/</code>; <code>access_url</code> is the reviewee's login-free link to the report, the same URL <code>complete</code> returns as <code>report_url</code>.</p>
+                    <p><code>report_id</code> is the report's UUID for <code>GET /api/v1/reports/{uuid}/</code>; <code>access_url</code> is the reviewee's login-free link to the report, the same URL <code>complete</code> returns as <code>report_url</code>. <code>pdf_url</code> is the authenticated PDF download; it renders the PDF on the first request if the stored one is not there yet.</p>
                 </div>
 
                 <div class="feature-card mb-8">

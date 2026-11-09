@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from reviews.models import ReviewCycle, Response
 from reports.models import Report
 from reports.services import report_webhook_suppressed
+from core.url import get_absolute_url
 from .webhooks import send_webhook
 import logging
 
@@ -125,6 +126,7 @@ def report_generated(sender, instance, created, update_fields, **kwargs):
                     },
                     "generated_at": instance.generated_at.isoformat(),
                     "access_url": instance.reviewee_url,
+                    "pdf_url": get_absolute_url("api:report-pdf", uuid=instance.uuid),
                 },
             )
     except Exception as e:

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import FileResponse, Http404, HttpResponse
 from django.conf import settings
 from django.urls import reverse
 from django.contrib import messages
@@ -526,3 +526,11 @@ def dreyfus_capture_email(request):
         logger.exception(f"Unexpected error in dreyfus_capture_email: {str(e)}")
         messages.error(request, "An error occurred. Please try again.")
         return redirect(_get_view_name('dreyfus_assessment_start'))
+
+
+def sample_report(request):
+    """The sample report PDF, rendered into the image when the landing container is built."""
+    path = settings.BASE_DIR / 'landing' / 'sample-report.pdf'
+    if not path.exists():
+        raise Http404
+    return FileResponse(path.open('rb'), content_type='application/pdf', filename='blik-sample-report.pdf')

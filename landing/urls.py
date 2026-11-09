@@ -37,6 +37,7 @@ urlpatterns = [
     path('how-it-works-hr/', views.how_it_works, {'audience': 'hr'}, name='how_it_works_hr'),
     path('how-it-works-developers/', views.how_it_works, {'audience': 'developers'}, name='how_it_works_developers'),
     path('og-image.png', views.og_image, name='og_image'),
+    path('sample-report.pdf', views.sample_report, name='sample_report'),
     path('robots.txt', seo_views.robots, name='robots'),
     path('sitemap.xml', seo_views.sitemap, name='sitemap'),
 

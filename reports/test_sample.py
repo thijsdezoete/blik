@@ -1,8 +1,9 @@
-from django.core.cache import cache
-from django.test import TestCase
-from django.urls import reverse
+import tempfile
+from pathlib import Path
 
-from accounts.factories import UserProfileFactory
+from django.core.management import CommandError, call_command
+from django.test import TestCase
+
 from core.models import Organization
 from questionnaires.models import Question, Questionnaire, QuestionSection
 from reports.models import Report
@@ -11,8 +12,6 @@ from reports.sample import SAMPLE_QUESTIONNAIRE, build_sample_pdf
 
 class SampleReportTests(TestCase):
     def setUp(self):
-        cache.clear()
-        UserProfileFactory()  # the setup middleware redirects everything until one profile exists
         questionnaire = Questionnaire.objects.create(name=SAMPLE_QUESTIONNAIRE, organization=None)
         section = QuestionSection.objects.create(questionnaire=questionnaire, title='Leading', order=0)
         for i, text in enumerate(['Sets direction', 'Listens', 'Decides']):
@@ -28,14 +27,16 @@ class SampleReportTests(TestCase):
         self.assertTrue(pdf.startswith(b'%PDF'))
         self.assertEqual((Organization.objects.count(), Report.objects.count()), before)
 
-    def test_view_serves_and_caches_the_pdf(self):
-        response = self.client.get(reverse('reports:sample_report_pdf'))
+    def test_the_command_writes_the_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'sample.pdf'
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertIsNotNone(cache.get('sample-report-pdf:en'))
+            call_command('export_sample_pdf', str(path))
 
-    def test_without_the_shipped_questionnaire_it_is_not_found(self):
+            self.assertTrue(path.read_bytes().startswith(b'%PDF'))
+
+    def test_without_the_shipped_questionnaire_the_command_fails(self):
         Questionnaire.objects.all().delete()
 
-        self.assertEqual(self.client.get(reverse('reports:sample_report_pdf')).status_code, 404)
+        with self.assertRaises(CommandError):
+            call_command('export_sample_pdf', '/nonexistent/sample.pdf')

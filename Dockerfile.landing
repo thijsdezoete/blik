@@ -30,6 +30,10 @@ RUN apt-get update && apt-get install -y \
     git \
     fonts-liberation \
     fonts-dejavu-core \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libharfbuzz0b \
+    libharfbuzz-subset0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
@@ -50,6 +54,14 @@ RUN uv pip install --system -e .
 
 # Create directory for static files
 RUN mkdir -p /app/staticfiles
+
+# Render the sample report PDF with the current code, against a throwaway database.
+# The landing app serves it at /sample-report.pdf; a failure here fails the build.
+RUN DATABASE_URL=sqlite:////tmp/build.sqlite3 DEBUG=False ALLOWED_HOSTS=* \
+    SESSION_COOKIE_SECURE=False CSRF_COOKIE_SECURE=False \
+    sh -c 'python manage.py migrate -v0 && python manage.py upgrade > /dev/null \
+        && python manage.py export_sample_pdf landing/sample-report.pdf' \
+    && rm -f /tmp/build.sqlite3
 
 # Collect static files (landing pages only need static assets)
 RUN DJANGO_SETTINGS_MODULE=landing_settings python manage.py collectstatic --noinput --clear

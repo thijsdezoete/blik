@@ -1,15 +1,12 @@
 """A sample report PDF for the landing pages, built fresh from the current code and rolled back.
 
 Nothing is stored: the demo organization, cycle and answers live inside one transaction that is
-rolled back after the PDF is rendered, so every deploy serves a sample with the latest report layout.
+rolled back after the PDF is rendered. `manage.py export_sample_pdf` writes it when the landing
+image is built, so every deploy ships a sample with the latest report layout.
 """
 import random
 
-from django.core.cache import cache
 from django.db import transaction
-from django.http import Http404, HttpResponse
-from django.utils import translation
-from django_ratelimit.decorators import ratelimit
 
 from accounts.models import Reviewee
 from core.models import Organization
@@ -68,18 +65,3 @@ def build_sample_pdf(language):
         pass
     return pdf
 
-
-@ratelimit(key='ip', rate='10/m', block=True)
-def sample_report_pdf(request):
-    """GET /reports/sample.pdf — cached per language for a day, rendered on demand."""
-    language = translation.get_language() or 'en'
-    key = f'sample-report-pdf:{language}'
-    pdf = cache.get(key)
-    if pdf is None:
-        pdf = build_sample_pdf(language)
-        if pdf is None:
-            raise Http404
-        cache.set(key, pdf, 60 * 60 * 24)
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="blik-sample-report.pdf"'
-    return response

@@ -59,6 +59,8 @@ TEMPLATES = [
                 'landing.context_processors.url_namespace',
                 'landing.context_processors.organization_metadata',
             ],
+            # The shared SVG components load this library; `reports` is not an installed app here.
+            'libraries': {'diagram_tags': 'reports.templatetags.diagram_tags'},
         },
     },
 ]

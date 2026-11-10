@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-09 07:26+0000\n"
+"POT-Creation-Date: 2026-11-10 10:29+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -653,6 +653,12 @@ msgstr "API"
 
 msgid "created by"
 msgstr "angelegt von"
+
+msgid "prefix"
+msgstr "Präfix"
+
+msgid "First characters of the token, to recognize it"
+msgstr "Die ersten Zeichen des Tokens, um es wiederzuerkennen"
 
 #, python-brace-format
 msgid "Permissions as JSON: {example}"
@@ -1456,6 +1462,9 @@ msgstr "Die Datei ist keine lesbare CSV-Datei. Als CSV (UTF-8) speichern."
 #, python-format
 msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
 msgstr "%(units)s Einheiten importiert: %(created)s neue Personen, %(updated)s aktualisiert."
+
+msgid "Unit name is required."
+msgstr "Der Name der Einheit ist erforderlich."
 
 #, python-format
 msgid "%(name)s is already in this unit."
@@ -5998,6 +6007,31 @@ msgstr "Mehrere anlegen"
 msgid "Create for all active reviewees"
 msgstr "Für alle aktiven Feedbacknehmenden anlegen"
 
+msgid "Reviewers per cycle"
+msgstr "Feedbackgebende je Feedbackrunde"
+
+msgid "Derive from org chart"
+msgstr "Aus dem Organigramm übernehmen"
+
+msgid "(no units yet)"
+msgstr "(noch keine Einheiten)"
+
+msgid "Auto-assign managers, peers, and direct reports based on each reviewee's team memberships. You'll confirm before invitations send."
+msgstr "Führungskraft, Kolleg:innen und direkte Mitarbeitende werden aus den Einheiten jeder feedbacknehmenden Person zugewiesen. Die Einladungen werden erst nach einer Bestätigung versendet."
+
+msgid "Leave empty"
+msgstr "Leer lassen"
+
+msgid "Create cycles with no reviewers. You'll assign them per-cycle afterwards."
+msgstr "Feedbackrunden ohne Feedbackgebende anlegen. Die Feedbackgebenden werden danach je Feedbackrunde zugewiesen."
+
+#, python-format
+msgid "Build an <a href=\"%(org_chart_url)s\">org chart</a> to unlock one-click bulk cycles in the future."
+msgstr "Mit einem <a href=\"%(org_chart_url)s\">Organigramm</a> lassen sich mehrere Feedbackrunden künftig mit einem Klick anlegen."
+
+msgid "Bulk creation does not send any emails yet. You'll review the new cycles and send invitations in the next step."
+msgstr "Beim Anlegen mehrerer Feedbackrunden werden noch keine E-Mails versendet. Die neuen Feedbackrunden werden im nächsten Schritt geprüft und die Einladungen versendet."
+
 msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
 msgstr "Sie können Feedbackrunden nur für sich selbst anlegen. Für andere Teammitglieder legt ein Admin die Feedbackrunden an."
 
@@ -6033,6 +6067,19 @@ msgstr "Mindestens eine Kategorie auswählen."
 
 msgid "Invite Reviewers (Optional)"
 msgstr "Feedbackgebende einladen (optional)"
+
+msgid "Pick reviewers from your existing people, or add a new one. You can also enter raw email addresses at the bottom if the person isn't in Blik yet."
+msgstr "Feedbackgebende aus den vorhandenen Personen wählen oder eine neue Person hinzufügen. Wer noch nicht in Blik ist, lässt sich unten auch per E-Mail-Adresse eintragen."
+
+#, python-format
+msgid "This person isn't in the <a href=\"%(org_chart_url)s\">org chart</a> yet, so we can't auto-fill their reviewers. Add them to a unit to make future cycles one-click."
+msgstr "Diese Person ist noch nicht im <a href=\"%(org_chart_url)s\">Organigramm</a>, deshalb lassen sich ihre Feedbackgebenden nicht automatisch eintragen. Steht sie in einer Einheit, geht das bei künftigen Feedbackrunden mit einem Klick."
+
+msgid "Auto-filled with the reviewee when you pick one above"
+msgstr "Wird mit der oben gewählten feedbacknehmenden Person ausgefüllt"
+
+msgid "Use this only for reviewers who aren't yet in Blik and you don't want to create a profile for. Separate multiple emails with commas or newlines."
+msgstr "Nur für Feedbackgebende, die noch nicht in Blik sind und für die kein Eintrag angelegt werden soll. Mehrere Adressen durch Kommas oder Zeilenumbrüche trennen."
 
 msgid "Send invitation emails immediately after creating cycle"
 msgstr "Einladungs-E-Mails direkt nach dem Anlegen versenden"

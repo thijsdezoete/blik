@@ -50,16 +50,26 @@
                 </div>
                 <div id="bulkModeNote" style="display: none;">
                     <div class="form-group" style="margin-bottom: 1rem;">
-                        <label class="form-label">Reviewers per cycle</label>
+                        <label class="form-label">{% trans 'Reviewers per cycle' %}</label>
                         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                             <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; cursor: {% if has_org_chart %}pointer{% else %}not-allowed{% endif %}; {% if not has_org_chart %}opacity: 0.5;{% endif %}">
                                 <input type="radio" name="bulk_source" value="chart"
                                        {% if has_org_chart %}checked{% else %}disabled{% endif %}
                                        style="margin-top: 0.25rem;">
                                 <div>
-                                    <div style="font-weight: 600;">Derive from org chart{% if not has_org_chart %} <span style="color: var(--text-tertiary); font-weight: normal;">(no units yet)</span>{% endif %}</div>
+                                    <div style="font-weight: 600;">
+                                        {% trans 'Derive from org chart' %}
+                                        {% if not has_org_chart %}
+                                        <span style="color: var(--text-tertiary); font-weight: normal;">
+                                            {% trans '(no units yet)' %}
+                                        </span>
+                                        {% endif %}
+                                    </div>
                                     <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                                        Auto-assign managers, peers, and direct reports based on each reviewee's team memberships. You'll confirm before invitations send.
+                                        {% blocktrans trimmed %}
+                                            Auto-assign managers, peers, and direct reports based on each reviewee's
+                                            team memberships. You'll confirm before invitations send.
+                                        {% endblocktrans %}
                                     </div>
                                 </div>
                             </label>
@@ -68,21 +78,30 @@
                                        {% if not has_org_chart %}checked{% endif %}
                                        style="margin-top: 0.25rem;">
                                 <div>
-                                    <div style="font-weight: 600;">Leave empty</div>
+                                    <div style="font-weight: 600;">{% trans 'Leave empty' %}</div>
                                     <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                                        Create cycles with no reviewers. You'll assign them per-cycle afterwards.
+                                        {% blocktrans trimmed %}
+                                            Create cycles with no reviewers. You'll assign them per-cycle afterwards.
+                                        {% endblocktrans %}
                                     </div>
                                 </div>
                             </label>
                         </div>
                         {% if not has_org_chart %}
                         <div class="alert alert-info" style="margin-top: 0.75rem; font-size: 0.875rem;">
-                            Build an <a href="{% url 'org_chart' %}">org chart</a> to unlock one-click bulk cycles in the future.
+                            {% url 'org_chart' as org_chart_url %}
+                            {% blocktrans trimmed %}
+                                Build an <a href="{{ org_chart_url }}">org chart</a> to unlock one-click bulk cycles in
+                                the future.
+                            {% endblocktrans %}
                         </div>
                         {% endif %}
                     </div>
                     <div class="alert alert-warning" style="font-size: 0.875rem;">
-                        Bulk creation does not send any emails yet. You'll review the new cycles and send invitations in the next step.
+                        {% blocktrans trimmed %}
+                            Bulk creation does not send any emails yet. You'll review the new cycles and send
+                            invitations in the next step.
+                        {% endblocktrans %}
                     </div>
                 </div>
             </div>
@@ -227,73 +246,83 @@
             </div>
             <div class="card-body" id="inviteFormBody" style="display: none;">
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    Pick reviewers from your existing people, or add a new one. You can also enter raw email addresses at the bottom if the person isn't in Blik yet.
+                    {% blocktrans trimmed %}
+                        Pick reviewers from your existing people, or add a new one. You can also enter raw email
+                        addresses at the bottom if the person isn't in Blik yet.
+                    {% endblocktrans %}
                 </p>
 
                 <div id="chartEmptyNotice" class="alert alert-info" style="display: none; margin-bottom: 1.5rem;">
-                    This person isn't in the <a href="{% url 'org_chart' %}">org chart</a> yet, so we can't auto-fill their reviewers. Add them to a unit to make future cycles one-click.
+                    {% url 'org_chart' as org_chart_url %}
+                    {% blocktrans trimmed %}
+                        This person isn't in the <a href="{{ org_chart_url }}">org chart</a> yet, so we can't auto-fill
+                        their reviewers. Add them to a unit to make future cycles one-click.
+                    {% endblocktrans %}
                 </div>
 
                 <div class="form-group category-emails" data-category="self" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Self Assessment</label>
+                    <label class="form-label">{% trans 'Self Assessment' %}</label>
                     <div id="selfPicker"
                          data-reviewee-picker
                          data-field-name="self_reviewees"
-                         data-placeholder="Usually the reviewee themselves"></div>
+                         data-placeholder="{% trans 'Usually the reviewee themselves' %}"></div>
                     <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                        Auto-filled with the reviewee when you pick one above
+                        {% trans 'Auto-filled with the reviewee when you pick one above' %}
                     </div>
                 </div>
 
                 <div class="form-group category-emails" data-category="manager" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Manager / Supervisor</label>
+                    <label class="form-label">{% trans 'Manager/Supervisor' %}</label>
                     <div id="managerPicker" data-reviewee-picker
                          data-field-name="manager_reviewees"
-                         data-placeholder="Search for a manager…"></div>
+                         data-placeholder="{% trans 'Search for a manager…' %}"></div>
                 </div>
 
                 <div class="form-group category-emails" data-category="peer" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Peers</label>
+                    <label class="form-label">{% trans 'Peers' %}</label>
                     <div id="peerPicker" data-reviewee-picker
                          data-field-name="peer_reviewees"
-                         data-placeholder="Search for a peer…"></div>
+                         data-placeholder="{% trans 'Search for a peer…' %}"></div>
                     <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                        Colleagues at the same level
+                        {% trans 'Colleagues at the same level' %}
                     </div>
                 </div>
 
                 <div class="form-group category-emails" data-category="direct_report" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Direct Reports</label>
+                    <label class="form-label">{% trans 'Direct Reports' %}</label>
                     <div id="directReportPicker" data-reviewee-picker
                          data-field-name="direct_report_reviewees"
-                         data-placeholder="Search for a direct report…"></div>
+                         data-placeholder="{% trans 'Search for a direct report…' %}"></div>
                     <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                        People who report to this reviewee
+                        {% trans 'People who report to this reviewee' %}
                     </div>
                 </div>
 
                 <details style="margin-bottom: 1.5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light);">
                     <summary style="padding: 0.75rem 1rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);">
-                        Add by email (advanced)
+                        {% trans 'Add by email (advanced)' %}
                     </summary>
                     <div style="padding: 0 1rem 1rem;">
                         <p style="color: var(--text-secondary); font-size: 0.875rem; margin: 0 0 1rem;">
-                            Use this only for reviewers who aren't yet in Blik and you don't want to create a profile for. Separate multiple emails with commas or newlines.
+                            {% blocktrans trimmed %}
+                                Use this only for reviewers who aren't yet in Blik and you don't want to create a
+                                profile for. Separate multiple emails with commas or newlines.
+                            {% endblocktrans %}
                         </p>
                         <div class="form-group" style="margin-bottom: 1rem;">
-                            <label class="form-label">Self</label>
+                            <label class="form-label">{% trans 'Self' %}</label>
                             <textarea name="self_emails" id="selfEmails" class="form-control" rows="1" placeholder="reviewee@example.com"></textarea>
                         </div>
                         <div class="form-group" style="margin-bottom: 1rem;">
-                            <label class="form-label">Manager</label>
+                            <label class="form-label">{% trans 'Manager' %}</label>
                             <textarea name="manager_emails" class="form-control" rows="1" placeholder="manager@example.com"></textarea>
                         </div>
                         <div class="form-group" style="margin-bottom: 1rem;">
-                            <label class="form-label">Peers</label>
+                            <label class="form-label">{% trans 'Peers' %}</label>
                             <textarea name="peer_emails" class="form-control" rows="2" placeholder="peer1@example.com, peer2@example.com"></textarea>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Direct Reports</label>
+                            <label class="form-label">{% trans 'Direct Reports' %}</label>
                             <textarea name="direct_report_emails" class="form-control" rows="2" placeholder="report1@example.com"></textarea>
                         </div>
                     </div>
@@ -317,6 +346,7 @@
     </form>
 </div>
 
+<script src="{% url 'javascript-catalog' %}?language={{ LANGUAGE_CODE }}"></script>
 <script src="{% static 'js/reviewee_picker.js' %}"></script>
 <script>
 function toggleRevieweeSelect() {

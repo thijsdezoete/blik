@@ -91,7 +91,8 @@
             });
             this.$input.addEventListener('keydown', e => this._onKey(e));
             document.addEventListener('click', e => {
-                if (!this.root.contains(e.target)) this._closeDropdown();
+                // The path, not the target: a click that re-renders the dropdown has detached its target by now
+                if (!e.composedPath().includes(this.root)) this._closeDropdown();
             });
             this.$chips.addEventListener('click', e => {
                 const btn = e.target.closest('.rp-chip-remove');
@@ -202,25 +203,28 @@
             const email = looksLikeEmail ? prefilled : '';
 
             this.$dropdown.innerHTML = `
-                <form class="rp-create-form" novalidate>
+                <div class="rp-create-form">
                     <div class="rp-create-row">
                         <input type="text" class="rp-cf-name" placeholder="${escapeHtml(gettext('Full name'))}"
-                               value="${escapeHtml(name)}" required>
+                               value="${escapeHtml(name)}">
                     </div>
                     <div class="rp-create-row">
-                        <input type="email" class="rp-cf-email" placeholder="email@example.com" value="${escapeHtml(email)}" required>
+                        <input type="email" class="rp-cf-email" placeholder="email@example.com" value="${escapeHtml(email)}">
                     </div>
                     <div class="rp-create-error" hidden></div>
                     <div class="rp-create-actions">
-                        <button type="submit" class="btn btn-primary btn-sm">${escapeHtml(gettext('Add'))}</button>
+                        <button type="button" class="btn btn-primary btn-sm rp-cf-add">
+                            ${escapeHtml(gettext('Add'))}
+                        </button>
                         <button type="button" class="btn btn-secondary btn-sm rp-cf-cancel">
                             ${escapeHtml(gettext('Cancel'))}
                         </button>
                     </div>
-                </form>
+                </div>
             `;
             this.$dropdown.hidden = false;
-            const form = this.$dropdown.querySelector('form');
+            // No <form> of its own: the picker usually sits inside one, and HTML drops a nested form
+            const form = this.$dropdown.querySelector('.rp-create-form');
             const $name = form.querySelector('.rp-cf-name');
             const $email = form.querySelector('.rp-cf-email');
             const $err = form.querySelector('.rp-create-error');
@@ -228,8 +232,7 @@
             ($name.value ? $email : $name).focus();
 
             form.querySelector('.rp-cf-cancel').addEventListener('click', () => this._closeDropdown());
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            const submit = async () => {
                 $err.hidden = true;
                 const body = new URLSearchParams({
                     name: $name.value.trim(),
@@ -259,6 +262,13 @@
                 } catch (err) {
                     $err.textContent = gettext('Network error. Try again.');
                     $err.hidden = false;
+                }
+            };
+            form.querySelector('.rp-cf-add').addEventListener('click', submit);
+            form.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && e.target.matches('input')) {
+                    e.preventDefault();
+                    submit();
                 }
             });
         }

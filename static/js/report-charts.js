@@ -15,6 +15,7 @@
             peer: style.getPropertyValue('--success').trim() || '#10b981',
             manager: style.getPropertyValue('--warning').trim() || '#f59e0b',
             direct_report: style.getPropertyValue('--insight-skill').trim() || '#3b82f6',
+            combined_anonymous: style.getPropertyValue('--insight-perception').trim() || '#8b5cf6',
             others: style.getPropertyValue('--secondary').trim() || '#64748b',
             text: style.getPropertyValue('--text-primary').trim() || '#1e293b',
             textSecondary: style.getPropertyValue('--text-secondary').trim() || '#64748b',
@@ -34,6 +35,7 @@
         'peer': gettext('Peers'),
         'manager': gettext('Manager'),
         'direct_report': gettext('Direct Reports'),
+        'combined_anonymous': gettext('Combined Anonymous Feedback'),
         'others_avg': gettext('Others Average')
     };
 
@@ -70,7 +72,7 @@
 
         // Prepare datasets
         const datasets = [];
-        const categories = ['self', 'peer', 'manager', 'direct_report'];
+        const categories = ['self', 'peer', 'manager', 'direct_report', 'combined_anonymous'];
 
         categories.forEach(category => {
             const data = axisNames.map(axis =>
@@ -161,7 +163,7 @@
      */
     function renderMobileSectionChart(canvasId, sectionNames, sections, colors) {
         const ctx = document.getElementById(canvasId);
-        const categories = ['self', 'peer', 'manager', 'direct_report'];
+        const categories = ['self', 'peer', 'manager', 'direct_report', 'combined_anonymous'];
 
         const datasets = categories.map(category => ({
             label: categoryLabels[category],
@@ -336,7 +338,7 @@
         if (!ctx) return;
 
         const colors = getThemeColors();
-        const categories = ['self', 'peer', 'manager', 'direct_report'];
+        const categories = ['self', 'peer', 'manager', 'direct_report', 'combined_anonymous'];
 
         const data = categories.map(cat => sectionData[cat] || 0)
             .filter(v => v > 0);

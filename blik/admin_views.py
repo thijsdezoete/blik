@@ -2853,6 +2853,9 @@ def settings_view(request):
                 except (ValueError, TypeError):
                     organization.min_responses_for_anonymity = 3
                 organization.hide_below_threshold_from_managers = request.POST.get('hide_below_threshold_from_managers') == 'on'
+                organization.combine_small_reviewer_groups = (
+                    request.POST.get('combine_small_reviewer_groups') == 'on'
+                )
                 organization.auto_send_report_email = request.POST.get('auto_send_report_email') == 'on'
                 organization.attach_report_pdf = request.POST.get('attach_report_pdf') == 'on'
                 retention = request.POST.get('report_pdf_retention_days', '').strip()

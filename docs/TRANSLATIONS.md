@@ -124,9 +124,9 @@ Use the same term throughout:
 | Questionnaire | Fragebogen | |
 | Report | Bericht | |
 | Self-assessment, self | Selbsteinschätzung, Selbst | |
-| Peer | Kolleg:in | plural Kolleg:innen |
+| Peer | Kolleg:in | plural Kolleg:innen; "your colleague": Ihr:e Kolleg:in |
 | Manager | Führungskraft | |
-| Direct report | direkte Mitarbeitende | plural only; as a label "Direkte Mitarbeitende" |
+| Direct report | direkte Mitarbeitende | plural only; as a label "Direkte Mitarbeitende"; one person: direkt unterstellte Person, "your direct report": Ihnen direkt unterstellt |
 | Others' average | Durchschnitt der anderen | |
 | User | Benutzer:in | |
 | Team member | Teammitglied | |
@@ -142,6 +142,10 @@ Use the same term throughout:
 | Dreyfus stages | Neuling, Fortgeschrittene:r Anfänger:in, Kompetent, Gewandt, Expert:in | Novice, Advanced Beginner, Competent, Proficient, Expert |
 | Anonymity threshold | Mindestanzahl für Anonymität | |
 | GDPR | DSGVO | |
+| Org chart, unit | Organigramm, Einheit | |
+| Outbox, queued | Postausgang, im Postausgang | |
+| (an email) goes out | wird versendet | not "geht hinaus" |
+| Plan, upgrade your plan | Tarif, größeren Tarif wählen | |
 | Settings | Einstellungen | |
 | Dashboard | Dashboard | |
 

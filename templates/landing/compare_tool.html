@@ -1,0 +1,221 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>{{ v.name }} 360 Feedback: Pricing and Features ({{ checked_year }}) | Blik360</title>
+    <meta name="description" content="{{ meta_description }}">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare_tool' v.slug %}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare_tool' v.slug %}">
+    <meta property="og:title" content="{{ v.name }} 360 feedback: pricing and features">
+    <meta property="og:description" content="{{ v.summary }}">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title={{ v.name|urlencode }}%20360%20feedback&subtitle=Pricing%20and%20features">
+    <meta property="article:modified_time" content="{{ checked_iso }}">
+    <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
+{% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Article",
+                "headline": "{{ v.name|escapejs }} 360 feedback: pricing and features",
+                "description": "{{ meta_description|escapejs }}",
+                "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare_tool' v.slug %}",
+                "dateModified": "{{ checked_iso }}",
+                "about": {"@type": "SoftwareApplication", "name": "{{ v.name|escapejs }}", "applicationCategory": "BusinessApplication"},
+                "author": {"@type": "Organization", "name": "{{ site_name|escapejs }}", "url": "{{ site_protocol }}://{{ site_domain }}/"},
+                "publisher": {"@type": "Organization", "name": "{{ site_name|escapejs }}", "url": "{{ site_protocol }}://{{ site_domain }}/"}
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}"},
+                    {"@type": "ListItem", "position": 2, "name": "360 tools compared", "item": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare' %}"},
+                    {"@type": "ListItem", "position": 3, "name": "{{ v.name|escapejs }}"}
+                ]
+            },
+            {
+                "@type": "FAQPage",
+                "mainEntity": [{% for item in v.faq %}
+                    {"@type": "Question", "name": "{{ item.q|escapejs }}", "acceptedAnswer": {"@type": "Answer", "text": "{{ item.a|escapejs }}"}}{% if not forloop.last %},{% endif %}{% endfor %}
+                ]
+            }
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#faq">FAQ</a>
+    <a href="{% landing_url 'compare' %}">All tools</a>
+{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <nav class="hero-note" aria-label="Breadcrumb"><a href="{% landing_url 'compare' %}">360 tools compared</a> · {{ group_title }}</nav>
+                <h1 class="hero-title">{{ v.name }} 360 feedback: pricing and features</h1>
+                <p class="hero-subtitle">{{ v.what }}</p>
+                <p class="hero-note">Checked <time datetime="{{ checked_iso }}">{{ checked }}</time> from {{ v.name }}'s public pages.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container content-wide">
+            <h2 class="section-title">In short</h2>
+            <p class="comparison-lead">{{ v.summary }}</p>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">Key facts about {{ v.name }}</caption>
+                    <tbody>
+                        <tr><th scope="row">How 360 is sold</th><td>{{ v.sold_as }}</td></tr>
+                        <tr><th scope="row">Entry price</th><td>{{ v.entry }}</td></tr>
+                        <tr><th scope="row">50 people, one year</th><td>{% with c=v.pricing.cost.50 %}{{ c.cost|default:"Quote only" }}<br><small>{{ c.basis }}</small>{% endwith %}</td></tr>
+                        <tr><th scope="row">EU hosting</th><td>{{ v.eu }}</td></tr>
+                        <tr><th scope="row">AI on feedback</th><td>{{ v.ai }}</td></tr>
+                        <tr><th scope="row">Certificates</th><td>{{ v.certs }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="section">
+        <div class="container content-wide">
+            <h2 class="section-title">{{ v.name }} pricing</h2>
+            {% if v.pricing.plans %}
+            <div class="table-container">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">{{ v.name }} plans</caption>
+                    <thead><tr><th scope="col">Plan</th><th scope="col">Price</th><th scope="col">360 feedback</th><th scope="col">Notes</th></tr></thead>
+                    <tbody>
+                        {% for plan in v.pricing.plans %}
+                        <tr><td><strong>{{ plan.name }}</strong></td><td>{{ plan.price }}</td><td>{{ plan.includes_360|yesno:"Included,Not included" }}</td><td>{{ plan.notes }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <h3 class="comparison-subheading">What 360 feedback costs per year</h3>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">Yearly cost of {{ v.name }} 360 feedback by team size</caption>
+                    <thead><tr><th scope="col">Reviewed employees</th><th scope="col">Cost per year</th><th scope="col">How we calculated it</th></tr></thead>
+                    <tbody>
+                        {% for size, c in costs %}
+                        <tr><td>{{ size }}</td><td><strong>{{ c.cost|default:"Quote only" }}</strong></td><td>{{ c.basis }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if v.pricing.notes %}<ul>{% for note in v.pricing.notes %}<li>{{ note }}</li>{% endfor %}</ul>{% endif %}
+            <p class="comparison-note comparison-footnote">List prices for the cheapest plan that includes 360 feedback, licence only, annual billing where offered. Vendors give discounts.</p>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="section section-alt">
+        <div class="container content-wide">
+            <h2 class="section-title">How 360 feedback works in {{ v.name }}</h2>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">{{ v.name }} 360 feedback features</caption>
+                    <tbody>
+                        {% for label, value in features %}<tr><th scope="row">{{ label }}</th><td>{{ value }}</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="security" class="section">
+        <div class="container content-wide">
+            <h2 class="section-title">Data, privacy and security</h2>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">{{ v.name }} data hosting and security</caption>
+                    <tbody>
+                        {% for label, value in security %}<tr><th scope="row">{{ label }}</th><td>{{ value }}</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <div class="grid-two content-wide">
+                <div class="feature-card">
+                    <h2 class="comparison-subheading">Strengths</h2>
+                    <ul>{% for item in v.strengths %}<li>{{ item }}</li>{% endfor %}</ul>
+                </div>
+                <div class="feature-card">
+                    <h2 class="comparison-subheading">Limitations</h2>
+                    <ul>{% for item in v.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
+                </div>
+            </div>
+            <div class="feature-card content-wide comparison-callout">
+                <p><strong>A good fit for:</strong> {{ v.fit }}</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section">
+        <div class="container content-wide">
+            <h2 class="section-title">Questions about {{ v.name }}</h2>
+            <div class="faq-grid">
+                {% for item in v.faq %}
+                <details class="faq-item"{% if forloop.first %} open{% endif %}>
+                    <summary>{{ item.q }}</summary>
+                    <p>{{ item.a }}</p>
+                </details>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="similar" class="section section-alt">
+        <div class="container content-wide">
+            <h2 class="section-title">Similar tools: {{ group_title }}</h2>
+            <p class="section-intro">{{ group_intro }}</p>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">Other {{ group_title }}</caption>
+                    <thead><tr><th scope="col">Tool</th><th scope="col">How 360 is sold</th><th scope="col">Entry price</th></tr></thead>
+                    <tbody>
+                        {% for t in others %}
+                        <tr><td><a href="{{ t.url }}"><strong>{{ t.name }}</strong></a></td><td>{{ t.sold_as }}</td><td>{{ t.entry }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p><a href="{% landing_url 'compare' %}">All tools side by side, with prices for 50 people →</a></p>
+        </div>
+    </section>
+
+    <section id="sources" class="section">
+        <div class="container content-wide">
+            <h2 class="section-title">Sources and method</h2>
+            <p>
+                We read {{ v.name }}'s public pages on <time datetime="{{ checked_iso }}">{{ checked }}</time>: pricing, security and help pages.
+                Figures marked as directory figures come from review sites such as Capterra or G2. We did not test the product ourselves.
+            </p>
+            <ul class="comparison-source-list">
+                {% for label, url in v.sources %}<li><a href="{{ url }}" target="_blank" rel="noopener nofollow">{{ label }}</a></li>{% endfor %}
+            </ul>
+            <p class="comparison-note comparison-footnote">
+                This page is made by Blik, which is also a 360 feedback tool. Vendors change prices and features.
+                Something wrong? Tell us at <a href="mailto:{{ org_contact_email }}">{{ org_contact_email }}</a> and we fix it.
+            </p>
+        </div>
+    </section>
+{% endblock %}

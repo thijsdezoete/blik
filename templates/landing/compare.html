@@ -1,0 +1,215 @@
+{% extends 'landing/base.html' %}
+{% load static landing_tags %}
+
+{% block meta %}
+    <title>360 Feedback Software Compared: {{ tool_count }} Tools, Prices for 50 People | Blik360</title>
+    <meta name="description" content="{{ tool_count }} 360 feedback tools side by side: list prices for 50 employees, how 360 is sold, EU hosting, AI and certificates, with sources. Checked {{ checked }}.">
+    <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare' %}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare' %}">
+    <meta property="og:title" content="360 feedback software compared: {{ tool_count }} tools">
+    <meta property="og:description" content="List prices for 50 employees, EU hosting, AI and certificates, with sources.">
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title={{ tool_count }}%20360%20Tools%20Compared&subtitle=List%20prices%20for%2050%20people">
+    <meta property="article:modified_time" content="{{ checked_iso }}">
+    <meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
+{% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Article",
+                "headline": "360 feedback software compared: {{ tool_count }} tools",
+                "url": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare' %}",
+                "dateModified": "{{ checked_iso }}",
+                "author": {"@type": "Organization", "name": "{{ site_name|escapejs }}", "url": "{{ site_protocol }}://{{ site_domain }}/"},
+                "publisher": {"@type": "Organization", "name": "{{ site_name|escapejs }}", "url": "{{ site_protocol }}://{{ site_domain }}/"}
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {"@type": "ListItem", "position": 1, "name": "Home", "item": "{{ site_protocol }}://{{ site_domain }}{% landing_url 'index' %}"},
+                    {"@type": "ListItem", "position": 2, "name": "360 tools compared"}
+                ]
+            },
+            {
+                "@type": "ItemList",
+                "name": "360 feedback tools",
+                "itemListElement": [{% for group in groups %}{% for t in group.tools %}
+                    {"@type": "ListItem", "name": "{{ t.name|escapejs }}", "url": "{{ site_protocol }}://{{ site_domain }}{{ t.url }}"}{% if not forloop.last %},{% endif %}{% endfor %}{% if not forloop.last %},{% endif %}{% endfor %}
+                ]
+            },
+            {
+                "@type": "FAQPage",
+                "mainEntity": [{% for q, a in faq %}
+                    {"@type": "Question", "name": "{{ q|escapejs }}", "acceptedAnswer": {"@type": "Answer", "text": "{{ a|escapejs }}"}}{% if not forloop.last %},{% endif %}{% endfor %}
+                ]
+            }
+        ]
+    }
+    </script>
+{% endblock %}
+
+{% block nav_links %}
+    <a href="{% landing_url 'index' %}">Home</a>
+    <a href="#cost">Cost for 50</a>
+    <a href="#tools">All tools</a>
+    <a href="#fit">Which tool fits</a>
+    <a href="#faq">FAQ</a>
+{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">360 feedback software compared</h1>
+                <p class="hero-subtitle">
+                    List prices, hosting, AI and certificates for {{ tool_count }} tools, taken from the vendors' own pages where we could.
+                    Blik makes this page and is one of the tools in it.
+                </p>
+                <p class="hero-note">Checked <time datetime="{{ checked_iso }}">{{ checked }}</time>.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="key-facts" class="section section-alt">
+        <div class="container content-wide">
+            <h2 class="section-title">Key facts</h2>
+            <ul>{% for fact in facts %}<li>{{ fact }}</li>{% endfor %}</ul>
+            <p class="comparison-note comparison-footnote">Counts include Blik.</p>
+        </div>
+    </section>
+
+    <section id="cost" class="section">
+        <div class="container">
+            <h2 class="section-title">What 360 feedback costs for 50 people per year</h2>
+            <p class="section-intro">
+                Scenario: 50 reviewed employees, one 360 round a year, list price, annual billing, licence only.
+                Ordered from cheap to expensive by approximate euro value. Prices stay in the vendor's currency. Discounts are not included.
+            </p>
+            <div class="table-container content-wide">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">Yearly cost of 360 feedback for 50 employees, per tool</caption>
+                    <thead>
+                        <tr><th scope="col">Tool</th><th scope="col">Cost per year, 50 people</th><th scope="col">How we calculated it</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for row in scenario %}
+                        <tr>
+                            <td>{% if row.url %}<a href="{{ row.url }}">{{ row.name }}</a>{% else %}{{ row.name }}{% endif %}</td>
+                            <td><strong>{{ row.cost }}</strong></td>
+                            <td>{{ row.basis }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="content-wide">
+                <p class="comparison-note comparison-footnote">
+                    Read this table with care. Most of these tools are suites. For the same money you also get goals, 1:1s, engagement surveys or an HR system.
+                    The 360 specialists, Blik among them, sell only 360. Quote-only tools are not in the table: {{ quote_only|join:", " }}.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="tools" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">All {{ tool_count }} tools</h2>
+            <p class="section-intro">Grouped by how they sell 360 feedback, A–Z in each group. Click a tool for its pricing, how its 360 works, data hosting and sources.</p>
+            <div class="table-container content-wide">
+                <table class="comparison-table comparison-table-wide">
+                    <caption class="visually-hidden">360 feedback tools: how 360 is sold, entry price, EU hosting, AI and certificates</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Tool</th>
+                            <th scope="col">How 360 is sold</th>
+                            <th scope="col">Entry price</th>
+                            <th scope="col">EU hosting</th>
+                            <th scope="col">AI on feedback</th>
+                            <th scope="col">Certificates</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for group in groups %}
+                        <tr>
+                            <th colspan="6" scope="colgroup" class="comparison-align-left">{{ group.title }} <small>· {{ group.intro }}</small></th>
+                        </tr>
+                        {% for t in group.tools %}
+                        <tr>
+                            <td><a href="{{ t.url }}"><strong>{{ t.name }}</strong></a></td>
+                            <td>{{ t.sold_as }}</td>
+                            <td>{{ t.entry }}</td>
+                            <td>{{ t.eu }}</td>
+                            <td>{{ t.ai }}</td>
+                            <td>{{ t.certs }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="content-wide">
+                <p class="comparison-note comparison-footnote">
+                    "Not found" means we looked on the vendor's site and found nothing. "Not published" means the vendor does not say.
+                    "Directory figure" means the price comes from a review site such as Capterra, not from the vendor.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="fit" class="section">
+        <div class="container">
+            <h2 class="section-title">Which tool fits</h2>
+            <div class="table-container content-wide">
+                <table class="comparison-table">
+                    <caption class="visually-hidden">360 feedback tools by need</caption>
+                    <thead>
+                        <tr><th scope="col">If you need…</th><th scope="col">Look at</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Open source, or 360 on your own servers</td><td>Blik (the only one in this list)</td></tr>
+                        <tr><td>One or a few rounds, no subscription</td><td>Blik Single Round, Empxtrack (2 free reviews, more bought in the app)</td></tr>
+                        <tr><td>No AI on feedback (none found on the vendor's pages)</td><td>{{ ai_no|join:", " }}</td></tr>
+                        <tr><td>AI summaries and drafted reviews</td><td>15Five, EchoSpan, Effy AI, Leapsome, Peoplebox.ai</td></tr>
+                        <tr><td>ISO 27001 or SOC 2 for procurement</td><td>{{ certified|join:", " }}</td></tr>
+                        <tr><td>Many languages</td><td>EchoSpan (100+, paid add-on), Spidergap (100+ on the pricing page, 28 in the help centre), SurveyMonkey (57), WorkTango (40+ survey languages), Betterworks (31)</td></tr>
+                        <tr><td>Customer or partner raters</td><td>EchoSpan, eloomi, Empxtrack, iSpring LMS, Leapsome, PeopleGoal, Sloneek, Spidergap, Synergita, TalentGuard, WorkDove (Quantum Workplace)</td></tr>
+                        <tr><td>Goals, 1:1s and reviews in one tool</td><td>15Five, Lattice, Leapsome, Small Improvements</td></tr>
+                        <tr><td>You already pay for Microsoft Viva or BambooHR Pro</td><td>Use the 360 you already have: BambooHR, Microsoft Viva Glint</td></tr>
+                        <tr><td>5 people or fewer, zero budget</td><td>Blik (free signup for one round, or self-hosted), Effy AI free tier, Empxtrack (2 free reviews)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="section section-alt">
+        <div class="container content-wide">
+            <h2 class="section-title">Questions about 360 feedback tools</h2>
+            <div class="faq-grid">
+                {% for q, a in faq %}
+                <details class="faq-item"{% if forloop.first %} open{% endif %}>
+                    <summary>{{ q }}</summary>
+                    <p>{{ a }}</p>
+                </details>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section id="method" class="section">
+        <div class="container content-wide">
+            <h2 class="section-title">How we made this table</h2>
+            <ul>
+                <li>We read each vendor's public pricing, security and help pages on <time datetime="{{ checked_iso }}">{{ checked }}</time>. Each tool page lists its sources.</li>
+                <li>We did not test the products ourselves. Where a vendor publishes no price, we say so, or use a review-site figure and label it.</li>
+                <li>Prices are list prices for the cheapest plan that includes 360 feedback. Vendors give discounts.</li>
+                <li>Blik makes this page and is one of the tools in it. Something wrong? Tell us at <a href="mailto:{{ org_contact_email }}">{{ org_contact_email }}</a> and we fix it.</li>
+            </ul>
+        </div>
+    </section>
+{% endblock %}

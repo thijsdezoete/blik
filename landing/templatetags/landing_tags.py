@@ -20,7 +20,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def landing_url(view_name):
+def landing_url(view_name, *args):
     """
     Reverse a landing URL with appropriate namespace.
 
@@ -30,9 +30,9 @@ def landing_url(view_name):
     is_standalone = getattr(settings, 'ROOT_URLCONF', '') == 'landing_urls'
 
     if is_standalone:
-        return reverse(view_name)
+        return reverse(view_name, args=args)
     else:
-        return reverse(f'landing:{view_name}')
+        return reverse(f'landing:{view_name}', args=args)
 
 
 @register.filter

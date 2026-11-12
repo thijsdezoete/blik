@@ -270,7 +270,8 @@ def compare(request):
             {'key': key, 'title': title, 'intro': intro, 'tools': [t for t in tools if t['group'] == key]}
             for key, title, intro in GROUPS
         ],
-        'scenario': [{**row, 'url': url_by_name.get(row['name'])} for row in SCENARIO],
+        'scenario': [{**row, 'url': reverse(_get_view_name(row['page'])) if 'page' in row else url_by_name.get(row['name'])}
+                     for row in SCENARIO],
         'tool_count': n, 'facts': facts, 'faq': faq,
         'quote_only': quote_only, 'ai_no': ai_no, 'certified': certified,
         'checked': CHECKED, 'checked_iso': CHECKED_ISO,

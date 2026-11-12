@@ -42,13 +42,13 @@ BLIK = {
 
 # Annual licence cost for 50 reviewed people and one round a year, cheapest first.
 # "sort" is an approximate euro value, only for the order; the shown cost keeps the vendor's currency.
-# Quote-only tools are left out.
+# Quote-only tools are left out. "page" is the URL name of the Blik page for that row.
 SCENARIO = sorted([
-    {"name": "Blik self-hosted", "cost": "€0 licence", "sort": 0,
+    {"name": "Blik self-hosted", "page": "open_source", "cost": "€0 licence", "sort": 0,
      "basis": "Free AGPL software plus your own server (about €10–50/month)."},
-    {"name": "Blik Single Round", "cost": f"€{_SINGLE_50}", "sort": _SINGLE_50,
+    {"name": "Blik Single Round", "page": "one_time_360_review", "cost": f"€{_SINGLE_50}", "sort": _SINGLE_50,
      "basis": f"{_PACKS} packs of €{PRICING['plan_single_price']} for {PRICING['plan_single_max']} people. One round, no subscription."},
-    {"name": "Blik EU SaaS", "cost": f"€{_SAAS_YEAR}", "sort": _SAAS_YEAR,
+    {"name": "Blik EU SaaS", "page": "pricing", "cost": f"€{_SAAS_YEAR}", "sort": _SAAS_YEAR,
      "basis": f"€{PRICING['plan_saas_price']}/month for up to {PRICING['plan_saas_max']} people, all rounds included."},
 ] + [
     {"slug": v["slug"], "name": v["name"], "cost": v["pricing"]["cost"]["50"]["cost"],

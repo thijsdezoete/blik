@@ -159,7 +159,7 @@ def organization_metadata(request):
         'org_contributors': repo_meta.get('contributors', []),
         'org_github_url': 'https://github.com/thijsdezoete/blik',
         # Not DEFAULT_FROM_EMAIL: that is the no-reply sender, not an inbox people can write to.
-        'org_contact_email': 'support@blik360.com',
+        'org_contact_email': 'thijs@mail.blik360.com',
     }
 
     return org_context

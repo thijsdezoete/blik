@@ -163,8 +163,8 @@
             <h2 class="section-title">Pricing: Flat vs. Quote-Based</h2>
 
             <div class="comparison-plan-grid comparison-plan-grid--compact mb-12">
-                <div class="feature-card comparison-outline-success">
-                    <h3 class="comparison-success mb-4">Blik SaaS (Managed)</h3>
+                <div class="feature-card">
+                    <h3 class="mb-4">Blik SaaS (Managed)</h3>
                     <div class="comparison-plan-price">€{{ plan_saas_price }}<span class="comparison-price-period">/month</span></div>
                     <ul class="comparison-benefits comparison-benefits--muted">
                         <li>Up to {{ plan_saas_max }} employees</li>
@@ -178,8 +178,8 @@
                     </p>
                 </div>
 
-                <div class="feature-card comparison-outline-success">
-                    <h3 class="comparison-success mb-4">Blik Open Source (Self-Hosted)</h3>
+                <div class="feature-card">
+                    <h3 class="mb-4">Blik Open Source (Self-Hosted)</h3>
                     <div class="comparison-plan-price">€0<span class="comparison-price-period">/forever</span></div>
                     <ul class="comparison-benefits comparison-benefits--muted">
                         <li>All features (same as SaaS)</li>
@@ -192,8 +192,8 @@
                     </p>
                 </div>
 
-                <div class="feature-card comparison-outline-danger">
-                    <h3 class="comparison-danger mb-4">Culture Amp Pricing</h3>
+                <div class="feature-card">
+                    <h3 class="mb-4">Culture Amp Pricing</h3>
                     <div class="comparison-plan-price">$9-14<span class="comparison-price-period">/user/month</span></div>
                     <ul class="comparison-benefits comparison-benefits--muted">
                         <li>User-reported estimate, not published</li>
@@ -214,13 +214,13 @@
                 <h3>Annual Cost Comparison ({{ plan_saas_max }} employees)</h3>
                 <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 class="comparison-success">Blik</h4>
-                        <p class="comparison-price comparison-success">€{{ plan_saas_annual }}/year</p>
+                        <h4>Blik</h4>
+                        <p class="comparison-price">€{{ plan_saas_annual }}/year</p>
                         <p class="comparison-note">Flat rate, up to {{ plan_saas_max }} employees</p>
                     </div>
                     <div>
-                        <h4 class="comparison-danger">Culture Amp (user-reported)</h4>
-                        <p class="comparison-price comparison-danger">$5,400-8,400/year</p>
+                        <h4>Culture Amp (user-reported)</h4>
+                        <p class="comparison-price">$5,400-8,400/year</p>
                         <p class="comparison-note">Estimate from user reports; not published</p>
                     </div>
                 </div>
@@ -241,7 +241,7 @@
                 <div class="comparison-card">
                     <h3>Integration &amp; API Quality</h3>
                     <div class="grid-two mt-6">
-                        <div class="card-green">
+                        <div class="comparison-side">
                             <h4>Blik</h4>
                             <ul>
                                 <li>REST API with full CRUD operations</li>
@@ -252,7 +252,7 @@
                             </ul>
                             <a href="{{ api_swagger_url }}" target="_blank" class="btn btn-secondary comparison-inline-link mt-4">View API Docs</a>
                         </div>
-                        <div class="card-red">
+                        <div class="comparison-side">
                             <h4>Culture Amp</h4>
                             <ul>
                                 <li>Native HRIS connectors</li>
@@ -268,7 +268,7 @@
                 <div class="comparison-card">
                     <h3>Feature Scope &amp; Delivery</h3>
                     <div class="grid-two mt-6">
-                        <div class="card-green">
+                        <div class="comparison-side">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Open source = document and verify yourself</li>
@@ -276,7 +276,7 @@
                                 <li>Public roadmap on GitHub</li>
                             </ul>
                         </div>
-                        <div class="card-red">
+                        <div class="comparison-side">
                             <h4>Culture Amp</h4>
                             <ul>
                                 <li>Feature scope defined per plan and contract</li>
@@ -290,7 +290,7 @@
                 <div class="comparison-card">
                     <h3>Growth &amp; Scalability</h3>
                     <div class="grid-two mt-6">
-                        <div class="card-green">
+                        <div class="comparison-side">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Self-hosted scales with your infrastructure</li>
@@ -299,7 +299,7 @@
                                 <li>Works at any team size you host</li>
                             </ul>
                         </div>
-                        <div class="card-red">
+                        <div class="comparison-side">
                             <h4>Culture Amp</h4>
                             <ul>
                                 <li>Enterprise platform for large organizations</li>
@@ -319,8 +319,8 @@
             <h2 class="section-title">Which Platform Is Right for You?</h2>
 
             <div class="comparison-plan-grid mt-12">
-                <div class="feature-card comparison-outline-success">
-                    <h3 class="comparison-success">Choose Blik If You:</h3>
+                <div class="feature-card">
+                    <h3>Choose Blik If You:</h3>
                     <ul class="comparison-benefits mt-6">
                         <li>Want <strong>token-based review access and aggregated reports</strong></li>
                         <li>Want <strong>flat, transparent pricing</strong></li>
@@ -333,8 +333,8 @@
                     <a href="{% landing_url 'signup' %}" class="btn btn-primary comparison-decision-link">Try Blik</a>
                 </div>
 
-                <div class="feature-card comparison-outline-warning">
-                    <h3 class="comparison-warning">Choose Culture Amp If You:</h3>
+                <div class="feature-card">
+                    <h3>Choose Culture Amp If You:</h3>
                     <ul class="comparison-benefits mt-6">
                         <li>Need <strong>engagement surveys</strong> as a primary feature</li>
                         <li>Want an <strong>all-in-one</strong> engagement and performance platform</li>

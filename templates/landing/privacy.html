@@ -435,7 +435,7 @@
 
                 <details class="faq-item">
                     <summary>Can we integrate with our Active Directory or LDAP?</summary>
-                    <p>LDAP integration is on the roadmap but not currently implemented. For now, admins use Django's built-in authentication. Since reviewers never log in (token-based access), only admin accounts need management. For firms requiring LDAP, you can modify the authentication backend in the open source code or wait for the next major release.</p>
+                    <p>Admins sign in with Django's built-in authentication. Reviewers never sign in (token-based access), so only admin accounts need management. The code is open source, so you can change the authentication backend to use LDAP.</p>
                 </details>
 
                 <details class="faq-item">

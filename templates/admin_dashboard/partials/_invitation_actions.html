@@ -1,0 +1,11 @@
+{% load i18n %}<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+    <form method="post" action="{% url 'resend_invitation' invitation.pk %}" style="margin: 0;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-secondary">{% trans 'Send again' %}</button>
+    </form>
+    {% blocktrans trimmed asvar question with email=invitation.email %}Withdraw the invitation to {{ email }}? The link in the email stops working.{% endblocktrans %}
+    <form method="post" action="{% url 'withdraw_invitation' invitation.pk %}" style="margin: 0;" onsubmit="return confirm('{{ question|escapejs }}')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger">{% trans 'Withdraw' %}</button>
+    </form>
+</div>

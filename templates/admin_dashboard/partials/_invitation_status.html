@@ -1,0 +1,4 @@
+{% load i18n %}{% if invitation.email_error %}<span class="badge" style="background: #dc2626; color: white;" title="{{ invitation.email_error }}">{% trans 'Not sent' %}</span>
+{% elif invitation.email_queued_at %}<span class="badge" style="background: #64748b; color: white;">{% trans 'Queued' %}</span>
+{% elif invitation.is_valid %}<span class="badge" style="background: #059669; color: white;">{% trans 'Active' %}</span>
+{% else %}<span class="badge" style="background: #dc2626; color: white;">{% trans 'Expired' %}</span>{% endif %}

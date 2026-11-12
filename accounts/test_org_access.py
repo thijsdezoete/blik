@@ -160,3 +160,36 @@ class OrgAccessTests(TestCase):
         old.refresh_from_db()
         self.assertTrue(old.is_valid())
         self.assertNotEqual(old.token, old_token)
+
+    def test_withdrawing_an_invitation_removes_it_and_only_in_the_own_organization(self):
+        from accounts.factories import OrganizationInvitationFactory
+        from accounts.models import OrganizationInvitation
+        from accounts.permissions import assign_organization_admin
+        assign_organization_admin(self._login('hank@uni.example'))
+        own = OrganizationInvitationFactory(organization=self.org, email='new@uni.example')
+        other = OrganizationInvitationFactory(email='new@other.example')
+
+        self.client.post(reverse('withdraw_invitation', args=[own.pk]))
+        elsewhere = self.client.post(reverse('withdraw_invitation', args=[other.pk]))
+
+        self.assertEqual(elsewhere.status_code, 404)
+        self.assertEqual(list(OrganizationInvitation.objects.all()), [other])
+
+    def test_sending_an_invitation_again_queues_it_with_a_new_link_and_the_same_message(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from accounts.factories import OrganizationInvitationFactory
+        from accounts.permissions import assign_organization_admin
+        assign_organization_admin(self._login('hank@uni.example'))
+        invitation = OrganizationInvitationFactory(
+            organization=self.org, email='new@uni.example', message='Welcome',
+            expires_at=timezone.now() - timedelta(days=1))
+        old_token = invitation.token
+
+        self.client.post(reverse('resend_invitation', args=[invitation.pk]))
+
+        invitation.refresh_from_db()
+        self.assertTrue(invitation.is_valid())
+        self.assertNotEqual(invitation.token, old_token)
+        self.assertIsNotNone(invitation.email_queued_at)
+        self.assertEqual(invitation.message, 'Welcome')

@@ -107,6 +107,36 @@ def invite_managers(request):
     return redirect('org_chart')
 
 
+def _open_invitation_or_404(request, pk):
+    # The organization middleware does not run for /accounts/ URLs.
+    org = request.organization or request.user.profile.organization
+    return get_object_or_404(OrganizationInvitation, pk=pk, organization=org, accepted_at__isnull=True)
+
+
+@login_required
+@organization_admin_required
+@require_POST
+def withdraw_invitation(request, pk):
+    """Take back an invitation that is not accepted: its link stops working and a queued email does not go out."""
+    invitation = _open_invitation_or_404(request, pk)
+    invitation.delete()
+    messages.success(request, _('The invitation to %(email)s is withdrawn.') % {'email': invitation.email})
+    return redirect('team_list')
+
+
+@login_required
+@organization_admin_required
+@require_POST
+def resend_invitation(request, pk):
+    """Send an open invitation again: a new link, seven more days, the same message. The cron sends it."""
+    invitation = _open_invitation_or_404(request, pk)
+    open_invitation(invitation.organization, invitation.email, request.user, invitation.message,
+                    email_queued_at=timezone.now())
+    messages.success(request, _('The invitation to %(email)s is queued and goes out within about five minutes.')
+                     % {'email': invitation.email})
+    return redirect('team_list')
+
+
 @login_required
 @organization_admin_required
 def send_invitation(request):

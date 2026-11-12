@@ -1,4 +1,4 @@
-"""Managers read the reports of everyone below them in the org chart."""
+"""Managers read the reports of their direct reports in the org chart."""
 from django.test import TestCase
 from django.urls import reverse
 
@@ -8,7 +8,7 @@ from accounts.org_import import import_org_chart, rows_from_csv
 from accounts.permissions import (
     assign_organization_member,
     ensure_permission_groups,
-    reviewee_emails_below,
+    direct_report_emails,
 )
 from core.factories import OrganizationFactory, UserFactory
 from reviews.factories import ReviewCycleFactory
@@ -39,16 +39,16 @@ class OrgAccessTests(TestCase):
         self.client.force_login(user)
         return user
 
-    def test_everyone_below_over_all_layers(self):
+    def test_direct_reports_only_not_the_layers_below(self):
         ada, hank, sam = (UserFactory(username=n, email=f'{n}@uni.example') for n in ('ada', 'hank', 'sam'))
 
         self.assertEqual(
-            reviewee_emails_below(ada, self.org),
-            {'hank@uni.example', 'hilde@uni.example', 'sam@uni.example', 'sue@uni.example', 'lea@uni.example'},
+            direct_report_emails(ada, self.org),
+            {'hank@uni.example', 'hilde@uni.example'},
         )
-        self.assertEqual(reviewee_emails_below(hank, self.org), {'sam@uni.example', 'sue@uni.example'})
-        self.assertEqual(reviewee_emails_below(sam, self.org), set())
-        self.assertEqual(reviewee_emails_below(ada, OrganizationFactory()), set())
+        self.assertEqual(direct_report_emails(hank, self.org), {'sam@uni.example', 'sue@uni.example'})
+        self.assertEqual(direct_report_emails(sam, self.org), set())
+        self.assertEqual(direct_report_emails(ada, OrganizationFactory()), set())
 
     def test_a_head_reads_the_reports_of_their_own_staff_only(self):
         self._login('hank@uni.example')
@@ -78,3 +78,11 @@ class OrgAccessTests(TestCase):
         self.assertEqual(listed, {'hank@uni.example': False, 'sam@uni.example': True, 'sue@uni.example': True})
         self.assertContains(response, reverse('reports:view_report', args=[self.cycles['sam@uni.example'].uuid]))
 
+
+    def test_the_reviewee_list_shows_a_manager_only_themselves_and_their_direct_reports(self):
+        self._login('hank@uni.example')
+
+        response = self.client.get(reverse('reviewee_list'))
+
+        listed = {item['reviewee'].email for item in response.context['reviewees_with_latest']}
+        self.assertEqual(listed, {'hank@uni.example', 'sam@uni.example', 'sue@uni.example'})

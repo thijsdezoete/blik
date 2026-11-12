@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils import translation
 from django.utils.translation import gettext as _
 from django_ratelimit.decorators import ratelimit
-from accounts.permissions import can_view_all_reports, reviewee_emails_below
+from accounts.permissions import can_view_all_reports, direct_report_emails
 from reviews.models import ReviewCycle
 from .models import Report
 from .context import build_report_context
@@ -33,7 +33,7 @@ def get_cycle_or_404(request, cycle_uuid):
 
 def can_view_report(request, cycle):
     return can_view_all_reports(request.user) or (
-        cycle.reviewee.email.lower() in reviewee_emails_below(request.user, request.organization)
+        cycle.reviewee.email.lower() in direct_report_emails(request.user, request.organization)
     )
 
 
@@ -53,7 +53,7 @@ def is_own_cycle(user, cycle):
 
 @login_required
 def view_report(request, cycle_uuid):
-    """View aggregated feedback report for a review cycle (org admins and managers above the reviewee)"""
+    """View aggregated feedback report for a review cycle (org admins and the reviewee's direct manager)"""
     # Reviewees reach their own report through the token URL, not the admin view.
     cycle = get_object_or_404(ReviewCycle.objects.select_related('reviewee'), uuid=cycle_uuid)
     if not can_view_report(request, cycle):

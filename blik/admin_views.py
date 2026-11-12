@@ -35,7 +35,7 @@ from accounts.permissions import (
     can_view_all_reports,
     is_organization_admin,
     login_required,
-    reviewee_emails_below,
+    direct_report_emails,
     set_user_permission,
     visible_cycles,
 )
@@ -433,6 +433,10 @@ def reviewee_list(request):
     """Find people and understand their feedback status before taking action."""
     org = request.organization
     people = Reviewee.objects.for_organization(org).filter(is_active=True)
+    if not can_view_all_reports(request.user):
+        # Everyone else sees themselves and, as a manager, their direct reports.
+        scope = direct_report_emails(request.user, org) | {(request.user.email or '').lower()}
+        people = people.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
     latest_cycles = ReviewCycle.objects.filter(reviewee=OuterRef('pk')).order_by('-created_at', '-pk')
     latest_reports = Report.objects.filter(
         cycle__reviewee=OuterRef('pk'), cycle__status='completed', available=True,
@@ -1747,9 +1751,9 @@ def review_cycle_list(request):
             'reviewee', 'questionnaire', 'created_by'
         )
 
-    below = set() if can_view_all_reports(request.user) else reviewee_emails_below(request.user, org)
+    below = set() if can_view_all_reports(request.user) else direct_report_emails(request.user, org)
     if below:
-        # Managers also see the cycles of the people below them in the org
+        # Managers also see the cycles of their direct reports in the org
         # chart, but only to read the report (see report_only below).
         own = visible_cycles(request.user, cycles_qs).values('pk')
         cycles_qs = cycles_qs.annotate(reviewee_email_lower=Lower('reviewee__email')).filter(

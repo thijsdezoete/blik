@@ -3837,7 +3837,7 @@ def org_chart(request):
     """Render the org chart editor page."""
     org = request.organization
     if not org:
-        messages.error(request, 'No organization found.')
+        messages.error(request, _('No organization found.'))
         return redirect('admin_dashboard')
 
     context = _org_chart_context(org)
@@ -3974,7 +3974,7 @@ def org_chart_unit_create(request):
     org = request.organization
     name = (request.POST.get('name') or '').strip()
     if not name:
-        return JsonResponse({'error': 'Unit name is required.'}, status=400)
+        return JsonResponse({'error': _('Unit name is required.')}, status=400)
 
     if OrgUnit.objects.filter(organization=org, name=name).exists():
         return JsonResponse(
@@ -4012,7 +4012,7 @@ def org_chart_unit_update(request, unit_uuid):
     if 'name' in request.POST:
         name = (request.POST.get('name') or '').strip()
         if not name:
-            return JsonResponse({'error': 'Unit name is required.'}, status=400)
+            return JsonResponse({'error': _('Unit name is required.')}, status=400)
         if (
             OrgUnit.objects.filter(organization=org, name=name)
             .exclude(pk=unit.pk).exists()

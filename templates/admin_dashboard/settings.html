@@ -893,7 +893,7 @@ function displayPreview(preview, warnings) {
         <div style="display: grid; gap: 1rem;">
             <div>
                 <strong>{{ _('Organization:')|escapejs }}</strong> ${preview.organization_name}
-                ${preview.organization_email ? `<br><small style="color: var(--text-secondary);">${preview.organization_email}</small>` : ''}
+                ${preview.organization_email ? `<span class="person-email">${preview.organization_email}</span>` : ''}
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; padding: 1rem; background: var(--bg-card); border-radius: 6px;">

@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <tr>
                         <td>
                             <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
-                            <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
+                            <div class="person-email">{{ item.cycle.reviewee.email }}</div>
                         </td>
                         <td style="width: 200px;">
                             <div style="margin-bottom: 0.25rem; font-size: 0.75rem; color: #64748b;">
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <tr>
                         <td>
                             <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
-                            <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
+                            <div class="person-email">{{ item.cycle.reviewee.email }}</div>
                         </td>
                         <td style="color: #64748b; font-size: 0.875rem;">
                             {{ item.cycle.created_at|date:'SHORT_DATE_FORMAT' }}
@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tr>
                     <td>
                         <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">{{ cycle.reviewee.email }}</div>
+                        <div class="person-email">{{ cycle.reviewee.email }}</div>
                     </td>
                     <td>{{ cycle.questionnaire.name }}</td>
                     <td style="color: #64748b; font-size: 0.875rem;">

@@ -1921,12 +1921,6 @@ def review_cycle_create(request):
                 # request from stalling on SMTP and avoids surprise blasts.
                 reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
 
-                # Refuse the whole batch up front so the message can say how
-                # many credits it needs; the model gate still backs this up.
-                credits = cycle_credits(org)
-                if credits is not None and reviewees.count() > credits:
-                    raise NoCycleCredits(needed=reviewees.count(), available=credits)
-
                 # `bulk_source` controls reviewer-token pre-population:
                 #   'chart' — derive from the org chart for each reviewee
                 #   'previous' — each reviewee's latest cycle: its questionnaire,
@@ -1939,43 +1933,57 @@ def review_cycle_create(request):
                 # so the defaults match what the created cycles will have.
                 active_categories = ReviewCycle(**category_flags).active_categories
 
-                with transaction.atomic():
-                    for reviewee in reviewees:
-                        email_assignments = None
-                        cycle_questionnaire, cycle_flags = questionnaire, category_flags
-                        if bulk_source == 'previous':
-                            previous = reviewee.review_cycles.select_related('questionnaire').first()
-                            # Archived questionnaires do not come back this way either.
-                            if previous is None or not previous.questionnaire.is_active:
-                                unplaced_count += 1
-                                continue
-                            cycle_questionnaire = previous.questionnaire
-                            cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
-                            email_assignments = {code: [] for code in previous.active_categories}
-                            for category, email in previous.tokens.filter(
-                                reviewer_email__isnull=False, category__in=previous.active_categories,
-                            ).values_list('category', 'reviewer_email'):
-                                email_assignments[category].append(email.lower())
-                            if 'self' in email_assignments and not email_assignments['self'] and reviewee.email:
-                                email_assignments['self'] = [reviewee.email.lower()]
-                            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
-                                unplaced_count += 1
-                                continue
-                        elif bulk_source == 'chart':
-                            buckets = derive_reviewers(reviewee)
-                            # Build the email_assignments dict the existing
-                            # helper expects: emails only, no Reviewee FK.
-                            email_assignments = {
-                                code: [p.email.lower() for p in buckets.get(code, []) if p.email]
-                                for code in active_categories
-                            }
-                            # Nobody but the reviewee: a worker in an upward run,
-                            # a professor in a peer run. No cycle, no lone
-                            # self-assessment, no credit spent.
-                            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
-                                unplaced_count += 1
-                                continue
+                # First work out which cycles to create, then create them: the
+                # credit check counts only the people who really get a cycle.
+                planned = []
+                for reviewee in reviewees:
+                    email_assignments = None
+                    cycle_questionnaire, cycle_flags = questionnaire, category_flags
+                    if bulk_source == 'previous':
+                        previous = reviewee.review_cycles.select_related('questionnaire').first()
+                        # Archived questionnaires do not come back this way either.
+                        if previous is None or not previous.questionnaire.is_active:
+                            unplaced_count += 1
+                            continue
+                        cycle_questionnaire = previous.questionnaire
+                        cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
+                        email_assignments = {code: [] for code in previous.active_categories}
+                        for category, email in previous.tokens.filter(
+                            reviewer_email__isnull=False, category__in=previous.active_categories,
+                        ).values_list('category', 'reviewer_email'):
+                            email_assignments[category].append(email.lower())
+                        # The self-assessment goes to the person's address of today,
+                        # not to the one the previous cycle used.
+                        if 'self' in email_assignments and reviewee.email:
+                            email_assignments['self'] = [reviewee.email.lower()]
+                        if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                            unplaced_count += 1
+                            continue
+                    elif bulk_source == 'chart':
+                        buckets = derive_reviewers(reviewee)
+                        # Build the email_assignments dict the existing
+                        # helper expects: emails only, no Reviewee FK.
+                        email_assignments = {
+                            code: [p.email.lower() for p in buckets.get(code, []) if p.email]
+                            for code in active_categories
+                        }
+                        # Nobody but the reviewee: a worker in an upward run,
+                        # a professor in a peer run. No cycle, no lone
+                        # self-assessment, no credit spent.
+                        if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                            unplaced_count += 1
+                            continue
 
+                    planned.append((reviewee, cycle_questionnaire, cycle_flags, email_assignments))
+
+                # Refuse the whole batch up front so the message can say how
+                # many credits it needs; the model gate still backs this up.
+                credits = cycle_credits(org)
+                if credits is not None and len(planned) > credits:
+                    raise NoCycleCredits(needed=len(planned), available=credits)
+
+                with transaction.atomic():
+                    for reviewee, cycle_questionnaire, cycle_flags, email_assignments in planned:
                         cycle = ReviewCycle.objects.create(
                             reviewee=reviewee,
                             questionnaire=cycle_questionnaire,

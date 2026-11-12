@@ -145,6 +145,8 @@ class BulkChartDerivationTests(TestCase):
         ReviewerTokenFactory(cycle=latest, category='manager', reviewer_email='Boss@example.com')
         ReviewerTokenFactory(cycle=latest, category='peer', reviewer_email='pal@example.com')
         ReviewerTokenFactory(cycle=latest, category='peer')  # never assigned: not copied
+        # The earlier self-assessment went to an address alice no longer has.
+        ReviewerTokenFactory(cycle=latest, category='self', reviewer_email='old-alice@example.com')
 
         resp = self.client.post(reverse('review_cycle_create'), {
             'creation_mode': 'bulk',

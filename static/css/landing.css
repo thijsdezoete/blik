@@ -1961,6 +1961,12 @@
     color: var(--primary);
 }
 
+/* Default for text links without a class of their own, instead of the browser's blue.
+   Specificity (0,1,1), so any rule for a link class or container still wins. */
+.landing-page a:where(:not([class])) {
+    color: var(--primary);
+}
+
 /* Shared header and footer */
 .landing-page .header .logo {
     text-decoration: none;

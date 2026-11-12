@@ -42,7 +42,7 @@
         <dl class="oc-import-summary">
             <div><dt>{% trans 'In the file' %}</dt><dd>{{ row_count }}</dd></div>
             <div><dt>{% trans 'No change' %}</dt><dd>{{ changes.unchanged }}</dd></div>
-            <div><dt>{% trans 'Changes' %}</dt><dd>{{ changes.people|length }}</dd></div>
+            <div><dt>{% trans 'Changes' context 'number of people who change' %}</dt><dd>{{ changes.people|length }}</dd></div>
             <div><dt>{% trans 'In Blik, not in the file' %}</dt><dd>{{ changes.missing|length }}</dd></div>
         </dl>
 
@@ -54,7 +54,7 @@
         <h3 class="oc-role">{% trans 'People who change' %}</h3>
         <div class="table-wrapper{% if changes.people|length > 12 %} oc-import-scroll{% endif %}" role="region" aria-label="{% trans 'People who change' %}" tabindex="0">
             <table class="table oc-import-diff">
-                <thead><tr><th scope="col">{% trans 'Person' %}</th><th scope="col">{% trans 'What changes' %}</th><th scope="col">{% trans 'Now' %}</th><th scope="col">{% trans 'After the import' %}</th></tr></thead>
+                <thead><tr><th scope="col">{% trans 'Person' %}</th><th scope="col">{% trans 'What changes' %}</th><th scope="col">{% trans 'Now' context 'column: before the import' %}</th><th scope="col">{% trans 'After the import' %}</th></tr></thead>
                 <tbody>{% for person in changes.people %}
                     <tr>
                         <td><strong>{{ person.name }}</strong><div class="person-email">{{ person.email }}</div></td>
@@ -81,7 +81,7 @@
         <p class="help-text">{% trans 'They are in Blik, but the file does not have them. Did they leave? Then deactivate them below. If not, they stay active.' %}</p>
         <div class="table-wrapper{% if changes.missing|length > 12 %} oc-import-scroll{% endif %}" role="region" aria-label="{% trans 'People who are not in the file' %}" tabindex="0">
             <table class="table oc-import-diff">
-                <thead><tr><th scope="col">{% trans 'Person' %}</th><th scope="col">{% trans 'Now' %}</th><th scope="col">{% trans 'After the import, if they stay active' %}</th></tr></thead>
+                <thead><tr><th scope="col">{% trans 'Person' %}</th><th scope="col">{% trans 'Now' context 'column: before the import' %}</th><th scope="col">{% trans 'After the import, if they stay active' %}</th></tr></thead>
                 <tbody>{% for person in changes.missing %}
                     <tr>
                         <td><strong>{{ person.name }}</strong><div class="person-email">{{ person.email }}</div></td>
@@ -112,8 +112,8 @@
         <details>
             <summary>{% trans 'How this affects your plan' %}</summary>
                 {% if plan.has_subscription %}
-                <p>{% blocktrans trimmed with max=plan.max_employees now=plan.current_reviewees after=changes.active %}Your plan allows {{ max }} active people. Now {{ now }} are active. After this import {{ after }} are active.{% endblocktrans %}
-                {% if changes.missing %}{% blocktrans trimmed with after=changes.active_without_missing %}With the people who are not in the file deactivated, {{ after }} are active.{% endblocktrans %}{% endif %}</p>
+                <p>{% blocktrans trimmed with max=plan.max_employees now=plan.current_reviewees after=changes.active %}Active people your plan allows: {{ max }}. Active now: {{ now }}. Active after this import: {{ after }}.{% endblocktrans %}
+                {% if changes.missing %}{% blocktrans trimmed with after=changes.active_without_missing %}Active after this import, with the people who are not in the file deactivated: {{ after }}.{% endblocktrans %}{% endif %}</p>
                 <p>{% trans 'Only active people count. The import does not change your plan or its price.' %}</p>
                 {% elif plan.mode == 'credits' %}
                 <p>{% trans 'You pay per feedback cycle, not per person. The import starts no cycles and uses no credits.' %}</p>

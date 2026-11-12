@@ -326,12 +326,13 @@ def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False
             row = {'name': person.name, 'email': person.email, 'before': texts(before), 'after': texts(after)}
             details = False
             if old:
-                for label, old_value, new_value in ((_('Name'), old.name, person.name),
-                                                    (_('Department'), old.department, person.department)):
+                # Translators: a line in the preview of an import, such as "Name: Ada Lovelace"
+                for text, old_value, new_value in ((_('Name: %(value)s'), old.name, person.name),
+                                                   (_('Department: %(value)s'), old.department, person.department)):
                     if old_value != new_value:
                         details = True
-                        row['before'].append(f'{label}: {old_value or "–"}')
-                        row['after'].append(f'{label}: {new_value or "–"}')
+                        row['before'].append(text % {'value': old_value or '–'})
+                        row['after'].append(text % {'value': new_value or '–'})
             moved = [key for key, _text in before] != [key for key, _text in after]
             if old is None:
                 row['kind'], row['before'] = 'new', []

@@ -4610,6 +4610,15 @@ msgstr "Einheit löschen"
 msgid "Not in a unit"
 msgstr "In keiner Einheit"
 
+#. Translators: a line in the preview of an import, such as "Name: Ada Lovelace"
+#, python-format
+msgid "Name: %(value)s"
+msgstr "Name: %(value)s"
+
+#, python-format
+msgid "Department: %(value)s"
+msgstr "Bereich: %(value)s"
+
 msgid "Find a person"
 msgstr "Person suchen"
 
@@ -4673,6 +4682,7 @@ msgstr "In der Datei"
 msgid "No change"
 msgstr "Unverändert"
 
+msgctxt "number of people who change"
 msgid "Changes"
 msgstr "Änderungen"
 
@@ -6459,6 +6469,7 @@ msgstr "Person"
 msgid "What changes"
 msgstr "Was sich ändert"
 
+msgctxt "column: before the import"
 msgid "Now"
 msgstr "Jetzt"
 
@@ -6546,12 +6557,12 @@ msgid "How this affects your plan"
 msgstr "Auswirkungen auf den Tarif"
 
 #, python-format
-msgid "Your plan allows %(max)s active people. Now %(now)s are active. After this import %(after)s are active."
-msgstr "Der Tarif erlaubt %(max)s aktive Personen. Jetzt sind %(now)s aktiv. Nach diesem Import sind %(after)s aktiv."
+msgid "Active people your plan allows: %(max)s. Active now: %(now)s. Active after this import: %(after)s."
+msgstr "Aktive Personen laut Tarif: %(max)s. Jetzt aktiv: %(now)s. Nach diesem Import aktiv: %(after)s."
 
 #, python-format
-msgid "With the people who are not in the file deactivated, %(after)s are active."
-msgstr "Werden die Personen deaktiviert, die nicht in der Datei stehen, sind %(after)s aktiv."
+msgid "Active after this import, with the people who are not in the file deactivated: %(after)s."
+msgstr "Nach diesem Import aktiv, wenn die Personen deaktiviert werden, die nicht in der Datei stehen: %(after)s."
 
 msgid "Only active people count. The import does not change your plan or its price."
 msgstr "Nur aktive Personen zählen. Der Import ändert weder den Tarif noch den Preis."

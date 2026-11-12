@@ -66,7 +66,7 @@
                 <tr>
                     <td>
                         <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
-                        <div class="person-email">{{ cycle.reviewee.email }}</div>
+                        <div class="person-email">{{ cycle.reviewee.email }}{% if not cycle.reviewee.is_active %} · {% trans 'Deactivated' %}{% endif %}</div>
                     </td>
                     <td>
                         <div style="font-weight: 500;">{{ cycle.questionnaire.name }}</div>
@@ -96,7 +96,7 @@
                     <td>
                         {% if cycle.report_only %}
                         <a href="{% url 'reports:view_report' cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'Report' %}</a>
-                        {% elif perms.accounts.can_manage_organization %}
+                        {% elif perms.accounts.can_manage_organization and cycle.reviewee.is_active %}
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <button type="button" class="btn btn-sm btn-primary" data-reviewee-dialog="start-review-{{ cycle.uuid }}" aria-haspopup="dialog">{% trans 'New Cycle' %}</button>
                             <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View' %}</a>

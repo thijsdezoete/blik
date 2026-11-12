@@ -574,6 +574,22 @@ msgstr "Zeile %(line)s: Führungskraft %(email)s ist nicht in der Datei."
 msgid "Line %(line)s: a person cannot be their own manager."
 msgstr "Zeile %(line)s: Eine Person kann nicht ihre eigene Führungskraft sein."
 
+#, python-format
+msgid "Line %(line)s: the reporting line of %(email)s comes back to the same person."
+msgstr "Zeile %(line)s: Die Berichtslinie von %(email)s führt zur selben Person zurück."
+
+#, python-format
+msgid "Manager of %(unit)s"
+msgstr "Führungskraft von %(unit)s"
+
+#, python-format
+msgid "In %(unit)s, reports to %(manager)s"
+msgstr "In %(unit)s, berichtet an %(manager)s"
+
+#, python-format
+msgid "In %(unit)s"
+msgstr "In %(unit)s"
+
 msgid "Authentication required"
 msgstr "Anmeldung erforderlich"
 
@@ -1519,6 +1535,12 @@ msgstr "Die Datei ist keine lesbare CSV-Datei. Als CSV (UTF-8) speichern."
 #, python-format
 msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
 msgstr "%(units)s Einheiten importiert: %(created)s neue Personen, %(updated)s aktualisiert."
+
+#, python-format
+msgid "%(count)s person who is not in the file was deactivated."
+msgid_plural "%(count)s people who are not in the file were deactivated."
+msgstr[0] "%(count)s Person, die nicht in der Datei steht, wurde deaktiviert."
+msgstr[1] "%(count)s Personen, die nicht in der Datei stehen, wurden deaktiviert."
 
 #, python-format
 msgid "%(name)s is already in this unit."
@@ -4600,6 +4622,12 @@ msgstr "Eine Person auf eine Einheit ziehen. Eine Person hierher ziehen, um sie 
 msgid "Everyone is in a unit. Drag a person here to take them out of a unit."
 msgstr "Alle sind in einer Einheit. Eine Person hierher ziehen, um sie aus einer Einheit zu nehmen."
 
+msgid "Step 2 of 2: check the changes"
+msgstr "Schritt 2 von 2: Änderungen prüfen"
+
+msgid "Step 1 of 2: choose the columns"
+msgstr "Schritt 1 von 2: Spalten wählen"
+
 #, python-format
 msgid "%(filename)s · %(counter)s person"
 msgid_plural "%(filename)s · %(counter)s people"
@@ -4633,6 +4661,30 @@ msgid_plural "And %(counter)s more errors."
 msgstr[0] "Und %(counter)s weiterer Fehler."
 msgstr[1] "Und %(counter)s weitere Fehler."
 
+msgid "What the import changes"
+msgstr "Was der Import ändert"
+
+msgid "Nothing is saved yet. Each row shows one person: where they are now, and where they are after the import."
+msgstr "Noch ist nichts gespeichert. Jede Zeile zeigt eine Person: wo sie jetzt ist und wo sie nach dem Import ist."
+
+msgid "In the file"
+msgstr "In der Datei"
+
+msgid "No change"
+msgstr "Unverändert"
+
+msgid "Changes"
+msgstr "Änderungen"
+
+msgid "In Blik, not in the file"
+msgstr "In Blik, nicht in der Datei"
+
+msgid "The file is the same as the org chart. Nothing changes."
+msgstr "Die Datei entspricht dem Organigramm. Es ändert sich nichts."
+
+msgid "People who change"
+msgstr "Personen mit Änderungen"
+
 msgid "Which column is which?"
 msgstr "Welche Spalte ist was?"
 
@@ -4654,11 +4706,17 @@ msgstr "Erste Zeilen"
 msgid "First rows of the file"
 msgstr "Erste Zeilen der Datei"
 
-msgid "This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit."
-msgstr "Dies ersetzt das aktuelle Organigramm. Personen, die nicht in der Datei stehen, bleiben in Blik, sind aber in keiner Einheit mehr."
+msgid "Changed a column? Then Blik shows the changes again first."
+msgstr "Spalte geändert? Dann zeigt Blik zuerst noch einmal die Änderungen."
+
+msgid "Blik shows what the import changes before anything is saved."
+msgstr "Blik zeigt, was der Import ändert, bevor etwas gespeichert wird."
 
 msgid "Import"
 msgstr "Importieren"
+
+msgid "Show changes"
+msgstr "Änderungen anzeigen"
 
 msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
 msgstr "Wer in welcher Einheit ist und wer sie leitet. Blik schlägt daraus für jedes Feedback Führungskraft, Kolleg:innen und direkte Mitarbeitende vor."
@@ -5908,6 +5966,9 @@ msgstr "Wir lesen jede Bewertung und priorisieren danach neue Funktionen"
 msgid "Review Cycle: %(name)s"
 msgstr "Feedbackrunde: %(name)s"
 
+msgid "Deactivated"
+msgstr "Deaktiviert"
+
 msgid "Questionnaire:"
 msgstr "Fragebogen:"
 
@@ -6394,6 +6455,115 @@ msgstr "Eine Differenz wird nur angezeigt, wenn genug Feedback vorliegt, um die 
 
 msgid "Person"
 msgstr "Person"
+
+msgid "What changes"
+msgstr "Was sich ändert"
+
+msgid "Now"
+msgstr "Jetzt"
+
+msgid "After the import"
+msgstr "Nach dem Import"
+
+msgid "New in Blik"
+msgstr "Neu in Blik"
+
+msgid "Active again"
+msgstr "Wieder aktiv"
+
+msgid "Other place in the chart"
+msgstr "Anderer Platz im Organigramm"
+
+msgid "Other manager"
+msgstr "Andere Führungskraft"
+
+msgid "Other name or department"
+msgstr "Anderer Name oder Bereich"
+
+msgid "Not in Blik"
+msgstr "Nicht in Blik"
+
+msgid "Units"
+msgstr "Einheiten"
+
+#, python-format
+msgid "<strong>%(unit)s</strong> is new."
+msgstr "<strong>%(unit)s</strong> ist neu."
+
+#, python-format
+msgid "<strong>%(unit)s</strong> is removed: after the import nobody reports to its manager."
+msgstr "<strong>%(unit)s</strong> wird entfernt: Nach dem Import berichtet niemand mehr an die Führungskraft."
+
+msgid "All other units keep their name, their place and their people."
+msgstr "Alle anderen Einheiten behalten Namen, Position und Personen."
+
+#, python-format
+msgid "%(counter)s person is not in the file"
+msgid_plural "%(counter)s people are not in the file"
+msgstr[0] "%(counter)s Person steht nicht in der Datei"
+msgstr[1] "%(counter)s Personen stehen nicht in der Datei"
+
+msgid "They are in Blik, but the file does not have them. Did they leave? Then deactivate them below. If not, they stay active."
+msgstr "Sie sind in Blik, stehen aber nicht in der Datei. Ausgeschieden? Dann unten deaktivieren. Sonst bleiben sie aktiv."
+
+msgid "People who are not in the file"
+msgstr "Personen, die nicht in der Datei stehen"
+
+msgid "After the import, if they stay active"
+msgstr "Nach dem Import, wenn sie aktiv bleiben"
+
+#, python-format
+msgid "Deactivate this person"
+msgid_plural "Deactivate these %(counter)s people"
+msgstr[0] "Diese Person deaktivieren"
+msgstr[1] "Diese %(counter)s Personen deaktivieren"
+
+msgid "Deactivated people leave the org chart and get no new cycles. Nothing is deleted: the feedback they gave and their own reports stay."
+msgstr "Deaktivierte Personen verlassen das Organigramm und erhalten keine neuen Feedbackrunden. Es wird nichts gelöscht: Das Feedback, das sie gegeben haben, und ihre eigenen Berichte bleiben."
+
+msgid "What happens to a deactivated person"
+msgstr "Was mit einer deaktivierten Person geschieht"
+
+msgid "Nothing is deleted."
+msgstr "Es wird nichts gelöscht."
+
+msgid "The feedback they gave to other people stays, and still counts in the reports of those people."
+msgstr "Das Feedback, das sie anderen gegeben hat, bleibt erhalten und zählt weiter in den Berichten dieser Personen."
+
+msgid "Open invitations to give feedback stay open. No answer counts as no response."
+msgstr "Offene Einladungen, Feedback zu geben, bleiben offen. Ohne Antwort zählen sie als nicht beantwortet."
+
+msgid "They get no new cycles and are no longer in the org chart or the lists of people."
+msgstr "Sie erhält keine neuen Feedbackrunden und steht nicht mehr im Organigramm oder in den Personenlisten."
+
+msgid "Their own cycles and reports stay in the list of review cycles, marked as deactivated."
+msgstr "Ihre eigenen Feedbackrunden und Berichte bleiben in der Liste der Feedbackrunden, als deaktiviert markiert."
+
+msgid "To make them active again, import a file that has them in it."
+msgstr "Zum Reaktivieren eine Datei importieren, in der die Person steht."
+
+msgid "How this affects your plan"
+msgstr "Auswirkungen auf den Tarif"
+
+#, python-format
+msgid "Your plan allows %(max)s active people. Now %(now)s are active. After this import %(after)s are active."
+msgstr "Der Tarif erlaubt %(max)s aktive Personen. Jetzt sind %(now)s aktiv. Nach diesem Import sind %(after)s aktiv."
+
+#, python-format
+msgid "With the people who are not in the file deactivated, %(after)s are active."
+msgstr "Werden die Personen deaktiviert, die nicht in der Datei stehen, sind %(after)s aktiv."
+
+msgid "Only active people count. The import does not change your plan or its price."
+msgstr "Nur aktive Personen zählen. Der Import ändert weder den Tarif noch den Preis."
+
+msgid "You pay per feedback cycle, not per person. The import starts no cycles and uses no credits."
+msgstr "Abgerechnet wird pro Feedbackrunde, nicht pro Person. Der Import startet keine Feedbackrunden und verbraucht kein Guthaben."
+
+msgid "Your plan has no limit on the number of people. The import costs nothing."
+msgstr "Der Tarif begrenzt die Zahl der Personen nicht. Der Import kostet nichts."
+
+msgid "Columns and first rows of the file"
+msgstr "Spalten und erste Zeilen der Datei"
 
 msgid "Review status"
 msgstr "Feedbackstatus"

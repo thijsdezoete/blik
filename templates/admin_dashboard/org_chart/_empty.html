@@ -2,7 +2,7 @@
     <h2 class="card-title">{% trans 'No units yet' %}</h2>
     <p class="help-text">{% trans 'Import a CSV file with your people and their managers, or create the first unit yourself.' %}</p>
     <div class="oc-empty-actions">
-        <button type="button" class="btn btn-secondary" data-oc-open="ocImportDialog">{% trans 'Import CSV' %}</button>
-        <button type="button" class="btn btn-primary" data-oc-new-unit>{% trans 'New unit' %}</button>
+        {% if can_manage %}<button type="button" class="btn btn-secondary" data-oc-open="ocImportDialog">{% trans 'Import CSV' %}</button>
+        <button type="button" class="btn btn-primary" data-oc-new-unit>{% trans 'New unit' %}</button>{% endif %}
     </div>
 </div>

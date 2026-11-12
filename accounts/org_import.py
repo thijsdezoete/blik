@@ -9,10 +9,12 @@ department is a member of the professor's unit and the manager of their own.
 import csv
 import io
 import re
+from collections import Counter
 
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import transaction
+from django.db.models import Max
 from django.utils.translation import gettext as _, gettext_lazy
 
 from accounts.models import OrgUnit, OrgUnitMembership, Reviewee
@@ -150,6 +152,18 @@ def check_rows(rows):
             errors.append(_('Line %(line)s: manager %(email)s is not in the file.') % {'line': line, 'email': manager})
         if manager and manager == row['email'].lower():
             errors.append(_('Line %(line)s: a person cannot be their own manager.') % {'line': line})
+
+    # A reporting line that comes back to the same person (A reports to B, B to A).
+    manager_of = {row['email'].lower(): row.get('manager_email', '').lower() for row in rows}
+    for line, row in enumerate(rows, start=2):
+        start = row['email'].lower()
+        seen, current = {start}, manager_of.get(start, '')
+        while current and current not in seen:
+            seen.add(current)
+            current = manager_of.get(current, '')
+        if current == start and manager_of[start] != start:
+            errors.append(_('Line %(line)s: the reporting line of %(email)s comes back to the same person.')
+                          % {'line': line, 'email': start})
     return errors
 
 
@@ -160,20 +174,60 @@ def count_new_people(organization, rows):
     return len(emails - {e.lower() for e in known})
 
 
-def import_org_chart(organization, rows):
-    """Replace the organization's org chart with the one in `rows`.
+def _placements(organization):
+    """Where each person is in the chart: {reviewee id: [(key, text), ...]}.
 
-    Creates or updates the reviewees (matched by email). People not in the file
-    stay, but are no longer in a unit. Returns (stats, errors); nothing is
-    written when there are errors.
+    The key changes when the unit or its managers change; the text says it in words.
+    """
+    memberships = list(OrgUnitMembership.objects.filter(unit__organization=organization)
+                       .select_related('unit', 'reviewee').order_by('unit__display_order', 'row', 'col'))
+    managers = {}
+    for m in memberships:
+        if m.role == OrgUnitMembership.MANAGER:
+            managers.setdefault(m.unit_id, []).append(m.reviewee)
+    places = {}
+    for m in memberships:
+        above = managers.get(m.unit_id, [])
+        if m.role == OrgUnitMembership.MANAGER:
+            key, text = ('manager', m.unit_id), _('Manager of %(unit)s') % {'unit': m.unit.name}
+        elif above:
+            key = ('member', m.unit_id, tuple(r.pk for r in above))
+            text = _('In %(unit)s, reports to %(manager)s') % {
+                'unit': m.unit.name, 'manager': ', '.join(r.name for r in above)}
+        else:
+            key, text = ('member', m.unit_id, ()), _('In %(unit)s') % {'unit': m.unit.name}
+        places.setdefault(m.reviewee_id, []).append((key, text))
+    return places
+
+
+def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False):
+    """Bring the organization's org chart in line with `rows`.
+
+    Creates or updates the reviewees (matched by email). The file is merged into
+    the chart: a manager keeps the unit they have (name, order, positions), and
+    only the people whose manager changed move. A person without a manager in
+    the file stays where they are. A unit that loses all its members is removed.
+
+    People who are not in the file stay as they are, or are deactivated with
+    `deactivate_missing`. Nothing is ever deleted from a person.
+
+    With `dry_run` nothing is written; the stats say what the import would do.
+    `stats['people']` has one row per person who changes, with their place in
+    the chart before and after; `stats['missing']` the same for the people who
+    are not in the file (as it is when they stay active).
+    Returns (stats, errors); nothing is written when there are errors.
     """
     errors = check_rows(rows)
     if errors:
         return None, errors
 
-    stats = {'created': 0, 'updated': 0, 'units': 0}
+    MANAGER, MEMBER = OrgUnitMembership.MANAGER, OrgUnitMembership.MEMBER
+    stats = {'created': [], 'updated': 0, 'moved': 0, 'unchanged': 0, 'people': [], 'units_created': [],
+             'units_removed': [], 'missing': [], 'deactivated': 0, 'units': 0, 'active': 0}
     with transaction.atomic():
-        people = {}
+        was = {r.pk: r for r in Reviewee.objects.filter(organization=organization)}
+        places_before = _placements(organization)
+        people, new = {}, set()
         for row in rows:
             email = row['email'].lower()
             reviewee = Reviewee.objects.filter(organization=organization, email=email).first()
@@ -183,7 +237,8 @@ def import_org_chart(organization, rows):
                     transaction.set_rollback(True)
                     return None, [message]
                 reviewee = Reviewee(organization=organization, email=email)
-                stats['created'] += 1
+                stats['created'].append(row['name'])
+                new.add(email)
             else:
                 stats['updated'] += 1
             reviewee.name = row['name']
@@ -192,7 +247,22 @@ def import_org_chart(organization, rows):
             reviewee.save()
             people[email] = reviewee
 
-        OrgUnit.objects.filter(organization=organization).delete()
+        units = OrgUnit.objects.filter(organization=organization)
+        memberships = OrgUnitMembership.objects.filter(unit__organization=organization)
+        had_members = set(memberships.filter(role=MEMBER).values_list('unit_id', flat=True))
+
+        missing = (Reviewee.objects.filter(organization=organization, is_active=True)
+                   .exclude(pk__in=[p.pk for p in people.values()])
+                   .exclude(email__icontains='@deleted.invalid').order_by('name'))
+        missing_people = list(missing)
+        if deactivate_missing:
+            stats['deactivated'] = len(missing_people)
+            OrgUnitMembership.objects.filter(reviewee__in=missing).delete()
+            missing.update(is_active=False)
+
+        names = set(units.values_list('name', flat=True))
+        last_order = units.aggregate(m=Max('display_order'))['m']
+        order = -1 if last_order is None else last_order
 
         reports = {}
         for row in rows:
@@ -200,18 +270,93 @@ def import_org_chart(organization, rows):
             if manager:
                 reports.setdefault(manager, []).append(people[row['email'].lower()])
 
-        names = set()
-        for order, (manager_email, members) in enumerate(reports.items()):
+        for manager_email, members in reports.items():
             manager = people[manager_email]
-            name = manager.department or manager.name
-            if name in names:
-                name = f'{name} ({manager.name})'
-            names.add(name)
+            # ponytail: a person who manages several hand-made units gets their reports in the first one
+            own = memberships.filter(reviewee=manager, role=MANAGER).order_by('unit__display_order').first()
+            unit = own.unit if own else None
+            if unit is None:
+                # A new manager takes over the unit most of their reports are in, when
+                # its manager no longer manages anyone. The unit keeps its name and place.
+                current = Counter(memberships.filter(reviewee__in=members, role=MEMBER).values_list('unit_id', flat=True))
+                for unit_id, _count in current.most_common():
+                    old = memberships.filter(unit_id=unit_id, role=MANAGER).values_list('reviewee__email', flat=True)
+                    if not any(email in reports for email in old):
+                        unit = units.get(pk=unit_id)
+                        memberships.filter(unit=unit, role=MANAGER).delete()
+                        memberships.filter(unit=unit, reviewee=manager).delete()
+                        break
+            if unit is None:
+                name = manager.department or manager.name
+                if name in names:
+                    name = f'{name} ({manager.name})'
+                while name in names:
+                    name += ' 2'
+                names.add(name)
+                order += 1
+                unit = OrgUnit.objects.create(organization=organization, name=name, display_order=order)
+                stats['units_created'].append(name)
+            if not own:
+                OrgUnitMembership.objects.create(unit=unit, reviewee=manager, row=0, col=0)
 
-            unit = OrgUnit.objects.create(organization=organization, name=name, display_order=order)
-            OrgUnitMembership.objects.create(unit=unit, reviewee=manager, row=0, col=0)
-            for col, member in enumerate(sorted(members, key=lambda r: r.name.lower())):
-                OrgUnitMembership.objects.create(unit=unit, reviewee=member, row=1, col=col)
-            stats['units'] += 1
+            for member in sorted(members, key=lambda r: r.name.lower()):
+                memberships.filter(reviewee=member, role=MEMBER).exclude(unit=unit).delete()
+                if memberships.filter(unit=unit, reviewee=member, role=MEMBER).exists():
+                    continue
+                memberships.filter(unit=unit, reviewee=member).delete()
+                last_col = memberships.filter(unit=unit, row=1).aggregate(m=Max('col'))['m']
+                OrgUnitMembership.objects.create(unit=unit, reviewee=member, row=1,
+                                                 col=0 if last_col is None else last_col + 1)
+
+        emptied = units.filter(pk__in=had_members).exclude(memberships__role=MEMBER)
+        stats['units_removed'] = list(emptied.values_list('name', flat=True))
+        emptied.delete()
+        stats['units'] = units.count()
+
+        # What changes per person, from the chart before and after.
+        places_after = _placements(organization)
+        nowhere = [((), _('Not in a unit'))]
+
+        def texts(places):
+            return [text for _key, text in places]
+
+        for person in people.values():
+            old = was.get(person.pk)
+            before, after = places_before.get(person.pk, nowhere), places_after.get(person.pk, nowhere)
+            row = {'name': person.name, 'email': person.email, 'before': texts(before), 'after': texts(after)}
+            details = False
+            if old:
+                for label, old_value, new_value in ((_('Name'), old.name, person.name),
+                                                    (_('Department'), old.department, person.department)):
+                    if old_value != new_value:
+                        details = True
+                        row['before'].append(f'{label}: {old_value or "–"}')
+                        row['after'].append(f'{label}: {new_value or "–"}')
+            moved = [key for key, _text in before] != [key for key, _text in after]
+            if old is None:
+                row['kind'], row['before'] = 'new', []
+            elif not old.is_active:
+                row['kind'] = 'reactivated'
+            elif moved:
+                # Same units, other manager above them: the person stays, the manager changes.
+                same_units = [key[:2] for key, _text in before] == [key[:2] for key, _text in after]
+                row['kind'] = 'manager' if same_units else 'moved'
+                stats['moved'] += 1
+            elif details:
+                row['kind'] = 'changed'
+            else:
+                stats['unchanged'] += 1
+                continue
+            stats['people'].append(row)
+        order = ['new', 'reactivated', 'moved', 'manager', 'changed']
+        stats['people'].sort(key=lambda row: (order.index(row['kind']), row['name'].lower()))
+        stats['missing'] = [
+            {'name': r.name, 'email': r.email, 'before': texts(places_before.get(r.pk, nowhere)),
+             'after': texts(places_after.get(r.pk, nowhere))}
+            for r in missing_people]
+        stats['active'] = Reviewee.objects.filter(organization=organization, is_active=True).count()
+
+        if dry_run:
+            transaction.set_rollback(True)
 
     return stats, []

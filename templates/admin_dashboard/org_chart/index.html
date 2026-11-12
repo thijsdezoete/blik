@@ -12,8 +12,8 @@
     </div>
     <div class="oc-page-actions">
         {% if managers_without_account %}<button type="button" class="btn btn-secondary" data-oc-open="ocAccountsDialog">{% blocktrans trimmed count counter=managers_without_account|length %}{{ counter }} manager without an account{% plural %}{{ counter }} managers without an account{% endblocktrans %}</button>{% endif %}
-        <button type="button" class="btn btn-secondary" data-oc-open="ocImportDialog">{% trans 'Import CSV' %}</button>
-        <button type="button" class="btn btn-primary" data-oc-new-unit>{% trans 'New unit' %}</button>
+        {% if can_manage %}<button type="button" class="btn btn-secondary" data-oc-open="ocImportDialog">{% trans 'Import CSV' %}</button>
+        <button type="button" class="btn btn-primary" data-oc-new-unit>{% trans 'New unit' %}</button>{% endif %}
     </div>
 </div>
 
@@ -185,7 +185,7 @@
         {% csrf_token %}
         <div class="card-body">
             <p>{% trans 'A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which.' %}</p>
-            {% if nodes %}<p class="reviewee-start-note">{% trans 'This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit.' %}</p>{% endif %}
+            {% if nodes %}<p class="reviewee-start-note">{% trans 'Blik shows what the import changes before anything is saved.' %}</p>{% endif %}
             <div class="form-group">
                 <label class="form-label" for="ocImportFile">{% trans 'File' %}</label>
                 <input type="file" id="ocImportFile" name="file" accept=".csv,text/csv" class="form-control" required>

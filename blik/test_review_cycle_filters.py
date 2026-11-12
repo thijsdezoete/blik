@@ -80,3 +80,12 @@ class ReviewCycleFilterTests(TestCase):
         ordered = [c.pk for c in self.get(sort='fewest_responses').context['cycles']]
         self.assertEqual(set(ordered[:2]), {self.waiting.pk, self.waiting_invited.pk})
         self.assertEqual(ordered[-1], self.all_responded.pk)
+
+    def test_cycles_of_deactivated_people_stay_listed_but_anonymized_ones_do_not(self):
+        Reviewee.objects.filter(pk=self.completed.reviewee_id).update(is_active=False)
+        Reviewee.objects.filter(pk=self.all_responded.reviewee_id).update(is_active=False, email='x@deleted.invalid')
+
+        listed = self.listed(self.get())
+
+        self.assertIn(self.completed.pk, listed)
+        self.assertNotIn(self.all_responded.pk, listed)

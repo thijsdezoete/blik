@@ -574,6 +574,22 @@ msgstr ""
 msgid "Line %(line)s: a person cannot be their own manager."
 msgstr ""
 
+#, python-format
+msgid "Line %(line)s: the reporting line of %(email)s comes back to the same person."
+msgstr ""
+
+#, python-format
+msgid "Manager of %(unit)s"
+msgstr ""
+
+#, python-format
+msgid "In %(unit)s, reports to %(manager)s"
+msgstr ""
+
+#, python-format
+msgid "In %(unit)s"
+msgstr ""
+
 msgid "Authentication required"
 msgstr ""
 
@@ -1519,6 +1535,12 @@ msgstr ""
 #, python-format
 msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
 msgstr ""
+
+#, python-format
+msgid "%(count)s person who is not in the file was deactivated."
+msgid_plural "%(count)s people who are not in the file were deactivated."
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-format
 msgid "%(name)s is already in this unit."
@@ -4600,6 +4622,12 @@ msgstr ""
 msgid "Everyone is in a unit. Drag a person here to take them out of a unit."
 msgstr ""
 
+msgid "Step 2 of 2: check the changes"
+msgstr ""
+
+msgid "Step 1 of 2: choose the columns"
+msgstr ""
+
 #, python-format
 msgid "%(filename)s · %(counter)s person"
 msgid_plural "%(filename)s · %(counter)s people"
@@ -4633,6 +4661,30 @@ msgid_plural "And %(counter)s more errors."
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "What the import changes"
+msgstr ""
+
+msgid "Nothing is saved yet. Each row shows one person: where they are now, and where they are after the import."
+msgstr ""
+
+msgid "In the file"
+msgstr ""
+
+msgid "No change"
+msgstr ""
+
+msgid "Changes"
+msgstr ""
+
+msgid "In Blik, not in the file"
+msgstr ""
+
+msgid "The file is the same as the org chart. Nothing changes."
+msgstr ""
+
+msgid "People who change"
+msgstr ""
+
 msgid "Which column is which?"
 msgstr ""
 
@@ -4654,10 +4706,16 @@ msgstr ""
 msgid "First rows of the file"
 msgstr ""
 
-msgid "This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit."
+msgid "Changed a column? Then Blik shows the changes again first."
+msgstr ""
+
+msgid "Blik shows what the import changes before anything is saved."
 msgstr ""
 
 msgid "Import"
+msgstr ""
+
+msgid "Show changes"
 msgstr ""
 
 msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
@@ -5908,6 +5966,9 @@ msgstr ""
 msgid "Review Cycle: %(name)s"
 msgstr ""
 
+msgid "Deactivated"
+msgstr ""
+
 msgid "Questionnaire:"
 msgstr ""
 
@@ -6393,6 +6454,115 @@ msgid "A difference is shown only when there is enough feedback to protect anony
 msgstr "Eine Differenz wird nur angezeigt, wenn genug Feedback vorliegt, um die Anonymität zu wahren. Nutze sie als Gesprächsanlass, nicht als Leistungsbewertung."
 
 msgid "Person"
+msgstr ""
+
+msgid "What changes"
+msgstr ""
+
+msgid "Now"
+msgstr ""
+
+msgid "After the import"
+msgstr ""
+
+msgid "New in Blik"
+msgstr ""
+
+msgid "Active again"
+msgstr ""
+
+msgid "Other place in the chart"
+msgstr ""
+
+msgid "Other manager"
+msgstr ""
+
+msgid "Other name or department"
+msgstr ""
+
+msgid "Not in Blik"
+msgstr ""
+
+msgid "Units"
+msgstr ""
+
+#, python-format
+msgid "<strong>%(unit)s</strong> is new."
+msgstr ""
+
+#, python-format
+msgid "<strong>%(unit)s</strong> is removed: after the import nobody reports to its manager."
+msgstr ""
+
+msgid "All other units keep their name, their place and their people."
+msgstr ""
+
+#, python-format
+msgid "%(counter)s person is not in the file"
+msgid_plural "%(counter)s people are not in the file"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "They are in Blik, but the file does not have them. Did they leave? Then deactivate them below. If not, they stay active."
+msgstr ""
+
+msgid "People who are not in the file"
+msgstr ""
+
+msgid "After the import, if they stay active"
+msgstr ""
+
+#, python-format
+msgid "Deactivate this person"
+msgid_plural "Deactivate these %(counter)s people"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Deactivated people leave the org chart and get no new cycles. Nothing is deleted: the feedback they gave and their own reports stay."
+msgstr ""
+
+msgid "What happens to a deactivated person"
+msgstr ""
+
+msgid "Nothing is deleted."
+msgstr ""
+
+msgid "The feedback they gave to other people stays, and still counts in the reports of those people."
+msgstr ""
+
+msgid "Open invitations to give feedback stay open. No answer counts as no response."
+msgstr ""
+
+msgid "They get no new cycles and are no longer in the org chart or the lists of people."
+msgstr ""
+
+msgid "Their own cycles and reports stay in the list of review cycles, marked as deactivated."
+msgstr ""
+
+msgid "To make them active again, import a file that has them in it."
+msgstr ""
+
+msgid "How this affects your plan"
+msgstr ""
+
+#, python-format
+msgid "Your plan allows %(max)s active people. Now %(now)s are active. After this import %(after)s are active."
+msgstr ""
+
+#, python-format
+msgid "With the people who are not in the file deactivated, %(after)s are active."
+msgstr ""
+
+msgid "Only active people count. The import does not change your plan or its price."
+msgstr ""
+
+msgid "You pay per feedback cycle, not per person. The import starts no cycles and uses no credits."
+msgstr ""
+
+msgid "Your plan has no limit on the number of people. The import costs nothing."
+msgstr ""
+
+msgid "Columns and first rows of the file"
 msgstr ""
 
 msgid "Review status"

@@ -1749,8 +1749,10 @@ def review_cycle_list(request):
     org = request.organization
 
     if org:
-        # Filter out cycles for anonymized reviewees
-        cycles_qs = ReviewCycle.objects.for_organization(org).select_related(
+        # Cycles of deactivated people (leavers) stay listed, so their past reports
+        # can be found. Cycles of anonymized (GDPR-deleted) reviewees do not.
+        cycles_qs = ReviewCycle.objects.for_organization(org, include_deleted=True).exclude(
+            reviewee__email__icontains='@deleted.invalid').select_related(
             'reviewee', 'questionnaire', 'created_by'
         )
     else:
@@ -3833,6 +3835,7 @@ def _chart_change_response(organization):
     patching parts of the page would go stale.
     """
     context = _org_chart_context(organization)
+    context['can_manage'] = True  # only people who may edit the chart get this response
     return JsonResponse({
         'chart_html': render_to_string('admin_dashboard/org_chart/_chart.html', context),
         'outline_html': render_to_string('admin_dashboard/org_chart/_outline.html', context),
@@ -3859,6 +3862,7 @@ def org_chart(request):
         return redirect('admin_dashboard')
 
     context = _org_chart_context(org)
+    context['can_manage'] = request.user.has_perm('accounts.can_manage_organization')
     if request.user.has_perm('accounts.can_invite_members'):
         managers = context['managers_without_account'] = managers_without_account(org)
         context['managers_to_invite'] = sum(not m.invited for m in managers)
@@ -3918,6 +3922,7 @@ def org_chart_import_map(request):
 
     errors = []
     over_limit = None
+    changes = mapping_key = None
     if request.method == 'POST':
         mapping = {}
         for field, _label in FIELDS:
@@ -3933,15 +3938,34 @@ def org_chart_import_map(request):
             new_people = count_new_people(request.organization, mapped)
             if headroom is not None and new_people > headroom:
                 over_limit = {'new': new_people, 'allowed': headroom}
+        # The import runs only on a preview of this same mapping: 'confirm' holds the
+        # mapping the admin saw the preview for.
+        mapping_key = ','.join('' if mapping[field] is None else str(mapping[field]) for field, _label in FIELDS)
+        confirmed = request.POST.get('confirm') == mapping_key
         if not errors and not over_limit:
-            stats, errors = import_org_chart(request.organization, mapped)
-            if not errors:
+            stats, errors = import_org_chart(
+                request.organization, mapped,
+                deactivate_missing=confirmed and bool(request.POST.get('deactivate_missing')),
+                dry_run=not confirmed,
+            )
+            if not errors and confirmed:
                 del request.session['org_import']
                 messages.success(
                     request,
-                    _('Imported %(units)s units: %(created)s new people, %(updated)s updated.') % stats,
+                    _('Imported %(units)s units: %(created)s new people, %(updated)s updated.')
+                    % {**stats, 'created': len(stats['created'])},
                 )
+                if stats['deactivated']:
+                    messages.info(request, ngettext(
+                        '%(count)s person who is not in the file was deactivated.',
+                        '%(count)s people who are not in the file were deactivated.',
+                        stats['deactivated']) % {'count': stats['deactivated']})
                 return redirect('org_chart')
+            if not errors:
+                changes = stats
+                changes['active_without_missing'] = stats['active'] - len(stats['missing'])
+                changes['nothing'] = not (stats['people'] or stats['units_created']
+                                          or stats['units_removed'] or stats['missing'])
     else:
         mapping = guess_mapping(headers)
 
@@ -3954,7 +3978,9 @@ def org_chart_import_map(request):
         'errors': errors[:20],
         'more_errors': max(0, len(errors) - 20),
         'over_limit': over_limit,
-        'has_units': OrgUnit.objects.filter(organization=request.organization).exists(),
+        'changes': changes,
+        'mapping_key': mapping_key,
+        'plan': get_subscription_status(request.organization),
     })
 
 

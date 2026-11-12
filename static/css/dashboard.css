@@ -1,0 +1,130 @@
+/* The dashboard: what is running, what needs the reader, and how Blik works. */
+.dash-card { margin-bottom: 1.5rem; }
+/* The two cards of a row have the same height. */
+.dash-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 1.5rem; }
+.dash-figure { font-size: 2rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.dash-figure small { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
+.dash-since { margin: 0.5rem 0 1rem; }
+.dash-bar { height: 0.625rem; margin: 0.5rem 0; border-radius: 999px; background: var(--bg-secondary); overflow: hidden; }
+.dash-bar span { display: block; height: 100%; background: var(--primary); border-radius: 999px; }
+.dash-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; font-size: 0.875rem; }
+.dash-split b { display: block; font-size: 0.9375rem; }
+.dash-split p { margin: 0; color: var(--text-secondary); }
+.dash-split .dash-links { margin-top: 1.625rem; }
+.dash-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; margin-top: 1.5rem; }
+.dash-stage { display: block; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 8px; color: var(--text-primary); text-decoration: none; }
+.dash-stage:hover { border-color: var(--primary); }
+.dash-stage strong { display: block; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.dash-stage span { font-size: 0.875rem; color: var(--text-secondary); }
+
+.dash-list { list-style: none; margin: 0; padding: 0; }
+.dash-list li { display: flex; align-items: center; gap: 0.875rem; padding: 0.75rem 0; border-top: 1px solid var(--border); }
+.dash-list li:first-child { border-top: 0; padding-top: 0; }
+.dash-list li:last-child { padding-bottom: 0; }
+.dash-count { flex-shrink: 0; min-width: 2.25rem; padding: 0.25rem 0.5rem; border-radius: 6px; background: var(--bg-secondary); font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+.dash-count.is-problem { background: var(--danger); color: #fff; }
+.dash-count.is-tip { background: none; border: 1px dashed var(--border); color: var(--text-secondary); font-weight: 400; }
+.dash-what { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.dash-what span { display: block; font-size: 0.875rem; color: var(--text-secondary); }
+.dash-list a.btn { flex-shrink: 0; }
+.dash-subhead, .dash-who-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); }
+.dash-subhead { margin: 1.25rem 0 0.75rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.dash-subhead.is-first { margin-top: 0; padding-top: 0; border-top: 0; }
+.dash-more { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.dash-more > summary { cursor: pointer; font-size: 0.875rem; color: var(--primary); }
+.dash-more[open] > summary { margin-bottom: 0.75rem; }
+
+/* Getting started */
+.dash-progress { display: flex; align-items: center; gap: 0.75rem; }
+.dash-progress .dash-bar { width: 8rem; margin: 0; }
+.dash-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+.dash-steps li { display: flex; flex-direction: column; padding: 0.875rem 1rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; }
+.dash-steps li b { display: block; margin-bottom: 0.25rem; font-size: 0.9375rem; }
+.dash-steps li.is-done { color: var(--text-secondary); }
+.dash-steps li.is-done b::before { content: "\2713\00a0"; color: var(--success); }
+.dash-steps li.is-next { border-color: var(--primary); }
+.dash-steps .dash-actions { margin-top: auto; padding-top: 0.75rem; }
+.dash-later { display: flex; align-items: center; gap: 1.5rem; padding: 1rem 1.125rem; border: 1px dashed var(--border); border-radius: 8px; font-size: 0.875rem; }
+.dash-later .dash-what b { display: block; font-size: 0.9375rem; }
+.dash-later .dash-buttons { display: flex; gap: 0.75rem; flex-shrink: 0; align-items: center; margin: 0; }
+.dash-skip { padding: 0; border: 0; background: none; color: var(--text-secondary); font: inherit; font-size: 0.875rem; text-decoration: underline; cursor: pointer; }
+
+/* How Blik works: one sentence, three steps, one table */
+#dash-how > summary { cursor: pointer; list-style: none; }
+#dash-how > summary::-webkit-details-marker { display: none; }
+#dash-how[open] .dash-when-closed, #dash-how:not([open]) .dash-when-open { display: none; }
+#dash-how:not([open]) > summary { border-bottom: 0; }
+.dash-how { padding: 1.5rem 2rem 2rem; }
+.how-tabs { display: none; margin-bottom: 2rem; }
+.has-pages .how-tabs { display: flex; }
+.how-tabs .stage-tab { border-top: 0; border-left: 0; border-right: 0; background: none; font: inherit; cursor: pointer; }
+.how-page + .how-page { margin-top: 3rem; }
+.has-pages .how-page { margin-top: 0; min-height: 20rem; }
+.how-lead { margin: 0 0 0.25rem; font-size: 1.375rem; font-weight: 600; line-height: 1.3; }
+.how-sub { margin: 0; color: var(--text-secondary); font-size: 0.875rem; }
+.how-page h3 { margin: 0 0 0.125rem; font-size: 1rem; font-weight: 600; }
+.how-page p:not(.how-lead) { color: var(--text-secondary); font-size: 0.875rem; }
+.how-page a { color: var(--primary); }
+.how-next { margin: 1.5rem 0 0; text-align: right; }
+
+/* Who logs in */
+.how-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); margin-top: 1.5rem; }
+.how-side { min-width: 0; }
+.how-side:first-child { padding-right: 2rem; }
+.how-side + .how-side { padding-left: 2rem; border-left: 1px solid var(--border); }
+.how-side p { margin: 0; max-width: 56ch; }
+.how-dots { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; min-height: 48px; align-content: flex-start; }
+.how-dot { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--text-secondary); }
+.how-dot-in { background: var(--primary); border-color: var(--primary); }
+.how-foot { margin: 1.5rem 0 0; }
+
+/* What a cycle is */
+.how-flow { display: grid; grid-template-columns: 1fr auto 1.7fr auto 1fr; column-gap: 1.5rem; align-items: start; }
+.how-part { text-align: center; min-width: 0; }
+.how-fig { height: 210px; display: flex; align-items: center; justify-content: center; }
+.how-fig svg { display: block; max-width: 100%; height: auto; }
+.how-arrow { height: 210px; display: flex; align-items: center; color: var(--text-secondary); }
+.how-part p { margin: 0 auto; max-width: 32ch; }
+.how-svgtext { font-size: 13px; fill: var(--text-secondary); }
+.how-svgname { font-size: 14px; font-weight: 600; fill: var(--text-primary); }
+
+/* From start to report */
+.how-steps { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.5rem; counter-reset: how; }
+.how-steps li { counter-increment: how; padding-top: 0.875rem; border-top: 2px solid var(--border); }
+.how-steps li:has(.is-you) { border-top-color: var(--primary); }
+.how-steps h3::before { content: counter(how) ". "; }
+.how-steps p { margin: 0; }
+.how-actor { display: block; margin-bottom: 0.375rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); }
+.how-actor.is-you { color: var(--primary); }
+
+/* Who can do what */
+.how-matrix-wrap { margin-top: 1.5rem; overflow-x: auto; }
+.how-matrix { width: 100%; min-width: 44rem; border-collapse: collapse; font-size: 0.875rem; }
+.how-matrix th, .how-matrix td { padding: 0.625rem 0.75rem; border-top: 1px solid var(--border); text-align: center; vertical-align: middle; }
+.how-matrix thead th { border-top: 0; padding-top: 0; font-size: 0.8125rem; font-weight: 400; color: var(--text-secondary); vertical-align: bottom; width: 14%; }
+.how-matrix thead th:first-child { width: auto; }
+.how-matrix tbody th { padding-left: 0; text-align: left; font-weight: 600; }
+.how-matrix tbody th span { display: block; font-size: 0.8125rem; font-weight: 400; color: var(--text-secondary); }
+.how-yes { color: var(--primary); font-weight: 700; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* What is anonymous */
+.how-facts { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+.how-facts li { padding-top: 0.875rem; border-top: 2px solid var(--border); }
+.how-facts p { margin: 0.25rem 0 0; }
+.how-facts.how-four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.how-facts.how-two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 1rem; }
+.how-ways-title { margin-top: 2.5rem; }
+
+@media (max-width: 900px) {
+    .dash-grid, .dash-steps, .dash-split, .how-split, .how-flow, .how-steps, .how-facts, .how-facts.how-four, .how-facts.how-two { grid-template-columns: minmax(0, 1fr); }
+    .how-flow { row-gap: 0.75rem; }
+    .how-fig, .how-arrow { height: auto; }
+    .how-arrow { justify-content: center; }
+    .how-arrow svg { transform: rotate(90deg); }
+    .how-side:first-child { padding-right: 0; padding-bottom: 1.25rem; }
+    .how-side + .how-side { padding-left: 0; padding-top: 1.25rem; border-left: 0; border-top: 1px solid var(--border); }
+    .has-pages .how-page { min-height: 0; }
+    .dash-later { flex-direction: column; align-items: flex-start; }
+    .dash-split .dash-links { margin-top: 0; }
+}

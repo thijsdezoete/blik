@@ -81,6 +81,12 @@ class Organization(TimeStampedModel):
         verbose_name=_('only managers below the first level')
     )
 
+    org_chart_offer_dismissed = models.BooleanField(
+        default=False,
+        help_text=_('The dashboard no longer offers to build an org chart'),
+        verbose_name=_('org chart offer dismissed')
+    )
+
     # Validated against settings.LANGUAGES where it is set, so the language list is never frozen
     # into a migration.
     default_language = models.CharField(

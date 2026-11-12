@@ -170,6 +170,8 @@
         frame.addEventListener('load', preview);
         dialog.addEventListener('change', selection);
         preview();
+        // The dashboard links here to invite managers.
+        if (location.hash === '#accounts') dialog.showModal();
     })();
     </script>
     {% endif %}

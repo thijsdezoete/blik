@@ -29,6 +29,7 @@ urlpatterns = [
 
     # Admin dashboard
     path('dashboard/', admin_views.dashboard, name='admin_dashboard'),
+    path('dashboard/skip-org-chart/', admin_views.dashboard_skip_org_chart, name='dashboard_skip_org_chart'),
     path('dashboard/settings/', admin_views.settings_view, name='settings'),
     path('dashboard/billing/', subscription_views.billing, name='billing'),
     path('dashboard/billing/plan/<str:plan_type>/', subscription_views.change_plan_view, name='billing_change_plan'),

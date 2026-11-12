@@ -35,8 +35,9 @@ class ReviewCycleFilterTests(TestCase):
 
         self.waiting = cycle('Ann', self.q1, 0, 0)
         self.waiting_invited = cycle('Bob', q2, 0, 2)
-        self.in_progress = cycle('Cas', self.q1, 1, 3)
-        self.all_responded = cycle('Dee', q2, 2, 2)
+        self.collecting = cycle('Cas', self.q1, 1, 3)
+        # The organization's threshold is 3 answers per group.
+        self.enough = cycle('Dee', q2, 3, 4)
         self.completed = cycle('Eve', self.q1, 1, 3, status='completed')
 
     def get(self, **params):
@@ -48,8 +49,8 @@ class ReviewCycleFilterTests(TestCase):
     def test_each_stage_lists_its_cycles(self):
         for stage, expected in [
             ('waiting', {self.waiting, self.waiting_invited}),
-            ('in_progress', {self.in_progress}),
-            ('all_responded', {self.all_responded}),
+            ('collecting', {self.collecting}),
+            ('enough', {self.enough}),
             ('completed', {self.completed}),
         ]:
             with self.subTest(stage=stage):
@@ -58,13 +59,13 @@ class ReviewCycleFilterTests(TestCase):
     def test_stage_counts_cover_every_cycle_once(self):
         response = self.get()
         counts = {key: count for key, _label, count in response.context['stages']}
-        self.assertEqual(counts, {'waiting': 2, 'in_progress': 1, 'all_responded': 1, 'completed': 1})
+        self.assertEqual(counts, {'waiting': 2, 'collecting': 1, 'enough': 1, 'completed': 1})
         self.assertEqual(response.context['total_count'], 5)
 
     def test_search_matches_name_or_email_and_narrows_counts(self):
         response = self.get(q='cas')
-        self.assertEqual(self.listed(response), {self.in_progress.pk})
-        self.assertEqual(self.listed(self.get(q='dee@acme')), {self.all_responded.pk})
+        self.assertEqual(self.listed(response), {self.collecting.pk})
+        self.assertEqual(self.listed(self.get(q='dee@acme')), {self.enough.pk})
         self.assertEqual(response.context['total_count'], 1)
 
     def test_questionnaire_filter_combines_with_stage(self):
@@ -79,13 +80,21 @@ class ReviewCycleFilterTests(TestCase):
     def test_fewest_responses_sort(self):
         ordered = [c.pk for c in self.get(sort='fewest_responses').context['cycles']]
         self.assertEqual(set(ordered[:2]), {self.waiting.pk, self.waiting_invited.pk})
-        self.assertEqual(ordered[-1], self.all_responded.pk)
+        self.assertEqual(ordered[-1], self.enough.pk)
+
+    def test_needs_filter_from_the_dashboard_lists_the_cycles_without_reviewers(self):
+        response = self.get(needs='no_reviewers')
+        self.assertEqual(self.listed(response), {self.waiting.pk})
+        self.assertTrue(response.context['is_filtered'])
 
     def test_cycles_of_deactivated_people_stay_listed_but_anonymized_ones_do_not(self):
         Reviewee.objects.filter(pk=self.completed.reviewee_id).update(is_active=False)
-        Reviewee.objects.filter(pk=self.all_responded.reviewee_id).update(is_active=False, email='x@deleted.invalid')
+        Reviewee.objects.filter(pk=self.waiting.reviewee_id).update(is_active=False)
+        Reviewee.objects.filter(pk=self.enough.reviewee_id).update(is_active=False, email='x@deleted.invalid')
 
         listed = self.listed(self.get())
 
         self.assertIn(self.completed.pk, listed)
-        self.assertNotIn(self.all_responded.pk, listed)
+        self.assertNotIn(self.enough.pk, listed)
+        # The dashboard does not count a deactivated person's cycle, so its link does not list it.
+        self.assertEqual(self.listed(self.get(needs='no_reviewers')), set())

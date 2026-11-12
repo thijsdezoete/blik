@@ -71,9 +71,11 @@ from reports.finalize import finalize_cycle
 from reports.services import generate_report, self_vs_others_gap
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
+from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
 from subscriptions.models import Subscription
 from subscriptions.utils import (
+    CREDITS_PER_PACK,
     NoCycleCredits,
     ReviewerLimit,
     billing_context,
@@ -201,85 +203,53 @@ def collect_reviewer_emails(request, organization, categories):
 
 @login_required
 def dashboard(request):
-    """Admin dashboard homepage"""
+    """What is running and what needs this person: for an admin the organization, for others their own feedback and team."""
     org = request.organization
-
-    # Get statistics filtered by organization
-    reviewees_qs = Reviewee.objects.for_organization(org).filter(is_active=True)
-    cycles_qs = visible_cycles(
-        request.user,
-        ReviewCycle.objects.for_organization(org).select_related('reviewee', 'questionnaire')
-    )
-
-    total_reviewees = reviewees_qs.count()
-    active_cycles = cycles_qs.filter(status='active').count()
-    completed_cycles = cycles_qs.filter(status='completed').count()
-
-    # Get subscription status
-    subscription_status = get_subscription_status(org) if org else None
-
-    # Recent activity
-    recent_cycles = cycles_qs.all()[:5]
-
-    # Pending reviews (tokens not completed)
-    pending_tokens = ReviewerToken.objects.filter(
-        cycle__in=cycles_qs,
-        completed_at__isnull=True,
-        cycle__status='active'
-    ).count()
-
-    # Completion stats for active cycles
-    active_cycles_data = []
-    for cycle in cycles_qs.filter(status='active').select_related('reviewee'):
-        total_tokens = cycle.tokens.count()
-        completed_tokens = cycle.tokens.filter(completed_at__isnull=False).count()
-        completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
-
-        active_cycles_data.append({
-            'cycle': cycle,
-            'total_tokens': total_tokens,
-            'completed_tokens': completed_tokens,
-            'completion_rate': completion_rate,
-        })
-
-    # Completed cycles with report availability
-    completed_cycles_data = []
-    for cycle in cycles_qs.filter(status='completed').select_related('reviewee').order_by('-created_at')[:10]:
-        # Check if report exists
-        report_exists = Report.objects.filter(cycle=cycle).exists()
-
-        completed_cycles_data.append({
-            'cycle': cycle,
-            'report_exists': report_exists,
-        })
-
-    # Check if user has seen welcome modal
-    has_seen_welcome = False
-    try:
-        has_seen_welcome = request.user.profile.has_seen_welcome
-    except UserProfile.DoesNotExist:
-        pass
-
-    # Check if user has submitted a product review (global, not org-scoped)
-    user_has_reviewed = ProductReview.objects.filter(
-        reviewer_email=request.user.email,
-        is_active=True
-    ).exists()
-
+    threshold = org.min_responses_for_anonymity if org else 3
+    sees_all = can_view_all_reports(request.user)
     context = {
-        'total_reviewees': total_reviewees,
-        'active_cycles': active_cycles,
-        'completed_cycles': completed_cycles,
-        'pending_tokens': pending_tokens,
-        'recent_cycles': recent_cycles,
-        'active_cycles_data': active_cycles_data,
-        'completed_cycles_data': completed_cycles_data,
-        'subscription_status': subscription_status,
-        'has_seen_welcome': has_seen_welcome,
-        'user_has_reviewed': user_has_reviewed,
+        'sees_all': sees_all,
+        'threshold': max(threshold, 1),
+        'can_create_for_others': may_create_for_others(request.user),
+        'subscription_status': get_subscription_status(org) if org else None,
+        # A product review is global, not per organization.
+        'user_has_reviewed': ProductReview.objects.filter(
+            reviewer_email=request.user.email, is_active=True).exists(),
+        # "How Blik works" is open until the person folds it once.
+        'has_seen_welcome': getattr(getattr(request.user, 'profile', None), 'has_seen_welcome', False),
+        **billing_context(org, request.user),
     }
+    # Explain what a cycle costs only where Blik bills for it.
+    mode = context['subscription_status']['mode'] if context['subscription_status'] else 'self_hosted'
+    context['billing_mode'] = mode if context['is_hosted'] and mode != 'self_hosted' else ''
+    context['credits_per_pack'] = CREDITS_PER_PACK
+    context['show_billing'] = bool(org) and can_see_billing(org, request.user)
+
+    if sees_all and org:
+        cycles = ReviewCycle.objects.for_organization(org)
+        started = dashboard_state.getting_started(org)
+        context.update({
+            'started': started,
+            'running': dashboard_state.running_state(cycles, threshold),
+            'reports': dashboard_state.latest_reports(cycles, threshold),
+            'suggestions': dashboard_state.suggestions(org, request.user, started),
+        })
+    else:
+        context['personal'] = dashboard_state.personal_state(
+            request.user, org, threshold, runs_team=may_create_for_others(request.user))
 
     return render(request, 'admin_dashboard/dashboard.html', context)
+
+
+@login_required
+@require_POST
+def dashboard_skip_org_chart(request):
+    """Hide the dashboard's offer to build an org chart, for the whole organization."""
+    org = request.organization
+    if org and request.user.has_perm('accounts.can_manage_organization'):
+        org.org_chart_offer_dismissed = True
+        org.save(update_fields=['org_chart_offer_dismissed'])
+    return redirect('admin_dashboard')
 
 
 @login_required
@@ -1726,15 +1696,6 @@ def question_dreyfus_config_api(request, question_id):
 # Where a cycle stands, from its status and response counts. Together the
 # stages cover every cycle exactly once. Conditions use the token_count and
 # completed_count annotations of review_cycle_list.
-CYCLE_STAGES = {
-    'waiting': (gettext_lazy('No responses yet'), Q(status='active', completed_count=0)),
-    'in_progress': (gettext_lazy('In progress'),
-                    Q(status='active', completed_count__gt=0, completed_count__lt=F('token_count'))),
-    'all_responded': (gettext_lazy('All responded'),
-                      Q(status='active', completed_count__gt=0, completed_count=F('token_count'))),
-    'completed': (gettext_lazy('Completed'), Q(status='completed')),
-}
-
 CYCLE_SORTS = {
     'newest': (gettext_lazy('Newest first'), ['-created_at']),
     'oldest': (gettext_lazy('Oldest first'), ['created_at']),
@@ -1785,24 +1746,31 @@ def review_cycle_list(request):
         except ValidationError:
             questionnaire_filter = ''
 
-    cycles_qs = cycles_qs.prefetch_related(
+    cycles_qs = dashboard_state.with_progress(cycles_qs.prefetch_related(
         'questionnaire__sections__questions'
-    ).annotate(
-        token_count=Count('tokens'),
-        completed_count=Count('tokens', filter=Q(tokens__completed_at__isnull=False)),
+    )).annotate(
         # Queued emails the outbox could not send, so a mail problem shows in the list
-        failed_emails=Count('tokens', filter=Q(tokens__email_error__gt='') & (
-            Q(tokens__invitation_queued_at__isnull=False) | Q(tokens__reminder_queued_at__isnull=False))),
+        failed_emails=dashboard_state.failed_emails(),
         reviewee_has_active_cycle=Exists(
             ReviewCycle.objects.filter(reviewee=OuterRef('reviewee'), status='active')),
     )
 
+    # The dashboard links here with one thing that cycles need, such as a reminder.
+    threshold = org.min_responses_for_anonymity if org else 3
+    cycle_needs = dashboard_state.cycle_needs(threshold)
+    needs = request.GET.get('needs', '')
+    if needs in cycle_needs:
+        cycles_qs = cycles_qs.filter(cycle_needs[needs][1], reviewee__is_active=True)
+    else:
+        needs = ''
+
     # Counts follow the search and questionnaire filters, so each stage
     # button shows what clicking it would give.
-    stage_counts = {stage: cycles_qs.filter(cond).count() for stage, (_label, cond) in CYCLE_STAGES.items()}
+    stages = dashboard_state.cycle_stages(threshold)
+    stage_counts = {stage: cycles_qs.filter(cond).count() for stage, (_label, cond) in stages.items()}
     stage = request.GET.get('stage', '')
-    if stage in CYCLE_STAGES:
-        cycles_qs = cycles_qs.filter(CYCLE_STAGES[stage][1])
+    if stage in stages:
+        cycles_qs = cycles_qs.filter(stages[stage][1])
     else:
         stage = ''
 
@@ -1854,11 +1822,13 @@ def review_cycle_list(request):
         'questionnaire_filter': questionnaire_filter,
         'used_questionnaires': used_questionnaires,
         'stage': stage,
-        'stages': [(key, label, stage_counts[key]) for key, (label, _cond) in CYCLE_STAGES.items()],
+        'stages': [(key, label, stage_counts[key]) for key, (label, _cond) in stages.items()],
+        'needs': needs,
+        'needs_label': cycle_needs[needs][0] if needs else '',
         'total_count': sum(stage_counts.values()),
         'sort': sort,
         'sorts': [(key, label) for key, (label, _fields) in CYCLE_SORTS.items()],
-        'is_filtered': bool(q or questionnaire_filter or stage),
+        'is_filtered': bool(q or questionnaire_filter or stage or needs),
     }
 
     return render(request, 'admin_dashboard/review_cycle_list.html', context)

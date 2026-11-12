@@ -331,7 +331,11 @@ def delete_organization(request):
 @login_required(as_json=True)
 @require_POST
 def mark_welcome_seen(request):
-    """Mark the welcome modal as seen for the current user."""
+    """
+    Remember that this user folded "How Blik works" on the dashboard: from now
+    on it starts folded for them, on every device. The flag is older than the
+    dashboard section; it was the "seen" mark of the welcome modal before.
+    """
     try:
         profile = request.user.profile
         profile.has_seen_welcome = True

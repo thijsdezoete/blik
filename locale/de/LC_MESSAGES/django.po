@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 20:06+0000\n"
+"POT-Creation-Date: 2026-11-12 20:56+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -366,6 +366,23 @@ msgstr "Keine Daten importiert"
 msgid "Import failed with errors: %(errors)s"
 msgstr "Import mit Fehlern fehlgeschlagen: %(errors)s"
 
+#, python-format
+msgid "%(inviter)s invited you to join %(organization)s on %(site_name)s"
+msgstr "%(inviter)s lädt Sie zu %(organization)s auf %(site_name)s ein"
+
+#, python-format
+msgid "Invitation to join %(organization)s on %(site_name)s"
+msgstr "Einladung zu %(organization)s auf %(site_name)s"
+
+msgid "Select at least one manager."
+msgstr "Mindestens eine Führungskraft auswählen."
+
+#, python-format
+msgid "%(count)s invitation is queued and goes out within about five minutes."
+msgid_plural "%(count)s invitations are queued and go out within about five minutes."
+msgstr[0] "%(count)s Einladung steht im Postausgang und geht in etwa fünf Minuten hinaus."
+msgstr[1] "%(count)s Einladungen stehen im Postausgang und gehen in etwa fünf Minuten hinaus."
+
 msgid "No organization found."
 msgstr "Keine Organisation gefunden."
 
@@ -375,14 +392,6 @@ msgstr "E-Mail-Adresse ist erforderlich."
 #, python-format
 msgid "Invitation already sent to %(email)s"
 msgstr "Einladung wurde bereits an %(email)s gesendet"
-
-#, python-format
-msgid "%(inviter)s invited you to join %(organization)s on %(site_name)s"
-msgstr "%(inviter)s lädt Sie zu %(organization)s auf %(site_name)s ein"
-
-#, python-format
-msgid "Invitation to join %(organization)s on %(site_name)s"
-msgstr "Einladung zu %(organization)s auf %(site_name)s"
 
 #, python-format
 msgid "Invitation sent to %(email)s"
@@ -451,6 +460,18 @@ msgstr "angenommen am"
 
 msgid "expires at"
 msgstr "läuft ab am"
+
+msgid "message"
+msgstr "Nachricht"
+
+msgid "email queued at"
+msgstr "E-Mail in den Postausgang gestellt am"
+
+msgid "email error"
+msgstr "E-Mail-Fehler"
+
+msgid "email attempts"
+msgstr "E-Mail-Versuche"
 
 msgid "invitation"
 msgstr "Einladung"
@@ -3013,14 +3034,8 @@ msgstr "Erinnerung in den Postausgang gestellt am"
 msgid "Why the last attempt to send the queued email failed"
 msgstr "Warum der letzte Versuch, die E-Mail im Postausgang zu senden, fehlgeschlagen ist"
 
-msgid "email error"
-msgstr "E-Mail-Fehler"
-
 msgid "Failed attempts to send the queued email"
 msgstr "Fehlgeschlagene Versuche, die E-Mail im Postausgang zu senden"
-
-msgid "email attempts"
-msgstr "E-Mail-Versuche"
 
 msgid "When someone claimed this token by clicking the invitation link"
 msgstr "Zeitpunkt, zu dem jemand dieses Token über den Einladungslink übernommen hat"
@@ -3048,6 +3063,10 @@ msgstr "Antwort"
 
 msgid "responses"
 msgstr "Antworten"
+
+#, python-format
+msgid "Failed to send the invitation to %(email)s: %(error)s"
+msgstr "Die Einladung konnte nicht an %(email)s gesendet werden: %(error)s"
 
 #, python-format
 msgid "Could not connect to the mail server: %(error)s"
@@ -4618,6 +4637,12 @@ msgstr "Importieren"
 msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
 msgstr "Wer in welcher Einheit ist und wer sie leitet. Blik schlägt daraus für jedes Feedback Führungskraft, Kolleg:innen und direkte Mitarbeitende vor."
 
+#, python-format
+msgid "%(counter)s manager without an account"
+msgid_plural "%(counter)s managers without an account"
+msgstr[0] "%(counter)s Führungskraft ohne Konto"
+msgstr[1] "%(counter)s Führungskräfte ohne Konto"
+
 msgid "Chart"
 msgstr "Diagramm"
 
@@ -4671,6 +4696,34 @@ msgstr "Die Führungskraft dieser Einheit wird Mitglied der übergeordneten Einh
 
 msgid "The people in this unit stay in Blik. People who are in no other unit move to \"Not in a unit\"."
 msgstr "Die Personen in dieser Einheit bleiben in Blik. Personen, die in keiner anderen Einheit sind, wandern zu „In keiner Einheit“."
+
+msgid "Managers without an account"
+msgstr "Führungskräfte ohne Konto"
+
+msgid "A manager can read the reports of the people in the units they manage. For this, the manager must log in with an account that has the same email address as in the org chart."
+msgstr "Eine Führungskraft kann die Berichte der Personen in den Einheiten lesen, die sie leitet. Dafür ist die Anmeldung mit einem Konto nötig, das dieselbe E-Mail-Adresse wie im Organigramm hat."
+
+msgid "A manager sees only these reports. A manager cannot change a cycle, and does not see the reports of people further down the chart. The report settings control if a manager sees the answers below the anonymity threshold."
+msgstr "Eine Führungskraft sieht nur diese Berichte. Sie kann keine Feedbackrunde ändern und sieht nicht die Berichte von Personen weiter unten im Organigramm. Die Berichtseinstellungen legen fest, ob eine Führungskraft die Antworten unterhalb der Anonymitätsschwelle sieht."
+
+msgid "These managers have no account yet. An invitation lets them make one. An invitation is valid for 7 days."
+msgstr "Diese Führungskräfte haben noch kein Konto. Mit einer Einladung können sie eines anlegen. Eine Einladung ist 7 Tage gültig."
+
+msgid "Your message (optional)"
+msgstr "Eigene Nachricht (optional)"
+
+msgid "The message is added to each invitation email."
+msgstr "Die Nachricht wird in jede Einladungs-E-Mail eingefügt."
+
+msgid "The email that each selected manager gets"
+msgstr "Die E-Mail, die jede ausgewählte Führungskraft erhält"
+
+#, python-format
+msgid "The email goes out in the language set for each person. For a person without one that is %(language)s, the language of the organization, as shown here."
+msgstr "Die E-Mail wird in der Sprache gesendet, die für die jeweilige Person eingestellt ist. Für eine Person ohne eigene Sprache ist das %(language)s, die Sprache der Organisation, wie hier gezeigt."
+
+msgid "Invite selected managers"
+msgstr "Ausgewählte Führungskräfte einladen"
 
 msgid "A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which."
 msgstr "Eine CSV-Datei mit einer Zeile pro Person: Name, E-Mail-Adresse und optional Bereich und Führungskraft. Die Spaltennamen sind beliebig: Im nächsten Schritt wählen Sie, welche Spalte was enthält."

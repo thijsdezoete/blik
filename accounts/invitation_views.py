@@ -5,17 +5,106 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils import translation
-from django.utils.translation import gettext as _
+from django.utils.crypto import get_random_string
+from django.utils.translation import gettext as _, ngettext
+from django.views.decorators.http import require_POST
 from accounts.models import OrganizationInvitation
-from accounts.permissions import organization_admin_required
+from accounts.permissions import managers_without_account, organization_admin_required
 from core.languages import recipient_language
 from core.email import inviter_name, send_email
 from core.url import get_absolute_url
 from subscriptions.utils import check_user_limit
+
+
+def invitation_email(org, user, invite_url, message=''):
+    """Subject, text and HTML of the invitation email, in the active language."""
+    inviter = inviter_name(user)
+    context = {
+        'organization': org,
+        'invite_url': invite_url,
+        'inviter_name': inviter,
+        'site_name': settings.SITE_NAME,
+        'message': message,
+    }
+    if inviter:
+        subject = _('%(inviter)s invited you to join %(organization)s on %(site_name)s') % {
+            'inviter': inviter, 'organization': org.name, 'site_name': settings.SITE_NAME}
+    else:
+        subject = _('Invitation to join %(organization)s on %(site_name)s') % {
+            'organization': org.name, 'site_name': settings.SITE_NAME}
+    return (subject, render_to_string('emails/team_invitation.txt', context),
+            render_to_string('emails/team_invitation.html', context))
+
+
+def open_invitation(org, email, user, message='', **fields):
+    """
+    A fresh invitation for this address. An organization has one invitation per
+    address, so an expired or used one is made new: new token, seven more days.
+    """
+    return OrganizationInvitation.objects.update_or_create(
+        organization=org, email=email,
+        defaults={
+            'invited_by': user,
+            'message': message,
+            'token': get_random_string(64),
+            'accepted_at': None,
+            'expires_at': timezone.now() + timedelta(days=7),
+            'email_queued_at': None, 'email_error': '', 'email_attempts': 0,
+            **fields,
+        },
+    )[0]
+
+
+def invite(org, email, user, language=None, message=''):
+    """
+    Create an invitation and send its email. Raises when the email cannot be
+    sent, and then leaves no invitation: an open one would stop a second try.
+    """
+    with transaction.atomic():
+        invitation = open_invitation(org, email, user, message)
+        # There is no profile yet: the language chosen in the invitation form, else the organization's
+        with translation.override(recipient_language(language, organization=org)):
+            subject, text, html = invitation_email(
+                org, user, get_absolute_url('accept_invitation', token=invitation.token), message)
+            send_email(
+                subject=subject,
+                message=text,
+                recipient_list=[email],
+                html_message=html,
+                from_email=org.from_email if org.from_email else None
+            )
+
+
+@login_required
+@organization_admin_required
+@require_POST
+def invite_managers(request):
+    """Invite the selected managers in the org chart who have no account and no open invitation."""
+    # The organization middleware does not run for /accounts/ URLs.
+    org = request.organization or request.user.profile.organization
+    message = request.POST.get('message', '').strip()[:2000]
+    selected = {email.lower() for email in request.POST.getlist('emails')}
+    # Only queue: the send_queued_invitations cron sends the emails, so a slow
+    # mail server does not hold up this request.
+    queued = 0
+    for manager in managers_without_account(org):
+        # The posted addresses only choose from this list; they never add to it.
+        if not manager.invited and manager.email.lower() in selected:
+            open_invitation(org, manager.email.lower(), request.user, message, email_queued_at=timezone.now())
+            queued += 1
+    if not queued:
+        messages.error(request, _('Select at least one manager.'))
+    if queued:
+        messages.success(request, ngettext(
+            '%(count)s invitation is queued and goes out within about five minutes.',
+            '%(count)s invitations are queued and go out within about five minutes.',
+            queued) % {'count': queued})
+    return redirect('org_chart')
 
 
 @login_required
@@ -59,41 +148,8 @@ def send_invitation(request):
             messages.info(request, _('Invitation already sent to %(email)s') % {'email': email})
             return redirect('admin_dashboard')
 
-        # Create new invitation
-        invitation = OrganizationInvitation.objects.create(
-            organization=org,
-            email=email,
-            invited_by=request.user,
-            expires_at=timezone.now() + timedelta(days=7)
-        )
-
-        # Build invitation URL
-        invite_url = get_absolute_url('accept_invitation', token=invitation.token)
-
-        # Send invitation email
         try:
-            # There is no profile yet: the language chosen in the invitation form, else the organization's
-            with translation.override(recipient_language(request.POST.get('language'), organization=org)):
-                inviter = inviter_name(request.user)
-                context = {
-                    'organization': org,
-                    'invite_url': invite_url,
-                    'inviter_name': inviter,
-                    'site_name': settings.SITE_NAME,
-                }
-                if inviter:
-                    subject = _('%(inviter)s invited you to join %(organization)s on %(site_name)s') % {
-                        'inviter': inviter, 'organization': org.name, 'site_name': settings.SITE_NAME}
-                else:
-                    subject = _('Invitation to join %(organization)s on %(site_name)s') % {
-                        'organization': org.name, 'site_name': settings.SITE_NAME}
-                send_email(
-                    subject=subject,
-                    message=render_to_string('emails/team_invitation.txt', context),
-                    recipient_list=[email],
-                    html_message=render_to_string('emails/team_invitation.html', context),
-                    from_email=org.from_email if org.from_email else None
-                )
+            invite(org, email, request.user, language=request.POST.get('language'))
             messages.success(request, _('Invitation sent to %(email)s') % {'email': email})
         except Exception as e:
             messages.error(request, _('Failed to send invitation: %(error)s') % {'error': e})

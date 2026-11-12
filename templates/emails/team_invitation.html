@@ -9,7 +9,9 @@
 <p style="margin:0 0 16px;">{% if inviter_name %}{% blocktrans trimmed with inviter=inviter_name organization=organization.name %}{{ inviter }} invited you to join <strong>{{ organization }}</strong> on {{ site_name }}.{% endblocktrans %}{% else %}{% blocktrans trimmed with organization=organization.name %}You are invited to join <strong>{{ organization }}</strong> on {{ site_name }}.{% endblocktrans %}{% endif %}
 {% trans 'Your team uses it to give each other anonymous 360 feedback.' %}</p>
 
-{% trans 'Accept the invitation' as cta %}{% include 'emails/_button.html' with url=invite_url label=cta %}
+{% if message %}<p id="custom-message" style="margin:0 0 16px; padding-left:12px; border-left:3px solid #e2e8f0; white-space:pre-line;">{{ message }}</p>
+
+{% endif %}{% trans 'Accept the invitation' as cta %}{% include 'emails/_button.html' with url=invite_url label=cta %}
 
 <p style="margin:0; font-size:13px; color:#64748b;">{% trans 'This invitation expires in 7 days.' %}</p>
 {% endblock %}

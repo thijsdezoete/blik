@@ -4,7 +4,9 @@
 
 {% if inviter_name %}{% blocktrans trimmed with inviter=inviter_name organization=organization.name %}{{ inviter }} invited you to join {{ organization }} on {{ site_name }}.{% endblocktrans %}{% else %}{% blocktrans trimmed with organization=organization.name %}You are invited to join {{ organization }} on {{ site_name }}.{% endblocktrans %}{% endif %} {% trans 'Your team uses it to give each other anonymous 360 feedback.' %}
 
-{% trans 'Accept the invitation and create your account:' %}
+{% if message %}{{ message }}
+
+{% endif %}{% trans 'Accept the invitation and create your account:' %}
 {{ invite_url }}
 
 {% trans 'This invitation expires in 7 days.' %}{% endautoescape %}

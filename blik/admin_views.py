@@ -36,12 +36,13 @@ from accounts.permissions import (
     is_organization_admin,
     login_required,
     direct_report_emails,
+    managers_without_account,
     set_user_permission,
     visible_cycles,
 )
 from api.models import APIToken, WebhookEndpoint
 from core.env_config import env_managed_fields
-from core.languages import default_language, is_language, language_name
+from core.languages import default_language, is_language, language_name, recipient_language
 from core.gdpr import GDPRDeletionService
 from core.models import Organization
 from productreviews.models import ProductReview, anonymous_name
@@ -3794,6 +3795,16 @@ def org_chart(request):
         return redirect('admin_dashboard')
 
     context = _org_chart_context(org)
+    if request.user.has_perm('accounts.can_invite_members'):
+        managers = context['managers_without_account'] = managers_without_account(org)
+        context['managers_to_invite'] = sum(not m.invited for m in managers)
+        if context['managers_to_invite']:
+            # The email as it goes out, for the preview. The script on the page
+            # puts the text of the message field in place of the placeholder.
+            from accounts.invitation_views import invitation_email
+            context['invite_language_name'] = language_name(default_language(org))
+            with translation.override(recipient_language(None, organization=org)):
+                context['invite_preview_html'] = invitation_email(org, request.user, '#', message='…')[2]
     return render(request, 'admin_dashboard/org_chart/index.html', context)
 
 

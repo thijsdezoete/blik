@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 20:06+0000\n"
+"POT-Creation-Date: 2026-11-12 20:56+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -366,6 +366,23 @@ msgstr ""
 msgid "Import failed with errors: %(errors)s"
 msgstr ""
 
+#, python-format
+msgid "%(inviter)s invited you to join %(organization)s on %(site_name)s"
+msgstr "%(inviter)s lädt dich zu %(organization)s auf %(site_name)s ein"
+
+#, python-format
+msgid "Invitation to join %(organization)s on %(site_name)s"
+msgstr ""
+
+msgid "Select at least one manager."
+msgstr ""
+
+#, python-format
+msgid "%(count)s invitation is queued and goes out within about five minutes."
+msgid_plural "%(count)s invitations are queued and go out within about five minutes."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "No organization found."
 msgstr ""
 
@@ -374,14 +391,6 @@ msgstr ""
 
 #, python-format
 msgid "Invitation already sent to %(email)s"
-msgstr ""
-
-#, python-format
-msgid "%(inviter)s invited you to join %(organization)s on %(site_name)s"
-msgstr "%(inviter)s lädt dich zu %(organization)s auf %(site_name)s ein"
-
-#, python-format
-msgid "Invitation to join %(organization)s on %(site_name)s"
 msgstr ""
 
 #, python-format
@@ -450,6 +459,18 @@ msgid "accepted at"
 msgstr ""
 
 msgid "expires at"
+msgstr ""
+
+msgid "message"
+msgstr ""
+
+msgid "email queued at"
+msgstr ""
+
+msgid "email error"
+msgstr ""
+
+msgid "email attempts"
 msgstr ""
 
 msgid "invitation"
@@ -3013,13 +3034,7 @@ msgstr ""
 msgid "Why the last attempt to send the queued email failed"
 msgstr ""
 
-msgid "email error"
-msgstr ""
-
 msgid "Failed attempts to send the queued email"
-msgstr ""
-
-msgid "email attempts"
 msgstr ""
 
 msgid "When someone claimed this token by clicking the invitation link"
@@ -3047,6 +3062,10 @@ msgid "response"
 msgstr ""
 
 msgid "responses"
+msgstr ""
+
+#, python-format
+msgid "Failed to send the invitation to %(email)s: %(error)s"
 msgstr ""
 
 #, python-format
@@ -4618,6 +4637,12 @@ msgstr ""
 msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
 msgstr ""
 
+#, python-format
+msgid "%(counter)s manager without an account"
+msgid_plural "%(counter)s managers without an account"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Chart"
 msgstr ""
 
@@ -4670,6 +4695,34 @@ msgid "The manager of this unit becomes a member of the unit above."
 msgstr ""
 
 msgid "The people in this unit stay in Blik. People who are in no other unit move to \"Not in a unit\"."
+msgstr ""
+
+msgid "Managers without an account"
+msgstr ""
+
+msgid "A manager can read the reports of the people in the units they manage. For this, the manager must log in with an account that has the same email address as in the org chart."
+msgstr ""
+
+msgid "A manager sees only these reports. A manager cannot change a cycle, and does not see the reports of people further down the chart. The report settings control if a manager sees the answers below the anonymity threshold."
+msgstr ""
+
+msgid "These managers have no account yet. An invitation lets them make one. An invitation is valid for 7 days."
+msgstr ""
+
+msgid "Your message (optional)"
+msgstr ""
+
+msgid "The message is added to each invitation email."
+msgstr ""
+
+msgid "The email that each selected manager gets"
+msgstr ""
+
+#, python-format
+msgid "The email goes out in the language set for each person. For a person without one that is %(language)s, the language of the organization, as shown here."
+msgstr ""
+
+msgid "Invite selected managers"
 msgstr ""
 
 msgid "A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which."

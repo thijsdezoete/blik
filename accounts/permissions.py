@@ -438,3 +438,33 @@ def direct_report_emails(user, organization):
     ).values_list('reviewee__email', flat=True)
     return {email.lower() for email in emails} - {user.email.lower()}
 
+
+def managers_without_account(organization):
+    """
+    The managers in the org chart who cannot log in: no account in this
+    organization has their email. Each comes with `invited`, whether an
+    invitation to them is still open. Until they have an account they cannot
+    read the reports of their direct reports.
+    """
+    from django.utils import timezone
+    from accounts.models import OrganizationInvitation, OrgUnitMembership, Reviewee, UserProfile
+
+    has_account = {
+        (email or '').lower() for email in
+        UserProfile.objects.filter(organization=organization).values_list('user__email', flat=True)
+    }
+    invited = {
+        email.lower() for email in OrganizationInvitation.objects.filter(
+            organization=organization, accepted_at__isnull=True, expires_at__gt=timezone.now(),
+        ).values_list('email', flat=True)
+    }
+    managers = Reviewee.objects.for_organization(organization).filter(
+        is_active=True, unit_memberships__role=OrgUnitMembership.MANAGER,
+    ).distinct().order_by('name')
+    out = []
+    for manager in managers:
+        email = (manager.email or '').lower()
+        if email and email not in has_account:
+            manager.invited = email in invited
+            out.append(manager)
+    return out

@@ -11,6 +11,7 @@
         <p>{% trans 'Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review.' %}</p>
     </div>
     <div class="oc-page-actions">
+        {% if managers_without_account %}<button type="button" class="btn btn-secondary" data-oc-open="ocAccountsDialog">{% blocktrans trimmed count counter=managers_without_account|length %}{{ counter }} manager without an account{% plural %}{{ counter }} managers without an account{% endblocktrans %}</button>{% endif %}
         <button type="button" class="btn btn-secondary" data-oc-open="ocImportDialog">{% trans 'Import CSV' %}</button>
         <button type="button" class="btn btn-primary" data-oc-new-unit>{% trans 'New unit' %}</button>
     </div>
@@ -106,6 +107,74 @@
         <div class="card-footer"><button type="button" class="btn btn-secondary" data-oc-close>{% trans 'Cancel' %}</button><button type="submit" class="btn btn-danger">{% trans 'Delete unit' %}</button></div>
     </form>
 </dialog>
+
+{% if managers_without_account %}
+<dialog id="ocAccountsDialog" class="modal-content reviewee-dialog oc-accounts" aria-labelledby="ocAccountsDialogTitle">
+    <div class="card-header">
+        <h2 class="card-title" id="ocAccountsDialogTitle">{% trans 'Managers without an account' %}</h2>
+        <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}">&times;</button></form>
+    </div>
+    <form method="post" action="{% url 'invite_managers' %}" class="reviewee-start-form">
+        {% csrf_token %}
+        <div class="card-body oc-accounts-body{% if managers_to_invite %} oc-accounts-split{% endif %}">
+            <div>
+            <p>{% trans 'A manager can read the reports of the people in the units they manage. For this, the manager must log in with an account that has the same email address as in the org chart.' %}</p>
+            <p>{% trans 'A manager sees only these reports. A manager cannot change a cycle, and does not see the reports of people further down the chart. The report settings control if a manager sees the answers below the anonymity threshold.' %}</p>
+            <p>{% trans 'These managers have no account yet. An invitation lets them make one. An invitation is valid for 7 days.' %}</p>
+            <ul class="oc-accounts-list">
+                {% for manager in managers_without_account %}
+                <li>
+                    <label class="oc-accounts-person">
+                        <input type="checkbox" name="emails" value="{{ manager.email }}" {% if manager.invited %}disabled{% else %}checked{% endif %}>
+                        <span><strong>{{ manager.name }}</strong><span class="help-text">{{ manager.email }}</span></span>
+                    </label>
+                    {% if manager.invited %}<span class="help-text">{% trans 'Invited' %}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
+            {% if managers_to_invite %}
+            <div class="oc-accounts-preview">
+            <div class="form-group">
+                <label class="form-label" for="ocInviteMessage">{% trans 'Your message (optional)' %}</label>
+                <textarea id="ocInviteMessage" name="message" class="form-control" rows="3" maxlength="2000"></textarea>
+                <small class="help-text">{% trans 'The message is added to each invitation email.' %}</small>
+            </div>
+            <p class="form-label">{% trans 'The email that each selected manager gets' %}</p>
+            <p class="help-text">{% blocktrans trimmed with language=invite_language_name %}The email goes out in the language set for each person. For a person without one that is {{ language }}, the language of the organization, as shown here.{% endblocktrans %}</p>
+            <iframe id="ocInvitePreview" class="oc-invite-preview" sandbox="allow-same-origin" title="{% trans 'The email that each selected manager gets' %}" srcdoc="{{ invite_preview_html|force_escape }}"></iframe>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-secondary" data-oc-close>{% if managers_to_invite %}{% trans 'Cancel' %}{% else %}{% trans 'Close' %}{% endif %}</button>
+            {% if managers_to_invite %}<button type="submit" class="btn btn-primary" id="ocInviteSubmit">{% trans 'Invite selected managers' %}</button>{% endif %}
+        </div>
+    </form>
+    {% if managers_to_invite %}
+    <script>
+    (function () {
+        const dialog = document.getElementById('ocAccountsDialog');
+        const field = document.getElementById('ocInviteMessage');
+        const frame = document.getElementById('ocInvitePreview');
+        function preview() {
+            const target = frame.contentDocument && frame.contentDocument.getElementById('custom-message');
+            if (!target) return;
+            target.textContent = field.value;
+            target.style.display = field.value.trim() ? '' : 'none';
+        }
+        function selection() {
+            document.getElementById('ocInviteSubmit').disabled = !dialog.querySelector('input[name="emails"]:checked');
+        }
+        field.addEventListener('input', preview);
+        frame.addEventListener('load', preview);
+        dialog.addEventListener('change', selection);
+        preview();
+    })();
+    </script>
+    {% endif %}
+</dialog>
+{% endif %}
 
 <dialog id="ocImportDialog" class="modal-content reviewee-dialog" aria-labelledby="ocImportDialogTitle">
     <div class="card-header">

@@ -5869,9 +5869,19 @@
     font-size: 1.125rem;
 }
 
+/* Decision cards keep their button at the bottom, so the buttons in a row line up. */
+.landing-page :is(.section, .cta-section) .feature-card:has(> .comparison-decision-link) {
+    display: flex;
+    flex-direction: column;
+}
+
 .landing-page :is(.section, .cta-section) .comparison-decision-link {
-    margin-top: 1.5rem;
+    margin-top: auto;
     width: 100%;
+}
+
+.landing-page :is(.section, .cta-section) :has(+ .comparison-decision-link) {
+    margin-bottom: 1.5rem;
 }
 
 .landing-page :is(.section, .cta-section) .comparison-inline-link {

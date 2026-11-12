@@ -128,3 +128,10 @@
     .dash-later { flex-direction: column; align-items: flex-start; }
     .dash-split .dash-links { margin-top: 0; }
 }
+
+/* On a phone the three stages are rows: number and label side by side. */
+@media (max-width: 600px) {
+    .dash-stages { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+    .dash-stage { display: flex; align-items: baseline; gap: 0.75rem; }
+    .dash-stage strong { display: inline; min-width: 2rem; }
+}

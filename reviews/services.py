@@ -73,6 +73,11 @@ def derive_reviewers(reviewee):
                         ∪ (⋃ over T where P is MANAGER → managers(T) \\ {P})
         direct_reports  = ⋃ over T where P is MANAGER → members(T)
 
+    The organization can extend direct_reports further down the chart
+    (`chart_depth` levels, None = all the way down). The first level is always
+    the full team; with `chart_managers_only` the deeper levels give only the
+    people who manage a unit themselves.
+
     Dedup priority when the same person lands in multiple buckets:
         self > manager > direct_report > peer.
 
@@ -91,7 +96,7 @@ def derive_reviewers(reviewee):
 
     # Pull every membership of P in a single query, then fan out into two
     # queries (one per role) that fetch sibling memberships across those
-    # units. Three queries total regardless of unit count.
+    # units. Three queries for the first level regardless of unit count.
     my_memberships = list(
         OrgUnitMembership.objects
         .filter(reviewee=reviewee)
@@ -129,6 +134,34 @@ def derive_reviewers(reviewee):
             else:
                 # Co-manager — counts as a peer.
                 peers.append(m.reviewee)
+
+    # Deeper levels: the members of the units that the level above manages.
+    # Two or three queries per level.
+    org = reviewee.organization
+    depth, managers_only = org.chart_depth, org.chart_managers_only
+    seen = {reviewee.pk} | {r.pk for r in direct_reports}
+    frontier, level = list(direct_reports), 1
+    while frontier and (depth is None or level < depth):
+        frontier = [
+            m.reviewee for m in OrgUnitMembership.objects
+            .filter(
+                role=OrgUnitMembership.MEMBER,
+                unit__in=OrgUnitMembership.objects.filter(
+                    reviewee__in=frontier, role=OrgUnitMembership.MANAGER,
+                ).values('unit_id'),
+            )
+            .exclude(reviewee__in=seen)  # also stops a chart that loops
+            .select_related('reviewee')
+        ]
+        seen |= {r.pk for r in frontier}
+        level += 1
+        if managers_only:
+            manages = set(OrgUnitMembership.objects.filter(
+                reviewee__in=frontier, role=OrgUnitMembership.MANAGER,
+            ).values_list('reviewee_id', flat=True))
+            direct_reports += [r for r in frontier if r.pk in manages]
+        else:
+            direct_reports += frontier
 
     def _dedup_by_uuid(seq):
         """Preserve first-seen order while dropping duplicate Reviewees."""

@@ -2736,6 +2736,20 @@ def settings_view(request):
                 organization.save()
                 messages.success(request, _('New user settings updated successfully.'))
 
+            elif section == 'chart':
+                # How far down the org chart direct-report reviewers come from.
+                raw = request.POST.get('chart_depth', '').strip()
+                if request.POST.get('chart_depth_all') == 'on':
+                    organization.chart_depth = None
+                elif raw.isdigit() and 1 <= int(raw) <= 99:
+                    organization.chart_depth = int(raw)
+                else:
+                    messages.error(request, _('The number of levels must be a number from 1 to 99.'))
+                    return redirect('settings')
+                organization.chart_managers_only = request.POST.get('chart_who') != 'teams'
+                organization.save()
+                messages.success(request, _('Org chart settings updated successfully.'))
+
             elif section == 'reports':
                 # Update report settings
                 min_responses = request.POST.get('min_responses_for_anonymity', 3)

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 20:56+0000\n"
+"POT-Creation-Date: 2026-11-12 21:28+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -382,6 +382,14 @@ msgid "%(count)s invitation is queued and goes out within about five minutes."
 msgid_plural "%(count)s invitations are queued and go out within about five minutes."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-format
+msgid "The invitation to %(email)s is withdrawn."
+msgstr ""
+
+#, python-format
+msgid "The invitation to %(email)s is queued and goes out within about five minutes."
+msgstr ""
 
 msgid "No organization found."
 msgstr ""
@@ -1136,6 +1144,24 @@ msgstr ""
 
 msgid "Fewest responses"
 msgstr ""
+
+#, python-format
+msgid "This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for."
+msgid_plural "This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(skipped)s person is skipped: the org chart gives no reviewers for the selected categories."
+msgid_plural "%(skipped)s people are skipped: the org chart gives them no reviewers for the selected categories."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(skipped)s person is skipped: no previous cycle with reviewers and an active questionnaire."
+msgid_plural "%(skipped)s people are skipped: no previous cycle with reviewers and an active questionnaire."
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-format
 msgid "Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories."
@@ -4731,6 +4757,22 @@ msgstr "Eine CSV-Datei mit einer Zeile pro Person: Name, E-Mail-Adresse und opti
 msgid "File"
 msgstr ""
 
+msgid "Send again"
+msgstr ""
+
+#, python-format
+msgid "Withdraw the invitation to %(email)s? The link in the email stops working."
+msgstr ""
+
+msgid "Withdraw"
+msgstr ""
+
+msgid "Not sent"
+msgstr ""
+
+msgid "Queued"
+msgstr ""
+
 msgid "Buy a round"
 msgstr ""
 
@@ -4936,9 +4978,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Blik tries again within about five minutes."
-msgstr ""
-
-msgid "Queued"
 msgstr ""
 
 msgid "Goes out within about five minutes"
@@ -6088,6 +6127,9 @@ msgstr ""
 msgid "Create for all active reviewees"
 msgstr ""
 
+msgid "Create for you and your direct reports"
+msgstr ""
+
 msgid "Reuse previous settings per cycle"
 msgstr ""
 
@@ -6543,7 +6585,7 @@ msgstr ""
 msgid "New users can create cycles for others"
 msgstr ""
 
-msgid "If disabled, new users can only create cycles for themselves"
+msgid "New users can then create and run cycles for the people in the units they manage. If disabled, new users can only create cycles for themselves."
 msgstr ""
 
 msgid "Reviewers from the org chart"
@@ -7009,7 +7051,7 @@ msgstr ""
 msgid "Can create review cycles for others"
 msgstr ""
 
-msgid "Without this, user can only create cycles for themselves"
+msgid "An admin creates cycles for everyone. A member creates and runs cycles for themselves and for the people in the units they manage. Without this, a user can only create cycles for themselves."
 msgstr ""
 
 msgid "Can view all reports and cycles"

@@ -44,7 +44,7 @@
                         <input type="radio" name="creation_mode" value="bulk" onchange="toggleRevieweeSelect()">
                         <div>
                             <div style="font-weight: 600;">{% trans 'Bulk Create' %}</div>
-                            <div style="font-size: 0.875rem; color: #64748b;">{% trans 'Create for all active reviewees' %}</div>
+                            <div style="font-size: 0.875rem; color: #64748b;">{% if creates_for_whole_organization %}{% trans 'Create for all active reviewees' %}{% else %}{% trans 'Create for you and your direct reports' %}{% endif %}</div>
                         </div>
                     </label>
                 </div>
@@ -92,6 +92,7 @@
                         </div>
                         {% endif %}
                     </div>
+                    <div id="bulkCount" class="alert alert-info" role="status" aria-live="polite" style="font-size: 0.875rem;" hidden></div>
                     <div class="alert alert-warning" style="font-size: 0.875rem;">
                         Bulk creation does not send any emails yet. You'll review the new cycles and send invitations in the next step.
                     </div>
@@ -361,6 +362,24 @@ function toggleRevieweeSelect() {
         if (bulkNote) bulkNote.style.display = 'none';
     }
 }
+
+// Ask the server what the bulk run would create with the form as it is now.
+let bulkCountRequest = 0;
+function updateBulkCount() {
+    const box = document.getElementById('bulkCount');
+    const mode = document.querySelector('input[name="creation_mode"]:checked');
+    if (!box || !mode || mode.value !== 'bulk') return;
+    const request = ++bulkCountRequest;
+    fetch('{% url 'review_cycle_bulk_preview' %}', {method: 'POST', body: new FormData(document.getElementById('cycleForm'))})
+        .then(response => response.ok ? response.json() : null)
+        .then(data => {
+            if (request !== bulkCountRequest) return;  // an older answer
+            box.hidden = !data;
+            if (data) box.textContent = data.message;
+        })
+        .catch(() => { box.hidden = true; });
+}
+document.getElementById('cycleForm').addEventListener('change', updateBulkCount);
 
 function toggleInviteForm() {
     const body = document.getElementById('inviteFormBody');

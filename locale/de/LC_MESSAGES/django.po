@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 20:56+0000\n"
+"POT-Creation-Date: 2026-11-12 21:28+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -382,6 +382,14 @@ msgid "%(count)s invitation is queued and goes out within about five minutes."
 msgid_plural "%(count)s invitations are queued and go out within about five minutes."
 msgstr[0] "%(count)s Einladung steht im Postausgang und geht in etwa fünf Minuten hinaus."
 msgstr[1] "%(count)s Einladungen stehen im Postausgang und gehen in etwa fünf Minuten hinaus."
+
+#, python-format
+msgid "The invitation to %(email)s is withdrawn."
+msgstr "Die Einladung an %(email)s wurde zurückgezogen."
+
+#, python-format
+msgid "The invitation to %(email)s is queued and goes out within about five minutes."
+msgstr "Die Einladung an %(email)s steht im Postausgang und geht in etwa fünf Minuten hinaus."
 
 msgid "No organization found."
 msgstr "Keine Organisation gefunden."
@@ -1136,6 +1144,24 @@ msgstr "Feedbacknehmende A–Z"
 
 msgid "Fewest responses"
 msgstr "Wenigste Antworten"
+
+#, python-format
+msgid "This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for."
+msgid_plural "This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for."
+msgstr[0] "Es wird %(count)s Feedbackrunde erstellt, für %(count)s von %(total)s Personen, für die das möglich ist."
+msgstr[1] "Es werden %(count)s Feedbackrunden erstellt, für %(count)s von %(total)s Personen, für die das möglich ist."
+
+#, python-format
+msgid "%(skipped)s person is skipped: the org chart gives no reviewers for the selected categories."
+msgid_plural "%(skipped)s people are skipped: the org chart gives them no reviewers for the selected categories."
+msgstr[0] "%(skipped)s Person wird übersprungen: Das Organigramm liefert keine Feedbackgebenden in den gewählten Kategorien."
+msgstr[1] "%(skipped)s Personen werden übersprungen: Das Organigramm liefert für sie keine Feedbackgebenden in den gewählten Kategorien."
+
+#, python-format
+msgid "%(skipped)s person is skipped: no previous cycle with reviewers and an active questionnaire."
+msgid_plural "%(skipped)s people are skipped: no previous cycle with reviewers and an active questionnaire."
+msgstr[0] "%(skipped)s Person wird übersprungen: keine frühere Feedbackrunde mit Feedbackgebenden und aktivem Fragebogen."
+msgstr[1] "%(skipped)s Personen werden übersprungen: keine frühere Feedbackrunde mit Feedbackgebenden und aktivem Fragebogen."
 
 #, python-format
 msgid "Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories."
@@ -4731,6 +4757,22 @@ msgstr "Eine CSV-Datei mit einer Zeile pro Person: Name, E-Mail-Adresse und opti
 msgid "File"
 msgstr "Datei"
 
+msgid "Send again"
+msgstr "Erneut senden"
+
+#, python-format
+msgid "Withdraw the invitation to %(email)s? The link in the email stops working."
+msgstr "Die Einladung an %(email)s zurückziehen? Der Link in der E-Mail funktioniert dann nicht mehr."
+
+msgid "Withdraw"
+msgstr "Zurückziehen"
+
+msgid "Not sent"
+msgstr "Nicht gesendet"
+
+msgid "Queued"
+msgstr "Im Postausgang"
+
 msgid "Buy a round"
 msgstr "Paket kaufen"
 
@@ -4937,9 +4979,6 @@ msgstr[1] "Nach %(attempts)s Versuchen aufgegeben. Die Einladung erneut senden, 
 
 msgid "Blik tries again within about five minutes."
 msgstr "Blik versucht es in etwa fünf Minuten erneut."
-
-msgid "Queued"
-msgstr "Im Postausgang"
 
 msgid "Goes out within about five minutes"
 msgstr "Geht in etwa fünf Minuten hinaus"
@@ -6088,6 +6127,9 @@ msgstr "Mehrere anlegen"
 msgid "Create for all active reviewees"
 msgstr "Für alle aktiven Feedbacknehmenden anlegen"
 
+msgid "Create for you and your direct reports"
+msgstr "Für sich selbst und die direkten Mitarbeitenden erstellen"
+
 msgid "Reuse previous settings per cycle"
 msgstr "Einstellungen der vorigen Feedbackrunde übernehmen"
 
@@ -6543,8 +6585,8 @@ msgstr "Neue Benutzer:innen"
 msgid "New users can create cycles for others"
 msgstr "Neue Benutzer:innen dürfen Feedbackrunden für andere anlegen"
 
-msgid "If disabled, new users can only create cycles for themselves"
-msgstr "Wenn deaktiviert, können neue Benutzer:innen nur Feedbackrunden für sich selbst anlegen"
+msgid "New users can then create and run cycles for the people in the units they manage. If disabled, new users can only create cycles for themselves."
+msgstr "Neue Benutzer:innen können dann Feedbackrunden für die Personen in den Einheiten erstellen und verwalten, die sie leiten. Wenn deaktiviert, sind nur Feedbackrunden für sich selbst möglich."
 
 msgid "Reviewers from the org chart"
 msgstr "Feedbackgebende aus dem Organigramm"
@@ -7009,8 +7051,8 @@ msgstr "Zusätzliche Berechtigungen"
 msgid "Can create review cycles for others"
 msgstr "Darf Feedbackrunden für andere anlegen"
 
-msgid "Without this, user can only create cycles for themselves"
-msgstr "Ohne diese Berechtigung kann die Person nur Feedbackrunden für sich selbst anlegen"
+msgid "An admin creates cycles for everyone. A member creates and runs cycles for themselves and for the people in the units they manage. Without this, a user can only create cycles for themselves."
+msgstr "Admins erstellen Feedbackrunden für alle. Mitglieder erstellen und verwalten Feedbackrunden für sich selbst und für die Personen in den Einheiten, die sie leiten. Ohne diese Berechtigung sind nur Feedbackrunden für sich selbst möglich."
 
 msgid "Can view all reports and cycles"
 msgstr "Darf alle Berichte und Feedbackrunden sehen"

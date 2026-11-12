@@ -109,12 +109,18 @@ def get_cycle_or_404(request, cycle_uuid):
     """
     Get a ReviewCycle by UUID, filtered by organization and by what the current
     user is allowed to see. Returns 404 for cycles in another organization or
-    belonging to another reviewee.
+    belonging to a reviewee whose cycles this user does not run.
     """
     cycles_qs = ReviewCycle.objects.select_related('reviewee', 'questionnaire', 'created_by')
     if request.organization:
         cycles_qs = cycles_qs.filter(reviewee__organization=request.organization)
-    return get_object_or_404(visible_cycles(request.user, cycles_qs), uuid=cycle_uuid)
+    allowed = visible_cycles(request.user, cycles_qs)
+    team = run_team_emails(request.user, request.organization)
+    if team:
+        # A manager who may create cycles for their direct reports also runs those cycles.
+        allowed = cycles_qs.annotate(reviewee_email_lower=Lower('reviewee__email')).filter(
+            Q(pk__in=allowed.values('pk')) | Q(reviewee_email_lower__in=team))
+    return get_object_or_404(allowed, uuid=cycle_uuid)
 
 
 @login_required
@@ -1753,9 +1759,11 @@ def review_cycle_list(request):
         )
 
     below = set() if can_view_all_reports(request.user) else direct_report_emails(request.user, org)
+    run_team = run_team_emails(request.user, org)
     if below:
         # Managers also see the cycles of their direct reports in the org
-        # chart, but only to read the report (see report_only below).
+        # chart: to run them when they may create cycles for others, else
+        # only to read the report (see report_only below).
         own = visible_cycles(request.user, cycles_qs).values('pk')
         cycles_qs = cycles_qs.annotate(reviewee_email_lower=Lower('reviewee__email')).filter(
             Q(pk__in=own) | Q(reviewee_email_lower__in=below))
@@ -1827,7 +1835,7 @@ def review_cycle_list(request):
 
     # "New Cycle" opens the start dialog of the reviewee list, set up as a copy of the row's cycle.
     for cycle in cycles:
-        cycle.report_only = cycle.reviewee.email.lower() in below
+        cycle.report_only = cycle.reviewee.email.lower() in below - run_team
         cycle.start = {
             'reviewee': cycle.reviewee,
             'source_cycle': cycle,
@@ -1876,12 +1884,120 @@ def may_create_for_others(user):
     return profile is not None and profile.can_create_cycles_for_others
 
 
+def run_team_emails(user, org):
+    """
+    Emails of the direct reports whose cycles this user creates and runs: those
+    of a user who may create cycles for others. Empty for everyone else.
+    """
+    return direct_report_emails(user, org) if may_create_for_others(user) else set()
+
+
 def creatable_reviewees(user, org):
-    """The reviewees this user may start a cycle for: everyone, or only themselves."""
+    """
+    The reviewees this user may start a cycle for. With the permission to
+    create cycles for others: an organization admin for everyone, another user
+    for themselves and their direct reports. Without it: only themselves.
+    """
     reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
-    if not may_create_for_others(user):
-        reviewees = reviewees.filter(email=user.email)
-    return reviewees
+    if may_create_for_others(user) and user.has_perm('accounts.can_manage_organization'):
+        return reviewees
+    scope = ({(user.email or '').lower()} | run_team_emails(user, org)) - {''}
+    return reviewees.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
+
+
+def bulk_reviewees(user, org):
+    """The people a bulk run makes cycles for: everyone this user may start a cycle for."""
+    return creatable_reviewees(user, org)
+
+
+def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
+    """
+    Work out which cycles a bulk run creates, without creating them. The form
+    shows the numbers before the run, and the credit check counts only the
+    people who really get a cycle.
+
+    `bulk_source` controls the reviewers of each cycle:
+        'chart' — derive from the org chart for each reviewee
+        'previous' — each reviewee's latest cycle: its questionnaire,
+                     categories and reviewer email strings (never FKs)
+        'empty' — no reviewers yet (admins fill them in per cycle later)
+
+    Returns (planned, skipped): planned is a list of (reviewee, questionnaire,
+    category flags, email assignments or None); skipped counts the people who
+    get no cycle.
+    """
+    # The categories this run collects, read off an unsaved cycle
+    # so the defaults match what the created cycles will have.
+    active_categories = ReviewCycle(**category_flags).active_categories
+    unplaced_count = 0
+    planned = []
+    for reviewee in reviewees:
+        email_assignments = None
+        cycle_questionnaire, cycle_flags = questionnaire, category_flags
+        if bulk_source == 'previous':
+            previous = reviewee.review_cycles.select_related('questionnaire').first()
+            # Archived questionnaires do not come back this way either.
+            if previous is None or not previous.questionnaire.is_active:
+                unplaced_count += 1
+                continue
+            cycle_questionnaire = previous.questionnaire
+            cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
+            email_assignments = {code: [] for code in previous.active_categories}
+            for category, email in previous.tokens.filter(
+                reviewer_email__isnull=False, category__in=previous.active_categories,
+            ).values_list('category', 'reviewer_email'):
+                email_assignments[category].append(email.lower())
+            # The self-assessment goes to the person's address of today,
+            # not to the one the previous cycle used.
+            if 'self' in email_assignments and reviewee.email:
+                email_assignments['self'] = [reviewee.email.lower()]
+            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                unplaced_count += 1
+                continue
+        elif bulk_source == 'chart':
+            buckets = derive_reviewers(reviewee)
+            # Build the email_assignments dict the existing
+            # helper expects: emails only, no Reviewee FK.
+            email_assignments = {
+                code: [p.email.lower() for p in buckets.get(code, []) if p.email]
+                for code in active_categories
+            }
+            # Nobody but the reviewee: a worker in an upward run,
+            # a professor in a peer run. No cycle, no lone
+            # self-assessment, no credit spent.
+            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                unplaced_count += 1
+                continue
+
+        planned.append((reviewee, cycle_questionnaire, cycle_flags, email_assignments))
+    return planned, unplaced_count
+
+
+@login_required
+@require_POST
+def review_cycle_bulk_preview(request):
+    """What a bulk run with the posted form would create, as a sentence for the form. Creates nothing."""
+    if not may_create_for_others(request.user):
+        raise Http404
+    bulk_source = request.POST.get('bulk_source', 'empty')
+    reviewees = bulk_reviewees(request.user, request.organization)
+    planned, skipped = plan_bulk_cycles(reviewees, bulk_source, None, selected_category_flags(request))
+    count = len(planned)
+    parts = [ngettext(
+        'This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for.',
+        'This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for.',
+        count) % {'count': count, 'total': count + skipped}]
+    if skipped and bulk_source == 'chart':
+        parts.append(ngettext(
+            '%(skipped)s person is skipped: the org chart gives no reviewers for the selected categories.',
+            '%(skipped)s people are skipped: the org chart gives them no reviewers for the selected categories.',
+            skipped) % {'skipped': skipped})
+    elif skipped:
+        parts.append(ngettext(
+            '%(skipped)s person is skipped: no previous cycle with reviewers and an active questionnaire.',
+            '%(skipped)s people are skipped: no previous cycle with reviewers and an active questionnaire.',
+            skipped) % {'skipped': skipped})
+    return JsonResponse({'count': count, 'skipped': skipped, 'message': ' '.join(parts)})
 
 
 @login_required
@@ -1889,7 +2005,7 @@ def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
     if request.method == 'POST':
         creation_mode = request.POST.get('creation_mode', 'single')
-        # Bulk is a cycle for everyone: only for users who may create for others.
+        # Bulk is a cycle for several people: only for users who may create for others.
         if creation_mode == 'bulk' and not may_create_for_others(request.user):
             raise Http404
         questionnaire_id = request.POST.get('questionnaire')
@@ -1924,62 +2040,9 @@ def review_cycle_create(request):
                 # send any emails here — the admin confirms sending on the
                 # follow-up bulk_send_invitations page. This prevents the
                 # request from stalling on SMTP and avoids surprise blasts.
-                reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
-
-                # `bulk_source` controls reviewer-token pre-population:
-                #   'chart' — derive from the org chart for each reviewee
-                #   'previous' — each reviewee's latest cycle: its questionnaire,
-                #                categories and reviewer email strings (never FKs)
-                #   'empty' — no tokens yet (admins fill them in per cycle later)
+                reviewees = bulk_reviewees(request.user, org)
                 derived_count = 0
-                unplaced_count = 0
-
-                # The categories this run collects, read off an unsaved cycle
-                # so the defaults match what the created cycles will have.
-                active_categories = ReviewCycle(**category_flags).active_categories
-
-                # First work out which cycles to create, then create them: the
-                # credit check counts only the people who really get a cycle.
-                planned = []
-                for reviewee in reviewees:
-                    email_assignments = None
-                    cycle_questionnaire, cycle_flags = questionnaire, category_flags
-                    if bulk_source == 'previous':
-                        previous = reviewee.review_cycles.select_related('questionnaire').first()
-                        # Archived questionnaires do not come back this way either.
-                        if previous is None or not previous.questionnaire.is_active:
-                            unplaced_count += 1
-                            continue
-                        cycle_questionnaire = previous.questionnaire
-                        cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
-                        email_assignments = {code: [] for code in previous.active_categories}
-                        for category, email in previous.tokens.filter(
-                            reviewer_email__isnull=False, category__in=previous.active_categories,
-                        ).values_list('category', 'reviewer_email'):
-                            email_assignments[category].append(email.lower())
-                        # The self-assessment goes to the person's address of today,
-                        # not to the one the previous cycle used.
-                        if 'self' in email_assignments and reviewee.email:
-                            email_assignments['self'] = [reviewee.email.lower()]
-                        if not any(emails for code, emails in email_assignments.items() if code != 'self'):
-                            unplaced_count += 1
-                            continue
-                    elif bulk_source == 'chart':
-                        buckets = derive_reviewers(reviewee)
-                        # Build the email_assignments dict the existing
-                        # helper expects: emails only, no Reviewee FK.
-                        email_assignments = {
-                            code: [p.email.lower() for p in buckets.get(code, []) if p.email]
-                            for code in active_categories
-                        }
-                        # Nobody but the reviewee: a worker in an upward run,
-                        # a professor in a peer run. No cycle, no lone
-                        # self-assessment, no credit spent.
-                        if not any(emails for code, emails in email_assignments.items() if code != 'self'):
-                            unplaced_count += 1
-                            continue
-
-                    planned.append((reviewee, cycle_questionnaire, cycle_flags, email_assignments))
+                planned, unplaced_count = plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags)
 
                 # Refuse the whole batch up front so the message can say how
                 # many credits it needs; the model gate still backs this up.
@@ -2150,6 +2213,7 @@ def review_cycle_create(request):
         'reviewees': reviewees,
         'questionnaires': questionnaires,
         'can_create_for_others': may_create_for_others(request.user),
+        'creates_for_whole_organization': request.user.has_perm('accounts.can_manage_organization'),
         **billing_context(org, request.user),
         'has_org_chart': has_org_chart,
         'has_previous_cycles': org is not None and ReviewCycle.objects.filter(reviewee__organization=org).exists(),

@@ -71,6 +71,7 @@ urlpatterns = [
 
     path('dashboard/cycles/', admin_views.review_cycle_list, name='review_cycle_list'),
     path('dashboard/cycles/create/', admin_views.review_cycle_create, name='review_cycle_create'),
+    path('dashboard/cycles/create/bulk-preview/', admin_views.review_cycle_bulk_preview, name='review_cycle_bulk_preview'),
     path('dashboard/cycles/derive-reviewers/', admin_views.derive_reviewers_for_cycle, name='derive_reviewers_for_cycle'),
     path('dashboard/cycles/bulk/send-invitations/', admin_views.bulk_send_invitations, name='bulk_send_invitations'),
     path('dashboard/cycles/<uuid:cycle_uuid>/', admin_views.review_cycle_detail, name='review_cycle_detail'),

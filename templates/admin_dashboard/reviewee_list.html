@@ -77,7 +77,7 @@
                             {% if item.active_cycle %}<a href="{% url 'review_cycle_detail' item.active_cycle.uuid %}" class="reviewee-name-link">{{ item.reviewee.name }}</a>
                             {% elif item.latest_completed_report %}<a href="{% url 'reports:view_report' item.latest_completed_report.cycle.uuid %}" class="reviewee-name-link">{{ item.reviewee.name }}</a>
                             {% else %}<span class="reviewee-name">{{ item.reviewee.name }}</span>{% endif %}
-                            <p class="help-text">{{ item.reviewee.email }}</p>
+                            <span class="person-email">{{ item.reviewee.email }}</span>
                         </td>
                         <td class="reviewee-status">
                             {% if item.active_cycle %}<span class="badge badge-info">{% trans 'In progress' %}</span>

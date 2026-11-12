@@ -229,7 +229,7 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--primary);
+    color: var(--primary-600);
     margin-bottom: var(--space-3);
 }
 
@@ -404,7 +404,11 @@
 .landing-page .hero-note {
     margin-top: var(--space-4);
     font-size: var(--text-sm);
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
+}
+
+.landing-page .hero-note a {
+    color: inherit;
 }
 
 /* Home hero: the report in a browser frame, a phone answering on top of it */
@@ -561,7 +565,7 @@
 
 .landing-page .step h3::before {
     content: counter(step) ". ";
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .step p {
@@ -622,7 +626,7 @@
 }
 
 .landing-page .split-text a:not(.btn) {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .data-grid,
@@ -646,7 +650,7 @@
     display: block;
     text-align: center;
     margin-top: var(--space-8);
-    color: var(--primary);
+    color: var(--primary-600);
     font-weight: 500;
 }
 
@@ -700,7 +704,7 @@
 /* ==================== Citation Links ==================== */
 .citation-link {
     text-decoration: none;
-    color: var(--primary);
+    color: var(--primary-600);
     font-weight: 600;
     transition: color 0.15s ease;
 }
@@ -711,11 +715,11 @@
 }
 
 [data-theme="dark"] .citation-link {
-    color: var(--primary-400);
+    color: var(--primary-600);
 }
 
 [data-theme="dark"] .citation-link:hover {
-    color: var(--primary-300);
+    color: var(--primary-700);
 }
 
 /* ==================== Responsive Tables ==================== */
@@ -953,7 +957,7 @@
 .landing-page .price {
     font-size: 3rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--primary-600);
     line-height: 1;
 }
 
@@ -992,7 +996,7 @@
 }
 
 .landing-page .pricing-more {
-    color: var(--primary);
+    color: var(--primary-600);
     display: block;
     margin-top: 1rem;
     text-align: center;
@@ -1094,7 +1098,7 @@
     content: '+';
     font-size: 1.5rem;
     font-weight: 400;
-    color: var(--primary);
+    color: var(--primary-600);
     transition: transform 0.2s;
 }
 
@@ -1202,7 +1206,7 @@
 }
 
 .read-more-toggle:hover {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
@@ -1262,7 +1266,7 @@
     margin-top: auto;
     padding: 0.5rem 0.875rem;
     background: transparent;
-    color: var(--primary);
+    color: var(--primary-600);
     border: 1px solid var(--primary);
     border-radius: var(--radius-md);
     font-size: 0.875rem;
@@ -1336,9 +1340,9 @@
 }
 
 .landing-page .feature-card-gradient {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .landing-page .feature-card-gradient h3 {
@@ -1432,7 +1436,7 @@
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 16px;
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .signup-subtitle {
@@ -1476,7 +1480,7 @@
 .plan-price {
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--primary);
+    color: var(--primary-600);
     margin-bottom: 8px;
 }
 
@@ -1524,9 +1528,9 @@
 }
 
 .checkout-btn.primary {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .checkout-btn.primary:hover {
@@ -1536,7 +1540,7 @@
 
 .checkout-btn.secondary {
     background: var(--bg-card);
-    color: var(--primary);
+    color: var(--primary-600);
     border: 2px solid var(--primary);
 }
 
@@ -1566,7 +1570,7 @@
 }
 
 .back-link:hover {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .signup-signin {
@@ -1576,7 +1580,7 @@
 }
 
 .signup-signin a {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 /* Mobile Responsive */
@@ -1746,31 +1750,6 @@
     border-bottom: none;
 }
 
-/* Table cell highlights */
-.landing-page .comparison-table .highlight-green {
-    background: var(--success-50);
-}
-
-.landing-page .comparison-table .highlight-yellow {
-    background: var(--warning-50);
-}
-
-.landing-page .comparison-table .highlight-red {
-    background: var(--danger-50);
-}
-
-[data-theme="dark"] .landing-page .comparison-table .highlight-green {
-    background: rgba(16, 185, 129, 0.1);
-}
-
-[data-theme="dark"] .landing-page .comparison-table .highlight-yellow {
-    background: rgba(245, 158, 11, 0.1);
-}
-
-[data-theme="dark"] .landing-page .comparison-table .highlight-red {
-    background: rgba(239, 68, 68, 0.1);
-}
-
 /* Comparison warning/info boxes */
 .landing-page .comparison-warning-box {
     margin-top: 3rem;
@@ -1794,7 +1773,7 @@
 .landing-page .comparison-cta-box {
     margin-top: 3rem;
     padding: 2rem;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border-radius: 8px;
     color: white;
     text-align: center;
@@ -1825,7 +1804,7 @@
 }
 
 .landing-page .crosslink-links a {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 /* Decision cards */
@@ -1866,7 +1845,7 @@
     content: "→";
     position: absolute;
     left: 0;
-    color: var(--primary);
+    color: var(--primary-600);
     font-weight: 700;
 }
 
@@ -1903,7 +1882,7 @@
 .landing-page .comparison-detail strong {
     display: block;
     margin-bottom: 0.5rem;
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 /* Level cards on agency page */
@@ -1954,7 +1933,12 @@
 .landing-page .calculator-card a,
 .landing-page :where(.feature-card) a:where(:not(.btn)),
 .landing-page #pricing-sources a {
-    color: var(--primary);
+    color: var(--primary-600);
+}
+
+/* Default link colour instead of the browser's blue. :where() keeps it at (0,0,1), so every other link rule wins. */
+:where(.landing-page) a {
+    color: var(--primary-600);
 }
 
 /* Shared header and footer */
@@ -1996,7 +1980,7 @@
 
 .landing-page .article-metadata a,
 .landing-page .legal-page a {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .container.legal-page {
@@ -2071,7 +2055,7 @@
 .landing-page .audience-step-number {
     font-size: 2rem;
     font-weight: bold;
-    color: var(--primary);
+    color: var(--primary-600);
     margin-bottom: 1rem;
 }
 
@@ -2104,7 +2088,7 @@
 }
 
 .landing-page .audience-link {
-    color: var(--primary);
+    color: var(--primary-600);
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 0.2em;
@@ -2124,11 +2108,11 @@
 }
 
 .landing-page .audience-highlight {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     padding: 2rem;
     text-align: center;
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .landing-page h3.audience-highlight-title {
@@ -2198,7 +2182,7 @@
 }
 
 .landing-page .audience-resource-link {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: none;
 }
 
@@ -2218,7 +2202,6 @@
 
 .landing-page p.audience-cost-problem-warning {
     margin-top: 1rem;
-    color: var(--warning);
     font-weight: 600;
 }
 
@@ -2228,7 +2211,6 @@
 
 .landing-page p.audience-cost-problem-success {
     margin-top: 1rem;
-    color: var(--success);
     font-weight: 600;
 }
 
@@ -2247,7 +2229,7 @@
 }
 
 .landing-page .audience-framework-link {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: none;
     font-weight: 500;
 }
@@ -2371,7 +2353,7 @@
     max-width: 900px;
     margin: 0 auto;
     padding: 3rem;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border-radius: 16px;
     text-align: center;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -2459,7 +2441,6 @@
 
 .landing-page p.audience-architecture-confirmation {
     text-align: center;
-    color: var(--success);
     font-weight: 600;
     margin-top: 1.5rem;
 }
@@ -2471,7 +2452,6 @@
 
 .landing-page td.audience-selfhost-price {
     font-weight: 600;
-    color: var(--success);
 }
 
 .landing-page p.audience-price-source {
@@ -2511,6 +2491,12 @@
 
 .landing-page .questionnaire-badge-management {
     background: var(--insight-perception);
+}
+
+/* Dark mode lightens these fills, so white text loses contrast. Text in the page background colour. */
+[data-theme="dark"] .landing-page :is(.questionnaire-badge-quick, .questionnaire-badge-engineering, .questionnaire-badge-management),
+[data-theme="dark"] .landing-page .framework-page :is(.matrix-scenario-time--passenger, .matrix-scenario-time--developing) {
+    color: var(--bg-body);
 }
 
 .landing-page p.audience-highlight-copy-large {
@@ -2994,7 +2980,7 @@
 }
 
 .slider-label.active {
-    color: var(--primary);
+    color: var(--primary-600);
     font-size: 0.875rem;
 }
 
@@ -3111,7 +3097,7 @@
 
 .landing-page .framework-page .agency-stat-callout {
     background: var(--success);
-    color: white;
+    color: #0f172a;
     padding: var(--space-6) var(--space-8);
     margin: var(--space-8) auto;
     border-radius: var(--radius-lg);
@@ -3220,11 +3206,11 @@
 .landing-page .framework-page .framework-principle-card,
 .landing-page .framework-page .framework-principle-card--narrow,
 .landing-page .framework-page .framework-principle-card--wide {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     padding: var(--space-12);
     text-align: center;
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .landing-page .framework-page .framework-principle-card--narrow {
@@ -3287,7 +3273,7 @@
 }
 
 .landing-page .framework-page .agency-level-overview-label {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .framework-page .agency-level-overview-label--passive {
@@ -3319,22 +3305,22 @@
 }
 
 .landing-page .framework-page .framework-link--medium {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: none;
     font-weight: 500;
 }
 
 .landing-page .framework-page .framework-link--underlined {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: underline;
 }
 
 .landing-page .framework-page .framework-link {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .framework-page .framework-link--strong {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: none;
     font-weight: 600;
 }
@@ -3345,13 +3331,13 @@
 }
 
 .landing-page .framework-page .framework-link--citation {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: underline;
     font-size: 0.875rem;
 }
 
 .landing-page .framework-page .framework-link--reference {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: none;
     font-size: 0.875rem;
 }
@@ -3367,13 +3353,13 @@
 }
 
 .landing-page .framework-page .framework-link--underlined-strong {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: underline;
     font-weight: 600;
 }
 
 .landing-page .framework-page .framework-link--plain {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: none;
 }
 
@@ -3387,13 +3373,13 @@
 .landing-page .framework-page .framework-principle-panel--spaced,
 .landing-page .framework-page .framework-principle-panel--wide,
 .landing-page .framework-page .framework-principle-panel {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     padding: var(--space-12);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
     text-align: center;
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .landing-page .framework-page .framework-principle-panel--spaced {
@@ -3464,12 +3450,12 @@
 .landing-page .framework-page .framework-research-banner {
     max-width: 800px;
     margin: 0 auto 3rem;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     padding: 3rem;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .landing-page .framework-page .framework-research-banner-title {
@@ -3848,13 +3834,13 @@
 .landing-page .framework-page .matrix-scenario-prompt {
     text-align: center;
     margin-bottom: var(--space-12);
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     padding: var(--space-6);
     border-radius: var(--radius-lg);
     font-size: var(--text-lg);
     font-style: italic;
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .landing-page .framework-page .scenario-cards-grid {
@@ -3906,10 +3892,12 @@
 
 .landing-page .framework-page .matrix-scenario-time--multiplier {
     background: var(--success);
+    color: #0f172a;
 }
 
 .landing-page .framework-page .matrix-scenario-time--learner {
     background: var(--warning);
+    color: #0f172a;
 }
 
 .landing-page .framework-page .matrix-scenario-time--passenger {
@@ -4262,7 +4250,7 @@
 
 .landing-page .framework-page .framework-assessment-title {
     margin-bottom: 1rem;
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .framework-page .framework-assessment-label {
@@ -4786,7 +4774,7 @@
 
 .landing-page .framework-page .dreyfus-progression-arrow {
     flex: 0 0 auto;
-    color: var(--primary-400);
+    color: var(--primary-500);
 }
 
 .landing-page .framework-page .dreyfus-progression-captions {
@@ -4890,7 +4878,7 @@
 }
 
 .landing-page .framework-page .dreyfus-level-card--expert {
-    border-top: 3px solid var(--primary-700);
+    border-top: 3px solid var(--primary-dark);
 }
 
 .landing-page .framework-page .dreyfus-level-title,
@@ -4964,7 +4952,7 @@
 .landing-page .framework-page .dreyfus-agency-link {
     display: inline-block;
     padding: var(--space-3) var(--space-6);
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     text-decoration: none;
     font-weight: 600;
@@ -5382,7 +5370,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: var(--bg-primary);
+    background: var(--bg-card);
     border-radius: 32px;
     overflow: hidden;
 }
@@ -5481,7 +5469,7 @@
 }
 
 .calculator-card {
-    background: var(--bg-primary);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 2rem;
@@ -5531,7 +5519,7 @@
 .employee-count-display {
     font-size: 2rem;
     font-weight: bold;
-    color: var(--primary);
+    color: var(--primary-600);
     margin-top: 0.5rem;
 }
 
@@ -5550,7 +5538,8 @@
     text-align: center;
     font-weight: 500;
     transition: all 0.2s;
-    background: var(--bg-primary);
+    background: var(--bg-card);
+    color: inherit;
 }
 
 .competitor-option:hover {
@@ -5620,7 +5609,7 @@
 }
 
 .savings-highlight {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     padding: 2rem;
     border-radius: 12px;
@@ -5694,24 +5683,6 @@
     color: var(--text-secondary);
 }
 
-.comparison-table-detailed :where(.highlight-green) {
-    background-color: rgba(16, 185, 129, 0.1);
-    font-weight: 500;
-    color: var(--success);
-}
-
-.comparison-table-detailed :where(.highlight-red) {
-    background-color: rgba(239, 68, 68, 0.1);
-    font-weight: 500;
-    color: var(--danger);
-}
-
-.comparison-table-detailed :where(.highlight-yellow) {
-    background-color: rgba(245, 158, 11, 0.1);
-    font-weight: 500;
-    color: var(--warning);
-}
-
 .comparison-card {
     background: var(--bg);
     border-radius: 8px;
@@ -5725,54 +5696,14 @@
     font-size: 1.5rem;
 }
 
-.card-green,
-.card-red {
+.comparison-side {
     padding: 1.5rem;
+    border: 1px solid var(--border);
     border-radius: 8px;
 }
 
-.card-green {
-    background: rgba(16, 185, 129, 0.05);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.card-green h4 {
-    color: var(--success);
+.comparison-side h4 {
     margin-bottom: 1rem;
-}
-
-.card-green ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-green ul li:before {
-    content: "✓ ";
-    color: var(--success);
-    font-weight: bold;
-    margin-right: 0.5rem;
-}
-
-.card-red {
-    background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.card-red h4 {
-    color: var(--danger);
-    margin-bottom: 1rem;
-}
-
-.card-red ul {
-    list-style: none;
-    padding: 0;
-}
-
-.card-red ul li:before {
-    content: "✗ ";
-    color: var(--danger);
-    font-weight: bold;
-    margin-right: 0.5rem;
 }
 
 /* Layout, prices, source notes, and calls to action. The section context keeps
@@ -5934,13 +5865,23 @@
 
 .landing-page :is(.section, .cta-section) .comparison-cost-summary--featured {
     font-weight: bold;
-    color: var(--primary);
+    color: var(--primary-600);
     font-size: 1.125rem;
 }
 
+/* Decision cards keep their button at the bottom, so the buttons in a row line up. */
+.landing-page :is(.section, .cta-section) .feature-card:has(> .comparison-decision-link) {
+    display: flex;
+    flex-direction: column;
+}
+
 .landing-page :is(.section, .cta-section) .comparison-decision-link {
-    margin-top: 1.5rem;
+    margin-top: auto;
     width: 100%;
+}
+
+.landing-page :is(.section, .cta-section) :has(+ .comparison-decision-link) {
+    margin-bottom: 1.5rem;
 }
 
 .landing-page :is(.section, .cta-section) .comparison-inline-link {
@@ -5990,16 +5931,6 @@
 
 .landing-page :is(.section, .cta-section) .comparison-callout {
     margin-top: 1.5rem;
-}
-
-.landing-page :is(.section, .cta-section) .comparison-callout--success {
-    background: var(--success-bg);
-    border-left: 4px solid var(--success);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-callout--warning {
-    background: var(--warning-bg);
-    border-left: 4px solid var(--warning);
 }
 
 .landing-page :is(.section, .cta-section) .comparison-callout--neutral {
@@ -6096,26 +6027,6 @@
     margin-top: 2.5rem;
 }
 
-.landing-page :is(.section, .cta-section) .comparison-outline-success {
-    border: 2px solid var(--success);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-outline-danger {
-    border: 2px solid var(--danger);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-outline-warning {
-    border: 2px solid var(--warning);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-accent-success {
-    border-left: 4px solid var(--success);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-accent-warning {
-    border-left: 4px solid var(--warning);
-}
-
 .landing-page :is(.section, .cta-section) .comparison-accent-primary {
     border-left: 4px solid var(--primary);
 }
@@ -6124,24 +6035,8 @@
     border-left: 4px solid var(--border);
 }
 
-.landing-page :is(.section, .cta-section) .comparison-success {
-    color: var(--success);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-danger {
-    color: var(--danger);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-warning {
-    color: var(--warning);
-}
-
 .landing-page :is(.section, .cta-section) .comparison-primary {
-    color: var(--primary);
-}
-
-.landing-page :is(.section, .cta-section) .comparison-price--competitor {
-    color: #dc3545;
+    color: var(--primary-600);
 }
 
 .landing-page .section.comparison-sources-section {
@@ -6191,7 +6086,7 @@
 
 .landing-page .product-link,
 .landing-page .product-link-primary {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .product-link {
@@ -6272,7 +6167,7 @@
 }
 
 .landing-page .code-tabs .tab-button.active {
-    color: var(--primary);
+    color: var(--primary-600);
     border-bottom-color: var(--primary);
 }
 
@@ -6349,9 +6244,9 @@
 }
 
 .landing-page .dreyfus-stages-banner {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
-    border: 1px solid var(--primary-700);
+    border: 1px solid var(--primary-dark);
 }
 
 .landing-page .open-source-community-grid {
@@ -6368,7 +6263,7 @@
 
 /* Founder story typography is deliberately larger than standard feature copy. */
 .landing-page .hero.about-hero {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     padding: 4rem 0;
 }
 
@@ -6435,7 +6330,7 @@
 }
 
 .landing-page .about-join-card {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border: none;
     padding: 3rem;
     text-align: center;
@@ -6456,7 +6351,7 @@
 
 .landing-page .btn.about-github-button {
     background: var(--bg-card);
-    color: var(--primary);
+    color: var(--primary-600);
     border: none;
 }
 
@@ -6478,7 +6373,7 @@
 
 /* FAQ actions retain their contrast on the hero and card surfaces. */
 .landing-page .faq-hero-link {
-    color: var(--primary);
+    color: var(--primary-600);
     text-decoration: underline;
 }
 
@@ -6514,7 +6409,7 @@
 .assessment-page .hero-section {
     text-align: center;
     padding: 3rem 1rem;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border-radius: 1rem;
     color: white;
     margin-bottom: 3rem;
@@ -6568,7 +6463,7 @@
 .assessment-page .section-icon {
     width: 3rem;
     height: 3rem;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border-radius: 0.75rem;
     display: flex;
     align-items: center;
@@ -6616,7 +6511,7 @@
 
 .assessment-page .question-number {
     display: inline-block;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     color: white;
     width: 2rem;
     height: 2rem;
@@ -6777,13 +6672,13 @@
 }
 
 .assessment-progress::-webkit-progress-value {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border-radius: 9999px;
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .assessment-progress::-moz-progress-bar {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border-radius: 9999px;
 }
 
@@ -6801,7 +6696,7 @@
     font-size: 1.25rem;
     font-weight: 700;
     color: white;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border: none;
     border-radius: 0.75rem;
     cursor: pointer;
@@ -6965,7 +6860,7 @@
 }
 
 .landing-page .assessment-email-card {
-    background: var(--primary-700);
+    background: var(--primary-dark);
     padding: 2.5rem;
     border-radius: 0.75rem;
     color: white;
@@ -7143,7 +7038,7 @@
 .landing-page .confirmation-cta {
     margin-top: 3rem;
     padding: 2.5rem;
-    background: var(--primary-700);
+    background: var(--primary-dark);
     border-radius: 0.75rem;
     color: white;
 }
@@ -7185,7 +7080,7 @@
     padding: 1rem 2rem;
     font-size: 1.125rem;
     background: var(--bg-card);
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .landing-page .confirmation-pricing-note {
@@ -7291,7 +7186,7 @@
     font-size: 8rem;
     font-weight: 700;
     line-height: 1;
-    color: var(--primary);
+    color: var(--primary-600);
     margin-bottom: 1rem;
 }
 
@@ -7316,7 +7211,7 @@
 }
 
 .landing-page .error-actions .btn-outline {
-    color: var(--primary);
+    color: var(--primary-600);
 }
 
 .assessment-unavailable-page .error-content { max-width: 700px; }
@@ -7599,7 +7494,7 @@
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.04em;
-    color: var(--primary);
+    color: var(--primary-600);
     text-align: center;
     font-variant-numeric: tabular-nums;
 }
@@ -7981,7 +7876,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--primary);
+    color: var(--primary-600);
     margin-bottom: var(--space-2);
 }
 .landing-page .hiw-teaser-title {

@@ -198,3 +198,79 @@ class DeriveReviewersTests(TestCase):
         result = derive_reviewers(p)
         names = [r.name for r in result['direct_report']]
         self.assertEqual(names, ['Alice', 'Marie', 'Zara'])
+
+
+class DeriveReviewersDepthTests(TestCase):
+    """Director > Lead > (Senior, Engineer); Senior > Junior."""
+
+    def setUp(self):
+        self.org = OrganizationFactory()
+        people = self.people = {n: RevieweeFactory(organization=self.org, name=n)
+                                for n in ('Director', 'Lead', 'Senior', 'Engineer', 'Junior')}
+        self.director = people['Director']
+        for manager, members in (('Director', ['Lead']), ('Lead', ['Senior', 'Engineer']),
+                                 ('Senior', ['Junior'])):
+            unit = OrgUnitFactory(organization=self.org, name=manager)
+            OrgUnitMembershipFactory(unit=unit, reviewee=people[manager], row=0, col=0)
+            for col, member in enumerate(members):
+                OrgUnitMembershipFactory(unit=unit, reviewee=people[member], row=1, col=col)
+
+    def reports(self, depth, managers_only):
+        self.org.chart_depth, self.org.chart_managers_only = depth, managers_only
+        self.org.save()
+        return [p.name for p in derive_reviewers(self.director)['direct_report']]
+
+    def test_one_level_is_the_own_team(self):
+        self.assertEqual(self.reports(1, True), ['Lead'])
+        self.assertEqual(self.reports(1, False), ['Lead'])
+
+    def test_entire_teams_stop_at_the_depth(self):
+        self.assertEqual(self.reports(2, False), ['Engineer', 'Lead', 'Senior'])
+
+    def test_only_managers_below_the_first_level(self):
+        self.assertEqual(self.reports(2, True), ['Lead', 'Senior'])
+        # Junior manages nobody, so all the way down adds nobody.
+        self.assertEqual(self.reports(None, True), ['Lead', 'Senior'])
+
+    def test_all_the_way_down(self):
+        self.assertEqual(self.reports(None, False), ['Engineer', 'Junior', 'Lead', 'Senior'])
+
+    def test_a_chart_that_loops_ends(self):
+        # The director reports to the junior: a loop.
+        junior_unit = OrgUnitFactory(organization=self.org, name='Junior')
+        junior = self.people['Junior']
+        OrgUnitMembershipFactory(unit=junior_unit, reviewee=junior, row=0, col=0)
+        OrgUnitMembershipFactory(unit=junior_unit, reviewee=self.director, row=1, col=0)
+        # The junior is now the director's manager, and a manager is not also a report.
+        self.assertEqual(self.reports(None, False), ['Engineer', 'Lead', 'Senior'])
+
+
+class ChartSettingsFormTests(TestCase):
+    def setUp(self):
+        from django.contrib.auth.models import User
+        from accounts.factories import UserProfileFactory
+        from accounts.permissions import assign_organization_admin
+        self.org = OrganizationFactory()
+        admin = User.objects.create_user(username='chart_admin', password='pw')
+        UserProfileFactory(user=admin, organization=self.org)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+    def post(self, **data):
+        from django.urls import reverse
+        self.client.post(reverse('settings'), {'section': 'chart', **data})
+        self.org.refresh_from_db()
+        return self.org.chart_depth, self.org.chart_managers_only
+
+    def test_default_is_one_level_and_only_managers(self):
+        self.assertEqual((self.org.chart_depth, self.org.chart_managers_only), (1, True))
+
+    def test_levels_and_teams_are_saved(self):
+        self.assertEqual(self.post(chart_depth='3', chart_who='teams'), (3, False))
+
+    def test_all_the_way_down_is_saved_as_no_limit(self):
+        # A disabled number input is not sent at all.
+        self.assertEqual(self.post(chart_depth_all='on', chart_who='managers'), (None, True))
+
+    def test_a_wrong_number_changes_nothing(self):
+        self.assertEqual(self.post(chart_depth='0', chart_who='teams'), (1, True))

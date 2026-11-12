@@ -113,11 +113,10 @@
     <section id="navigation" class="section">
         <div class="container">
             <h2 class="section-title">Focused Reviews or a Broader Workflow</h2>
-            <div class="feature-grid">
+            <div class="grid-two">
                 <div class="feature-card">
                     <h3>Blik</h3>
                     <p>Organize review cycles and interpret feedback using trends, benchmarks, and perception-gap insights.</p>
-                    <p>Blik has no SSO/SAML, native HRIS connectors, or native mobile app. REST API and webhooks support custom integration; the interface is responsive web.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Engagedly</h3>
@@ -153,7 +152,7 @@
                         <li><strong>Source access:</strong> Inspect and modify under AGPL-3.0</li>
                         <li><strong>Operations:</strong> You manage updates, backups, and hosting</li>
                     </ul>
-                    <div class="cta-box comparison-callout comparison-callout--success">
+                    <div class="cta-box comparison-callout comparison-callout--neutral">
                         <p>Choose managed hosting or operate the open-source application yourself.</p>
                     </div>
                 </div>
@@ -180,13 +179,13 @@
                 <h3>Annual Cost Comparison ({{ plan_saas_max }} employees)</h3>
                 <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 class="comparison-success">Blik</h4>
-                        <p class="comparison-price comparison-success">€{{ plan_saas_annual }}/year</p>
+                        <h4>Blik</h4>
+                        <p class="comparison-price">€{{ plan_saas_annual }}/year</p>
                         <p class="comparison-note">All features, up to {{ plan_saas_max }} employees</p>
                     </div>
                     <div>
-                        <h4 class="comparison-danger">Engagedly (50 seats)</h4>
-                        <p class="comparison-price comparison-danger">$7,500/year (min.)</p>
+                        <h4>Engagedly (50 seats)</h4>
+                        <p class="comparison-price">$7,500/year (min.)</p>
                         <p class="comparison-note">Performance Suite at $5-8/user/month; the $7,500/year minimum binds at 50 seats.</p>
                     </div>
                 </div>
@@ -211,8 +210,8 @@
             <h2 class="section-title">Which Platform Is Right for You?</h2>
 
             <div class="comparison-plan-grid mt-12">
-                <div class="feature-card comparison-outline-success">
-                    <h3 class="comparison-success">Choose Blik If You:</h3>
+                <div class="feature-card">
+                    <h3>Choose Blik If You:</h3>
                     <ul class="comparison-benefits mt-6">
                         <li>Want a <strong>dedicated review workflow</strong></li>
                         <li>Prefer <strong>structured feedback without gamification</strong></li>
@@ -226,8 +225,8 @@
                     <a href="{% landing_url 'signup' %}" class="btn btn-primary comparison-decision-link">Try Blik</a>
                 </div>
 
-                <div class="feature-card comparison-outline-warning">
-                    <h3 class="comparison-warning">Choose Engagedly If You:</h3>
+                <div class="feature-card">
+                    <h3>Choose Engagedly If You:</h3>
                     <ul class="comparison-benefits mt-6">
                         <li>Want <strong>all-in-one platform</strong> (OKRs, LMS, surveys)</li>
                         <li>Like <strong>gamification</strong> (badges, points, leaderboards)</li>

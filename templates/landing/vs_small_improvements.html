@@ -80,23 +80,23 @@
                     <tbody>
                         <tr>
                             <td><strong>Deployment</strong></td>
-                            <td class="highlight-green">Self-hosted OR SaaS<br><small>Your choice</small></td>
-                            <td class="highlight-red">SaaS only<br><small>Their servers only</small></td>
+                            <td>Self-hosted OR SaaS<br><small>Your choice</small></td>
+                            <td>SaaS only<br><small>Their servers only</small></td>
                         </tr>
                         <tr>
                             <td><strong>Open Source</strong></td>
-                            <td class="highlight-green">✓ AGPL licensed<br><small>Full code transparency</small></td>
-                            <td class="highlight-red">✗ Proprietary<br><small>Closed source</small></td>
+                            <td>✓ AGPL licensed<br><small>Full code transparency</small></td>
+                            <td>✗ Proprietary<br><small>Closed source</small></td>
                         </tr>
                         <tr>
                             <td><strong>Pricing</strong></td>
-                            <td class="highlight-green">€{{ plan_saas_price }}/mo (SaaS) or Free<br><small>Up to {{ plan_saas_max }} employees, transparent</small></td>
-                            <td class="highlight-yellow">$3-9/user/month<br><small>Scales with headcount, billed annually</small></td>
+                            <td>€{{ plan_saas_price }}/mo (SaaS) or Free<br><small>Up to {{ plan_saas_max }} employees, transparent</small></td>
+                            <td>$3-9/user/month<br><small>Scales with headcount, billed annually</small></td>
                         </tr>
                         <tr>
                             <td><strong>360° Feedback</strong></td>
-                            <td class="highlight-green">✓ Core focus<br><small>4 research-backed questionnaires</small></td>
-                            <td class="highlight-green">✓ Supported<br><small>Custom feedback cycles</small></td>
+                            <td>✓ Core focus<br><small>4 research-backed questionnaires</small></td>
+                            <td>✓ Supported<br><small>Custom feedback cycles</small></td>
                         </tr>
                         <tr>
                             <td><strong>Feedback confidentiality</strong></td>
@@ -105,7 +105,7 @@
                         </tr>
                         <tr>
                             <td><strong>People Analytics</strong></td>
-                            <td class="highlight-green">✓ Automated insights<br><small>Dreyfus model, perception gaps</small></td>
+                            <td>✓ Automated insights<br><small>Dreyfus model, perception gaps</small></td>
                             <td>Performance reporting<br><small>Evaluate the reports your team needs</small></td>
                         </tr>
                         <tr>
@@ -115,8 +115,8 @@
                         </tr>
                         <tr>
                             <td><strong>1-on-1s & Objectives</strong></td>
-                            <td class="highlight-red">✗ Not included<br><small>Focused on 360° only</small></td>
-                            <td class="highlight-green">✓ Core features<br><small>Meeting notes, goal tracking</small></td>
+                            <td>✗ Not included<br><small>Focused on 360° only</small></td>
+                            <td>✓ Core features<br><small>Meeting notes, goal tracking</small></td>
                         </tr>
                     </tbody>
                 </table>
@@ -141,7 +141,7 @@
                 </p>
             </div>
 
-            <div class="feature-grid mt-12">
+            <div class="grid-two mt-12">
                 <div class="feature-card">
                     <h3>What Blik Does</h3>
                     <ul class="comparison-align-left">
@@ -152,7 +152,7 @@
                         <li>Performance insights</li>
                     </ul>
                     <p class="comparison-note mt-4">
-                        <strong>What Blik doesn't do:</strong> OKRs, 1-on-1s, continuous feedback, or engagement surveys. There is no SSO/SAML, no native HRIS connectors, and no native mobile app; custom integrations use the REST API and webhooks.
+                        <strong>What Small Improvements also covers:</strong> 1:1 meetings, objectives, praise and pulse surveys. It also offers SSO and HRIS connectors. Blik covers 360 feedback only.
                     </p>
                 </div>
 
@@ -179,10 +179,10 @@
         <div class="container">
             <h2 class="section-title">Pricing Models</h2>
 
-            <div class="feature-grid mt-12">
+            <div class="grid-two mt-12">
                 <div class="feature-card">
                     <h3>Blik Pricing</h3>
-                    <div class="comparison-price comparison-primary comparison-paragraph">Free or €{{ plan_saas_price }}/mo</div>
+                    <div class="comparison-price comparison-paragraph">Free or €{{ plan_saas_price }}/mo</div>
                     <ul class="comparison-align-left">
                         <li><strong>Self-hosted:</strong> €0/month forever</li>
                         <li><strong>SaaS:</strong> €{{ plan_saas_price }}/month flat rate, up to {{ plan_saas_max }} employees</li>
@@ -194,7 +194,7 @@
 
                 <div class="feature-card">
                     <h3>Small Improvements Pricing</h3>
-                    <div class="comparison-price text-secondary comparison-paragraph">$3-9/user/mo</div>
+                    <div class="comparison-price comparison-paragraph">$3-9/user/mo</div>
                     <ul class="comparison-align-left">
                         <li><strong>Launch:</strong> $3/user/month (20-seat minimum)</li>
                         <li><strong>Grow:</strong> $6/user/month (20-seat minimum; includes 360 feedback)</li>
@@ -212,17 +212,17 @@
                 <h3 class="mb-4">Cost Example: 50-person company</h3>
                 <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <div class="comparison-price comparison-primary">€0/year</div>
+                        <div class="comparison-price comparison-price--compact">€0/year</div>
                         <div class="text-secondary">Blik Self-Hosted</div>
                         <div class="comparison-price-caption">+ your hosting costs</div>
                     </div>
                     <div>
-                        <div class="comparison-price comparison-primary">€{{ plan_saas_annual }}/year</div>
+                        <div class="comparison-price comparison-price--compact">€{{ plan_saas_annual }}/year</div>
                         <div class="text-secondary">Blik SaaS</div>
                         <div class="comparison-price-caption">No per-user fees</div>
                     </div>
                     <div>
-                        <div class="comparison-price comparison-price--competitor">$3,600-5,400/year</div>
+                        <div class="comparison-price comparison-price--compact">$3,600-5,400/year</div>
                         <div class="text-secondary">Small Improvements (360 tiers)</div>
                         <div class="comparison-price-caption">Grow/Elevate at 50 seats, billed annually</div>
                     </div>

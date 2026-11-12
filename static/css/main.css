@@ -1,4 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=block");
+/* Self-hosted: the CSP allows fonts and styles from 'self' only. */
+@font-face { font-family: Roboto; font-weight: 400; font-display: block; src: url("../fonts/roboto/Roboto-Regular.ttf"); }
+@font-face { font-family: Roboto; font-weight: 700; font-display: block; src: url("../fonts/roboto/Roboto-Bold.ttf"); }
 
 /* Blik - Centralized CSS System
  * Shadcn-inspired design system with zero noise, maximum signal
@@ -120,8 +122,13 @@
     /* Primary Color Scale - Dark Theme */
     --primary-50: #1e1b4b;
     --primary-100: #312e81;
+    --primary-200: #3730a3;
+    --primary-300: #4338ca;
+    --primary-400: #4f46e5;
     --primary-500: #6366f1;
     --primary-600: #818cf8;
+    --primary-700: #a5b4fc;
+    --primary-800: #c7d2fe;
     --primary-900: #e0e7ff;
     --primary: #6366f1;
     --primary-dark: #4f46e5;
@@ -2128,6 +2135,14 @@ body.setup-page {
     text-align: center;
     padding: 3rem 1.5rem;
     color: var(--text-tertiary);
+}
+
+/* The email under a person's name in tables and lists */
+.person-email {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    overflow-wrap: anywhere;
 }
 
 .help-text {

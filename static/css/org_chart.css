@@ -122,3 +122,35 @@
 .oc-import-preview .oc-mapped { background: color-mix(in srgb, var(--primary) 6%, transparent); }
 .oc-import-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 0.75rem; }
 .oc-import-footer .help-text { flex: 1 1 20rem; margin: 0; }
+.oc-import-changes h3 { margin-top: 1.75rem; }
+.oc-import-changes ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+.oc-import-changes details { margin-top: 0.75rem; }
+.oc-import-changes summary, .oc-import-columns > summary { cursor: pointer; }
+.oc-import-summary { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 0; }
+.oc-import-summary > div { flex: 1 1 9rem; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 0.5rem; }
+.oc-import-summary dt { font-size: 0.8125rem; color: var(--text-secondary); }
+.oc-import-summary dd { margin: 0; font-size: 1.5rem; font-weight: 600; }
+.oc-import-scroll { max-height: 36rem; overflow: auto; }
+.oc-import-diff td { vertical-align: top; }
+.oc-import-diff strong { font-weight: 500; }
+.oc-import-deactivate { margin-top: 1rem; font-weight: 500; }
+.oc-import-columns { border-top: 1px solid var(--border); }
+.oc-import-columns > summary { padding: 1rem 1.5rem; }
+
+/* Managers without an account: the text, the list and the preview scroll, header and footer stay. */
+.oc-accounts { max-width: 34rem; }
+.oc-accounts:has(.oc-accounts-split) { max-width: 72rem; }
+/* The email stays in view next to the list and the message while those scroll. */
+.oc-accounts-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+.oc-accounts-preview { position: sticky; top: 0; }
+/* One column on a narrow screen: a long list scrolls in its own box, so the message and the email stay near. */
+@media (max-width: 900px) { .oc-accounts-split { grid-template-columns: minmax(0, 1fr); } .oc-accounts-preview { position: static; } .oc-accounts-split .oc-accounts-list { max-height: 14rem; overflow-y: auto; } }
+.oc-accounts-body p { margin: 0 0 0.75rem; }
+.oc-accounts-body p.form-label { margin-bottom: 0.25rem; }
+.oc-accounts-list { list-style: none; margin: 1rem 0 1.5rem; padding: 0; border-bottom: 1px solid var(--border); }
+.oc-accounts-list li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.625rem 0; border-top: 1px solid var(--border); }
+.oc-accounts-person { display: flex; align-items: center; gap: 0.75rem; min-width: 0; margin: 0; cursor: pointer; }
+.oc-accounts-person > span { display: flex; flex-direction: column; min-width: 0; }
+.oc-accounts-person input { flex-shrink: 0; }
+.oc-accounts-list li > .help-text { flex-shrink: 0; }
+.oc-invite-preview { display: block; width: 100%; height: min(26rem, 40vh); border: 1px solid var(--border); border-radius: 8px; background: #fff; }

@@ -237,6 +237,7 @@
                         <th>{% trans 'Sent' %}</th>
                         <th>{% trans 'Expires' %}</th>
                         <th>{% trans 'Status' %}</th>
+                        {% if perms.accounts.can_invite_members %}<th></th>{% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -246,13 +247,8 @@
                         <td>{{ invitation.invited_by.username }}</td>
                         <td>{{ invitation.created_at|date:'SHORT_DATE_FORMAT' }}</td>
                         <td>{{ invitation.expires_at|date:'SHORT_DATE_FORMAT' }}</td>
-                        <td>
-                            {% if invitation.is_valid %}
-                                <span class="badge" style="background: #059669; color: white;">{% trans 'Active' %}</span>
-                            {% else %}
-                                <span class="badge" style="background: #dc2626; color: white;">{% trans 'Expired' %}</span>
-                            {% endif %}
-                        </td>
+                        <td>{% include 'admin_dashboard/partials/_invitation_status.html' %}</td>
+                        {% if perms.accounts.can_invite_members %}<td>{% include 'admin_dashboard/partials/_invitation_actions.html' %}</td>{% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -265,13 +261,7 @@
             <div class="mobile-card">
                 <div class="mobile-card-header">
                     <div><strong>{{ invitation.email }}</strong></div>
-                    <div>
-                        {% if invitation.is_valid %}
-                            <span class="badge" style="background: #059669; color: white; font-size: 11px;">{% trans 'Active' %}</span>
-                        {% else %}
-                            <span class="badge" style="background: #dc2626; color: white; font-size: 11px;">{% trans 'Expired' %}</span>
-                        {% endif %}
-                    </div>
+                    <div>{% include 'admin_dashboard/partials/_invitation_status.html' %}</div>
                 </div>
                 <div class="mobile-card-body">
                     <div class="mobile-card-row">
@@ -286,6 +276,7 @@
                         <span class="mobile-card-label">{% trans 'Expires' %}</span>
                         <span>{{ invitation.expires_at|date:'SHORT_DATE_FORMAT' }}</span>
                     </div>
+                    {% if perms.accounts.can_invite_members %}<div style="margin-top: 0.75rem;">{% include 'admin_dashboard/partials/_invitation_actions.html' %}</div>{% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -339,7 +330,7 @@
                     <label for="can-manage-cycles" style="display: inline; font-weight: normal;">
                         {% trans 'Can create review cycles for others' %}
                         <small style="display: block; color: var(--text-secondary);">
-                            {% trans 'Without this, user can only create cycles for themselves' %}
+                            {% trans 'An admin creates cycles for everyone. A member creates and runs cycles for themselves and for the people in the units they manage. Without this, a user can only create cycles for themselves.' %}
                         </small>
                     </label>
                 </div>

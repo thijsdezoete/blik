@@ -1,7 +1,10 @@
 {% extends "admin_dashboard/base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% if reviewee %}{% trans 'Edit Reviewee' %}{% else %}{% trans 'Create Reviewee' %}{% endif %}{% endblock %}
+
+{% block extra_css %}{% if department_units is not None %}<link rel="stylesheet" href="{% static 'css/reviewees.css' %}">
+<style>#departmentDialog { overflow: visible; } /* the manager suggestions hang below the field */</style>{% endif %}{% endblock %}
 
 {% block content %}
 <div style="margin-bottom: 2rem;">
@@ -47,6 +50,20 @@
                     >
                 </div>
 
+                {% if department_units is not None %}
+                {# Create, for those who may edit the org chart: the department is a unit in the chart. #}
+                <div class="form-group">
+                    <label for="department" class="form-label">{% trans 'Department (Optional)' %}</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <div style="flex: 1; min-width: 0;" data-suggest-field data-field-name="department" data-input-id="department"
+                             data-options="{{ department_units_json }}" data-placeholder="{% trans 'Engineering, Marketing, etc.' %}"></div>
+                        <button type="button" class="btn btn-secondary" id="newDepartmentBtn" style="white-space: nowrap;">{% trans 'New department' %}</button>
+                    </div>
+                    <input type="hidden" name="department_manager" id="departmentManager">
+                    <input type="hidden" name="department_lead" id="departmentLead">
+                    <small class="help-text" id="departmentHelp">{% trans 'The person joins this department in the org chart.' %}</small>
+                </div>
+                {% else %}
                 <div class="form-group">
                     <label for="department" class="form-label">{% trans 'Department (Optional)' %}</label>
                     <input
@@ -58,6 +75,7 @@
                         placeholder="{% trans 'Engineering, Marketing, etc.' %}"
                     >
                 </div>
+                {% endif %}
 
                 <div class="form-group">
                     <label for="language" class="form-label">{% trans 'Language' %}</label>
@@ -80,4 +98,78 @@
         </div>
     </div>
 </div>
+
+{% if department_units is not None %}
+{% csrf_token %}
+<dialog id="departmentDialog" class="modal-content reviewee-dialog" aria-labelledby="departmentDialogTitle">
+    <div class="card-header">
+        <h2 class="card-title" id="departmentDialogTitle">{% trans 'New department' %}</h2>
+    </div>
+    <form id="departmentForm" style="margin: 0;">
+        <div class="card-body" style="overflow: visible;">
+            <div class="form-group">
+                <label class="form-label" for="departmentName">{% trans 'Name' %}</label>
+                <input type="text" id="departmentName" class="form-control" required maxlength="255" placeholder="{% trans 'For example: Optics, Chair of Physics' %}">
+            </div>
+            <div class="form-check" style="margin-bottom: 1rem;">
+                <input type="checkbox" id="departmentLeads" class="form-check-input">
+                <label for="departmentLeads" style="display: inline; font-weight: normal;">{% trans 'The new person manages this department' %}</label>
+            </div>
+            <div class="form-group" id="departmentManagerGroup">
+                <label class="form-label">{% trans 'Manager (optional)' %}</label>
+                <div id="departmentManagerPicker" data-field-name="_unused" data-placeholder="{% trans 'Search for a manager…' %}"></div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-secondary" id="departmentCancel">{% trans 'Cancel' %}</button>
+            <button type="submit" class="btn btn-primary">{% trans 'Add' %}</button>
+        </div>
+    </form>
+</dialog>
+<script src="{% static 'js/reviewee_picker.js' %}"></script>
+<script>
+(function () {
+    // The new unit is made when the form is saved: until then, cancelling leaves the chart as it was.
+    const dialog = document.getElementById('departmentDialog');
+    const field = () => document.getElementById('department');  // made by the suggest field
+    const managerInput = document.getElementById('departmentManager');
+    const leadInput = document.getElementById('departmentLead');
+    const help = document.getElementById('departmentHelp');
+    const helpText = help.textContent;
+    const name = document.getElementById('departmentName');
+    const leads = document.getElementById('departmentLeads');
+    const managerGroup = document.getElementById('departmentManagerGroup');
+    let picker = null;
+
+    document.getElementById('newDepartmentBtn').addEventListener('click', () => {
+        name.value = '';
+        leads.checked = false;
+        managerGroup.hidden = false;
+        // A fresh picker each time: no manager left over from a cancelled try.
+        const holder = document.getElementById('departmentManagerPicker');
+        holder.innerHTML = '';
+        picker = new window.RevieweePicker(holder);
+        dialog.showModal();
+        name.focus();
+    });
+    leads.addEventListener('change', () => { managerGroup.hidden = leads.checked; });
+    document.getElementById('departmentCancel').addEventListener('click', () => dialog.close());
+    document.getElementById('departmentForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const manager = leads.checked ? null : [...picker.selected.values()][0];
+        field().value = name.value.trim();
+        managerInput.value = manager ? manager.uuid : '';
+        leadInput.value = leads.checked ? '1' : '';
+        help.textContent = leads.checked
+            ? '{{ _('A new department, managed by this person.')|escapejs }}'
+            : manager ? '{{ _('A new department, managed by %(name)s.')|escapejs }}'.replace('%(name)s', manager.name)
+            : '{{ _('A new department, without a manager yet.')|escapejs }}';
+        dialog.close();
+    });
+    // Typing over the name drops what the dialog chose for it.
+    document.addEventListener('input', (e) => {
+        if (e.target.id !== 'department') return; managerInput.value = ''; leadInput.value = ''; help.textContent = helpText; });
+})();
+</script>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,6 @@
+{% load i18n %}<li>
+    <div class="dash-what">{{ item.cycle.questionnaire.name }}
+        <span>{% blocktrans trimmed count counter=item.answers %}{{ counter }} answer so far{% plural %}{{ counter }} answers so far{% endblocktrans %} · {% blocktrans trimmed with date=item.cycle.created_at|date:'SHORT_DATE_FORMAT' %}since {{ date }}{% endblocktrans %}</span>
+    </div>
+    {% if item.self_open %}<a href="{% url 'reviews:claim_token' item.cycle.invitation_token_self %}" class="btn btn-sm btn-primary">{% trans 'Answer your self-assessment' %}</a>{% endif %}
+</li>

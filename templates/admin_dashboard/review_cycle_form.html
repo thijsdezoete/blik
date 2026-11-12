@@ -44,7 +44,7 @@
                         <input type="radio" name="creation_mode" value="bulk" onchange="toggleRevieweeSelect()">
                         <div>
                             <div style="font-weight: 600;">{% trans 'Bulk Create' %}</div>
-                            <div style="font-size: 0.875rem; color: #64748b;">{% trans 'Create for all active reviewees' %}</div>
+                            <div style="font-size: 0.875rem; color: #64748b;">{% if creates_for_whole_organization %}{% trans 'Create for all active reviewees' %}{% else %}{% trans 'Create for you and your direct reports' %}{% endif %}</div>
                         </div>
                     </label>
                 </div>
@@ -73,6 +73,17 @@
                                     </div>
                                 </div>
                             </label>
+                            <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; cursor: {% if has_previous_cycles %}pointer{% else %}not-allowed; opacity: 0.5{% endif %};">
+                                <input type="radio" name="bulk_source" value="previous"
+                                       {% if not has_previous_cycles %}disabled{% endif %}
+                                       style="margin-top: 0.25rem;">
+                                <div>
+                                    <div style="font-weight: 600;">{% if has_previous_cycles %}{% trans 'Reuse previous settings per cycle' %}{% else %}{% blocktrans trimmed %}Reuse previous settings per cycle <span style="color: var(--text-tertiary); font-weight: normal;">(no cycles yet)</span>{% endblocktrans %}{% endif %}</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                        {% trans 'Copy the questionnaire, the categories and the reviewer emails of the previous cycle of each person. People without a previous cycle are skipped.' %}
+                                    </div>
+                                </div>
+                            </label>
                             <label style="display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;">
                                 <input type="radio" name="bulk_source" value="empty"
                                        {% if not has_org_chart %}checked{% endif %}
@@ -97,6 +108,7 @@
                         </div>
                         {% endif %}
                     </div>
+                    <div id="bulkCount" class="alert alert-info" role="status" aria-live="polite" style="font-size: 0.875rem;" hidden></div>
                     <div class="alert alert-warning" style="font-size: 0.875rem;">
                         {% blocktrans trimmed %}
                             Bulk creation does not send any emails yet. You'll review the new cycles and send
@@ -117,9 +129,9 @@
         </div>
         {% endif %}
 
-        <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card" style="margin-bottom: 1.5rem;" id="setupCard">
             <div class="card-header">
-                <h2 class="card-title">{% trans 'Basic Information' %}</h2>
+                <h2 class="card-title" id="setupTitle">{% trans 'Reviewee and questionnaire' %}</h2>
             </div>
             <div class="card-body">
                 <div class="form-group" id="revieweeGroup">
@@ -173,7 +185,7 @@
             </div>
         </div>
 
-        <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card" style="margin-bottom: 1.5rem;" id="categoriesCard">
             <div class="card-header">
                 <h2 class="card-title" style="margin: 0;">{% trans 'Feedback Categories' %}</h2>
             </div>
@@ -357,6 +369,14 @@ function toggleRevieweeSelect() {
     const inviteSection = document.getElementById('inviteSection');
 
     const bulkNote = document.getElementById('bulkModeNote');
+    const source = document.querySelector('input[name="bulk_source"]:checked');
+    // Reusing earlier cycles takes the questionnaire and categories from each of them.
+    const reuse = mode === 'bulk' && source && source.value === 'previous';
+    document.getElementById('setupCard').style.display = reuse ? 'none' : '';
+    document.getElementById('categoriesCard').style.display = reuse ? 'none' : '';
+    document.getElementById('questionnaire').required = !reuse;
+    document.getElementById('setupTitle').textContent = mode === 'bulk'
+        ? '{{ _('Questionnaire')|escapejs }}' : '{{ _('Reviewee and questionnaire')|escapejs }}';
 
     if (mode === 'bulk') {
         revieweeGroup.style.display = 'none';
@@ -372,6 +392,24 @@ function toggleRevieweeSelect() {
         if (bulkNote) bulkNote.style.display = 'none';
     }
 }
+
+// Ask the server what the bulk run would create with the form as it is now.
+let bulkCountRequest = 0;
+function updateBulkCount() {
+    const box = document.getElementById('bulkCount');
+    const mode = document.querySelector('input[name="creation_mode"]:checked');
+    if (!box || !mode || mode.value !== 'bulk') return;
+    const request = ++bulkCountRequest;
+    fetch('{% url 'review_cycle_bulk_preview' %}', {method: 'POST', body: new FormData(document.getElementById('cycleForm'))})
+        .then(response => response.ok ? response.json() : null)
+        .then(data => {
+            if (request !== bulkCountRequest) return;  // an older answer
+            box.hidden = !data;
+            if (data) box.textContent = data.message;
+        })
+        .catch(() => { box.hidden = true; });
+}
+document.getElementById('cycleForm').addEventListener('change', updateBulkCount);
 
 function toggleInviteForm() {
     const body = document.getElementById('inviteFormBody');
@@ -493,6 +531,7 @@ function updateQuestionnaireDetails() {
     panel.style.display = 'block';
 }
 
+document.querySelectorAll('input[name="bulk_source"]').forEach(r => r.addEventListener('change', toggleRevieweeSelect));
 // Initialize on page load
 toggleRevieweeSelect();
 

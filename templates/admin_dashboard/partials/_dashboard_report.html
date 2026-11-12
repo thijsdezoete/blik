@@ -1,0 +1,6 @@
+{% load i18n %}<li>
+    <div class="dash-what">{{ item.cycle.reviewee.name }}
+        <span>{{ item.cycle.questionnaire.name }} · {% blocktrans trimmed with date=item.cycle.updated_at|date:'SHORT_DATE_FORMAT' %}closed on {{ date }}{% endblocktrans %} · {% blocktrans trimmed count counter=item.answers %}{{ counter }} answer{% plural %}{{ counter }} answers{% endblocktrans %}{% if item.hidden %} · {% blocktrans trimmed with groups=item.hidden|join:', ' count counter=threshold %}hidden for fewer than {{ counter }} answer: {{ groups }}{% plural %}hidden for fewer than {{ counter }} answers: {{ groups }}{% endblocktrans %}{% endif %}</span>
+    </div>
+    <a href="{% url 'reports:view_report' item.cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'Report' %}</a>
+</li>

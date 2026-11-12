@@ -1,0 +1,4 @@
+{% load i18n %}<li>
+    <div class="dash-what">{{ token.cycle.reviewee.name }}<span>{{ token.get_category_display }}</span></div>
+    <a href="{% url 'reviews:feedback_form' token.token %}" class="btn btn-sm btn-secondary">{% trans 'Give feedback' %}</a>
+</li>

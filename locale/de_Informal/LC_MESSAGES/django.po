@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-10 10:29+0000\n"
+"POT-Creation-Date: 2026-11-12 23:07+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -366,6 +366,31 @@ msgstr ""
 msgid "Import failed with errors: %(errors)s"
 msgstr ""
 
+#, python-format
+msgid "%(inviter)s invited you to join %(organization)s on %(site_name)s"
+msgstr "%(inviter)s lädt dich zu %(organization)s auf %(site_name)s ein"
+
+#, python-format
+msgid "Invitation to join %(organization)s on %(site_name)s"
+msgstr ""
+
+msgid "Select at least one manager."
+msgstr ""
+
+#, python-format
+msgid "%(count)s invitation is queued and goes out within about five minutes."
+msgid_plural "%(count)s invitations are queued and go out within about five minutes."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "The invitation to %(email)s is withdrawn."
+msgstr ""
+
+#, python-format
+msgid "The invitation to %(email)s is queued and goes out within about five minutes."
+msgstr ""
+
 msgid "No organization found."
 msgstr ""
 
@@ -374,14 +399,6 @@ msgstr ""
 
 #, python-format
 msgid "Invitation already sent to %(email)s"
-msgstr ""
-
-#, python-format
-msgid "%(inviter)s invited you to join %(organization)s on %(site_name)s"
-msgstr "%(inviter)s lädt dich zu %(organization)s auf %(site_name)s ein"
-
-#, python-format
-msgid "Invitation to join %(organization)s on %(site_name)s"
 msgstr ""
 
 #, python-format
@@ -450,6 +467,18 @@ msgid "accepted at"
 msgstr ""
 
 msgid "expires at"
+msgstr ""
+
+msgid "message"
+msgstr ""
+
+msgid "email queued at"
+msgstr ""
+
+msgid "email error"
+msgstr ""
+
+msgid "email attempts"
 msgstr ""
 
 msgid "invitation"
@@ -543,6 +572,34 @@ msgstr ""
 
 #, python-format
 msgid "Line %(line)s: a person cannot be their own manager."
+msgstr ""
+
+#, python-format
+msgid "Line %(line)s: the reporting line of %(email)s comes back to the same person."
+msgstr ""
+
+#, python-format
+msgid "Manager of %(unit)s"
+msgstr ""
+
+#, python-format
+msgid "In %(unit)s, reports to %(manager)s"
+msgstr ""
+
+#, python-format
+msgid "In %(unit)s"
+msgstr ""
+
+msgid "Not in a unit"
+msgstr ""
+
+#. Translators: a line in the preview of an import, such as "Name: Ada Lovelace"
+#, python-format
+msgid "Name: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "Department: %(value)s"
 msgstr ""
 
 msgid "Authentication required"
@@ -1098,12 +1155,6 @@ msgstr ""
 msgid "Internal server error"
 msgstr ""
 
-msgid "No responses yet"
-msgstr ""
-
-msgid "All responded"
-msgstr ""
-
 msgid "Newest first"
 msgstr ""
 
@@ -1117,8 +1168,34 @@ msgid "Fewest responses"
 msgstr ""
 
 #, python-format
-msgid "Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories."
-msgstr ""
+msgid "%(skipped)s person is skipped: the org chart gives no reviewers for the selected categories."
+msgid_plural "%(skipped)s people are skipped: the org chart gives them no reviewers for the selected categories."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(skipped)s person is skipped: no previous cycle with reviewers and an active questionnaire."
+msgid_plural "%(skipped)s people are skipped: no previous cycle with reviewers and an active questionnaire."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for."
+msgid_plural "This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Created %(count)s review cycle with reviewers from the org chart."
+msgid_plural "Created %(count)s review cycles with reviewers from the org chart."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Created %(count)s review cycle with the questionnaire and reviewers of the previous cycle of that person."
+msgid_plural "Created %(count)s review cycles, each with the questionnaire and reviewers of the previous cycle of that person."
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-format
 msgid "Created %(count)s review cycles. No invitations have been sent yet."
@@ -1284,6 +1361,12 @@ msgid "Organization details updated successfully."
 msgstr ""
 
 msgid "New user settings updated successfully."
+msgstr ""
+
+msgid "The number of levels must be a number from 1 to 99."
+msgstr ""
+
+msgid "Org chart settings updated successfully."
 msgstr ""
 
 msgid "Report PDF retention must be a number of days from 1 to 3650."
@@ -1463,11 +1546,35 @@ msgstr ""
 msgid "Imported %(units)s units: %(created)s new people, %(updated)s updated."
 msgstr ""
 
+#, python-format
+msgid "%(count)s person who is not in the file was deactivated."
+msgid_plural "%(count)s people who are not in the file were deactivated."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Unit name is required."
 msgstr ""
 
 #, python-format
 msgid "%(name)s is already in this unit."
+msgstr ""
+
+msgid "No answers yet"
+msgstr ""
+
+msgid "Collecting answers"
+msgstr ""
+
+msgid "Enough answers for a report"
+msgstr ""
+
+msgid "Emails could not be sent"
+msgstr ""
+
+msgid "No new answer for 7 days"
+msgstr ""
+
+msgid "Cycles without reviewers"
 msgstr ""
 
 #, python-format
@@ -1653,6 +1760,12 @@ msgstr ""
 msgid "minimum responses for anonymity"
 msgstr ""
 
+msgid "Hide the answers of groups below the anonymity threshold in the manager view of a report"
+msgstr ""
+
+msgid "hide answers below the threshold from managers"
+msgstr ""
+
 msgid "Automatically send email to reviewee when their report is generated"
 msgstr ""
 
@@ -1678,6 +1791,24 @@ msgid "By default, new users can create cycles for others (not just themselves)"
 msgstr ""
 
 msgid "new users can create cycles for others"
+msgstr ""
+
+msgid "Levels below a person that give direct-report feedback. Empty: all the way down."
+msgstr ""
+
+msgid "org chart depth"
+msgstr ""
+
+msgid "Below the first level, only people who manage a unit give feedback"
+msgstr ""
+
+msgid "only managers below the first level"
+msgstr ""
+
+msgid "The dashboard no longer offers to build an org chart"
+msgstr ""
+
+msgid "org chart offer dismissed"
 msgstr ""
 
 msgid "Language of emails and feedback forms, unless a person has their own"
@@ -2988,13 +3119,7 @@ msgstr ""
 msgid "Why the last attempt to send the queued email failed"
 msgstr ""
 
-msgid "email error"
-msgstr ""
-
 msgid "Failed attempts to send the queued email"
-msgstr ""
-
-msgid "email attempts"
 msgstr ""
 
 msgid "When someone claimed this token by clicking the invitation link"
@@ -3022,6 +3147,10 @@ msgid "response"
 msgstr ""
 
 msgid "responses"
+msgstr ""
+
+#, python-format
+msgid "Failed to send the invitation to %(email)s: %(error)s"
 msgstr ""
 
 #, python-format
@@ -3993,6 +4122,9 @@ msgstr ""
 msgid "Send invitations"
 msgstr ""
 
+msgid "Review the cycles you just created. The questionnaire and reviewers come from the previous cycle of each person. Edit a cycle afterwards if something is not correct."
+msgstr "Prüfe die gerade erstellten Feedbackrunden. Fragebogen und Feedbackgebende stammen aus der vorigen Feedbackrunde der jeweiligen Person. Wenn etwas nicht stimmt, bearbeite die Feedbackrunde anschließend."
+
 msgid "Review the cycles you just created. The reviewers come from the org chart. Edit a cycle afterwards if something is not correct."
 msgstr "Prüfe die gerade erstellten Feedbackrunden. Die Feedbackgebenden stammen aus dem Organigramm. Wenn etwas nicht stimmt, bearbeite die Feedbackrunde anschließend."
 
@@ -4045,31 +4177,554 @@ msgstr ""
 msgid "No pending bulk invitations. If you just created cycles, they're already in the <a href=\"%(cycles_url)s\">cycles list</a>."
 msgstr ""
 
-msgid "Skip for now"
+msgid "Your own feedback, and your team."
 msgstr ""
 
-msgid "Manage 360-degree feedback and review cycles"
+msgid "What is running, and what needs you."
 msgstr ""
 
-msgid "Active Reviewees"
+msgid "Four steps to the first report."
 msgstr ""
 
-msgid "Active Cycles"
+msgid "New cycle"
 msgstr ""
 
-msgid "Completed Cycles"
+msgid "Getting started"
 msgstr ""
 
-msgid "Pending Reviews"
+#, python-format
+msgid "%(done)s of %(total)s done"
 msgstr ""
 
-msgid "Share Your Experience with Blik"
+msgid "Add people"
 msgstr ""
 
-msgid "Enjoying Blik? Take 2 minutes to share your feedback and help other teams discover us."
-msgstr "Gefällt dir Blik? Nimm dir 2 Minuten für dein Feedback und hilf anderen Teams, uns zu entdecken."
+#, python-format
+msgid "%(counter)s reviewee added. A reviewee needs no account."
+msgid_plural "%(counter)s reviewees added. They need no account."
+msgstr[0] ""
+msgstr[1] ""
 
-msgid "Submit a Review"
+msgid "Add the people who get feedback. They need no account."
+msgstr ""
+
+msgid "Create the first cycle"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s cycle created."
+msgid_plural "%(counter)s cycles created."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Start with one person to see how it works."
+msgstr ""
+
+msgid "Create a cycle"
+msgstr ""
+
+msgid "Send the invitations"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s reviewer invited."
+msgid_plural "%(counter)s reviewers invited."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Reviewers get a link by email. They need no account."
+msgstr ""
+
+msgid "Open the cycles"
+msgstr ""
+
+msgid "Read the first report"
+msgstr ""
+
+msgid "Ready when the cycle is closed and enough reviewers have answered."
+msgstr ""
+
+msgid "Next: feedback for everyone at once"
+msgstr ""
+
+#, python-format
+msgid "You have %(people)s people. With an org chart, Blik knows who manages whom. It then picks the reviewers for each person and creates all cycles in one step."
+msgstr ""
+
+msgid "Build the org chart"
+msgstr ""
+
+msgid "Skip this step"
+msgstr ""
+
+msgid "Running now"
+msgstr ""
+
+msgid "All cycles"
+msgstr ""
+
+#, python-format
+msgid "answers so far, in %(counter)s cycle"
+msgid_plural "answers so far, in %(counter)s cycles"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "The oldest cycle runs since %(date)s."
+msgstr ""
+
+#, python-format
+msgid "%(counter)s new answer in the last 7 days."
+msgid_plural "%(counter)s new answers in the last 7 days."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Invited by email"
+msgstr ""
+
+#, python-format
+msgid "%(answered)s of %(invited)s invited reviewers answered. A cycle closes by itself when the last one answers."
+msgstr ""
+
+msgid "Nobody is invited by email in these cycles."
+msgstr ""
+
+msgid "Through shared links"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s answer. Blik does not know how many people have a link, so you close these cycles yourself."
+msgid_plural "%(counter)s answers. Blik does not know how many people have a link, so you close these cycles yourself."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Needs your attention"
+msgstr ""
+
+msgid "The address or the mail server is wrong."
+msgstr ""
+
+msgid "Fix"
+msgstr ""
+
+#, python-format
+msgid "Each group of reviewers has %(counter)s answer or more. Close a cycle when you expect no more answers."
+msgid_plural "Each group of reviewers has %(counter)s answers or more. Close a cycle when you expect no more answers."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Show"
+msgstr ""
+
+msgid "A reminder can help."
+msgstr ""
+
+msgid "Remind"
+msgstr ""
+
+msgid "Nobody is invited by email and nobody has used a link."
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Nothing needs you now."
+msgstr ""
+
+msgid "Suggestions"
+msgstr ""
+
+msgid "Managers without an account"
+msgstr ""
+
+msgid "They cannot read the reports of their team."
+msgstr ""
+
+msgid "Invite"
+msgstr ""
+
+msgid "People who are not in the org chart"
+msgstr ""
+
+msgid "Blik cannot pick reviewers for them."
+msgstr ""
+
+msgid "Place"
+msgstr ""
+
+msgid "No cycle is running."
+msgstr ""
+
+msgid "Latest reports"
+msgstr ""
+
+msgid "All completed cycles"
+msgstr ""
+
+msgid "Your team"
+msgstr ""
+
+msgid "Create cycles for the team"
+msgstr ""
+
+#, python-format
+msgid "%(answered)s of %(invited)s invited reviewers answered"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s answer through shared links"
+msgid_plural "%(counter)s answers through shared links"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "enough for a report"
+msgstr ""
+
+#, python-format
+msgid "since %(date)s"
+msgstr ""
+
+msgid "Open cycle"
+msgstr ""
+
+msgid "Your own feedback"
+msgstr ""
+
+msgid "answer so far"
+msgid_plural "answers so far"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(questionnaire)s, running since %(date)s. You get the report by email when the cycle is closed."
+msgstr ""
+
+msgid "Your self-assessment is open"
+msgstr ""
+
+msgid "Answer"
+msgstr ""
+
+#, python-format
+msgid "Show %(count)s more"
+msgstr ""
+
+msgid "No feedback is running for you."
+msgstr ""
+
+#, python-format
+msgid "%(counter)s colleague waits for your feedback"
+msgid_plural "%(counter)s colleagues wait for your feedback"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "How Blik works"
+msgstr ""
+
+msgid "Hide"
+msgstr ""
+
+msgid "Who logs in"
+msgstr ""
+
+msgid "What a cycle is"
+msgstr ""
+
+msgid "Who gives feedback"
+msgstr ""
+
+msgid "From start to report"
+msgstr ""
+
+msgid "The report"
+msgstr ""
+
+msgid "Who can do what"
+msgstr ""
+
+msgid "Who sees what"
+msgstr ""
+
+msgid "What a cycle costs"
+msgstr ""
+
+msgid "Few people log in to Blik. All other people get a link."
+msgstr ""
+
+msgid "Team members log in"
+msgstr ""
+
+#, python-format
+msgid "Admins and managers. They run cycles and read reports. Invite them on <a href=\"%(team_url)s\">Organization → Team</a>."
+msgstr ""
+
+msgid "Reviewees and reviewers get a link"
+msgstr ""
+
+#, python-format
+msgid "A reviewee gets feedback. Reviewers give it. They need no account. Add reviewees on the <a href=\"%(reviewees_url)s\">Reviewees</a> page."
+msgstr ""
+
+msgid "One person can be both. The email address connects the account and the reviewee."
+msgstr ""
+
+msgid "A cycle is one round of feedback about one person."
+msgstr ""
+
+msgid "Example: a cycle for Anna."
+msgstr ""
+
+msgid "You"
+msgstr "Du"
+
+msgid "You start the cycle"
+msgstr ""
+
+msgid "You choose a questionnaire and the reviewers of Anna."
+msgstr ""
+
+msgid "Anna in the middle. Her manager, her peers and her direct reports are around her."
+msgstr ""
+
+msgid "manager"
+msgstr ""
+
+msgid "peers"
+msgstr ""
+
+msgid "direct reports"
+msgstr ""
+
+msgid "Her reviewers answer"
+msgstr ""
+
+msgid "Each one gets a link. Anna never sees a name with an answer."
+msgstr ""
+
+msgid "Anna gets a report"
+msgstr ""
+
+msgid "Blik sends it to her by email. The cycle is complete."
+msgstr ""
+
+msgid "Feedback comes from up to four groups. You choose the groups for each cycle."
+msgstr ""
+
+msgid "The reviewee answers the same questions about themselves."
+msgstr ""
+
+msgid "The person the reviewee reports to."
+msgstr ""
+
+msgid "Colleagues at the same level."
+msgstr ""
+
+# Reviewee overview filters and actions
+msgid "The people the reviewee manages."
+msgstr ""
+
+msgid "There are two ways to ask reviewers. You can use both in one cycle."
+msgstr ""
+
+msgid "By email"
+msgstr ""
+
+msgid "You give the email addresses. Blik sends each reviewer a link, and a reminder when they do not answer. The cycle closes when the last one has answered."
+msgstr ""
+
+msgid "With a link you share"
+msgstr ""
+
+msgid "Each group has a link. You or the reviewee send it to as many people as you want. Blik does not know who has the link, so you close the cycle yourself."
+msgstr ""
+
+msgid "Five steps from start to report. You do three of them."
+msgstr ""
+
+# Reviewee overview filters and actions
+msgid "The people who get feedback, on the Reviewees page."
+msgstr ""
+
+msgid "One person, one questionnaire, and the reviewers."
+msgstr ""
+
+msgid "Reviewers answer"
+msgstr ""
+
+msgid "Blik sends each reviewer a link and reminds those who have not answered."
+msgstr ""
+
+msgid "The cycle closes"
+msgstr ""
+
+msgid "You close it when you expect no more answers. It closes by itself when all reviewers invited by email have answered."
+msgstr ""
+
+#, python-format
+msgid "Blik makes the report and sends it to the person. A group with fewer than %(counter)s answer stays hidden."
+msgid_plural "Blik makes the report and sends it to the person. A group with fewer than %(counter)s answers stays hidden."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "The report shows how others see a person, next to how that person sees themselves."
+msgstr ""
+
+msgid "Scores"
+msgstr ""
+
+msgid "For each section of the questionnaire: the average of each group of reviewers."
+msgstr ""
+
+msgid "Self and others"
+msgstr ""
+
+msgid "Where the person rates themselves higher or lower than the others do. A good start for a conversation."
+msgstr ""
+
+msgid "The comments of the reviewers, per group and without names."
+msgstr ""
+
+msgid "Skill level and agency"
+msgstr ""
+
+#, python-format
+msgid "Some questionnaires also place the person on two scales: the skill level, from novice to expert (the <a href=\"%(dreyfus_url)s\" target=\"_blank\" rel=\"noopener\">Dreyfus model</a>), and the <a href=\"%(agency_url)s\" target=\"_blank\" rel=\"noopener\">level of agency</a>: how much a person acts on their own initiative. The report then gives steps to the next level."
+msgstr ""
+
+msgid "When a cycle closes, Blik makes the report. The reviewee gets a link by email. A PDF is also available."
+msgstr ""
+
+msgid "An account starts as a member. A role or a permission adds to that."
+msgstr ""
+
+msgid "Own feedback and report"
+msgstr ""
+
+msgid "Reports of their team"
+msgstr ""
+
+msgid "Create and run cycles for their team"
+msgstr ""
+
+msgid "All cycles and reports"
+msgstr ""
+
+msgid "People, questionnaires, team and settings"
+msgstr ""
+
+msgid "Member"
+msgstr ""
+
+msgid "Each person with an account"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "Member who manages a unit"
+msgstr ""
+
+msgid "From the org chart"
+msgstr ""
+
+msgid "With “Can create review cycles for others”"
+msgstr ""
+
+msgid "A permission on Organization → Team"
+msgstr ""
+
+msgid "With “Can view all reports and cycles”"
+msgstr ""
+
+msgid "Organization Admin"
+msgstr ""
+
+msgid "A role on Organization → Team"
+msgstr ""
+
+msgid "A person who only gets or gives feedback is not in this table: that person needs no account."
+msgstr ""
+
+msgid "All feedback is anonymous. Nobody can see who gave which answer."
+msgstr ""
+
+msgid "The reviewee"
+msgstr ""
+
+msgid "Sees the report. It shows the answers of each group together. No name is with an answer."
+msgstr ""
+
+msgid "An admin"
+msgstr ""
+
+msgid "Sees which invited email has answered. Never what that person answered."
+msgstr ""
+
+#, python-format
+msgid "Fewer than %(counter)s answer: hidden"
+msgid_plural "Fewer than %(counter)s answers: hidden"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "With few answers it is easy to guess who wrote what. So the report shows peers and direct reports only from %(counter)s answer."
+msgid_plural "With few answers it is easy to guess who wrote what. So the report shows peers and direct reports only from %(counter)s answers."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "You change this number on <a href=\"%(settings_url)s\">Organization → Settings</a>, under Report Settings."
+msgstr ""
+
+msgid "An organization admin can change this number."
+msgstr ""
+
+msgid "A lower number shows more feedback, but reviewers are easier to guess."
+msgstr ""
+
+msgid "The answers of the manager and the self-assessment are always in the report, when the cycle has them: there is only one of each."
+msgstr ""
+
+msgid "A cycle for one reviewee with one questionnaire costs one credit. Reviewers are free."
+msgstr ""
+
+msgid "Credits"
+msgstr ""
+
+#, python-format
+msgid "Credits come in packs of %(count)s and do not expire. A person who is skipped in a bulk run costs no credit."
+msgstr ""
+
+msgid "Subscription"
+msgstr ""
+
+msgid "With a subscription you do not use credits. You can run as many cycles as you want, for the number of reviewees in your plan."
+msgstr ""
+
+msgid "Your organization now"
+msgstr ""
+
+#, python-format
+msgid "Subscription %(plan)s: %(current)s of %(max)s reviewees."
+msgstr ""
+
+msgid "The subscription is not active. New cycles are not possible."
+msgstr ""
+
+#, python-format
+msgid "%(counter)s credit left."
+msgid_plural "%(counter)s credits left."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "You find the prices and your invoices on <a href=\"%(billing_url)s\">Organization → Billing</a>."
+msgstr ""
+
+msgid "Next"
 msgstr ""
 
 msgid "Subscription & Limits"
@@ -4096,37 +4751,13 @@ msgstr ""
 msgid "You're nearing your plan limit of %(max_employees)s reviewees. Contact us to upgrade your plan."
 msgstr "Du näherst dich der Grenze deines Tarifs von %(max_employees)s Feedbacknehmenden. Kontaktiere uns für einen größeren Tarif."
 
-msgid "Quick Actions"
+msgid "Share Your Experience with Blik"
 msgstr ""
 
-msgid "New Review Cycle"
-msgstr ""
+msgid "Enjoying Blik? Take 2 minutes to share your feedback and help other teams discover us."
+msgstr "Gefällt dir Blik? Nimm dir 2 Minuten für dein Feedback und hilf anderen Teams, uns zu entdecken."
 
-msgid "Add Reviewee"
-msgstr ""
-
-msgid "All Cycles"
-msgstr ""
-
-msgid "Progress"
-msgstr ""
-
-msgid "Actions"
-msgstr ""
-
-msgid "Recent Review Cycles"
-msgstr ""
-
-msgid "View All"
-msgstr ""
-
-msgid "No review cycles yet"
-msgstr ""
-
-msgid "Create your first review cycle to get started"
-msgstr ""
-
-msgid "Create Review Cycle"
+msgid "Submit a Review"
 msgstr ""
 
 msgid "Share Your Experience"
@@ -4205,6 +4836,9 @@ msgstr ""
 msgid "Reviewees (%(count)s)"
 msgstr ""
 
+msgid "Actions"
+msgstr ""
+
 msgid "Inactive"
 msgstr ""
 
@@ -4232,9 +4866,6 @@ msgstr ""
 
 #, python-format
 msgid "Page %(num)s of %(total)s"
-msgstr ""
-
-msgid "Next"
 msgstr ""
 
 msgid "Last"
@@ -4291,9 +4922,6 @@ msgstr ""
 
 msgid "Created Cycles"
 msgstr ""
-
-msgid "You"
-msgstr "Du"
 
 msgid "No users found"
 msgstr ""
@@ -4410,9 +5038,6 @@ msgstr ""
 msgid "Response Status"
 msgstr ""
 
-msgid "Invited by email"
-msgstr ""
-
 msgid "Via invite link"
 msgstr ""
 
@@ -4512,9 +5137,6 @@ msgstr ""
 msgid "Delete unit"
 msgstr ""
 
-msgid "Not in a unit"
-msgstr ""
-
 msgid "Find a person"
 msgstr ""
 
@@ -4525,6 +5147,12 @@ msgid "Drag a person onto a unit. Drag a person here to take them out of a unit.
 msgstr ""
 
 msgid "Everyone is in a unit. Drag a person here to take them out of a unit."
+msgstr ""
+
+msgid "Step 2 of 2: check the changes"
+msgstr ""
+
+msgid "Step 1 of 2: choose the columns"
 msgstr ""
 
 #, python-format
@@ -4560,6 +5188,144 @@ msgid_plural "And %(counter)s more errors."
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "What the import changes"
+msgstr ""
+
+msgid "Nothing is saved yet. Each row shows one person: where they are now, and where they are after the import."
+msgstr ""
+
+msgid "In the file"
+msgstr ""
+
+msgid "No change"
+msgstr ""
+
+msgctxt "number of people who change"
+msgid "Changes"
+msgstr ""
+
+msgid "In Blik, not in the file"
+msgstr ""
+
+msgid "The file is the same as the org chart. Nothing changes."
+msgstr ""
+
+msgid "People who change"
+msgstr ""
+
+msgid "Person"
+msgstr ""
+
+msgid "What changes"
+msgstr ""
+
+msgctxt "column: before the import"
+msgid "Now"
+msgstr ""
+
+msgid "After the import"
+msgstr ""
+
+msgid "New in Blik"
+msgstr ""
+
+msgid "Active again"
+msgstr ""
+
+msgid "Other place in the chart"
+msgstr ""
+
+msgid "Other manager"
+msgstr ""
+
+msgid "Other name or department"
+msgstr ""
+
+msgid "Not in Blik"
+msgstr ""
+
+msgid "Units"
+msgstr ""
+
+#, python-format
+msgid "<strong>%(unit)s</strong> is new."
+msgstr ""
+
+#, python-format
+msgid "<strong>%(unit)s</strong> is removed: after the import nobody reports to its manager."
+msgstr ""
+
+msgid "All other units keep their name, their place and their people."
+msgstr ""
+
+#, python-format
+msgid "%(counter)s person is not in the file"
+msgid_plural "%(counter)s people are not in the file"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "They are in Blik, but the file does not have them. Did they leave? Then deactivate them below. If not, they stay active."
+msgstr ""
+
+msgid "People who are not in the file"
+msgstr ""
+
+msgid "After the import, if they stay active"
+msgstr ""
+
+#, python-format
+msgid "Deactivate this person"
+msgid_plural "Deactivate these %(counter)s people"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Deactivated people leave the org chart and get no new cycles. Nothing is deleted: the feedback they gave and their own reports stay."
+msgstr ""
+
+msgid "What happens to a deactivated person"
+msgstr ""
+
+msgid "Nothing is deleted."
+msgstr ""
+
+msgid "The feedback they gave to other people stays, and still counts in the reports of those people."
+msgstr ""
+
+msgid "Open invitations to give feedback stay open. No answer counts as no response."
+msgstr ""
+
+msgid "They get no new cycles and are no longer in the org chart or the lists of people."
+msgstr ""
+
+msgid "Their own cycles and reports stay in the list of review cycles, marked as deactivated."
+msgstr ""
+
+msgid "To make them active again, import a file that has them in it."
+msgstr ""
+
+msgid "How this affects your plan"
+msgstr ""
+
+#, python-format
+msgid "Active people your plan allows: %(max)s. Active now: %(now)s. Active after this import: %(after)s."
+msgstr ""
+
+#, python-format
+msgid "Active after this import, with the people who are not in the file deactivated: %(after)s."
+msgstr ""
+
+msgid "Only active people count. The import does not change your plan or its price."
+msgstr ""
+
+msgid "You pay per feedback cycle, not per person. The import starts no cycles and uses no credits."
+msgstr ""
+
+msgid "Your plan has no limit on the number of people. The import costs nothing."
+msgstr ""
+
+msgid "Columns and first rows of the file"
+msgstr ""
+
 msgid "Which column is which?"
 msgstr ""
 
@@ -4581,14 +5347,26 @@ msgstr ""
 msgid "First rows of the file"
 msgstr ""
 
-msgid "This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit."
+msgid "Changed a column? Then Blik shows the changes again first."
+msgstr ""
+
+msgid "Blik shows what the import changes before anything is saved."
 msgstr ""
 
 msgid "Import"
 msgstr ""
 
+msgid "Show changes"
+msgstr ""
+
 msgid "Who is in which unit, and who manages it. Blik uses this to suggest managers, peers and direct reports for each review."
 msgstr ""
+
+#, python-format
+msgid "%(counter)s manager without an account"
+msgid_plural "%(counter)s managers without an account"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Chart"
 msgstr ""
@@ -4644,10 +5422,79 @@ msgstr ""
 msgid "The people in this unit stay in Blik. People who are in no other unit move to \"Not in a unit\"."
 msgstr ""
 
+msgid "A manager can read the reports of the people in the units they manage. For this, the manager must log in with an account that has the same email address as in the org chart."
+msgstr ""
+
+msgid "A manager sees only these reports. A manager cannot change a cycle, and does not see the reports of people further down the chart. The report settings control if a manager sees the answers below the anonymity threshold."
+msgstr ""
+
+msgid "These managers have no account yet. An invitation lets them make one. An invitation is valid for 7 days."
+msgstr ""
+
+msgid "Your message (optional)"
+msgstr ""
+
+msgid "The message is added to each invitation email."
+msgstr ""
+
+msgid "The email that each selected manager gets"
+msgstr ""
+
+#, python-format
+msgid "The email goes out in the language set for each person. For a person without one that is %(language)s, the language of the organization, as shown here."
+msgstr ""
+
+msgid "Invite selected managers"
+msgstr ""
+
 msgid "A CSV file with one row per person: name, email, and optionally department and manager. Any column names work: in the next step you choose which column is which."
 msgstr "Eine CSV-Datei mit einer Zeile pro Person: Name, E-Mail-Adresse und optional Bereich und Führungskraft. Die Spaltennamen sind beliebig: Im nächsten Schritt wählst du, welche Spalte was enthält."
 
 msgid "File"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s answer so far"
+msgid_plural "%(counter)s answers so far"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Answer your self-assessment"
+msgstr ""
+
+#, python-format
+msgid "closed on %(date)s"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s answer"
+msgid_plural "%(counter)s answers"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "hidden for fewer than %(counter)s answer: %(groups)s"
+msgid_plural "hidden for fewer than %(counter)s answers: %(groups)s"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Give feedback"
+msgstr ""
+
+msgid "Send again"
+msgstr ""
+
+#, python-format
+msgid "Withdraw the invitation to %(email)s? The link in the email stops working."
+msgstr ""
+
+msgid "Withdraw"
+msgstr ""
+
+msgid "Not sent"
+msgstr ""
+
+msgid "Queued"
 msgstr ""
 
 msgid "Buy a round"
@@ -4841,6 +5688,9 @@ msgstr "Die Runde beginnt mit Plätzen für eine Selbsteinschätzung, drei Kolle
 msgid "The reviewee is notified by email right away."
 msgstr ""
 
+msgid "Create Review Cycle"
+msgstr ""
+
 #, python-format
 msgid "Sent %(date)s"
 msgstr ""
@@ -4855,9 +5705,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Blik tries again within about five minutes."
-msgstr ""
-
-msgid "Queued"
 msgstr ""
 
 msgid "Goes out within about five minutes"
@@ -5381,9 +6228,6 @@ msgstr ""
 msgid "Action Items"
 msgstr ""
 
-msgid "Add"
-msgstr ""
-
 msgid "Define action items for development plans when this question scores low"
 msgstr ""
 
@@ -5788,6 +6632,9 @@ msgstr ""
 msgid "Review Cycle: %(name)s"
 msgstr ""
 
+msgid "Deactivated"
+msgstr ""
+
 msgid "Questionnaire:"
 msgstr ""
 
@@ -5859,6 +6706,9 @@ msgid "Total Reviewers"
 msgstr ""
 
 msgid "Completion Rate"
+msgstr ""
+
+msgid "Progress"
 msgstr ""
 
 #, python-format
@@ -6007,6 +6857,9 @@ msgstr ""
 msgid "Create for all active reviewees"
 msgstr ""
 
+msgid "Create for you and your direct reports"
+msgstr ""
+
 msgid "Reviewers per cycle"
 msgstr ""
 
@@ -6017,6 +6870,15 @@ msgid "(no units yet)"
 msgstr ""
 
 msgid "Auto-assign managers, peers, and direct reports based on each reviewee's team memberships. You'll confirm before invitations send."
+msgstr ""
+
+msgid "Reuse previous settings per cycle"
+msgstr ""
+
+msgid "Reuse previous settings per cycle <span style=\"color: var(--text-tertiary); font-weight: normal;\">(no cycles yet)</span>"
+msgstr ""
+
+msgid "Copy the questionnaire, the categories and the reviewer emails of the previous cycle of each person. People without a previous cycle are skipped."
 msgstr ""
 
 msgid "Leave empty"
@@ -6034,6 +6896,9 @@ msgstr ""
 
 msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
 msgstr "Du kannst Feedbackrunden nur für dich selbst anlegen. Für andere Teammitglieder legt ein Admin die Feedbackrunden an."
+
+msgid "Reviewee and questionnaire"
+msgstr ""
 
 msgid "Select a reviewee..."
 msgstr ""
@@ -6111,6 +6976,10 @@ msgstr ""
 msgid "Sort"
 msgstr ""
 
+#, python-format
+msgid "%(label)s: clear filters"
+msgstr ""
+
 msgid "Clear filters"
 msgstr ""
 
@@ -6128,6 +6997,9 @@ msgstr ""
 
 #, python-format
 msgid "Page %(number)s of %(num_pages)s"
+msgstr ""
+
+msgid "No review cycles yet"
 msgstr ""
 
 msgid "Create your first review cycle to start collecting feedback"
@@ -6223,10 +7095,32 @@ msgstr ""
 msgid "Engineering, Marketing, etc."
 msgstr ""
 
+msgid "New department"
+msgstr ""
+
+msgid "The person joins this department in the org chart."
+msgstr ""
+
 msgid "Language of the emails to this person and of their self-assessment."
 msgstr ""
 
 msgid "Update Reviewee"
+msgstr ""
+
+msgid "The new person manages this department"
+msgstr ""
+
+msgid "Manager (optional)"
+msgstr ""
+
+msgid "A new department, managed by this person."
+msgstr ""
+
+#, python-format
+msgid "A new department, managed by %(name)s."
+msgstr ""
+
+msgid "A new department, without a manager yet."
 msgstr ""
 
 # Reviewee overview filters and actions
@@ -6235,6 +7129,9 @@ msgstr "Finde Personen, verfolge ihr Feedback und plane die nächste Feedbackrun
 
 #, python-format
 msgid "%(current)s / %(max)s reviewees (%(remaining)s remaining)"
+msgstr ""
+
+msgid "Add Reviewee"
 msgstr ""
 
 msgid "Add Myself"
@@ -6272,9 +7169,6 @@ msgstr ""
 
 msgid "A difference is shown only when there is enough feedback to protect anonymity. Use it as a conversation starter, not a performance score."
 msgstr "Eine Differenz wird nur angezeigt, wenn genug Feedback vorliegt, um die Anonymität zu wahren. Nutze sie als Gesprächsanlass, nicht als Leistungsbewertung."
-
-msgid "Person"
-msgstr ""
 
 msgid "Review status"
 msgstr ""
@@ -6436,6 +7330,12 @@ msgstr ""
 msgid "Minimum responses required to display results. Set to 1 for small teams, 3+ for larger teams. Self-assessments always shown."
 msgstr ""
 
+msgid "Hide answers below the threshold from managers"
+msgstr ""
+
+msgid "When disabled, managers see all answers in their view of the report. The report of the reviewee always hides the groups below the threshold."
+msgstr ""
+
 msgid "Automatically send report email when generated"
 msgstr ""
 
@@ -6460,7 +7360,31 @@ msgstr ""
 msgid "New users can create cycles for others"
 msgstr ""
 
-msgid "If disabled, new users can only create cycles for themselves"
+msgid "New users can then create and run cycles for the people in the units they manage. If disabled, new users can only create cycles for themselves."
+msgstr ""
+
+msgid "Reviewers from the org chart"
+msgstr ""
+
+msgid "Levels below a person that give direct-report feedback"
+msgstr ""
+
+msgid "All the way down"
+msgstr ""
+
+msgid "With 1 level, a manager gets feedback from the people in the units they manage. Each more level adds the units below those people."
+msgstr ""
+
+msgid "Below the first level: only managers"
+msgstr ""
+
+msgid "Below the first level: entire teams"
+msgstr ""
+
+msgid "The first level is always the full team. This choice applies to the levels below it."
+msgstr ""
+
+msgid "Entire teams over more than one level give many feedback requests. Example: in a chart of 300 people with \"All the way down\", the person at the top gets 299 reviewers, and each person gets one request for each manager above them."
 msgstr ""
 
 msgid "Your plan, payment method, invoices and review credits."
@@ -6846,12 +7770,6 @@ msgstr ""
 msgid "Super Admin"
 msgstr ""
 
-msgid "Organization Admin"
-msgstr ""
-
-msgid "Member"
-msgstr ""
-
 msgid "Can manage cycles"
 msgstr ""
 
@@ -6902,7 +7820,7 @@ msgstr ""
 msgid "Can create review cycles for others"
 msgstr ""
 
-msgid "Without this, user can only create cycles for themselves"
+msgid "An admin creates cycles for everyone. A member creates and runs cycles for themselves and for the people in the units they manage. Without this, a user can only create cycles for themselves."
 msgstr ""
 
 msgid "Can view all reports and cycles"
@@ -7468,9 +8386,6 @@ msgid "Choose a questionnaire. The default questionnaire is a good start."
 msgstr ""
 
 msgid "Invite the reviewers by email, or share the invite links."
-msgstr ""
-
-msgid "All feedback is anonymous. Nobody can see who gave which answer."
 msgstr ""
 
 msgid "Create a review cycle:"

@@ -207,6 +207,111 @@ def alternatives(request):
     return render(request, 'landing/alternatives.html')
 
 
+def _compare_tools():
+    """Every tool in the tables, Blik included, A–Z, each with the URL of its page."""
+    from .competitors import VENDORS, BLIK
+    tools = [{**v, 'url': reverse(_get_view_name('compare_tool'), args=[v['slug']])} for v in VENDORS]
+    tools.append({**BLIK, 'url': reverse(_get_view_name('pricing'))})
+    return sorted(tools, key=lambda t: t['name'].lower())
+
+
+def _and_list(names):
+    """['A', 'B', 'C'] -> 'A, B and C'."""
+    return ' and '.join([', '.join(names[:-1]), names[-1]]) if len(names) > 1 else ''.join(names)
+
+
+def compare(request):
+    """Reference table of 360 feedback tools: key facts, cost for 50 people, FAQ."""
+    from .competitors import GROUPS, SCENARIO, VENDORS, CHECKED, CHECKED_ISO
+    tools = _compare_tools()
+    n = len(tools)
+    url_by_name = {t['name']: t['url'] for t in tools}
+
+    def names(test):
+        return [t['name'] for t in tools if test(t['flags'])]
+
+    priced = names(lambda f: f['published_price'])
+    standalone = names(lambda f: f['standalone_360'])
+    eu_default = names(lambda f: f['eu_hosting'] == 'default')
+    eu_option = names(lambda f: f['eu_hosting'] == 'option')
+    ai_yes = names(lambda f: f['ai_on_feedback'] in ('yes', 'opt-in'))
+    ai_no = names(lambda f: f['ai_on_feedback'] == 'no')
+    certified = names(lambda f: f['certified'] == 'yes')
+    quote_only = sorted(v['name'] for v in VENDORS if v['pricing']['sort_eur_50'] is None)
+    hosted = [row for row in SCENARIO if row['sort'] > 0]  # leaves out the €0 self-hosted licence
+    cheapest, dearest = hosted[0], hosted[-1]
+    price_range = (f"For 50 reviewed employees, published list prices go from {cheapest['cost']} ({cheapest['name']}) "
+                   f"to {dearest['cost']} ({dearest['name']}) a year, licence only.")
+
+    facts = [
+        f"{len(priced)} of the {n} tools publish a full price. The others sell on quote, or publish only part of the price.",
+        price_range,
+        f"{len(standalone)} of the {n} tools sell 360 feedback on its own. The others sell it inside a larger suite or plan.",
+        f"{len(eu_default)} tools store data in the EU by default. {len(eu_option)} more offer an EU region.",
+        f"{len(ai_yes)} tools use AI on feedback, for summaries, drafting or analysis. For {len(ai_no)} we found none."
+        + (f" {n - len(ai_yes) - len(ai_no)} do not say." if n - len(ai_yes) - len(ai_no) else ""),
+        f"{len(certified)} tools hold ISO 27001 or a SOC 2 report of their own.",
+    ]
+    faq = [
+        ("How much does 360 feedback software cost for 50 employees?",
+         f"{price_range} {len(quote_only)} tools sell on quote only: {_and_list(quote_only)}."),
+        ("Which 360 feedback tools store data in the EU by default?",
+         f"{_and_list(eu_default)}." + (f" {_and_list(eu_option)} offer an EU region as an option." if eu_option else "")),
+        ("Which 360 feedback tools do not use AI on feedback?",
+         f"We found no AI on feedback for {_and_list(ai_no)}. {len(ai_yes)} of the {n} tools use AI on feedback, "
+         "for example for summaries or drafted reviews."),
+        ("Which 360 feedback tools have ISO 27001 or SOC 2?",
+         f"{_and_list(certified)} hold ISO 27001 or a SOC 2 report of their own."),
+        ("Can I buy 360 feedback without a full HR or performance suite?",
+         f"Yes. {_and_list(standalone)} sell 360 feedback on its own."),
+    ]
+    return render(request, 'landing/compare.html', {
+        'groups': [
+            {'key': key, 'title': title, 'intro': intro, 'tools': [t for t in tools if t['group'] == key]}
+            for key, title, intro in GROUPS
+        ],
+        'scenario': [{**row, 'url': reverse(_get_view_name(row['page'])) if 'page' in row else url_by_name.get(row['name'])}
+                     for row in SCENARIO],
+        'tool_count': n, 'facts': facts, 'faq': faq,
+        'quote_only': quote_only, 'ai_no': ai_no, 'certified': certified,
+        'checked': CHECKED, 'checked_iso': CHECKED_ISO,
+    })
+
+
+_FEATURE_LABELS = [
+    ('Raters', 'raters'), ('Choosing raters', 'nomination'), ('Anonymity', 'anonymity'),
+    ('Questions', 'questions'), ('Reports', 'reports'), ('Languages', 'languages'),
+    ('Integrations', 'integrations'), ('AI', 'ai'),
+]
+_SECURITY_LABELS = [
+    ('Hosting', 'hosting'), ('Certificates', 'certificates'),
+    ('AI providers', 'ai_subprocessors'), ('GDPR', 'gdpr'),
+]
+
+
+def compare_tool(request, slug):
+    """One tool: summary, pricing, how its 360 works, data and security, FAQ, sources."""
+    from django.http import Http404
+    from .competitors import BY_SLUG, GROUPS, CHECKED, CHECKED_ISO
+    v = BY_SLUG.get(slug)
+    if v is None:
+        raise Http404
+    group = next(g for g in GROUPS if g[0] == v['group'])
+    cost_50 = v['pricing']['cost']['50']['cost']
+    lead = (f"{v['name']} 360 feedback for 50 employees: {cost_50} a year." if cost_50
+            else f"{v['name']} 360 feedback: price on quote only.")
+    return render(request, 'landing/compare_tool.html', {
+        'v': v,
+        'costs': [(size, v['pricing']['cost'][size]) for size in ('10', '50', '200')],
+        'features': [(label, v['features'][key]) for label, key in _FEATURE_LABELS],
+        'security': [(label, v['security'][key]) for label, key in _SECURITY_LABELS],
+        'others': [t for t in _compare_tools() if t['group'] == v['group'] and t['slug'] != slug],
+        'group_title': group[1], 'group_intro': group[2],
+        'meta_description': f"{lead} How it is sold, anonymity, AI, EU hosting and certificates, with sources. Checked {CHECKED}.",
+        'checked': CHECKED, 'checked_iso': CHECKED_ISO, 'checked_year': CHECKED_ISO[:4],
+    })
+
+
 def free_360_tools(request):
     """Free 360 feedback tools comparison page."""
     return render(request, 'landing/free_360_tools.html')

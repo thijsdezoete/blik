@@ -87,18 +87,18 @@
                         </tr>
                         <tr>
                             <td><strong>Open Source License</strong></td>
-                            <td class="highlight-green">AGPLv3 (100% open)<br><small>All features included</small></td>
+                            <td>AGPLv3 (100% open)<br><small>All features included</small></td>
                             <td>GPL v2 Starter edition<br><small>Quote-based Advanced plan</small></td>
                         </tr>
                         <tr>
                             <td><strong>Mobile Experience</strong></td>
-                            <td class="highlight-green">Responsive web design<br><small>No native mobile app</small></td>
+                            <td>Responsive web design</td>
                             <td>Mobile app available; confirm feature coverage for your edition</td>
                         </tr>
                         <tr>
                             <td><strong>Deployment Options</strong></td>
-                            <td class="highlight-green">SaaS (€{{ plan_saas_price }}/mo) OR<br>Self-hosted (Free)<br><small>Running in under 30 minutes with Docker Compose</small></td>
-                            <td class="highlight-yellow">Self-hosted (Free) OR<br>Cloud (Paid)<br><small>LAMP stack setup</small></td>
+                            <td>SaaS (€{{ plan_saas_price }}/mo) OR<br>Self-hosted (Free)<br><small>Running in under 30 minutes with Docker Compose</small></td>
+                            <td>Self-hosted (Free) OR<br>Cloud (Paid)<br><small>LAMP stack setup</small></td>
                         </tr>
                         <tr>
                             <td><strong>360 Reviews</strong></td>
@@ -107,13 +107,13 @@
                         </tr>
                         <tr>
                             <td><strong>Setup Complexity</strong></td>
-                            <td class="highlight-green">Docker Compose up<br><small>Running in under 30 minutes with Docker Compose</small></td>
-                            <td class="highlight-yellow">Manual LAMP stack setup<br><small>More configuration steps</small></td>
+                            <td>Docker Compose up<br><small>Running in under 30 minutes with Docker Compose</small></td>
+                            <td>Manual LAMP stack setup<br><small>More configuration steps</small></td>
                         </tr>
                         <tr>
                             <td><strong>Technical Skills Required</strong></td>
-                            <td class="highlight-green">Basic Docker knowledge<br><small>Clear documentation</small></td>
-                            <td class="highlight-yellow">Advanced skills help<br><small>For deeper customization</small></td>
+                            <td>Basic Docker knowledge<br><small>Clear documentation</small></td>
+                            <td>Advanced skills help<br><small>For deeper customization</small></td>
                         </tr>
                     </tbody>
                 </table>
@@ -134,7 +134,7 @@
         <div class="container">
             <h2 class="section-title">Compare the Workflow You Need</h2>
             <p>Blik concentrates on structured review cycles. OrangeHRM combines HR administration with performance-management workflows. Try representative tasks with reviewers, managers, and administrators before choosing.</p>
-            <p>Blik has no SSO/SAML, native HRIS connectors, or native mobile app. It offers responsive web access and a REST API plus webhooks for custom integrations, not a replacement for leave, time, or recruitment tools.</p>
+            <p>Blik does not replace leave, time or recruitment tools. It connects to other systems through a REST API and webhooks.</p>
         </div>
     </section>
 
@@ -148,7 +148,7 @@
                 <div class="comparison-card">
                     <h3>Scope & Purpose</h3>
                     <div class="grid-two mt-6">
-                        <div class="card-green">
+                        <div class="comparison-side">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Focused: 360° feedback only</li>
@@ -157,7 +157,7 @@
                                 <li>REST API and webhooks for custom integration</li>
                             </ul>
                         </div>
-                        <div class="card-green">
+                        <div class="comparison-side">
                             <h4>OrangeHRM</h4>
                             <ul>
                                 <li>Comprehensive: Full HR suite</li>
@@ -179,7 +179,7 @@
                 <div class="comparison-card">
                     <h3>Cost & Deployment Options</h3>
                     <div class="grid-two mt-6">
-                        <div class="card-green">
+                        <div class="comparison-side">
                             <h4>Blik</h4>
                             <ul>
                                 <li>Self-hosted: Free forever (AGPLv3)</li>
@@ -188,7 +188,7 @@
                                 <li>All features in open source version</li>
                             </ul>
                         </div>
-                        <div class="card-green">
+                        <div class="comparison-side">
                             <h4>OrangeHRM</h4>
                             <ul>
                                 <li>Starter: Free (GPL v2)</li>
@@ -212,13 +212,13 @@
                 <h3>Self-Hosted Deployment</h3>
                 <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 class="comparison-success">Blik Open Source</h4>
-                        <p class="comparison-price comparison-success">€0</p>
+                        <h4>Blik Open Source</h4>
+                        <p class="comparison-price">€0</p>
                         <p class="comparison-note">AGPLv3 - All features</p>
                     </div>
                     <div>
-                        <h4 class="comparison-success">OrangeHRM Starter</h4>
-                        <p class="comparison-price comparison-success">$0</p>
+                        <h4>OrangeHRM Starter</h4>
+                        <p class="comparison-price">$0</p>
                         <p>GPL v2 — Starter edition</p>
                     </div>
                 </div>
@@ -228,13 +228,13 @@
                 <h3>Managed Hosting Options</h3>
                 <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 class="comparison-success">Blik SaaS</h4>
-                        <p class="comparison-price comparison-success">€{{ plan_saas_price }}/month</p>
+                        <h4>Blik SaaS</h4>
+                        <p class="comparison-price">€{{ plan_saas_price }}/month</p>
                         <p class="comparison-note">Up to {{ plan_saas_max }} employees, all features</p>
                     </div>
                     <div>
                         <h4 class="text-secondary">OrangeHRM Cloud</h4>
-                        <p class="comparison-price text-secondary">Contact Sales</p>
+                        <p class="comparison-price">Contact Sales</p>
                         <p class="comparison-note">Paid cloud hosting available</p>
                     </div>
                 </div>
@@ -244,13 +244,13 @@
                 <h3>Professional/Support Options</h3>
                 <div class="comparison-metrics-grid mt-6">
                     <div>
-                        <h4 class="comparison-success">Blik</h4>
-                        <p class="comparison-price comparison-price--compact comparison-success">Included</p>
+                        <h4>Blik</h4>
+                        <p class="comparison-price comparison-price--compact">Included</p>
                         <p class="comparison-note">Email support, community, full features</p>
                     </div>
                     <div>
                         <h4>OrangeHRM Advanced</h4>
-                        <p class="comparison-price comparison-price--compact comparison-warning">Paid Upgrade</p>
+                        <p class="comparison-price comparison-price--compact">Paid Upgrade</p>
                         <p class="comparison-note">Advanced features require paid license</p>
                     </div>
                 </div>
@@ -270,8 +270,8 @@
             <h2 class="section-title">Which Platform Is Right for You?</h2>
 
             <div class="comparison-plan-grid mt-12">
-                <div class="feature-card comparison-outline-success">
-                    <h3 class="comparison-success">Choose Blik If You:</h3>
+                <div class="feature-card">
+                    <h3>Choose Blik If You:</h3>
                     <ul class="comparison-benefits mt-6">
                         <li>Need a <strong>dedicated review tool</strong></li>
                         <li>Want <strong>responsive web access</strong></li>
@@ -285,8 +285,8 @@
                     <a href="{% landing_url 'signup' %}" class="btn btn-primary comparison-decision-link">Try Blik</a>
                 </div>
 
-                <div class="feature-card comparison-outline-warning">
-                    <h3 class="comparison-warning">Choose OrangeHRM If You:</h3>
+                <div class="feature-card">
+                    <h3>Choose OrangeHRM If You:</h3>
                     <ul class="comparison-benefits mt-6">
                         <li>Need <strong>comprehensive HR suite</strong> (leave, time, recruitment)</li>
                         <li>Want <strong>employee administration alongside reviews</strong></li>

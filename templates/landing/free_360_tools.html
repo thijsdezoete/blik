@@ -132,17 +132,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="table-row-success">
+                        <tr>
                             <td data-label="Tool"><strong>Blik360</strong></td>
-                            <td data-label="Truly Free?" class="highlight-green">&#10003; Self-host free; one free hosted review</td>
-                            <td data-label="Self-Hosted?" class="highlight-green">&#10003;</td>
-                            <td data-label="Anonymous?" class="highlight-green">&#10003; Token-based</td>
-                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Truly Free?">&#10003; Self-host free; one free hosted review</td>
+                            <td data-label="Self-Hosted?">&#10003;</td>
+                            <td data-label="Anonymous?">&#10003; Token-based</td>
+                            <td data-label="360-Specific?">&#10003;</td>
                             <td data-label="Pricing"><strong>Free</strong> (self-host, or one hosted review) / €{{ plan_saas_price }}/mo for up to {{ plan_saas_max }} employees (managed)</td>
                         </tr>
                         <tr>
                             <td data-label="Tool"><strong>Google Forms</strong></td>
-                            <td data-label="Truly Free?" class="highlight-green">&#10003; Completely free</td>
+                            <td data-label="Truly Free?">&#10003; Completely free</td>
                             <td data-label="Self-Hosted?">&#10007;</td>
                             <td data-label="Anonymous?">Depends on form settings</td>
                             <td data-label="360-Specific?">&#10007; Generic survey</td>
@@ -160,24 +160,24 @@
                             <td data-label="Tool"><strong>Spidergap</strong></td>
                             <td data-label="Truly Free?">First assessment free</td>
                             <td data-label="Self-Hosted?">&#10007;</td>
-                            <td data-label="Anonymous?" class="highlight-green">&#10003;</td>
-                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Anonymous?">&#10003;</td>
+                            <td data-label="360-Specific?">&#10003;</td>
                             <td data-label="Pricing"><strong>Trial assessment</strong> / paid plans</td>
                         </tr>
                         <tr>
                             <td data-label="Tool"><strong>Primalogik</strong></td>
                             <td data-label="Truly Free?">&#10007; Free trial only</td>
                             <td data-label="Self-Hosted?">&#10007;</td>
-                            <td data-label="Anonymous?" class="highlight-green">&#10003;</td>
-                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Anonymous?">&#10003;</td>
+                            <td data-label="360-Specific?">&#10003;</td>
                             <td data-label="Pricing"><strong>Trial</strong> / paid plans</td>
                         </tr>
                         <tr>
                             <td data-label="Tool"><strong>Trakstar / Engagedly</strong></td>
                             <td data-label="Truly Free?">&#10007; No free tier</td>
                             <td data-label="Self-Hosted?">&#10007;</td>
-                            <td data-label="Anonymous?" class="highlight-green">&#10003;</td>
-                            <td data-label="360-Specific?" class="highlight-green">&#10003;</td>
+                            <td data-label="Anonymous?">&#10003;</td>
+                            <td data-label="360-Specific?">&#10003;</td>
                             <td data-label="Pricing"><a href="https://engagedly.com/pricing/">Performance Suite $5–8/user/mo, $7,500/year minimum</a> (as of October 2026)</td>
                         </tr>
                     </tbody>
@@ -196,7 +196,7 @@
 
             <div class="comparison-stack content-wide">
                 <!-- Blik360 -->
-                <div class="feature-card feature-card-success">
+                <div class="feature-card">
                     <h3>Blik360</h3>
                     <p class="mb-4">
                         This is our product. Blik is an AGPL-3.0 360° feedback platform you can self-host without license fees, or use managed hosting for €{{ plan_saas_price }}/month for up to {{ plan_saas_max }} employees. One hosted review is free, with no credit card.
@@ -208,7 +208,7 @@
                         You can upload your people as a CSV. Blik builds the org chart and starts a round for everyone from it, with a preview first. Each person gets one email with every link they need. Every report also comes as a PDF. All of this is in every plan.
                     </p>
                     <p class="mb-6">
-                        Self-hosting requires maintenance. Blik has no SSO, native HRIS connectors, or native mobile app; integrations use the REST API and webhooks.
+                        Self-hosting requires maintenance.
                     </p>
                     <div class="comparison-actions">
                         <a href="{% landing_url 'pricing' %}" class="btn btn-secondary comparison-inline-link">See Pricing</a>

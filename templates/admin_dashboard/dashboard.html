@@ -1,202 +1,396 @@
 {% extends "admin_dashboard/base.html" %}
-{% load i18n %}
+{% load i18n static landing_tags %}
 
 {% block title %}{% trans 'Dashboard' %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">{% endblock %}
 
 {% block content %}
-<!-- Welcome Modal -->
-<div id="welcome-modal" class="modal-overlay" style="display: none;" data-has-seen-welcome="{{ has_seen_welcome|yesno:'true,false' }}">
-    <div class="modal-content" style="max-width: 600px;">
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <div style="width: 64px; height: 64px; margin: 0 auto 1rem; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <circle cx="12" cy="12" r="6"></circle>
-                    <circle cx="12" cy="12" r="2"></circle>
-                </svg>
-            </div>
-            <h2 style="margin: 0 0 0.5rem 0; font-size: 1.75rem;">{% trans 'Welcome to Blik' %}</h2>
-            <p style="color: var(--text-secondary); margin: 0;">{% trans 'Your 360-degree feedback platform' %}</p>
-        </div>
-
-        <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">{% trans 'How Blik helps you:' %}</h3>
-            <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
-                <li>{% trans 'Gather comprehensive feedback from peers, managers, and direct reports' %}</li>
-                <li>{% trans 'Maintain complete anonymity for honest, constructive input' %}</li>
-                <li>{% trans 'Generate actionable insights to drive professional growth' %}</li>
-            </ul>
-        </div>
-
-        <div style="margin-bottom: 2rem;">
-            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem;">{% trans 'Getting started is simple:' %}</h3>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div style="display: flex; gap: 1rem; align-items: start;">
-                    <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">1</div>
-                    <div>
-                        <strong>{% trans 'Add reviewees' %}</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% trans 'People who will receive 360° feedback' %}</p>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 1rem; align-items: start;">
-                    <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">2</div>
-                    <div>
-                        <strong>{% trans 'Create a review cycle' %}</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% trans 'Choose a questionnaire and invite reviewers' %}</p>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 1rem; align-items: start;">
-                    <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">3</div>
-                    <div>
-                        <strong>{% trans 'Share anonymous invite links' %}</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% trans 'Copy links and share directly, or optionally send via email' %}</p>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 1rem; align-items: start;">
-                    <div style="min-width: 32px; height: 32px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">4</div>
-                    <div>
-                        <strong>{% trans 'Review the report' %}</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">{% trans 'View aggregated insights and share with reviewees' %}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-            <button onclick="dismissWelcome(true)" class="btn btn-secondary">
-                {% trans 'Skip for now' %}
-            </button>
-            <a href="{% url 'reviewee_create' %}" onclick="dismissWelcome(false)" class="btn btn-primary" style="text-decoration: none;">
-                {% trans 'Get Started' %}
-            </a>
-        </div>
-    </div>
-</div>
-
-<script>
-// Welcome modal logic - global functions for reuse
-window.showWelcomeModal = function() {
-    const modal = document.getElementById('welcome-modal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-};
-
-window.dismissWelcome = function(skip = false) {
-    const modal = document.getElementById('welcome-modal');
-    if (modal) {
-        localStorage.setItem('blik_welcome_seen', 'true');
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-
-        // Mark as seen in backend
-        fetch('{% url "account:mark_welcome_seen" %}', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
-                'Content-Type': 'application/json',
-            },
-        }).catch(err => console.error('Failed to mark welcome as seen:', err));
-    }
-};
-
-// Auto-show on first visit (only if not already seen)
-(function() {
-    const hasSeenWelcomeLocal = localStorage.getItem('blik_welcome_seen');
-    const hasSeenWelcomeBackend = document.getElementById('welcome-modal')?.dataset.hasSeenWelcome === 'true';
-    const autoShow = document.getElementById('welcome-modal')?.dataset.autoShow !== 'false';
-
-    // Show modal on first visit only if:
-    // 1. Auto-show is enabled
-    // 2. User hasn't seen it on this device (localStorage)
-    // 3. User hasn't seen it on any device (backend)
-    if (!hasSeenWelcomeLocal && !hasSeenWelcomeBackend && autoShow) {
-        showWelcomeModal();
-    }
-})();
-
-// Modal event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('welcome-modal');
-    if (!modal) return;
-
-    // Close on overlay click
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            dismissWelcome(true);
-        }
-    });
-
-    // Close on Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            dismissWelcome(true);
-        }
-    });
-});
-</script>
-
 <div class="page-header">
     <div>
         <h1>{% trans 'Dashboard' %}</h1>
-        <p>{% trans 'Manage 360-degree feedback and review cycles' %}</p>
+        <p>{% if not sees_all %}{% trans 'Your own feedback, and your team.' %}{% elif started.complete %}{% trans 'What is running, and what needs you.' %}{% else %}{% trans 'Four steps to the first report.' %}{% endif %}</p>
     </div>
+    <a href="{% url 'review_cycle_create' %}" class="btn btn-primary">{% trans 'New cycle' %}</a>
 </div>
 
-<!-- Stats Cards -->
-<div class="stats-grid">
-    <div class="card">
-        <div class="card-body stat-card-content">
-            <div class="stat-number primary">{{ total_reviewees }}</div>
-            <div class="stat-label">{% trans 'Active Reviewees' %}</div>
+{% if sees_all %}
+{% if not started.complete %}
+<div class="card dash-card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans 'Getting started' %}</h2>
+        <div class="dash-progress">
+            <span class="help-text">{% blocktrans trimmed with done=started.done total=started.total %}{{ done }} of {{ total }} done{% endblocktrans %}</span>
+            <div class="dash-bar"><span style="width: {{ started.percent }}%"></span></div>
         </div>
     </div>
-
-    <div class="card">
-        <div class="card-body stat-card-content">
-            <div class="stat-number warning">{{ active_cycles }}</div>
-            <div class="stat-label">{% trans 'Active Cycles' %}</div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-body stat-card-content">
-            <div class="stat-number success">{{ completed_cycles }}</div>
-            <div class="stat-label">{% trans 'Completed Cycles' %}</div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-body stat-card-content">
-            <div class="stat-number secondary">{{ pending_tokens }}</div>
-            <div class="stat-label">{% trans 'Pending Reviews' %}</div>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Review Card -->
-{% if not user_has_reviewed and HAS_STRIPE_CONFIGURED %}
-<div class="card" style="border-left: 3px solid #10b981; margin-bottom: 2rem;">
     <div class="card-body">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 250px;">
-                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.125rem; color: #10b981;">
-                    ⭐ {% trans 'Share Your Experience with Blik' %}
-                </h3>
-                <p style="margin: 0; color: #64748b;">
-                    {% trans 'Enjoying Blik? Take 2 minutes to share your feedback and help other teams discover us.' %}
-                </p>
+        <ol class="dash-steps">
+            {% for step in started.steps %}
+            <li class="{% if step.done %}is-done{% elif step.next %}is-next{% endif %}">
+                {% if step.key == 'people' %}
+                <b>{% trans 'Add people' %}</b>
+                {% if step.done %}{% blocktrans trimmed count counter=step.count %}{{ counter }} reviewee added. A reviewee needs no account.{% plural %}{{ counter }} reviewees added. They need no account.{% endblocktrans %}
+                {% else %}{% trans 'Add the people who get feedback. They need no account.' %}
+                {% if step.next %}<div class="dash-actions"><a href="{% url 'reviewee_list' %}" class="btn btn-sm btn-primary">{% trans 'Add people' %}</a></div>{% endif %}{% endif %}
+                {% elif step.key == 'cycle' %}
+                <b>{% trans 'Create the first cycle' %}</b>
+                {% if step.done %}{% blocktrans trimmed count counter=step.count %}{{ counter }} cycle created.{% plural %}{{ counter }} cycles created.{% endblocktrans %}
+                {% else %}{% trans 'Start with one person to see how it works.' %}
+                {% if step.next %}<div class="dash-actions"><a href="{% url 'review_cycle_create' %}" class="btn btn-sm btn-primary">{% trans 'Create a cycle' %}</a></div>{% endif %}{% endif %}
+                {% elif step.key == 'invitations' %}
+                <b>{% trans 'Send the invitations' %}</b>
+                {% if step.done %}{% blocktrans trimmed count counter=step.count %}{{ counter }} reviewer invited.{% plural %}{{ counter }} reviewers invited.{% endblocktrans %}
+                {% else %}{% trans 'Reviewers get a link by email. They need no account.' %}
+                {% if step.next %}<div class="dash-actions"><a href="{% url 'review_cycle_list' %}" class="btn btn-sm btn-primary">{% trans 'Open the cycles' %}</a></div>{% endif %}{% endif %}
+                {% else %}
+                <b>{% trans 'Read the first report' %}</b>
+                {% trans 'Ready when the cycle is closed and enough reviewers have answered.' %}
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+{% endif %}
+
+{% if suggestions.offer_org_chart %}
+<div class="dash-later dash-card">
+    <div class="dash-what">
+        <b>{% trans 'Next: feedback for everyone at once' %}</b>
+        {% blocktrans trimmed with people=started.people %}You have {{ people }} people. With an org chart, Blik knows who manages whom. It then picks the reviewers for each person and creates all cycles in one step.{% endblocktrans %}
+    </div>
+    <form method="post" action="{% url 'dashboard_skip_org_chart' %}" class="dash-buttons">
+        {% csrf_token %}
+        <a href="{% url 'org_chart' %}" class="btn btn-sm btn-primary">{% trans 'Build the org chart' %}</a>
+        <button type="submit" class="dash-skip">{% trans 'Skip this step' %}</button>
+    </form>
+</div>
+{% endif %}
+
+{% if running %}
+<div class="dash-grid dash-card">
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">{% trans 'Running now' %}</h2><a href="{% url 'review_cycle_list' %}" class="btn btn-sm btn-secondary">{% trans 'All cycles' %}</a></div>
+        <div class="card-body">
+            <div class="dash-figure">{{ running.answers }} <small>{% blocktrans trimmed count counter=running.cycles %}answers so far, in {{ counter }} cycle{% plural %}answers so far, in {{ counter }} cycles{% endblocktrans %}</small></div>
+            <p class="help-text dash-since">
+                {% blocktrans trimmed with date=running.oldest|date:'SHORT_DATE_FORMAT' %}The oldest cycle runs since {{ date }}.{% endblocktrans %}
+                {% blocktrans trimmed count counter=running.new_answers %}{{ counter }} new answer in the last 7 days.{% plural %}{{ counter }} new answers in the last 7 days.{% endblocktrans %}
+            </p>
+            <div class="dash-split">
+                <div>
+                    <b>{% trans 'Invited by email' %}</b>
+                    {% if running.invited %}
+                    <div class="dash-bar" role="img" aria-label="{% widthratio running.invited_answered running.invited 100 %}%"><span style="width: {% widthratio running.invited_answered running.invited 100 %}%"></span></div>
+                    <p>{% blocktrans trimmed with answered=running.invited_answered invited=running.invited %}{{ answered }} of {{ invited }} invited reviewers answered. A cycle closes by itself when the last one answers.{% endblocktrans %}</p>
+                    {% else %}<p>{% trans 'Nobody is invited by email in these cycles.' %}</p>{% endif %}
+                </div>
+                <div>
+                    <b>{% trans 'Through shared links' %}</b>
+                    <p class="dash-links">{% blocktrans trimmed count counter=running.link_answers %}{{ counter }} answer. Blik does not know how many people have a link, so you close these cycles yourself.{% plural %}{{ counter }} answers. Blik does not know how many people have a link, so you close these cycles yourself.{% endblocktrans %}</p>
+                </div>
             </div>
-            <div>
-                <button onclick="openReviewModal()" class="btn btn-primary" style="white-space: nowrap;">
-                    {% trans 'Submit a Review' %}
-                </button>
+            <div class="dash-stages">
+                {% for stage in running.stages %}<a href="{{ stage.url }}" class="dash-stage"><strong>{{ stage.count }}</strong><span>{{ stage.label }}</span></a>{% endfor %}
             </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">{% trans 'Needs your attention' %}</h2></div>
+        <div class="card-body">
+            {% with needs=running.needs enough=running.stages.2 %}
+            {% if needs.failed_emails.count or enough.count or needs.stale.count or needs.no_reviewers.count %}
+            <ul class="dash-list">
+                {% if needs.failed_emails.count %}<li><span class="dash-count is-problem">{{ needs.failed_emails.count }}</span><div class="dash-what">{% trans 'Emails could not be sent' %}<span>{% trans 'The address or the mail server is wrong.' %}</span></div><a href="{{ needs.failed_emails.url }}" class="btn btn-sm btn-secondary">{% trans 'Fix' %}</a></li>{% endif %}
+                {% if enough.count %}<li><span class="dash-count">{{ enough.count }}</span><div class="dash-what">{% trans 'Enough answers for a report' %}<span>{% blocktrans trimmed count counter=threshold %}Each group of reviewers has {{ counter }} answer or more. Close a cycle when you expect no more answers.{% plural %}Each group of reviewers has {{ counter }} answers or more. Close a cycle when you expect no more answers.{% endblocktrans %}</span></div><a href="{{ enough.url }}" class="btn btn-sm btn-secondary">{% trans 'Show' %}</a></li>{% endif %}
+                {% if needs.stale.count %}<li><span class="dash-count">{{ needs.stale.count }}</span><div class="dash-what">{% trans 'No new answer for 7 days' %}<span>{% trans 'A reminder can help.' %}</span></div><a href="{{ needs.stale.url }}" class="btn btn-sm btn-secondary">{% trans 'Remind' %}</a></li>{% endif %}
+                {% if needs.no_reviewers.count %}<li><span class="dash-count">{{ needs.no_reviewers.count }}</span><div class="dash-what">{% trans 'Cycles without reviewers' %}<span>{% trans 'Nobody is invited by email and nobody has used a link.' %}</span></div><a href="{{ needs.no_reviewers.url }}" class="btn btn-sm btn-secondary">{% trans 'Add' %}</a></li>{% endif %}
+            </ul>
+            {% else %}
+            <p class="help-text">{% trans 'Nothing needs you now.' %}</p>
+            {% endif %}
+            {% endwith %}
+            {% if suggestions.managers_without_account or suggestions.not_in_chart %}
+            <p class="dash-subhead">{% trans 'Suggestions' %}</p>
+            <ul class="dash-list">
+                {% if suggestions.managers_without_account %}<li><span class="dash-count is-tip">{{ suggestions.managers_without_account }}</span><div class="dash-what">{% trans 'Managers without an account' %}<span>{% trans 'They cannot read the reports of their team.' %}</span></div><a href="{% url 'org_chart' %}#accounts" class="btn btn-sm btn-secondary">{% trans 'Invite' %}</a></li>{% endif %}
+                {% if suggestions.not_in_chart %}<li><span class="dash-count is-tip">{{ suggestions.not_in_chart }}</span><div class="dash-what">{% trans 'People who are not in the org chart' %}<span>{% trans 'Blik cannot pick reviewers for them.' %}</span></div><a href="{% url 'org_chart' %}" class="btn btn-sm btn-secondary">{% trans 'Place' %}</a></li>{% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% elif started.complete %}
+<div class="card dash-card">
+    <div class="card-body">
+        <p class="help-text">{% trans 'No cycle is running.' %}</p>
+    </div>
+</div>
+{% endif %}
+
+{% if reports %}
+<div class="card dash-card">
+    <div class="card-header"><h2 class="card-title">{% trans 'Latest reports' %}</h2><a href="{% url 'review_cycle_list' %}?stage=completed" class="btn btn-sm btn-secondary">{% trans 'All completed cycles' %}</a></div>
+    <div class="card-body">
+        <ul class="dash-list">
+            {% for item in reports %}{% include 'admin_dashboard/partials/_dashboard_report.html' %}{% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+{% else %}{# not an admin: the own feedback and the team #}
+<div class="{% if personal.team %}dash-grid{% endif %} dash-card">
+    {% if personal.team %}
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">{% trans 'Your team' %}</h2>{% if can_create_for_others %}<a href="{% url 'review_cycle_create' %}" class="btn btn-sm btn-secondary">{% trans 'Create cycles for the team' %}</a>{% endif %}</div>
+        <div class="card-body">
+            <ul class="dash-list">
+                {% for item in personal.team %}
+                {% if item.cycle %}
+                <li>
+                    <div class="dash-what">{{ item.cycle.reviewee.name }}
+                        <span>{{ item.cycle.questionnaire.name }}
+                        {% if item.invited %} · {% blocktrans trimmed with answered=item.invited_answered invited=item.invited %}{{ answered }} of {{ invited }} invited reviewers answered{% endblocktrans %}{% endif %}
+                        {% if item.link_answers %} · {% blocktrans trimmed count counter=item.link_answers %}{{ counter }} answer through shared links{% plural %}{{ counter }} answers through shared links{% endblocktrans %}{% endif %}
+                        {% if item.enough %} · {% trans 'enough for a report' %}{% endif %}
+                         · {% blocktrans trimmed with date=item.cycle.created_at|date:'SHORT_DATE_FORMAT' %}since {{ date }}{% endblocktrans %}</span>
+                    </div>
+                    {% if item.runs %}<a href="{% url 'review_cycle_detail' item.cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'Open cycle' %}</a>{% endif %}
+                </li>
+                {% else %}
+                <li><div class="dash-what">{{ item.reviewee.name }}<span>{% trans 'No cycle is running.' %}</span></div></li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% if personal.team_reports %}
+            <p class="dash-subhead">{% trans 'Reports' %}</p>
+            <ul class="dash-list">
+                {% for item in personal.team_reports %}{% include 'admin_dashboard/partials/_dashboard_report.html' %}{% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">{% trans 'Your own feedback' %}</h2></div>
+        <div class="card-body">
+            {% if personal.own|length == 1 %}{% with item=personal.own.0 %}
+            <div class="dash-figure">{{ item.answers }} <small>{% blocktrans trimmed count counter=item.answers %}answer so far{% plural %}answers so far{% endblocktrans %}</small></div>
+            <p class="help-text dash-since">{% blocktrans trimmed with questionnaire=item.cycle.questionnaire.name date=item.cycle.created_at|date:'SHORT_DATE_FORMAT' %}{{ questionnaire }}, running since {{ date }}. You get the report by email when the cycle is closed.{% endblocktrans %}</p>
+            {% if item.self_open %}
+            <ul class="dash-list"><li><span class="dash-count is-problem">1</span><div class="dash-what">{% trans 'Your self-assessment is open' %}</div><a href="{% url 'reviews:claim_token' item.cycle.invitation_token_self %}" class="btn btn-sm btn-primary">{% trans 'Answer' %}</a></li></ul>
+            {% endif %}
+            {% endwith %}{% elif personal.own %}
+            {# Several cycles at once: one row each, the first five in view. #}
+            <ul class="dash-list">
+                {% for item in personal.own|slice:':5' %}{% include 'admin_dashboard/partials/_dashboard_own_cycle.html' %}{% endfor %}
+            </ul>
+            {% if personal.own|length > 5 %}
+            <details class="dash-more"><summary>{% blocktrans trimmed with count=personal.own|length|add:'-5' %}Show {{ count }} more{% endblocktrans %}</summary>
+                <ul class="dash-list">{% for item in personal.own|slice:'5:' %}{% include 'admin_dashboard/partials/_dashboard_own_cycle.html' %}{% endfor %}</ul>
+            </details>
+            {% endif %}
+            {% elif not personal.to_review %}
+            <p class="help-text">{% trans 'No feedback is running for you.' %}</p>
+            {% endif %}
+
+            {% if personal.to_review %}
+            <p class="dash-subhead{% if not personal.own %} is-first{% endif %}">{% blocktrans trimmed count counter=personal.to_review|length %}{{ counter }} colleague waits for your feedback{% plural %}{{ counter }} colleagues wait for your feedback{% endblocktrans %}</p>
+            <ul class="dash-list">
+                {% for token in personal.to_review|slice:':5' %}{% include 'admin_dashboard/partials/_dashboard_to_review.html' %}{% endfor %}
+            </ul>
+            {% if personal.to_review|length > 5 %}
+            <details class="dash-more"><summary>{% blocktrans trimmed with count=personal.to_review|length|add:'-5' %}Show {{ count }} more{% endblocktrans %}</summary>
+                <ul class="dash-list">{% for token in personal.to_review|slice:'5:' %}{% include 'admin_dashboard/partials/_dashboard_to_review.html' %}{% endfor %}</ul>
+            </details>
+            {% endif %}
+            {% endif %}
         </div>
     </div>
 </div>
 {% endif %}
+
+<details class="card dash-card" id="dash-how"{% if not has_seen_welcome %} open{% endif %}>
+    <summary class="card-header"><h2 class="card-title">{% trans 'How Blik works' %}</h2><span class="help-text dash-when-open">{% trans 'Hide' %}</span><span class="help-text dash-when-closed">{% trans 'Show' %}</span></summary>
+    <div class="dash-how" id="how-pages">
+        <nav class="stage-tabs how-tabs" aria-label="{% trans 'How Blik works' %}">
+            <button type="button" class="stage-tab" data-how-tab aria-current="true">{% trans 'Who logs in' %}</button>
+            <button type="button" class="stage-tab" data-how-tab>{% trans 'What a cycle is' %}</button>
+            <button type="button" class="stage-tab" data-how-tab>{% trans 'Who gives feedback' %}</button>
+            <button type="button" class="stage-tab" data-how-tab>{% trans 'From start to report' %}</button>
+            <button type="button" class="stage-tab" data-how-tab>{% trans 'The report' %}</button>
+            <button type="button" class="stage-tab" data-how-tab>{% trans 'Who can do what' %}</button>
+            <button type="button" class="stage-tab" data-how-tab>{% trans 'Who sees what' %}</button>
+            {% if billing_mode %}<button type="button" class="stage-tab" data-how-tab>{% trans 'What a cycle costs' %}</button>{% endif %}
+        </nav>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'Few people log in to Blik. All other people get a link.' %}</p>
+            <div class="how-split">
+                <div class="how-side">
+                    <div class="how-dots" aria-hidden="true"><span class="how-dot how-dot-in"></span><span class="how-dot how-dot-in"></span><span class="how-dot how-dot-in"></span></div>
+                    <h3>{% trans 'Team members log in' %}</h3>
+                    <p>{% url 'team_list' as team_url %}{% blocktrans trimmed %}Admins and managers. They run cycles and read reports. Invite them on <a href="{{ team_url }}">Organization → Team</a>.{% endblocktrans %}</p>
+                </div>
+                <div class="how-side">
+                    <div class="how-dots" aria-hidden="true"><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span><span class="how-dot"></span></div>
+                    <h3>{% trans 'Reviewees and reviewers get a link' %}</h3>
+                    <p>{% url 'reviewee_list' as reviewees_url %}{% blocktrans trimmed %}A reviewee gets feedback. Reviewers give it. They need no account. Add reviewees on the <a href="{{ reviewees_url }}">Reviewees</a> page.{% endblocktrans %}</p>
+                </div>
+            </div>
+            <p class="how-foot">{% trans 'One person can be both. The email address connects the account and the reviewee.' %}</p>
+        </section>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'A cycle is one round of feedback about one person.' %}</p>
+            <p class="how-sub">{% trans 'Example: a cycle for Anna.' %}</p>
+            <div class="how-flow">
+                <div class="how-part">
+                    <div class="how-fig"><svg width="72" height="72" viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="22" fill="var(--bg-card)" stroke="var(--text-primary)" stroke-width="2"/><text class="how-svgname" x="36" y="41" text-anchor="middle" font-size="13">{% trans 'You' %}</text></svg></div>
+                    <h3>{% trans 'You start the cycle' %}</h3>
+                    <p>{% trans 'You choose a questionnaire and the reviewers of Anna.' %}</p>
+                </div>
+                <div class="how-arrow" aria-hidden="true"><svg width="40" height="16" viewBox="0 0 40 16"><path d="M0 8h36M30 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="how-part">
+                    <div class="how-fig">
+                        <svg width="340" height="205" viewBox="0 0 340 205" role="img" aria-label="{% trans 'Anna in the middle. Her manager, her peers and her direct reports are around her.' %}">
+                            <g stroke="var(--border)" stroke-width="1.5"><line x1="170" y1="100" x2="170" y2="34"/><line x1="170" y1="100" x2="72" y2="52"/><line x1="170" y1="100" x2="52" y2="100"/><line x1="170" y1="100" x2="72" y2="148"/><line x1="170" y1="100" x2="276" y2="70"/><line x1="170" y1="100" x2="276" y2="130"/></g>
+                            <g fill="var(--bg-card)" stroke="var(--text-secondary)" stroke-width="1.5"><circle cx="170" cy="30" r="12"/><circle cx="72" cy="52" r="12"/><circle cx="52" cy="100" r="12"/><circle cx="72" cy="148" r="12"/><circle cx="276" cy="70" r="12"/><circle cx="276" cy="130" r="12"/></g>
+                            <circle cx="170" cy="100" r="22" fill="var(--primary)"/>
+                            <text class="how-svgtext" x="190" y="34">{% trans 'manager' %}</text>
+                            <text class="how-svgtext" x="60" y="184" text-anchor="middle">{% trans 'peers' %}</text>
+                            <text class="how-svgtext" x="276" y="166" text-anchor="middle">{% trans 'direct reports' %}</text>
+                            <text class="how-svgname" x="170" y="144" text-anchor="middle">Anna</text>
+                            <text class="how-svgtext" x="170" y="161" text-anchor="middle">{% trans 'reviewee' %}</text>
+                        </svg>
+                    </div>
+                    <h3>{% trans 'Her reviewers answer' %}</h3>
+                    <p>{% trans 'Each one gets a link. Anna never sees a name with an answer.' %}</p>
+                </div>
+                <div class="how-arrow" aria-hidden="true"><svg width="40" height="16" viewBox="0 0 40 16"><path d="M0 8h36M30 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="how-part">
+                    <div class="how-fig"><svg width="72" height="88" viewBox="0 0 72 88" aria-hidden="true"><rect x="10" y="6" width="52" height="68" rx="4" fill="var(--bg-card)" stroke="var(--text-primary)" stroke-width="2"/><g stroke="var(--text-secondary)" stroke-width="3" stroke-linecap="round"><line x1="20" y1="24" x2="52" y2="24"/><line x1="20" y1="38" x2="44" y2="38"/><line x1="20" y1="52" x2="48" y2="52"/></g></svg></div>
+                    <h3>{% trans 'Anna gets a report' %}</h3>
+                    <p>{% trans 'Blik sends it to her by email. The cycle is complete.' %}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'Feedback comes from up to four groups. You choose the groups for each cycle.' %}</p>
+            <ul class="how-facts how-four">
+                <li><h3>{% trans 'Self' %}</h3><p>{% trans 'The reviewee answers the same questions about themselves.' %}</p></li>
+                <li><h3>{% trans 'Manager' %}</h3><p>{% trans 'The person the reviewee reports to.' %}</p></li>
+                <li><h3>{% trans 'Peers' %}</h3><p>{% trans 'Colleagues at the same level.' %}</p></li>
+                <li><h3>{% trans 'Direct reports' %}</h3><p>{% trans 'The people the reviewee manages.' %}</p></li>
+            </ul>
+            <p class="how-sub how-ways-title">{% trans 'There are two ways to ask reviewers. You can use both in one cycle.' %}</p>
+            <ul class="how-facts how-two">
+                <li><h3>{% trans 'By email' %}</h3><p>{% trans 'You give the email addresses. Blik sends each reviewer a link, and a reminder when they do not answer. The cycle closes when the last one has answered.' %}</p></li>
+                <li><h3>{% trans 'With a link you share' %}</h3><p>{% trans 'Each group has a link. You or the reviewee send it to as many people as you want. Blik does not know who has the link, so you close the cycle yourself.' %}</p></li>
+            </ul>
+        </section>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'Five steps from start to report. You do three of them.' %}</p>
+            <ol class="how-steps">
+                <li><span class="how-actor is-you">{% trans 'You' %}</span><h3>{% trans 'Add people' %}</h3><p>{% trans 'The people who get feedback, on the Reviewees page.' %}</p></li>
+                <li><span class="how-actor is-you">{% trans 'You' %}</span><h3>{% trans 'Create a cycle' %}</h3><p>{% trans 'One person, one questionnaire, and the reviewers.' %}</p></li>
+                <li><span class="how-actor">Blik</span><h3>{% trans 'Reviewers answer' %}</h3><p>{% trans 'Blik sends each reviewer a link and reminds those who have not answered.' %}</p></li>
+                <li><span class="how-actor is-you">{% trans 'You' %}</span><h3>{% trans 'The cycle closes' %}</h3><p>{% trans 'You close it when you expect no more answers. It closes by itself when all reviewers invited by email have answered.' %}</p></li>
+                <li><span class="how-actor">Blik</span><h3>{% trans 'The report' %}</h3><p>{% blocktrans trimmed count counter=threshold %}Blik makes the report and sends it to the person. A group with fewer than {{ counter }} answer stays hidden.{% plural %}Blik makes the report and sends it to the person. A group with fewer than {{ counter }} answers stays hidden.{% endblocktrans %}</p></li>
+            </ol>
+        </section>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'The report shows how others see a person, next to how that person sees themselves.' %}</p>
+            <ul class="how-facts how-four">
+                <li><h3>{% trans 'Scores' %}</h3><p>{% trans 'For each section of the questionnaire: the average of each group of reviewers.' %}</p></li>
+                <li><h3>{% trans 'Self and others' %}</h3><p>{% trans 'Where the person rates themselves higher or lower than the others do. A good start for a conversation.' %}</p></li>
+                <li><h3>{% trans 'Written feedback' %}</h3><p>{% trans 'The comments of the reviewers, per group and without names.' %}</p></li>
+                <li><h3>{% trans 'Skill level and agency' %}</h3><p>{% landing_url 'dreyfus_model' as dreyfus_url %}{% landing_url 'agency_levels' as agency_url %}{% blocktrans trimmed %}Some questionnaires also place the person on two scales: the skill level, from novice to expert (the <a href="{{ dreyfus_url }}" target="_blank" rel="noopener">Dreyfus model</a>), and the <a href="{{ agency_url }}" target="_blank" rel="noopener">level of agency</a>: how much a person acts on their own initiative. The report then gives steps to the next level.{% endblocktrans %}</p></li>
+            </ul>
+            <p class="how-foot">{% trans 'When a cycle closes, Blik makes the report. The reviewee gets a link by email. A PDF is also available.' %}</p>
+        </section>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'An account starts as a member. A role or a permission adds to that.' %}</p>
+            <div class="how-matrix-wrap">
+            <table class="how-matrix">
+                <thead><tr><th></th><th>{% trans 'Own feedback and report' %}</th><th>{% trans 'Reports of their team' %}</th><th>{% trans 'Create and run cycles for their team' %}</th><th>{% trans 'All cycles and reports' %}</th><th>{% trans 'People, questionnaires, team and settings' %}</th></tr></thead>
+                <tbody>
+                    <tr><th scope="row">{% trans 'Member' %}<span>{% trans 'Each person with an account' %}</span></th><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td></tr>
+                    <tr><th scope="row">{% trans 'Member who manages a unit' %}<span>{% trans 'From the org chart' %}</span></th><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td></tr>
+                    <tr><th scope="row">{% trans 'With “Can create review cycles for others”' %}<span>{% trans 'A permission on Organization → Team' %}</span></th><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td></tr>
+                    <tr><th scope="row">{% trans 'With “Can view all reports and cycles”' %}<span>{% trans 'A permission on Organization → Team' %}</span></th><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="sr-only">{% trans 'No' %}</span></td></tr>
+                    <tr><th scope="row">{% trans 'Organization Admin' %}<span>{% trans 'A role on Organization → Team' %}</span></th><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td><td><span class="how-yes" aria-hidden="true">&#10003;</span><span class="sr-only">{% trans 'Yes' %}</span></td></tr>
+                </tbody>
+            </table>
+            </div>
+            <p class="how-foot">{% trans 'A person who only gets or gives feedback is not in this table: that person needs no account.' %}</p>
+        </section>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'All feedback is anonymous. Nobody can see who gave which answer.' %}</p>
+            <ul class="how-facts">
+                <li><h3>{% trans 'The reviewee' %}</h3><p>{% trans 'Sees the report. It shows the answers of each group together. No name is with an answer.' %}</p></li>
+                <li><h3>{% trans 'An admin' %}</h3><p>{% trans 'Sees which invited email has answered. Never what that person answered.' %}</p></li>
+                <li><h3>{% blocktrans trimmed count counter=threshold %}Fewer than {{ counter }} answer: hidden{% plural %}Fewer than {{ counter }} answers: hidden{% endblocktrans %}</h3><p>
+                    {% blocktrans trimmed count counter=threshold %}With few answers it is easy to guess who wrote what. So the report shows peers and direct reports only from {{ counter }} answer.{% plural %}With few answers it is easy to guess who wrote what. So the report shows peers and direct reports only from {{ counter }} answers.{% endblocktrans %}
+                    {% if perms.accounts.can_manage_organization %}{% url 'settings' as settings_url %}{% blocktrans trimmed %}You change this number on <a href="{{ settings_url }}">Organization → Settings</a>, under Report Settings.{% endblocktrans %}{% else %}{% trans 'An organization admin can change this number.' %}{% endif %}
+                    {% trans 'A lower number shows more feedback, but reviewers are easier to guess.' %}
+                </p></li>
+            </ul>
+            <p class="how-foot">{% trans 'The answers of the manager and the self-assessment are always in the report, when the cycle has them: there is only one of each.' %}</p>
+        </section>
+
+        {% if billing_mode %}
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'A cycle for one reviewee with one questionnaire costs one credit. Reviewers are free.' %}</p>
+            <ul class="how-facts">
+                <li><h3>{% trans 'Credits' %}</h3><p>{% blocktrans trimmed with count=credits_per_pack %}Credits come in packs of {{ count }} and do not expire. A person who is skipped in a bulk run costs no credit.{% endblocktrans %}</p></li>
+                <li><h3>{% trans 'Subscription' %}</h3><p>{% trans 'With a subscription you do not use credits. You can run as many cycles as you want, for the number of reviewees in your plan.' %}</p></li>
+                <li><h3>{% trans 'Your organization now' %}</h3><p>
+                    {% if billing_mode == 'subscription' %}{% blocktrans trimmed with plan=subscription_status.plan_name current=subscription_status.current_reviewees max=subscription_status.max_employees %}Subscription {{ plan }}: {{ current }} of {{ max }} reviewees.{% endblocktrans %}
+                    {% elif billing_mode == 'lapsed' %}{% trans 'The subscription is not active. New cycles are not possible.' %}
+                    {% else %}{% blocktrans trimmed count counter=subscription_status.cycle_credits|default:0 %}{{ counter }} credit left.{% plural %}{{ counter }} credits left.{% endblocktrans %}{% endif %}
+                    {% if show_billing %}{% url 'billing' as billing_url %}{% blocktrans trimmed %}You find the prices and your invoices on <a href="{{ billing_url }}">Organization → Billing</a>.{% endblocktrans %}{% endif %}
+                </p></li>
+            </ul>
+        </section>
+        {% endif %}
+
+        <p class="how-next" hidden><button type="button" class="btn btn-sm btn-secondary" data-how-next>{% trans 'Next' %}</button></p>
+    </div>
+</details>
+<script>
+(function () {
+    const how = document.getElementById('dash-how');
+    // One page at a time. Without this script all three pages show below each other.
+    const pages = [...how.querySelectorAll('[data-how-page]')];
+    const tabs = [...how.querySelectorAll('[data-how-tab]')];
+    const next = how.querySelector('.how-next');
+    function show(index) {
+        pages.forEach((page, i) => { page.hidden = i !== index; });
+        tabs.forEach((tab, i) => { i === index ? tab.setAttribute('aria-current', 'true') : tab.removeAttribute('aria-current'); });
+        next.hidden = index === pages.length - 1;
+        next.firstElementChild.onclick = () => show(index + 1);
+    }
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => show(i)));
+    how.classList.add('has-pages');
+    show(0);
+    // Open until this person folds it once. The account remembers that, so it
+    // is then folded on every device; a click opens it again at any time.
+    how.addEventListener('toggle', () => {
+        if (how.open || how.dataset.seen) return;
+        how.dataset.seen = '1';
+        fetch('{% url "account:mark_welcome_seen" %}', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}});
+    });
+})();
+</script>
 
 <!-- Subscription Status -->
 {% if subscription_status.has_subscription %}
@@ -247,171 +441,24 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 {% endif %}
 
-<!-- Quick Actions -->
-<div class="card mb-2">
-    <div class="card-header">
-        <h2 class="card-title">{% trans 'Quick Actions' %}</h2>
-    </div>
+<!-- Quick Review Card -->
+{% if not user_has_reviewed and HAS_STRIPE_CONFIGURED %}
+<div class="card" style="border-left: 3px solid #10b981; margin-bottom: 2rem;">
     <div class="card-body">
-        <div class="action-grid">
-            <a href="{% url 'review_cycle_create' %}" class="btn btn-primary text-center">
-                {% trans 'New Review Cycle' %}
-            </a>
-            <a href="{% url 'reviewee_create' %}" class="btn btn-secondary text-center">
-                {% trans 'Add Reviewee' %}
-            </a>
-            <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary text-center">
-                {% trans 'Questionnaires' %}
-            </a>
-            <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary text-center">
-                {% trans 'All Cycles' %}
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- Active and Completed Cycles in Two Columns on Wide Screens -->
-<div class="dashboard-grid">
-    <!-- Active Cycles Progress -->
-    {% if active_cycles_data %}
-    <div class="card mb-2">
-        <div class="card-header">
-            <h2 class="card-title">{% trans 'Active Cycles' %}</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-wrapper">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>{% trans 'Reviewee' %}</th>
-                        <th>{% trans 'Progress' %}</th>
-                        <th>{% trans 'Actions' %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in active_cycles_data %}
-                    <tr>
-                        <td>
-                            <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
-                            <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
-                        </td>
-                        <td style="width: 200px;">
-                            <div style="margin-bottom: 0.25rem; font-size: 0.75rem; color: #64748b;">
-                                {{ item.completed_tokens }} / {{ item.total_tokens }} ({{ item.completion_rate|floatformat:0 }}%)
-                            </div>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: {{ item.completion_rate }}%;"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <a href="{% url 'review_cycle_detail' item.cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View' %}</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.125rem; color: #10b981;">
+                    ⭐ {% trans 'Share Your Experience with Blik' %}
+                </h3>
+                <p style="margin: 0; color: #64748b;">
+                    {% trans 'Enjoying Blik? Take 2 minutes to share your feedback and help other teams discover us.' %}
+                </p>
             </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Completed Cycles -->
-    {% if completed_cycles_data %}
-    <div class="card mb-2">
-        <div class="card-header">
-            <h2 class="card-title">{% trans 'Completed Cycles' %}</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-wrapper">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>{% trans 'Reviewee' %}</th>
-                        <th>{% trans 'Completed' %}</th>
-                        <th>{% trans 'Actions' %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in completed_cycles_data %}
-                    <tr>
-                        <td>
-                            <div style="font-weight: 500;">{{ item.cycle.reviewee.name }}</div>
-                            <div style="font-size: 0.875rem; color: #64748b;">{{ item.cycle.reviewee.email }}</div>
-                        </td>
-                        <td style="color: #64748b; font-size: 0.875rem;">
-                            {{ item.cycle.created_at|date:'SHORT_DATE_FORMAT' }}
-                        </td>
-                        <td>
-                            {% if item.report_exists %}
-                            <a href="{% url 'reports:view_report' item.cycle.uuid %}" class="btn btn-sm btn-primary">{% trans 'View Report' %}</a>
-                            {% else %}
-                            <a href="{% url 'review_cycle_detail' item.cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View' %}</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div>
+                <button onclick="openReviewModal()" class="btn btn-primary" style="white-space: nowrap;">
+                    {% trans 'Submit a Review' %}
+                </button>
             </div>
-        </div>
-    </div>
-    {% endif %}
-</div>
-
-<!-- Recent Activity -->
-{% if recent_cycles %}
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">{% trans 'Recent Review Cycles' %}</h2>
-        <a href="{% url 'review_cycle_list' %}" class="btn btn-sm btn-secondary">{% trans 'View All' %}</a>
-    </div>
-    <div class="card-body">
-        <div class="table-wrapper">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{% trans 'Reviewee' %}</th>
-                    <th>{% trans 'Questionnaire' %}</th>
-                    <th>{% trans 'Created' %}</th>
-                    <th>{% trans 'Status' %}</th>
-                    <th>{% trans 'Actions' %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cycle in recent_cycles %}
-                <tr>
-                    <td>
-                        <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">{{ cycle.reviewee.email }}</div>
-                    </td>
-                    <td>{{ cycle.questionnaire.name }}</td>
-                    <td style="color: #64748b; font-size: 0.875rem;">
-                        {{ cycle.created_at|date:'SHORT_DATE_FORMAT' }}
-                    </td>
-                    <td>
-                        {% if cycle.status == 'active' %}
-                        <span class="badge badge-warning">{% trans 'Active' %}</span>
-                        {% else %}
-                        <span class="badge badge-success">{% trans 'Completed' %}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View' %}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        </div>
-    </div>
-</div>
-{% else %}
-<div class="card">
-    <div class="card-body">
-        <div class="empty-state">
-            <h3 style="margin-bottom: 0.5rem;">{% trans 'No review cycles yet' %}</h3>
-            <p style="margin-bottom: 1.5rem;">{% trans 'Create your first review cycle to get started' %}</p>
-            <a href="{% url 'review_cycle_create' %}" class="btn btn-primary">{% trans 'Create Review Cycle' %}</a>
         </div>
     </div>
 </div>

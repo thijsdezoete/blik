@@ -1,6 +1,7 @@
-"""Managers read the reports of everyone below them in the org chart."""
+"""Managers read the reports of their direct reports in the org chart."""
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import translation
 
 from accounts.factories import UserProfileFactory
 from accounts.models import Reviewee
@@ -8,7 +9,8 @@ from accounts.org_import import import_org_chart, rows_from_csv
 from accounts.permissions import (
     assign_organization_member,
     ensure_permission_groups,
-    reviewee_emails_below,
+    direct_report_emails,
+    managers_without_account,
 )
 from core.factories import OrganizationFactory, UserFactory
 from reviews.factories import ReviewCycleFactory
@@ -39,16 +41,16 @@ class OrgAccessTests(TestCase):
         self.client.force_login(user)
         return user
 
-    def test_everyone_below_over_all_layers(self):
+    def test_direct_reports_only_not_the_layers_below(self):
         ada, hank, sam = (UserFactory(username=n, email=f'{n}@uni.example') for n in ('ada', 'hank', 'sam'))
 
         self.assertEqual(
-            reviewee_emails_below(ada, self.org),
-            {'hank@uni.example', 'hilde@uni.example', 'sam@uni.example', 'sue@uni.example', 'lea@uni.example'},
+            direct_report_emails(ada, self.org),
+            {'hank@uni.example', 'hilde@uni.example'},
         )
-        self.assertEqual(reviewee_emails_below(hank, self.org), {'sam@uni.example', 'sue@uni.example'})
-        self.assertEqual(reviewee_emails_below(sam, self.org), set())
-        self.assertEqual(reviewee_emails_below(ada, OrganizationFactory()), set())
+        self.assertEqual(direct_report_emails(hank, self.org), {'sam@uni.example', 'sue@uni.example'})
+        self.assertEqual(direct_report_emails(sam, self.org), set())
+        self.assertEqual(direct_report_emails(ada, OrganizationFactory()), set())
 
     def test_a_head_reads_the_reports_of_their_own_staff_only(self):
         self._login('hank@uni.example')
@@ -78,3 +80,116 @@ class OrgAccessTests(TestCase):
         self.assertEqual(listed, {'hank@uni.example': False, 'sam@uni.example': True, 'sue@uni.example': True})
         self.assertContains(response, reverse('reports:view_report', args=[self.cycles['sam@uni.example'].uuid]))
 
+
+    def test_the_reviewee_list_shows_a_manager_only_themselves_and_their_direct_reports(self):
+        self._login('hank@uni.example')
+
+        response = self.client.get(reverse('reviewee_list'))
+
+        listed = {item['reviewee'].email for item in response.context['reviewees_with_latest']}
+        self.assertEqual(listed, {'hank@uni.example', 'sam@uni.example', 'sue@uni.example'})
+
+    def test_managers_without_account_lists_who_cannot_log_in(self):
+        from accounts.factories import OrganizationInvitationFactory
+        self._login('hank@uni.example')  # has an account now
+        OrganizationInvitationFactory(organization=self.org, email='Hilde@uni.example')
+
+        found = {m.email: m.invited for m in managers_without_account(self.org)}
+
+        # Sam, Sue and Lea manage nobody; Hank has an account.
+        self.assertEqual(found, {'ada@uni.example': False, 'hilde@uni.example': True})
+
+    def test_invite_managers_queues_the_message_for_the_selected_who_are_not_yet_invited(self):
+        from unittest.mock import patch
+        from accounts.factories import OrganizationInvitationFactory
+        from accounts.models import OrganizationInvitation
+        from accounts.permissions import assign_organization_admin
+        from reviews.outbox import send_queued_emails
+        assign_organization_admin(self._login('hank@uni.example'))
+        OrganizationInvitationFactory(organization=self.org, email='hilde@uni.example')
+
+        Reviewee.objects.filter(email='ada@uni.example').update(language='de')
+        sent_in = []
+        with patch('core.email.send_email', side_effect=lambda **kw: sent_in.append(translation.get_language())) as send:
+            self.client.post(reverse('invite_managers'), {
+                'message': 'Read the reports of your staff.',
+                # Hilde is invited already; Sam manages nobody; an outsider is not in the chart.
+                'emails': ['Ada@uni.example', 'hilde@uni.example', 'sam@uni.example', 'x@other.example'],
+            })
+            send.assert_not_called()  # the request only queues
+            queued = OrganizationInvitation.objects.get(email_queued_at__isnull=False)
+            self.assertEqual(queued.email, 'ada@uni.example')
+
+            stats = send_queued_emails()
+
+        (call,) = send.call_args_list
+        self.assertEqual(call.kwargs['recipient_list'], ['ada@uni.example'])
+        self.assertIn('Read the reports of your staff.', call.kwargs['message'])
+        self.assertIn('Read the reports of your staff.', call.kwargs['html_message'])
+        self.assertIn(queued.token, call.kwargs['message'])
+        self.assertEqual(stats['sent'], 1)
+        self.assertEqual(sent_in, ['de'])  # Ada's own language, not the organization's
+        queued.refresh_from_db()
+        self.assertIsNone(queued.email_queued_at)
+
+    def test_an_invitation_that_cannot_be_sent_is_not_kept(self):
+        from unittest.mock import patch
+        from accounts.models import OrganizationInvitation
+        from accounts.permissions import assign_organization_admin
+        assign_organization_admin(self._login('hank@uni.example'))
+
+        with patch('accounts.invitation_views.send_email', side_effect=OSError('no smtp')):
+            self.client.post(reverse('send_invitation'), {'email': 'new@uni.example'})
+
+        self.assertFalse(OrganizationInvitation.objects.filter(organization=self.org).exists())
+
+    def test_an_expired_invitation_is_made_new(self):
+        from datetime import timedelta
+        from unittest.mock import patch
+        from django.utils import timezone
+        from accounts.factories import OrganizationInvitationFactory
+        from accounts.permissions import assign_organization_admin
+        assign_organization_admin(self._login('hank@uni.example'))
+        old = OrganizationInvitationFactory(
+            organization=self.org, email='new@uni.example', expires_at=timezone.now() - timedelta(days=1))
+        old_token = old.token
+
+        with patch('accounts.invitation_views.send_email'):
+            self.client.post(reverse('send_invitation'), {'email': 'new@uni.example'})
+
+        old.refresh_from_db()
+        self.assertTrue(old.is_valid())
+        self.assertNotEqual(old.token, old_token)
+
+    def test_withdrawing_an_invitation_removes_it_and_only_in_the_own_organization(self):
+        from accounts.factories import OrganizationInvitationFactory
+        from accounts.models import OrganizationInvitation
+        from accounts.permissions import assign_organization_admin
+        assign_organization_admin(self._login('hank@uni.example'))
+        own = OrganizationInvitationFactory(organization=self.org, email='new@uni.example')
+        other = OrganizationInvitationFactory(email='new@other.example')
+
+        self.client.post(reverse('withdraw_invitation', args=[own.pk]))
+        elsewhere = self.client.post(reverse('withdraw_invitation', args=[other.pk]))
+
+        self.assertEqual(elsewhere.status_code, 404)
+        self.assertEqual(list(OrganizationInvitation.objects.all()), [other])
+
+    def test_sending_an_invitation_again_queues_it_with_a_new_link_and_the_same_message(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from accounts.factories import OrganizationInvitationFactory
+        from accounts.permissions import assign_organization_admin
+        assign_organization_admin(self._login('hank@uni.example'))
+        invitation = OrganizationInvitationFactory(
+            organization=self.org, email='new@uni.example', message='Welcome',
+            expires_at=timezone.now() - timedelta(days=1))
+        old_token = invitation.token
+
+        self.client.post(reverse('resend_invitation', args=[invitation.pk]))
+
+        invitation.refresh_from_db()
+        self.assertTrue(invitation.is_valid())
+        self.assertNotEqual(invitation.token, old_token)
+        self.assertIsNotNone(invitation.email_queued_at)
+        self.assertEqual(invitation.message, 'Welcome')

@@ -33,6 +33,11 @@ class Organization(TimeStampedModel):
         help_text=_('Minimum number of responses required to show results (for anonymity). Set to 1 for small teams.'),
         verbose_name=_('minimum responses for anonymity')
     )
+    hide_below_threshold_from_managers = models.BooleanField(
+        default=True,
+        help_text=_('Hide the answers of groups below the anonymity threshold in the manager view of a report'),
+        verbose_name=_('hide answers below the threshold from managers')
+    )
     auto_send_report_email = models.BooleanField(
         default=True,
         help_text=_('Automatically send email to reviewee when their report is generated'),
@@ -60,6 +65,26 @@ class Organization(TimeStampedModel):
         default=False,
         help_text=_('By default, new users can create cycles for others (not just themselves)'),
         verbose_name=_('new users can create cycles for others')
+    )
+
+    # How far down the org chart a person's direct-report reviewers come from.
+    chart_depth = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        default=1,
+        help_text=_('Levels below a person that give direct-report feedback. Empty: all the way down.'),
+        verbose_name=_('org chart depth')
+    )
+    chart_managers_only = models.BooleanField(
+        default=True,
+        help_text=_('Below the first level, only people who manage a unit give feedback'),
+        verbose_name=_('only managers below the first level')
+    )
+
+    org_chart_offer_dismissed = models.BooleanField(
+        default=False,
+        help_text=_('The dashboard no longer offers to build an org chart'),
+        verbose_name=_('org chart offer dismissed')
     )
 
     # Validated against settings.LANGUAGES where it is set, so the language list is never frozen

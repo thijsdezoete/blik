@@ -8,6 +8,7 @@
 <div class="page-header">
     <div>
         <h1>{% trans 'Import CSV' %}</h1>
+        <p class="help-text">{% if changes %}{% trans 'Step 2 of 2: check the changes' %}{% else %}{% trans 'Step 1 of 2: choose the columns' %}{% endif %}</p>
         <p>{% blocktrans trimmed count counter=row_count with filename=filename %}{{ filename }} · {{ counter }} person{% plural %}{{ filename }} · {{ counter }} people{% endblocktrans %}</p>
     </div>
 </div>
@@ -29,6 +30,101 @@
 
 <form method="post" class="card">
     {% csrf_token %}
+{% if changes %}
+    <input type="hidden" name="confirm" value="{{ mapping_key }}">
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">{% trans 'What the import changes' %}</h2>
+            <p class="help-text">{% trans 'Nothing is saved yet. Each row shows one person: where they are now, and where they are after the import.' %}</p>
+        </div>
+    </div>
+    <div class="card-body oc-import-changes" id="changes">
+        <dl class="oc-import-summary">
+            <div><dt>{% trans 'In the file' %}</dt><dd>{{ row_count }}</dd></div>
+            <div><dt>{% trans 'No change' %}</dt><dd>{{ changes.unchanged }}</dd></div>
+            <div><dt>{% trans 'Changes' context 'number of people who change' %}</dt><dd>{{ changes.people|length }}</dd></div>
+            <div><dt>{% trans 'In Blik, not in the file' %}</dt><dd>{{ changes.missing|length }}</dd></div>
+        </dl>
+
+        {% if changes.nothing %}
+        <p>{% trans 'The file is the same as the org chart. Nothing changes.' %}</p>
+        {% endif %}
+
+        {% if changes.people %}
+        <h3 class="oc-role">{% trans 'People who change' %}</h3>
+        <div class="table-wrapper{% if changes.people|length > 12 %} oc-import-scroll{% endif %}" role="region" aria-label="{% trans 'People who change' %}" tabindex="0">
+            <table class="table oc-import-diff">
+                <thead><tr><th scope="col">{% trans 'Person' %}</th><th scope="col">{% trans 'What changes' %}</th><th scope="col">{% trans 'Now' context 'column: before the import' %}</th><th scope="col">{% trans 'After the import' %}</th></tr></thead>
+                <tbody>{% for person in changes.people %}
+                    <tr>
+                        <td><strong>{{ person.name }}</strong><div class="person-email">{{ person.email }}</div></td>
+                        <td>{% if person.kind == 'new' %}{% trans 'New in Blik' %}{% elif person.kind == 'reactivated' %}{% trans 'Active again' %}{% elif person.kind == 'moved' %}{% trans 'Other place in the chart' %}{% elif person.kind == 'manager' %}{% trans 'Other manager' %}{% else %}{% trans 'Other name or department' %}{% endif %}</td>
+                        <td>{% for line in person.before %}<div>{{ line }}</div>{% empty %}<span class="help-text">{% trans 'Not in Blik' %}</span>{% endfor %}</td>
+                        <td>{% for line in person.after %}<div>{{ line }}</div>{% endfor %}</td>
+                    </tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if changes.units_created or changes.units_removed %}
+        <h3 class="oc-role">{% trans 'Units' %}</h3>
+        <ul>
+            {% for unit in changes.units_created %}<li>{% blocktrans trimmed %}<strong>{{ unit }}</strong> is new.{% endblocktrans %}</li>{% endfor %}
+            {% for unit in changes.units_removed %}<li>{% blocktrans trimmed %}<strong>{{ unit }}</strong> is removed: after the import nobody reports to its manager.{% endblocktrans %}</li>{% endfor %}
+        </ul>
+        <p class="help-text">{% trans 'All other units keep their name, their place and their people.' %}</p>
+        {% endif %}
+
+        {% if changes.missing %}
+        <h3 class="oc-role">{% blocktrans trimmed count counter=changes.missing|length %}{{ counter }} person is not in the file{% plural %}{{ counter }} people are not in the file{% endblocktrans %}</h3>
+        <p class="help-text">{% trans 'They are in Blik, but the file does not have them. Did they leave? Then deactivate them below. If not, they stay active.' %}</p>
+        <div class="table-wrapper{% if changes.missing|length > 12 %} oc-import-scroll{% endif %}" role="region" aria-label="{% trans 'People who are not in the file' %}" tabindex="0">
+            <table class="table oc-import-diff">
+                <thead><tr><th scope="col">{% trans 'Person' %}</th><th scope="col">{% trans 'Now' context 'column: before the import' %}</th><th scope="col">{% trans 'After the import, if they stay active' %}</th></tr></thead>
+                <tbody>{% for person in changes.missing %}
+                    <tr>
+                        <td><strong>{{ person.name }}</strong><div class="person-email">{{ person.email }}</div></td>
+                        <td>{% for line in person.before %}<div>{{ line }}</div>{% endfor %}</td>
+                        <td>{% for line in person.after %}<div>{{ line }}</div>{% endfor %}</td>
+                    </tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <label class="form-check oc-import-deactivate">
+            <input type="checkbox" class="form-check-input" name="deactivate_missing" value="1">
+            {% blocktrans trimmed count counter=changes.missing|length %}Deactivate this person{% plural %}Deactivate these {{ counter }} people{% endblocktrans %}
+        </label>
+        <p class="help-text">{% trans 'Deactivated people leave the org chart and get no new cycles. Nothing is deleted: the feedback they gave and their own reports stay.' %}</p>
+        <details>
+            <summary>{% trans 'What happens to a deactivated person' %}</summary>
+                <ul>
+                    <li>{% trans 'Nothing is deleted.' %}</li>
+                    <li>{% trans 'The feedback they gave to other people stays, and still counts in the reports of those people.' %}</li>
+                    <li>{% trans 'Open invitations to give feedback stay open. No answer counts as no response.' %}</li>
+                    <li>{% trans 'They get no new cycles and are no longer in the org chart or the lists of people.' %}</li>
+                    <li>{% trans 'Their own cycles and reports stay in the list of review cycles, marked as deactivated.' %}</li>
+                    <li>{% trans 'To make them active again, import a file that has them in it.' %}</li>
+                </ul>
+        </details>
+        {% endif %}
+
+        <details>
+            <summary>{% trans 'How this affects your plan' %}</summary>
+                {% if plan.has_subscription %}
+                <p>{% blocktrans trimmed with max=plan.max_employees now=plan.current_reviewees after=changes.active %}Active people your plan allows: {{ max }}. Active now: {{ now }}. Active after this import: {{ after }}.{% endblocktrans %}
+                {% if changes.missing %}{% blocktrans trimmed with after=changes.active_without_missing %}Active after this import, with the people who are not in the file deactivated: {{ after }}.{% endblocktrans %}{% endif %}</p>
+                <p>{% trans 'Only active people count. The import does not change your plan or its price.' %}</p>
+                {% elif plan.mode == 'credits' %}
+                <p>{% trans 'You pay per feedback cycle, not per person. The import starts no cycles and uses no credits.' %}</p>
+                {% else %}
+                <p>{% trans 'Your plan has no limit on the number of people. The import costs nothing.' %}</p>
+                {% endif %}
+        </details>
+    </div>
+    <details class="oc-import-columns">
+        <summary>{% trans 'Columns and first rows of the file' %}</summary>
+{% endif %}
     <div class="card-header">
         <div>
             <h2 class="card-title">{% trans 'Which column is which?' %}</h2>
@@ -57,11 +153,15 @@
                 <tbody>{% for row in preview %}<tr>{% for cell in row %}<td data-col="{{ forloop.counter0 }}">{{ cell }}</td>{% endfor %}</tr>{% endfor %}</tbody>
             </table>
         </div>
+
     </div>
+{% if changes %}
+    </details>
+{% endif %}
     <div class="card-footer oc-import-footer">
-        {% if has_units %}<p class="help-text">{% trans 'This replaces the current org chart. People who are not in the file stay in Blik, but are no longer in a unit.' %}</p>{% endif %}
+        <p class="help-text">{% if changes %}{% trans 'Changed a column? Then Blik shows the changes again first.' %}{% else %}{% trans 'Blik shows what the import changes before anything is saved.' %}{% endif %}</p>
         <a href="{% url 'org_chart' %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
-        <button type="submit" class="btn btn-primary">{% trans 'Import' %}</button>
+        <button type="submit" class="btn btn-primary">{% if changes %}{% trans 'Import' %}{% else %}{% trans 'Show changes' %}{% endif %}</button>
     </div>
 </form>
 

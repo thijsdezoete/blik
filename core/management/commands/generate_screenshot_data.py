@@ -74,7 +74,9 @@ class Command(BaseCommand):
         UserProfile.objects.create(
             user=admin,
             organization=org,
-            can_create_cycles_for_others=True
+            can_create_cycles_for_others=True,
+            # The dashboard screenshot shows the state of the cycles, with "How Blik works" folded.
+            has_seen_welcome=True,
         )
         # Assign organization admin permissions
         assign_organization_admin(admin)
@@ -102,7 +104,8 @@ class Command(BaseCommand):
             UserProfile.objects.create(
                 user=user,
                 organization=org,
-                can_create_cycles_for_others=is_admin
+                can_create_cycles_for_others=is_admin,
+                has_seen_welcome=True,
             )
             # Assign proper permissions
             if is_admin:

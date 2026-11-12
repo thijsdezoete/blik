@@ -350,7 +350,7 @@
 
                 <details class="faq-item">
                     <summary>Can we integrate with our existing LDAP/SSO?</summary>
-                    <p>Currently, admin authentication uses Django's built-in system. LDAP/SSO integration is on the roadmap. For now, admins log in with username/password. Reviewers never authenticate (token-based access only). You can modify the authentication backend since it's open source.</p>
+                    <p>Admins sign in with a username and password, through Django's built-in authentication. Reviewers never sign in. They use a private link. The code is open source, so you can change the authentication backend.</p>
                 </details>
 
                 <details class="faq-item">

@@ -35,13 +35,14 @@ from accounts.permissions import (
     can_view_all_reports,
     is_organization_admin,
     login_required,
-    reviewee_emails_below,
+    direct_report_emails,
+    managers_without_account,
     set_user_permission,
     visible_cycles,
 )
 from api.models import APIToken, WebhookEndpoint
 from core.env_config import env_managed_fields
-from core.languages import default_language, is_language, language_name
+from core.languages import default_language, is_language, language_name, recipient_language
 from core.gdpr import GDPRDeletionService
 from core.models import Organization
 from productreviews.models import ProductReview, anonymous_name
@@ -70,9 +71,11 @@ from reports.finalize import finalize_cycle
 from reports.services import generate_report, self_vs_others_gap
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
+from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
 from subscriptions.models import Subscription
 from subscriptions.utils import (
+    CREDITS_PER_PACK,
     NoCycleCredits,
     ReviewerLimit,
     billing_context,
@@ -108,12 +111,18 @@ def get_cycle_or_404(request, cycle_uuid):
     """
     Get a ReviewCycle by UUID, filtered by organization and by what the current
     user is allowed to see. Returns 404 for cycles in another organization or
-    belonging to another reviewee.
+    belonging to a reviewee whose cycles this user does not run.
     """
     cycles_qs = ReviewCycle.objects.select_related('reviewee', 'questionnaire', 'created_by')
     if request.organization:
         cycles_qs = cycles_qs.filter(reviewee__organization=request.organization)
-    return get_object_or_404(visible_cycles(request.user, cycles_qs), uuid=cycle_uuid)
+    allowed = visible_cycles(request.user, cycles_qs)
+    team = run_team_emails(request.user, request.organization)
+    if team:
+        # A manager who may create cycles for their direct reports also runs those cycles.
+        allowed = cycles_qs.annotate(reviewee_email_lower=Lower('reviewee__email')).filter(
+            Q(pk__in=allowed.values('pk')) | Q(reviewee_email_lower__in=team))
+    return get_object_or_404(allowed, uuid=cycle_uuid)
 
 
 @login_required
@@ -194,85 +203,53 @@ def collect_reviewer_emails(request, organization, categories):
 
 @login_required
 def dashboard(request):
-    """Admin dashboard homepage"""
+    """What is running and what needs this person: for an admin the organization, for others their own feedback and team."""
     org = request.organization
-
-    # Get statistics filtered by organization
-    reviewees_qs = Reviewee.objects.for_organization(org).filter(is_active=True)
-    cycles_qs = visible_cycles(
-        request.user,
-        ReviewCycle.objects.for_organization(org).select_related('reviewee', 'questionnaire')
-    )
-
-    total_reviewees = reviewees_qs.count()
-    active_cycles = cycles_qs.filter(status='active').count()
-    completed_cycles = cycles_qs.filter(status='completed').count()
-
-    # Get subscription status
-    subscription_status = get_subscription_status(org) if org else None
-
-    # Recent activity
-    recent_cycles = cycles_qs.all()[:5]
-
-    # Pending reviews (tokens not completed)
-    pending_tokens = ReviewerToken.objects.filter(
-        cycle__in=cycles_qs,
-        completed_at__isnull=True,
-        cycle__status='active'
-    ).count()
-
-    # Completion stats for active cycles
-    active_cycles_data = []
-    for cycle in cycles_qs.filter(status='active').select_related('reviewee'):
-        total_tokens = cycle.tokens.count()
-        completed_tokens = cycle.tokens.filter(completed_at__isnull=False).count()
-        completion_rate = (completed_tokens / total_tokens * 100) if total_tokens > 0 else 0
-
-        active_cycles_data.append({
-            'cycle': cycle,
-            'total_tokens': total_tokens,
-            'completed_tokens': completed_tokens,
-            'completion_rate': completion_rate,
-        })
-
-    # Completed cycles with report availability
-    completed_cycles_data = []
-    for cycle in cycles_qs.filter(status='completed').select_related('reviewee').order_by('-created_at')[:10]:
-        # Check if report exists
-        report_exists = Report.objects.filter(cycle=cycle).exists()
-
-        completed_cycles_data.append({
-            'cycle': cycle,
-            'report_exists': report_exists,
-        })
-
-    # Check if user has seen welcome modal
-    has_seen_welcome = False
-    try:
-        has_seen_welcome = request.user.profile.has_seen_welcome
-    except UserProfile.DoesNotExist:
-        pass
-
-    # Check if user has submitted a product review (global, not org-scoped)
-    user_has_reviewed = ProductReview.objects.filter(
-        reviewer_email=request.user.email,
-        is_active=True
-    ).exists()
-
+    threshold = org.min_responses_for_anonymity if org else 3
+    sees_all = can_view_all_reports(request.user)
     context = {
-        'total_reviewees': total_reviewees,
-        'active_cycles': active_cycles,
-        'completed_cycles': completed_cycles,
-        'pending_tokens': pending_tokens,
-        'recent_cycles': recent_cycles,
-        'active_cycles_data': active_cycles_data,
-        'completed_cycles_data': completed_cycles_data,
-        'subscription_status': subscription_status,
-        'has_seen_welcome': has_seen_welcome,
-        'user_has_reviewed': user_has_reviewed,
+        'sees_all': sees_all,
+        'threshold': max(threshold, 1),
+        'can_create_for_others': may_create_for_others(request.user),
+        'subscription_status': get_subscription_status(org) if org else None,
+        # A product review is global, not per organization.
+        'user_has_reviewed': ProductReview.objects.filter(
+            reviewer_email=request.user.email, is_active=True).exists(),
+        # "How Blik works" is open until the person folds it once.
+        'has_seen_welcome': getattr(getattr(request.user, 'profile', None), 'has_seen_welcome', False),
+        **billing_context(org, request.user),
     }
+    # Explain what a cycle costs only where Blik bills for it.
+    mode = context['subscription_status']['mode'] if context['subscription_status'] else 'self_hosted'
+    context['billing_mode'] = mode if context['is_hosted'] and mode != 'self_hosted' else ''
+    context['credits_per_pack'] = CREDITS_PER_PACK
+    context['show_billing'] = bool(org) and can_see_billing(org, request.user)
+
+    if sees_all and org:
+        cycles = ReviewCycle.objects.for_organization(org)
+        started = dashboard_state.getting_started(org)
+        context.update({
+            'started': started,
+            'running': dashboard_state.running_state(cycles, threshold),
+            'reports': dashboard_state.latest_reports(cycles, threshold),
+            'suggestions': dashboard_state.suggestions(org, request.user, started),
+        })
+    else:
+        context['personal'] = dashboard_state.personal_state(
+            request.user, org, threshold, runs_team=may_create_for_others(request.user))
 
     return render(request, 'admin_dashboard/dashboard.html', context)
+
+
+@login_required
+@require_POST
+def dashboard_skip_org_chart(request):
+    """Hide the dashboard's offer to build an org chart, for the whole organization."""
+    org = request.organization
+    if org and request.user.has_perm('accounts.can_manage_organization'):
+        org.org_chart_offer_dismissed = True
+        org.save(update_fields=['org_chart_offer_dismissed'])
+    return redirect('admin_dashboard')
 
 
 @login_required
@@ -433,6 +410,10 @@ def reviewee_list(request):
     """Find people and understand their feedback status before taking action."""
     org = request.organization
     people = Reviewee.objects.for_organization(org).filter(is_active=True)
+    if not can_view_all_reports(request.user):
+        # Everyone else sees themselves and, as a manager, their direct reports.
+        scope = direct_report_emails(request.user, org) | {(request.user.email or '').lower()}
+        people = people.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
     latest_cycles = ReviewCycle.objects.filter(reviewee=OuterRef('pk')).order_by('-created_at', '-pk')
     latest_reports = Report.objects.filter(
         cycle__reviewee=OuterRef('pk'), cycle__status='completed', available=True,
@@ -560,13 +541,44 @@ def reviewee_list(request):
     })
 
 
+def append_membership(unit, reviewee, role):
+    """Put `reviewee` in `unit` as manager (row 0) or member (row 1), after the people already there."""
+    row = 0 if role == OrgUnitMembership.MANAGER else 1
+    last = unit.memberships.filter(row=row).aggregate(m=Max('col'))['m']
+    return OrgUnitMembership.objects.create(unit=unit, reviewee=reviewee, row=row, col=0 if last is None else last + 1)
+
+
+def place_in_department(org, reviewee, name, manager=None, leads=False):
+    """Put a new reviewee in the org chart unit called `name`, made if there is none yet.
+
+    A new unit gets `manager` as its manager, or the reviewee when they `leads` it.
+    """
+    unit = OrgUnit.objects.filter(organization=org, name__iexact=name).first()
+    if unit is None:
+        last = OrgUnit.objects.filter(organization=org).aggregate(m=Max('display_order'))['m'] or 0
+        unit = OrgUnit.objects.create(organization=org, name=name, display_order=last + 1)
+        if manager and not leads:
+            append_membership(unit, manager, OrgUnitMembership.MANAGER)
+    append_membership(unit, reviewee, OrgUnitMembership.MANAGER if leads else OrgUnitMembership.MEMBER)
+    reviewee.department = unit.name
+    reviewee.save(update_fields=['department'])
+
+
+def department_choices(request):
+    """The org chart units the department field suggests, for those who may edit the chart."""
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        return {'department_units': None}
+    units = list(OrgUnit.objects.filter(organization=request.organization).order_by('name').values_list('name', flat=True))
+    return {'department_units': units, 'department_units_json': json.dumps(units)}
+
+
 @login_required
 def reviewee_create(request):
     """Create a new reviewee"""
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
-        department = request.POST.get('department', '')
+        department = request.POST.get('department', '').strip()
         language = request.POST.get('language', '')
 
         if name and email:
@@ -588,13 +600,20 @@ def reviewee_create(request):
                 return redirect('reviewee_list')
 
             try:
-                reviewee = Reviewee.objects.create(
-                    organization=organization,
-                    name=name,
-                    email=email,
-                    department=department,
-                    language=language if is_language(language) else '',
-                )
+                with transaction.atomic():
+                    reviewee = Reviewee.objects.create(
+                        organization=organization,
+                        name=name,
+                        email=email,
+                        department=department,
+                        language=language if is_language(language) else '',
+                    )
+                    # The department is a unit in the org chart, for those who may edit the chart.
+                    if department and request.user.has_perm('accounts.can_manage_organization'):
+                        manager = Reviewee.objects.for_organization(organization).filter(
+                            uuid=request.POST.get('department_manager') or None).first()
+                        place_in_department(organization, reviewee, department, manager,
+                                            leads=request.POST.get('department_lead') == '1')
                 messages.success(request, _('Reviewee "%(name)s" created successfully.') % {'name': reviewee.name})
                 return redirect('reviewee_list')
             except Exception as e:
@@ -605,6 +624,7 @@ def reviewee_create(request):
     return render(request, 'admin_dashboard/reviewee_form.html', {
         'action': 'Create',
         'default_language_name': language_name(default_language(request.organization)),
+        **department_choices(request),
     })
 
 
@@ -1676,15 +1696,6 @@ def question_dreyfus_config_api(request, question_id):
 # Where a cycle stands, from its status and response counts. Together the
 # stages cover every cycle exactly once. Conditions use the token_count and
 # completed_count annotations of review_cycle_list.
-CYCLE_STAGES = {
-    'waiting': (gettext_lazy('No responses yet'), Q(status='active', completed_count=0)),
-    'in_progress': (gettext_lazy('In progress'),
-                    Q(status='active', completed_count__gt=0, completed_count__lt=F('token_count'))),
-    'all_responded': (gettext_lazy('All responded'),
-                      Q(status='active', completed_count__gt=0, completed_count=F('token_count'))),
-    'completed': (gettext_lazy('Completed'), Q(status='completed')),
-}
-
 CYCLE_SORTS = {
     'newest': (gettext_lazy('Newest first'), ['-created_at']),
     'oldest': (gettext_lazy('Oldest first'), ['created_at']),
@@ -1699,8 +1710,10 @@ def review_cycle_list(request):
     org = request.organization
 
     if org:
-        # Filter out cycles for anonymized reviewees
-        cycles_qs = ReviewCycle.objects.for_organization(org).select_related(
+        # Cycles of deactivated people (leavers) stay listed, so their past reports
+        # can be found. Cycles of anonymized (GDPR-deleted) reviewees do not.
+        cycles_qs = ReviewCycle.objects.for_organization(org, include_deleted=True).exclude(
+            reviewee__email__icontains='@deleted.invalid').select_related(
             'reviewee', 'questionnaire', 'created_by'
         )
     else:
@@ -1708,10 +1721,12 @@ def review_cycle_list(request):
             'reviewee', 'questionnaire', 'created_by'
         )
 
-    below = set() if can_view_all_reports(request.user) else reviewee_emails_below(request.user, org)
+    below = set() if can_view_all_reports(request.user) else direct_report_emails(request.user, org)
+    run_team = run_team_emails(request.user, org)
     if below:
-        # Managers also see the cycles of the people below them in the org
-        # chart, but only to read the report (see report_only below).
+        # Managers also see the cycles of their direct reports in the org
+        # chart: to run them when they may create cycles for others, else
+        # only to read the report (see report_only below).
         own = visible_cycles(request.user, cycles_qs).values('pk')
         cycles_qs = cycles_qs.annotate(reviewee_email_lower=Lower('reviewee__email')).filter(
             Q(pk__in=own) | Q(reviewee_email_lower__in=below))
@@ -1731,24 +1746,31 @@ def review_cycle_list(request):
         except ValidationError:
             questionnaire_filter = ''
 
-    cycles_qs = cycles_qs.prefetch_related(
+    cycles_qs = dashboard_state.with_progress(cycles_qs.prefetch_related(
         'questionnaire__sections__questions'
-    ).annotate(
-        token_count=Count('tokens'),
-        completed_count=Count('tokens', filter=Q(tokens__completed_at__isnull=False)),
+    )).annotate(
         # Queued emails the outbox could not send, so a mail problem shows in the list
-        failed_emails=Count('tokens', filter=Q(tokens__email_error__gt='') & (
-            Q(tokens__invitation_queued_at__isnull=False) | Q(tokens__reminder_queued_at__isnull=False))),
+        failed_emails=dashboard_state.failed_emails(),
         reviewee_has_active_cycle=Exists(
             ReviewCycle.objects.filter(reviewee=OuterRef('reviewee'), status='active')),
     )
 
+    # The dashboard links here with one thing that cycles need, such as a reminder.
+    threshold = org.min_responses_for_anonymity if org else 3
+    cycle_needs = dashboard_state.cycle_needs(threshold)
+    needs = request.GET.get('needs', '')
+    if needs in cycle_needs:
+        cycles_qs = cycles_qs.filter(cycle_needs[needs][1], reviewee__is_active=True)
+    else:
+        needs = ''
+
     # Counts follow the search and questionnaire filters, so each stage
     # button shows what clicking it would give.
-    stage_counts = {stage: cycles_qs.filter(cond).count() for stage, (_label, cond) in CYCLE_STAGES.items()}
+    stages = dashboard_state.cycle_stages(threshold)
+    stage_counts = {stage: cycles_qs.filter(cond).count() for stage, (_label, cond) in stages.items()}
     stage = request.GET.get('stage', '')
-    if stage in CYCLE_STAGES:
-        cycles_qs = cycles_qs.filter(CYCLE_STAGES[stage][1])
+    if stage in stages:
+        cycles_qs = cycles_qs.filter(stages[stage][1])
     else:
         stage = ''
 
@@ -1783,7 +1805,7 @@ def review_cycle_list(request):
 
     # "New Cycle" opens the start dialog of the reviewee list, set up as a copy of the row's cycle.
     for cycle in cycles:
-        cycle.report_only = cycle.reviewee.email.lower() in below
+        cycle.report_only = cycle.reviewee.email.lower() in below - run_team
         cycle.start = {
             'reviewee': cycle.reviewee,
             'source_cycle': cycle,
@@ -1800,11 +1822,13 @@ def review_cycle_list(request):
         'questionnaire_filter': questionnaire_filter,
         'used_questionnaires': used_questionnaires,
         'stage': stage,
-        'stages': [(key, label, stage_counts[key]) for key, (label, _cond) in CYCLE_STAGES.items()],
+        'stages': [(key, label, stage_counts[key]) for key, (label, _cond) in stages.items()],
+        'needs': needs,
+        'needs_label': cycle_needs[needs][0] if needs else '',
         'total_count': sum(stage_counts.values()),
         'sort': sort,
         'sorts': [(key, label) for key, (label, _fields) in CYCLE_SORTS.items()],
-        'is_filtered': bool(q or questionnaire_filter or stage),
+        'is_filtered': bool(q or questionnaire_filter or stage or needs),
     }
 
     return render(request, 'admin_dashboard/review_cycle_list.html', context)
@@ -1832,12 +1856,126 @@ def may_create_for_others(user):
     return profile is not None and profile.can_create_cycles_for_others
 
 
+def run_team_emails(user, org):
+    """
+    Emails of the direct reports whose cycles this user creates and runs: those
+    of a user who may create cycles for others. Empty for everyone else.
+    """
+    return direct_report_emails(user, org) if may_create_for_others(user) else set()
+
+
 def creatable_reviewees(user, org):
-    """The reviewees this user may start a cycle for: everyone, or only themselves."""
+    """
+    The reviewees this user may start a cycle for. With the permission to
+    create cycles for others: an organization admin for everyone, another user
+    for themselves and their direct reports. Without it: only themselves.
+    """
     reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
-    if not may_create_for_others(user):
-        reviewees = reviewees.filter(email=user.email)
-    return reviewees
+    if may_create_for_others(user) and user.has_perm('accounts.can_manage_organization'):
+        return reviewees
+    scope = ({(user.email or '').lower()} | run_team_emails(user, org)) - {''}
+    return reviewees.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
+
+
+def bulk_reviewees(user, org):
+    """The people a bulk run makes cycles for: everyone this user may start a cycle for."""
+    return creatable_reviewees(user, org)
+
+
+def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
+    """
+    Work out which cycles a bulk run creates, without creating them. The form
+    shows the numbers before the run, and the credit check counts only the
+    people who really get a cycle.
+
+    `bulk_source` controls the reviewers of each cycle:
+        'chart' — derive from the org chart for each reviewee
+        'previous' — each reviewee's latest cycle: its questionnaire,
+                     categories and reviewer email strings (never FKs)
+        'empty' — no reviewers yet (admins fill them in per cycle later)
+
+    Returns (planned, skipped): planned is a list of (reviewee, questionnaire,
+    category flags, email assignments or None); skipped counts the people who
+    get no cycle.
+    """
+    # The categories this run collects, read off an unsaved cycle
+    # so the defaults match what the created cycles will have.
+    active_categories = ReviewCycle(**category_flags).active_categories
+    unplaced_count = 0
+    planned = []
+    for reviewee in reviewees:
+        email_assignments = None
+        cycle_questionnaire, cycle_flags = questionnaire, category_flags
+        if bulk_source == 'previous':
+            previous = reviewee.review_cycles.select_related('questionnaire').first()
+            # Archived questionnaires do not come back this way either.
+            if previous is None or not previous.questionnaire.is_active:
+                unplaced_count += 1
+                continue
+            cycle_questionnaire = previous.questionnaire
+            cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
+            email_assignments = {code: [] for code in previous.active_categories}
+            for category, email in previous.tokens.filter(
+                reviewer_email__isnull=False, category__in=previous.active_categories,
+            ).values_list('category', 'reviewer_email'):
+                email_assignments[category].append(email.lower())
+            # The self-assessment goes to the person's address of today,
+            # not to the one the previous cycle used.
+            if 'self' in email_assignments and reviewee.email:
+                email_assignments['self'] = [reviewee.email.lower()]
+            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                unplaced_count += 1
+                continue
+        elif bulk_source == 'chart':
+            buckets = derive_reviewers(reviewee)
+            # Build the email_assignments dict the existing
+            # helper expects: emails only, no Reviewee FK.
+            email_assignments = {
+                code: [p.email.lower() for p in buckets.get(code, []) if p.email]
+                for code in active_categories
+            }
+            # Nobody but the reviewee: a worker in an upward run,
+            # a professor in a peer run. No cycle, no lone
+            # self-assessment, no credit spent.
+            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                unplaced_count += 1
+                continue
+
+        planned.append((reviewee, cycle_questionnaire, cycle_flags, email_assignments))
+    return planned, unplaced_count
+
+
+def skipped_sentence(bulk_source, skipped):
+    """Why a bulk run skips people, as a list with one sentence; empty when it skips nobody."""
+    if not skipped:
+        return []
+    if bulk_source == 'chart':
+        return [ngettext(
+            '%(skipped)s person is skipped: the org chart gives no reviewers for the selected categories.',
+            '%(skipped)s people are skipped: the org chart gives them no reviewers for the selected categories.',
+            skipped) % {'skipped': skipped}]
+    return [ngettext(
+        '%(skipped)s person is skipped: no previous cycle with reviewers and an active questionnaire.',
+        '%(skipped)s people are skipped: no previous cycle with reviewers and an active questionnaire.',
+        skipped) % {'skipped': skipped}]
+
+
+@login_required
+@require_POST
+def review_cycle_bulk_preview(request):
+    """What a bulk run with the posted form would create, as a sentence for the form. Creates nothing."""
+    if not may_create_for_others(request.user):
+        raise Http404
+    bulk_source = request.POST.get('bulk_source', 'empty')
+    reviewees = bulk_reviewees(request.user, request.organization)
+    planned, skipped = plan_bulk_cycles(reviewees, bulk_source, None, selected_category_flags(request))
+    count = len(planned)
+    parts = [ngettext(
+        'This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for.',
+        'This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for.',
+        count) % {'count': count, 'total': count + skipped}]
+    parts += skipped_sentence(bulk_source, skipped)
+    return JsonResponse({'count': count, 'skipped': skipped, 'message': ' '.join(parts)})
 
 
 @login_required
@@ -1845,17 +1983,20 @@ def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
     if request.method == 'POST':
         creation_mode = request.POST.get('creation_mode', 'single')
-        # Bulk is a cycle for everyone: only for users who may create for others.
+        # Bulk is a cycle for several people: only for users who may create for others.
         if creation_mode == 'bulk' and not may_create_for_others(request.user):
             raise Http404
         questionnaire_id = request.POST.get('questionnaire')
+        bulk_source = request.POST.get('bulk_source', 'empty')
+        # Reusing earlier cycles takes the questionnaire and categories from each of them.
+        reuse_previous = creation_mode == 'bulk' and bulk_source == 'previous'
 
-        if not questionnaire_id:
+        if not questionnaire_id and not reuse_previous:
             messages.error(request, _('Questionnaire is required.'))
             return redirect('review_cycle_create')
 
         category_flags = selected_category_flags(request)
-        if category_flags and not any(category_flags.values()):
+        if category_flags and not any(category_flags.values()) and not reuse_previous:
             messages.error(request, _('Select at least one feedback category.'))
             return redirect('review_cycle_create')
 
@@ -1865,7 +2006,7 @@ def review_cycle_create(request):
 
             # Filter by organization to prevent cross-org access; archived
             # ones are gone from the form and must not come back through POST.
-            questionnaire = Questionnaire.objects.get(
+            questionnaire = None if reuse_previous else Questionnaire.objects.get(
                 id=questionnaire_id,
                 organization=org,
                 is_active=True
@@ -1877,49 +2018,24 @@ def review_cycle_create(request):
                 # send any emails here — the admin confirms sending on the
                 # follow-up bulk_send_invitations page. This prevents the
                 # request from stalling on SMTP and avoids surprise blasts.
-                reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
+                reviewees = bulk_reviewees(request.user, org)
+                derived_count = 0
+                planned, unplaced_count = plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags)
 
                 # Refuse the whole batch up front so the message can say how
                 # many credits it needs; the model gate still backs this up.
                 credits = cycle_credits(org)
-                if credits is not None and reviewees.count() > credits:
-                    raise NoCycleCredits(needed=reviewees.count(), available=credits)
-
-                # `bulk_source` controls reviewer-token pre-population:
-                #   'chart' — derive from the org chart for each reviewee
-                #   'empty' — no tokens yet (admins fill them in per cycle later)
-                bulk_source = request.POST.get('bulk_source', 'empty')
-                derived_count = 0
-                unplaced_count = 0
-
-                # The categories this run collects, read off an unsaved cycle
-                # so the defaults match what the created cycles will have.
-                active_categories = ReviewCycle(**category_flags).active_categories
+                if credits is not None and len(planned) > credits:
+                    raise NoCycleCredits(needed=len(planned), available=credits)
 
                 with transaction.atomic():
-                    for reviewee in reviewees:
-                        email_assignments = None
-                        if bulk_source == 'chart':
-                            buckets = derive_reviewers(reviewee)
-                            # Build the email_assignments dict the existing
-                            # helper expects: emails only, no Reviewee FK.
-                            email_assignments = {
-                                code: [p.email.lower() for p in buckets.get(code, []) if p.email]
-                                for code in active_categories
-                            }
-                            # Nobody but the reviewee: a worker in an upward run,
-                            # a professor in a peer run. No cycle, no lone
-                            # self-assessment, no credit spent.
-                            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
-                                unplaced_count += 1
-                                continue
-
+                    for reviewee, cycle_questionnaire, cycle_flags, email_assignments in planned:
                         cycle = ReviewCycle.objects.create(
                             reviewee=reviewee,
-                            questionnaire=questionnaire,
+                            questionnaire=cycle_questionnaire,
                             created_by=request.user,
                             status='active',
-                            **category_flags
+                            **cycle_flags
                         )
                         created_cycles.append(cycle)
 
@@ -1938,12 +2054,21 @@ def review_cycle_create(request):
                 ]
                 request.session['pending_bulk_source'] = bulk_source
 
+                # One sentence per count, so each can take its plural form; and
+                # nothing about skipped people when nobody was skipped.
+                created = len(created_cycles)
                 if bulk_source == 'chart':
-                    messages.success(
-                        request,
-                        _('Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories.')
-                        % {'count': len(created_cycles), 'unplaced': unplaced_count}
-                    )
+                    sentence = ngettext(
+                        'Created %(count)s review cycle with reviewers from the org chart.',
+                        'Created %(count)s review cycles with reviewers from the org chart.',
+                        created) % {'count': created}
+                    messages.success(request, ' '.join([sentence, *skipped_sentence(bulk_source, unplaced_count)]))
+                elif bulk_source == 'previous':
+                    sentence = ngettext(
+                        'Created %(count)s review cycle with the questionnaire and reviewers of the previous cycle of that person.',
+                        'Created %(count)s review cycles, each with the questionnaire and reviewers of the previous cycle of that person.',
+                        created) % {'count': created}
+                    messages.success(request, ' '.join([sentence, *skipped_sentence(bulk_source, unplaced_count)]))
                 else:
                     messages.success(
                         request,
@@ -2069,8 +2194,10 @@ def review_cycle_create(request):
         'reviewees': reviewees,
         'questionnaires': questionnaires,
         'can_create_for_others': may_create_for_others(request.user),
+        'creates_for_whole_organization': request.user.has_perm('accounts.can_manage_organization'),
         **billing_context(org, request.user),
         'has_org_chart': has_org_chart,
+        'has_previous_cycles': org is not None and ReviewCycle.objects.filter(reviewee__organization=org).exists(),
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)
@@ -2112,7 +2239,7 @@ def bulk_send_invitations(request):
         # self-assessment and the links to share.
         reviewer_tokens = 0
         reviewer_emails = 0
-        if bulk_source != 'chart':
+        if bulk_source not in ('chart', 'previous'):
             for cycle in cycles:
                 queue_reviewee_notifications(cycle)
         else:
@@ -2156,7 +2283,7 @@ def bulk_send_invitations(request):
         'cycles': cycles,
         'cycle_summaries': cycle_summaries,
         'bulk_source': bulk_source,
-        'derived_from_chart': bulk_source == 'chart',
+        'with_reviewers': bulk_source in ('chart', 'previous'),
     }
     return render(request, 'admin_dashboard/bulk_send_invitations.html', context)
 
@@ -2659,6 +2786,20 @@ def settings_view(request):
                 organization.save()
                 messages.success(request, _('New user settings updated successfully.'))
 
+            elif section == 'chart':
+                # How far down the org chart direct-report reviewers come from.
+                raw = request.POST.get('chart_depth', '').strip()
+                if request.POST.get('chart_depth_all') == 'on':
+                    organization.chart_depth = None
+                elif raw.isdigit() and 1 <= int(raw) <= 99:
+                    organization.chart_depth = int(raw)
+                else:
+                    messages.error(request, _('The number of levels must be a number from 1 to 99.'))
+                    return redirect('settings')
+                organization.chart_managers_only = request.POST.get('chart_who') != 'teams'
+                organization.save()
+                messages.success(request, _('Org chart settings updated successfully.'))
+
             elif section == 'reports':
                 # Update report settings
                 min_responses = request.POST.get('min_responses_for_anonymity', 3)
@@ -2666,6 +2807,7 @@ def settings_view(request):
                     organization.min_responses_for_anonymity = int(min_responses)
                 except (ValueError, TypeError):
                     organization.min_responses_for_anonymity = 3
+                organization.hide_below_threshold_from_managers = request.POST.get('hide_below_threshold_from_managers') == 'on'
                 organization.auto_send_report_email = request.POST.get('auto_send_report_email') == 'on'
                 organization.attach_report_pdf = request.POST.get('attach_report_pdf') == 'on'
                 retention = request.POST.get('report_pdf_retention_days', '').strip()
@@ -3672,6 +3814,7 @@ def _chart_change_response(organization):
     patching parts of the page would go stale.
     """
     context = _org_chart_context(organization)
+    context['can_manage'] = True  # only people who may edit the chart get this response
     return JsonResponse({
         'chart_html': render_to_string('admin_dashboard/org_chart/_chart.html', context),
         'outline_html': render_to_string('admin_dashboard/org_chart/_outline.html', context),
@@ -3698,6 +3841,17 @@ def org_chart(request):
         return redirect('admin_dashboard')
 
     context = _org_chart_context(org)
+    context['can_manage'] = request.user.has_perm('accounts.can_manage_organization')
+    if request.user.has_perm('accounts.can_invite_members'):
+        managers = context['managers_without_account'] = managers_without_account(org)
+        context['managers_to_invite'] = sum(not m.invited for m in managers)
+        if context['managers_to_invite']:
+            # The email as it goes out, for the preview. The script on the page
+            # puts the text of the message field in place of the placeholder.
+            from accounts.invitation_views import invitation_email
+            context['invite_language_name'] = language_name(default_language(org))
+            with translation.override(recipient_language(None, organization=org)):
+                context['invite_preview_html'] = invitation_email(org, request.user, '#', message='…')[2]
     return render(request, 'admin_dashboard/org_chart/index.html', context)
 
 
@@ -3747,6 +3901,7 @@ def org_chart_import_map(request):
 
     errors = []
     over_limit = None
+    changes = mapping_key = None
     if request.method == 'POST':
         mapping = {}
         for field, _label in FIELDS:
@@ -3762,15 +3917,34 @@ def org_chart_import_map(request):
             new_people = count_new_people(request.organization, mapped)
             if headroom is not None and new_people > headroom:
                 over_limit = {'new': new_people, 'allowed': headroom}
+        # The import runs only on a preview of this same mapping: 'confirm' holds the
+        # mapping the admin saw the preview for.
+        mapping_key = ','.join('' if mapping[field] is None else str(mapping[field]) for field, _label in FIELDS)
+        confirmed = request.POST.get('confirm') == mapping_key
         if not errors and not over_limit:
-            stats, errors = import_org_chart(request.organization, mapped)
-            if not errors:
+            stats, errors = import_org_chart(
+                request.organization, mapped,
+                deactivate_missing=confirmed and bool(request.POST.get('deactivate_missing')),
+                dry_run=not confirmed,
+            )
+            if not errors and confirmed:
                 del request.session['org_import']
                 messages.success(
                     request,
-                    _('Imported %(units)s units: %(created)s new people, %(updated)s updated.') % stats,
+                    _('Imported %(units)s units: %(created)s new people, %(updated)s updated.')
+                    % {**stats, 'created': len(stats['created'])},
                 )
+                if stats['deactivated']:
+                    messages.info(request, ngettext(
+                        '%(count)s person who is not in the file was deactivated.',
+                        '%(count)s people who are not in the file were deactivated.',
+                        stats['deactivated']) % {'count': stats['deactivated']})
                 return redirect('org_chart')
+            if not errors:
+                changes = stats
+                changes['active_without_missing'] = stats['active'] - len(stats['missing'])
+                changes['nothing'] = not (stats['people'] or stats['units_created']
+                                          or stats['units_removed'] or stats['missing'])
     else:
         mapping = guess_mapping(headers)
 
@@ -3783,7 +3957,9 @@ def org_chart_import_map(request):
         'errors': errors[:20],
         'more_errors': max(0, len(errors) - 20),
         'over_limit': over_limit,
-        'has_units': OrgUnit.objects.filter(organization=request.organization).exists(),
+        'changes': changes,
+        'mapping_key': mapping_key,
+        'plan': get_subscription_status(request.organization),
     })
 
 
@@ -4013,7 +4189,6 @@ def org_chart_membership_create(request):
             {'error': 'role must be "manager" or "member".'},
             status=400,
         )
-    row = 0 if role == OrgUnitMembership.MANAGER else 1
 
     mode = request.POST.get('mode', 'copy')
 
@@ -4035,19 +4210,7 @@ def org_chart_membership_create(request):
                 status=400,
             )
 
-        # Append at the next unused col in this row.
-        next_col = (
-            unit.memberships.filter(row=row)
-            .aggregate(m=Max('col'))['m']
-        )
-        col = 0 if next_col is None else next_col + 1
-
-        OrgUnitMembership.objects.create(
-            unit=unit,
-            reviewee=reviewee,
-            row=row,
-            col=col,
-        )
+        append_membership(unit, reviewee, role)
 
     return _chart_change_response(org)
 

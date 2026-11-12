@@ -116,6 +116,58 @@ def drop_stale():
     )
 
 
+def queued_team_invitations():
+    """The invitations to join an organization that the cron still has to send."""
+    from accounts.models import OrganizationInvitation
+    return OrganizationInvitation.objects.filter(
+        email_queued_at__isnull=False,
+        accepted_at__isnull=True,
+        email_attempts__lt=MAX_ATTEMPTS,
+    )
+
+
+def send_queued_team_invitation(invitation_id, connection, stats):
+    """One invitation to join an organization, in its own transaction."""
+    from django.utils import translation
+    from accounts.invitation_views import invitation_email
+    from accounts.models import Reviewee
+    from core.email import send_email
+    from core.languages import recipient_language
+    from core.url import get_absolute_url
+
+    with transaction.atomic():
+        invitation = (
+            queued_team_invitations()
+            .filter(pk=invitation_id)
+            .select_for_update(skip_locked=True, of=('self',))
+            .select_related('organization', 'invited_by')
+            .first()
+        )
+        if invitation is None:
+            return
+        org = invitation.organization
+        try:
+            # A manager is a person in the org chart, and that person can have a language of their own.
+            own_language = Reviewee.objects.filter(
+                organization=org, email__iexact=invitation.email).values_list('language', flat=True).first()
+            with translation.override(recipient_language(own_language, organization=org)):
+                subject, text, html = invitation_email(
+                    org, invitation.invited_by,
+                    get_absolute_url('accept_invitation', token=invitation.token), invitation.message)
+                send_email(subject=subject, message=text, recipient_list=[invitation.email], html_message=html,
+                           from_email=org.from_email or None, connection=connection)
+        except Exception as e:
+            logger.exception('Sending team invitation %s failed', invitation_id)
+            record_failure(queued_team_invitations().filter(pk=invitation.pk), e, 'email_')
+            stats['errors'].append(
+                _('Failed to send the invitation to %(email)s: %(error)s') % {'email': invitation.email, 'error': error_text(e)}
+            )
+            close_quietly(connection)
+            return
+        queued_team_invitations().filter(pk=invitation.pk).update(email_queued_at=None, email_error='', email_attempts=0)
+        stats['sent'] += 1
+
+
 def error_text(error):
     """What the admin reads about a failed send."""
     return f'{type(error).__name__}: {error}' if str(error) else type(error).__name__
@@ -145,7 +197,8 @@ def send_queued_emails():
     stats = {'sent': 0, 'tokens': 0, 'errors': []}
     drop_stale()
 
-    if not (queued_tokens(INVITATION).exists() or queued_tokens(REMINDER).exists() or queued_links_emails().exists()):
+    if not (queued_tokens(INVITATION).exists() or queued_tokens(REMINDER).exists() or queued_links_emails().exists()
+            or queued_team_invitations().exists()):
         return stats
 
     # One connection for the whole run: opening one per email is what made a bulk send slow
@@ -158,6 +211,7 @@ def send_queued_emails():
             (queued_tokens(INVITATION), 'email_'),
             (queued_tokens(REMINDER), 'email_'),
             (queued_links_emails(), 'links_email_'),
+            (queued_team_invitations(), 'email_'),
         ):
             record_failure(queryset, e, prefix)
         stats['errors'].append(_('Could not connect to the mail server: %(error)s') % {'error': error_text(e)})
@@ -170,6 +224,9 @@ def send_queued_emails():
 
         for cycle_id in list(queued_links_emails().order_by('pk').values_list('pk', flat=True)):
             send_queued_links_email(cycle_id, connection, stats)
+
+        for invitation_id in list(queued_team_invitations().order_by('pk').values_list('pk', flat=True)):
+            send_queued_team_invitation(invitation_id, connection, stats)
     finally:
         close_quietly(connection)
 

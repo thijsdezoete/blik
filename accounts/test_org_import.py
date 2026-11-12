@@ -21,10 +21,10 @@ class ImportOrgChartTests(TestCase):
     def setUp(self):
         self.org = OrganizationFactory()
 
-    def _import(self, text=CSV):
+    def _import(self, text=CSV, **options):
         rows, errors = rows_from_csv(text.encode())
         self.assertEqual(errors, [])
-        return import_org_chart(self.org, rows)
+        return import_org_chart(self.org, rows, **options)
 
     def _members(self, unit_name, role):
         return sorted(
@@ -36,7 +36,8 @@ class ImportOrgChartTests(TestCase):
         stats, errors = self._import()
 
         self.assertEqual(errors, [])
-        self.assertEqual(stats, {'created': 5, 'updated': 0, 'units': 2})
+        self.assertEqual(len(stats['created']), 5)
+        self.assertEqual(stats['units_created'], ['Chair of Physics', 'Optics'])
         self.assertEqual(self._members('Chair of Physics', 'manager'), ['ada@uni.example'])
         self.assertEqual(self._members('Chair of Physics', 'member'), ['hank@uni.example', 'hilde@uni.example'])
         self.assertEqual(self._members('Optics', 'manager'), ['hank@uni.example'])
@@ -47,18 +48,86 @@ class ImportOrgChartTests(TestCase):
         self.assertEqual([r.email for r in hank['peer']], ['hilde@uni.example'])
         self.assertEqual([r.email for r in hank['direct_report']], ['sam@uni.example', 'sue@uni.example'])
 
-    def test_import_again_replaces_the_chart_and_updates_people(self):
+    def test_import_again_keeps_the_units_and_moves_only_who_changed(self):
         RevieweeFactory(organization=self.org, email='sam@uni.example', name='Old name')
         self._import()
+        optics = OrgUnit.objects.get(name='Optics')
+        OrgUnit.objects.filter(pk=optics.pk).update(name='Optics lab', display_order=7)
+        before = list(OrgUnitMembership.objects.filter(unit=optics).values_list('pk', flat=True))
 
-        stats, errors = self._import(CSV.replace('Sue Staff;sue@uni.example;Optics;hank@uni.example\n', ''))
+        # Hilde now reports to Hank; nothing else changes.
+        stats, errors = self._import(CSV.replace('Lasers;ada@uni.example', 'Lasers;hank@uni.example'))
 
         self.assertEqual(errors, [])
-        self.assertEqual(stats['updated'], 4)
-        self.assertEqual(OrgUnit.objects.filter(organization=self.org).count(), 2)
-        self.assertEqual(self._members('Optics', 'member'), ['sam@uni.example'])
+        self.assertEqual((stats['updated'], stats['unchanged'], stats['units_created'], stats['units_removed']), (5, 4, [], []))
+        self.assertEqual(stats['people'], [{
+            'name': 'Hilde Head', 'email': 'hilde@uni.example', 'kind': 'moved',
+            'before': ['In Chair of Physics, reports to Prof Ada'], 'after': ['In Optics lab, reports to Hank Head']}])
+        optics.refresh_from_db()
+        self.assertEqual((optics.name, optics.display_order), ('Optics lab', 7))
+        self.assertEqual(self._members('Optics lab', 'member'), ['hilde@uni.example', 'sam@uni.example', 'sue@uni.example'])
+        self.assertEqual(self._members('Chair of Physics', 'member'), ['hank@uni.example'])
+        self.assertTrue(set(before) <= set(OrgUnitMembership.objects.filter(unit=optics).values_list('pk', flat=True)))
         self.assertEqual(Reviewee.objects.get(email='sam@uni.example').name, 'Sam Staff')
-        self.assertFalse(OrgUnitMembership.objects.filter(reviewee__email='sue@uni.example').exists())
+
+    def test_people_not_in_the_file_stay_unless_deactivated(self):
+        self._import()
+        without_sue = CSV.replace('Sue Staff;sue@uni.example;Optics;hank@uni.example\n', '')
+
+        stats, _errors = self._import(without_sue)
+
+        self.assertEqual([(m['email'], m['before']) for m in stats['missing']],
+                         [('sue@uni.example', ['In Optics, reports to Hank Head'])])
+        self.assertEqual(self._members('Optics', 'member'), ['sam@uni.example', 'sue@uni.example'])
+        self.assertTrue(Reviewee.objects.get(email='sue@uni.example').is_active)
+
+        stats, _errors = self._import(without_sue, deactivate_missing=True)
+
+        self.assertEqual((stats['deactivated'], stats['active']), (1, 4))
+        self.assertEqual(self._members('Optics', 'member'), ['sam@uni.example'])
+        self.assertFalse(Reviewee.objects.get(email='sue@uni.example').is_active)
+
+    def test_dry_run_reports_the_changes_and_writes_nothing(self):
+        self._import()
+        text = CSV.replace('Sam Staff;sam@uni.example;Optics;hank@uni.example\nSue Staff;sue@uni.example;Optics;hank@uni.example\n',
+                           'New Nia;nia@uni.example;Lasers;hilde@uni.example\n')
+
+        stats, errors = self._import(text, deactivate_missing=True, dry_run=True)
+
+        self.assertEqual(errors, [])
+        self.assertEqual(stats['created'], ['New Nia'])
+        self.assertEqual([(p['kind'], p['before'], p['after']) for p in stats['people'] if p['name'] == 'New Nia'],
+                         [('new', [], ['In Lasers, reports to Hilde Head'])])
+        self.assertEqual((stats['units_created'], stats['units_removed'], stats['deactivated']), (['Lasers'], ['Optics'], 2))
+        self.assertFalse(Reviewee.objects.filter(email='nia@uni.example').exists())
+        self.assertEqual(OrgUnit.objects.filter(organization=self.org).count(), 2)
+        self.assertTrue(Reviewee.objects.get(email='sue@uni.example').is_active)
+
+    def test_a_new_manager_takes_over_the_unit_of_the_old_one(self):
+        self._import()
+        optics = OrgUnit.objects.get(name='Optics')
+
+        # Sam becomes head of Optics; Hank reports to Sam.
+        stats, errors = self._import(
+            'name;email;department;manager_email\n'
+            'Prof Ada;ada@uni.example;Chair of Physics;\n'
+            'Hilde Head;hilde@uni.example;Lasers;ada@uni.example\n'
+            'Sam Staff;sam@uni.example;Optics;ada@uni.example\n'
+            'Hank Head;hank@uni.example;Optics;sam@uni.example\n'
+            'Sue Staff;sue@uni.example;Optics;sam@uni.example\n')
+
+        self.assertEqual(errors, [])
+        self.assertEqual((stats['units_created'], stats['units_removed']), ([], []))
+        self.assertEqual(OrgUnit.objects.get(name='Optics').pk, optics.pk)
+        self.assertEqual(self._members('Optics', 'manager'), ['sam@uni.example'])
+        self.assertEqual(self._members('Optics', 'member'), ['hank@uni.example', 'sue@uni.example'])
+        self.assertEqual(self._members('Chair of Physics', 'member'), ['hilde@uni.example', 'sam@uni.example'])
+
+    def test_a_reporting_line_in_a_circle_is_an_error(self):
+        stats, errors = self._import('name;email;manager\nA;a@x.example;b@x.example\nB;b@x.example;a@x.example\n')
+
+        self.assertIsNone(stats)
+        self.assertEqual(len(errors), 2)
 
     def test_errors_write_nothing(self):
         text = CSV + 'Max Mystery;max@uni.example;Optics;nobody@uni.example\nBad;not-an-email;;\n'
@@ -139,11 +208,17 @@ class ImportViewTests(TestCase):
         upload = self.client.post(reverse('org_chart_import'),
                                   {'file': SimpleUploadedFile('people.csv', csv.encode())})
         page = self.client.get(reverse('org_chart_import_map'))
-        done = self.client.post(reverse('org_chart_import_map'),
-                                {'name': '0', 'email': '1', 'department': '2', 'manager': '3'})
+        mapping = {'name': '0', 'email': '1', 'department': '2', 'manager': '3'}
+        preview = self.client.post(reverse('org_chart_import_map'), mapping)
+        saved_by_preview = OrgUnit.objects.filter(organization=org).count()
+        # A confirmation for another mapping than the one posted shows the changes again.
+        stale = self.client.post(reverse('org_chart_import_map'), {**mapping, 'confirm': '0,,,1,2,'})
+        done = self.client.post(reverse('org_chart_import_map'), {**mapping, 'confirm': preview.context['mapping_key']})
 
         self.assertRedirects(upload, reverse('org_chart_import_map'), fetch_redirect_response=False)
         self.assertEqual([f[2] for f in page.context['fields']], [0, None, None, 1, 2, 3])
+        self.assertEqual(preview.context['changes']['created'], ['Ada', 'Bob'])
+        self.assertEqual((saved_by_preview, stale.status_code), (0, 200))
         self.assertRedirects(done, reverse('org_chart'))
         self.assertEqual(
             list(OrgUnitMembership.objects.filter(unit__organization=org).values_list('unit__name', 'reviewee__email', 'role')),

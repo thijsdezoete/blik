@@ -23,6 +23,7 @@
             {% endfor %}
         </nav>
         {% if stage %}<input type="hidden" name="stage" value="{{ stage }}">{% endif %}
+        {% if needs %}<input type="hidden" name="needs" value="{{ needs }}">{% endif %}
         <div class="list-filter-fields">
             <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="{% trans 'Search reviewee name or email' %}" aria-label="{% trans 'Search reviewee' %}" title="{% trans 'Press / to search' %}">
             <select name="questionnaire" class="form-control" aria-label="{% trans 'Questionnaire' %}" onchange="this.form.requestSubmit()">
@@ -36,7 +37,7 @@
                 <option value="{{ key }}" {% if sort == key %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
             </select>
-            <span id="cycle-clear">{% if is_filtered %}<a href="?{% querystring stage=None q=None questionnaire=None page=None %}" class="btn btn-sm btn-secondary">{% trans 'Clear filters' %}</a>{% endif %}</span>
+            <span id="cycle-clear">{% if is_filtered %}<a href="?{% querystring stage=None needs=None q=None questionnaire=None page=None %}" class="btn btn-sm btn-secondary">{% if needs %}{% blocktrans trimmed with label=needs_label %}{{ label }}: clear filters{% endblocktrans %}{% else %}{% trans 'Clear filters' %}{% endif %}</a>{% endif %}</span>
         </div>
     </form>
     <div id="cycle-results">
@@ -66,7 +67,7 @@
                 <tr>
                     <td>
                         <div style="font-weight: 500;">{{ cycle.reviewee.name }}</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">{{ cycle.reviewee.email }}</div>
+                        <div class="person-email">{{ cycle.reviewee.email }}{% if not cycle.reviewee.is_active %} · {% trans 'Deactivated' %}{% endif %}</div>
                     </td>
                     <td>
                         <div style="font-weight: 500;">{{ cycle.questionnaire.name }}</div>
@@ -96,7 +97,7 @@
                     <td>
                         {% if cycle.report_only %}
                         <a href="{% url 'reports:view_report' cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'Report' %}</a>
-                        {% elif perms.accounts.can_manage_organization %}
+                        {% elif perms.accounts.can_manage_organization and cycle.reviewee.is_active %}
                         <div style="display: flex; gap: 0.5rem; align-items: center;">
                             <button type="button" class="btn btn-sm btn-primary" data-reviewee-dialog="start-review-{{ cycle.uuid }}" aria-haspopup="dialog">{% trans 'New Cycle' %}</button>
                             <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View' %}</a>

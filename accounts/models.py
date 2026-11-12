@@ -78,6 +78,14 @@ class OrganizationInvitation(TimeStampedModel):
     accepted_at = models.DateTimeField(_('accepted at'), null=True, blank=True)
     expires_at = models.DateTimeField(_('expires at'))
 
+    # A text of the inviter that goes into the invitation email.
+    message = models.TextField(_('message'), blank=True, default='')
+    # The outbox, as on reviewer tokens: the send_queued_invitations cron sends the
+    # email and empties email_queued_at (see reviews/outbox.py).
+    email_queued_at = models.DateTimeField(_('email queued at'), null=True, blank=True)
+    email_error = models.TextField(_('email error'), blank=True, default='')
+    email_attempts = models.PositiveSmallIntegerField(_('email attempts'), default=0)
+
     objects = OrganizationManager()
 
     class Meta:

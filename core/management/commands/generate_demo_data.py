@@ -136,30 +136,26 @@ class Command(BaseCommand):
         active_count = 0
         partial_count = 0
 
-        for reviewee in reviewees:
-            # 70% chance of having at least one cycle
-            if random.random() > 0.3:
-                questionnaire = random.choice(questionnaires)
-
-                # Determine cycle state
-                rand = random.random()
-                if rand < 0.4:  # 40% completed cycles
-                    cycle = self._create_completed_cycle(
-                        reviewee, questionnaire, admin_user
-                    )
-                    completed_count += 1
-                elif rand < 0.7:  # 30% partially completed (active)
-                    cycle = self._create_partial_cycle(
-                        reviewee, questionnaire, admin_user
-                    )
-                    partial_count += 1
-                else:  # 30% just started (active)
-                    cycle = self._create_new_cycle(
-                        reviewee, questionnaire, admin_user
-                    )
-                    active_count += 1
-
-                cycle_count += 1
+        # A fixed mix, so the example data always shows every state on the
+        # dashboard: reports to read, cycles that collect answers, one that
+        # has enough answers for a report, and new ones. Every fourth person
+        # has no cycle yet.
+        mix = ['completed', 'partial', 'new', None, 'completed', 'enough', 'partial', None, 'completed', 'new']
+        for index, reviewee in enumerate(reviewees):
+            state = mix[index % len(mix)]
+            if state is None:
+                continue
+            questionnaire = random.choice(questionnaires)
+            if state == 'completed':
+                cycle = self._create_completed_cycle(reviewee, questionnaire, admin_user)
+                completed_count += 1
+            elif state == 'new':
+                cycle = self._create_new_cycle(reviewee, questionnaire, admin_user)
+                active_count += 1
+            else:
+                cycle = self._create_partial_cycle(reviewee, questionnaire, admin_user, enough=state == 'enough')
+                partial_count += 1
+            cycle_count += 1
 
         self.stdout.write(self.style.SUCCESS(
             f'Created {cycle_count} review cycles:\n'
@@ -632,8 +628,32 @@ class Command(BaseCommand):
 
         return cycle
 
-    def _create_partial_cycle(self, reviewee, questionnaire, admin_user):
-        """Create a cycle with some completed tokens, some in progress"""
+    def _invitations(self, cycle, reviewee):
+        """
+        Decide how this cycle asks its reviewers, and start it some days ago.
+        Two of three cycles invite colleagues by email; the third shares a link, so
+        their tokens have no address. Returns the extra token fields per category.
+        """
+        started = timezone.now() - timedelta(days=random.randint(2, 20))
+        ReviewCycle.objects.filter(pk=cycle.pk).update(created_at=started)
+        self._cycles_made = getattr(self, '_cycles_made', 0) + 1
+        if self._cycles_made % 3 == 0:
+            return lambda category: {}
+        colleagues = list(
+            Reviewee.objects.filter(organization=reviewee.organization)
+            .exclude(pk=reviewee.pk).values_list('email', flat=True))
+
+        def invited(category):
+            email = reviewee.email if category == 'self' or not colleagues else random.choice(colleagues)
+            return {'reviewer_email': email, 'invitation_sent_at': started}
+        return invited
+
+    def _create_partial_cycle(self, reviewee, questionnaire, admin_user, enough=False):
+        """
+        Create a cycle with some completed tokens, some in progress. With
+        `enough`, each group that has reviewers has three answers or more:
+        enough for a report at the default anonymity threshold.
+        """
         cycle = ReviewCycle.objects.create(
             reviewee=reviewee,
             questionnaire=questionnaire,
@@ -641,13 +661,19 @@ class Command(BaseCommand):
             status='active'
         )
 
-        num_tokens = random.randint(5, 8)
-        categories = ['self'] + ['peer'] * 3 + ['manager'] + ['direct_report'] * 2
-        categories = categories[:num_tokens]
-        random.shuffle(categories)
+        invited = self._invitations(cycle, reviewee)
+        if enough:
+            # The three peers have answered; the self-assessment is still open.
+            categories = ['peer'] * 3 + ['self']
+            num_tokens, num_completed = 4, 3
+        else:
+            num_tokens = random.randint(5, 8)
+            categories = ['self'] + ['peer'] * 3 + ['manager'] + ['direct_report'] * 2
+            categories = categories[:num_tokens]
+            random.shuffle(categories)
 
-        # 40-70% of tokens completed
-        num_completed = random.randint(int(num_tokens * 0.4), int(num_tokens * 0.7))
+            # 40-70% of tokens completed
+            num_completed = random.randint(int(num_tokens * 0.4), int(num_tokens * 0.7))
 
         for i, category in enumerate(categories):
             claimed_time = timezone.now() - timedelta(days=random.randint(3, 21))
@@ -658,6 +684,7 @@ class Command(BaseCommand):
                     cycle=cycle,
                     category=category,
                     token=uuid.uuid4(),
+                    **invited(category),
                     claimed_at=claimed_time,
                     completed_at=claimed_time + timedelta(hours=random.randint(1, 72))
                 )
@@ -683,6 +710,7 @@ class Command(BaseCommand):
                     cycle=cycle,
                     category=category,
                     token=uuid.uuid4(),
+                    **invited(category),
                     claimed_at=claimed_time
                 )
             else:
@@ -690,7 +718,8 @@ class Command(BaseCommand):
                 ReviewerToken.objects.create(
                     cycle=cycle,
                     category=category,
-                    token=uuid.uuid4()
+                    token=uuid.uuid4(),
+                    **invited(category)
                 )
 
         return cycle
@@ -704,6 +733,7 @@ class Command(BaseCommand):
             status='active'
         )
 
+        invited = self._invitations(cycle, reviewee)
         num_tokens = random.randint(5, 8)
         categories = ['self'] + ['peer'] * 3 + ['manager'] + ['direct_report'] * 2
         categories = categories[:num_tokens]
@@ -717,13 +747,15 @@ class Command(BaseCommand):
                     cycle=cycle,
                     category=category,
                     token=uuid.uuid4(),
+                    **invited(category),
                     claimed_at=claimed_time
                 )
             else:
                 ReviewerToken.objects.create(
                     cycle=cycle,
                     category=category,
-                    token=uuid.uuid4()
+                    token=uuid.uuid4(),
+                    **invited(category)
                 )
 
         return cycle

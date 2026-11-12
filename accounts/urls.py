@@ -11,5 +11,8 @@ urlpatterns = [
     path('forgot-password/', views.forgot_password_view, name='forgot_password'),
     path('reset-password/<str:token>/', views.reset_password_view, name='reset_password'),
     path('invite/', invitation_views.send_invitation, name='send_invitation'),
+    path('invite/managers/', invitation_views.invite_managers, name='invite_managers'),
+    path('invite/<int:pk>/withdraw/', invitation_views.withdraw_invitation, name='withdraw_invitation'),
+    path('invite/<int:pk>/resend/', invitation_views.resend_invitation, name='resend_invitation'),
     path('invite/<str:token>/', invitation_views.accept_invitation, name='accept_invitation'),
 ]

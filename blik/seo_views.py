@@ -39,6 +39,7 @@ def sitemap(request):
     exclude_names = {
         'og_image', 'robots', 'sitemap', 'signup',
         'dreyfus_assessment_submit', 'dreyfus_capture_email',
+        'compare_tool',  # one URL per vendor, added below
     }
 
     # Priority overrides (default is 0.8)
@@ -61,6 +62,7 @@ def sitemap(request):
         'vs_odoo': 0.9,
         'vs_engagedly': 0.9,
         'vs_small_improvements': 0.9,
+        'compare': 0.95,
     }
 
     # Changefreq overrides (default is monthly)
@@ -96,6 +98,15 @@ def sitemap(request):
         <lastmod>{lastmod}</lastmod>
         <changefreq>{changefreq}</changefreq>
         <priority>{priority}</priority>
+    </url>''')
+
+    from landing.competitors import VENDORS, CHECKED_ISO
+    for vendor in VENDORS:
+        urls.append(f'''    <url>
+        <loc>{base_url}{prefix}/compare/{vendor['slug']}/</loc>
+        <lastmod>{CHECKED_ISO}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
     </url>''')
 
     sitemap_xml = f'''<?xml version="1.0" encoding="UTF-8"?>

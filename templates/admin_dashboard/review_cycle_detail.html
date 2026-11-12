@@ -9,6 +9,7 @@
         <div>
             <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
                 {{ cycle.reviewee.name }}
+                {% if not cycle.reviewee.is_active %}<span class="badge badge-secondary">{% trans 'Deactivated' %}</span>{% endif %}
                 {% if cycle.status == 'active' %}
                 <span class="badge badge-warning">{% trans 'Active' %}</span>
                 {% else %}

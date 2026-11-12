@@ -441,7 +441,7 @@ class Command(BaseCommand):
                     'url': f'{base_url}/dashboard/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'light',
-                    'wait_for': '.stats-grid',
+                    'wait_for': '.dash-card',
                 },
                 # 8. Admin Dashboard - Desktop Dark
                 {
@@ -449,7 +449,7 @@ class Command(BaseCommand):
                     'url': f'{base_url}/dashboard/',
                     'viewport': {'width': 1920, 'height': 1080},
                     'theme': 'dark',
-                    'wait_for': '.stats-grid',
+                    'wait_for': '.dash-card',
                 },
                 # 9. Admin Dashboard - Mobile Light
                 {
@@ -457,7 +457,7 @@ class Command(BaseCommand):
                     'url': f'{base_url}/dashboard/',
                     'viewport': {'width': 375, 'height': 812},
                     'theme': 'light',
-                    'wait_for': '.stats-grid',
+                    'wait_for': '.dash-card',
                 },
                 # 10. Admin Dashboard - Mobile Dark
                 {
@@ -465,7 +465,7 @@ class Command(BaseCommand):
                     'url': f'{base_url}/dashboard/',
                     'viewport': {'width': 375, 'height': 812},
                     'theme': 'dark',
-                    'wait_for': '.stats-grid',
+                    'wait_for': '.dash-card',
                 },
                 # 11. Review Cycle Detail - Desktop Light
                 {
@@ -603,10 +603,9 @@ class Command(BaseCommand):
                 # Add cookies
                 await page.context.add_cookies(cookies)
 
-                # Set theme and dismiss welcome modal
+                # Set theme
                 await page.add_init_script(f'''
                     localStorage.setItem('theme', '{screenshot_config['theme']}');
-                    localStorage.setItem('blik_welcome_seen', 'true');
                 ''')
 
                 # Navigate to page
@@ -806,7 +805,6 @@ class Command(BaseCommand):
 
                     await page.add_init_script(f'''
                         localStorage.setItem('theme', '{screenshot_config['theme']}');
-                        localStorage.setItem('blik_welcome_seen', 'true');
                     ''')
 
                     await page.goto(screenshot_config['url'])
@@ -886,7 +884,6 @@ class Command(BaseCommand):
             await page.context.add_cookies(cookies)
             await page.add_init_script('''
                 localStorage.setItem('theme', 'light');
-                localStorage.setItem('blik_welcome_seen', 'true');
             ''')
             try:
                 ok = await open_page(page, config, base_url)

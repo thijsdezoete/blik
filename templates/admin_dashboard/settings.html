@@ -117,6 +117,23 @@
                         <div class="form-check">
                             <input
                                 type="checkbox"
+                                id="hide_below_threshold_from_managers"
+                                name="hide_below_threshold_from_managers"
+                                class="form-check-input"
+                                {% if organization.hide_below_threshold_from_managers %}checked{% endif %}
+                                {% if not perms.accounts.can_manage_organization %}disabled{% endif %}
+                            >
+                            <label class="form-label" for="hide_below_threshold_from_managers" style="display: inline; font-weight: normal;">
+                                {% trans 'Hide answers below the threshold from managers' %}
+                            </label>
+                        </div>
+                        <small class="help-text">{% trans 'When disabled, managers see all answers in their view of the report. The report of the reviewee always hides the groups below the threshold.' %}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input
+                                type="checkbox"
                                 id="auto_send_report_email"
                                 name="auto_send_report_email"
                                 class="form-check-input"
@@ -195,7 +212,7 @@
                                 {% trans 'New users can create cycles for others' %}
                             </label>
                         </div>
-                        <small class="help-text">{% trans 'If disabled, new users can only create cycles for themselves' %}</small>
+                        <small class="help-text">{% trans 'New users can then create and run cycles for the people in the units they manage. If disabled, new users can only create cycles for themselves.' %}</small>
                     </div>
 
                     {% if perms.accounts.can_manage_organization %}
@@ -205,6 +222,66 @@
                     {% endif %}
                 </div>
             </form>
+        </div>
+
+        <!-- Org chart reviewers -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">{% trans 'Reviewers from the org chart' %}</h2>
+            </div>
+            <form method="post" action="{% url 'settings' %}">
+                {% csrf_token %}
+                <input type="hidden" name="section" value="chart">
+                <fieldset class="card-body" style="border: 0; margin: 0; min-width: 0;" {% if not perms.accounts.can_manage_organization %}disabled{% endif %}>
+                    <div class="form-group">
+                        <label class="form-label" for="chart_depth">{% trans 'Levels below a person that give direct-report feedback' %}</label>
+                        <input type="number" id="chart_depth" name="chart_depth" class="form-input" min="1" max="99"
+                               value="{{ organization.chart_depth|default:1 }}" style="max-width: 6rem;">
+                        <div class="form-check" style="margin-top: 0.5rem;">
+                            <input type="checkbox" id="chart_depth_all" name="chart_depth_all" class="form-check-input"
+                                   {% if organization.chart_depth is None %}checked{% endif %}>
+                            <label class="form-label" for="chart_depth_all" style="display: inline; font-weight: normal;">{% trans 'All the way down' %}</label>
+                        </div>
+                        <small class="help-text">{% trans 'With 1 level, a manager gets feedback from the people in the units they manage. Each more level adds the units below those people.' %}</small>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="radio" id="chart_who_managers" name="chart_who" value="managers" class="form-check-input"
+                                   {% if organization.chart_managers_only %}checked{% endif %}>
+                            <label class="form-label" for="chart_who_managers" style="display: inline; font-weight: normal;">{% trans 'Below the first level: only managers' %}</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" id="chart_who_teams" name="chart_who" value="teams" class="form-check-input"
+                                   {% if not organization.chart_managers_only %}checked{% endif %}>
+                            <label class="form-label" for="chart_who_teams" style="display: inline; font-weight: normal;">{% trans 'Below the first level: entire teams' %}</label>
+                        </div>
+                        <small class="help-text">{% trans 'The first level is always the full team. This choice applies to the levels below it.' %}</small>
+                    </div>
+                    <div id="chartDepthWarning" class="alert alert-warning" role="alert" style="display: none;">
+                        {% trans 'Entire teams over more than one level give many feedback requests. Example: in a chart of 300 people with "All the way down", the person at the top gets 299 reviewers, and each person gets one request for each manager above them.' %}
+                    </div>
+                    {% if perms.accounts.can_manage_organization %}
+                    <div style="margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary btn-sm">{% trans 'Save Changes' %}</button>
+                    </div>
+                    {% endif %}
+                </fieldset>
+            </form>
+            <script>
+            (function () {
+                const depth = document.getElementById('chart_depth');
+                const all = document.getElementById('chart_depth_all');
+                const teams = document.getElementById('chart_who_teams');
+                function update() {
+                    depth.disabled = all.checked;
+                    document.getElementById('chartDepthWarning').style.display =
+                        teams.checked && (all.checked || depth.value > 1) ? '' : 'none';
+                }
+                [depth, all, teams, document.getElementById('chart_who_managers')]
+                    .forEach(el => el.addEventListener('input', update));
+                update();
+            })();
+            </script>
         </div>
 
     </div>
@@ -816,7 +893,7 @@ function displayPreview(preview, warnings) {
         <div style="display: grid; gap: 1rem;">
             <div>
                 <strong>{{ _('Organization:')|escapejs }}</strong> ${preview.organization_name}
-                ${preview.organization_email ? `<br><small style="color: var(--text-secondary);">${preview.organization_email}</small>` : ''}
+                ${preview.organization_email ? `<span class="person-email">${preview.organization_email}</span>` : ''}
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; padding: 1rem; background: var(--bg-card); border-radius: 6px;">

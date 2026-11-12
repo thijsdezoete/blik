@@ -14,7 +14,7 @@ from accounts.factories import (
     OrgUnitMembershipFactory,
     UserProfileFactory,
 )
-from accounts.models import UserProfile
+from accounts.models import Reviewee, UserProfile
 from core.factories import OrganizationFactory, UserFactory
 from questionnaires.factories import QuestionnaireFactory
 from reviews.models import ReviewCycle, ReviewerToken
@@ -134,6 +134,50 @@ class BulkChartDerivationTests(TestCase):
                 reviewee__organization=self.org):
             self.assertEqual(
                 cycle.tokens.filter(reviewer_email__isnull=False).count(), 0)
+
+    def test_bulk_previous_source_copies_each_reviewees_latest_cycle(self):
+        from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
+        alice = RevieweeFactory(organization=self.org, email='alice@example.com')
+        RevieweeFactory(organization=self.org, email='bob@example.com')  # no earlier cycle
+        own = QuestionnaireFactory(organization=self.org)
+        ReviewCycleFactory(reviewee=alice, questionnaire=self.questionnaire)  # older, ignored
+        latest = ReviewCycleFactory(reviewee=alice, questionnaire=own, include_direct_report=False)
+        ReviewerTokenFactory(cycle=latest, category='manager', reviewer_email='Boss@example.com')
+        ReviewerTokenFactory(cycle=latest, category='peer', reviewer_email='pal@example.com')
+        ReviewerTokenFactory(cycle=latest, category='peer')  # never assigned: not copied
+        # The earlier self-assessment went to an address alice no longer has.
+        ReviewerTokenFactory(cycle=latest, category='self', reviewer_email='old-alice@example.com')
+
+        resp = self.client.post(reverse('review_cycle_create'), {
+            'creation_mode': 'bulk',
+            'bulk_source': 'previous',  # no questionnaire: each cycle brings its own
+        })
+        self.assertEqual(resp.status_code, 302)
+
+        new = ReviewCycle.objects.exclude(pk=latest.pk).filter(reviewee=alice).first()
+        self.assertEqual(new.questionnaire, own)
+        self.assertFalse(new.include_direct_report)
+        emails = set(new.tokens.values_list('category', 'reviewer_email'))
+        self.assertEqual(emails, {('manager', 'boss@example.com'), ('peer', 'pal@example.com'),
+                                  ('self', 'alice@example.com')})
+        self.assertFalse(ReviewCycle.objects.filter(reviewee__email='bob@example.com').exists())
+
+    def test_bulk_preview_counts_the_cycles_and_creates_none(self):
+        from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
+        alice = RevieweeFactory(organization=self.org, email='alice@example.com')
+        RevieweeFactory(organization=self.org, email='bob@example.com')
+        previous = ReviewCycleFactory(reviewee=alice, questionnaire=self.questionnaire)
+        ReviewerTokenFactory(cycle=previous, category='peer', reviewer_email='pal@example.com')
+        people = Reviewee.objects.filter(organization=self.org, is_active=True).count()
+
+        def preview(source):
+            data = self.client.post(reverse('review_cycle_bulk_preview'), {'bulk_source': source}).json()
+            return data['count'], data['skipped']
+
+        self.assertEqual(preview('previous'), (1, people - 1))
+        self.assertEqual(preview('empty'), (people, 0))
+        self.assertEqual(preview('chart'), (0, people))  # nobody is in a unit
+        self.assertEqual(ReviewCycle.objects.count(), 1)
 
     def test_unplaced_reviewees_get_no_cycle_in_chart_mode(self):
         """

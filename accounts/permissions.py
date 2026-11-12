@@ -415,12 +415,12 @@ def visible_cycles(user, queryset, email_field='reviewee__email'):
     return queryset.filter(**{f'{email_field}__iexact': user.email})
 
 
-def reviewee_emails_below(user, organization):
+def direct_report_emails(user, organization):
     """
-    Emails of everyone below this user in the org chart: the members of the
-    units they manage, the members of the units those members manage, and so on.
+    Emails of this user's direct reports: the members of the units they manage.
 
-    A manager may read the reports of these people (not run their cycles).
+    A manager may read the reports of these people (not run their cycles), and
+    of nobody further down: wider access is the can_view_all_reports permission.
     The user is matched to a Reviewee by email, as everywhere else.
     """
     from accounts.models import OrgUnitMembership
@@ -428,26 +428,43 @@ def reviewee_emails_below(user, organization):
     if not organization or not getattr(user, 'email', ''):
         return set()
 
-    memberships = list(
-        OrgUnitMembership.objects
-        .filter(unit__organization=organization)
-        .values_list('unit_id', 'role', 'reviewee__email')
-    )
-    managed_units = {}  # email -> unit ids they manage
-    members = {}        # unit id -> member emails
-    for unit_id, role, email in memberships:
-        email = email.lower()
-        if role == OrgUnitMembership.MANAGER:
-            managed_units.setdefault(email, set()).add(unit_id)
-        else:
-            members.setdefault(unit_id, set()).add(email)
+    emails = OrgUnitMembership.objects.filter(
+        role=OrgUnitMembership.MEMBER,
+        unit__in=OrgUnitMembership.objects.filter(
+            unit__organization=organization,
+            role=OrgUnitMembership.MANAGER,
+            reviewee__email__iexact=user.email,
+        ).values('unit_id'),
+    ).values_list('reviewee__email', flat=True)
+    return {email.lower() for email in emails} - {user.email.lower()}
 
-    me = user.email.lower()
-    below, todo = set(), [me]
-    while todo:
-        for unit_id in managed_units.get(todo.pop(), ()):
-            for email in members.get(unit_id, ()):
-                if email not in below and email != me:
-                    below.add(email)
-                    todo.append(email)
-    return below
+
+def managers_without_account(organization):
+    """
+    The managers in the org chart who cannot log in: no account in this
+    organization has their email. Each comes with `invited`, whether an
+    invitation to them is still open. Until they have an account they cannot
+    read the reports of their direct reports.
+    """
+    from django.utils import timezone
+    from accounts.models import OrganizationInvitation, OrgUnitMembership, Reviewee, UserProfile
+
+    has_account = {
+        (email or '').lower() for email in
+        UserProfile.objects.filter(organization=organization).values_list('user__email', flat=True)
+    }
+    invited = {
+        email.lower() for email in OrganizationInvitation.objects.filter(
+            organization=organization, accepted_at__isnull=True, expires_at__gt=timezone.now(),
+        ).values_list('email', flat=True)
+    }
+    managers = Reviewee.objects.for_organization(organization).filter(
+        is_active=True, unit_memberships__role=OrgUnitMembership.MANAGER,
+    ).distinct().order_by('name')
+    out = []
+    for manager in managers:
+        email = (manager.email or '').lower()
+        if email and email not in has_account:
+            manager.invited = email in invited
+            out.append(manager)
+    return out

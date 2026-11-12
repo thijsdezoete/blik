@@ -142,6 +142,17 @@ class DashboardEntryPointTests(CycleGateBase):
         self.assertEqual(self.cycles(), 0)
         self.assertEqual(cycle_credits(self.org), self.active_reviewees - 1)
 
+    def test_bulk_create_needs_credits_only_for_the_cycles_it_creates(self):
+        from reviews.factories import ReviewerTokenFactory
+        grant(self.org, 2)
+        previous = ReviewCycle.objects.create(reviewee=self.reviewee, questionnaire=self.questionnaire)
+        ReviewerTokenFactory(cycle=previous, category='peer', reviewer_email='pal@example.com')
+        # One credit left and several active people, but only one has a previous cycle.
+        self.client.post(reverse('review_cycle_create'), {
+            'creation_mode': 'bulk', 'bulk_source': 'previous',
+        })
+        self.assertEqual((self.cycles(), cycle_credits(self.org)), (2, 0))
+
 
 class ApiEntryPointTests(CycleGateBase):
     def setUp(self):

@@ -68,7 +68,7 @@
                                        {% if not has_previous_cycles %}disabled{% endif %}
                                        style="margin-top: 0.25rem;">
                                 <div>
-                                    <div style="font-weight: 600;">{% trans 'Reuse previous settings per cycle' %}{% if not has_previous_cycles %} <span style="color: var(--text-tertiary); font-weight: normal;">({% trans 'no cycles yet' %})</span>{% endif %}</div>
+                                    <div style="font-weight: 600;">{% if has_previous_cycles %}{% trans 'Reuse previous settings per cycle' %}{% else %}{% blocktrans trimmed %}Reuse previous settings per cycle <span style="color: var(--text-tertiary); font-weight: normal;">(no cycles yet)</span>{% endblocktrans %}{% endif %}</div>
                                     <div style="font-size: 0.875rem; color: var(--text-secondary);">
                                         {% trans 'Copy the questionnaire, the categories and the reviewer emails of the previous cycle of each person. People without a previous cycle are skipped.' %}
                                     </div>

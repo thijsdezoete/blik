@@ -1975,6 +1975,21 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
     return planned, unplaced_count
 
 
+def skipped_sentence(bulk_source, skipped):
+    """Why a bulk run skips people, as a list with one sentence; empty when it skips nobody."""
+    if not skipped:
+        return []
+    if bulk_source == 'chart':
+        return [ngettext(
+            '%(skipped)s person is skipped: the org chart gives no reviewers for the selected categories.',
+            '%(skipped)s people are skipped: the org chart gives them no reviewers for the selected categories.',
+            skipped) % {'skipped': skipped}]
+    return [ngettext(
+        '%(skipped)s person is skipped: no previous cycle with reviewers and an active questionnaire.',
+        '%(skipped)s people are skipped: no previous cycle with reviewers and an active questionnaire.',
+        skipped) % {'skipped': skipped}]
+
+
 @login_required
 @require_POST
 def review_cycle_bulk_preview(request):
@@ -1989,16 +2004,7 @@ def review_cycle_bulk_preview(request):
         'This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for.',
         'This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for.',
         count) % {'count': count, 'total': count + skipped}]
-    if skipped and bulk_source == 'chart':
-        parts.append(ngettext(
-            '%(skipped)s person is skipped: the org chart gives no reviewers for the selected categories.',
-            '%(skipped)s people are skipped: the org chart gives them no reviewers for the selected categories.',
-            skipped) % {'skipped': skipped})
-    elif skipped:
-        parts.append(ngettext(
-            '%(skipped)s person is skipped: no previous cycle with reviewers and an active questionnaire.',
-            '%(skipped)s people are skipped: no previous cycle with reviewers and an active questionnaire.',
-            skipped) % {'skipped': skipped})
+    parts += skipped_sentence(bulk_source, skipped)
     return JsonResponse({'count': count, 'skipped': skipped, 'message': ' '.join(parts)})
 
 
@@ -2078,18 +2084,21 @@ def review_cycle_create(request):
                 ]
                 request.session['pending_bulk_source'] = bulk_source
 
+                # One sentence per count, so each can take its plural form; and
+                # nothing about skipped people when nobody was skipped.
+                created = len(created_cycles)
                 if bulk_source == 'chart':
-                    messages.success(
-                        request,
-                        _('Created %(count)s review cycles with reviewers from the org chart. %(unplaced)s reviewee(s) were skipped: the chart gives them no reviewers for the selected categories.')
-                        % {'count': len(created_cycles), 'unplaced': unplaced_count}
-                    )
+                    sentence = ngettext(
+                        'Created %(count)s review cycle with reviewers from the org chart.',
+                        'Created %(count)s review cycles with reviewers from the org chart.',
+                        created) % {'count': created}
+                    messages.success(request, ' '.join([sentence, *skipped_sentence(bulk_source, unplaced_count)]))
                 elif bulk_source == 'previous':
-                    messages.success(
-                        request,
-                        _('Created %(count)s review cycles with the questionnaire and reviewers of each person\'s previous cycle. %(skipped)s reviewee(s) were skipped: they have no previous cycle with reviewers and an active questionnaire.')
-                        % {'count': len(created_cycles), 'skipped': unplaced_count}
-                    )
+                    sentence = ngettext(
+                        'Created %(count)s review cycle with the questionnaire and reviewers of the previous cycle of that person.',
+                        'Created %(count)s review cycles, each with the questionnaire and reviewers of the previous cycle of that person.',
+                        created) % {'count': created}
+                    messages.success(request, ' '.join([sentence, *skipped_sentence(bulk_source, unplaced_count)]))
                 else:
                     messages.success(
                         request,

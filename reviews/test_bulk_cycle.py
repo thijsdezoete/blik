@@ -4,6 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from accounts.models import Reviewee
+from accounts.permissions import assign_organization_admin
 from core.factories import OrganizationFactory, UserFactory
 from accounts.factories import UserProfileFactory, RevieweeFactory
 from questionnaires.factories import QuestionnaireFactory
@@ -27,6 +28,9 @@ class BulkCycleCreationTestCase(TestCase):
             organization=self.org,
             can_create_cycles_for_others=True,
         )
+        # Only an organization admin creates cycles for everyone; another
+        # user with the permission creates for their own team.
+        assign_organization_admin(self.user)
         self.questionnaire = QuestionnaireFactory(organization=self.org, is_default=True)
         self.reviewees = [
             RevieweeFactory(organization=self.org, name=f'Reviewee {i}')

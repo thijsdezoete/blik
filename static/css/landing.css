@@ -1961,9 +1961,8 @@
     color: var(--primary);
 }
 
-/* Default for text links without a class of their own, instead of the browser's blue.
-   Specificity (0,1,1), so any rule for a link class or container still wins. */
-.landing-page a:where(:not([class])) {
+/* Default link colour instead of the browser's blue. :where() keeps it at (0,0,1), so every other link rule wins. */
+:where(.landing-page) a {
     color: var(--primary);
 }
 

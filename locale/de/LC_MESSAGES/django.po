@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 22:01+0000\n"
+"POT-Creation-Date: 2026-11-15 22:59+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1601,8 +1601,8 @@ msgid "Admin email is required."
 msgstr "Die Admin-E-Mail-Adresse ist erforderlich."
 
 #, python-format
-msgid "Review credits must be a number from 0 to %(max)s."
-msgstr "Feedbackrunden: eine Zahl zwischen 0 und %(max)s eingeben."
+msgid "Credits must be a number from 0 to %(max)s."
+msgstr "Die Anzahl der Feedbackrunden muss eine Zahl von 0 bis %(max)s sein."
 
 #, python-format
 msgid "Organization \"%(name)s\" already exists."
@@ -3515,12 +3515,12 @@ msgid "Login token for %(email)s"
 msgstr "Anmeldetoken für %(email)s"
 
 #, python-format
-msgid "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy more on the Billing page, or start a subscription there."
-msgstr "Dafür werden %(needed)s Feedbackrunde(n) benötigt, das Guthaben reicht für %(available)s. Weitere Pakete oder ein Abonnement gibt es auf der Seite Abrechnung."
+msgid "This needs %(needed)s credit(s) and you have %(available)s. Buy more on the Billing page, or start a subscription there."
+msgstr "Dafür werden %(needed)s Feedbackrunde(n) benötigt, verfügbar sind %(available)s. Weitere Pakete oder ein Abonnement gibt es auf der Seite Abrechnung."
 
 #, python-format
-msgid "Free accounts can invite up to %(max)s reviewers per review cycle. Buy review credits on the Billing page to invite more."
-msgstr "Kostenlose Konten können bis zu %(max)s Feedbackgebende pro Feedbackrunde einladen. Guthaben für mehr Feedbackgebende gibt es auf der Seite Abrechnung."
+msgid "Free accounts can invite up to %(max)s reviewers per review cycle. Buy credits on the Billing page to invite more."
+msgstr "Kostenlose Konten können bis zu %(max)s Feedbackgebende pro Feedbackrunde einladen. Mit einem Paket von der Seite Abrechnung sind mehr möglich."
 
 msgid "The card was declined: not enough funds."
 msgstr "Die Karte wurde abgelehnt: nicht genügend Deckung."
@@ -3957,7 +3957,7 @@ msgstr "Keine Zahlungsmethode hinterlegt."
 msgid "Change payment method"
 msgstr "Zahlungsmethode ändern"
 
-msgid "You pay per round. There is no subscription."
+msgid "You pay per pack of credits. There is no subscription."
 msgstr "Bezahlung pro Paket, ohne Abonnement."
 
 msgid "Usage"
@@ -3970,7 +3970,7 @@ msgstr "Aktive Feedbacknehmende"
 msgid "%(count)s of %(max)s"
 msgstr "%(count)s von %(max)s"
 
-msgid "Review credits left"
+msgid "Credits left"
 msgstr "Verbleibende Feedbackrunden"
 
 msgid "Not used while your subscription is active."
@@ -3992,12 +3992,12 @@ msgstr "Abonnement „EU Hosted“ starten"
 msgid "Start Enterprise subscription"
 msgstr "Abonnement „Enterprise“ starten"
 
-msgid "Buy review credits"
+msgid "Buy credits"
 msgstr "Feedbackrunden kaufen"
 
 #, python-format
-msgid "Purchase %(count)s review slots"
-msgstr "%(count)s Feedback-Plätze kaufen"
+msgid "Buy %(count)s credits"
+msgstr "%(count)s Feedbackrunden kaufen"
 
 #, python-format
 msgid "€%(price)s, excluding VAT"
@@ -4013,9 +4013,6 @@ msgstr "Wie viele Feedbackrunden werden benötigt?"
 #, python-format
 msgid "Credits come in packs of %(per_pack)s. One credit is one reviewee with one questionnaire. Credits do not expire."
 msgstr "Feedbackrunden gibt es in Paketen zu %(per_pack)s. Eine Feedbackrunde ist eine feedbacknehmende Person mit einem Fragebogen. Sie verfallen nicht."
-
-msgid "Buy credits"
-msgstr "Feedbackrunden kaufen"
 
 msgid "Invoices"
 msgstr "Rechnungen"
@@ -5377,8 +5374,8 @@ msgstr "Nach diesem Import aktiv, wenn die Personen deaktiviert werden, die nich
 msgid "Only active people count. The import does not change your plan or its price."
 msgstr "Nur aktive Personen zählen. Der Import ändert weder den Tarif noch den Preis."
 
-msgid "You pay per feedback cycle, not per person. The import starts no cycles and uses no credits."
-msgstr "Abgerechnet wird pro Feedbackrunde, nicht pro Person. Der Import startet keine Feedbackrunden und verbraucht kein Guthaben."
+msgid "You pay per review cycle, not per person. The import starts no cycles and uses no credits."
+msgstr "Abgerechnet wird pro Feedbackrunde, nicht pro Person. Der Import startet keine Feedbackrunden und kostet nichts."
 
 msgid "Your plan has no limit on the number of people. The import costs nothing."
 msgstr "Der Tarif begrenzt die Zahl der Personen nicht. Der Import kostet nichts."
@@ -5557,13 +5554,7 @@ msgstr "Nicht gesendet"
 msgid "Queued"
 msgstr "Im Postausgang"
 
-msgid "Buy a round"
-msgstr "Paket kaufen"
-
-msgid "Buy another round"
-msgstr "Weiteres Paket kaufen"
-
-msgid "Ask an organization administrator to buy another round."
+msgid "Ask an organization administrator to buy credits."
 msgstr "Weitere Pakete können nur Organisations-Admins kaufen."
 
 #, python-format
@@ -6895,14 +6886,14 @@ msgstr "Diese feedbackgebende Person wirklich aus der Feedbackrunde entfernen?"
 msgid "Set up a new 360-degree feedback review cycle"
 msgstr "Neue Feedbackrunde für 360°-Feedback einrichten"
 
-msgid "You have no review cycles left."
+msgid "You have no credits left."
 msgstr "Keine Feedbackrunden mehr verfügbar."
 
-msgid "Cycles in progress continue and your reports stay available. To start a new cycle, buy another round or start a subscription."
-msgstr "Laufende Feedbackrunden gehen weiter, die Berichte bleiben verfügbar. Für eine neue Feedbackrunde eine weitere Runde kaufen oder ein Abonnement abschließen."
+msgid "Cycles in progress continue and your reports stay available. To start a new cycle, buy credits or start a subscription."
+msgstr "Laufende Feedbackrunden gehen weiter, die Berichte bleiben verfügbar. Für eine neue Feedbackrunde ein Paket kaufen oder ein Abonnement abschließen."
 
 #, python-format
-msgid "Review cycles remaining: <strong>%(cycle_credits)s</strong>. Each cycle you create uses one."
+msgid "Credits left: <strong>%(cycle_credits)s</strong>. Each cycle you create uses one credit."
 msgstr "Verbleibende Feedbackrunden: <strong>%(cycle_credits)s</strong>. Jede neu angelegte Feedbackrunde verbraucht eine."
 
 msgid "Creation Mode"
@@ -7459,7 +7450,7 @@ msgstr "Die erste Ebene ist immer das ganze Team. Diese Auswahl gilt für die Eb
 msgid "Entire teams over more than one level give many feedback requests. Example: in a chart of 300 people with \"All the way down\", the person at the top gets 299 reviewers, and each person gets one request for each manager above them."
 msgstr "Ganze Teams über mehr als eine Ebene führen zu vielen Feedbackanfragen. Beispiel: In einem Organigramm mit 300 Personen und „Bis ganz nach unten“ erhält die Person an der Spitze 299 Feedbackgebende, und jede Person erhält eine Anfrage für jede Führungskraft über ihr."
 
-msgid "Your plan, payment method, invoices and review credits."
+msgid "Your plan, payment method, invoices and credits."
 msgstr "Tarif, Zahlungsmethode, Rechnungen und Feedbackrunden."
 
 msgid "Email (SMTP) Settings"

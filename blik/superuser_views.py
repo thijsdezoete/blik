@@ -77,7 +77,7 @@ def create_organization(request):
             except ValueError:
                 credits = -1
             if not 0 <= credits <= MAX_GRANTED_CREDITS:
-                messages.error(request, _('Review credits must be a number from 0 to %(max)s.') % {'max': MAX_GRANTED_CREDITS})
+                messages.error(request, _('Credits must be a number from 0 to %(max)s.') % {'max': MAX_GRANTED_CREDITS})
                 return page()
 
         # Check if organization with this name already exists

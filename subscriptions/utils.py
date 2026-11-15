@@ -25,7 +25,7 @@ class NoCycleCredits(Exception):
         self.needed = needed
         self.available = available
         super().__init__(
-            _('This needs %(needed)s review-cycle credit(s) and you have %(available)s. '
+            _('This needs %(needed)s credit(s) and you have %(available)s. '
               'Buy more on the Billing page, or start a subscription there.')
             % {'needed': needed, 'available': available}
         )
@@ -41,7 +41,7 @@ class ReviewerLimit(Exception):
     def __init__(self):
         super().__init__(
             _('Free accounts can invite up to %(max)s reviewers per review cycle. '
-              'Buy review credits on the Billing page to invite more.')
+              'Buy credits on the Billing page to invite more.')
             % {'max': FREE_REVIEWERS_PER_CYCLE}
         )
 

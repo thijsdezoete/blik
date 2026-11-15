@@ -89,7 +89,7 @@
             </div>
             {% endif %}
             {% elif round_credits is not None %}
-            <p style="margin: 0;">{% trans 'You pay per round. There is no subscription.' %}</p>
+            <p style="margin: 0;">{% trans 'You pay per pack of credits. There is no subscription.' %}</p>
             {% endif %}
         </div>
     </div>
@@ -111,7 +111,7 @@
             {% endif %}
             {% if round_credits is not None %}
             <div>
-                <label class="form-label" style="margin-bottom: 0.25rem;">{% trans 'Review credits left' %}</label>
+                <label class="form-label" style="margin-bottom: 0.25rem;">{% trans 'Credits left' %}</label>
                 <p style="margin: 0; font-size: 1.25rem; font-weight: 600;">{{ round_credits }}</p>
                 <p style="margin: 0.25rem 0 0; font-size: 0.8125rem; color: var(--text-secondary);">
                     {% if cycle_credits is None %}{% trans 'Not used while your subscription is active.' %}{% else %}{% trans 'One credit is one reviewee with one questionnaire.' %}{% endif %}
@@ -147,12 +147,12 @@
             {% endif %}
             {% if status.mode != 'subscription' %}
             <div style="display: grid; gap: 1.25rem;{% if other_plans or can_start_subscription %} padding-top: 1rem; margin-top: 0.5rem; border-top: 1px solid var(--border-color);{% endif %}">
-            <h3 style="margin: 0; font-size: 1rem;">{% trans 'Buy review credits' %}</h3>
+            <h3 style="margin: 0; font-size: 1rem;">{% trans 'Buy credits' %}</h3>
             <form method="post" action="{% url 'subscriptions:start_checkout' %}" style="display: grid; gap: 0.5rem;">
                 {% csrf_token %}
                 <input type="hidden" name="plan_type" value="single">
                 <input type="hidden" name="reviews" value="{{ credits_per_pack }}">
-                <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=credits_per_pack %}Purchase {{ count }} review slots{% endblocktrans %}</button>
+                <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=credits_per_pack %}Buy {{ count }} credits{% endblocktrans %}</button>
                 {% if plan_single_price %}
                 <p style="margin: 0; font-size: 0.875rem; color: var(--text-secondary);">{% blocktrans trimmed with price=plan_single_price %}€{{ price }}, excluding VAT{% endblocktrans %}</p>
                 {% endif %}

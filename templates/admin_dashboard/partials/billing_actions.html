@@ -5,7 +5,7 @@
     <form method="post" action="{% url 'subscriptions:start_checkout' %}">
         {% csrf_token %}
         <input type="hidden" name="plan_type" value="single">
-        <button type="submit" class="btn btn-primary">{% if round_credits is None %}{% trans 'Buy a round' %}{% else %}{% trans 'Buy another round' %}{% endif %}{% if plan_single_price %} (€{{ plan_single_price }}){% endif %}</button>
+        <button type="submit" class="btn btn-primary">{% trans 'Buy credits' %}{% if plan_single_price %} (€{{ plan_single_price }}){% endif %}</button>
     </form>
     {% if can_start_subscription %}
     <form method="post" action="{% url 'subscriptions:start_checkout' %}">
@@ -21,5 +21,5 @@
     {% endif %}
 </div>
 {% elif not is_org_admin %}
-<p style="margin: 0; font-size: 0.875rem; color: #64748b;">{% trans 'Ask an organization administrator to buy another round.' %}</p>
+<p style="margin: 0; font-size: 0.875rem; color: #64748b;">{% trans 'Ask an organization administrator to buy credits.' %}</p>
 {% endif %}

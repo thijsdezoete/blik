@@ -117,7 +117,7 @@
                 {% if changes.missing and not changes.deactivated %}{% blocktrans trimmed with after=changes.active_without_missing %}Active after this import, with the people who are not in the file deactivated: {{ after }}.{% endblocktrans %}{% endif %}</p>
                 <p>{% trans 'Only active people count. The import does not change your plan or its price.' %}</p>
                 {% elif plan.mode == 'credits' %}
-                <p>{% trans 'You pay per feedback cycle, not per person. The import starts no cycles and uses no credits.' %}</p>
+                <p>{% trans 'You pay per review cycle, not per person. The import starts no cycles and uses no credits.' %}</p>
                 {% else %}
                 <p>{% trans 'Your plan has no limit on the number of people. The import costs nothing.' %}</p>
                 {% endif %}

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 20:41+0000\n"
+"POT-Creation-Date: 2026-11-15 21:07+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -919,8 +919,9 @@ msgstr "Keine Berechtigung, die Berechtigungen von Benutzer:innen zu verwalten."
 msgid "Invalid request: missing required fields."
 msgstr "Ungültige Anfrage: Pflichtfelder fehlen."
 
-msgid "You cannot modify your own permissions."
-msgstr "Die eigenen Berechtigungen können nicht geändert werden."
+#, python-format
+msgid "%(username)s now has API access."
+msgstr "%(username)s hat jetzt API-Zugriff."
 
 msgid "Cannot modify permissions for super admins."
 msgstr "Die Berechtigungen von Super-Admins können nicht geändert werden."
@@ -7437,6 +7438,9 @@ msgstr "TLS-Verschlüsselung verwenden (Port 587)"
 msgid "API Configuration"
 msgstr "API-Konfiguration"
 
+msgid "Webhooks"
+msgstr "Webhooks"
+
 msgid "API Access"
 msgstr "API-Zugriff"
 
@@ -7464,9 +7468,6 @@ msgstr "Noch keine API-Tokens erstellt"
 
 msgid "Create New Token"
 msgstr "Neues Token erstellen"
-
-msgid "Webhooks"
-msgstr "Webhooks"
 
 msgid "Receive event notifications for cycle creation, completion, etc."
 msgstr "Benachrichtigungen über Ereignisse wie neue oder abgeschlossene Feedbackrunden erhalten"
@@ -7848,6 +7849,9 @@ msgstr "Ohne diese Berechtigung sieht die Person nur die Berichte und Feedbackru
 
 msgid "Organization Admins always have this."
 msgstr "Organisations-Admins haben diese Berechtigung immer."
+
+msgid "Shows the API identifiers of review cycles and, for an Organization Admin, the API tokens in the settings. Without this, the interface does not mention the API."
+msgstr "Zeigt die API-Kennungen der Feedbackrunden und, für Organisations-Admins, die API-Tokens in den Einstellungen. Ohne diese Berechtigung erwähnt die Oberfläche die API nicht."
 
 msgid "Update Permissions"
 msgstr "Berechtigungen aktualisieren"

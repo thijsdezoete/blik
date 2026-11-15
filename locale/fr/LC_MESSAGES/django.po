@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Chris Maugino <maugino@gmail.com>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2026-11-02 11:54+0000\n"
-"PO-Revision-Date: 2026-11-09 16:45+0000\n"
+"PO-Revision-Date: 2026-11-14 12:05+0000\n"
 "Last-Translator: Chris Maugino <maugino@gmail.com>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -27,7 +26,7 @@ msgstr "Erreur d’anonymisation %(name)s: %(error)s"
 
 #, python-format
 msgid "Successfully anonymized %(count)s reviewee(s). Personal data removed, review cycles preserved."
-msgstr "Anonymisation réussie %(count)s ou des personnes évaluées. Données personnelles supprimées, cycles d’évaluation préservés."
+msgstr "%(count)s personne(s) évaluée(s) anonymisée(s) avec succès. Données personnelles supprimées, cycles d’évaluation préservés."
 
 msgid "GDPR: Hard delete (complete removal with all data)"
 msgstr "RGPD : suppression complète (suppression complète de toutes les données)"
@@ -334,7 +333,7 @@ msgstr "Personne évaluée « %(name)s » introuvable pour le rapport : élémen
 
 #, python-format
 msgid "No questionnaire found for report (reviewee: %(name)s) - skipping"
-msgstr "Aucun questionnaire trouvé pour le rapport (évalué : %(name)s) - sautage"
+msgstr "Aucun questionnaire trouvé pour le rapport (personne évaluée : %(name)s) : élément ignoré"
 
 #, python-format
 msgid "Failed to import report: %(error)s"
@@ -801,10 +800,8 @@ msgstr "Erreur de suppression de l’organisation : %(error)s"
 msgid "Something went wrong."
 msgstr "Quelque chose a mal tourné."
 
-#, fuzzy
-#| msgid "You do not have permission to manage organization members."
 msgid "You do not have permission to manage user permissions."
-msgstr "Vous n’avez pas la permission de gérer les membres de l’organisation."
+msgstr "Vous n’avez pas l’autorisation de gérer les permissions des utilisateurs."
 
 msgid "Invalid request: missing required fields."
 msgstr "Demande invalide : champs requis manquants."
@@ -878,7 +875,7 @@ msgstr "Vous n’avez pas la permission de modifier les personnes évaluées. Se
 
 #, python-format
 msgid "Reviewee \"%(name)s\" updated successfully."
-msgstr "Personne évaluée «%(name)s» mis à jour avec succès."
+msgstr "Personne évaluée «%(name)s» mise à jour avec succès."
 
 #, python-format
 msgid "Error updating reviewee: %(error)s"
@@ -889,7 +886,7 @@ msgstr "Vous n’avez pas la permission de supprimer les personnes évaluées. S
 
 #, python-format
 msgid "Reviewee \"%(name)s\" deactivated."
-msgstr "Personne évaluée «%(name)s» désactivé."
+msgstr "Personne évaluée «%(name)s» désactivée."
 
 msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
 msgstr "Vous n’avez pas la permission de créer des cycles d’évaluation. Seuls les administrateurs d’organisation peuvent accéder à cette fonctionnalité."
@@ -1002,7 +999,7 @@ msgid "Error updating question. Please try again."
 msgstr "Erreur lors de la mise à jour de la question. Veuillez réessayer."
 
 msgid "Dreyfus/Agency configuration updated successfully."
-msgstr "La configuration Dreyfus/Agency a été mise à jour avec succès."
+msgstr "La configuration Dreyfus/Capacité d’initiative a été mise à jour avec succès."
 
 msgid "Question not found."
 msgstr "Question non trouvée."
@@ -1059,7 +1056,7 @@ msgid "Created %(count)s review cycles. No invitations have been sent yet."
 msgstr "Créé %(count)s cycles de revue. Aucune invitation n’a encore été envoyée."
 
 msgid "Reviewee is required for single cycle creation."
-msgstr "Une personne évaluée est requis pour la création d’un seul cycle."
+msgstr "Une personne évaluée est requise pour créer un cycle individuel."
 
 #, python-format
 msgid "Invalid email skipped in %(category)s: %(email)s"
@@ -1267,7 +1264,7 @@ msgstr "La personne évaluée %(name)s a été anonymisé. %(count)s cycle(s) d�
 
 #, python-format
 msgid "Error deleting reviewee: %(error)s"
-msgstr "Erreur de suppression du personne évaluée : %(error)s"
+msgstr "Erreur lors de la suppression de la personne évaluée : %(error)s"
 
 msgid "You do not have permission to create product reviews."
 msgstr "Vous n’avez pas la permission de créer des avis produits."
@@ -1891,13 +1888,13 @@ msgid "questionnaires"
 msgstr "Questionnaires"
 
 msgid "Dreyfus (Skill + Agency)"
-msgstr "Dreyfus (Compétence + Agence)"
+msgstr "Dreyfus (Compétence + Capacité d’initiative)"
 
 msgid "Dreyfus (Skill)"
 msgstr "Dreyfus (Compétence)"
 
 msgid "Dreyfus (Agency)"
-msgstr "Dreyfus (agence)"
+msgstr "Dreyfus (Capacité d’initiative)"
 
 msgid "Standard 360"
 msgstr "Standard 360"
@@ -2699,7 +2696,7 @@ msgid "Manager Review"
 msgstr "Évaluation du manager"
 
 msgid "Direct Report Review"
-msgstr "Examen de Direct Report"
+msgstr "Évaluation par un collaborateur direct"
 
 msgid "feedback category"
 msgstr "Catégorie de rétroaction"
@@ -3602,7 +3599,7 @@ msgid "%(cycles)s cycles, %(responses)s responses"
 msgstr "%(cycles)s cycles, %(responses)s réponses"
 
 msgid "No reviewees found"
-msgstr "Aucun évalué trouvé"
+msgstr "Aucune personne évaluée trouvée"
 
 msgid "Items per page:"
 msgstr "Éléments par page :"
@@ -3733,13 +3730,13 @@ msgid "Your email is automatically assigned for self-assessment"
 msgstr "Votre adresse e-mail est automatiquement attribuée pour l’auto-évaluation"
 
 msgid "Usually the reviewee's own email"
-msgstr "Généralement l’adresse e-mail du personne évaluée"
+msgstr "Généralement l’adresse e-mail de la personne évaluée"
 
 msgid "Manager/Supervisor"
-msgstr "Manager / responsable hiérarchique"
+msgstr "Responsable / responsable hiérarchique"
 
 msgid "Direct manager or supervisor"
-msgstr "Manager direct ou responsable hiérarchique"
+msgstr "Responsable direct ou responsable hiérarchique"
 
 msgid "Peers"
 msgstr "Pairs"
@@ -3876,10 +3873,10 @@ msgid "%(count)s-point scale"
 msgstr "Échelle de %(count)s points"
 
 msgid "Configure Dreyfus/Agency weights and action items"
-msgstr "Configurer les pondérations Dreyfus/Agency et les éléments d’action"
+msgstr "Configurer les pondérations Dreyfus/Capacité d’initiative et les actions"
 
 msgid "Dreyfus/Agency"
-msgstr "Dreyfus/Agency"
+msgstr "Dreyfus/Capacité d’initiative"
 
 msgid "Edit"
 msgstr "Modifier"
@@ -4512,7 +4509,7 @@ msgid "Learn more about scoring"
 msgstr "En savoir plus sur la notation"
 
 msgid "Dreyfus/Agency Configuration (Optional)"
-msgstr "Configuration Dreyfus/Agency (facultatif)"
+msgstr "Configuration Dreyfus/Capacité d’initiative (facultatif)"
 
 msgid "Model Weights"
 msgstr "Poids de modèles"
@@ -4835,7 +4832,7 @@ msgid "Self vs Others Comparison"
 msgstr "Comparaison entre soi et les autres"
 
 msgid "How the reviewee's self-assessment would compare to others' feedback (sorted by gap size)"
-msgstr "Comment l’auto-évaluation du réévalué se comparerait aux retours des autres (triés par taille de l’écart)"
+msgstr "Comment l’auto-évaluation de la personne évaluée se comparerait aux retours des autres (triés par taille de l’écart)"
 
 msgid "Section-Level Performance"
 msgstr "Performance par domaine"
@@ -5165,7 +5162,7 @@ msgid "Who gives feedback in this cycle. Categories you clear are left out of th
 msgstr "Qui donne son retour lors de ce cycle. Les catégories que vous éliminez sont exclues de l’e-mail d’invitation et du rapport."
 
 msgid "The reviewee rates themselves"
-msgstr "Le personne évaluée s’évalue lui-même"
+msgstr "La personne évaluée s’auto-évalue"
 
 msgid "Select at least one category."
 msgstr "Sélectionnez au moins une catégorie."
@@ -5198,7 +5195,7 @@ msgid "Search reviewee name or email"
 msgstr "Rechercher le nom ou l’adresse e-mail de la personne évaluée"
 
 msgid "Search reviewee"
-msgstr "Rechercher Personne évaluée"
+msgstr "Rechercher une personne évaluée"
 
 msgid "Press / to search"
 msgstr "Appuyez / pour rechercher"
@@ -5243,7 +5240,7 @@ msgid "Cycle UUID"
 msgstr "Cycle UUID"
 
 msgid "Reviewee UUID"
-msgstr "Personne évaluée de l’UUID"
+msgstr "UUID de la personne évaluée"
 
 msgid "Example calls"
 msgstr "Exemples d’appels"
@@ -5279,7 +5276,7 @@ msgid "Delete Reviewee"
 msgstr "Supprimer la personne évaluée"
 
 msgid "Are you sure you want to deactivate this reviewee?"
-msgstr "Êtes-vous sûr de vouloir désactiver ce personne évaluée ?"
+msgstr "Êtes-vous sûr de vouloir désactiver cette personne évaluée ?"
 
 msgid "<strong>Warning:</strong> This will deactivate the reviewee. Their past review cycles will remain accessible, but they will not appear in active lists."
 msgstr "<strong>Avertissement :</strong> Cela désactivera la personne évaluée. Leurs cycles d’évaluation passés resteront accessibles, mais ils n’apparaîtront pas dans les listes actives."
@@ -6595,7 +6592,7 @@ msgstr "Créez un cycle d’évaluation :"
 
 #, python-format
 msgid "%(reviewee_name)s's cycle is set up"
-msgstr "Le cycle de %(reviewee_name)sest mis en place"
+msgstr "Le cycle de %(reviewee_name)s est configuré"
 
 msgid "Nothing happens until the reviewers get the link."
 msgstr "Rien ne se passe tant que les évaluateurs n’ont pas le lien."
@@ -6623,7 +6620,7 @@ msgstr "Anonymat"
 
 #, python-format
 msgid "%(reviewee_name)s's cycle is set up."
-msgstr "Le cycle de %(reviewee_name)sest mis en place."
+msgstr "Le cycle de %(reviewee_name)s est configuré."
 
 msgid "By email. Blik sends each reviewer a personal link."
 msgstr "Par email. Blik envoie à chaque évaluateur un lien unique et personnel."
@@ -6840,7 +6837,7 @@ msgid "For your manager."
 msgstr "Pour votre manager."
 
 msgid "Direct Report Reviews"
-msgstr "Avis de Direct Report"
+msgstr "Feedback des collaborateurs directs"
 
 msgid "For the people who report to you. Each person who opens it gets their own review."
 msgstr "Pour les personnes qui vous rendent compte. Chaque personne qui l’ouvre a sa propre évaluation."
@@ -6892,7 +6889,7 @@ msgstr "%(organization_name)s demande votre avis honnête sur <strong>%(reviewee
 
 #, python-format
 msgid "Your answers are anonymous. %(reviewee_name)s never sees your name with them. So you can be honest."
-msgstr "Vos réponses sont anonymes. %(reviewee_name)s ne voit jamais votre nom avec eux. Donc vous peux être honnête."
+msgstr "Vos réponses sont anonymes. %(reviewee_name)s ne voit jamais votre nom associé à vos réponses. Vous pouvez donc être honnête."
 
 msgid "Start the review"
 msgstr "Commencez l'évaluation"
@@ -7908,7 +7905,7 @@ msgid "<a href=\"%(dashboard_url)s\" target=\"_blank\">Go to Admin Dashboard</a>
 msgstr "<a href=\"%(dashboard_url)s\" target=\"_blank\">Accédez au tableau de bord d’administration</a> pour gérer les personnes évaluées, les questionnaires et les cycles d’évaluation"
 
 msgid "Create your first reviewee:"
-msgstr "Créez votre premier évalué :"
+msgstr "Créez votre première personne évaluée :"
 
 msgid "Add people who will receive 360-degree feedback from the dashboard"
 msgstr "Ajoutez des personnes qui recevront un retour à 360 degrés depuis le tableau de bord"

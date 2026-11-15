@@ -817,14 +817,12 @@ msgid "Department"
 msgstr "Dipartimento"
 
 #: accounts/org_import.py:27
-#, fuzzy
 msgid "Manager (email or name)"
-msgstr "Nome, email o dipartimento"
+msgstr "Manager (email o nome)"
 
 #: accounts/org_import.py:88
-#, fuzzy
 msgid "Choose the column with the email addresses."
-msgstr "Usa il tuo indirizzo email invitato"
+msgstr "Scegli la colonna con gli indirizzi email."
 
 #: accounts/org_import.py:90
 msgid ""
@@ -846,14 +844,13 @@ msgstr ""
 "manager."
 
 #: accounts/org_import.py:130 blik/admin_views.py:3802
-#, fuzzy
 msgid "The file has no rows."
-msgstr "Questo ciclo non ha collegamenti da inviare."
+msgstr "Il file non contiene righe."
 
 #: accounts/org_import.py:139
-#, fuzzy, python-format
+#, python-format
 msgid "Line %(line)s: invalid email \"%(email)s\"."
-msgstr "Devi utilizzare l'email invitata: %(email)s"
+msgstr "Riga %(line)s: indirizzo email \"%(email)s\" non valido."
 
 #: accounts/org_import.py:142
 #, python-format
@@ -921,9 +918,9 @@ msgid "Please use the signup page to create an account."
 msgstr "Usa la pagina di iscrizione per creare un account."
 
 #: accounts/views.py:72
-#, fuzzy, python-format
+#, python-format
 msgid "Check your email. We sent your sign-in details to %(email)s."
-msgstr "Segnala l'email inviata a %(name)s al %(email)s."
+msgstr "Controlla la tua email. Abbiamo inviato i dati di accesso a %(email)s."
 
 #: accounts/views.py:90 subscriptions/fulfilment.py:240
 msgid "You already have a Blik360 account"
@@ -1302,9 +1299,8 @@ msgid "Invalid email skipped in %(category)s: %(email)s"
 msgstr "Email non valida saltata in %(category)s: %(email)s"
 
 #: blik/admin_views.py:346
-#, fuzzy
 msgid "You do not have permission to manage organization members."
-msgstr "Non hai il permesso di gestire le impostazioni dell'organizzazione."
+msgstr "Non hai il permesso di gestire i membri dell’organizzazione."
 
 #: blik/admin_views.py:362
 msgid "Invalid request: missing required fields."
@@ -1328,9 +1324,9 @@ msgid "Successfully promoted %(username)s to Organization Admin."
 msgstr "Promosso con successo %(username)s a Amministratore Organizzativo."
 
 #: blik/admin_views.py:404
-#, fuzzy, python-format
+#, python-format
 msgid "Successfully updated %(username)s to HR/L&D Admin."
-msgstr "Aggiornato con successo %(username)s ruolo di Membro."
+msgstr "%(username)s è stato aggiornato correttamente al ruolo di amministratore HR/L&D."
 
 #: blik/admin_views.py:410
 #, python-format
@@ -1439,19 +1435,16 @@ msgid "Reviewee \"%(name)s\" deactivated."
 msgstr "Persona valutata \"%(name)s\" disattivata."
 
 #: blik/admin_views.py:759
-#, fuzzy
 msgid "You do not have permission to create reviewees."
-msgstr "Non hai il permesso di eliminare le persone valutate."
+msgstr "Non hai il permesso di creare persone valutate."
 
 #: blik/admin_views.py:765
-#, fuzzy
 msgid "No organization context."
-msgstr "Nessuna organizzazione trovata."
+msgstr "Nessun contesto organizzativo disponibile."
 
 #: blik/admin_views.py:780
-#, fuzzy
 msgid "Invalid email address."
-msgstr "Usa il tuo indirizzo email invitato"
+msgstr "Indirizzo email non valido."
 
 #: blik/admin_views.py:825
 msgid ""
@@ -1474,15 +1467,12 @@ msgid "Select at least one feedback category."
 msgstr "Seleziona almeno una categoria di feedback."
 
 #: blik/admin_views.py:932
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Copied "
 "%(count)s reviewer(s) from previous cycle. %(queued)s invitation email(s) go "
 "out within about five minutes."
-msgstr ""
-"ciclo di valutazione creato per \"%(name)s\" usando \"%(questionnaire)s\". "
-"Copiato %(count)s valutatore dal ciclo precedente. %(sent)s inviato/i invito/"
-"i via email."
+msgstr "Ciclo di valutazione creato per \"%(name)s\" usando \"%(questionnaire)s\". Sono stati copiati %(count)s valutatori dal ciclo precedente. %(queued)s email di invito verranno inviate entro circa cinque minuti."
 
 #: blik/admin_views.py:941 blik/admin_views.py:948
 #, python-format
@@ -1721,13 +1711,11 @@ msgid "Reviewee is required for single cycle creation."
 msgstr "Il reviewee è necessario per la creazione di un singolo ciclo."
 
 #: blik/admin_views.py:2086
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. "
 "The invitation emails go out within about five minutes."
-msgstr ""
-"Ciclo di valutazione creato per \"%(name)s\" con %(assigned)s valutatore "
-"invitato. Vengono inviate email di invito."
+msgstr "Ciclo di valutazione creato per \"%(name)s\" con %(assigned)s valutatori invitati. Le email di invito verranno inviate entro circa cinque minuti."
 
 #: blik/admin_views.py:2093
 #, python-format
@@ -1739,13 +1727,11 @@ msgstr ""
 "assegnato. Visita la pagina degli inviti per inviare email."
 
 #: blik/admin_views.py:2103
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Review cycle created for \"%(name)s\". The reviewee's emails go out within "
 "about five minutes."
-msgstr ""
-"Ciclo di recensioni creato per \"%(name)s\" con %(assigned)s valutatore "
-"assegnato. Visita la pagina degli inviti per inviare email."
+msgstr "Ciclo di valutazione creato per \"%(name)s\". Le email destinate alla persona valutata verranno inviate entro circa cinque minuti."
 
 #: blik/admin_views.py:2118
 #, python-format
@@ -1926,13 +1912,10 @@ msgid "Removed %(category)s reviewer (%(email)s) from cycle."
 msgstr "Rimosso %(category)s valutatore (%(email)s) dal ciclo."
 
 #: blik/admin_views.py:2647
-#, fuzzy
 msgid ""
 "Cycle automatically closed (all remaining reviewers completed). The report "
 "is ready within a few minutes."
-msgstr ""
-"Il ciclo si chiude automaticamente e il report viene generato (tutti i "
-"valutatori rimanenti completati)."
+msgstr "Ciclo chiuso automaticamente: tutti i valutatori rimanenti hanno completato il feedback. Il report sarà pronto entro pochi minuti."
 
 #: blik/admin_views.py:2654
 #, python-format
@@ -1966,9 +1949,8 @@ msgid "Organization details updated successfully."
 msgstr "I dettagli dell'organizzazione aggiornati con successo."
 
 #: blik/admin_views.py:2736
-#, fuzzy
 msgid "New user settings updated successfully."
-msgstr "Le impostazioni del report aggiornate con successo."
+msgstr "Impostazioni del nuovo utente aggiornate correttamente."
 
 #: blik/admin_views.py:2758
 msgid "Report PDF retention must be a number of days from 1 to 3650."
@@ -2197,9 +2179,8 @@ msgid "Error deleting webhook: %(error)s"
 msgstr "Errore nell'eliminazione del webhook: %(error)s"
 
 #: blik/admin_views.py:3787 blik/admin_views.py:3817
-#, fuzzy
 msgid "You do not have permission to edit the org chart."
-msgstr "Non hai il permesso di creare organizzazioni."
+msgstr "Non hai il permesso di modificare l’organigramma."
 
 #: blik/admin_views.py:3791
 msgid "Choose a CSV file."
@@ -2225,14 +2206,13 @@ msgid "%(name)s is already in this unit."
 msgstr "%(name)s è già in questa unità."
 
 #: blik/superuser_views.py:30
-#, fuzzy, python-format
+#, python-format
 msgid "%(count)s credits left"
-msgstr "%(count)s creato"
+msgstr "%(count)s crediti rimanenti"
 
 #: blik/superuser_views.py:31
-#, fuzzy
 msgid "Free, no limits"
-msgstr "Limite di tasso"
+msgstr "Gratuito, senza limiti"
 
 #: blik/superuser_views.py:46
 msgid "You do not have permission to create organizations."
@@ -2495,10 +2475,8 @@ msgid "automatically send report email"
 msgstr "invia automaticamente l'email di segnalazione"
 
 #: core/models.py:44
-#, fuzzy
 msgid "Attach the report as a PDF to the email sent to the reviewee"
-msgstr ""
-"Quando l'email di check-in chiuso è stata inviata alla persona valutata"
+msgstr "Allega il report in formato PDF all’email inviata alla persona valutata"
 
 #: core/models.py:45
 msgid "attach report PDF"
@@ -2668,9 +2646,9 @@ msgid "%(command)s: last run %(time)s"
 msgstr "%(command)s: ultima esecuzione %(time)s"
 
 #: notifications/admin.py:53
-#, fuzzy, python-format
+#, python-format
 msgid "%(command)s: never ran"
-msgstr "%(count)s recensione in"
+msgstr "%(command)s: mai eseguito"
 
 #: notifications/apps.py:8
 msgid "Notifications"
@@ -2757,19 +2735,16 @@ msgid "sent emails"
 msgstr "inviò email"
 
 #: notifications/models.py:58
-#, fuzzy
 msgid "recipient"
-msgstr "Competente"
+msgstr "destinatario"
 
 #: notifications/models.py:63
-#, fuzzy
 msgid "email log entry"
-msgstr "Email inviate"
+msgstr "voce del registro email"
 
 #: notifications/models.py:64
-#, fuzzy
 msgid "email log"
-msgstr "E-mail"
+msgstr "registro email"
 
 #: notifications/models.py:75
 msgid "command"
@@ -2780,14 +2755,12 @@ msgid "ran at"
 msgstr "eseguito il"
 
 #: notifications/models.py:77
-#, fuzzy
 msgid "sent"
-msgstr "inviato a"
+msgstr "inviato"
 
 #: notifications/models.py:78
-#, fuzzy
 msgid "errors"
-msgstr "Errore"
+msgstr "errori"
 
 #: notifications/models.py:81
 msgid "cron run"
@@ -4126,25 +4099,25 @@ msgid "Insufficient responses (minimum %(count)s required)"
 msgstr "Risposte insufficienti (minimo %(count)s richiesto)"
 
 #: reports/pdf.py:206
-#, fuzzy, python-format
+#, python-format
 msgid "%(count)s peer"
 msgid_plural "%(count)s peers"
-msgstr[0] "%(count)s creato"
-msgstr[1] "%(count)s creato"
+msgstr[0] "%(count)s collega"
+msgstr[1] "%(count)s colleghi"
 
 #: reports/pdf.py:207
-#, fuzzy, python-format
+#, python-format
 msgid "%(count)s manager"
 msgid_plural "%(count)s managers"
-msgstr[0] "%(count)s creato"
-msgstr[1] "%(count)s creato"
+msgstr[0] "%(count)s manager"
+msgstr[1] "%(count)s manager"
 
 #: reports/pdf.py:208
-#, fuzzy, python-format
+#, python-format
 msgid "%(count)s direct report"
 msgid_plural "%(count)s direct reports"
-msgstr[0] "%(count)s creato"
-msgstr[1] "%(count)s creato"
+msgstr[0] "%(count)s collaboratore diretto"
+msgstr[1] "%(count)s collaboratori diretti"
 
 #: reports/pdf.py:217 templates/reports/_report_content.html:63
 #: templates/reports/pdf/_comments.html:4 templates/reports/pdf/_detail.html:56
@@ -4333,9 +4306,8 @@ msgstr ""
 "Quando il ciclo è stato finalizzato e il suo rapporto inviato via e-mail"
 
 #: reviews/models.py:65
-#, fuzzy
 msgid "report finalized at"
-msgstr "Dati del rapporto"
+msgstr "report finalizzato il"
 
 #: reviews/models.py:74
 msgid ""
@@ -4459,32 +4431,28 @@ msgid "When the invitation was put in the outbox. Empty once it is sent."
 msgstr "Quando l'invito è stato messo in coda. Vuoto una volta inviato."
 
 #: reviews/models.py:203
-#, fuzzy
 msgid "invitation queued at"
-msgstr "Invito inviato a"
+msgstr "invito messo in coda il"
 
 #: reviews/models.py:208
 msgid "When a reminder was put in the outbox. Empty once it is sent."
 msgstr "Quando un promemoria è stato messo in coda. Vuoto una volta inviato."
 
 #: reviews/models.py:209
-#, fuzzy
 msgid "reminder queued at"
-msgstr "Ultimo promemoria inviato a"
+msgstr "promemoria messo in coda il"
 
 #: reviews/models.py:214
 msgid "Why the last attempt to send the queued email failed"
 msgstr "Perché l'ultimo tentativo di inviare l'email in coda è fallito"
 
 #: reviews/models.py:215
-#, fuzzy
 msgid "email error"
-msgstr "E-mail"
+msgstr "errore email"
 
 #: reviews/models.py:219
-#, fuzzy
 msgid "Failed attempts to send the queued email"
-msgstr "Impossibile inviare l'email."
+msgstr "Tentativi non riusciti di inviare l’email in coda"
 
 #: reviews/models.py:220
 msgid "email attempts"
@@ -4532,9 +4500,9 @@ msgid "responses"
 msgstr "Risposte"
 
 #: reviews/outbox.py:163
-#, fuzzy, python-format
+#, python-format
 msgid "Could not connect to the mail server: %(error)s"
-msgstr "Non è stato possibile caricare i questionari predefiniti: %(error)s"
+msgstr "Impossibile connettersi al server di posta: %(error)s"
 
 #: reviews/outbox.py:212
 #, python-format
@@ -4542,9 +4510,9 @@ msgid "Failed to send to %(email)s: %(error)s"
 msgstr "Non inviato a %(email)s: %(error)s"
 
 #: reviews/outbox.py:246
-#, fuzzy, python-format
+#, python-format
 msgid "Failed to send the links to %(email)s: %(error)s"
-msgstr "Non inviato un promemoria a %(email)s: %(error)s"
+msgstr "Impossibile inviare i link a %(email)s: %(error)s"
 
 #: reviews/services.py:213
 #, python-format
@@ -4578,24 +4546,22 @@ msgid "your colleague"
 msgstr "tuo/tua collega"
 
 #: reviews/services.py:335
-#, fuzzy
 msgid "your direct report"
-msgstr "Collaboratore diretto"
+msgstr "il tuo collaboratore diretto"
 
 #: reviews/services.py:336
-#, fuzzy
 msgid "your manager"
-msgstr "Per il tuo manager."
+msgstr "il tuo manager"
 
 #: reviews/services.py:370 reviews/services.py:412
-#, fuzzy, python-format
+#, python-format
 msgid "Your feedback forms for %(organization)s"
-msgstr "Il vostro feedback per %(name)s"
+msgstr "I tuoi moduli di feedback per %(organization)s"
 
 #: reviews/services.py:410
-#, fuzzy, python-format
+#, python-format
 msgid "Your feedback forms for %(organization)s are still open"
-msgstr "Il tuo feedback per %(name)s è ancora aperto"
+msgstr "I tuoi moduli di feedback per %(organization)s sono ancora aperti"
 
 #: reviews/services.py:437
 #, python-format
@@ -4687,14 +4653,12 @@ msgid "Something went wrong. Please try again."
 msgstr "Qualcosa è andato storto. Riprova."
 
 #: subscriptions/admin.py:38
-#, fuzzy
 msgid "Next trial reminder"
-msgstr "Promemoria per il prossimo ciclo"
+msgstr "Prossimo promemoria del periodo di prova"
 
 #: subscriptions/admin.py:42
-#, fuzzy
 msgid "Emails to this organization"
-msgstr "Invita %(email)s a %(organization)s"
+msgstr "Email a questa organizzazione"
 
 #: subscriptions/admin.py:68
 msgid "Used"
@@ -5007,14 +4971,11 @@ msgid "Login token for %(email)s"
 msgstr "Token di accesso per %(email)s"
 
 #: subscriptions/utils.py:28
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "This needs %(needed)s review-cycle credit(s) and you have %(available)s. Buy "
 "more on the Billing page, or start a subscription there."
-msgstr ""
-"Questo richiede %(needed)s credito per il ciclo di valutazione e hai "
-"%(available)s. Compra un altro round o avvia un abbonamento sotto "
-"Impostazioni."
+msgstr "Sono necessari %(needed)s crediti per cicli di valutazione e ne hai %(available)s. Acquistane altri nella pagina Fatturazione oppure attiva un abbonamento."
 
 #: subscriptions/utils.py:43
 #, python-format
@@ -5031,9 +4992,8 @@ msgid "The card was declined: not enough funds."
 msgstr "La carta è stata rifiutata: fondi insufficienti."
 
 #: subscriptions/utils.py:137
-#, fuzzy
 msgid "The card has expired."
-msgstr "Questo invito è scaduto."
+msgstr "La carta è scaduta."
 
 #: subscriptions/utils.py:138 subscriptions/utils.py:139
 #: subscriptions/utils.py:140
@@ -5117,15 +5077,11 @@ msgid "Payment received. Your purchase has been added to your account."
 msgstr "Pagamento ricevuto. Il tuo acquisto è stato aggiunto al tuo conto."
 
 #: subscriptions/views.py:335
-#, fuzzy
 msgid ""
 "This email address already has an account. The new subscription was "
 "cancelled and nothing was charged. Sign in and start the subscription from "
 "the Billing page."
-msgstr ""
-"Questo indirizzo email ha già un account. Il nuovo abbonamento è stato "
-"cancellato e non è stato addebitato nulla. Accedi e scegli un piano sotto "
-"Impostazioni."
+msgstr "Questo indirizzo email è già associato a un account. Il nuovo abbonamento è stato annullato e non è stato effettuato alcun addebito. Accedi e attiva l’abbonamento dalla pagina Fatturazione."
 
 #: subscriptions/views.py:339
 msgid ""
@@ -5136,14 +5092,13 @@ msgstr ""
 "non è stato addebitato nulla."
 
 #: subscriptions/views.py:415
-#, fuzzy, python-format
+#, python-format
 msgid "Your plan is now %(plan)s."
-msgstr "Il tuo piano ora è %(plan)s"
+msgstr "Il tuo piano ora è %(plan)s."
 
 #: subscriptions/views.py:420
-#, fuzzy
 msgid "Could not change the plan. Please try again, or contact us."
-msgstr "Non è stato possibile creare la sessione di checkout. Riprova."
+msgstr "Impossibile cambiare il piano. Riprova oppure contattaci."
 
 #: subscriptions/views.py:440
 msgid ""
@@ -5153,9 +5108,8 @@ msgstr ""
 "acquisto."
 
 #: subscriptions/views.py:448
-#, fuzzy
 msgid "Could not open the billing portal. Please try again."
-msgstr "Non è stato possibile avviare il checkout. Riprova."
+msgstr "Impossibile aprire il portale di fatturazione. Riprova."
 
 #: templates/accounts/forgot_password.html:4
 msgid "Forgot Password - Blik 360 Feedback"
@@ -5180,9 +5134,8 @@ msgid "Back to Login"
 msgstr "Torna a Login"
 
 #: templates/accounts/free_signup.html:4
-#, fuzzy
 msgid "Sign up - Blik 360 Feedback"
-msgstr "Accesso - Feedback su Blik 360"
+msgstr "Registrazione - Blik 360 Feedback"
 
 #: templates/accounts/free_signup.html:9 templates/accounts/free_signup.html:25
 #: templates/accounts/register.html:9 templates/accounts/register.html:49
@@ -5194,9 +5147,8 @@ msgid "Free, with one review cycle. No card needed."
 msgstr "Gratuito, con un ciclo di revisione. Nessuna carta richiesta."
 
 #: templates/accounts/free_signup.html:22
-#, fuzzy
 msgid "We send your sign-in details to this address."
-msgstr "Usa il tuo indirizzo email invitato"
+msgstr "Invieremo i dati di accesso a questo indirizzo."
 
 #: templates/accounts/free_signup.html:30 templates/accounts/register.html:54
 #, python-format
@@ -5613,9 +5565,8 @@ msgstr "Impostazioni"
 #: templates/admin_dashboard/billing.html:10
 #: templates/admin_dashboard/settings.html:219
 #: templates/superuser/create_organization.html:79
-#, fuzzy
 msgid "Billing"
-msgstr "Brillante"
+msgstr "Fatturazione"
 
 #: templates/admin_dashboard/base.html:77
 msgid "Platform"
@@ -5674,24 +5625,23 @@ msgstr ""
 "tra qualche minuto."
 
 #: templates/admin_dashboard/billing.html:33
-#, fuzzy, python-format
+#, python-format
 msgid "€%(price)s/month, excluding VAT"
-msgstr "€%(price)sal mese"
+msgstr "€%(price)s/mese, IVA esclusa"
 
 #: templates/admin_dashboard/billing.html:39
-#, fuzzy, python-format
+#, python-format
 msgid "Your subscription ended on %(date)s. You can start a new one below."
-msgstr ""
-"Il tuo periodo di prova termina %(date)s. I tuoi rapporti restano come sono"
+msgstr "Il tuo abbonamento è terminato il %(date)s. Puoi attivarne uno nuovo qui sotto."
 
 #: templates/admin_dashboard/billing.html:43
 msgid "Your last payment failed."
 msgstr "Il tuo ultimo pagamento non è riuscito."
 
 #: templates/admin_dashboard/billing.html:46
-#, fuzzy, python-format
+#, python-format
 msgid "We try again on %(date)s."
-msgstr "Prossimo pagamento a %(date)s."
+msgstr "Riproveremo il %(date)s."
 
 #: templates/admin_dashboard/billing.html:48
 msgid ""
@@ -5701,39 +5651,36 @@ msgstr ""
 "aperta."
 
 #: templates/admin_dashboard/billing.html:51
-#, fuzzy
 msgid "Update payment method"
-msgstr "Aggiorna il tuo metodo di pagamento"
+msgstr "Aggiorna il metodo di pagamento"
 
 #: templates/admin_dashboard/billing.html:54
-#, fuzzy, python-format
+#, python-format
 msgid "Your subscription ends on %(date)s."
-msgstr "Il tuo periodo di prova finisce su %(date)s"
+msgstr "Il tuo abbonamento termina il %(date)s."
 
 #: templates/admin_dashboard/billing.html:58
-#, fuzzy
 msgid "Reactivate subscription"
-msgstr "Nessun abbonamento attivo trovato."
+msgstr "Riattiva l’abbonamento"
 
 #: templates/admin_dashboard/billing.html:62
-#, fuzzy, python-format
+#, python-format
 msgid "Your trial ends on %(date)s."
-msgstr "Il tuo periodo di prova finisce su %(date)s"
+msgstr "Il periodo di prova termina il %(date)s."
 
 #: templates/admin_dashboard/billing.html:64
-#, fuzzy
 msgid "Then your first invoice is:"
-msgstr "Crea il tuo primo persona valutata:"
+msgstr "La prima fattura sarà quindi:"
 
 #: templates/admin_dashboard/billing.html:70
-#, fuzzy, python-format
+#, python-format
 msgid "Next invoice on %(date)s:"
-msgstr "Prossimo pagamento a %(date)s."
+msgstr "Prossima fattura il %(date)s:"
 
 #: templates/admin_dashboard/billing.html:73
-#, fuzzy, python-format
+#, python-format
 msgid "Next invoice on %(date)s."
-msgstr "Prossimo pagamento a %(date)s."
+msgstr "Prossima fattura il %(date)s."
 
 #: templates/admin_dashboard/billing.html:81
 #, python-format
@@ -5750,14 +5697,12 @@ msgstr ""
 "carta per evitare un pagamento non riuscito."
 
 #: templates/admin_dashboard/billing.html:86
-#, fuzzy
 msgid "No payment method on file."
-msgstr "Aggiorna il tuo metodo di pagamento"
+msgstr "Nessun metodo di pagamento registrato."
 
 #: templates/admin_dashboard/billing.html:88
-#, fuzzy
 msgid "Change payment method"
-msgstr "Aggiorna il tuo metodo di pagamento"
+msgstr "Cambia metodo di pagamento"
 
 #: templates/admin_dashboard/billing.html:92
 msgid "You pay per round. There is no subscription."
@@ -5769,19 +5714,17 @@ msgid "Usage"
 msgstr "Utilizzo"
 
 #: templates/admin_dashboard/billing.html:105
-#, fuzzy
 msgid "Active reviewees"
 msgstr "Persone valutate attive"
 
 #: templates/admin_dashboard/billing.html:107
-#, fuzzy, python-format
+#, python-format
 msgid "%(count)s of %(max)s"
-msgstr "Scala: %(min)s a %(max)s"
+msgstr "%(count)s di %(max)s"
 
 #: templates/admin_dashboard/billing.html:114
-#, fuzzy
 msgid "Review credits left"
-msgstr "Titolo della recensione"
+msgstr "Crediti di valutazione rimanenti"
 
 #: templates/admin_dashboard/billing.html:117
 msgid "Not used while your subscription is active."
@@ -5797,9 +5740,9 @@ msgid "Plan"
 msgstr "Piano"
 
 #: templates/admin_dashboard/billing.html:133
-#, fuzzy, python-format
+#, python-format
 msgid "Switch to %(name)s: €%(price)s/month, up to %(max)s reviewees"
-msgstr "%(plan)s,%(price)s € al mese, per un massimo di %(max)s persone."
+msgstr "Passa a %(name)s: €%(price)s/mese, fino a %(max)s persone valutate"
 
 #: templates/admin_dashboard/billing.html:140
 #: templates/admin_dashboard/partials/billing_actions.html:14
@@ -5812,14 +5755,13 @@ msgid "Start Enterprise subscription"
 msgstr "Abbonamento Start Enterprise"
 
 #: templates/admin_dashboard/billing.html:150
-#, fuzzy
 msgid "Buy review credits"
-msgstr "cicli di valutazione"
+msgstr "Acquista crediti di valutazione"
 
 #: templates/admin_dashboard/billing.html:155
-#, fuzzy, python-format
+#, python-format
 msgid "Purchase %(count)s review slots"
-msgstr "%(count)s recensione in"
+msgstr "Acquista %(count)s crediti di valutazione"
 
 #: templates/admin_dashboard/billing.html:157
 #, python-format
@@ -5849,28 +5791,24 @@ msgid "Buy credits"
 msgstr "Acquista crediti"
 
 #: templates/admin_dashboard/billing.html:184
-#, fuzzy
 msgid "Invoices"
-msgstr "Scelte"
+msgstr "Fatture"
 
 #: templates/admin_dashboard/billing.html:185
-#, fuzzy
 msgid "Edit billing details"
-msgstr "Dettagli modifica"
+msgstr "Modifica i dati di fatturazione"
 
 #: templates/admin_dashboard/billing.html:193
 msgid "Date"
 msgstr "Data"
 
 #: templates/admin_dashboard/billing.html:194
-#, fuzzy
 msgid "Number"
-msgstr "Membro"
+msgstr "Numero"
 
 #: templates/admin_dashboard/billing.html:195
-#, fuzzy
 msgid "Amount"
-msgstr "Account"
+msgstr "Importo"
 
 #: templates/admin_dashboard/billing.html:206
 msgid "Paid"
@@ -5885,14 +5823,12 @@ msgid "Void"
 msgstr "Annullata"
 
 #: templates/admin_dashboard/billing.html:206
-#, fuzzy
 msgid "Not paid"
-msgstr "Non specificato"
+msgstr "Non pagata"
 
 #: templates/admin_dashboard/billing.html:209
-#, fuzzy
 msgid "Pay"
-msgstr "Carico utile"
+msgstr "Paga"
 
 #: templates/admin_dashboard/billing.html:209
 #: templates/admin_dashboard/dashboard.html:307
@@ -5906,9 +5842,8 @@ msgid "View"
 msgstr "Vista"
 
 #: templates/admin_dashboard/billing.html:217
-#, fuzzy
 msgid "No invoices yet."
-msgstr "Nessuna persona valutata per ora"
+msgstr "Nessuna fattura presente."
 
 #: templates/admin_dashboard/billing.html:221
 msgid ""
@@ -5944,19 +5879,17 @@ msgstr ""
 
 #: templates/admin_dashboard/billing.html:237
 #: templates/admin_dashboard/billing.html:250
-#, fuzzy
 msgid "Cancel subscription"
-msgstr "Annulla l'abbonamento"
+msgstr "Annulla l’abbonamento"
 
 #: templates/admin_dashboard/billing.html:241
-#, fuzzy
 msgid "What happens when I cancel?"
-msgstr "Cosa succede su %(date)s"
+msgstr "Cosa succede se annullo?"
 
 #: templates/admin_dashboard/billing.html:243
-#, fuzzy, python-format
+#, python-format
 msgid "You keep full access until %(date)s. You pay nothing more."
-msgstr "I tuoi dati restano disponibili fino a %(date)s. Non paghi altro."
+msgstr "Mantieni l’accesso completo fino al %(date)s. Non pagherai altro."
 
 #: templates/admin_dashboard/billing.html:244
 msgid ""
@@ -5972,39 +5905,36 @@ msgid "%(days)s days after the end, we delete your data."
 msgstr "%(days)s giorni dopo la fine, eliminiamo i tuoi dati."
 
 #: templates/admin_dashboard/billing.html:246
-#, fuzzy
 msgid "Export your data first"
-msgstr "Esporta i tuoi dati"
+msgstr "Esporta prima i tuoi dati"
 
 #: templates/admin_dashboard/billing.html:260
-#, fuzzy
 msgid "Questions?"
-msgstr "Domande"
+msgstr "Domande?"
 
 #: templates/admin_dashboard/billing.html:263
 msgid "Send us an email about billing, invoices or your plan:"
 msgstr "Scrivici un'e-mail su fatturazione, fatture o il tuo piano:"
 
 #: templates/admin_dashboard/billing_change_plan.html:4
-#, fuzzy
 msgid "Change plan"
-msgstr "Cambia password"
+msgstr "Cambia piano"
 
 #: templates/admin_dashboard/billing_change_plan.html:9
 #: templates/admin_dashboard/billing_change_plan.html:35
-#, fuzzy, python-format
+#, python-format
 msgid "Switch to %(name)s"
-msgstr "Invia il rapporto a %(name)s"
+msgstr "Passa a %(name)s"
 
 #: templates/admin_dashboard/billing_change_plan.html:10
-#, fuzzy, python-format
+#, python-format
 msgid "You are on %(name)s now."
-msgstr "Il vostro feedback per %(name)s"
+msgstr "Ora utilizzi %(name)s."
 
 #: templates/admin_dashboard/billing_change_plan.html:17
-#, fuzzy, python-format
+#, python-format
 msgid "€%(price)s/month, excluding VAT, for up to %(max)s active reviewees."
-msgstr "%(plan)s,%(price)s € al mese, per un massimo di %(max)s persone."
+msgstr "€%(price)s/mese, IVA esclusa, per un massimo di %(max)s persone valutate attive."
 
 #: templates/admin_dashboard/billing_change_plan.html:22
 #, python-format
@@ -6018,9 +5948,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: templates/admin_dashboard/billing_change_plan.html:23
-#, fuzzy
 msgid "Go to Reviewees"
-msgstr "Persone valutate"
+msgstr "Vai a Persone valutate"
 
 #: templates/admin_dashboard/billing_change_plan.html:28
 #, python-format
@@ -6053,9 +5982,8 @@ msgstr ""
 "dall'organigramma. Se qualcosa non è corretto, modifica il ciclo in seguito."
 
 #: templates/admin_dashboard/bulk_send_invitations.html:14
-#, fuzzy
 msgid "Review the cycles you just created, then queue the invitation emails."
-msgstr "Rivedi i cicli che hai appena creato, poi invia email di invito."
+msgstr "Controlla i cicli di valutazione appena creati, quindi metti in coda le email di invito."
 
 #: templates/admin_dashboard/bulk_send_invitations.html:18
 msgid "Back to cycles"
@@ -6076,13 +6004,10 @@ msgstr ""
 "propria autovalutazione. Le email partono entro circa cinque minuti."
 
 #: templates/admin_dashboard/bulk_send_invitations.html:28
-#, fuzzy
 msgid ""
 "Review the list below and click <em>Send invitations</em> to queue the "
 "emails to every reviewee. They go out within about five minutes."
-msgstr ""
-"Consulta la lista qui sotto e <em>clicca su Invia inviti ora</em> per "
-"avvisare ogni persona persona valutata."
+msgstr "Controlla l’elenco qui sotto e fai clic su <em>Invia inviti</em> per mettere in coda le email destinate a tutte le persone valutate. Verranno inviate entro circa cinque minuti."
 
 #: templates/admin_dashboard/bulk_send_invitations.html:29
 msgid ""
@@ -6108,7 +6033,6 @@ msgid "Peers"
 msgstr "Colleghi"
 
 #: templates/admin_dashboard/bulk_send_invitations.html:46
-#, fuzzy
 msgid "Direct reports"
 msgstr "Collaboratori diretti"
 
@@ -6121,11 +6045,11 @@ msgid "Created"
 msgstr "Creazione"
 
 #: templates/admin_dashboard/bulk_send_invitations.html:85
-#, fuzzy, python-format
+#, python-format
 msgid "Send all invitations (%(counter)s reviewee)"
 msgid_plural "Send all invitations (%(counter)s reviewees)"
-msgstr[0] "Invia inviti a tutti i %(counter)s recensitori"
-msgstr[1] "Invia inviti a tutti i %(counter)s recensiti"
+msgstr[0] "Invia tutti gli inviti (%(counter)s persona valutata)"
+msgstr[1] "Invia tutti gli inviti (%(counter)s persone valutate)"
 
 #: templates/admin_dashboard/bulk_send_invitations.html:87
 #, python-format
@@ -6701,14 +6625,12 @@ msgid "Your email is automatically assigned for self-assessment"
 msgstr "La tua email viene automaticamente assegnata per l'autovalutazione"
 
 #: templates/admin_dashboard/manage_invitations.html:78
-#, fuzzy
 msgid "Usually the reviewee themselves"
-msgstr "Di solito l'email stessa della persona valutata"
+msgstr "Di solito la persona valutata stessa"
 
 #: templates/admin_dashboard/manage_invitations.html:80
-#, fuzzy
 msgid "Usually the reviewee's own record"
-msgstr "Di solito l'email stessa della persona valutata"
+msgstr "Di solito il profilo della persona valutata"
 
 #: templates/admin_dashboard/manage_invitations.html:88
 #: templates/admin_dashboard/manage_invitations.html:148
@@ -6716,9 +6638,8 @@ msgid "Manager/Supervisor"
 msgstr "Manager/Supervisore"
 
 #: templates/admin_dashboard/manage_invitations.html:91
-#, fuzzy
 msgid "Search for a manager…"
-msgstr "Per il tuo manager."
+msgstr "Cerca un manager…"
 
 #: templates/admin_dashboard/manage_invitations.html:100
 msgid "Search for a peer…"
@@ -6763,14 +6684,10 @@ msgid "Add by email (advanced)"
 msgstr "Aggiungi per e-mail (avanzato)"
 
 #: templates/admin_dashboard/manage_invitations.html:138
-#, fuzzy
 msgid ""
 "For reviewers who are not in Blik yet. Separate multiple emails with commas "
 "or newlines."
-msgstr ""
-"Inserisci ora gli indirizzi e-mail dei valutatori oppure salta questo "
-"passaggio e aggiungili in seguito. Separa più indirizzi con virgole o "
-"interruzioni di riga."
+msgstr "Per i valutatori che non sono ancora in Blik. Separa più indirizzi email con virgole o interruzioni di riga."
 
 #: templates/admin_dashboard/manage_invitations.html:169
 msgid "Save & Send Invitations"
@@ -6854,12 +6771,10 @@ msgstr[0] "%(counter)s invito in attesa"
 msgstr[1] "%(counter)s inviti in attesa"
 
 #: templates/admin_dashboard/manage_invitations.html:252
-#, fuzzy
 msgid ""
 "Queue the email invitations to reviewers who haven't received one yet. They "
 "go out within about five minutes."
-msgstr ""
-"Invia inviti via email ai valutatori che non ne hanno ancora ricevuto uno"
+msgstr "Metti in coda le email di invito per i valutatori che non ne hanno ancora ricevuta una. Verranno inviate entro circa cinque minuti."
 
 #: templates/admin_dashboard/manage_invitations.html:254
 msgid "Send Pending Invitations"
@@ -6871,21 +6786,19 @@ msgstr "Torna ai dettagli del ciclo"
 
 #: templates/admin_dashboard/org_chart/_chart_node.html:12
 #: templates/admin_dashboard/org_chart/_outline_node.html:15
-#, fuzzy
 msgid "Members"
-msgstr "Membro"
+msgstr "Membri"
 
 #: templates/admin_dashboard/org_chart/_chart_node.html:19
-#, fuzzy, python-format
+#, python-format
 msgid "%(counter)s unit below"
 msgid_plural "%(counter)s units below"
-msgstr[0] "%(counter)s domanda"
-msgstr[1] "%(counter)s domande"
+msgstr[0] "%(counter)s unità sottostante"
+msgstr[1] "%(counter)s unità sottostanti"
 
 #: templates/admin_dashboard/org_chart/_empty.html:2
-#, fuzzy
 msgid "No units yet"
-msgstr "Non ancora usato"
+msgstr "Nessuna unità presente"
 
 #: templates/admin_dashboard/org_chart/_empty.html:3
 msgid ""
@@ -6900,9 +6813,8 @@ msgstr ""
 #: templates/admin_dashboard/org_chart/import_map.html:10
 #: templates/admin_dashboard/org_chart/index.html:14
 #: templates/admin_dashboard/org_chart/index.html:112
-#, fuzzy
 msgid "Import CSV"
-msgstr "Dati di importazione"
+msgstr "Importa CSV"
 
 #: templates/admin_dashboard/org_chart/_empty.html:6
 #: templates/admin_dashboard/org_chart/index.html:15
@@ -6921,23 +6833,22 @@ msgstr "Mostra o nascondi"
 
 #: templates/admin_dashboard/org_chart/_outline_node.html:8
 #: templates/admin_dashboard/org_chart/_people.html:9
-#, fuzzy
 msgid "No manager yet"
-msgstr "Può gestire i cicli"
+msgstr "Nessun manager assegnato"
 
 #: templates/admin_dashboard/org_chart/_outline_node.html:9
-#, fuzzy, python-format
+#, python-format
 msgid "%(counter)s member"
 msgid_plural "%(counter)s members"
-msgstr[0] "%(counter)s recensore"
-msgstr[1] "%(counter)s recensori"
+msgstr[0] "%(counter)s membro"
+msgstr[1] "%(counter)s membri"
 
 #: templates/admin_dashboard/org_chart/_outline_node.html:9
-#, fuzzy, python-format
+#, python-format
 msgid "%(counter)s unit"
 msgid_plural "%(counter)s units"
-msgstr[0] "%(counter)s domanda"
-msgstr[1] "%(counter)s domande"
+msgstr[0] "%(counter)s unità"
+msgstr[1] "%(counter)s unità"
 
 #: templates/admin_dashboard/org_chart/_people.html:3
 #: templates/admin_dashboard/org_chart/_people.html:5
@@ -6946,32 +6857,28 @@ msgid "Also in: %(units)s"
 msgstr "Anche in: %(units)s"
 
 #: templates/admin_dashboard/org_chart/_people.html:6
-#, fuzzy, python-format
+#, python-format
 msgid "Remove %(name)s from %(unit)s"
-msgstr "Recensione da %(name)s"
+msgstr "Rimuovi %(name)s da %(unit)s"
 
 #: templates/admin_dashboard/org_chart/_people.html:9
-#, fuzzy
 msgid "No members yet"
-msgstr "Nessun valutatore ancora"
+msgstr "Nessun membro presente"
 
 #: templates/admin_dashboard/org_chart/_unit_menu.html:3
 #: templates/admin_dashboard/org_chart/index.html:66
-#, fuzzy
 msgid "Add manager"
-msgstr "Manager"
+msgstr "Aggiungi manager"
 
 #: templates/admin_dashboard/org_chart/_unit_menu.html:4
 #: templates/admin_dashboard/org_chart/index.html:66
 #: templates/admin_dashboard/org_chart/index.html:68
-#, fuzzy
 msgid "Add member"
-msgstr "Membro"
+msgstr "Aggiungi membro"
 
 #: templates/admin_dashboard/org_chart/_unit_menu.html:5
-#, fuzzy
 msgid "Rename"
-msgstr "Nome"
+msgstr "Rinomina"
 
 #: templates/admin_dashboard/org_chart/_unit_menu.html:6
 #: templates/admin_dashboard/org_chart/index.html:80
@@ -6981,9 +6888,8 @@ msgstr "Colloca sotto un'altra unità"
 #: templates/admin_dashboard/org_chart/_unit_menu.html:7
 #: templates/admin_dashboard/org_chart/index.html:98
 #: templates/admin_dashboard/org_chart/index.html:106
-#, fuzzy
 msgid "Delete unit"
-msgstr "Elimina account"
+msgstr "Elimina unità"
 
 #: templates/admin_dashboard/org_chart/_unplaced.html:3
 msgid "Not in a unit"
@@ -7011,11 +6917,11 @@ msgstr ""
 "Tutti sono in un'unità. Trascina una persona qui per toglierla da un'unità."
 
 #: templates/admin_dashboard/org_chart/import_map.html:11
-#, fuzzy, python-format
+#, python-format
 msgid "%(filename)s · %(counter)s person"
 msgid_plural "%(filename)s · %(counter)s people"
-msgstr[0] "%(selected)s di %(counter)s rispondito"
-msgstr[1] "%(selected)s dei %(counter)s intervistati"
+msgstr[0] "%(filename)s · %(counter)s persona"
+msgstr[1] "%(filename)s · %(counter)s persone"
 
 #: templates/admin_dashboard/org_chart/import_map.html:17
 #, python-format
@@ -7032,26 +6938,23 @@ msgstr[0] "Il tuo piano consente di aggiungerne ancora %(counter)s."
 msgstr[1] "Il tuo piano consente di aggiungerne ancora %(counter)s."
 
 #: templates/admin_dashboard/org_chart/import_map.html:19
-#, fuzzy
 msgid "Upgrade your plan"
-msgstr "Il tuo piano"
+msgstr "Passa a un piano superiore"
 
 #: templates/admin_dashboard/org_chart/import_map.html:19
-#, fuzzy
 msgid "or remove people from the file."
-msgstr "Nessuno corrisponde a questi filtri."
+msgstr "oppure rimuovi alcune persone dal file."
 
 #: templates/admin_dashboard/org_chart/import_map.html:25
-#, fuzzy
 msgid "The file cannot be imported yet."
-msgstr "Il rapporto non è ancora stato generato"
+msgstr "Il file non può ancora essere importato."
 
 #: templates/admin_dashboard/org_chart/import_map.html:26
-#, fuzzy, python-format
+#, python-format
 msgid "And %(counter)s more error."
 msgid_plural "And %(counter)s more errors."
-msgstr[0] "%(counter)s recensore"
-msgstr[1] "%(counter)s recensori"
+msgstr[0] "E %(counter)s altro errore."
+msgstr[1] "E altri %(counter)s errori."
 
 #: templates/admin_dashboard/org_chart/import_map.html:34
 msgid "Which column is which?"
@@ -7079,9 +6982,8 @@ msgstr ""
 "Ogni manager riceve un'unità con le persone che riportano a lui o a lei."
 
 #: templates/admin_dashboard/org_chart/import_map.html:53
-#, fuzzy
 msgid "First rows"
-msgstr "Primo"
+msgstr "Prime righe"
 
 #: templates/admin_dashboard/org_chart/import_map.html:54
 msgid "First rows of the file"
@@ -7097,9 +6999,8 @@ msgstr ""
 "restano in Blik, ma non sono più in nessuna unità."
 
 #: templates/admin_dashboard/org_chart/import_map.html:64
-#, fuzzy
 msgid "Import"
-msgstr "Dati di importazione"
+msgstr "Importa"
 
 #: templates/admin_dashboard/org_chart/index.html:11
 msgid ""
@@ -7170,9 +7071,8 @@ msgstr "Per esempio: Ottica, Cattedra di Fisica"
 
 #: templates/admin_dashboard/org_chart/index.html:62
 #: templates/admin_dashboard/org_chart/index.html:92
-#, fuzzy
 msgid "Save"
-msgstr "Salvata"
+msgstr "Salva"
 
 #: templates/admin_dashboard/org_chart/index.html:72
 msgid "Find a person, or type a name and email to add someone new."
@@ -7498,13 +7398,10 @@ msgid "Feedback Categories"
 msgstr "Categorie di feedback"
 
 #: templates/admin_dashboard/partials/reviewee_start_dialog.html:28
-#, fuzzy
 msgid ""
 "Reviewers are copied from the previous cycle. Reviewers with an email "
 "address get their invitation within about five minutes."
-msgstr ""
-"I valutatori vengono copiati dal ciclo precedente. Gli inviti vengono "
-"inviati ai valutatori che hanno un indirizzo email."
+msgstr "I valutatori vengono copiati dal ciclo di valutazione precedente. I valutatori con un indirizzo email riceveranno l’invito entro circa cinque minuti."
 
 #: templates/admin_dashboard/partials/reviewee_start_dialog.html:30
 msgid ""
@@ -7524,9 +7421,8 @@ msgid "Sent %(date)s"
 msgstr "Inviato %(date)s"
 
 #: templates/admin_dashboard/partials/token_invitation_status.html:8
-#, fuzzy
 msgid "Failed"
-msgstr "Fallito:"
+msgstr "Non riuscito"
 
 #: templates/admin_dashboard/partials/token_invitation_status.html:12
 #, python-format
@@ -7557,9 +7453,9 @@ msgid "Ready to send"
 msgstr "Pronto da inviare"
 
 #: templates/admin_dashboard/partials/token_reminder_status.html:7
-#, fuzzy, python-format
+#, python-format
 msgid "Reminder failed: %(error)s"
-msgstr "Importazione fallita: %(error)s"
+msgstr "Invio del promemoria non riuscito: %(error)s"
 
 #: templates/admin_dashboard/partials/token_reminder_status.html:8
 msgid "Send it again when the mail server works."
@@ -9150,9 +9046,9 @@ msgid "Copy Link"
 msgstr "Copia link"
 
 #: templates/admin_dashboard/review_cycle_detail.html:278
-#, fuzzy, python-format
+#, python-format
 msgid "The email with these links to %(email)s failed: %(error)s"
-msgstr "Non inviato a %(email)s: %(error)s"
+msgstr "Invio dell’email con questi link a %(email)s non riuscito: %(error)s"
 
 #: templates/admin_dashboard/review_cycle_detail.html:279
 msgid ""
@@ -9208,13 +9104,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: templates/admin_dashboard/review_cycle_detail.html:446
-#, fuzzy
 msgid ""
 "Queue the invitation emails to all reviewers who have been assigned but not "
 "invited yet. They go out within about five minutes."
-msgstr ""
-"Invia email di invito a tutti i valutatori che sono stati assegnati ma non "
-"ancora inviati"
+msgstr "Metti in coda le email di invito per tutti i valutatori assegnati che non sono ancora stati invitati. Verranno inviate entro circa cinque minuti."
 
 #: templates/admin_dashboard/review_cycle_detail.html:448
 msgid "Send All Pending Invites"
@@ -9464,9 +9357,8 @@ msgid "Show API Identifiers"
 msgstr "Mostra identificatori API"
 
 #: templates/admin_dashboard/review_cycle_list.html:82
-#, fuzzy
 msgid "Email failed"
-msgstr "Email configurata:"
+msgstr "Invio email non riuscito"
 
 #: templates/admin_dashboard/review_cycle_list.html:101
 msgid "New Cycle"
@@ -9974,9 +9866,8 @@ msgstr ""
 "come file PDF."
 
 #: templates/admin_dashboard/settings.html:151
-#, fuzzy
 msgid "Report PDF Retention (days)"
-msgstr "Impostazioni del report"
+msgstr "Conservazione dei PDF dei report (giorni)"
 
 #: templates/admin_dashboard/settings.html:163
 msgid ""
@@ -9987,9 +9878,8 @@ msgstr ""
 "eliminato. Lascia vuoto per usare il valore predefinito."
 
 #: templates/admin_dashboard/settings.html:178
-#, fuzzy
 msgid "New Users"
-msgstr "Utenti"
+msgstr "Nuovi utenti"
 
 #: templates/admin_dashboard/settings.html:195
 msgid "New users can create cycles for others"
@@ -10660,9 +10550,8 @@ msgstr ""
 "eliminare l'organizzazione"
 
 #: templates/admin_dashboard/team.html:335
-#, fuzzy
 msgid "Can manage users, questionnaires, review cycles, and reports"
-msgstr "Persone, cicli di valutazione, questionari, feedback e report"
+msgstr "Può gestire utenti, questionari, cicli di valutazione e report"
 
 #: templates/admin_dashboard/team.html:344
 msgid "Regular team member with limited permissions"
@@ -10698,9 +10587,8 @@ msgid "Send a password reset email to this user?"
 msgstr "Inviare un'email per reimpostare la password a questo utente?"
 
 #: templates/admin_dashboard/team.html:385
-#, fuzzy
 msgid "Send Password Reset"
-msgstr "Nuova password"
+msgstr "Invia reimpostazione password"
 
 #: templates/admin_dashboard/team.html:388
 msgid "Update Permissions"
@@ -11469,23 +11357,18 @@ msgstr ""
 "addebitato nulla."
 
 #: templates/emails/existing_account.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "To choose a plan for your existing organization, sign in at %(login_url)s "
 "and open Settings."
-msgstr ""
-"Per scegliere un piano per la tua organizzazione esistente, accedi su "
-"%(site_url)s e apri Impostazioni."
+msgstr "Per scegliere un piano per la tua organizzazione esistente, accedi da %(login_url)s e apri Impostazioni."
 
 #: templates/emails/existing_account_signup.txt:1
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Someone tried to sign up with %(email)s, but this inbox already has a "
 "Blik360 account. We did not create a new account."
-msgstr ""
-"Hai iniziato un nuovo abbonamento con %(email)s, ma questo indirizzo ha già "
-"un account Blik360. Abbiamo cancellato il nuovo abbonamento e non è stato "
-"addebitato nulla."
+msgstr "Qualcuno ha provato a registrarsi con %(email)s, ma questo indirizzo email è già associato a un account Blik360. Non abbiamo creato un nuovo account."
 
 #: templates/emails/existing_account_signup.txt:3
 #, python-format
@@ -11622,9 +11505,8 @@ msgstr "Apri il rapporto:"
 #: templates/emails/reviewer_invitation_bundle.txt:1
 #: templates/reviews/feedback_overview.html:8
 #: templates/reviews/feedback_overview.html:56
-#, fuzzy
 msgid "Your feedback forms"
-msgstr "Il vostro feedback per %(name)s"
+msgstr "I tuoi moduli di feedback"
 
 #: templates/emails/feedback_overview_link.html:4
 #: templates/emails/feedback_overview_link.html:8
@@ -11641,9 +11523,9 @@ msgstr ""
 #: templates/emails/feedback_overview_link.txt:5
 #: templates/emails/reviewer_invitation_bundle.html:19
 #: templates/emails/reviewer_invitation_bundle.txt:14
-#, fuzzy, python-format
+#, python-format
 msgid "This link works for %(days)s days."
-msgstr "Scade tra %(days)s giorni"
+msgstr "Questo link è valido per %(days)s giorni."
 
 #: templates/emails/feedback_overview_link.html:9
 msgid "Show my forms"
@@ -12403,68 +12285,54 @@ msgstr "Avvia la valutazione:"
 #: templates/emails/reviewer_invitation_bundle.html:3
 #: templates/emails/reviewer_invitation_bundle.html:5
 #: templates/emails/reviewer_invitation_bundle.txt:1
-#, fuzzy
 msgid "Your feedback forms are still open"
-msgstr "Il tuo feedback per %(name)s è ancora aperto"
+msgstr "I tuoi moduli di feedback sono ancora aperti"
 
 #: templates/emails/reviewer_invitation_bundle.html:4
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "%(organization_name)s asks for your honest feedback. Your answers are "
 "anonymous."
-msgstr ""
-"%(organization_name)s chiede un feedback onesto su %(reviewee_name)s. Le tue "
-"risposte sono anonime."
+msgstr "%(organization_name)s ti chiede un feedback sincero. Le tue risposte sono anonime."
 
 #: templates/emails/reviewer_invitation_bundle.html:8
 #: templates/emails/reviewer_invitation_bundle.txt:5
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "%(organization_name)s asks for your honest feedback. You still have "
 "%(count)s form to fill in."
 msgid_plural ""
 "%(organization_name)s asks for your honest feedback. You still have "
 "%(count)s forms to fill in."
-msgstr[0] ""
-"%(organization_name)s chiede un feedback onesto su %(reviewee_name)s. Le tue "
-"risposte sono anonime."
-msgstr[1] ""
-"%(organization_name)s chiede un feedback onesto su %(reviewee_name)s. Le tue "
-"risposte sono anonime."
+msgstr[0] "%(organization_name)s ti chiede un feedback sincero. Hai ancora %(count)s modulo da compilare."
+msgstr[1] "%(organization_name)s ti chiede un feedback sincero. Hai ancora %(count)s moduli da compilare."
 
 #: templates/emails/reviewer_invitation_bundle.html:8
 #: templates/emails/reviewer_invitation_bundle.txt:5
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "%(organization_name)s asks for your honest feedback. You have %(count)s form "
 "to fill in."
 msgid_plural ""
 "%(organization_name)s asks for your honest feedback. You have %(count)s "
 "forms to fill in."
-msgstr[0] ""
-"%(organization_name)s chiede un feedback onesto su %(reviewee_name)s. Le tue "
-"risposte sono anonime."
-msgstr[1] ""
-"%(organization_name)s chiede un feedback onesto su %(reviewee_name)s. Le tue "
-"risposte sono anonime."
+msgstr[0] "%(organization_name)s ti chiede un feedback sincero. Hai %(count)s modulo da compilare."
+msgstr[1] "%(organization_name)s ti chiede un feedback sincero. Hai %(count)s moduli da compilare."
 
 #: templates/emails/reviewer_invitation_bundle.html:8
 #: templates/emails/reviewer_invitation_bundle.txt:5
-#, fuzzy, python-format
+#, python-format
 msgid "Together they take about %(minutes)s minute."
 msgid_plural "Together they take about %(minutes)s minutes."
-msgstr[0] "Ci vuole circa %(minutes)s minuto."
-msgstr[1] "Ci vogliono circa %(minutes)s minuti."
+msgstr[0] "Complessivamente richiedono circa %(minutes)s minuto."
+msgstr[1] "Complessivamente richiedono circa %(minutes)s minuti."
 
 #: templates/emails/reviewer_invitation_bundle.html:9
 #: templates/emails/reviewer_invitation_bundle.txt:7
-#, fuzzy
 msgid ""
 "Your answers are anonymous. The people you review never see your name with "
 "them. So you can be honest."
-msgstr ""
-"Le tue risposte sono anonime. %(reviewee_name)s non vede mai il tuo nome con "
-"loro. Quindi puoi essere onesto."
+msgstr "Le tue risposte sono anonime. Le persone che valuti non vedranno mai il tuo nome associato alle risposte. Puoi quindi essere sincero."
 
 #: templates/emails/reviewer_invitation_bundle.html:10
 #: templates/emails/reviewer_reminder.html:10
@@ -12472,21 +12340,20 @@ msgid "Open the review"
 msgstr "Apri la valutazione"
 
 #: templates/emails/reviewer_invitation_bundle.html:14
-#, fuzzy
 msgid "Your own self-assessment"
 msgstr "La tua autovalutazione"
 
 #: templates/emails/reviewer_invitation_bundle.html:14
-#, fuzzy, python-format
+#, python-format
 msgid "%(name)s, %(relation)s"
-msgstr "%(name)s (importato)"
+msgstr "%(name)s, %(relation)s"
 
 #: templates/emails/reviewer_invitation_bundle.html:15
-#, fuzzy, python-format
+#, python-format
 msgid "About %(minutes)s minute."
 msgid_plural "About %(minutes)s minutes."
-msgstr[0] "Ci vuole circa %(minutes)s minuto."
-msgstr[1] "Ci vogliono circa %(minutes)s minuti."
+msgstr[0] "Circa %(minutes)s minuto."
+msgstr[1] "Circa %(minutes)s minuti."
 
 #: templates/emails/reviewer_invitation_bundle.html:19
 #, python-format
@@ -12498,9 +12365,9 @@ msgstr ""
 "personale</a> mostra quali moduli sono ancora aperti."
 
 #: templates/emails/reviewer_invitation_bundle.txt:9
-#, fuzzy, python-format
+#, python-format
 msgid "Your own self-assessment (%(questionnaire)s)"
-msgstr "La tua autovalutazione: %(questionnaire)s"
+msgstr "La tua autovalutazione (%(questionnaire)s)"
 
 #: templates/emails/reviewer_invitation_bundle.txt:9
 #, python-format
@@ -12510,20 +12377,17 @@ msgstr "%(name)s, %(relation)s (%(questionnaire)s)"
 #: templates/emails/reviewer_invitation_bundle.txt:9
 #: templates/reviews/feedback_overview.html:69
 #: templates/reviews/feedback_overview.html:82
-#, fuzzy, python-format
+#, python-format
 msgid "about %(minutes)s minute"
 msgid_plural "about %(minutes)s minutes"
-msgstr[0] "Ci vuole circa %(minutes)s minuto."
-msgstr[1] "Ci vogliono circa %(minutes)s minuti."
+msgstr[0] "circa %(minutes)s minuto"
+msgstr[1] "circa %(minutes)s minuti"
 
 #: templates/emails/reviewer_invitation_bundle.txt:12
-#, fuzzy
 msgid ""
 "You can stop and continue later. Your personal overview shows which forms "
 "are still open:"
-msgstr ""
-"Puoi fermarti e continuare più tardi nello stesso browser. Le tue risposte "
-"restano lì finché non le invii."
+msgstr "Puoi interrompere e continuare più tardi. Il tuo riepilogo personale mostra quali moduli sono ancora aperti:"
 
 #: templates/emails/reviewer_reminder.html:3
 #: templates/emails/reviewer_reminder.html:6
@@ -13932,9 +13796,8 @@ msgid "Review Date"
 msgstr "Data della valutazione"
 
 #: templates/reports/pdf/_cover.html:13
-#, fuzzy
 msgid "Feedback from"
-msgstr "Feedback"
+msgstr "Feedback da"
 
 #: templates/reports/pdf/_cover.html:17
 msgid ""
@@ -13951,70 +13814,58 @@ msgid "Scale:"
 msgstr "Scala:"
 
 #: templates/reports/pdf/_detail.html:26
-#, fuzzy
 msgid "Average"
-msgstr "3 - Media"
+msgstr "Media"
 
 #: templates/reports/pdf/_detail.html:28
-#, fuzzy
 msgid "Positive"
-msgstr "Proattivo"
+msgstr "Positivo"
 
 #: templates/reports/pdf/_detail.html:50 templates/reports/pdf/_others.html:22
 #: templates/reports/pdf/_summary.html:76
-#, fuzzy
 msgid "Others"
-msgstr "Media degli altri:"
+msgstr "Altri"
 
 #: templates/reports/pdf/_development.html:7
-#, fuzzy
 msgid "Dreyfus model"
-msgstr "Pesi per modelli Dreyfus"
+msgstr "Modello di Dreyfus"
 
 #: templates/reports/pdf/_development.html:50
-#, fuzzy
 msgid "Skill"
-msgstr "Livello di competenza"
+msgstr "Competenza"
 
 #: templates/reports/pdf/_development.html:51
-#, fuzzy
 msgid "Agency"
-msgstr "Livello di capacità di iniziativa"
+msgstr "Capacità di iniziativa"
 
 #: templates/reports/pdf/_development.html:55
 #: templates/reports/pdf/_summary.html:48
-#, fuzzy
 msgid "Performance matrix"
-msgstr "Panoramica delle performance"
+msgstr "Matrice delle performance"
 
 #: templates/reports/pdf/_others.html:3
-#, fuzzy
 msgid "How others see you"
-msgstr "Gli altri ti vedono"
+msgstr "Come ti vedono gli altri"
 
 #: templates/reports/pdf/_others.html:21 templates/reports/pdf/_summary.html:74
-#, fuzzy
 msgid "Sections"
 msgstr "Sezioni"
 
 #: templates/reports/pdf/_others.html:23
-#, fuzzy
 msgid "Gap"
-msgstr "Intervallo:"
+msgstr "Divario"
 
 #: templates/reports/pdf/_others.html:30
-#, fuzzy
 msgid "strength"
-msgstr "Punti di forza chiave"
+msgstr "punto di forza"
 
 #: templates/reports/pdf/_others.html:31
 msgid "area to grow"
 msgstr "area di crescita"
 
 #: templates/reports/pdf/_summary.html:3
-#, fuzzy
 msgid "Summary"
-msgstr "Riepilogo del ciclo"
+msgstr "Riepilogo"
 
 #: templates/reports/pdf/_summary.html:8 templates/reports/pdf/_summary.html:44
 #: templates/reports/report_base.html:86
@@ -14041,9 +13892,8 @@ msgstr ""
 "In ogni sezione gli altri ti valutano almeno quanto la tua autovalutazione."
 
 #: templates/reports/pdf/_summary.html:60
-#, fuzzy
 msgid "Strengths"
-msgstr "Punti di forza chiave"
+msgstr "Punti di forza"
 
 #: templates/reports/pdf/_summary.html:64
 msgid "Areas to grow"
@@ -14062,14 +13912,12 @@ msgid "Total Responses"
 msgstr "Risposte totali"
 
 #: templates/reports/report_base.html:102
-#, fuzzy
 msgid "Download PDF"
-msgstr "Scarica Esportazione"
+msgstr "Scarica PDF"
 
 #: templates/reports/report_base.html:106
-#, fuzzy
 msgid "Regenerate PDF"
-msgstr "Rapporto Rigenerazione"
+msgstr "Rigenera PDF"
 
 #: templates/reports/report_not_ready.html:8
 #: templates/reports/report_not_ready.html:15
@@ -14102,7 +13950,6 @@ msgstr ""
 "informazioni."
 
 #: templates/reviews/_overview_action.html:2
-#, fuzzy
 msgid "Start"
 msgstr "Inizia"
 
@@ -14115,9 +13962,8 @@ msgid "Done"
 msgstr "Fatto"
 
 #: templates/reviews/_overview_action.html:8
-#, fuzzy
 msgid "Closed"
-msgstr "Chiudi"
+msgstr "Chiuso"
 
 #: templates/reviews/claim_error.html:8
 msgid "Unable to Claim Token"
@@ -14186,25 +14032,24 @@ msgid "Submit Feedback"
 msgstr "Invia feedback"
 
 #: templates/reviews/feedback_overview.html:58
-#, fuzzy, python-format
+#, python-format
 msgid "%(done)s of %(total)s done."
-msgstr "Pagina %(num)s di %(total)s"
+msgstr "%(done)s di %(total)s completati."
 
 #: templates/reviews/feedback_overview.html:59
-#, fuzzy, python-format
+#, python-format
 msgid "The open forms take about %(minutes)s minute."
 msgid_plural "The open forms take about %(minutes)s minutes."
-msgstr[0] "Ci vuole circa %(minutes)s minuto."
-msgstr[1] "Ci vogliono circa %(minutes)s minuti."
+msgstr[0] "I moduli ancora aperti richiedono circa %(minutes)s minuto."
+msgstr[1] "I moduli ancora aperti richiedono circa %(minutes)s minuti."
 
 #: templates/reviews/feedback_overview.html:64
 msgid "About you"
 msgstr "Su di te"
 
 #: templates/reviews/feedback_overview.html:77
-#, fuzzy
 msgid "About others"
-msgstr "Su se stessi contro gli altri"
+msgstr "Sugli altri"
 
 #: templates/reviews/feedback_overview.html:90
 msgid "There are no forms for you at the moment."
@@ -14212,9 +14057,8 @@ msgstr "Al momento non ci sono moduli per te."
 
 #: templates/reviews/feedback_overview_expired.html:8
 #: templates/reviews/feedback_overview_expired.html:49
-#, fuzzy
 msgid "This link has expired"
-msgstr "Questo invito è scaduto."
+msgstr "Questo link è scaduto"
 
 #: templates/reviews/feedback_overview_expired.html:46
 msgid "Check your inbox"
@@ -14234,9 +14078,8 @@ msgstr ""
 "Richiedine uno nuovo e arriverà per email entro un minuto."
 
 #: templates/reviews/feedback_overview_expired.html:53
-#, fuzzy
 msgid "Send me a new link"
-msgstr "Invia il link di reset"
+msgstr "Inviami un nuovo link"
 
 #: templates/reviews/rating_descriptions.html:5
 msgid "What does each score mean?"
@@ -14466,11 +14309,10 @@ msgid "Create Organization"
 msgstr "Crea un'organizzazione"
 
 #: templates/superuser/create_organization.html:10
-#, fuzzy
 msgid ""
 "Create an organization without a payment, for testing or for a customer you "
 "invoice yourself."
-msgstr "Crea una nuova organizzazione senza un piano di pagamento per i test"
+msgstr "Crea un’organizzazione senza pagamento, per effettuare test o per un cliente a cui gestisci direttamente la fatturazione."
 
 #: templates/superuser/create_organization.html:20
 msgid "New Organization Details"
@@ -14501,9 +14343,8 @@ msgstr ""
 "come amministratore dell'organizzazione."
 
 #: templates/superuser/create_organization.html:52
-#, fuzzy
 msgid "Review credits"
-msgstr "Cicli di valutazione"
+msgstr "Crediti di valutazione"
 
 #: templates/superuser/create_organization.html:54
 msgid ""

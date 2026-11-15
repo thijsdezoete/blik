@@ -46,6 +46,7 @@ from .permissions import (
     TokenScopeMixin,
     IsOrganizationMember,
     CanManageOrganization,
+    CanManageAPITokens,
     CanManageQuestionnaires,
     CanCreateCycles,
     CanViewAllReports,
@@ -1039,14 +1040,14 @@ class APITokenViewSet(TokenScopeMixin, viewsets.ModelViewSet):
     """
     Manage API tokens for authentication.
 
-    Permissions: Organization admins only
+    Permissions: Organization admins with API access only
 
     IMPORTANT: Token values are only shown once upon creation.
     After creation, tokens are masked for security.
     """
 
     api_resource = "tokens"
-    permission_classes = [IsOrganizationMember, CanManageOrganization]
+    permission_classes = [IsOrganizationMember, CanManageAPITokens]
     serializer_class = APITokenSerializer
     lookup_field = "uuid"
 

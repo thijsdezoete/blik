@@ -4,7 +4,7 @@ Tests for API permissions.
 from django.test import TestCase
 from rest_framework.test import APIClient
 from accounts.models import Organization, OrgUnit, OrgUnitMembership, User, Reviewee, UserProfile
-from accounts.permissions import assign_organization_admin
+from accounts.permissions import assign_organization_admin, set_user_permission
 from api.models import APIToken
 from reviews.models import ReviewCycle
 from questionnaires.models import Questionnaire
@@ -335,3 +335,48 @@ class HasAPIPermissionTest(TestCase):
         # May fail due to other permissions, but not token permissions
         # (Token permissions only apply to API token auth)
         self.assertNotEqual(response.status_code, 401)
+
+
+class CanManageAPITokensPermissionTest(TestCase):
+    """The token endpoints need can_manage_organization and can_use_api, as the web does."""
+
+    def setUp(self):
+        self.org = Organization.objects.create(name='Acme')
+        self.admin = User.objects.create_user(
+            username='anna', email='anna@acme.example', password='test123')
+        UserProfile.objects.create(user=self.admin, organization=self.org)
+        assign_organization_admin(self.admin)
+        self.token = APIToken.objects.create(
+            organization=self.org, created_by=self.admin, name='Reporting')
+
+        self.client = APIClient()
+
+    def test_admin_without_api_access_cannot_use_the_token_endpoints(self):
+        self.client.force_login(self.admin)
+        detail = f'/api/v1/tokens/{self.token.uuid}/'
+
+        responses = [
+            self.client.get('/api/v1/tokens/'),
+            self.client.post('/api/v1/tokens/', {'name': 'New'}, format='json'),
+            self.client.get(detail),
+            self.client.patch(detail, {'name': 'Changed'}, format='json'),
+            self.client.delete(detail),
+        ]
+
+        self.assertEqual([r.status_code for r in responses], [403] * 5)
+        self.assertEqual(list(APIToken.objects.values_list('name', flat=True)), ['Reporting'])
+
+    def test_admin_with_api_access_manages_tokens(self):
+        set_user_permission(self.admin, 'can_use_api', True)
+        self.client.force_login(self.admin)
+
+        created = self.client.post('/api/v1/tokens/', {'name': 'New'}, format='json')
+        detail = f"/api/v1/tokens/{created.data['uuid']}/"
+        responses = [
+            created,
+            self.client.get('/api/v1/tokens/'),
+            self.client.patch(detail, {'name': 'Changed'}, format='json'),
+            self.client.delete(detail),
+        ]
+
+        self.assertEqual([r.status_code for r in responses], [201, 200, 200, 204])

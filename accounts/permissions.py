@@ -406,7 +406,8 @@ def can_use_api(user):
     and example calls.
 
     A per-user grant that no group carries. It hides interface parts only;
-    a request with an API token does not look at it.
+    a request with an API token does not look at it. The one exception is
+    the management of tokens, on the web and on the token endpoints of the API.
     """
     return user.has_perm('accounts.can_use_api')
 

@@ -462,21 +462,21 @@ class PlaceInDepartmentTests(TestCase):
         return {(m.reviewee, m.role) for m in unit.memberships.all()}
 
     def test_joins_an_existing_unit_by_name_as_member(self):
-        unit = OrgUnit.objects.create(organization=self.org, name='Optics')
-        place_in_department(self.org, self.person, 'optics', manager=self.boss)
+        unit = OrgUnit.objects.create(organization=self.org, name='Platform')
+        place_in_department(self.org, self.person, 'platform', manager=self.boss)
         self.assertEqual(self.roles(unit), {(self.person, OrgUnitMembership.MEMBER)})  # manager only for new units
-        self.assertEqual(self.person.department, 'Optics')
+        self.assertEqual(self.person.department, 'Platform')
 
     def test_new_unit_gets_the_chosen_manager(self):
-        place_in_department(self.org, self.person, 'Lasers', manager=self.boss)
-        place_in_department(self.org, self.other, 'Lasers')
-        unit = OrgUnit.objects.get(organization=self.org, name='Lasers')
+        place_in_department(self.org, self.person, 'Mobile', manager=self.boss)
+        place_in_department(self.org, self.other, 'Mobile')
+        unit = OrgUnit.objects.get(organization=self.org, name='Mobile')
         self.assertEqual(self.roles(unit), {(self.boss, OrgUnitMembership.MANAGER),
                                             (self.person, OrgUnitMembership.MEMBER),
                                             (self.other, OrgUnitMembership.MEMBER)})
         self.assertEqual(sorted(unit.memberships.filter(row=1).values_list('col', flat=True)), [0, 1])
 
     def test_new_person_can_lead_the_new_unit(self):
-        place_in_department(self.org, self.person, 'Lasers', manager=self.boss, leads=True)
-        unit = OrgUnit.objects.get(organization=self.org, name='Lasers')
+        place_in_department(self.org, self.person, 'Mobile', manager=self.boss, leads=True)
+        unit = OrgUnit.objects.get(organization=self.org, name='Mobile')
         self.assertEqual(self.roles(unit), {(self.person, OrgUnitMembership.MANAGER)})

@@ -13,13 +13,13 @@
     <a href="{% url 'review_cycle_create' %}" class="btn btn-primary">{% trans 'Create Review Cycle' %}</a>
 </div>
 
-{% if total_count or is_filtered %}
+{% if total_count or is_filtered or has_deactivated %}
 <div class="card">
     <form id="cycle-filters" method="get" class="list-filters">
         <nav id="cycle-stages" class="stage-tabs" aria-label="{% trans 'Filter by stage' %}">
-            <a href="?{% querystring stage=None page=None %}" class="stage-tab"{% if not stage %} aria-current="true"{% endif %}>{% trans 'All' %} <span>{{ total_count }}</span></a>
+            <a href="{% querystring stage=None page=None %}" class="stage-tab"{% if not stage %} aria-current="true"{% endif %}>{% trans 'All' %} <span>{{ total_count }}</span></a>
             {% for key, label, count in stages %}
-            <a href="?{% querystring stage=key page=None %}" class="stage-tab"{% if stage == key %} aria-current="true"{% endif %}>{{ label }} <span>{{ count }}</span></a>
+            <a href="{% querystring stage=key page=None %}" class="stage-tab"{% if stage == key %} aria-current="true"{% endif %}>{{ label }} <span>{{ count }}</span></a>
             {% endfor %}
         </nav>
         {% if stage %}<input type="hidden" name="stage" value="{{ stage }}">{% endif %}
@@ -37,7 +37,8 @@
                 <option value="{{ key }}" {% if sort == key %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
             </select>
-            <span id="cycle-clear">{% if is_filtered %}<a href="?{% querystring stage=None needs=None q=None questionnaire=None page=None %}" class="btn btn-sm btn-secondary">{% if needs %}{% blocktrans trimmed with label=needs_label %}{{ label }}: clear filters{% endblocktrans %}{% else %}{% trans 'Clear filters' %}{% endif %}</a>{% endif %}</span>
+            {% if has_deactivated %}<label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-size: 0.875rem; color: var(--text-secondary); white-space: nowrap;"><input type="checkbox" name="deactivated" value="1"{% if show_deactivated %} checked{% endif %} onchange="this.form.requestSubmit()"> {% trans 'Show deactivated people' %}</label>{% endif %}
+            <span id="cycle-clear">{% if is_filtered %}<a href="{% querystring stage=None needs=None q=None questionnaire=None page=None %}" class="btn btn-sm btn-secondary">{% if needs %}{% blocktrans trimmed with label=needs_label %}{{ label }}: clear filters{% endblocktrans %}{% else %}{% trans 'Clear filters' %}{% endif %}</a>{% endif %}</span>
         </div>
     </form>
     <div id="cycle-results">
@@ -134,8 +135,8 @@
         </div>
         <div class="pagination">
             {% if cycles.has_previous %}
-                <a href="?{% querystring page=1 %}" class="pagination-link">{% trans 'First' %}</a>
-                <a href="?{% querystring page=cycles.previous_page_number %}" class="pagination-link">{% trans 'Previous' %}</a>
+                <a href="{% querystring page=1 %}" class="pagination-link">{% trans 'First' %}</a>
+                <a href="{% querystring page=cycles.previous_page_number %}" class="pagination-link">{% trans 'Previous' %}</a>
             {% endif %}
 
             <span class="pagination-info">
@@ -143,8 +144,8 @@
             </span>
 
             {% if cycles.has_next %}
-                <a href="?{% querystring page=cycles.next_page_number %}" class="pagination-link">{% trans 'Next' %}</a>
-                <a href="?{% querystring page=cycles.paginator.num_pages %}" class="pagination-link">{% trans 'Last' %}</a>
+                <a href="{% querystring page=cycles.next_page_number %}" class="pagination-link">{% trans 'Next' %}</a>
+                <a href="{% querystring page=cycles.paginator.num_pages %}" class="pagination-link">{% trans 'Last' %}</a>
             {% endif %}
         </div>
     </div>

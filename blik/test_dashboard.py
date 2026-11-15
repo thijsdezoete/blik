@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, RevieweeFactory
+from accounts.models import Reviewee
 from blik import dashboard
 from core.factories import OrganizationFactory, UserFactory
 from questionnaires.factories import QuestionnaireFactory
@@ -106,3 +107,18 @@ class DashboardStateTests(TestCase):
         self.assertEqual([(row['cycle'], row['invited_answered'], row['invited']) for row in state['team']],
                          [(team_cycle, 1, 3)])
         self.assertEqual(state['own'], [])
+
+    def test_the_cycles_of_a_deactivated_person_do_not_count(self):
+        manager = RevieweeFactory(organization=self.org, name='Mia', email='mia@acme.example')
+        user = UserFactory(username='mia', email='mia@acme.example')
+        gone = self.cycle('Tom', peer=(1, 3), email=True)
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=manager, row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=gone.reviewee, row=1, col=0)
+        ReviewerTokenFactory(cycle=gone, category='peer', reviewer_email='mia@acme.example')
+        Reviewee.objects.filter(pk=gone.reviewee_id).update(is_active=False)
+
+        # The cycles the dashboard view counts for an admin.
+        self.assertIsNone(dashboard.running_state(ReviewCycle.objects.for_organization(self.org), 3, self.now))
+        state = dashboard.personal_state(user, self.org, 3, runs_team=False)
+        self.assertEqual((state['to_review'], state['team']), ([], []))

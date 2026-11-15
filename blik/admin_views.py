@@ -1877,9 +1877,33 @@ def creatable_reviewees(user, org):
     return reviewees.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
 
 
-def bulk_reviewees(user, org):
-    """The people a bulk run makes cycles for: everyone this user may start a cycle for."""
-    return creatable_reviewees(user, org)
+def selected_units(request):
+    """
+    The org chart units ticked on the bulk form; none ticked is a run for everyone.
+    A value that is no unit of this organization is a 404: to drop it could
+    widen the run to everyone.
+    """
+    values = set(request.POST.getlist('bulk_units'))
+    try:
+        units = list(OrgUnit.objects.filter(organization=request.organization, uuid__in=[UUID(v) for v in values]))
+    except ValueError:
+        raise Http404
+    if len(units) != len(values):
+        raise Http404
+    return units
+
+
+def bulk_reviewees(user, org, units=()):
+    """
+    The people a bulk run makes cycles for: everyone this user may start a cycle
+    for, or of those only the managers and members of `units`.
+    """
+    reviewees = creatable_reviewees(user, org)
+    if units:
+        # ponytail: the units as ticked, not the units below them; walk the chart
+        # down here if a parent unit must take its teams along
+        reviewees = reviewees.filter(pk__in=OrgUnitMembership.objects.filter(unit__in=units).values('reviewee_id'))
+    return reviewees
 
 
 def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
@@ -1967,13 +1991,21 @@ def review_cycle_bulk_preview(request):
     if not may_create_for_others(request.user):
         raise Http404
     bulk_source = request.POST.get('bulk_source', 'empty')
-    reviewees = bulk_reviewees(request.user, request.organization)
+    units = selected_units(request)
+    reviewees = bulk_reviewees(request.user, request.organization, units)
     planned, skipped = plan_bulk_cycles(reviewees, bulk_source, None, selected_category_flags(request))
     count = len(planned)
-    parts = [ngettext(
-        'This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for.',
-        'This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for.',
-        count) % {'count': count, 'total': count + skipped}]
+    if units:
+        sentence = ngettext(
+            'This creates %(count)s cycle, for %(count)s of the %(total)s people in the selected departments.',
+            'This creates %(count)s cycles, for %(count)s of the %(total)s people in the selected departments.',
+            count)
+    else:
+        sentence = ngettext(
+            'This creates %(count)s cycle, for %(count)s of the %(total)s people you can create cycles for.',
+            'This creates %(count)s cycles, for %(count)s of the %(total)s people you can create cycles for.',
+            count)
+    parts = [sentence % {'count': count, 'total': count + skipped}]
     parts += skipped_sentence(bulk_source, skipped)
     return JsonResponse({'count': count, 'skipped': skipped, 'message': ' '.join(parts)})
 
@@ -1986,6 +2018,7 @@ def review_cycle_create(request):
         # Bulk is a cycle for several people: only for users who may create for others.
         if creation_mode == 'bulk' and not may_create_for_others(request.user):
             raise Http404
+        units = selected_units(request) if creation_mode == 'bulk' else []
         questionnaire_id = request.POST.get('questionnaire')
         bulk_source = request.POST.get('bulk_source', 'empty')
         # Reusing earlier cycles takes the questionnaire and categories from each of them.
@@ -2018,7 +2051,7 @@ def review_cycle_create(request):
                 # send any emails here — the admin confirms sending on the
                 # follow-up bulk_send_invitations page. This prevents the
                 # request from stalling on SMTP and avoids surprise blasts.
-                reviewees = bulk_reviewees(request.user, org)
+                reviewees = bulk_reviewees(request.user, org, units)
                 derived_count = 0
                 planned, unplaced_count = plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags)
 
@@ -2185,18 +2218,19 @@ def review_cycle_create(request):
     # Org chart availability drives the default for the bulk-source radio:
     # if at least one unit exists we pre-select "derive from chart"; otherwise
     # only "leave empty" is offered.
-    has_org_chart = (
-        org is not None
-        and OrgUnit.objects.filter(organization=org).exists()
-    )
+    units = list(OrgUnit.objects.filter(organization=org).order_by('name')) if org is not None else []
+    has_org_chart = bool(units)
+    creates_for_whole_organization = request.user.has_perm('accounts.can_manage_organization')
 
     context = {
         'reviewees': reviewees,
         'questionnaires': questionnaires,
         'can_create_for_others': may_create_for_others(request.user),
-        'creates_for_whole_organization': request.user.has_perm('accounts.can_manage_organization'),
+        'creates_for_whole_organization': creates_for_whole_organization,
         **billing_context(org, request.user),
         'has_org_chart': has_org_chart,
+        # A run for some departments is for those who otherwise run it for everyone.
+        'bulk_units': units if creates_for_whole_organization else [],
         'has_previous_cycles': org is not None and ReviewCycle.objects.filter(reviewee__organization=org).exists(),
     }
 

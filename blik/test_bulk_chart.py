@@ -179,6 +179,37 @@ class BulkChartDerivationTests(TestCase):
         self.assertEqual(preview('chart'), (0, people))  # nobody is in a unit
         self.assertEqual(ReviewCycle.objects.count(), 1)
 
+    def test_bulk_run_for_selected_units_takes_only_their_managers_and_members(self):
+        sam = RevieweeFactory(organization=self.org, email='sam@example.com')
+        sue = RevieweeFactory(organization=self.org, email='sue@example.com')
+        ed = RevieweeFactory(organization=self.org, email='ed@example.com')
+        RevieweeFactory(organization=self.org, email='nounit@example.com')
+        sales = OrgUnitFactory(organization=self.org, name='Sales')
+        engineering = OrgUnitFactory(organization=self.org, name='Engineering')
+        OrgUnitMembershipFactory(unit=sales, reviewee=sam, row=0, col=0)
+        OrgUnitMembershipFactory(unit=sales, reviewee=sue, row=1, col=0)
+        OrgUnitMembershipFactory(unit=engineering, reviewee=ed, row=1, col=0)
+        form = {'creation_mode': 'bulk', 'bulk_source': 'empty', 'bulk_units': [str(sales.uuid)],
+                'questionnaire': self.questionnaire.id}
+
+        preview = self.client.post(reverse('review_cycle_bulk_preview'), form).json()
+        self.assertEqual((preview['count'], preview['skipped']), (2, 0))
+
+        self.client.post(reverse('review_cycle_create'), form)
+        self.assertEqual(set(ReviewCycle.objects.values_list('reviewee__email', flat=True)),
+                         {'sam@example.com', 'sue@example.com'})
+
+    def test_bulk_run_refuses_a_unit_of_another_organization(self):
+        # Dropping the unit instead would widen the run to everyone.
+        RevieweeFactory(organization=self.org)
+        foreign = OrgUnitFactory(organization=OrganizationFactory(), name='Elsewhere')
+        form = {'creation_mode': 'bulk', 'bulk_source': 'empty', 'bulk_units': [str(foreign.uuid)],
+                'questionnaire': self.questionnaire.id}
+
+        for url in ('review_cycle_bulk_preview', 'review_cycle_create'):
+            self.assertEqual(self.client.post(reverse(url), form).status_code, 404)
+        self.assertFalse(ReviewCycle.objects.exists())
+
     def test_unplaced_reviewees_get_no_cycle_in_chart_mode(self):
         """
         A reviewee the chart gives no reviewers gets no cycle: a lone

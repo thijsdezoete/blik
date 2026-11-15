@@ -49,6 +49,21 @@
                     </label>
                 </div>
                 <div id="bulkModeNote" style="display: none;">
+                    {% if bulk_units %}
+                    <fieldset class="form-group" style="margin-bottom: 1rem; border: 0; padding: 0;">
+                        <legend class="form-label">{% trans 'Departments' %}</legend>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem;">
+                            {% for unit in bulk_units %}
+                            <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; font-weight: normal;">
+                                <input type="checkbox" name="bulk_units" value="{{ unit.uuid }}"> {{ unit.name }}
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            {% trans 'Only the managers and members of the selected departments get a cycle. Select none to create cycles for everyone.' %}
+                        </div>
+                    </fieldset>
+                    {% endif %}
                     <div class="form-group" style="margin-bottom: 1rem;">
                         <label class="form-label">Reviewers per cycle</label>
                         <div style="display: flex; flex-direction: column; gap: 0.5rem;">

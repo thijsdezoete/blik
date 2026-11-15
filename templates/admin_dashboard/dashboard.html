@@ -224,6 +224,7 @@
             <button type="button" class="stage-tab" data-how-tab>{% trans 'The report' %}</button>
             <button type="button" class="stage-tab" data-how-tab>{% trans 'Who can do what' %}</button>
             <button type="button" class="stage-tab" data-how-tab>{% trans 'Who sees what' %}</button>
+            <button type="button" class="stage-tab" data-how-tab>{% trans 'When a person leaves' %}</button>
             {% if billing_mode %}<button type="button" class="stage-tab" data-how-tab>{% trans 'What a cycle costs' %}</button>{% endif %}
         </nav>
 
@@ -331,6 +332,7 @@
             </table>
             </div>
             <p class="how-foot">{% trans 'A person who only gets or gives feedback is not in this table: that person needs no account.' %}</p>
+            {% if perms.accounts.can_manage_organization %}<p class="how-sub">{% url 'team_list' as team_url %}{% blocktrans trimmed %}API access is a separate permission on <a href="{{ team_url }}">Organization → Team</a>. Without it, a person sees nothing about the API in Blik.{% endblocktrans %}</p>{% endif %}
         </section>
 
         <section class="how-page" data-how-page>
@@ -345,6 +347,19 @@
                 </p></li>
             </ul>
             <p class="how-foot">{% trans 'The answers of the manager and the self-assessment are always in the report, when the cycle has them: there is only one of each.' %}</p>
+        </section>
+
+        <section class="how-page" data-how-page>
+            <p class="how-lead">{% trans 'A person who leaves is deactivated, not deleted. Their feedback and their reports stay.' %}</p>
+            <ul class="how-facts how-four">
+                <li><h3>{% trans 'How to deactivate' %}</h3><p>
+                    {% if perms.accounts.can_manage_organization %}{% url 'reviewee_list' as reviewees_url %}{% blocktrans trimmed %}On the <a href="{{ reviewees_url }}">Reviewees</a> page, “Delete” deactivates a person. A CSV import of the org chart deactivates the people who are not in the file, unless you keep them. It never deactivates an admin.{% endblocktrans %}{% else %}{% trans 'An organization admin deactivates a person on the Reviewees page, or with a CSV import of the org chart.' %}{% endif %}
+                </p></li>
+                <li><h3>{% trans 'What stays' %}</h3><p>{% trans 'Nothing is deleted. The feedback the person gave still counts in the reports of other people. Their own cycles and reports stay too.' %}</p></li>
+                <li><h3>{% trans 'What stops' %}</h3><p>{% trans 'The person gets no new cycles. Blik does not add them as a reviewer to a new cycle. An invitation that is already open stays open.' %}</p></li>
+                <li><h3>{% trans 'Where their cycles are' %}</h3><p>{% url 'review_cycle_list' as cycles_url %}{% blocktrans trimmed %}The dashboard and the list of cycles leave them out. On the <a href="{{ cycles_url }}">Cycles</a> page, “Show deactivated people” brings them back.{% endblocktrans %}</p></li>
+            </ul>
+            <p class="how-foot">{% trans 'To make a person active again, add them again with the same email address, or import a file that has them.' %}</p>
         </section>
 
         {% if billing_mode %}

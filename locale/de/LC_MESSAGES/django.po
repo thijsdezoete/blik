@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 21:07+0000\n"
+"POT-Creation-Date: 2026-11-15 21:19+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -4452,6 +4452,9 @@ msgstr "Wer was darf"
 msgid "Who sees what"
 msgstr "Wer was sieht"
 
+msgid "When a person leaves"
+msgstr "Wenn eine Person ausscheidet"
+
 msgid "What a cycle costs"
 msgstr "Was eine Feedbackrunde kostet"
 
@@ -4654,6 +4657,10 @@ msgstr "Eine Rolle unter Organisation → Team"
 msgid "A person who only gets or gives feedback is not in this table: that person needs no account."
 msgstr "Wer nur Feedback erhält oder gibt, steht nicht in dieser Tabelle: Diese Person braucht kein Konto."
 
+#, python-format
+msgid "API access is a separate permission on <a href=\"%(team_url)s\">Organization → Team</a>. Without it, a person sees nothing about the API in Blik."
+msgstr "API-Zugriff ist eine eigene Berechtigung unter <a href=\"%(team_url)s\">Organisation → Team</a>. Ohne sie sieht eine Person in Blik nichts zur API."
+
 msgid "All feedback is anonymous. Nobody can see who gave which answer."
 msgstr "Alles Feedback ist anonym. Niemand kann sehen, wer welche Antwort gegeben hat."
 
@@ -4693,6 +4700,41 @@ msgstr "Eine kleinere Zahl zeigt mehr Feedback, aber Feedbackgebende sind leicht
 
 msgid "The answers of the manager and the self-assessment are always in the report, when the cycle has them: there is only one of each."
 msgstr "Die Antworten der Führungskraft und die Selbsteinschätzung stehen immer im Bericht, wenn die Feedbackrunde sie enthält: Es gibt jeweils nur eine."
+
+msgid "A person who leaves is deactivated, not deleted. Their feedback and their reports stay."
+msgstr "Wer ausscheidet, wird deaktiviert, nicht gelöscht. Feedback und Berichte bleiben erhalten."
+
+msgid "How to deactivate"
+msgstr "So wird deaktiviert"
+
+#, python-format
+msgid "On the <a href=\"%(reviewees_url)s\">Reviewees</a> page, “Delete” deactivates a person. A CSV import of the org chart deactivates the people who are not in the file, unless you keep them. It never deactivates an admin."
+msgstr "Auf der Seite <a href=\"%(reviewees_url)s\">Feedbacknehmende</a> deaktiviert „Löschen“ eine Person. Ein CSV-Import des Organigramms deaktiviert die Personen, die nicht in der Datei stehen, sofern sie nicht beibehalten werden. Admins deaktiviert er nie."
+
+msgid "An organization admin deactivates a person on the Reviewees page, or with a CSV import of the org chart."
+msgstr "Organisations-Admins deaktivieren eine Person auf der Seite „Feedbacknehmende“ oder mit einem CSV-Import des Organigramms."
+
+msgid "What stays"
+msgstr "Was bleibt"
+
+msgid "Nothing is deleted. The feedback the person gave still counts in the reports of other people. Their own cycles and reports stay too."
+msgstr "Nichts wird gelöscht. Das Feedback, das die Person gegeben hat, zählt weiter in den Berichten anderer. Ihre eigenen Feedbackrunden und Berichte bleiben ebenfalls."
+
+msgid "What stops"
+msgstr "Was endet"
+
+msgid "The person gets no new cycles. Blik does not add them as a reviewer to a new cycle. An invitation that is already open stays open."
+msgstr "Die Person erhält keine neuen Feedbackrunden. Blik fügt sie in neuen Feedbackrunden nicht als feedbackgebende Person hinzu. Eine bereits offene Einladung bleibt offen."
+
+msgid "Where their cycles are"
+msgstr "Wo ihre Feedbackrunden sind"
+
+#, python-format
+msgid "The dashboard and the list of cycles leave them out. On the <a href=\"%(cycles_url)s\">Cycles</a> page, “Show deactivated people” brings them back."
+msgstr "Dashboard und Liste der Feedbackrunden lassen sie aus. Auf der Seite <a href=\"%(cycles_url)s\">Feedbackrunden</a> zeigt „Deaktivierte Personen anzeigen“ sie wieder."
+
+msgid "To make a person active again, add them again with the same email address, or import a file that has them."
+msgstr "Um eine Person wieder zu aktivieren, sie mit derselben E-Mail-Adresse erneut hinzufügen oder eine Datei importieren, in der sie steht."
 
 msgid "A cycle for one reviewee with one questionnaire costs one credit. Reviewers are free."
 msgstr "Jede Feedbackrunde gilt für eine feedbacknehmende Person mit einem Fragebogen. Feedbackgebende sind kostenlos."

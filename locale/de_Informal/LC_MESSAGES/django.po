@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 21:07+0000\n"
+"POT-Creation-Date: 2026-11-15 21:19+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -4452,6 +4452,9 @@ msgstr ""
 msgid "Who sees what"
 msgstr ""
 
+msgid "When a person leaves"
+msgstr ""
+
 msgid "What a cycle costs"
 msgstr ""
 
@@ -4655,6 +4658,10 @@ msgstr ""
 msgid "A person who only gets or gives feedback is not in this table: that person needs no account."
 msgstr ""
 
+#, python-format
+msgid "API access is a separate permission on <a href=\"%(team_url)s\">Organization → Team</a>. Without it, a person sees nothing about the API in Blik."
+msgstr ""
+
 msgid "All feedback is anonymous. Nobody can see who gave which answer."
 msgstr ""
 
@@ -4693,6 +4700,41 @@ msgid "A lower number shows more feedback, but reviewers are easier to guess."
 msgstr ""
 
 msgid "The answers of the manager and the self-assessment are always in the report, when the cycle has them: there is only one of each."
+msgstr ""
+
+msgid "A person who leaves is deactivated, not deleted. Their feedback and their reports stay."
+msgstr ""
+
+msgid "How to deactivate"
+msgstr ""
+
+#, python-format
+msgid "On the <a href=\"%(reviewees_url)s\">Reviewees</a> page, “Delete” deactivates a person. A CSV import of the org chart deactivates the people who are not in the file, unless you keep them. It never deactivates an admin."
+msgstr ""
+
+msgid "An organization admin deactivates a person on the Reviewees page, or with a CSV import of the org chart."
+msgstr ""
+
+msgid "What stays"
+msgstr ""
+
+msgid "Nothing is deleted. The feedback the person gave still counts in the reports of other people. Their own cycles and reports stay too."
+msgstr ""
+
+msgid "What stops"
+msgstr ""
+
+msgid "The person gets no new cycles. Blik does not add them as a reviewer to a new cycle. An invitation that is already open stays open."
+msgstr ""
+
+msgid "Where their cycles are"
+msgstr ""
+
+#, python-format
+msgid "The dashboard and the list of cycles leave them out. On the <a href=\"%(cycles_url)s\">Cycles</a> page, “Show deactivated people” brings them back."
+msgstr ""
+
+msgid "To make a person active again, add them again with the same email address, or import a file that has them."
 msgstr ""
 
 msgid "A cycle for one reviewee with one questionnaire costs one credit. Reviewers are free."

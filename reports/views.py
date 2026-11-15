@@ -51,6 +51,15 @@ def is_own_cycle(user, cycle):
     )
 
 
+def may_get_pdf(user, cycle):
+    """
+    The rule of report_pdf, and of the PDF buttons on the report page. A manager
+    reads the report of a direct report on the page only: the stored PDF is the
+    reviewee's version, which can differ from what the manager may see.
+    """
+    return can_view_all_reports(user) or is_own_cycle(user, cycle)
+
+
 @login_required
 def view_report(request, cycle_uuid):
     """View aggregated feedback report for a review cycle (org admins and the reviewee's direct manager)"""
@@ -72,6 +81,7 @@ def view_report(request, cycle_uuid):
 
     context = build_report_context(report, is_admin_view=True)
     context['pdf_valid'] = report.has_valid_pdf()
+    context['can_get_pdf'] = may_get_pdf(request.user, cycle)
     # A manager reads the report but does not run the cycle.
     context['is_manager_view'] = not can_view_all_reports(request.user)
 
@@ -135,6 +145,7 @@ def reviewee_report(request, access_token):
     context = build_report_context(report, is_admin_view=False)
     context['is_public_view'] = True
     context['pdf_valid'] = report.has_valid_pdf()
+    context['can_get_pdf'] = True  # the token that opens this page opens the PDF too
 
     return render(request, 'reports/reviewee_report.html', context)
 
@@ -167,7 +178,7 @@ def report_pdf(request, cycle_uuid):
         cycle = get_object_or_404(
             ReviewCycle.objects.select_related('reviewee'), uuid=cycle_uuid
         )
-        if not is_own_cycle(request.user, cycle):
+        if not may_get_pdf(request.user, cycle):
             raise Http404
         report = Report.objects.filter(cycle=cycle).first() or generate_report(cycle)
         return redirect('reports:reviewee_report_pdf', access_token=report.access_token)

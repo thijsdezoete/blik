@@ -3962,16 +3962,16 @@ def org_chart_import_map(request):
             new_people = count_new_people(request.organization, mapped)
             if headroom is not None and new_people > headroom:
                 over_limit = {'new': new_people, 'allowed': headroom}
-        # The import runs only on a preview of this same mapping: 'confirm' holds the
-        # mapping the admin saw the preview for.
+        # The people who are not in the file are deactivated, unless the admin clears
+        # the checkbox in the preview. The first preview has no checkbox yet.
+        deactivate = 'confirm' not in request.POST or bool(request.POST.get('deactivate_missing'))
+        # The import runs only on a preview of this same mapping and this same choice:
+        # 'confirm' holds what the admin saw the preview for.
         mapping_key = ','.join('' if mapping[field] is None else str(mapping[field]) for field, _label in FIELDS)
-        confirmed = request.POST.get('confirm') == mapping_key
+        confirmed = request.POST.get('confirm') == f'{mapping_key},{int(deactivate)}'
         if not errors and not over_limit:
             stats, errors = import_org_chart(
-                request.organization, mapped,
-                deactivate_missing=confirmed and bool(request.POST.get('deactivate_missing')),
-                dry_run=not confirmed,
-            )
+                request.organization, mapped, deactivate_missing=deactivate, dry_run=not confirmed)
             if not errors and confirmed:
                 del request.session['org_import']
                 messages.success(
@@ -3987,6 +3987,8 @@ def org_chart_import_map(request):
                 return redirect('org_chart')
             if not errors:
                 changes = stats
+                # Nobody is missing: the page has no checkbox, so it posts no choice.
+                mapping_key += f',{int(bool(stats["deactivated"]))}'
                 changes['active_without_missing'] = stats['active'] - len(stats['missing'])
                 changes['nothing'] = not (stats['people'] or stats['units_created']
                                           or stats['units_removed'] or stats['missing'])

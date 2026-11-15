@@ -213,7 +213,9 @@ class ImportViewTests(TestCase):
         saved_by_preview = OrgUnit.objects.filter(organization=org).count()
         # A confirmation for another mapping than the one posted shows the changes again.
         stale = self.client.post(reverse('org_chart_import_map'), {**mapping, 'confirm': '0,,,1,2,'})
-        done = self.client.post(reverse('org_chart_import_map'), {**mapping, 'confirm': preview.context['mapping_key']})
+        # The admin is not in the file. The preview has the checkbox ticked; the page posts it.
+        done = self.client.post(reverse('org_chart_import_map'),
+                                {**mapping, 'confirm': preview.context['mapping_key'], 'deactivate_missing': '1'})
 
         self.assertRedirects(upload, reverse('org_chart_import_map'), fetch_redirect_response=False)
         self.assertEqual([f[2] for f in page.context['fields']], [0, None, None, 1, 2, 3])

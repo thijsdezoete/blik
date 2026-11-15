@@ -53,9 +53,15 @@ class QuestionnaireReportFeaturesTests(TestCase):
                 finally:
                     question.delete()
 
-    def test_likert_does_not_advertise_numeric_visuals(self):
+    def test_likert_supports_radar_skill_and_initiative(self):
         LikertQuestionFactory(
             section=self.section, config={'dreyfus_mapping': {'skill': 1, 'agency': 1}}
+        )
+        self.assertEqual(self.feature_keys(), ['radar', 'dreyfus', 'agency', 'distribution'])
+
+    def test_likert_with_one_option_has_no_score(self):
+        LikertQuestionFactory(
+            section=self.section, answer_options=['Agree'], config={'dreyfus_mapping': {'skill': 1}}
         )
         self.assertEqual(self.feature_keys(), ['distribution'])
 

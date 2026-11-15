@@ -4,6 +4,7 @@ from .services import (
     _hidden_groups,
     apply_display_anonymization,
     get_report_summary,
+    radar_axes,
 )
 
 
@@ -33,7 +34,13 @@ def build_report_context(report, *, is_admin_view):
     else:
         display_data = display_report_data(report)
 
+    # From the data the reader may see, so the axis added for two sections holds no hidden group
+    section_scores = (display_data.get('charts') or {}).get('section_scores') or {}
+    axes = radar_axes(section_scores)
+
     return {
+        'radar_axes': axes,
+        'radar_has_overall': bool(axes) and len(axes) > len(section_scores),
         'cycle': cycle,
         'report': report,
         'report_data': display_data,

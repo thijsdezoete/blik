@@ -369,15 +369,15 @@ def _numeric_category_averages(report_data):
         for question_data in section_data.get('questions', {}).values():
             question_type = question_data.get('question_type')
 
-            # Process numeric questions: rating, scale, and choice questions with scoring
-            if question_type in ('rating', 'scale'):
+            # Process numeric questions: rating, scale, likert, and choice questions with scoring
+            if question_type in ('rating', 'scale', 'likert'):
                 pass
             elif question_type in ('single_choice', 'multiple_choice'):
                 # Only include if scoring is enabled
                 if not question_data.get('question_config', {}).get('scoring_enabled'):
                     continue
             else:
-                # Skip text, likert (text-based), and other non-numeric types
+                # Skip text and other non-numeric types
                 continue
 
             for category, cat_data in question_data.get('by_category', {}).items():
@@ -563,9 +563,9 @@ def _calculate_chart_data(report_data):
             except Question.DoesNotExist:
                 chart_weight = 1.0
 
-            # Process numeric questions for charts: rating, scale, and choice questions with scoring
-            if question_type == 'rating' or question_type == 'scale':
-                # Direct numeric types
+            # Process numeric questions for charts: rating, scale, likert, and choice questions with scoring
+            if question_type in ('rating', 'scale', 'likert'):
+                # Direct numeric types. A likert average is on the 1-5 scale already, see likert_score()
                 pass
             elif question_type in ['single_choice', 'multiple_choice']:
                 # Only include if scoring is enabled
@@ -573,7 +573,7 @@ def _calculate_chart_data(report_data):
                 if not config.get('scoring_enabled'):
                     continue
             else:
-                # Skip text, likert (text-based), and other non-numeric types
+                # Skip text and other non-numeric types
                 continue
 
             for category, cat_data in question_data.get('by_category', {}).items():
@@ -656,6 +656,58 @@ def count_answers(option_ids):
     """How often each option was chosen, keyed by its id as text: JSON object keys are always text."""
 
     return {f'{option_id}': count for option_id, count in Counter(option_ids).items()}
+
+
+def likert_score(options, answer, reverse_scored=False):
+    """The score of a likert answer on the 1-5 scale of the charts, None when it has none.
+
+    An answer scores by the position of its option among the question's options, [{'id': ...}, ...] in their order:
+    the first option scores 1, the last 5 and the ones between are spread evenly, so a scale of any length compares
+    with a rating. A reverse-scored question counts from the other end: its first option is the best one.
+
+    An answer that names no option of the question has no score (the option was deleted after the answer was given).
+    Neither has an answer to a question with one option, which has no lowest and highest.
+    """
+
+    ids = [f'{option["id"]}' for option in options]
+
+    if len(ids) < 2 or f'{answer}' not in ids:
+        return None
+
+    position = ids.index(f'{answer}')
+
+    if reverse_scored:
+        position = len(ids) - 1 - position
+
+    return 1 + position / (len(ids) - 1) * 4
+
+
+def radar_axes(section_scores):
+    """The axes of the overview radar, {title: {category: score}}, or None when the report gets no radar.
+
+    Three or more scored sections are the axes as they are. Two get a third axis, "Overall": per reviewer group the
+    mean of its section scores, so the chart has three points. One section, or none, makes no radar.
+
+    The added axis is for drawing only: it is in no stored data, score or insight.
+    """
+
+    if len(section_scores) >= 3:
+        return section_scores
+
+    overall = _('Overall')
+
+    # A section with that very title would be replaced by the added axis
+    if len(section_scores) < 2 or overall in section_scores:
+        return None
+
+    groups = defaultdict(list)
+
+    for categories in section_scores.values():
+        for category in CATEGORY_ORDER:
+            if isinstance(categories.get(category), (int, float)):
+                groups[category].append(categories[category])
+
+    return {**section_scores, overall: {category: round(mean(scores), 2) for category, scores in groups.items()}}
 
 
 # Set while generate_report saves a report that must not fire the report.generated webhook
@@ -790,13 +842,18 @@ def generate_report(cycle, notify=True):
                     if numeric_responses:
                         result['avg'] = round(sum(numeric_responses) / len(numeric_responses), 2)
                 elif question_data['question_type'] == 'likert':
-                    # Convert likert text responses to numeric scores (1-indexed position in scale)
-                    # Store both the text distribution and numeric average
+                    # Store both the distribution over the options and the average of the answers' scores
                     text_responses = [r for r in category_data['responses'] if r]
                     if text_responses:
                         result['distribution'] = count_answers(text_responses)
-                        # For numeric calculations, use position in scale (1-indexed)
-                        # This allows averaging likert responses
+                        reverse_scored = bool((question_data['question_config'] or {}).get('reverse_scored'))
+                        scores = [
+                            score for answer in text_responses
+                            if (score := likert_score(question_data['options'], answer, reverse_scored)) is not None
+                        ]
+
+                        if scores:
+                            result['avg'] = round(sum(scores) / len(scores), 2)
                 elif question_data['question_type'] == 'single_choice':
                     # Store distribution of single choice responses (dropdown selection)
                     text_responses = [r for r in category_data['responses'] if r]

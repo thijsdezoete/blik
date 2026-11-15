@@ -317,6 +317,21 @@ body.report-page {
     margin-bottom: 1.5rem;
 }
 
+/* The note on the axis added to a radar of two sections */
+.radar-note {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-align: center;
+    margin: 0;
+}
+
+/* Phones show bars, which have no added axis: report-charts.js isMobile() */
+@media (max-width: 767px) {
+    .radar-note {
+        display: none;
+    }
+}
+
 /* Notice Box */
 .notice {
     background: #dbeafe;

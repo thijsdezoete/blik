@@ -139,13 +139,16 @@ def option_weights(question_data):
 
 
 @register.filter
-def likert_positive_count(distribution, options):
-    """Answers in the two highest options of a likert scale.
+def likert_positive_count(distribution, question_data):
+    """Answers in the two best options of a likert question: the two highest, the two lowest when it is reverse scored.
 
     Counted by position rather than by label, so custom scales and reworded or translated labels are summarised too.
     """
 
-    return sum(option_count(distribution, option) for option in options[-2:])
+    options = report_options(question_data)
+    reverse_scored = (question_data.get('question_config') or {}).get('reverse_scored')
+
+    return sum(option_count(distribution, option) for option in (options[:2] if reverse_scored else options[-2:]))
 
 
 @register.filter

@@ -65,3 +65,41 @@ class EditQuestionTests(TestCase):
         self.assertEqual(list(self.question.options.values_list('label', flat=True)), ['Never', 'Often'])
         self.assertEqual(self.question.labels, {})
         self.assertEqual(self.question.config['dreyfus_mapping'], {'skill': 1.5})
+
+    def test_an_edit_keeps_the_chart_settings(self):
+        self.question.config = {'min': 1, 'max': 5, 'chart_weight': 2.0, 'exclude_from_charts': True}
+        self.question.save()
+
+        self.edit(question_type='rating', question_text='How well does this person solve problems?')
+
+        self.assertEqual(self.question.config, {'min': 1, 'max': 5, 'chart_weight': 2.0, 'exclude_from_charts': True})
+
+    def likert_fields(self, **fields):
+        return {
+            'question_type': 'likert', 'question_text': 'This person often misses deadlines',
+            'likert_option_id': ['', ''], 'likert_option_label': ['Never', 'Often'], **fields,
+        }
+
+    def test_a_likert_question_is_reverse_scored_while_the_box_is_checked(self):
+        self.edit(**self.likert_fields(reverse_scored='on'))
+        self.assertEqual(self.question.config, {'reverse_scored': True, 'dreyfus_mapping': {'skill': 1.5}})
+
+        # The dialog posts the box again on every later edit
+        self.edit(**self.likert_fields(reverse_scored='on', question_text='This person misses deadlines'))
+        self.assertIs(self.question.config['reverse_scored'], True)
+
+        self.edit(**self.likert_fields())
+        self.assertNotIn('reverse_scored', self.question.config)
+
+    def test_a_new_likert_question_can_be_reverse_scored(self):
+        self.client.post(reverse('questionnaire_edit', args=[self.questionnaire.uuid]), {
+            'action': 'add_question', 'section_id': self.question.section_id, **self.likert_fields(reverse_scored='on'),
+        })
+
+        added = Question.objects.get(question_text='This person often misses deadlines')
+        self.assertEqual(added.config, {'reverse_scored': True})
+
+    def test_only_a_likert_question_is_reverse_scored(self):
+        self.edit(question_type='rating', question_text=self.question.question_text, reverse_scored='on')
+
+        self.assertNotIn('reverse_scored', self.question.config)

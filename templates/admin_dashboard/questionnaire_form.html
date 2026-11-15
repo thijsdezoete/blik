@@ -310,6 +310,16 @@
                 <div id="edit_likert_container" class="form-group" style="display: none;">
                     <label class="form-label">{% trans 'Likert Scale Items' %}</label>
                     {% include 'admin_dashboard/partials/option_rows.html' with id='edit_likert_options' prefix='likert' %}
+
+                    <div style="margin-top: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="edit_reverse_scored" name="reverse_scored">
+                            <span>{% trans 'Reverse scored' %}</span>
+                        </label>
+                        <small style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                            {% trans 'Select this for a negatively worded statement, for example “This person often misses deadlines”. The first option then gets the highest score.' %}
+                        </small>
+                    </div>
                 </div>
 
                 <div id="edit_scale_container" class="form-group" style="display: none;">
@@ -462,6 +472,16 @@
                                 <label class="form-label">{% trans 'Likert Scale Items' %}</label>
                                 {% include 'admin_dashboard/partials/option_rows.html' with prefix='likert' defaults=default_likert_scale %}
                                 <small style="color: var(--text-secondary); font-size: 0.875rem;">{% trans 'Default 5-point scale provided. Customize or use 3-point, 7-point, etc.' %}</small>
+
+                                <div style="margin-top: 1rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                        <input type="checkbox" name="reverse_scored">
+                                        <span>{% trans 'Reverse scored' %}</span>
+                                    </label>
+                                    <small style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-top: 0.25rem;">
+                                        {% trans 'Select this for a negatively worded statement, for example “This person often misses deadlines”. The first option then gets the highest score.' %}
+                                    </small>
+                                </div>
                             </div>
 
                             <div id="scale_container_{{ section.id }}" class="form-group" style="display: none;">
@@ -961,6 +981,7 @@ function openEditQuestionModal(questionId, questionText, questionType, required,
     const likertOptions = document.getElementById('edit_likert_options');
     const choiceOptions = document.getElementById('edit_choice_options');
     const enableScoring = document.getElementById('edit_enable_scoring');
+    const reverseScored = document.getElementById('edit_reverse_scored');
 
     // Reset containers
     ratingContainer.style.display = 'none';
@@ -970,6 +991,7 @@ function openEditQuestionModal(questionId, questionText, questionType, required,
     resetOptionRows(likertOptions);
     resetOptionRows(choiceOptions);
     enableScoring.checked = false;
+    reverseScored.checked = false;
 
     ratingContainer.querySelectorAll('[data-rating-value]').forEach(function(input) {
         input.value = labels[input.dataset.ratingValue] || '';
@@ -984,6 +1006,7 @@ function openEditQuestionModal(questionId, questionText, questionType, required,
         ratingContainer.style.display = 'block';
     } else if (questionType === 'likert') {
         likertContainer.style.display = 'block';
+        reverseScored.checked = Boolean(config.reverse_scored);
         setOptionRows(likertOptions, options);
     } else if (questionType === 'scale') {
         scaleContainer.style.display = 'block';

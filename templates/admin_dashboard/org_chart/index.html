@@ -34,9 +34,9 @@
             <div class="oc-control-group" data-for-view="outline" hidden>
                 <button type="button" class="btn btn-sm btn-secondary" data-oc-expand="all">{% trans 'Expand all' %}</button>
                 <button type="button" class="btn btn-sm btn-secondary" data-oc-expand="none">{% trans 'Collapse all' %}</button>
-                <span class="help-text">{% trans 'Drag a unit onto another unit to place it below.' %}</span>
+                {% if can_manage %}<span class="help-text">{% trans 'Drag a unit onto another unit to place it below.' %}</span>{% endif %}
             </div>
-            <span class="help-text">{% trans 'Drag a person to move them. Hold Alt to copy.' %}</span>
+            {% if can_manage %}<span class="help-text">{% trans 'Drag a person to move them. Hold Alt to copy.' %}</span>{% endif %}
         </div>
     </div>
     <p class="alert alert-error oc-error" role="alert" hidden></p>

@@ -295,8 +295,9 @@
     let drag = null;
 
     document.addEventListener('dragstart', (e) => {
-        const person = e.target.closest && e.target.closest('.oc-person');
-        const row = e.target.closest && e.target.closest('.oc-row');
+        // The page marks people and rows as draggable only for a person who may edit the chart.
+        const person = e.target.closest && e.target.closest('.oc-person[draggable="true"]');
+        const row = e.target.closest && e.target.closest('.oc-row[draggable="true"]');
         if (person) {
             drag = { kind: 'person', el: person, reviewee: person.dataset.revieweeUuid,
                      source: person.dataset.unitUuid || null, membership: person.dataset.membershipId || null };

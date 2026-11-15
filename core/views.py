@@ -69,10 +69,26 @@ def setup_admin(request):
     })
 
 
+def may_run_setup(user):
+    """
+    The setup pages change the organization. Before the first run no admin
+    exists, so any account may use them. After that they are for the people
+    who may change the same things in the settings.
+    """
+    return not is_setup_complete() or user.has_perm('accounts.can_manage_organization')
+
+
+def _refuse_setup(request):
+    messages.error(request, _('You do not have permission to manage organization settings.'))
+    return redirect('admin_dashboard')
+
+
 @login_required
 @require_http_methods(['GET', 'POST'])
 def setup_organization(request):
     """Step 2: Configure organization details."""
+    if not may_run_setup(request.user):
+        return _refuse_setup(request)
     # Check if user already has an organization (e.g., from Stripe signup)
     organization = None
     if hasattr(request.user, 'profile') and request.user.profile.organization:
@@ -138,6 +154,8 @@ def setup_organization(request):
 @require_http_methods(['GET', 'POST'])
 def setup_email(request):
     """Step 3: Configure email settings."""
+    if not may_run_setup(request.user):
+        return _refuse_setup(request)
     organization = request.organization
     if not organization:
         messages.error(request, _('No organization found. Please complete organization setup first.'))
@@ -200,6 +218,8 @@ def setup_complete(request):
     """Final step: Setup completion and next steps."""
     if not is_setup_complete():
         return redirect('setup_welcome')
+    if not may_run_setup(request.user):
+        return _refuse_setup(request)
 
     # Use the organization from the user's profile
     organization = request.organization

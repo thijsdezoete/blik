@@ -2,6 +2,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from accounts.factories import UserProfileFactory
+from accounts.permissions import assign_organization_admin
 from core.factories import OrganizationFactory, UserFactory
 from subscriptions.testing import grant, subscribe
 
@@ -11,6 +12,8 @@ class HostedEmailSetupTests(TestCase):
         self.org = OrganizationFactory()
         user = UserFactory()
         UserProfileFactory(user=user, organization=self.org)
+        # The account that signs up is the admin; the setup pages are for admins.
+        assign_organization_admin(user)
         self.client = Client()
         self.client.force_login(user)
 

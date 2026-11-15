@@ -1710,8 +1710,7 @@ def review_cycle_list(request):
     org = request.organization
 
     if org:
-        # Cycles of deactivated people (leavers) stay listed, so their past reports
-        # can be found. Cycles of anonymized (GDPR-deleted) reviewees do not.
+        # Cycles of anonymized (GDPR-deleted) reviewees are never listed.
         cycles_qs = ReviewCycle.objects.for_organization(org, include_deleted=True).exclude(
             reviewee__email__icontains='@deleted.invalid').select_related(
             'reviewee', 'questionnaire', 'created_by'
@@ -1732,6 +1731,12 @@ def review_cycle_list(request):
             Q(pk__in=own) | Q(reviewee_email_lower__in=below))
     else:
         cycles_qs = visible_cycles(request.user, cycles_qs)
+    # Cycles of deactivated people (leavers) are left out, as on the dashboard.
+    # "Show deactivated people" lists them, so their past reports can be found.
+    has_deactivated = cycles_qs.filter(reviewee__is_active=False).exists()
+    show_deactivated = has_deactivated and request.GET.get('deactivated') == '1'
+    if not show_deactivated:
+        cycles_qs = cycles_qs.filter(reviewee__is_active=True)
     # Questionnaires that occur in this user's cycles, archived ones included.
     used_questionnaires = Questionnaire.objects.filter(
         review_cycles__in=cycles_qs).distinct().order_by('name')
@@ -1760,7 +1765,7 @@ def review_cycle_list(request):
     cycle_needs = dashboard_state.cycle_needs(threshold)
     needs = request.GET.get('needs', '')
     if needs in cycle_needs:
-        cycles_qs = cycles_qs.filter(cycle_needs[needs][1], reviewee__is_active=True)
+        cycles_qs = cycles_qs.filter(cycle_needs[needs][1])
     else:
         needs = ''
 
@@ -1829,6 +1834,8 @@ def review_cycle_list(request):
         'sort': sort,
         'sorts': [(key, label) for key, (label, _fields) in CYCLE_SORTS.items()],
         'is_filtered': bool(q or questionnaire_filter or stage or needs),
+        'has_deactivated': has_deactivated,
+        'show_deactivated': show_deactivated,
     }
 
     return render(request, 'admin_dashboard/review_cycle_list.html', context)

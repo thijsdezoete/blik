@@ -7,6 +7,7 @@ from django.utils import timezone
 
 from accounts.models import Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin, ensure_permission_groups
+from blik import dashboard
 from core.models import Organization
 from questionnaires.models import Questionnaire
 from reviews.models import ReviewCycle, ReviewerToken
@@ -15,7 +16,7 @@ from reviews.models import ReviewCycle, ReviewerToken
 class ReviewCycleFilterTests(TestCase):
     def setUp(self):
         ensure_permission_groups()
-        org = Organization.objects.create(name='Acme', email='org@acme.example')
+        org = self.org = Organization.objects.create(name='Acme', email='org@acme.example')
         admin = User.objects.create_user(username='admin', email='admin@acme.example', password='pw')
         UserProfile.objects.create(user=admin, organization=org)
         assign_organization_admin(admin)
@@ -87,14 +88,38 @@ class ReviewCycleFilterTests(TestCase):
         self.assertEqual(self.listed(response), {self.waiting.pk})
         self.assertTrue(response.context['is_filtered'])
 
-    def test_cycles_of_deactivated_people_stay_listed_but_anonymized_ones_do_not(self):
+    def test_cycles_of_deactivated_people_are_listed_on_request_and_anonymized_ones_never(self):
         Reviewee.objects.filter(pk=self.completed.reviewee_id).update(is_active=False)
         Reviewee.objects.filter(pk=self.waiting.reviewee_id).update(is_active=False)
         Reviewee.objects.filter(pk=self.enough.reviewee_id).update(is_active=False, email='x@deleted.invalid')
+        active = {self.waiting_invited.pk, self.collecting.pk}
 
-        listed = self.listed(self.get())
+        response = self.get()
 
-        self.assertIn(self.completed.pk, listed)
-        self.assertNotIn(self.enough.pk, listed)
-        # The dashboard does not count a deactivated person's cycle, so its link does not list it.
+        self.assertEqual(self.listed(response), active)
+        self.assertEqual({key: count for key, _label, count in response.context['stages']},
+                         {'waiting': 1, 'collecting': 1, 'enough': 0, 'completed': 0})
+        self.assertEqual(response.context['total_count'], 2)
+        self.assertEqual(self.listed(self.get(stage='waiting')), {self.waiting_invited.pk})
         self.assertEqual(self.listed(self.get(needs='no_reviewers')), set())
+        self.assertTrue(response.context['has_deactivated'])
+
+        self.assertEqual(self.listed(self.get(deactivated='1')), active | {self.completed.pk, self.waiting.pk})
+        self.assertEqual(self.listed(self.get(deactivated='1', stage='waiting')),
+                         {self.waiting_invited.pk, self.waiting.pk})
+
+    def test_the_toggle_is_offered_only_with_a_cycle_of_a_deactivated_person(self):
+        self.assertFalse(self.get().context['has_deactivated'])
+
+    def test_each_dashboard_figure_equals_the_list_behind_its_link(self):
+        Reviewee.objects.filter(
+            pk__in=[self.waiting_invited.reviewee_id, self.collecting.reviewee_id]).update(is_active=False)
+
+        running = dashboard.running_state(ReviewCycle.objects.for_organization(self.org), 3)
+
+        self.assertEqual({stage['key']: stage['count'] for stage in running['stages']},
+                         {'waiting': 1, 'collecting': 0, 'enough': 1})
+        self.assertEqual(running['needs']['no_reviewers']['count'], 1)
+        for figure in running['stages'] + list(running['needs'].values()):
+            with self.subTest(url=figure['url']):
+                self.assertEqual(self.client.get(figure['url']).context['cycles'].paginator.count, figure['count'])

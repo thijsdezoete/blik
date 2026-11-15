@@ -214,7 +214,8 @@ def personal_state(user, org, threshold, runs_team):
     if not email or org is None:
         return {'own': [], 'to_review': [], 'team': [], 'team_reports': []}
     threshold = max(threshold, 1)
-    in_org = ReviewCycle.objects.filter(reviewee__organization=org).select_related('reviewee', 'questionnaire')
+    # Without the cycles of deactivated people, as everywhere on the dashboard.
+    in_org = ReviewCycle.objects.for_organization(org).select_related('reviewee', 'questionnaire')
 
     own = []
     for cycle in in_org.filter(status='active', reviewee__email__iexact=email).prefetch_related('tokens'):

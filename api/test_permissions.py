@@ -3,7 +3,7 @@ Tests for API permissions.
 """
 from django.test import TestCase
 from rest_framework.test import APIClient
-from accounts.models import Organization, User, Reviewee, UserProfile
+from accounts.models import Organization, OrgUnit, OrgUnitMembership, User, Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin
 from api.models import APIToken
 from reviews.models import ReviewCycle
@@ -210,6 +210,13 @@ class CanCreateCyclesPermissionTest(TestCase):
             name='Test Reviewee',
             email='reviewee@example.com'
         )
+        # The creator manages the unit of the reviewee: the reviewee is a direct report
+        manager = Reviewee.objects.get(organization=self.org, email='creator@example.com')
+        unit = OrgUnit.objects.create(organization=self.org, name='Engineering')
+        OrgUnitMembership.objects.create(unit=unit, reviewee=manager, row=0, col=0)
+        OrgUnitMembership.objects.create(unit=unit, reviewee=self.reviewee, row=1, col=0)
+        self.colleague = Reviewee.objects.create(
+            organization=self.org, name='Tom Smit', email='tom@acme.example')
 
         self.questionnaire = Questionnaire.objects.create(
             organization=self.org,
@@ -220,11 +227,36 @@ class CanCreateCyclesPermissionTest(TestCase):
         self.client = APIClient()
 
     def test_creator_can_create_cycle(self):
-        """User with can_create_cycles_for_others can create cycles."""
+        """User with can_create_cycles_for_others can create cycles for a direct report."""
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.creator_token.raw_token}')
 
         response = self.client.post('/api/v1/cycles/', {
             'reviewee': str(self.reviewee.uuid),
+            'questionnaire': str(self.questionnaire.uuid)
+        })
+
+        self.assertEqual(response.status_code, 201)
+
+    def test_creator_cannot_create_cycle_outside_their_team(self):
+        """As on the web: without the admin role, only for themselves and their direct reports."""
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.creator_token.raw_token}')
+
+        response = self.client.post('/api/v1/cycles/', {
+            'reviewee': str(self.colleague.uuid),
+            'questionnaire': str(self.questionnaire.uuid)
+        })
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('reviewee', response.data)
+        self.assertFalse(ReviewCycle.objects.filter(reviewee=self.colleague).exists())
+
+    def test_admin_creator_can_create_cycle_for_anyone(self):
+        """An organization admin with can_create_cycles_for_others is not limited to a team."""
+        assign_organization_admin(self.creator)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.creator_token.raw_token}')
+
+        response = self.client.post('/api/v1/cycles/', {
+            'reviewee': str(self.colleague.uuid),
             'questionnaire': str(self.questionnaire.uuid)
         })
 

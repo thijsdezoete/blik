@@ -10,11 +10,12 @@ from functools import wraps
 from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.functions import Lower
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _, gettext
-from accounts.models import UserProfile
+from accounts.models import Reviewee, UserProfile
 
 
 # Group names
@@ -456,6 +457,32 @@ def direct_report_emails(user, organization):
         ).values('unit_id'),
     ).values_list('reviewee__email', flat=True)
     return {email.lower() for email in emails} - {user.email.lower()}
+
+
+def may_create_for_others(user):
+    profile = getattr(user, 'profile', None)
+    return profile is not None and profile.can_create_cycles_for_others
+
+
+def run_team_emails(user, org):
+    """
+    Emails of the direct reports whose cycles this user creates and runs: those
+    of a user who may create cycles for others. Empty for everyone else.
+    """
+    return direct_report_emails(user, org) if may_create_for_others(user) else set()
+
+
+def creatable_reviewees(user, org):
+    """
+    The reviewees this user may start a cycle for. With the permission to
+    create cycles for others: an organization admin for everyone, another user
+    for themselves and their direct reports. Without it: only themselves.
+    """
+    reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
+    if may_create_for_others(user) and user.has_perm('accounts.can_manage_organization'):
+        return reviewees
+    scope = ({(user.email or '').lower()} | run_team_emails(user, org)) - {''}
+    return reviewees.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
 
 
 def managers_without_account(organization):

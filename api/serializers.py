@@ -9,6 +9,7 @@ from rest_framework import serializers
 from django.db import transaction
 from django.db.models import Count, Q
 from accounts.models import Reviewee
+from accounts.permissions import creatable_reviewees
 from core.url import get_absolute_url
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken, Response
 from questionnaires.answer_options import DEFAULT_RATING_LABELS
@@ -398,7 +399,8 @@ class ReviewCycleCreateSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if "request" in self.context:
             org = self.context["request"].organization
-            self.fields["reviewee"].queryset = Reviewee.objects.filter(organization=org, is_active=True)
+            # The same people as on the web: an admin everyone, a manager the own team
+            self.fields["reviewee"].queryset = creatable_reviewees(self.context["request"].user, org)
             # Questionnaires can be org-specific or shared templates (org=None)
             from django.db.models import Q
             self.fields["questionnaire"].queryset = Questionnaire.objects.filter(

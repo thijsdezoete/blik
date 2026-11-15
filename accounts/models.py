@@ -52,6 +52,7 @@ class UserProfile(TimeStampedModel):
             ('can_delete_organization', 'Can delete organization'),
             ('can_view_all_reports', 'Can view all organization reports'),
             ('can_manage_questionnaires', 'Can create and edit questionnaires'),
+            ('can_use_api', 'Can see the API parts of the interface'),
         ]
 
     def __str__(self):

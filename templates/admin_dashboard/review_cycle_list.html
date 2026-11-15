@@ -58,9 +58,11 @@
                     <th>{% trans 'Progress' %}</th>
                     <th>{% trans 'Created' %}</th>
                     <th>{% trans 'Actions' %}</th>
+                    {% if perms.accounts.can_use_api %}
                     <th style="width: 50px; text-align: center;" title="{% trans 'Show API Identifiers' %}">
                         <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                     </th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -107,6 +109,7 @@
                         <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View' %}</a>
                         {% endif %}
                     </td>
+                    {% if perms.accounts.can_use_api %}
                     <td style="text-align: center;">
                         <button onclick="showUuidModal('{{ cycle.uuid }}', '{{ cycle.reviewee.uuid }}', '{{ cycle.reviewee.name|escapejs }}')"
                                 style="background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 0.25rem; display: inline-flex; align-items: center; justify-content: center;"
@@ -114,6 +117,7 @@
                             <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </button>
                     </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -201,7 +205,10 @@ document.addEventListener('keydown', function(e) {
         }, 30);
     });
 })();
+</script>
 
+{% if perms.accounts.can_use_api %}
+<script>
 // UUID Modal functions
 function showUuidModal(cycleUuid, revieweeUuid, revieweeName) {
     const modal = document.getElementById('uuid-modal');
@@ -414,5 +421,6 @@ function showCopyFeedback(message) {
     transform: translateY(0);
 }
 </style>
+{% endif %}
 <script src="{% static 'js/reviewees.js' %}" defer></script>
 {% endblock %}

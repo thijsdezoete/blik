@@ -32,6 +32,7 @@ from accounts.permissions import (
     assign_organization_member,
     can_manage_organization_required,
     can_manage_questionnaires_required,
+    can_use_api,
     can_view_all_reports,
     is_organization_admin,
     login_required,
@@ -287,6 +288,7 @@ def team_list(request):
     for user_profile in users:
         user_profile.is_org_admin = user_profile.user.has_perm('accounts.can_manage_organization')
         user_profile.can_read_all_reports = can_view_all_reports(user_profile.user)
+        user_profile.has_api_access = can_use_api(user_profile.user)
 
     # Get pending invitations
     invitations = OrganizationInvitation.objects.filter(
@@ -327,6 +329,7 @@ def update_user_permissions(request):
         role = request.POST.get('role')  # 'admin' or 'member'
         can_create_cycles_for_others = request.POST.get('can_create_cycles_for_others') == 'on'
         can_view_reports = request.POST.get('can_view_all_reports') == 'on'
+        use_api = request.POST.get('can_use_api') == 'on'
 
         if not user_profile_id or not role:
             messages.error(request, _('Invalid request: missing required fields.'))
@@ -340,9 +343,13 @@ def update_user_permissions(request):
         )
         target_user = user_profile.user
 
-        # Prevent self-demotion or demoting superusers
+        # Prevent self-demotion or demoting superusers. API access is the one
+        # thing an admin sets on their own account: no admin has it by
+        # default, so the first one has to take it themselves.
         if target_user.id == request.user.id:
-            messages.error(request, _('You cannot modify your own permissions.'))
+            set_user_permission(target_user, 'can_use_api', use_api)
+            if use_api:
+                messages.success(request, _('%(username)s now has API access.') % {'username': target_user.username})
             return redirect('team_list')
 
         if target_user.is_superuser:
@@ -385,6 +392,12 @@ def update_user_permissions(request):
 
         if grant_reports:
             messages.success(request, _('%(username)s can now view all reports.') % {'username': target_user.username})
+
+        # API access is in no group, so it is set for admins and members alike.
+        set_user_permission(target_user, 'can_use_api', use_api)
+
+        if use_api:
+            messages.success(request, _('%(username)s now has API access.') % {'username': target_user.username})
 
     except Exception as e:
         messages.error(request, _('Error updating permissions: %(error)s') % {'error': str(e)})
@@ -3519,7 +3532,7 @@ def create_api_token(request):
     if request.method != 'POST':
         return redirect('settings')
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not can_use_api(request.user):
         messages.error(request, _('Permission denied.'))
         return redirect('settings')
 
@@ -3557,7 +3570,7 @@ def update_api_token(request, token_id):
     if request.method != 'POST':
         return redirect('settings')
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not can_use_api(request.user):
         messages.error(request, _('Permission denied.'))
         return redirect('settings')
 
@@ -3590,7 +3603,7 @@ def delete_api_token(request, token_id):
     if request.method != 'POST':
         return redirect('settings')
 
-    if not request.user.has_perm('accounts.can_manage_organization'):
+    if not can_use_api(request.user):
         messages.error(request, _('Permission denied.'))
         return redirect('settings')
 

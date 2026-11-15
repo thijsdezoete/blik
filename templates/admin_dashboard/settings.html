@@ -422,12 +422,13 @@
             </form>
         </div>
 
-        <!-- API Configuration -->
+        {# API Configuration #}
         <div class="card" id="api">
             <div class="card-header">
-                <h2 class="card-title">{% trans 'API Configuration' %}</h2>
+                <h2 class="card-title">{% if perms.accounts.can_use_api %}{% trans 'API Configuration' %}{% else %}{% trans 'Webhooks' %}{% endif %}</h2>
             </div>
             <div class="card-body">
+                    {% if perms.accounts.can_use_api %}
                     <div style="margin-bottom: 1rem;">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
                             <div>
@@ -485,11 +486,12 @@
                             {% trans 'Create New Token' %}
                         </button>
                     </div>
+                    {% endif %}
 
                     <!-- Webhooks Section -->
-                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                    <div{% if perms.accounts.can_use_api %} style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);"{% endif %}>
                         <div style="margin-bottom: 0.75rem;">
-                            <label class="form-label" style="margin-bottom: 0.25rem;">{% trans 'Webhooks' %}</label>
+                            {% if perms.accounts.can_use_api %}<label class="form-label" style="margin-bottom: 0.25rem;">{% trans 'Webhooks' %}</label>{% endif %}
                             <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
                                 {% trans 'Receive event notifications for cycle creation, completion, etc.' %}
                             </p>
@@ -972,6 +974,7 @@ function backToPreview() {
     document.getElementById('importStep1').style.display = 'block';
 }
 
+{% if perms.accounts.can_use_api %}
 // API Token Modal Functions
 function showCreateTokenModal() {
     document.getElementById('tokenModalTitle').textContent = '{{ _('Create API Token')|escapejs }}';
@@ -994,6 +997,7 @@ function editAPIToken(id, name, isActive, rateLimit) {
 function hideTokenModal() {
     document.getElementById('tokenModal').style.display = 'none';
 }
+{% endif %}
 
 // Webhook Modal Functions
 function showCreateWebhookModal() {
@@ -1028,6 +1032,7 @@ function hideWebhookModal() {
     document.getElementById('webhookModal').style.display = 'none';
 }
 
+{% if perms.accounts.can_use_api %}
 // Token Created Modal Functions
 function showTokenCreatedModal(token) {
     document.getElementById('createdTokenValue').value = token;
@@ -1049,6 +1054,7 @@ function showRevokeTokenModal(tokenId, tokenName) {
 function hideRevokeTokenModal() {
     document.getElementById('revokeTokenModal').style.display = 'none';
 }
+{% endif %}
 
 function showDeleteWebhookModal(webhookId, webhookName) {
     document.getElementById('modal-webhook-name').textContent = webhookName;
@@ -1060,6 +1066,7 @@ function hideDeleteWebhookModal() {
     document.getElementById('deleteWebhookModal').style.display = 'none';
 }
 
+{% if perms.accounts.can_use_api %}
 function copyTokenToClipboard() {
     const tokenInput = document.getElementById('createdTokenValue');
     tokenInput.select();
@@ -1087,8 +1094,10 @@ document.addEventListener('DOMContentLoaded', function() {
     showTokenCreatedModal('{{ new_token }}');
 });
 {% endif %}
+{% endif %}
 </script>
 
+{% if perms.accounts.can_use_api %}
 <!-- API Token Modal -->
 <div id="tokenModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
     <div style="background: var(--bg-card); padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
@@ -1208,6 +1217,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \<br>
         </form>
     </div>
 </div>
+{% endif %}
 
 <!-- Delete Webhook Modal -->
 <div id="deleteWebhookModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">

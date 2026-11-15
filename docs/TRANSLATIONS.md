@@ -124,9 +124,9 @@ Use the same term throughout:
 | Questionnaire | Fragebogen | |
 | Report | Bericht | |
 | Self-assessment, self | Selbsteinschätzung, Selbst | |
-| Peer | Kolleg:in | plural Kolleg:innen |
+| Peer | Kolleg:in | plural Kolleg:innen; "your colleague": Ihr:e Kolleg:in |
 | Manager | Führungskraft | |
-| Direct report | direkte Mitarbeitende | plural only; as a label "Direkte Mitarbeitende" |
+| Direct report | direkte Mitarbeitende | plural only; as a label "Direkte Mitarbeitende"; one person: direkt unterstellte Person, "your direct report": Ihnen direkt unterstellt |
 | Others' average | Durchschnitt der anderen | |
 | User | Benutzer:in | |
 | Team member | Teammitglied | |
@@ -142,8 +142,109 @@ Use the same term throughout:
 | Dreyfus stages | Neuling, Fortgeschrittene:r Anfänger:in, Kompetent, Gewandt, Expert:in | Novice, Advanced Beginner, Competent, Proficient, Expert |
 | Anonymity threshold | Mindestanzahl für Anonymität | |
 | GDPR | DSGVO | |
+| Org chart, unit | Organigramm, Einheit | |
+| Outbox, queued | Postausgang, im Postausgang | |
+| (an email) goes out | wird versendet | not "geht hinaus" |
+| Plan, upgrade your plan | Tarif, größeren Tarif wählen | |
 | Settings | Einstellungen | |
 | Dashboard | Dashboard | |
+
+
+## French terms
+
+Use the same term throughout:
+
+| English | French | Notes |
+|---|---|---|
+| Review cycle, cycle | cycle d’évaluation | |
+| Reviewee | personne évaluée | plural: personnes évaluées |
+| Reviewer | évaluateur | plural: évaluateurs |
+| Questionnaire | questionnaire | |
+| Report | rapport | |
+| Self-assessment, self | auto-évaluation, soi-même | |
+| Peer | pair | plural: pairs |
+| Manager | responsable | |
+| Direct report | collaborateur direct | plural: collaborateurs directs |
+| Others' average | moyenne des autres | |
+| User | utilisateur | |
+| Team member | membre de l’équipe | |
+| Organization | organisation | |
+| Admin, organization admin | admin, admin de l’organisation | |
+| Invitation, invite link | invitation, lien d’invitation | |
+| Access token | jeton d’accès | |
+| Perception gap | écart de perception | |
+| Blind spot | angle mort | |
+| Strengths | points forts | |
+| Development areas | axes de développement | |
+| Skill level | niveau de compétence | |
+| Agency | capacité d’initiative | the second Dreyfus dimension next to skill |
+| Anonymity threshold | seuil d’anonymat | |
+| Settings | paramètres | |
+| Dashboard | tableau de bord | |
+
+## Spanish terms
+
+Use the same term throughout:
+
+| English | Spanish | Notes |
+|---|---|---|
+| Review cycle, cycle | ciclo de evaluación | |
+| Reviewee | persona evaluada | plural: personas evaluadas |
+| Reviewer | evaluador | plural: evaluadores |
+| Questionnaire | cuestionario | |
+| Report | informe | |
+| Self-assessment, self | autoevaluación, uno mismo | |
+| Peer | colega | plural: colegas |
+| Manager | responsable | |
+| Direct report | colaborador directo | plural: colaboradores directos |
+| Others' average | promedio de los demás | |
+| User | usuario | |
+| Team member | miembro del equipo | |
+| Organization | organización | |
+| Admin, organization admin | administrador, administrador de la organización | |
+| Invitation, invite link | invitación, enlace de invitación | |
+| Access token | token de acceso | |
+| Perception gap | brecha de percepción | |
+| Blind spot | punto ciego | |
+| Strengths | fortalezas | |
+| Development areas | áreas de desarrollo | |
+| Skill level | nivel de competencia | |
+| Agency | capacidad de iniciativa | the second Dreyfus dimension next to skill |
+| Anonymity threshold | umbral de anonimato | |
+| Settings | configuración | |
+| Dashboard | panel de control | |
+
+## Italian terms
+
+Use the same term throughout:
+
+| English | Italian | Notes |
+|---|---|---|
+| Review cycle, cycle | ciclo di valutazione | |
+| Reviewee | persona valutata | plural: persone valutate |
+| Reviewer | valutatore | plural: valutatori |
+| Questionnaire | questionario | |
+| Report | report | |
+| Self-assessment, self | autovalutazione, sé | |
+| Peer | collega | plural: colleghi |
+| Manager | manager | |
+| Direct report | collaboratore diretto | plural: collaboratori diretti |
+| Others' average | media degli altri | |
+| User | utente | |
+| Team member | membro del team | |
+| Organization | organizzazione | |
+| Admin, organization admin | amministratore, amministratore dell’organizzazione | |
+| Invitation, invite link | invito, link di invito | |
+| Access token | token di accesso | |
+| Perception gap | divario di percezione | |
+| Blind spot | punto cieco | |
+| Strengths | punti di forza | |
+| Development areas | aree di sviluppo | |
+| Skill level | livello di competenza | |
+| Agency | capacità di iniziativa | the second Dreyfus dimension next to skill |
+| Anonymity threshold | soglia di anonimato | |
+| Settings | impostazioni | |
+| Dashboard | dashboard | |
 
 ## Adding a language
 

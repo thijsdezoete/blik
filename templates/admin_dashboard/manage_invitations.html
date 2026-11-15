@@ -258,6 +258,7 @@
 {% endif %}
 {% endif %}
 
+<script src="{% url 'javascript-catalog' %}?language={{ LANGUAGE_CODE }}"></script>
 <script src="{% static 'js/reviewee_picker.js' %}"></script>
 <script>
 // Mask email addresses to show partial info: first char + **** + last char before @

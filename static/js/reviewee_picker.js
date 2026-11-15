@@ -53,7 +53,7 @@
         constructor(root) {
             this.root = root;
             this.fieldName = root.dataset.fieldName || 'reviewees';
-            this.placeholder = root.dataset.placeholder || 'Add a person…';
+            this.placeholder = root.dataset.placeholder || gettext('Add a person…');
             this.selected = new Map(); // uuid -> {uuid, name, email}
 
             let initial = [];
@@ -73,7 +73,7 @@
                 <div class="rp-chips" role="list"></div>
                 <div class="rp-input-row">
                     <input type="text" class="rp-input" placeholder="${escapeHtml(this.placeholder)}"
-                           autocomplete="off" aria-label="Search for a person">
+                           autocomplete="off" aria-label="${escapeHtml(gettext('Search for a person'))}">
                     <div class="rp-dropdown" hidden></div>
                 </div>
                 <div class="rp-hidden"></div>
@@ -90,7 +90,8 @@
             this.$input.addEventListener('focus', () => this._search());
             this.$input.addEventListener('keydown', e => this._onKey(e));
             document.addEventListener('click', e => {
-                if (!this.root.contains(e.target)) this._closeDropdown();
+                // The path, not the target: a click that re-renders the dropdown has detached its target by now
+                if (!e.composedPath().includes(this.root)) this._closeDropdown();
             });
             this.$chips.addEventListener('click', e => {
                 const btn = e.target.closest('.rp-chip-remove');
@@ -184,7 +185,9 @@
             create.className = 'rp-option rp-option-create';
             create.innerHTML = `
                 <span class="rp-opt-plus">＋</span>
-                <span class="rp-opt-name">Create new reviewee${query ? ` “${escapeHtml(query)}”` : ''}</span>
+                <span class="rp-opt-name">${escapeHtml(query
+                    ? interpolate(gettext('Create new reviewee “%(name)s”'), {name: query}, true)
+                    : gettext('Create new reviewee'))}</span>
             `;
             create.addEventListener('click', () => this._openCreateForm(query));
             frag.appendChild(create);
@@ -203,22 +206,28 @@
             const email = looksLikeEmail ? prefilled : '';
 
             this.$dropdown.innerHTML = `
-                <form class="rp-create-form" novalidate>
+                <div class="rp-create-form">
                     <div class="rp-create-row">
-                        <input type="text" class="rp-cf-name" placeholder="Full name" value="${escapeHtml(name)}" required>
+                        <input type="text" class="rp-cf-name" placeholder="${escapeHtml(gettext('Full name'))}"
+                               value="${escapeHtml(name)}">
                     </div>
                     <div class="rp-create-row">
-                        <input type="email" class="rp-cf-email" placeholder="email@example.com" value="${escapeHtml(email)}" required>
+                        <input type="email" class="rp-cf-email" placeholder="email@example.com" value="${escapeHtml(email)}">
                     </div>
                     <div class="rp-create-error" hidden></div>
                     <div class="rp-create-actions">
-                        <button type="submit" class="btn btn-primary btn-sm">Add</button>
-                        <button type="button" class="btn btn-secondary btn-sm rp-cf-cancel">Cancel</button>
+                        <button type="button" class="btn btn-primary btn-sm rp-cf-add">
+                            ${escapeHtml(gettext('Add'))}
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm rp-cf-cancel">
+                            ${escapeHtml(gettext('Cancel'))}
+                        </button>
                     </div>
-                </form>
+                </div>
             `;
             this.$dropdown.hidden = false;
-            const form = this.$dropdown.querySelector('form');
+            // No <form> of its own: the picker usually sits inside one, and HTML drops a nested form
+            const form = this.$dropdown.querySelector('.rp-create-form');
             const $name = form.querySelector('.rp-cf-name');
             const $email = form.querySelector('.rp-cf-email');
             const $err = form.querySelector('.rp-create-error');
@@ -226,8 +235,7 @@
             ($name.value ? $email : $name).focus();
 
             form.querySelector('.rp-cf-cancel').addEventListener('click', () => this._closeDropdown());
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            const submit = async () => {
                 $err.hidden = true;
                 const body = new URLSearchParams({
                     name: $name.value.trim(),
@@ -246,7 +254,7 @@
                     });
                     const data = await resp.json().catch(() => ({}));
                     if (!resp.ok) {
-                        $err.textContent = data.error || 'Could not create reviewee.';
+                        $err.textContent = data.error || gettext('Could not create reviewee.');
                         $err.hidden = false;
                         return;
                     }
@@ -255,8 +263,15 @@
                     this._closeDropdown();
                     this.$input.focus();
                 } catch (err) {
-                    $err.textContent = 'Network error. Try again.';
+                    $err.textContent = gettext('Network error. Try again.');
                     $err.hidden = false;
+                }
+            };
+            form.querySelector('.rp-cf-add').addEventListener('click', submit);
+            form.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && e.target.matches('input')) {
+                    e.preventDefault();
+                    submit();
                 }
             });
         }
@@ -283,9 +298,10 @@
             chip.className = 'rp-chip';
             chip.setAttribute('role', 'listitem');
             chip.dataset.uuid = person.uuid;
+            const label = interpolate(gettext('Remove %(name)s'), {name: person.name || person.email}, true);
             chip.innerHTML = `
                 <span class="rp-chip-name">${escapeHtml(person.name || person.email)}</span>
-                <button type="button" class="rp-chip-remove" aria-label="Remove ${escapeHtml(person.name || person.email)}">×</button>
+                <button type="button" class="rp-chip-remove" aria-label="${escapeHtml(label)}">×</button>
             `;
             this.$chips.appendChild(chip);
         }

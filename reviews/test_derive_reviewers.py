@@ -199,6 +199,22 @@ class DeriveReviewersTests(TestCase):
         names = [r.name for r in result['direct_report']]
         self.assertEqual(names, ['Alice', 'Marie', 'Zara'])
 
+    def test_deactivated_people_are_in_no_bucket(self):
+        """A person who left keeps the place in the chart, but reviews nobody."""
+        p = self._make_reviewee('P')
+        boss, peer, report = (RevieweeFactory(organization=self.org, name=name, is_active=False)
+                              for name in ('Boss', 'Peer', 'Report'))
+        above = OrgUnitFactory(organization=self.org, name='Above')
+        self._add(above, boss, row=0, col=0)
+        self._add(above, p, row=1, col=0)
+        self._add(above, peer, row=1, col=1)
+        below = OrgUnitFactory(organization=self.org, name='Below')
+        self._add(below, p, row=0, col=0)
+        self._add(below, report, row=1, col=0)
+
+        result = derive_reviewers(p)
+        self.assertEqual((result['manager'], result['peer'], result['direct_report']), ([], [], []))
+
 
 class DeriveReviewersDepthTests(TestCase):
     """Director > Lead > (Senior, Engineer); Senior > Junior."""
@@ -234,6 +250,12 @@ class DeriveReviewersDepthTests(TestCase):
 
     def test_all_the_way_down(self):
         self.assertEqual(self.reports(None, False), ['Engineer', 'Junior', 'Lead', 'Senior'])
+
+    def test_the_team_of_a_deactivated_lead_stays_below_the_director(self):
+        lead = self.people['Lead']
+        lead.is_active = False
+        lead.save()
+        self.assertEqual(self.reports(2, False), ['Engineer', 'Senior'])
 
     def test_a_chart_that_loops_ends(self):
         # The director reports to the junior: a loop.

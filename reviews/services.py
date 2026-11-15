@@ -81,6 +81,8 @@ def derive_reviewers(reviewee):
     Dedup priority when the same person lands in multiple buckets:
         self > manager > direct_report > peer.
 
+    Deactivated people are in no bucket.
+
     Returns:
         dict: {
             'self': [Reviewee],
@@ -162,6 +164,12 @@ def derive_reviewers(reviewee):
             direct_reports += [r for r in frontier if r.pk in manages]
         else:
             direct_reports += frontier
+
+    # A deactivated person keeps the place in the chart, so the team below
+    # still counts for the levels above, but reviews nobody.
+    managers, peers, direct_reports = (
+        [r for r in bucket if r.is_active] for bucket in (managers, peers, direct_reports)
+    )
 
     def _dedup_by_uuid(seq):
         """Preserve first-seen order while dropping duplicate Reviewees."""

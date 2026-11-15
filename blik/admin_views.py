@@ -1915,7 +1915,8 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
     `bulk_source` controls the reviewers of each cycle:
         'chart' — derive from the org chart for each reviewee
         'previous' — each reviewee's latest cycle: its questionnaire,
-                     categories and reviewer email strings (never FKs)
+                     categories and reviewer email strings (never FKs),
+                     without the addresses of deactivated people
         'empty' — no reviewers yet (admins fill them in per cycle later)
 
     Returns (planned, skipped): planned is a list of (reviewee, questionnaire,
@@ -1939,9 +1940,12 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
             cycle_questionnaire = previous.questionnaire
             cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
             email_assignments = {code: [] for code in previous.active_categories}
+            # A colleague deactivated since then is not invited again.
+            deactivated = Reviewee.objects.filter(
+                organization=reviewee.organization_id, is_active=False, email__iexact=OuterRef('reviewer_email'))
             for category, email in previous.tokens.filter(
                 reviewer_email__isnull=False, category__in=previous.active_categories,
-            ).values_list('category', 'reviewer_email'):
+            ).exclude(Exists(deactivated)).values_list('category', 'reviewer_email'):
                 email_assignments[category].append(email.lower())
             # The self-assessment goes to the person's address of today,
             # not to the one the previous cycle used.

@@ -19,6 +19,8 @@ from core.factories import OrganizationFactory, UserFactory
 from questionnaires.factories import QuestionnaireFactory
 from reviews.models import ReviewCycle, ReviewerToken
 
+from .admin_views import bulk_reviewees, plan_bulk_cycles
+
 
 NON_HASHING_STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
@@ -232,6 +234,64 @@ class BulkChartDerivationTests(TestCase):
 
         self.assertFalse(ReviewCycle.objects.filter(reviewee=loner).exists())
         self.assertTrue(ReviewCycle.objects.filter(reviewee=on_unit).exists())
+
+
+class BulkLeavesOutDeactivatedPeopleTests(TestCase):
+    """A deactivated person plays no part in a bulk run: no cycle, no invitation, not in the figures."""
+
+    def setUp(self):
+        self.org = OrganizationFactory()
+        self.admin = UserFactory(username='bulk_admin')
+        UserProfileFactory(user=self.admin, organization=self.org, can_create_cycles_for_others=True)
+        _grant_manage(self.admin)
+        self.questionnaire = QuestionnaireFactory(organization=self.org)
+        # The manager left; the memberships stay in the chart.
+        self.gone = RevieweeFactory(organization=self.org, email='gone@example.com', is_active=False)
+        self.sam = RevieweeFactory(organization=self.org, name='Sam', email='sam@example.com')
+        self.sue = RevieweeFactory(organization=self.org, name='Sue', email='sue@example.com')
+        self.unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=self.unit, reviewee=self.gone, row=0, col=0)
+        OrgUnitMembershipFactory(unit=self.unit, reviewee=self.sam, row=1, col=0)
+        OrgUnitMembershipFactory(unit=self.unit, reviewee=self.sue, row=1, col=1)
+
+    def test_a_deactivated_person_gets_no_cycle(self):
+        self.assertNotIn(self.gone, bulk_reviewees(self.admin, self.org))
+        self.assertEqual(set(bulk_reviewees(self.admin, self.org, [self.unit])), {self.sam, self.sue})
+
+    def test_the_chart_invites_no_deactivated_person(self):
+        # The only reviewer the chart gives this person is the manager who left.
+        alone = RevieweeFactory(organization=self.org, email='alone@example.com')
+        other = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=other, reviewee=self.gone, row=0, col=0)
+        OrgUnitMembershipFactory(unit=other, reviewee=alone, row=1, col=0)
+
+        planned, skipped = plan_bulk_cycles(
+            bulk_reviewees(self.admin, self.org, [self.unit, other]), 'chart', self.questionnaire, {})
+
+        self.assertEqual({reviewee: emails for reviewee, _q, _flags, emails in planned}, {
+            self.sam: {'self': ['sam@example.com'], 'manager': [], 'peer': ['sue@example.com'], 'direct_report': []},
+            self.sue: {'self': ['sue@example.com'], 'manager': [], 'peer': ['sam@example.com'], 'direct_report': []},
+        })
+        self.assertEqual(skipped, 1)
+
+    def test_the_previous_cycle_invites_no_deactivated_person(self):
+        from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
+        previous = ReviewCycleFactory(reviewee=self.sam, questionnaire=self.questionnaire)
+        ReviewerTokenFactory(cycle=previous, category='manager', reviewer_email='Gone@example.com')
+        ReviewerTokenFactory(cycle=previous, category='peer', reviewer_email='external@elsewhere.example')
+        # A deactivated person of another organization with that address: not ours to drop.
+        RevieweeFactory(organization=OrganizationFactory(), email='external@elsewhere.example', is_active=False)
+        # The only reviewer of Sue's previous cycle left.
+        previous = ReviewCycleFactory(reviewee=self.sue, questionnaire=self.questionnaire)
+        ReviewerTokenFactory(cycle=previous, category='manager', reviewer_email='gone@example.com')
+
+        planned, skipped = plan_bulk_cycles(bulk_reviewees(self.admin, self.org, [self.unit]), 'previous', None, {})
+
+        self.assertEqual({reviewee: emails for reviewee, _q, _flags, emails in planned}, {
+            self.sam: {'self': ['sam@example.com'], 'manager': [], 'peer': ['external@elsewhere.example'],
+                       'direct_report': []},
+        })
+        self.assertEqual(skipped, 1)
 
 
 @override_settings(STORAGES=NON_HASHING_STORAGES)

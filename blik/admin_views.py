@@ -829,9 +829,12 @@ def quick_cycle_create(request, reviewee_uuid):
 
             if previous_cycle:
                 # Copy tokens from previous cycle, including email assignments. The self-assessment
-                # token comes from queue_reviewee_notifications below.
+                # token comes from queue_reviewee_notifications below. A colleague deactivated
+                # since then is not invited again, as in a bulk run.
                 previous_tokens = previous_cycle.tokens.filter(
-                    category__in=cycle.active_categories).exclude(category='self')
+                    category__in=cycle.active_categories).exclude(category='self').exclude(Exists(
+                        Reviewee.objects.filter(organization=reviewee.organization_id, is_active=False,
+                                                email__iexact=OuterRef('reviewer_email'))))
 
                 for prev_token in previous_tokens:
                     ReviewerToken.objects.create(

@@ -129,6 +129,22 @@ class QuickCycleTests(CycleCategoryTestCase):
         created = ReviewCycle.objects.exclude(pk=previous.pk).get()
         self.assertEqual(created.active_categories, ['peer', 'manager'])
 
+    def test_it_does_not_invite_a_colleague_who_was_deactivated_since(self):
+        previous = ReviewCycle.objects.create(reviewee=self.reviewee, questionnaire=self.questionnaire)
+        Reviewee.objects.create(organization=self.org, name='Lee Left', email='Lee@acme.example', is_active=False)
+        for email in ('lee@acme.example', 'pat@acme.example', 'extern@other.example', None):
+            ReviewerToken.objects.create(cycle=previous, category='peer', reviewer_email=email)
+
+        self.client.post(
+            reverse('quick_cycle_create', args=[self.reviewee.uuid]),
+            {'questionnaire_id': self.questionnaire.id},
+        )
+
+        created = ReviewCycle.objects.exclude(pk=previous.pk).get()
+        self.assertCountEqual(
+            created.tokens.filter(category='peer').values_list('reviewer_email', flat=True),
+            ['pat@acme.example', 'extern@other.example', None])
+
     def test_without_a_previous_cycle_it_collects_everything(self):
         self.client.post(
             reverse('quick_cycle_create', args=[self.reviewee.uuid]),

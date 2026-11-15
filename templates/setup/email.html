@@ -6,123 +6,128 @@
 {% block subtitle %}{% trans 'Configure email settings for sending invitations' %}{% endblock %}
 
 {% block content %}
-<h2 class="page-title">{% trans 'Email Configuration' %}</h2>
-<p class="page-description">
-    {% trans 'Choose how Blik will send emails for review invitations and notifications.' %}
-</p>
-
-{% if is_hosted %}
-<div class="info-card">
-    <h3>✨ {% trans "Recommended: Use Blik's Email Service" %}</h3>
-    <p>
-        {% blocktrans trimmed %}
-        As a hosted customer, you can use Blik's managed email service. All emails will be sent reliably with no configuration needed.
-        You can always switch to your own SMTP server later in settings.
-        {% endblocktrans %}
-    </p>
-    <form method="post" style="margin: 0;">
-        {% csrf_token %}
-        <input type="hidden" name="use_blik_mailer" value="true">
-        <button type="submit" class="btn btn-primary" style="margin: 0;">
-            {% trans "Use Blik's Email Service (Recommended)" %}
-        </button>
-    </form>
-</div>
-
-<div class="separator">
-    {% trans '— or configure your own SMTP server below —' %}
-</div>
-{% endif %}
-
-<form method="post" novalidate>
-    {% csrf_token %}
-
-    <div class="form-group">
-        <label for="id_smtp_host">{{ form.smtp_host.label }}</label>
-        {{ form.smtp_host }}
-        {% if form.smtp_host.errors %}
-            <ul class="errorlist">
-            {% for error in form.smtp_host.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.smtp_host.help_text }}</small>
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans 'Email Configuration' %}</h2>
     </div>
+    <div class="card-body">
+        <p class="page-description mb-1">
+            {% trans 'Choose how Blik will send emails for review invitations and notifications.' %}
+        </p>
 
-    <div class="form-group">
-        <label for="id_smtp_port">{{ form.smtp_port.label }}</label>
-        {{ form.smtp_port }}
-        {% if form.smtp_port.errors %}
-            <ul class="errorlist">
-            {% for error in form.smtp_port.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.smtp_port.help_text }}</small>
-    </div>
-
-    <div class="form-group">
-        <label for="id_smtp_username">{{ form.smtp_username.label }}</label>
-        {{ form.smtp_username }}
-        {% if form.smtp_username.errors %}
-            <ul class="errorlist">
-            {% for error in form.smtp_username.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.smtp_username.help_text }}</small>
-    </div>
-
-    <div class="form-group">
-        <label for="id_smtp_password">{{ form.smtp_password.label }}</label>
-        {{ form.smtp_password }}
-        {% if form.smtp_password.errors %}
-            <ul class="errorlist">
-            {% for error in form.smtp_password.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.smtp_password.help_text }}</small>
-    </div>
-
-    <div class="form-group">
-        <div class="form-check">
-            {{ form.smtp_use_tls }}
-            <label for="id_smtp_use_tls">{{ form.smtp_use_tls.label }}</label>
+        {% if is_hosted %}
+        <div class="setup-option">
+            <h3 class="card-title">✨ {% trans "Recommended: Use Blik's Email Service" %}</h3>
+            <p class="page-description mb-1">
+                {% blocktrans trimmed %}
+                As a hosted customer, you can use Blik's managed email service. All emails will be sent reliably with no configuration needed.
+                You can always switch to your own SMTP server later in settings.
+                {% endblocktrans %}
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="use_blik_mailer" value="true">
+                <button type="submit" class="btn btn-primary">
+                    {% trans "Use Blik's Email Service (Recommended)" %}
+                </button>
+            </form>
         </div>
-        <small class="help-text">{{ form.smtp_use_tls.help_text }}</small>
-    </div>
 
-    <div class="form-group">
-        <label for="id_from_email">{{ form.from_email.label }}</label>
-        {{ form.from_email }}
-        {% if form.from_email.errors %}
-            <ul class="errorlist">
-            {% for error in form.from_email.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
+        <p class="page-description text-center mt-1 mb-1">
+            {% trans '— or configure your own SMTP server below —' %}
+        </p>
         {% endif %}
-        <small class="help-text">{{ form.from_email.help_text }}</small>
-    </div>
 
-    <div class="form-group">
-        <div class="form-check">
-            {{ form.skip_email_setup }}
-            <label for="id_skip_email_setup">{{ form.skip_email_setup.label }}</label>
-        </div>
-        <small class="help-text">{{ form.skip_email_setup.help_text }}</small>
-    </div>
+        <form method="post" novalidate>
+            {% csrf_token %}
 
-    <div class="button-group">
-        <div></div>
-        <button type="submit" class="btn btn-primary">
-            {% trans 'Complete Setup' %} →
-        </button>
+            <div class="form-group">
+                <label class="form-label" for="id_smtp_host">{{ form.smtp_host.label }}</label>
+                {{ form.smtp_host }}
+                {% if form.smtp_host.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.smtp_host.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.smtp_host.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_smtp_port">{{ form.smtp_port.label }}</label>
+                {{ form.smtp_port }}
+                {% if form.smtp_port.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.smtp_port.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.smtp_port.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_smtp_username">{{ form.smtp_username.label }}</label>
+                {{ form.smtp_username }}
+                {% if form.smtp_username.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.smtp_username.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.smtp_username.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_smtp_password">{{ form.smtp_password.label }}</label>
+                {{ form.smtp_password }}
+                {% if form.smtp_password.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.smtp_password.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.smtp_password.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    {{ form.smtp_use_tls }}
+                    <label for="id_smtp_use_tls">{{ form.smtp_use_tls.label }}</label>
+                </div>
+                <small class="help-text">{{ form.smtp_use_tls.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_from_email">{{ form.from_email.label }}</label>
+                {{ form.from_email }}
+                {% if form.from_email.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.from_email.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.from_email.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    {{ form.skip_email_setup }}
+                    <label for="id_skip_email_setup">{{ form.skip_email_setup.label }}</label>
+                </div>
+                <small class="help-text">{{ form.skip_email_setup.help_text }}</small>
+            </div>
+
+            <div class="text-right">
+                <button type="submit" class="btn {% if is_hosted %}btn-secondary{% else %}btn-primary{% endif %}">
+                    {% trans 'Complete Setup' %} →
+                </button>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}

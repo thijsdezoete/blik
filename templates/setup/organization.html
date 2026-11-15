@@ -6,45 +6,50 @@
 {% block subtitle %}{% trans 'Configure your organization details' %}{% endblock %}
 
 {% block content %}
-<h2 class="page-title">{% trans 'Organization Details' %}</h2>
-<p class="page-description">
-    {% trans 'Tell us about your organization. This information will be used in emails and reports.' %}
-</p>
-
-<form method="post" novalidate>
-    {% csrf_token %}
-
-    <div class="form-group">
-        <label for="id_name">{{ form.name.label }}</label>
-        {{ form.name }}
-        {% if form.name.errors %}
-            <ul class="errorlist">
-            {% for error in form.name.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{% blocktrans trimmed %}Your organization's name (e.g., "Acme Corporation"){% endblocktrans %}</small>
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans 'Organization Details' %}</h2>
     </div>
+    <div class="card-body">
+        <p class="page-description mb-1">
+            {% trans 'Tell us about your organization. This information will be used in emails and reports.' %}
+        </p>
 
-    <div class="form-group">
-        <label for="id_email">{{ form.email.label }}</label>
-        {{ form.email }}
-        {% if form.email.errors %}
-            <ul class="errorlist">
-            {% for error in form.email.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.email.help_text }}</small>
-    </div>
+        <form method="post" novalidate>
+            {% csrf_token %}
 
-    <div class="button-group">
-        <div></div>
-        <button type="submit" class="btn btn-primary">
-            {% trans 'Continue to Email Setup' %} →
-        </button>
+            <div class="form-group">
+                <label class="form-label" for="id_name">{{ form.name.label }}</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.name.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{% blocktrans trimmed %}Your organization's name (e.g., "Acme Corporation"){% endblocktrans %}</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_email">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.email.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.email.help_text }}</small>
+            </div>
+
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">
+                    {% trans 'Continue to Email Setup' %} →
+                </button>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}

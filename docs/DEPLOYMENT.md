@@ -231,7 +231,7 @@ For deploying without Dokploy on any server with Docker:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/blik.git
+git clone https://github.com/thijsdezoete/blik.git
 cd blik
 ```
 

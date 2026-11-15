@@ -13,7 +13,9 @@ from accounts.factories import UserProfileFactory
 from accounts.models import Reviewee
 from accounts.permissions import assign_organization_admin, assign_organization_member, ensure_permission_groups
 from core.factories import OrganizationFactory, UserFactory
-from core.views import may_run_setup
+from core.views import may_generate_demo_data, may_run_setup
+from questionnaires.models import Questionnaire
+from reviews.models import ReviewCycle
 
 
 class MayRunSetupTests(TestCase):
@@ -58,6 +60,39 @@ class SetupPagesRefuseAMemberTests(TestCase):
         self.assertEqual(self.org.smtp_host, 'mail.acme.example')
 
     def test_no_demo_data_is_made(self):
+        before = Reviewee.objects.filter(organization=self.org).count()
+
+        self.client.post(reverse('setup_complete'), {'generate_test_data': '1'})
+
+        self.assertEqual(Reviewee.objects.filter(organization=self.org).count(), before)
+
+
+class DemoDataTests(TestCase):
+    """Demo data goes into the organization itself, so it is only for one that has no cycle yet."""
+
+    def setUp(self):
+        ensure_permission_groups()
+        self.org = OrganizationFactory(name='Acme')
+        admin = UserFactory()
+        UserProfileFactory(user=admin, organization=self.org)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+    def _start_a_cycle(self):
+        person = Reviewee.objects.create(organization=self.org, name='Dana Doe', email='dana@acme.example')
+        questionnaire = Questionnaire.objects.create(name='Professional Skills', organization=self.org)
+        ReviewCycle.objects.create(reviewee=person, questionnaire=questionnaire)
+
+    def test_only_an_organization_without_cycles_may_get_demo_data(self):
+        self.assertTrue(may_generate_demo_data(self.org))
+
+        self._start_a_cycle()
+
+        self.assertFalse(may_generate_demo_data(self.org))
+        self.assertTrue(may_generate_demo_data(OrganizationFactory()))
+
+    def test_an_organization_with_a_cycle_gets_no_demo_people(self):
+        self._start_a_cycle()
         before = Reviewee.objects.filter(organization=self.org).count()
 
         self.client.post(reverse('setup_complete'), {'generate_test_data': '1'})

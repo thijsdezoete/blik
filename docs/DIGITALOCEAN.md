@@ -196,7 +196,7 @@ Clone your repository:
 
 ```bash
 cd /opt
-git clone https://github.com/yourusername/blik.git
+git clone https://github.com/thijsdezoete/blik.git
 cd blik
 ```
 
@@ -531,7 +531,7 @@ If you encounter issues not covered here:
 1. **Check logs** (see above for how to access logs)
 2. **Review environment variables** against `.env.digitalocean.template`
 3. **Consult main deployment docs**: `docs/DEPLOYMENT.md`
-4. **GitHub Issues**: https://github.com/yourusername/blik/issues
+4. **GitHub Issues**: https://github.com/thijsdezoete/blik/issues
 5. **DigitalOcean Community**: https://www.digitalocean.com/community
 
 ---

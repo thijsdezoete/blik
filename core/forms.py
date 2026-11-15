@@ -150,7 +150,7 @@ class SetupEmailForm(forms.Form):
         widget=forms.CheckboxInput(attrs={
             'class': 'form-check-input'
         }),
-        help_text=_('You can configure email settings later in the admin panel')
+        help_text=_('You can configure email settings later on Organization → Settings')
     )
 
     def clean(self):

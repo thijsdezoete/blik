@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-15 21:19+0000\n"
+"POT-Creation-Date: 2026-11-15 21:55+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1728,8 +1728,8 @@ msgstr "E-Mail-Adresse, die im Feld „Von“ erscheint"
 msgid "Skip email setup (configure later)"
 msgstr "E-Mail-Einrichtung überspringen (später konfigurieren)"
 
-msgid "You can configure email settings later in the admin panel"
-msgstr "Die E-Mail-Einstellungen lassen sich später im Admin-Bereich konfigurieren"
+msgid "You can configure email settings later on Organization → Settings"
+msgstr "Die E-Mail-Einstellungen lassen sich später unter Organisation → Einstellungen festlegen"
 
 msgid "SMTP Host is required when not skipping email setup."
 msgstr "Der SMTP-Host ist erforderlich, wenn die E-Mail-Einrichtung nicht übersprungen wird."
@@ -1892,8 +1892,8 @@ msgstr "Der E-Mail-Dienst von Blik wird verwendet. Alles erledigt!"
 msgid "Email settings configured successfully!"
 msgstr "Die E-Mail-Einstellungen wurden gespeichert!"
 
-msgid "Email setup skipped. You can configure it later in the admin panel."
-msgstr "E-Mail-Einrichtung übersprungen. Sie lässt sich später im Admin-Bereich konfigurieren."
+msgid "Email setup skipped. You can configure it later on Organization → Settings."
+msgstr "E-Mail-Einrichtung übersprungen. Sie lässt sich später unter Organisation → Einstellungen nachholen."
 
 msgid "Default questionnaires loaded successfully!"
 msgstr "Die Standard-Fragebögen wurden geladen!"
@@ -1901,6 +1901,9 @@ msgstr "Die Standard-Fragebögen wurden geladen!"
 #, python-format
 msgid "Could not load default questionnaires: %(error)s"
 msgstr "Die Standard-Fragebögen konnten nicht geladen werden: %(error)s"
+
+msgid "This organization already has review cycles. Demo data is only for an organization that has none."
+msgstr "Diese Organisation hat bereits Feedbackrunden. Demodaten sind nur für eine Organisation ohne Feedbackrunden gedacht."
 
 msgid "Demo data generated successfully! Created 15 reviewees with diverse review cycles in various states. Check the dashboard to explore."
 msgstr "Demodaten wurden erzeugt! Angelegt wurden 15 Feedbacknehmende mit verschiedenen Feedbackrunden in unterschiedlichen Zuständen. Im Dashboard lassen sie sich erkunden."
@@ -9864,6 +9867,9 @@ msgstr "Einrichtung abgeschlossen!"
 msgid "Congratulations! Your Blik 360-degree feedback system is now configured and ready to use."
 msgstr "Herzlichen Glückwunsch! Das 360°-Feedbacksystem Blik ist jetzt eingerichtet und einsatzbereit."
 
+msgid "Go to Admin Dashboard"
+msgstr "Zum Admin-Dashboard"
+
 msgid "Configuration Summary"
 msgstr "Übersicht der Konfiguration"
 
@@ -9905,14 +9911,11 @@ msgstr "Neue Feedbackrunde anlegen und Einladungen an Feedbackgebende senden"
 msgid "Want to explore first?"
 msgstr "Erst einmal ausprobieren?"
 
-msgid "Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens."
-msgstr "Mit Testdaten lässt sich das System ausprobieren, ohne die Produktivdaten zu verändern. Dabei entstehen Beispiel-Feedbacknehmende und eine Feedbackrunde mit Tokens."
+msgid "This adds 15 example people with review cycles to your organization, so you can look around. They stay in your organization until you delete them."
+msgstr "Das fügt der Organisation 15 Beispielpersonen mit Feedbackrunden hinzu, um sich umzusehen. Sie bleiben in der Organisation, bis sie gelöscht werden."
 
 msgid "Generate Test Data"
 msgstr "Testdaten erzeugen"
-
-msgid "Go to Admin Dashboard"
-msgstr "Zum Admin-Dashboard"
 
 #, python-format
 msgid "Need help? Check out the <a href=\"%(docs_url)s\">documentation</a> or <a href=\"%(issues_url)s\">report an issue</a>."

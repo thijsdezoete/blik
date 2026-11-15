@@ -78,6 +78,15 @@ def may_run_setup(user):
     return not is_setup_complete() or user.has_perm('accounts.can_manage_organization')
 
 
+def may_generate_demo_data(organization):
+    """
+    Demo data goes into the organization itself, next to its real people.
+    So it is only offered while the organization has no cycle yet.
+    """
+    from reviews.models import ReviewCycle
+    return not ReviewCycle.objects.filter(reviewee__organization=organization).exists()
+
+
 def _refuse_setup(request):
     messages.error(request, _('You do not have permission to manage organization settings.'))
     return redirect('admin_dashboard')
@@ -189,7 +198,7 @@ def setup_email(request):
                 organization.save()
                 messages.success(request, _('Email settings configured successfully!'))
             else:
-                messages.info(request, _('Email setup skipped. You can configure it later in the admin panel.'))
+                messages.info(request, _('Email setup skipped. You can configure it later on Organization → Settings.'))
 
             return redirect('setup_complete')
     else:
@@ -243,6 +252,9 @@ def setup_complete(request):
 
     # Handle test data generation
     if request.method == 'POST' and request.POST.get('generate_test_data'):
+        if not may_generate_demo_data(organization):
+            messages.error(request, _('This organization already has review cycles. Demo data is only for an organization that has none.'))
+            return redirect('admin_dashboard')
         try:
             from io import StringIO
 
@@ -264,5 +276,6 @@ def setup_complete(request):
 
     return render(request, 'setup/complete.html', {
         'organization': organization,
+        'can_generate_demo_data': may_generate_demo_data(organization),
         'user': request.user,
     })

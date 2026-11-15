@@ -79,13 +79,14 @@
     </div>
 </div>
 
+{% if can_generate_demo_data %}
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">{% trans 'Want to explore first?' %}</h3>
     </div>
     <div class="card-body">
         <p class="page-description mb-1">
-            {% trans 'Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens.' %}
+            {% trans 'This adds 15 example people with review cycles to your organization, so you can look around. They stay in your organization until you delete them.' %}
         </p>
         <form method="post">
             {% csrf_token %}
@@ -96,9 +97,10 @@
         </form>
     </div>
 </div>
+{% endif %}
 
 <p class="page-description text-center">
-    {% blocktrans trimmed with docs_url='https://github.com/yourusername/blik' issues_url='https://github.com/yourusername/blik/issues' %}
+    {% blocktrans trimmed with docs_url='https://github.com/thijsdezoete/blik' issues_url='https://github.com/thijsdezoete/blik/issues' %}
     Need help? Check out the <a href="{{ docs_url }}">documentation</a> or <a href="{{ issues_url }}">report an issue</a>.
     {% endblocktrans %}
 </p>

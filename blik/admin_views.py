@@ -34,10 +34,13 @@ from accounts.permissions import (
     can_manage_questionnaires_required,
     can_use_api,
     can_view_all_reports,
+    creatable_reviewees,
     is_organization_admin,
     login_required,
     direct_report_emails,
     managers_without_account,
+    may_create_for_others,
+    run_team_emails,
     set_user_permission,
     visible_cycles,
 )
@@ -1879,32 +1882,6 @@ def selected_category_flags(request):
         f'include_{category}': request.POST.get(f'include_{category}') == 'on'
         for category in CATEGORY_ORDER
     }
-
-
-def may_create_for_others(user):
-    profile = getattr(user, 'profile', None)
-    return profile is not None and profile.can_create_cycles_for_others
-
-
-def run_team_emails(user, org):
-    """
-    Emails of the direct reports whose cycles this user creates and runs: those
-    of a user who may create cycles for others. Empty for everyone else.
-    """
-    return direct_report_emails(user, org) if may_create_for_others(user) else set()
-
-
-def creatable_reviewees(user, org):
-    """
-    The reviewees this user may start a cycle for. With the permission to
-    create cycles for others: an organization admin for everyone, another user
-    for themselves and their direct reports. Without it: only themselves.
-    """
-    reviewees = Reviewee.objects.for_organization(org).filter(is_active=True)
-    if may_create_for_others(user) and user.has_perm('accounts.can_manage_organization'):
-        return reviewees
-    scope = ({(user.email or '').lower()} | run_team_emails(user, org)) - {''}
-    return reviewees.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
 
 
 def selected_units(request):

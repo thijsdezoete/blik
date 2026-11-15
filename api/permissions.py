@@ -5,6 +5,8 @@ These permissions maintain organization isolation and enforce role-based access.
 """
 from rest_framework.permissions import BasePermission
 
+from accounts.permissions import can_use_api
+
 
 class IsOrganizationMember(BasePermission):
     """
@@ -84,6 +86,16 @@ class CanManageOrganization(BasePermission):
             return False
 
         return request.user.has_perm("accounts.can_manage_organization")
+
+
+class CanManageAPITokens(CanManageOrganization):
+    """
+    Requires 'can_manage_organization' and 'can_use_api', as the token views
+    of the web do. Used for the token endpoints only.
+    """
+
+    def has_permission(self, request, view):
+        return super().has_permission(request, view) and can_use_api(request.user)
 
 
 class CanManageQuestionnaires(BasePermission):

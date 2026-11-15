@@ -98,6 +98,7 @@
         </div>
         {% endif %}
 
+        {% if can_get_pdf %}
         <div class="actions">
             {% if pdf_valid %}
             <a href="{% if is_admin_view %}{% url 'reports:report_pdf' cycle.uuid %}{% else %}{% url 'reports:reviewee_report_pdf' report.access_token %}{% endif %}" class="btn btn-primary">{% trans 'Download PDF' %}</a>
@@ -108,6 +109,7 @@
             </form>
             {% endif %}
         </div>
+        {% endif %}
 
         {% block report_content %}
         {# Content will be included here #}

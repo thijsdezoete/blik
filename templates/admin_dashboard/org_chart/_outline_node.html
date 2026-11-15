@@ -1,6 +1,6 @@
 {% load i18n %}{% with unit=node.unit %}
 <li class="oc-branch" data-unit-uuid="{{ unit.uuid }}" data-unit-name="{{ unit.name }}" data-key="row-{{ unit.uuid }}">
-    <div class="oc-row" draggable="true" title="{% trans 'Drag onto another unit to place it below that unit' %}">
+    <div class="oc-row"{% if can_manage %} draggable="true" title="{% trans 'Drag onto another unit to place it below that unit' %}"{% endif %}>
         <button type="button" class="oc-toggle" aria-expanded="false" aria-label="{% trans 'Show or hide' %}: {{ unit.name }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
         </button>

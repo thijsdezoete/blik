@@ -71,6 +71,29 @@ class OrgAccessTests(TestCase):
         self.assertEqual(self.client.get(reverse('review_cycle_detail', args=[sam_cycle.uuid])).status_code, 404)
         self.assertEqual(self.client.get(reverse('reports:regenerate_report', args=[sam_cycle.uuid])).status_code, 404)
 
+    def test_the_pdf_is_for_the_reviewee_and_a_reader_of_all_reports_not_for_the_manager(self):
+        from accounts.permissions import set_user_permission
+        from reports.views import may_get_pdf
+        sam_cycle = self.cycles['sam@acme.example']
+        sam = self._login('sam@acme.example')
+        reader = self._login('sue@acme.example')
+        set_user_permission(reader, 'can_view_all_reports', True)
+        hank = self._login('hank@acme.example')
+
+        self.assertTrue(may_get_pdf(sam, sam_cycle))
+        self.assertTrue(may_get_pdf(reader, sam_cycle))
+        self.assertFalse(may_get_pdf(hank, sam_cycle))
+
+    def test_the_report_page_offers_a_manager_no_pdf_because_the_pdf_view_refuses_them(self):
+        self._login('hank@acme.example')
+        sam_cycle = self.cycles['sam@acme.example']
+
+        page = self.client.get(reverse('reports:view_report', args=[sam_cycle.uuid]))
+        pdf = self.client.get(reverse('reports:report_pdf', args=[sam_cycle.uuid]))
+
+        self.assertEqual(pdf.status_code, 404)
+        self.assertFalse(page.context['can_get_pdf'])
+
     def test_the_cycle_list_offers_only_the_report_for_cycles_below(self):
         self._login('hank@acme.example')
 

@@ -122,6 +122,63 @@ class ReportAccessGrantTests(TeamPermissionTestCase):
             self._reload(self.member).has_perm('accounts.can_view_all_reports'))
 
 
+class ApiAccessGrantTests(TeamPermissionTestCase):
+    """API access is in no group: an admin sets it per user, for members,
+    for other admins and for their own account."""
+
+    def _has_api_access(self, user):
+        return self._reload(user).has_perm('accounts.can_use_api')
+
+    def test_nobody_has_api_access_by_default(self):
+        self.assertFalse(self._has_api_access(self.admin))
+        self.assertFalse(self._has_api_access(self.member))
+
+    def test_admin_grants_api_access_to_a_member(self):
+        self.client.force_login(self.admin)
+        self._post(self.member_profile, can_use_api='on')
+
+        self.assertTrue(self._has_api_access(self.member))
+        self.assertFalse(
+            self._reload(self.member).has_perm('accounts.can_manage_organization'))
+
+    def test_admin_grants_api_access_to_another_admin(self):
+        self.client.force_login(self.admin)
+        profile = UserProfile.objects.get(user=self.other_admin)
+
+        self._post(profile, role='admin', can_use_api='on')
+
+        self.assertTrue(self._has_api_access(self.other_admin))
+        self.assertTrue(
+            self._reload(self.other_admin).has_perm('accounts.can_manage_organization'))
+
+    def test_admin_withdraws_api_access_again(self):
+        self.client.force_login(self.admin)
+        self._post(self.member_profile, can_use_api='on')
+        self._post(self.member_profile)
+
+        self.assertFalse(self._has_api_access(self.member))
+
+    def test_admin_grants_api_access_to_themselves(self):
+        self.client.force_login(self.admin)
+        self._post(UserProfile.objects.get(user=self.admin), role='admin', can_use_api='on')
+
+        self.assertTrue(self._has_api_access(self.admin))
+
+    def test_admin_changes_nothing_else_on_their_own_account(self):
+        """No self-demotion: only API access is read from the form."""
+        self.client.force_login(self.admin)
+        self._post(UserProfile.objects.get(user=self.admin), can_use_api='on')
+
+        self.assertTrue(
+            self._reload(self.admin).has_perm('accounts.can_manage_organization'))
+
+    def test_a_member_cannot_grant_it_to_themselves(self):
+        self.client.force_login(self.member)
+        self._post(self.member_profile, can_use_api='on')
+
+        self.assertFalse(self._has_api_access(self.member))
+
+
 class ReportAccessEffectTests(TeamPermissionTestCase):
     """What the permission is for: reading a report that is not your own."""
 

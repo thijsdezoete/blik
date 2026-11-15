@@ -113,11 +113,14 @@
                             {% if user_profile.can_read_all_reports %}
                                 <span class="badge" style="background: #8b5cf6; color: white;">{% trans 'All reports' %}</span>
                             {% endif %}
+                            {% if user_profile.has_api_access %}
+                                <span class="badge" style="background: #475569; color: white;">{% trans 'API Access' %}</span>
+                            {% endif %}
                         </td>
                         {% if perms.accounts.can_manage_organization %}
                         <td>
-                            {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.is_org_admin|lower }}, {{ user_profile.can_create_cycles_for_others|lower }}, {{ user_profile.can_read_all_reports|lower }})">
+                            {% if not user_profile.user.is_superuser %}
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.is_org_admin|lower }}, {{ user_profile.can_create_cycles_for_others|lower }}, {{ user_profile.can_read_all_reports|lower }}, {{ user_profile.has_api_access|lower }}, {% if user_profile.user.id == request.user.id %}true{% else %}false{% endif %})">
                                 {% trans 'Manage' %}
                             </button>
                             {% else %}
@@ -173,11 +176,14 @@
                             {% if user_profile.can_read_all_reports %}
                                 <span class="badge" style="background: #8b5cf6; color: white; font-size: 11px;">{% trans 'All reports' %}</span>
                             {% endif %}
+                            {% if user_profile.has_api_access %}
+                                <span class="badge" style="background: #475569; color: white; font-size: 11px;">{% trans 'API Access' %}</span>
+                            {% endif %}
                         </span>
                     </div>
                     {% if perms.accounts.can_manage_organization %}
-                        {% if user_profile.user.id != request.user.id and not user_profile.user.is_superuser %}
-                        <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.is_org_admin|lower }}, {{ user_profile.can_create_cycles_for_others|lower }}, {{ user_profile.can_read_all_reports|lower }})">
+                        {% if not user_profile.user.is_superuser %}
+                        <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="showManagePermissionsModal({{ user_profile.id }}, '{{ user_profile.user.username }}', {{ user_profile.is_org_admin|lower }}, {{ user_profile.can_create_cycles_for_others|lower }}, {{ user_profile.can_read_all_reports|lower }}, {{ user_profile.has_api_access|lower }}, {% if user_profile.user.id == request.user.id %}true{% else %}false{% endif %})">
                             {% trans 'Manage Permissions' %}
                         </button>
                         {% endif %}
@@ -299,7 +305,7 @@
             {% csrf_token %}
             <input type="hidden" id="modal-user-id" name="user_profile_id">
 
-            <div class="form-group">
+            <div class="form-group" id="role-group">
                 <label class="form-label">{% trans 'Role' %}</label>
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <div class="form-check">
@@ -325,7 +331,7 @@
 
             <div class="form-group">
                 <label class="form-label">{% trans 'Additional Permissions' %}</label>
-                <div class="form-check">
+                <div class="form-check" id="cycles-check">
                     <input type="checkbox" id="can-manage-cycles" name="can_create_cycles_for_others" class="form-check-input">
                     <label for="can-manage-cycles" style="display: inline; font-weight: normal;">
                         {% trans 'Can create review cycles for others' %}
@@ -334,7 +340,7 @@
                         </small>
                     </label>
                 </div>
-                <div class="form-check" style="margin-top: 0.75rem;">
+                <div class="form-check" id="reports-check" style="margin-top: 0.75rem;">
                     <input type="checkbox" id="can-view-reports" name="can_view_all_reports" class="form-check-input">
                     <label for="can-view-reports" style="display: inline; font-weight: normal;">
                         {% trans 'Can view all reports and cycles' %}
@@ -349,6 +355,19 @@
                         </small>
                     </label>
                 </div>
+                <div class="form-check" style="margin-top: 0.75rem;">
+                    <input type="checkbox" id="can-use-api" name="can_use_api" class="form-check-input">
+                    <label for="can-use-api" style="display: inline; font-weight: normal;">
+                        {% trans 'API Access' %}
+                        <small style="display: block; color: var(--text-secondary);">
+                            {% blocktrans trimmed %}
+                            Shows the API identifiers of review cycles and, for an
+                            Organization Admin, the API tokens in the settings.
+                            Without this, the interface does not mention the API.
+                            {% endblocktrans %}
+                        </small>
+                    </label>
+                </div>
             </div>
 
             <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
@@ -360,7 +379,7 @@
 </div>
 
 <script>
-function showManagePermissionsModal(userId, username, isStaff, canCreateCycles, canViewReports) {
+function showManagePermissionsModal(userId, username, isStaff, canCreateCycles, canViewReports, canUseApi, isSelf) {
     document.getElementById('modal-user-id').value = userId;
     document.getElementById('modal-username').textContent = username;
 
@@ -378,6 +397,13 @@ function showManagePermissionsModal(userId, username, isStaff, canCreateCycles, 
     // box is shown ticked and locked while Organization Admin is selected.
     document.getElementById('can-view-reports').checked = canViewReports;
     syncReportAccessToRole();
+
+    // API access is in no role. It is all an admin can change on their own
+    // account, so the rest is hidden there.
+    document.getElementById('can-use-api').checked = canUseApi;
+    ['role-group', 'cycles-check', 'reports-check'].forEach(function(id) {
+        document.getElementById(id).style.display = isSelf ? 'none' : '';
+    });
 
     document.getElementById('manage-permissions-modal').style.display = 'flex';
 }

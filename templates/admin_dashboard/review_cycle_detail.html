@@ -20,6 +20,7 @@
                 <strong>{% trans 'Questionnaire:' %}</strong> {{ cycle.questionnaire.name }}
             </p>
             <p style="color: #64748b; margin-bottom: 0.25rem;">{% blocktrans trimmed with date=cycle.created_at|date:'DATE_FORMAT' %}Created on {{ date }}{% endblocktrans %}</p>
+            {% if perms.accounts.can_use_api %}
             <details style="margin-top: 0.5rem;">
                 <summary style="cursor: pointer; color: #64748b; font-size: 0.875rem; user-select: none; display: inline-flex; align-items: center; gap: 0.25rem;">
                     <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
@@ -42,6 +43,7 @@
                     </div>
                 </div>
             </details>
+            {% endif %}
         </div>
         <a href="{% url 'review_cycle_list' %}" class="btn btn-secondary">{% trans 'Back to List' %}</a>
     </div>
@@ -631,6 +633,7 @@ function showCopyFeedback(message) {
     }, 2000);
 }
 
+{% if perms.accounts.can_use_api %}
 function copyToClipboard(elementId) {
     const element = document.getElementById(elementId);
     const text = element.textContent;
@@ -648,6 +651,7 @@ function copyToClipboard(elementId) {
         showCopyFeedback('{{ _('UUID copied to clipboard')|escapejs }}');
     });
 }
+{% endif %}
 
 // Confirmation modal functions
 function showConfirmModal(message, onConfirm) {

@@ -105,6 +105,19 @@ class PermissionAssignmentTestCase(TestCase):
 
         self.assertTrue(self._reload_user().has_perm('accounts.can_manage_questionnaires'))
 
+    def test_admin_group_never_carries_api_access(self):
+        """API access is off for everyone and granted per user, admins too."""
+        group = Group.objects.get(name=ORG_ADMIN_GROUP)
+
+        ensure_permission_groups()
+        self.assertFalse(group.permissions.filter(codename='can_use_api').exists())
+
+        # A group without permissions is filled anew.
+        group.permissions.clear()
+        ensure_permission_groups()
+        self.assertTrue(group.permissions.exists())
+        self.assertFalse(group.permissions.filter(codename='can_use_api').exists())
+
     def test_remove_from_all_org_groups_preserves_groups(self):
         assign_organization_admin(self.user)
         remove_from_all_org_groups(self.user)

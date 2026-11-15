@@ -85,6 +85,14 @@ def ensure_permission_groups():
         defaults={'name': 'Can create and edit questionnaires'},
     )
 
+    # Not in admin_permissions: API access is off for everyone, admins too,
+    # and is granted per user on the Team page.
+    Permission.objects.get_or_create(
+        codename='can_use_api',
+        content_type=content_type,
+        defaults={'name': 'Can see the API parts of the interface'},
+    )
+
     admin_permissions = [
         invite_permission,
         manage_org_permission,
@@ -389,6 +397,17 @@ def can_manage_questionnaires(user):
     migration accounts.0009 backfills.
     """
     return user.has_perm('accounts.can_manage_questionnaires')
+
+
+def can_use_api(user):
+    """
+    Check if user sees the API parts of the interface: tokens, identifiers
+    and example calls.
+
+    A per-user grant that no group carries. It hides interface parts only;
+    a request with an API token does not look at it.
+    """
+    return user.has_perm('accounts.can_use_api')
 
 
 def visible_cycles(user, queryset, email_field='reviewee__email'):

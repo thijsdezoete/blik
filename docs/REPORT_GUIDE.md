@@ -81,7 +81,7 @@ The PDF condenses the web report onto A4 pages:
 1. **Cover** - your name, the questionnaire, the organization, the review date and who gave feedback (for example "3 peers" and "1 manager"). A group below the anonymity threshold shows "Insufficient responses" instead of a count.
 2. **Summary** - your overall rating, your self-assessment with its gap to the others, your skill level and your agency level. Then the key points: perception gaps, self vs others, strengths, areas to grow and the next step. Then a table with your score per section.
 3. **Your Development Path** - your Dreyfus skill level with the steps to the next level, and your agency level and performance matrix when the questionnaire measures them.
-4. **Performance Overview** - a radar chart with one line per reviewer group and your self-assessment as a dashed line, plus one small radar per group. This page appears when the questionnaire has three or more sections.
+4. **Performance Overview** - a radar chart with one line per reviewer group and your self-assessment as a dashed line, plus one small radar per group. This page appears when two or more sections have a score. With two sections, the radar has a third axis, "Overall": the average of the two sections.
 5. **How others see you** - the perception gap with "You see yourself" and "Others see you", and a table per section with the others' score, your self score, the gap and the score of each reviewer group.
 6. **Detailed Feedback** - per question, a table with one row per reviewer group: the number of responses, the average and how many reviewers gave each answer. Your own answer is set against the others' average. Text answers are listed per group.
 

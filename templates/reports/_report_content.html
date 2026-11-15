@@ -143,6 +143,9 @@
     <div class="chart-container" style="position: relative; margin: 2rem 0; padding: 1.5rem; background: var(--bg-card); border-radius: 12px; box-shadow: var(--shadow-sm);">
         <canvas id="sectionRadarChart" style="max-height: 500px;"></canvas>
     </div>
+    {% if radar_has_overall %}
+    <p class="radar-note">{% trans '“Overall” is the average of the sections, added so that the chart has three points.' %}</p>
+    {% endif %}
 </div>
 
 <div class="report-section">

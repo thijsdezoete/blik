@@ -40,8 +40,12 @@
     /**
      * Render section radar chart
      * Shows section averages with self vs others overlay
+     *
+     * radarAxes holds the axes of the radar, as reports.services.radar_axes() decides them:
+     * the sections, with an added axis when there are two. null means no radar: bars are drawn.
+     * Without radarAxes, every section is an axis.
      */
-    window.renderSectionRadarChart = function(canvasId, chartData) {
+    window.renderSectionRadarChart = function(canvasId, chartData, radarAxes) {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
 
@@ -54,13 +58,23 @@
             return;
         }
 
+        const axes = radarAxes === undefined ? sections : radarAxes;
+
+        // On mobile, and when there is no radar, use horizontal bar chart instead
+        if (isMobile() || axes === null) {
+            renderMobileSectionChart(canvasId, sectionNames, sections, colors);
+            return;
+        }
+
+        const axisNames = Object.keys(axes);
+
         // Prepare datasets
         const datasets = [];
         const categories = ['self', 'peer', 'manager', 'direct_report'];
 
         categories.forEach(category => {
-            const data = sectionNames.map(section =>
-                sections[section][category] || null
+            const data = axisNames.map(axis =>
+                axes[axis][category] || null
             );
 
             // Only add if there's data
@@ -79,17 +93,11 @@
             }
         });
 
-        // On mobile, use horizontal bar chart instead
-        if (isMobile()) {
-            renderMobileSectionChart(canvasId, sectionNames, sections, colors);
-            return;
-        }
-
         // Radar chart configuration
         new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: sectionNames,
+                labels: axisNames,
                 datasets: datasets
             },
             options: {

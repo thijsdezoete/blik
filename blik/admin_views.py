@@ -1292,6 +1292,9 @@ def questionnaire_edit(request, questionnaire_uuid):
 
                         if not option_rows:
                             option_rows = [(None, label, None) for label in default_likert_scale]
+
+                        if request.POST.get('reverse_scored') == 'on':
+                            config = {'reverse_scored': True}
                     elif question_type == 'single_choice' or question_type == 'multiple_choice':
                         # Weights only count with scoring enabled
                         enable_scoring = request.POST.get('enable_scoring') == 'on'
@@ -1439,6 +1442,9 @@ def questionnaire_edit(request, questionnaire_uuid):
 
                         if not option_rows:
                             option_rows = [(None, label, None) for label in default_likert_scale]
+
+                        if request.POST.get('reverse_scored') == 'on':
+                            config = {'reverse_scored': True}
                     elif question_type == 'single_choice' or question_type == 'multiple_choice':
                         # Weights only count with scoring enabled
                         enable_scoring = request.POST.get('enable_scoring') == 'on'
@@ -1466,9 +1472,10 @@ def questionnaire_edit(request, questionnaire_uuid):
                             config = {'min': 1, 'max': 100, 'step': 1}
                             messages.warning(request, _('Invalid scale values. Using defaults (1-100, step 1).'))
 
-                    # The dialog doesn't show the Dreyfus weights, so keep them
-                    if 'dreyfus_mapping' in previous_config:
-                        config['dreyfus_mapping'] = previous_config['dreyfus_mapping']
+                    # The dialog doesn't show the Dreyfus weights and the chart settings, so keep them
+                    for key in ('dreyfus_mapping', 'chart_weight', 'exclude_from_charts'):
+                        if key in previous_config:
+                            config[key] = previous_config[key]
 
                     question.config = config
                     question.labels = labels

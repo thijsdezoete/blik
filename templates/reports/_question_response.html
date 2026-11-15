@@ -153,10 +153,10 @@
                     {# LIKERT QUESTIONS - Show sentiment summary + distribution #}
                     {% elif question_data.question_type == 'likert' %}
                         {% if cat_data.distribution %}
-                            {# Calculate sentiment (positive = the two highest options) #}
+                            {# Calculate sentiment (positive = the two highest options, the two lowest of a reverse-scored question) #}
                             {% with scale=question_data|report_options %}
                             {% with total_responses=cat_data.count %}
-                            {% with positive_count=cat_data.distribution|likert_positive_count:scale %}
+                            {% with positive_count=cat_data.distribution|likert_positive_count:question_data %}
                             {% with positive_pct=positive_count|percentage:total_responses %}
 
                             {% if positive_pct >= 70 %}

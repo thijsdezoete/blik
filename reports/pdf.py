@@ -25,7 +25,6 @@ from .pdf_charts import radar_chart
 from .pdf_summary import executive_summary
 
 FONT_DIR = settings.BASE_DIR / 'static' / 'fonts' / 'roboto'
-RADAR_MIN_SECTIONS = 3  # a radar of one or two axes is a line, the bars show those
 # One colour per reviewer group in the radars; self is a dashed dark outline
 GROUP_COLOURS = {'self': '#111827', 'peer': '#4f46e5', 'manager': '#0891b2', 'direct_report': '#db2777'}
 
@@ -151,10 +150,10 @@ def _pdf_context(report):
     data = context['report_data']
     insights = data.get('insights') or {}
     comparison = data.get('comparison') or {}
-    section_scores = (data.get('charts') or {}).get('section_scores') or {}
 
     figures = executive_summary(context)
-    radar = radar_chart(section_scores) if len(section_scores) >= RADAR_MIN_SECTIONS else None
+    # One section gets no radar: the section table shows its scores
+    radar = radar_chart(context['radar_axes']) if context['radar_axes'] else None
     if figures['overall'] and figures['overall']['trend']:
         figures['overall']['trend_class'] = _trend_class(figures['overall']['trend'])
 
@@ -367,8 +366,8 @@ def _detail_question(question):
             distribution = group.get('distribution') or {}
             row['cells'] = [_cell(distribution.get(key, 0), count) for key, _label in columns]
             if qtype == 'likert':
-                # The share in the two highest options, which the web report calls positive
-                row['positive'] = percentage(likert_positive_count(distribution, options), count)
+                # The share in the two best options, which the web report calls positive
+                row['positive'] = percentage(likert_positive_count(distribution, question), count)
         rows.append(row)
 
     # As on the web, the self-assessment is compared with the others: it is not one more reviewer group

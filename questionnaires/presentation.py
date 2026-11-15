@@ -34,7 +34,10 @@ def questionnaire_report_features(questionnaire):
             if question.question_type == 'rating' or options:
                 available.add('distribution')
 
-            has_score = question.question_type in ('rating', 'scale')
+            # A likert answer scores by the position of its option, which takes two options (see likert_score)
+            has_score = question.question_type in ('rating', 'scale') or (
+                question.question_type == 'likert' and len(options) >= 2
+            )
             has_nonzero_score = has_score
             if question.question_type in ('single_choice', 'multiple_choice') and config.get('scoring_enabled'):
                 weights = [
@@ -44,7 +47,6 @@ def questionnaire_report_features(questionnaire):
                 # The Dreyfus service ignores zero averages; charts still display them.
                 has_nonzero_score = any(weight != 0 for weight in weights)
 
-            # Likert currently has distributions but no report averages.
             if not has_score:
                 continue
 

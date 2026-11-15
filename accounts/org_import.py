@@ -15,9 +15,11 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import transaction
 from django.db.models import Max
+from django.db.models.functions import Lower
 from django.utils.translation import gettext as _, gettext_lazy
 
-from accounts.models import OrgUnit, OrgUnitMembership, Reviewee
+from accounts.models import OrgUnit, OrgUnitMembership, Reviewee, UserProfile
+from accounts.permissions import can_manage_organization, is_organization_admin
 from subscriptions.utils import check_employee_limit
 
 FIELDS = [
@@ -209,7 +211,8 @@ def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False
     the file stays where they are. A unit that loses all its members is removed.
 
     People who are not in the file stay as they are, or are deactivated with
-    `deactivate_missing`. Nothing is ever deleted from a person.
+    `deactivate_missing`. Admins of the organization always stay as they are.
+    Nothing is ever deleted from a person.
 
     With `dry_run` nothing is written; the stats say what the import would do.
     `stats['people']` has one row per person who changes, with their place in
@@ -251,9 +254,17 @@ def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False
         memberships = OrgUnitMembership.objects.filter(unit__organization=organization)
         had_members = set(memberships.filter(role=MEMBER).values_list('unit_id', flat=True))
 
+        # An admin who is not in the file is not missing: the import never deactivates
+        # the person who runs it, or another admin of the organization.
+        admins = {
+            (profile.user.email or '').lower()
+            for profile in UserProfile.objects.filter(organization=organization).select_related('user')
+            if is_organization_admin(profile.user) or can_manage_organization(profile.user)
+        }
         missing = (Reviewee.objects.filter(organization=organization, is_active=True)
                    .exclude(pk__in=[p.pk for p in people.values()])
-                   .exclude(email__icontains='@deleted.invalid').order_by('name'))
+                   .exclude(email__icontains='@deleted.invalid')
+                   .annotate(email_lower=Lower('email')).exclude(email_lower__in=admins).order_by('name'))
         missing_people = list(missing)
         if deactivate_missing:
             stats['deactivated'] = len(missing_people)

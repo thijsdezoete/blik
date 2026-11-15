@@ -17,11 +17,9 @@ from core.languages import recipient_language, user_language
 from core.url import get_absolute_url
 from notifications.log import send_logged
 from reviews.models import ReviewCycle, ReviewerToken
-from .utils import billing_enabled
+from .utils import SUPPORT_EMAIL, billing_enabled
 
 logger = logging.getLogger(__name__)
-
-SUPPORT_EMAIL = 'support@blik360.com'
 
 # Days we keep an organization's data after its subscription ends (see the pricing page).
 DATA_RETENTION_DAYS = 30

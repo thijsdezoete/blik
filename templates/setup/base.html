@@ -36,33 +36,35 @@
         })();
     </script>
 </head>
-<body class="setup-page">
-    <div class="setup-container">
-        <div class="header">
-            <h1>{% trans 'Blik Setup Wizard' %}</h1>
-            <p>{% block subtitle %}{% trans "Let's get your 360 feedback system ready" %}{% endblock %}</p>
-
-            {% if step and total_steps %}
-            <div class="step-indicator">
-                {% blocktrans trimmed %}Step {{ step }} of {{ total_steps }}{% endblocktrans %}
+<body>
+    <div class="container setup-container">
+        <div class="page-header">
+            <div>
+                <h1>{% trans 'Blik Setup Wizard' %}</h1>
+                <p class="page-description">{% block subtitle %}{% trans "Let's get your 360 feedback system ready" %}{% endblock %}</p>
             </div>
+        </div>
+
+        {% if step and total_steps %}
+        <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" style="width: {{ progress_percentage|default:0 }}%"></div>
             </div>
-            {% endif %}
+            <div class="progress-text">{% blocktrans trimmed %}Step {{ step }} of {{ total_steps }}{% endblocktrans %}</div>
         </div>
+        {% endif %}
 
-        <div class="content">
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            {% endif %}
-
-            {% block content %}{% endblock %}
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
     </div>
 </body>
 </html>

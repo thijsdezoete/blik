@@ -213,93 +213,6 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ==================== Layout: Setup Pages ==================== */
-body.setup-page {
-    background: var(--primary-600);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.setup-container {
-    background: var(--bg-card);
-    border-radius: 16px;
-    box-shadow: var(--shadow-lg);
-    padding: 60px 40px;
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
-}
-
-.setup-title {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #667eea;
-    margin-bottom: 20px;
-}
-
-.setup-subtitle {
-    font-size: 1.25rem;
-    color: #666;
-    margin-bottom: 40px;
-}
-
-.setup-status {
-    display: inline-block;
-    background: var(--success);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 30px;
-}
-
-.setup-info {
-    background: var(--bg-light);
-    border-radius: 12px;
-    padding: 30px;
-    margin-bottom: 30px;
-    text-align: left;
-}
-
-.setup-info h2 {
-    font-size: 1.1rem;
-    color: var(--text-primary);
-    margin-bottom: 15px;
-}
-
-.setup-info ul {
-    list-style: none;
-}
-
-.setup-info li {
-    padding: 8px 0;
-    color: var(--text-secondary);
-    padding-left: 24px;
-    position: relative;
-}
-
-.setup-info li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--success);
-    border: 2px solid var(--success);
-}
-
-.setup-footer {
-    margin-top: 30px;
-    color: var(--text-tertiary);
-    font-size: 0.9rem;
-}
-
 /* ==================== Navigation ==================== */
 .navbar {
     background: var(--bg-card);
@@ -865,34 +778,6 @@ body.setup-page {
         padding: 0.625rem 1.25rem;
         font-size: 0.875rem;
     }
-}
-
-/* Setup page buttons */
-.setup-button {
-    display: inline-block;
-    background: #667eea;
-    color: white;
-    padding: 14px 32px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: background 0.3s ease;
-    margin: 10px;
-    border: none;
-    cursor: pointer;
-}
-
-.setup-button:hover {
-    background: #5568d3;
-}
-
-.setup-button.secondary {
-    background: #6b7280;
-}
-
-.setup-button.secondary:hover {
-    background: #4b5563;
 }
 
 /* ==================== Cards ==================== */
@@ -2195,217 +2080,65 @@ body.setup-page {
     transform: translateY(0);
 }
 
-/* ============================================
-   Setup Wizard Styles
-   ============================================ */
-
-.setup-page .header {
-    background: var(--primary-color);
-    color: white;
-    padding: 30px;
-    text-align: center;
+/* ==================== Setup Wizard ==================== */
+/* The wizard is made of the parts of the app: page-header,
+   progress-container, card, form-control, btn, alert. These rules are the
+   rest. */
+.setup-container {
+    max-width: 42rem;
 }
 
-.setup-page .header h1 {
-    font-size: 28px;
-    margin-bottom: 8px;
-    color: white;
+.setup-container .card {
+    margin-bottom: 1.5rem;
 }
 
-.setup-page .header p {
-    font-size: 14px;
-    opacity: 0.9;
-    color: white;
+.setup-container a:not(.btn) {
+    color: var(--primary-600);
 }
 
-.setup-page .progress-bar {
-    background: rgba(255, 255, 255, 0.2);
-    height: 4px;
-    margin-top: 20px;
-    border-radius: 2px;
-    overflow: hidden;
+/* On a phone a long button text continues on a second line */
+.setup-container .btn {
+    white-space: normal;
 }
 
-.setup-page .progress-fill {
-    background: white;
-    height: 100%;
-    transition: width 0.3s ease;
-}
-
-.setup-page .content {
-    padding: 40px;
-    background: var(--bg-primary);
-}
-
-.setup-page .help-text {
-    display: block;
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-top: 5px;
-}
-
-.setup-page .form-check {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.setup-page .form-check-input {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-.setup-page .button-group {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-}
-
-.setup-page .errorlist {
+.setup-container .errorlist {
     list-style: none;
-    color: #dc3545;
-    font-size: 14px;
-    margin-top: 5px;
+    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--danger-600);
 }
 
-[data-theme="dark"] .setup-page .errorlist {
-    color: #f87171;
-}
-
-.setup-page .errorlist li {
-    margin-bottom: 3px;
-}
-
-.setup-page .step-indicator {
-    text-align: center;
-    font-size: 14px;
-    color: white;
-    opacity: 0.9;
-    margin-top: 10px;
-}
-
-.setup-page .next-steps {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
-}
-
-.setup-page .next-steps h3 {
-    margin-bottom: 15px;
-    color: var(--primary-color);
-}
-
-.setup-page .next-steps ul {
-    list-style: none;
-}
-
-.setup-page .next-steps li {
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.setup-page .next-steps li:last-child {
-    border-bottom: none;
-}
-
-.setup-page .next-steps a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.setup-page .next-steps a:hover {
-    text-decoration: underline;
-}
-
-.setup-page .setup-container {
-    background: var(--bg-primary);
-}
-
-.setup-page .page-title {
-    margin-bottom: 20px;
-    color: var(--text-primary);
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.setup-page .page-description {
-    margin-bottom: 25px;
-    color: var(--text-secondary);
-    font-size: 14px;
-}
-
-.setup-page .info-card {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: var(--bg-card);
-    border-radius: 8px;
-    border-left: 4px solid var(--primary);
-    box-shadow: var(--shadow-sm);
-}
-
-.setup-page .info-card h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 16px;
-    color: var(--text-primary);
-}
-
-.setup-page .info-card p {
-    margin: 0 0 15px 0;
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.setup-page .separator {
-    margin-bottom: 20px;
-    text-align: center;
-    color: var(--text-tertiary);
-    font-size: 14px;
-}
-
-.setup-page .config-summary {
-    background: var(--bg-card);
+/* The managed email service that a hosted customer can choose in step 3 */
+.setup-option {
+    padding: 1rem 1.25rem;
+    background: var(--bg-light);
     border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
     border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 25px;
 }
 
-.setup-page .config-summary h3 {
-    margin-bottom: 15px;
-    color: var(--text-primary);
-}
-
-.setup-page .config-summary table {
-    width: 100%;
-}
-
-.setup-page .config-summary td {
-    padding: 8px 0;
-}
-
-.setup-page .config-summary td:first-child {
+.setup-steps {
+    list-style: none;
     color: var(--text-secondary);
 }
 
-.setup-page .config-summary td:last-child {
-    font-weight: 600;
+.setup-steps li + li {
+    margin-top: 1rem;
+}
+
+.setup-steps strong {
     color: var(--text-primary);
 }
 
-.setup-page .success-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--success);
-    margin: 0 auto 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* The tick on the green circle. There is no token for text on a colour. */
+.setup-container .complete-icon {
+    color: var(--bg-card);
+}
+
+/* The summary: two items in a row, one in a row on a phone */
+.setup-container .meta-item {
+    flex: 1 1 14rem;
+    overflow-wrap: anywhere;
 }
 
 /* ==================== Mobile Utilities ==================== */

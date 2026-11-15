@@ -6,90 +6,98 @@
 {% block subtitle %}{% trans 'Your Blik instance is ready to use!' %}{% endblock %}
 
 {% block content %}
-<div class="success-icon">
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-    </svg>
+<div class="card">
+    <div class="card-body text-center">
+        <div class="complete-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+
+        <h2 class="card-title">{% trans 'Setup Complete!' %}</h2>
+        <p class="page-description mb-1">
+            {% trans 'Congratulations! Your Blik 360-degree feedback system is now configured and ready to use.' %}
+        </p>
+
+        <a href="/dashboard/" class="btn btn-primary">
+            {% trans 'Go to Admin Dashboard' %}
+        </a>
+    </div>
 </div>
 
-<h2 class="page-title" style="text-align: center; color: var(--success);">{% trans 'Setup Complete!' %}</h2>
-<p class="page-description" style="text-align: center;">
-    {% trans 'Congratulations! Your Blik 360-degree feedback system is now configured and ready to use.' %}
-</p>
-
-<div class="config-summary">
-    <h3>{% trans 'Configuration Summary' %}</h3>
-    <table>
-        <tr>
-            <td>{% trans 'Administrator:' %}</td>
-            <td>{{ user.username }}</td>
-        </tr>
-        <tr>
-            <td>{% trans 'Email:' %}</td>
-            <td>{{ user.email }}</td>
-        </tr>
-        <tr>
-            <td>{% trans 'Organization:' %}</td>
-            <td>{{ organization.name }}</td>
-        </tr>
-        <tr>
-            <td>{% trans 'Email Configured:' %}</td>
-            <td>
-                {% if organization.smtp_host %}
-                {% blocktrans trimmed with host=organization.smtp_host %}Yes ({{ host }}){% endblocktrans %}
-                {% else %}
-                {% trans 'Not yet configured' %}
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{% trans 'Configuration Summary' %}</h3>
+    </div>
+    <div class="card-body">
+        <dl class="report-meta">
+            <div class="meta-item">
+                <dt class="meta-label">{% trans 'Administrator:' %}</dt>
+                <dd class="meta-value">{{ user.username }}</dd>
+            </div>
+            <div class="meta-item">
+                <dt class="meta-label">{% trans 'Email:' %}</dt>
+                <dd class="meta-value">{{ user.email }}</dd>
+            </div>
+            <div class="meta-item">
+                <dt class="meta-label">{% trans 'Organization:' %}</dt>
+                <dd class="meta-value">{{ organization.name }}</dd>
+            </div>
+            <div class="meta-item">
+                <dt class="meta-label">{% trans 'Email Configured:' %}</dt>
+                <dd class="meta-value">
+                    {% if organization.smtp_host %}
+                    {% blocktrans trimmed with host=organization.smtp_host %}Yes ({{ host }}){% endblocktrans %}
+                    {% else %}
+                    {% trans 'Not yet configured' %}
+                    {% endif %}
+                </dd>
+            </div>
+        </dl>
+    </div>
 </div>
 
-<div class="next-steps">
-    <h3>{% trans 'Next Steps' %}</h3>
-    <ul>
-        <li>
-            <strong>{% trans 'Access admin dashboard:' %}</strong><br>
-            {% blocktrans trimmed with dashboard_url='/dashboard/' %}<a href="{{ dashboard_url }}" target="_blank">Go to Admin Dashboard</a> to manage reviewees, questionnaires, and review cycles{% endblocktrans %}
-        </li>
-        <li>
-            <strong>{% trans 'Create your first reviewee:' %}</strong><br>
-            {% trans 'Add people who will receive 360-degree feedback from the dashboard' %}
-        </li>
-        <li>
-            <strong>{% trans 'Start a review cycle:' %}</strong><br>
-            {% trans 'Create a new review cycle and send invitations to reviewers' %}
-        </li>
-    </ul>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{% trans 'Next Steps' %}</h3>
+    </div>
+    <div class="card-body">
+        <ul class="setup-steps">
+            <li>
+                <strong>{% trans 'Access admin dashboard:' %}</strong><br>
+                {% blocktrans trimmed with dashboard_url='/dashboard/' %}<a href="{{ dashboard_url }}" target="_blank">Go to Admin Dashboard</a> to manage reviewees, questionnaires, and review cycles{% endblocktrans %}
+            </li>
+            <li>
+                <strong>{% trans 'Create your first reviewee:' %}</strong><br>
+                {% trans 'Add people who will receive 360-degree feedback from the dashboard' %}
+            </li>
+            <li>
+                <strong>{% trans 'Start a review cycle:' %}</strong><br>
+                {% trans 'Create a new review cycle and send invitations to reviewers' %}
+            </li>
+        </ul>
+    </div>
 </div>
 
-<div class="info-card" style="margin-top: 25px;">
-    <h3>{% trans 'Want to explore first?' %}</h3>
-    <p>
-        {% trans 'Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens.' %}
-    </p>
-    <form method="post" style="margin: 0;">
-        {% csrf_token %}
-        <input type="hidden" name="generate_test_data" value="1">
-        <button type="submit" class="btn btn-primary" style="margin: 0;">
-            {% trans 'Generate Test Data' %}
-        </button>
-    </form>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{% trans 'Want to explore first?' %}</h3>
+    </div>
+    <div class="card-body">
+        <p class="page-description mb-1">
+            {% trans 'Generate test data to explore the system without affecting your production data. This creates sample reviewees and a review cycle with tokens.' %}
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="generate_test_data" value="1">
+            <button type="submit" class="btn btn-secondary">
+                {% trans 'Generate Test Data' %}
+            </button>
+        </form>
+    </div>
 </div>
 
-<div class="button-group" style="margin-top: 30px;">
-    <div></div>
-    <a href="/dashboard/" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
-        {% trans 'Go to Admin Dashboard' %}
-    </a>
-</div>
-
-<style>
-    .setup-help a {
-        color: var(--primary-color);
-    }
-</style>
-<p class="setup-help" style="text-align: center; margin-top: 30px; color: var(--text-secondary); font-size: 14px;">
+<p class="page-description text-center">
     {% blocktrans trimmed with docs_url='https://github.com/yourusername/blik' issues_url='https://github.com/yourusername/blik/issues' %}
     Need help? Check out the <a href="{{ docs_url }}">documentation</a> or <a href="{{ issues_url }}">report an issue</a>.
     {% endblocktrans %}

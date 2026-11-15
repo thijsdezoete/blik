@@ -6,64 +6,67 @@
 {% block subtitle %}{% trans 'Create your administrator account' %}{% endblock %}
 
 {% block content %}
-<h2 style="margin-bottom: 20px; color: #333;">{% trans 'Create Administrator Account' %}</h2>
-<p style="margin-bottom: 25px; color: #666;">
-    {% trans 'This account will have full access to configure and manage your Blik instance.' %}
-</p>
-
-<form method="post" novalidate>
-    {% csrf_token %}
-
-    {% if form.non_field_errors %}
-    <div class="alert alert-error">
-        {{ form.non_field_errors }}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">{% trans 'Create Administrator Account' %}</h2>
     </div>
-    {% endif %}
+    <div class="card-body">
+        <p class="page-description mb-1">
+            {% trans 'This account will have full access to configure and manage your Blik instance.' %}
+        </p>
 
-    <div class="form-group">
-        <label for="id_email">{{ form.email.label }}</label>
-        {{ form.email }}
-        {% if form.email.errors %}
-            <ul class="errorlist">
-            {% for error in form.email.errors %}
-                <li>{{ error }}</li>
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-error">{{ error }}</div>
             {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.email.help_text }}</small>
-    </div>
 
-    <div class="form-group">
-        <label for="id_password">{{ form.password.label }}</label>
-        {{ form.password }}
-        {% if form.password.errors %}
-            <ul class="errorlist">
-            {% for error in form.password.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.password.help_text }}</small>
-    </div>
+            <div class="form-group">
+                <label class="form-label" for="id_email">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.email.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.email.help_text }}</small>
+            </div>
 
-    <div class="form-group">
-        <label for="id_password_confirm">{{ form.password_confirm.label }}</label>
-        {{ form.password_confirm }}
-        {% if form.password_confirm.errors %}
-            <ul class="errorlist">
-            {% for error in form.password_confirm.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        <small class="help-text">{{ form.password_confirm.help_text }}</small>
-    </div>
+            <div class="form-group">
+                <label class="form-label" for="id_password">{{ form.password.label }}</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.password.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.password.help_text }}</small>
+            </div>
 
-    <div class="button-group">
-        <div></div>
-        <button type="submit" class="btn btn-primary">
-            {% trans 'Create Account & Continue' %} →
-        </button>
+            <div class="form-group">
+                <label class="form-label" for="id_password_confirm">{{ form.password_confirm.label }}</label>
+                {{ form.password_confirm }}
+                {% if form.password_confirm.errors %}
+                    <ul class="errorlist">
+                    {% for error in form.password_confirm.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <small class="help-text">{{ form.password_confirm.help_text }}</small>
+            </div>
+
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">
+                    {% trans 'Create Account & Continue' %} →
+                </button>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock %}

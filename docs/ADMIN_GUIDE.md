@@ -142,7 +142,7 @@ The org chart records who is in which unit and who manages it. Blik uses it to s
 
 ### How Units Work
 
-- A **unit** is a department, a team or a professor's area. It has a name. Unit names are unique in an organization.
+- A **unit** is a department or a team. It has a name. Unit names are unique in an organization.
 - A unit has a **manager row** and a **member row**. A person is in a unit once, as manager or as member.
 - Units **stack**: when the manager of unit B is a member of unit A, the chart shows B under A. So one person can manage one unit and be a member of another.
 - People who are in no unit are listed under **Not in a unit**.
@@ -173,9 +173,9 @@ The file has one row per person. Give the email column and a name column, or a f
 
 | Name | Email | Department | Manager |
 |------|-------|------------|---------|
-| Anna Berg | anna@example.com | Optics | |
-| Tom Vos | tom@example.com | Optics | anna@example.com |
-| Lea Kuhn | lea@example.com | Optics | Anna Berg |
+| Anna Berg | anna@example.com | Engineering | |
+| Tom Vos | tom@example.com | Engineering | anna@example.com |
+| Lea Kuhn | lea@example.com | Engineering | Anna Berg |
 
 Blik recognises common column names in English, German and Dutch, in any letter case: for example `Name`, `Vollständiger Name`, `Naam`; `First name`, `Vorname`, `Voornaam`; `Last name`, `Nachname`, `Achternaam`; `Email`, `E-Mail-Adresse`, `E-mailadres`; `Department`, `Team`, `Abteilung`, `Afdeling`; `Manager`, `Supervisor`, `Reports to`, `Vorgesetzter`, `Leidinggevende`. Other column names work too: map them by hand in step 2.
 

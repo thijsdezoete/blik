@@ -4,7 +4,7 @@ Any CSV works: the admin maps its columns to name (or first and last name),
 email, department and manager. The manager column can hold an email or a name.
 Each person who is someone's manager gets one unit: they are its manager, the
 people who report to them are its members. Units stack by themselves: a head of
-department is a member of the professor's unit and the manager of their own.
+department is a member of the director's unit and the manager of their own.
 """
 import csv
 import io

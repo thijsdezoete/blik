@@ -1973,7 +1973,7 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
                 for code in active_categories
             }
             # Nobody but the reviewee: a worker in an upward run,
-            # a professor in a peer run. No cycle, no lone
+            # the person at the top in a peer run. No cycle, no lone
             # self-assessment, no credit spent.
             if not any(emails for code, emails in email_assignments.items() if code != 'self'):
                 unplaced_count += 1

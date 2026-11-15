@@ -334,7 +334,7 @@
      * picker's look and keys: one autocomplete style across the app.
      *
      *   <div data-suggest-field data-field-name="department" data-input-id="department"
-     *        data-options='["Optics","Lasers"]' data-placeholder="…"></div>
+     *        data-options='["Engineering","Sales"]' data-placeholder="…"></div>
      *
      * The text itself is the value: the field submits as `data-field-name`.
      */

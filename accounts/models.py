@@ -193,7 +193,7 @@ class Reviewee(TimeStampedModel):
 
 class OrgUnit(TimeStampedModel):
     """
-    A unit in the org chart: a department, a professor's area, a team.
+    A unit in the org chart: a department or a team.
 
     A unit has a manager row (row 0) and a member row (row 1). Units stack:
     when the manager of unit B is a member of unit A, B shows under A. So a

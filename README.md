@@ -168,6 +168,9 @@ startup check `reports.E001` stops every `manage.py` command.
 
 ### Translations
 
+Blik is translated on [Hosted Weblate](https://hosted.weblate.org/engage/blik360/). To help with a
+translation, go there. You do not need a development setup.
+
 After changing texts, update the catalogues with
 `docker compose exec web python manage.py update_translations` instead of editing them by hand.
 See the [Translation Guide](docs/TRANSLATIONS.md) for the workflow and the German terms.

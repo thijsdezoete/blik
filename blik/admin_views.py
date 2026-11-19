@@ -2799,7 +2799,7 @@ def settings_view(request):
     # Fields the environment owns are read-only here — setup_organization
     # rewrites them on every container start, so an edit made here would
     # silently disappear on the next restart.
-    locked = env_managed_fields()
+    locked = env_managed_fields(organization)
 
     def editable(field):
         return field not in locked

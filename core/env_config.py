@@ -24,15 +24,28 @@ ENV_MANAGED_FIELDS = {
 }
 
 
-def env_managed_fields():
+# setup_organization writes this organization, and no other.
+ENV_ORGANIZATION_ID = 1
+
+
+def env_managed_fields(organization=None):
     """
     Return {field: env_var} for the fields the environment currently owns.
 
     An env var that is set but empty does not count as owning the field —
     that is how you hand a field back to the UI without editing compose files.
+
+    With an organization: the fields the environment owns of that organization.
+    On a service with more than one organization, ORGANIZATION_NAME names only
+    the organization that setup_organization writes. The others keep their own
+    name. The email settings stay locked for all of them: every organization
+    sends through the mail server of the service.
     """
-    return {
+    fields = {
         field: var
         for field, var in ENV_MANAGED_FIELDS.items()
         if os.environ.get(var)
     }
+    if organization is not None and organization.pk != ENV_ORGANIZATION_ID:
+        fields.pop('name', None)
+    return fields

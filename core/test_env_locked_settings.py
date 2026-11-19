@@ -39,6 +39,17 @@ class EnvManagedFieldsTests(TestCase):
         # An empty var hands the field back to the UI without editing compose files.
         self.assertNotIn('smtp_port', locked)
 
+    def test_the_name_is_locked_only_for_the_organization_the_environment_owns(self):
+        # setup_organization writes one organization. On a service with more, the others name themselves.
+        owned = Organization(pk=1, name='Blik')
+        other = Organization(pk=2, name='anna@acme.example')
+
+        with only_env(ORGANIZATION_NAME='Blik', EMAIL_HOST='smtp.acme.example'):
+            self.assertIn('name', env_managed_fields(owned))
+            self.assertNotIn('name', env_managed_fields(other))
+            # Every organization sends through the mail server of the service.
+            self.assertIn('smtp_host', env_managed_fields(other))
+
 
 class SettingsViewEnvLockTests(TestCase):
     def setUp(self):

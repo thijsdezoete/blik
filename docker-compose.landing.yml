@@ -14,6 +14,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.landing
+    # The name the container gives the mail server and puts in each Message-ID. Not set: the container id.
+    hostname: ${MAIL_HOSTNAME:-}
     command: gunicorn --bind 0.0.0.0:${LANDING_PORT:-8001} --workers 2 --timeout 60 --access-logfile - --error-logfile - --log-level info landing_wsgi:application
     volumes:
       - ./:/app

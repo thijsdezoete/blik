@@ -19,6 +19,8 @@ services:
 
   web:
     build: .
+    # The name the container gives the mail server and puts in each Message-ID. Not set: the container id.
+    hostname: ${MAIL_HOSTNAME:-}
     command: sh -c "gunicorn --bind 0.0.0.0:$${PORT:-8000} --workers 3 --timeout 120 blik.wsgi:application"
     volumes:
       - ./:/app

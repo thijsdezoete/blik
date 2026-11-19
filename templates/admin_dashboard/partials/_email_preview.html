@@ -1,0 +1,9 @@
+{% load i18n %}{% comment %}
+An email as it goes out: the subject and the HTML. static/js/email_preview.js fills it, and fills it
+again when a field with data-preview-field in the same form or dialog changes.
+Parameters: kind ('team' or 'reviewer'), frame_id, with_message (the email has a personal message), lazy.
+{% endcomment %}
+<div class="email-preview" data-email-preview="{% url 'invitation_preview' %}?kind={{ kind }}{% if with_message %}&amp;message=%E2%80%A6{% endif %}"{% if lazy %} data-email-preview-lazy{% endif %}>
+    <p class="email-preview-subject"><span class="help-text">{% trans 'Subject:' %}</span> <strong data-email-subject></strong></p>
+    <iframe{% if frame_id %} id="{{ frame_id }}"{% endif %} class="email-preview-frame" sandbox="allow-same-origin" title="{% trans 'The email as it goes out' %}"></iframe>
+</div>

@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from django.core.management.color import no_style
 from django.db import connection
 
+from core.env_config import ENV_ORGANIZATION_ID
 from core.languages import is_language
 from core.models import Organization
 
@@ -54,10 +55,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Check if org already exists
         try:
-            org = Organization.objects.get(id=1)
+            org = Organization.objects.get(id=ENV_ORGANIZATION_ID)
             created = False
         except Organization.DoesNotExist:
-            org = Organization(id=1)
+            org = Organization(id=ENV_ORGANIZATION_ID)
             created = True
 
         if created:

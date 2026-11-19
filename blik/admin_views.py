@@ -46,7 +46,7 @@ from accounts.permissions import (
 )
 from api.models import APIToken, WebhookEndpoint
 from core.env_config import env_managed_fields
-from core.languages import default_language, is_language, language_name, recipient_language
+from core.languages import default_language, is_language, language_name
 from core.gdpr import GDPRDeletionService
 from core.models import Organization
 from productreviews.models import ProductReview, anonymous_name
@@ -2799,7 +2799,7 @@ def settings_view(request):
     # Fields the environment owns are read-only here — setup_organization
     # rewrites them on every container start, so an edit made here would
     # silently disappear on the next restart.
-    locked = env_managed_fields()
+    locked = env_managed_fields(organization)
 
     def editable(field):
         return field not in locked
@@ -3891,12 +3891,7 @@ def org_chart(request):
         managers = context['managers_without_account'] = managers_without_account(org)
         context['managers_to_invite'] = sum(not m.invited for m in managers)
         if context['managers_to_invite']:
-            # The email as it goes out, for the preview. The script on the page
-            # puts the text of the message field in place of the placeholder.
-            from accounts.invitation_views import invitation_email
             context['invite_language_name'] = language_name(default_language(org))
-            with translation.override(recipient_language(None, organization=org)):
-                context['invite_preview_html'] = invitation_email(org, request.user, '#', message='…')[2]
     return render(request, 'admin_dashboard/org_chart/index.html', context)
 
 

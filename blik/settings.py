@@ -118,6 +118,7 @@ TEMPLATES = [
                 'landing.context_processors.organization_metadata',
                 'blik.context_processors.stripe_settings',
                 'blik.context_processors.billing',
+                'blik.context_processors.sender_identity',
             ],
         },
     },

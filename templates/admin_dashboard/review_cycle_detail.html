@@ -367,7 +367,7 @@
                                     {% if token.reviewer_email and not token.invitation_sent_at and not token.completed_at %}
                                     <div style="display: flex; gap: 0.5rem;">
                                         {% if not token.invitation_queued_at or token.email_error %}
-                                        <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: inline; margin: 0;">
+                                        <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: inline; margin: 0;">
                                             {% csrf_token %}
                                             <input type="hidden" name="token_id" value="{{ token.id }}">
                                             <button type="submit" class="btn btn-sm btn-primary" style="white-space: nowrap;">
@@ -442,7 +442,7 @@
 
         {% if pending_invites > 0 %}
         <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
-            <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
                 {% csrf_token %}
                 <div>
                     <div style="font-weight: 600; margin-bottom: 0.25rem;">{% blocktrans trimmed count counter=pending_invites %}{{ counter }} pending invitation{% plural %}{{ counter }} pending invitations{% endblocktrans %}</div>
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <a href="{% url 'manage_invitations' cycle.uuid %}" class="btn btn-primary">{% trans 'Manage Invitations' %}</a>
 
             {% if pending_invites > 0 %}
-            <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="margin: 0;">
+            <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
                     {% blocktrans trimmed %}Send Pending Invites ({{ pending_invites }}){% endblocktrans %}

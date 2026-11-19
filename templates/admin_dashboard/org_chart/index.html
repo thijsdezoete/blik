@@ -135,6 +135,7 @@
             </div>
             {% if managers_to_invite %}
             <div class="oc-accounts-preview">
+            {% include 'admin_dashboard/partials/_sender_identity_fields.html' %}
             <div class="form-group">
                 <label class="form-label" for="ocInviteMessage">{% trans 'Your message (optional)' %}</label>
                 <textarea id="ocInviteMessage" name="message" class="form-control" rows="3" maxlength="2000"></textarea>
@@ -142,7 +143,7 @@
             </div>
             <p class="form-label">{% trans 'The email that each selected manager gets' %}</p>
             <p class="help-text">{% blocktrans trimmed with language=invite_language_name %}The email goes out in the language set for each person. For a person without one that is {{ language }}, the language of the organization, as shown here.{% endblocktrans %}</p>
-            <iframe id="ocInvitePreview" class="oc-invite-preview" sandbox="allow-same-origin" title="{% trans 'The email that each selected manager gets' %}" srcdoc="{{ invite_preview_html|force_escape }}"></iframe>
+            {% include 'admin_dashboard/partials/_email_preview.html' with kind='team' frame_id='ocInvitePreview' with_message=True %}
             </div>
             {% endif %}
         </div>

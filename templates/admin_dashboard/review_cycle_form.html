@@ -23,7 +23,7 @@
         </div>
     </div>
     {% endif %}
-    <form method="post" id="cycleForm">
+    <form method="post" id="cycleForm" data-sends-mail="reviewer">
         {% csrf_token %}
 
         {% if can_create_for_others %}

@@ -34,10 +34,13 @@
 
 <!-- Invite Modal -->
 <div id="invite-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
-    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;">
+    <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; max-width: 60rem; width: 90%; max-height: 90vh; overflow-y: auto;">
         <h2 style="margin-top: 0;">{% trans 'Send Invitation' %}</h2>
         <form method="post" action="{% url 'send_invitation' %}">
             {% csrf_token %}
+            <div class="invite-split">
+            <div>
+            {% include 'admin_dashboard/partials/_sender_identity_fields.html' %}
             <div class="form-group">
                 <label for="email">{% trans 'Email Address' %}</label>
                 <input type="email" id="email" name="email" class="form-control" required autofocus>
@@ -45,13 +48,19 @@
             </div>
             <div class="form-group">
                 <label for="invite-language">{% trans 'Language' %}</label>
-                <select id="invite-language" name="language" class="form-control">
+                <select id="invite-language" name="language" class="form-control" data-preview-field>
                     <option value="">{% blocktrans trimmed with language=default_language_name %}Organization default ({{ language }}){% endblocktrans %}</option>
                     {% for code, name in LANGUAGES %}
                     <option value="{{ code }}">{{ name }}</option>
                     {% endfor %}
                 </select>
                 <small class="help-text">{% trans 'Language of the invitation email' %}</small>
+            </div>
+            </div>
+            <div>
+            <p class="form-label">{% trans 'The email as it goes out' %}</p>
+            {% include 'admin_dashboard/partials/_email_preview.html' with kind='team' %}
+            </div>
             </div>
             <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
                 <button type="button" class="btn btn-secondary" onclick="document.getElementById('invite-modal').style.display='none'">{% trans 'Cancel' %}</button>

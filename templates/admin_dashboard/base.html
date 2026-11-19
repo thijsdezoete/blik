@@ -195,5 +195,7 @@
             updateIcon(next);
         });
     </script>
+    {% if sender_identity_missing %}{% include 'admin_dashboard/partials/_sender_identity_dialog.html' %}{% endif %}
+    <script src="{% static 'js/email_preview.js' %}" defer></script>
 </body>
 </html>

@@ -369,6 +369,27 @@ def send_token_email(token, reminder=False, connection=None):
         )
 
 
+def reviewer_invitation_example(organization, user):
+    """Subject and HTML of a reviewer invitation with example values, in the active language.
+
+    For the preview that shows a user what the reviewers get. send_token_email sends the real one.
+    """
+    from questionnaires.models import Questionnaire
+
+    # The first cycle of a new user is often a test on themselves, so the example is about them.
+    name = user.get_full_name() or 'Alex Jansen'
+    questionnaire = Questionnaire.objects.for_organization(organization).filter(
+        is_active=True).order_by('-is_default', 'name', 'pk').first()
+    context = {
+        'reviewee_name': name,
+        'category': dict(ReviewerToken.CATEGORY_CHOICES)['peer'],
+        'feedback_url': '#',
+        'questionnaire_name': questionnaire.translated().name if questionnaire else '',
+        'organization_name': organization.name,
+    }
+    return _('Your feedback for %(name)s') % {'name': name}, render_to_string('emails/reviewer_invitation.html', context)
+
+
 # What the reviewee is to the reviewer. The token category names the reviewer's role
 # ("direct report review" = a direct report reviews), which reads backwards to the reviewer.
 REVIEWER_RELATION = {

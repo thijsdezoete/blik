@@ -165,7 +165,7 @@
             </details>
 
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button type="submit" name="action" value="assign" class="btn btn-primary">
+                <button type="submit" name="action" value="assign" class="btn btn-primary" data-sends-mail="reviewer">
                     {% trans 'Save & Send Invitations' %}
                 </button>
                 <button type="submit" name="action" value="assign_only" class="btn btn-secondary">
@@ -245,7 +245,7 @@
 {% if assigned_tokens > sent_tokens %}
 <div class="card" style="margin-top: 2rem;">
     <div class="card-body">
-        <form method="post" action="{% url 'send_invitations' cycle.uuid %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+        <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
             {% csrf_token %}
             <div>
                 <div style="font-weight: 600; margin-bottom: 0.25rem;">{% blocktrans trimmed count counter=unsent_tokens %}{{ counter }} pending invitation{% plural %}{{ counter }} pending invitations{% endblocktrans %}</div>

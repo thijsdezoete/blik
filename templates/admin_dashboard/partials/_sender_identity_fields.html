@@ -1,0 +1,20 @@
+{% load i18n %}{% comment %}
+The names an invitation shows, asked for in the form that sends it: see accounts/sender_identity.py.
+The inputs have no id: a page can show this more than once.
+{% endcomment %}{% if sender_identity_missing %}
+<div class="sender-identity">
+    <p class="help-text">{% trans 'The email shows who sends it. Now it shows an email address where a name must be. Give the names, so that people see that the email is real.' %}</p>
+    {% if 'name' in sender_identity_missing %}
+    <div class="sender-identity-names">
+        <label class="form-group"><span class="form-label">{% trans 'Your first name' %}</span>
+            <input type="text" name="sender_first_name" class="form-control" maxlength="150" required autocomplete="given-name" data-preview-field></label>
+        <label class="form-group"><span class="form-label">{% trans 'Your last name' %}</span>
+            <input type="text" name="sender_last_name" class="form-control" maxlength="150" autocomplete="family-name" data-preview-field></label>
+    </div>
+    {% endif %}
+    {% if 'organization' in sender_identity_missing %}
+    <label class="form-group"><span class="form-label">{% trans 'Name of your organization or team' %}</span>
+        <input type="text" name="sender_organization_name" class="form-control" maxlength="255" required autocomplete="organization" data-preview-field></label>
+    {% endif %}
+</div>
+{% endif %}

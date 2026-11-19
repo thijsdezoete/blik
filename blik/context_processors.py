@@ -36,3 +36,14 @@ def billing(request):
         # A failed payment also counts as lapsed, so check it first: Stripe is still retrying.
         'billing_problem': 'unpaid' if unpaid else 'lapsed' if entitlement(organization) == 'lapsed' else None,
     }
+
+
+def sender_identity(request):
+    """The names a user must give before an invitation goes out: see accounts/sender_identity.py."""
+    from accounts.sender_identity import missing
+
+    user = getattr(request, 'user', None)
+    organization = getattr(request, 'organization', None)
+    if not organization or user is None or not user.is_authenticated:
+        return {}
+    return {'sender_identity_missing': missing(user, organization)}

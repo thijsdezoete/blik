@@ -4,7 +4,7 @@
         <div><h2 class="card-title" id="start-review-title-{{ dialog_key }}">{% trans 'Start a review' %}</h2><p class="help-text">{{ item.reviewee.name }}</p></div>
         <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}" autofocus>&times;</button></form>
     </div>
-    <form method="post" action="{% url 'quick_cycle_create' item.reviewee.uuid %}" class="reviewee-start-form">
+    <form method="post" action="{% url 'quick_cycle_create' item.reviewee.uuid %}" class="reviewee-start-form" data-sends-mail="reviewer">
         {% csrf_token %}
         {% if item.source_cycle %}<input type="hidden" name="source_cycle_uuid" value="{{ item.source_cycle.uuid }}">{% endif %}
         <input type="hidden" name="categories_submitted" value="1">

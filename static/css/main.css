@@ -2720,3 +2720,22 @@ body {
     border-radius: 6px;
     font-size: 0.8125rem;
 }
+
+/* The email preview next to a form that sends email, and the names that an invitation shows */
+.email-preview-subject { margin: 0 0 0.5rem; overflow-wrap: anywhere; }
+.email-preview-subject .help-text { display: inline; }
+.invite-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+.invite-split .form-label { margin: 0 0 0.25rem; }
+@media (max-width: 800px) { .invite-split { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+.email-preview-frame { display: block; width: 100%; height: min(26rem, 40vh); border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+.sender-identity { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); }
+.sender-identity > .help-text { display: block; margin: 0 0 0.75rem; }
+.sender-identity label { display: block; margin-bottom: 0.75rem; }
+.sender-identity label:last-child, .sender-identity-names label { margin-bottom: 0; }
+.sender-identity-names { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+.sender-identity-names:last-child { margin-bottom: 0; }
+.sender-identity-dialog { margin: auto; padding: 0; width: calc(100% - 2rem); max-width: 40rem; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-card); color: var(--text-primary); }
+.sender-identity-dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+.sender-identity-dialog form { margin: 0; }
+.sender-identity-dialog .card-footer { display: flex; justify-content: flex-end; gap: 0.75rem; }
+@media (max-width: 480px) { .sender-identity-names { grid-template-columns: 1fr; } }

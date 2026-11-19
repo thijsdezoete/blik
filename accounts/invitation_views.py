@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -13,6 +14,7 @@ from django.utils import translation
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext as _, ngettext
 from django.views.decorators.http import require_POST
+from accounts import sender_identity
 from accounts.models import OrganizationInvitation
 from accounts.permissions import managers_without_account, organization_admin_required
 from core.languages import recipient_language
@@ -31,9 +33,13 @@ def invitation_email(org, user, invite_url, message=''):
         'site_name': settings.SITE_NAME,
         'message': message,
     }
-    if inviter:
+    # An email address in the subject looks like spam. The subject names the inviter
+    # only by a real name, and an organization named after an email address not at all.
+    if sender_identity.named_after_email(org):
+        subject = _('Your invitation to %(site_name)s') % {'site_name': settings.SITE_NAME}
+    elif user is not None and user.get_full_name():
         subject = _('%(inviter)s invited you to join %(organization)s on %(site_name)s') % {
-            'inviter': inviter, 'organization': org.name, 'site_name': settings.SITE_NAME}
+            'inviter': user.get_full_name(), 'organization': org.name, 'site_name': settings.SITE_NAME}
     else:
         subject = _('Invitation to join %(organization)s on %(site_name)s') % {
             'organization': org.name, 'site_name': settings.SITE_NAME}
@@ -87,6 +93,7 @@ def invite_managers(request):
     """Invite the selected managers in the org chart who have no account and no open invitation."""
     # The organization middleware does not run for /accounts/ URLs.
     org = request.organization or request.user.profile.organization
+    sender_identity.save(request.user, org, request.POST)
     message = request.POST.get('message', '').strip()[:2000]
     selected = {email.lower() for email in request.POST.getlist('emails')}
     # Only queue: the send_queued_invitations cron sends the emails, so a slow
@@ -178,6 +185,7 @@ def send_invitation(request):
             messages.info(request, _('Invitation already sent to %(email)s') % {'email': email})
             return redirect('admin_dashboard')
 
+        sender_identity.save(request.user, org, request.POST)
         try:
             invite(org, email, request.user, language=request.POST.get('language'))
             messages.success(request, _('Invitation sent to %(email)s') % {'email': email})
@@ -185,6 +193,41 @@ def send_invitation(request):
             messages.error(request, _('Failed to send invitation: %(error)s') % {'error': e})
 
     return redirect('team_list')
+
+
+@login_required
+@require_POST
+def save_sender_identity(request):
+    """Save the names that the dialog asks for before a form sends email."""
+    # The organization middleware does not run for /accounts/ URLs.
+    org = request.organization or request.user.profile.organization
+    sender_identity.save(request.user, org, request.POST)
+    return HttpResponse(status=204)
+
+
+@login_required
+def invitation_preview(request):
+    """
+    The subject and HTML of an email as it goes out, for the preview next to a form.
+    The names typed in the form show in it before they are saved.
+    """
+    from django.contrib.auth.models import User
+    from core.models import Organization
+    from reviews.services import reviewer_invitation_example
+
+    org = request.organization or request.user.profile.organization
+    # Copies: the preview must not change the user or the organization of this request.
+    user = User(first_name=request.user.first_name, last_name=request.user.last_name, email=request.user.email)
+    preview_org = Organization(pk=org.pk, name=org.name, default_language=org.default_language)
+    sender_identity.apply(user, preview_org, request.GET, sender_identity.missing(request.user, org))
+
+    with translation.override(recipient_language(request.GET.get('language'), organization=org)):
+        if request.GET.get('kind') == 'reviewer':
+            subject, html = reviewer_invitation_example(preview_org, user)
+        else:
+            subject, _text, html = invitation_email(
+                preview_org, user, '#', message=request.GET.get('message', '')[:2000])
+    return JsonResponse({'subject': subject, 'html': html})
 
 
 def accept_invitation(request, token):

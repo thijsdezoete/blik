@@ -1,0 +1,22 @@
+{% load i18n %}{% comment %}
+Opens when a form with data-sends-mail is submitted and the sender has no name yet
+(static/js/email_preview.js). It saves the names, then the form goes on.
+{% endcomment %}
+<dialog id="senderIdentityDialog" class="modal-content reviewee-dialog sender-identity-dialog" aria-labelledby="senderIdentityTitle">
+    <div class="card-header">
+        <h2 class="card-title" id="senderIdentityTitle">{% trans 'Before the emails go out' %}</h2>
+    </div>
+    <form method="post" action="{% url 'save_sender_identity' %}">
+        {% csrf_token %}
+        <div class="card-body">
+            {% include 'admin_dashboard/partials/_sender_identity_fields.html' %}
+            <p class="form-label">{% trans 'The email as it goes out' %}</p>
+            {% include 'admin_dashboard/partials/_email_preview.html' with kind='reviewer' lazy=True %}
+            <p class="help-text" data-identity-error hidden role="alert">{% trans 'The names are not saved. Try again.' %}</p>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-secondary" data-identity-cancel>{% trans 'Cancel' %}</button>
+            <button type="submit" class="btn btn-primary">{% trans 'Save and continue' %}</button>
+        </div>
+    </form>
+</dialog>

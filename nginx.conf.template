@@ -11,6 +11,13 @@ http {
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
 
+    # Behind another proxy (Traefik, Cloudflare), take the visitor address from its header.
+    # Only a peer on a private network is trusted, so a direct visitor cannot fake the address.
+    set_real_ip_from 10.0.0.0/8;
+    set_real_ip_from 172.16.0.0/12;
+    set_real_ip_from 192.168.0.0/16;
+    real_ip_header ${REAL_IP_HEADER};
+
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
                     '$status $body_bytes_sent "$http_referer" '
                     '"$http_user_agent" "$http_x_forwarded_for"';

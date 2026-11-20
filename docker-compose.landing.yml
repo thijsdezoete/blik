@@ -16,7 +16,8 @@ services:
       dockerfile: Dockerfile.landing
     # The name the container gives the mail server and puts in each Message-ID. Not set: the container id.
     hostname: ${MAIL_HOSTNAME:-}
-    command: gunicorn --bind 0.0.0.0:${LANDING_PORT:-8001} --workers 2 --timeout 60 --access-logfile - --error-logfile - --log-level info landing_wsgi:application
+    # The access log shows X-Real-IP, the visitor address that nginx found. The peer address is always nginx.
+    command: gunicorn --bind 0.0.0.0:${LANDING_PORT:-8001} --workers 2 --timeout 60 --access-logfile - --access-logformat '%({x-real-ip}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"' --error-logfile - --log-level info landing_wsgi:application
     volumes:
       - ./:/app
       - static_volume:/app/staticfiles
@@ -44,6 +45,8 @@ services:
       - NGINX_PORT=${NGINX_PORT:-80}
       - PORT=${PORT:-8000}
       - LANDING_PORT=${LANDING_PORT:-8001}
+      # The header of the proxy in front of nginx that holds the visitor address. Cloudflare: CF-Connecting-IP
+      - REAL_IP_HEADER=${REAL_IP_HEADER:-X-Forwarded-For}
     depends_on:
       - landing
     entrypoint: ["/docker-entrypoint-nginx.sh"]

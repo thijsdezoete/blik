@@ -14,6 +14,15 @@
             <dd>{% for group in feedback_groups %}<div>{% if group.hidden %}{{ group.category|category_label }}: <span class="muted">{{ group.text }}</span>{% else %}{{ group.text }}{% endif %}</div>{% endfor %}</dd>
             {% endif %}
         </dl>
+
         <p class="cover-about muted">{% trans 'This report brings together the feedback from your reviewers: a summary, your scores per section and every answer per question. Individual reviewers cannot be identified.' %}</p>
+
+        {% if report_data.combined_anonymous_feedback %}
+        <p class="cover-about muted" style="margin-top: 1rem;">
+            <b>{% trans 'Combined anonymous feedback:' %}</b>
+            {% trans 'To preserve anonymity, feedback from Peer and Direct Report groups has been combined. Scores and written comments from those groups are shown together and cannot be attributed to either group.' %}
+        </p>
+        {% endif %}
+
     </div>
 </section>

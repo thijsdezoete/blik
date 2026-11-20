@@ -2,6 +2,7 @@
 import math
 
 from reviews.models import CATEGORY_ORDER
+from .services import COMBINED_ANONYMOUS_CATEGORY
 
 MAX_LABEL = 22
 RADAR_PAD_X = 90
@@ -84,7 +85,7 @@ def _group_polygons(section_scores, polygon, dots):
     A group hidden for anonymity has no scores here, or an 'insufficient' marker instead of a number: it gets none.
     """
     groups = []
-    for category in CATEGORY_ORDER:
+    for category in (*CATEGORY_ORDER, COMBINED_ANONYMOUS_CATEGORY):
         scores = [cats.get(category) for cats in section_scores.values()]
         scores = [score if isinstance(score, (int, float)) else None for score in scores]
         if any(score is not None for score in scores):

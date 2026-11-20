@@ -15,7 +15,11 @@ def display_report_data(report):
     """
     cycle = report.cycle
     threshold = cycle.organization.min_responses_for_anonymity
-    anonymized = apply_display_anonymization(report.report_data, min_threshold=threshold)
+    anonymized = apply_display_anonymization(
+        report.report_data,
+        min_threshold=threshold,
+        combine_small_groups=cycle.organization.combine_small_reviewer_groups,
+    )
     _leave_out_trends_from_hidden_previous(anonymized, cycle, threshold)
     return with_texts(anonymized, cycle.questionnaire, cycle.reviewee.name)
 

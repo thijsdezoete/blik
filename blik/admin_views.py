@@ -2025,13 +2025,15 @@ def review_cycle_bulk_preview(request):
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
     if request.method == 'POST':
-        creation_mode = request.POST.get('creation_mode', 'single')
-        # Bulk is a cycle for several people: only for users who may create for others.
-        if creation_mode == 'bulk' and not may_create_for_others(request.user):
-            raise Http404
+        bulk_source = request.POST.get('bulk_source', 'empty')
+        # The form of a self-only member has no mode. The org chart or the
+        # previous cycle as the source of the reviewers makes it a bulk run:
+        # bulk_reviewees gives only the people this user may create a cycle
+        # for, so for them it is a run of one.
+        creation_mode = request.POST.get('creation_mode') or (
+            'bulk' if bulk_source in ('chart', 'previous') else 'single')
         units = selected_units(request) if creation_mode == 'bulk' else []
         questionnaire_id = request.POST.get('questionnaire')
-        bulk_source = request.POST.get('bulk_source', 'empty')
         # Reusing earlier cycles takes the questionnaire and categories from each of them.
         reuse_previous = creation_mode == 'bulk' and bulk_source == 'previous'
 
@@ -2233,16 +2235,20 @@ def review_cycle_create(request):
     has_org_chart = bool(units)
     creates_for_whole_organization = request.user.has_perm('accounts.can_manage_organization')
 
+    can_create_for_others = may_create_for_others(request.user)
     context = {
         'reviewees': reviewees,
         'questionnaires': questionnaires,
-        'can_create_for_others': may_create_for_others(request.user),
+        'can_create_for_others': can_create_for_others,
+        # The reviewer sources that give a self-only member a cycle: the form offers only those.
+        'own_sources': set() if can_create_for_others else {
+            source for source in ('chart', 'previous') if plan_bulk_cycles(reviewees, source, None, {})[0]},
         'creates_for_whole_organization': creates_for_whole_organization,
         **billing_context(org, request.user),
         'has_org_chart': has_org_chart,
         # A run for some departments is for those who otherwise run it for everyone.
         'bulk_units': units if creates_for_whole_organization else [],
-        'has_previous_cycles': org is not None and ReviewCycle.objects.filter(reviewee__organization=org).exists(),
+        'has_previous_cycles': ReviewCycle.objects.filter(reviewee__in=reviewees).exists(),
     }
 
     return render(request, 'admin_dashboard/review_cycle_form.html', context)

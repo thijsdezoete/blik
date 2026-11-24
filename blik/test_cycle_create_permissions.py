@@ -79,10 +79,50 @@ class CycleCreatePermissionTests(TestCase):
 
         self.assertFalse(ReviewCycle.objects.filter(reviewee=self.colleague).exists())
 
-    def test_member_cannot_post_bulk_cycles(self):
+    def test_bulk_of_a_member_creates_for_themselves_only(self):
         self.client.force_login(self.member)
-        response = self.client.post(reverse('review_cycle_create'), {
-            'creation_mode': 'bulk', 'questionnaire': self.questionnaire.id})
+        self.client.post(reverse('review_cycle_create'), {
+            'creation_mode': 'bulk', 'bulk_source': 'empty', 'questionnaire': self.questionnaire.id})
 
-        self.assertEqual(response.status_code, 404)
-        self.assertFalse(ReviewCycle.objects.exists())
+        self.assertEqual([c.reviewee for c in ReviewCycle.objects.all()], [self.own])
+
+    def test_member_reuses_the_reviewers_of_their_previous_cycle(self):
+        from reviews.factories import ReviewCycleFactory
+        from reviews.models import ReviewerToken
+        previous = ReviewCycleFactory(reviewee=self.own, questionnaire=self.questionnaire)
+        ReviewerToken.objects.create(cycle=previous, category='peer', reviewer_email='colleague@acme.example')
+        self.client.force_login(self.member)
+
+        self.client.post(reverse('review_cycle_create'), {'bulk_source': 'previous'})
+
+        new = ReviewCycle.objects.exclude(pk=previous.pk).get()
+        self.assertEqual(
+            list(new.tokens.filter(category='peer').values_list('reviewer_email', flat=True)),
+            ['colleague@acme.example'])
+
+    def test_member_who_selects_the_reviewers_themselves_gets_a_cycle_with_those(self):
+        self.client.force_login(self.member)
+
+        self.client.post(reverse('review_cycle_create'), {
+            'bulk_source': 'manual', 'questionnaire': self.questionnaire.id, 'reviewee': self.own.id,
+            'peer_emails': 'colleague@acme.example'})
+
+        cycle = ReviewCycle.objects.get()
+        self.assertEqual(
+            list(cycle.tokens.filter(category='peer').values_list('reviewer_email', flat=True)),
+            ['colleague@acme.example'])
+
+    def test_member_gets_the_reviewers_of_the_org_chart(self):
+        from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.colleague, row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.own, row=1, col=0)
+        self.client.force_login(self.member)
+
+        self.client.post(reverse('review_cycle_create'), {
+            'bulk_source': 'chart', 'questionnaire': self.questionnaire.id})
+
+        cycle = ReviewCycle.objects.get()
+        self.assertEqual(
+            list(cycle.tokens.filter(category='manager').values_list('reviewer_email', flat=True)),
+            ['colleague@acme.example'])

@@ -3,6 +3,7 @@ Facts about 360 feedback tools for /compare/ and /compare/<slug>/.
 
 The tool data is in compare_tools.json, researched from the vendors' public pages
 (pricing, security, help centre). Update CHECKED and CHECKED_ISO when you re-check it.
+A tool added between full checks has its own "checked" and "checked_iso" keys; remove them at the next full check.
 """
 
 import json

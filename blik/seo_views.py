@@ -104,7 +104,7 @@ def sitemap(request):
     for vendor in VENDORS:
         urls.append(f'''    <url>
         <loc>{base_url}{prefix}/compare/{vendor['slug']}/</loc>
-        <lastmod>{CHECKED_ISO}</lastmod>
+        <lastmod>{vendor.get('checked_iso', CHECKED_ISO)}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>''')

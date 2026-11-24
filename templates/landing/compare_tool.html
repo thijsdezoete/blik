@@ -2,12 +2,12 @@
 {% load static landing_tags %}
 
 {% block meta %}
-    <title>{{ v.name }} 360 Feedback: Pricing and Features ({{ checked_year }}) | Blik360</title>
+    <title>{{ subject }} Feedback: Pricing and Features ({{ checked_year }}) | Blik360</title>
     <meta name="description" content="{{ meta_description }}">
     <link rel="canonical" href="{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare_tool' v.slug %}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'compare_tool' v.slug %}">
-    <meta property="og:title" content="{{ v.name }} 360 feedback: pricing and features">
+    <meta property="og:title" content="{{ subject }} feedback: pricing and features">
     <meta property="og:description" content="{{ v.summary }}">
     <meta property="og:site_name" content="{{ site_name }}">
     <meta property="og:image" content="{{ site_protocol }}://{{ site_domain }}{% landing_url 'og_image' %}?title={{ v.name|urlencode }}%20360%20feedback&subtitle=Pricing%20and%20features">
@@ -62,7 +62,7 @@
         <div class="container">
             <div class="hero-content">
                 <nav class="hero-note" aria-label="Breadcrumb"><a href="{% landing_url 'compare' %}">360 tools compared</a> · {{ group_title }}</nav>
-                <h1 class="hero-title">{{ v.name }} 360 feedback: pricing and features</h1>
+                <h1 class="hero-title">{{ subject }} feedback: pricing and features</h1>
                 <p class="hero-subtitle">{{ v.what }}</p>
                 <p class="hero-note">Checked <time datetime="{{ checked_iso }}">{{ checked }}</time> from {{ v.name }}'s public pages.</p>
             </div>
@@ -109,7 +109,7 @@
             <h3 class="comparison-subheading">What 360 feedback costs per year</h3>
             <div class="table-container">
                 <table class="comparison-table">
-                    <caption class="visually-hidden">Yearly cost of {{ v.name }} 360 feedback by team size</caption>
+                    <caption class="visually-hidden">Yearly cost of {{ subject }} feedback by team size</caption>
                     <thead><tr><th scope="col">Reviewed employees</th><th scope="col">Cost per year</th><th scope="col">How we calculated it</th></tr></thead>
                     <tbody>
                         {% for size, c in costs %}
@@ -128,7 +128,7 @@
             <h2 class="section-title">How 360 feedback works in {{ v.name }}</h2>
             <div class="table-container">
                 <table class="comparison-table">
-                    <caption class="visually-hidden">{{ v.name }} 360 feedback features</caption>
+                    <caption class="visually-hidden">{{ subject }} feedback features</caption>
                     <tbody>
                         {% for label, value in features %}<tr><th scope="row">{{ label }}</th><td>{{ value }}</td></tr>{% endfor %}
                     </tbody>

@@ -297,18 +297,22 @@ def compare_tool(request, slug):
     if v is None:
         raise Http404
     group = next(g for g in GROUPS if g[0] == v['group'])
+    # A tool added after the last full check has its own date.
+    checked, checked_iso = v.get('checked', CHECKED), v.get('checked_iso', CHECKED_ISO)
     cost_50 = v['pricing']['cost']['50']['cost']
-    lead = (f"{v['name']} 360 feedback for 50 employees: {cost_50} a year." if cost_50
-            else f"{v['name']} 360 feedback: price on quote only.")
+    # "Launch 360" already ends in 360: no "Launch 360 360 feedback" in titles.
+    subject = v['name'] if v['name'].endswith('360') else f"{v['name']} 360"
+    lead = (f"{subject} feedback for 50 employees: {cost_50} a year." if cost_50
+            else f"{subject} feedback: price on quote only.")
     return render(request, 'landing/compare_tool.html', {
-        'v': v,
+        'v': v, 'subject': subject,
         'costs': [(size, v['pricing']['cost'][size]) for size in ('10', '50', '200')],
         'features': [(label, v['features'][key]) for label, key in _FEATURE_LABELS],
         'security': [(label, v['security'][key]) for label, key in _SECURITY_LABELS],
         'others': [t for t in _compare_tools() if t['group'] == v['group'] and t['slug'] != slug],
         'group_title': group[1], 'group_intro': group[2],
-        'meta_description': f"{lead} How it is sold, anonymity, AI, EU hosting and certificates, with sources. Checked {CHECKED}.",
-        'checked': CHECKED, 'checked_iso': CHECKED_ISO, 'checked_year': CHECKED_ISO[:4],
+        'meta_description': f"{lead} How it is sold, anonymity, AI, EU hosting and certificates, with sources. Checked {checked}.",
+        'checked': checked, 'checked_iso': checked_iso, 'checked_year': checked_iso[:4],
     })
 
 

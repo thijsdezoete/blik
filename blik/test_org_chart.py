@@ -480,3 +480,38 @@ class PlaceInDepartmentTests(TestCase):
         place_in_department(self.org, self.person, 'Mobile', manager=self.boss, leads=True)
         unit = OrgUnit.objects.get(organization=self.org, name='Mobile')
         self.assertEqual(self.roles(unit), {(self.person, OrgUnitMembership.MANAGER)})
+
+
+class ImportPreviewTests(TestCase):
+    def test_the_chart_of_an_import_marks_the_new_units_and_the_people_who_are_new_or_moved(self):
+        from accounts.org_import import import_org_chart, rows_from_csv
+        from blik.admin_views import import_preview_nodes
+
+        org = OrganizationFactory()
+        first = ('name;email;department;manager_email\n'
+                 'Owner Ada;ada@acme.example;Engineering;\n'
+                 'Hank Head;hank@acme.example;Platform;ada@acme.example\n'
+                 'Hal Help;hal@acme.example;Platform;hank@acme.example\n'
+                 'Sam Staff;sam@acme.example;Engineering;ada@acme.example\n'
+                 'Sue Staff;sue@acme.example;Engineering;ada@acme.example\n')
+        import_org_chart(org, rows_from_csv(first.encode())[0])
+        # Sue goes to a new unit of Ada, and Nia is new. Ada is new there too, but not in Engineering.
+        second = (first.replace('Sue Staff;sue@acme.example;Engineering', 'Sue Staff;sue@acme.example;Service Center')
+                  + 'New Nia;nia@acme.example;Engineering;ada@acme.example\n')
+
+        stats, errors = import_org_chart(org, rows_from_csv(second.encode())[0], dry_run=True,
+                                         preview=lambda stats: import_preview_nodes(org, stats))
+
+        def marks(node):
+            return {p['reviewee'].email: p['change'] for p in node['managers'] + node['members']}
+
+        nodes = {node['unit'].name: node for node in stats['preview']}
+        engineering, service = nodes['Engineering'], nodes['Service Center']
+        platform = engineering['children'][0]
+        self.assertEqual((engineering['is_new'], engineering['changed']), (False, True))
+        self.assertEqual(marks(engineering), {'ada@acme.example': None, 'hank@acme.example': None,
+                                              'nia@acme.example': 'new', 'sam@acme.example': None})
+        self.assertEqual((service['is_new'], service['changed']), (True, True))
+        self.assertEqual(marks(service), {'ada@acme.example': 'moved', 'sue@acme.example': 'moved'})
+        self.assertEqual((platform['is_new'], platform['changed']), (False, False))
+        self.assertEqual(marks(platform), {'hank@acme.example': None, 'hal@acme.example': None})

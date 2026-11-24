@@ -2,9 +2,14 @@
 
 Any CSV works: the admin maps its columns to name (or first and last name),
 email, department and manager. The manager column can hold an email or a name.
-Each person who is someone's manager gets one unit: they are its manager, the
+Each person who is someone's manager gets a unit: they are its manager, the
 people who report to them are its members. Units stack by themselves: a head of
 department is a member of the director's unit and the manager of their own.
+
+A manager can lead more than one unit. Reports who manage nobody and have a
+department that is not the department of their manager get a unit per
+department, named after it. So a head with research staff and a service center
+leads two units, and the people of the one are not the peers of the other.
 """
 import csv
 import io
@@ -202,7 +207,7 @@ def _placements(organization):
     return places
 
 
-def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False):
+def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False, preview=None):
     """Bring the organization's org chart in line with `rows`.
 
     Creates or updates the reviewees (matched by email). The file is merged into
@@ -217,7 +222,12 @@ def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False
     With `dry_run` nothing is written; the stats say what the import would do.
     `stats['people']` has one row per person who changes, with their place in
     the chart before and after; `stats['missing']` the same for the people who
-    are not in the file (as it is when they stay active).
+    are not in the file (as it is when they stay active). `stats['placed']` has
+    each place in the chart that a person did not have before, as (person id,
+    role, unit id).
+
+    `preview` is called with the stats before a dry run is undone, so it can read
+    the chart as it is after the import. Its result is `stats['preview']`.
     Returns (stats, errors); nothing is written when there are errors.
     """
     errors = check_rows(rows)
@@ -281,45 +291,101 @@ def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False
             if manager:
                 reports.setdefault(manager, []).append(people[row['email'].lower()])
 
+        renamed = []  # the new units whose name was taken, each with the name it should have
+
+        def new_unit(name, manager):
+            nonlocal order
+            wanted = name
+            if name in names:
+                name = f'{name} ({manager.name})'
+            while name in names:
+                name += ' 2'
+            names.add(name)
+            order += 1
+            stats['units_created'].append(name)
+            unit = OrgUnit.objects.create(organization=organization, name=name, display_order=order)
+            if name != wanted:
+                renamed.append((unit, wanted))
+            return unit
+
+        def named(unit, department, manager):
+            """The unit has the name `new_unit` gives a unit of `manager` for this department."""
+            name = unit.name.lower()
+            return name == department or name.startswith(f'{department} ({manager.name.lower()})')
+
+        def for_a_department(unit, manager):
+            """The unit is named after the department of its members, and that is not the manager's own."""
+            departments = {d.lower() for d in memberships.filter(unit=unit, role=MEMBER)
+                           .values_list('reviewee__department', flat=True)}
+            return any(named(unit, d, manager) for d in departments - {'', manager.department.lower()})
+
+        def take_over(group, manager, department=None, claimed=()):
+            """
+            The unit most of `group` are in, when its managers no longer manage anyone:
+            `manager` takes it over, and it keeps its name and place. With `department`
+            only a unit named after it.
+            """
+            current = Counter(memberships.filter(reviewee__in=group, role=MEMBER).values_list('unit_id', flat=True))
+            for unit_id, _count in current.most_common():
+                unit = units.get(pk=unit_id)
+                old = memberships.filter(unit=unit, role=MANAGER).values_list('reviewee__email', flat=True)
+                if (unit_id in claimed or (department and not named(unit, department, manager))
+                        or any(email.lower() in reports for email in old)):
+                    continue
+                memberships.filter(unit=unit, role=MANAGER).delete()
+                memberships.filter(unit=unit, reviewee=manager).delete()
+                return unit
+            return None
+
         for manager_email, members in reports.items():
             manager = people[manager_email]
-            # ponytail: a person who manages several hand-made units gets their reports in the first one
-            own = memberships.filter(reviewee=manager, role=MANAGER).order_by('unit__display_order').first()
-            unit = own.unit if own else None
-            if unit is None:
-                # A new manager takes over the unit most of their reports are in, when
-                # its manager no longer manages anyone. The unit keeps its name and place.
-                current = Counter(memberships.filter(reviewee__in=members, role=MEMBER).values_list('unit_id', flat=True))
-                for unit_id, _count in current.most_common():
-                    old = memberships.filter(unit_id=unit_id, role=MANAGER).values_list('reviewee__email', flat=True)
-                    if not any(email in reports for email in old):
-                        unit = units.get(pk=unit_id)
-                        memberships.filter(unit=unit, role=MANAGER).delete()
-                        memberships.filter(unit=unit, reviewee=manager).delete()
-                        break
-            if unit is None:
-                name = manager.department or manager.name
-                if name in names:
-                    name = f'{name} ({manager.name})'
-                while name in names:
-                    name += ' 2'
-                names.add(name)
-                order += 1
-                unit = OrgUnit.objects.create(organization=organization, name=name, display_order=order)
-                stats['units_created'].append(name)
-            if not own:
-                OrgUnitMembership.objects.create(unit=unit, reviewee=manager, row=0, col=0)
+            # The manager's own unit has key ''. It takes the reports who manage people
+            # themselves, and those with no department or the department of the manager.
+            # The other reports get one unit per department.
+            groups = {'': []}
+            for member in members:
+                department = member.department.lower()
+                own = not department or department == manager.department.lower() or member.email.lower() in reports
+                groups.setdefault('' if own else department, []).append(member)
 
-            for member in sorted(members, key=lambda r: r.name.lower()):
-                memberships.filter(reviewee=member, role=MEMBER).exclude(unit=unit).delete()
-                if memberships.filter(unit=unit, reviewee=member, role=MEMBER).exists():
+            led = list(units.filter(memberships__reviewee=manager, memberships__role=MANAGER).order_by('display_order'))
+            # The file names a department unit: it is the unit with that name that the
+            # manager leads or takes over.
+            found = {}
+            for key, group in groups.items():
+                if key:
+                    found[key] = next((u for u in led if named(u, key, manager)), None) or take_over(group, manager, key)
+            claimed = {unit.pk for unit in found.values() if unit}
+            if groups['']:
+                # ponytail: a person who manages several hand-made units gets their reports in the first one
+                found[''] = (next((u for u in led if u.pk not in claimed and not for_a_department(u, manager)), None)
+                             or take_over(groups[''], manager, claimed=claimed))
+
+            for key, group in groups.items():
+                if not group:
                     continue
-                memberships.filter(unit=unit, reviewee=member).delete()
-                last_col = memberships.filter(unit=unit, row=1).aggregate(m=Max('col'))['m']
-                OrgUnitMembership.objects.create(unit=unit, reviewee=member, row=1,
-                                                 col=0 if last_col is None else last_col + 1)
+                unit = found[key] or new_unit(group[0].department if key else manager.department or manager.name, manager)
+                if not memberships.filter(unit=unit, reviewee=manager, role=MANAGER).exists():
+                    OrgUnitMembership.objects.create(unit=unit, reviewee=manager, row=0, col=0)
+
+                for member in sorted(group, key=lambda r: r.name.lower()):
+                    memberships.filter(reviewee=member, role=MEMBER).exclude(unit=unit).delete()
+                    if memberships.filter(unit=unit, reviewee=member, role=MEMBER).exists():
+                        continue
+                    memberships.filter(unit=unit, reviewee=member).delete()
+                    last_col = memberships.filter(unit=unit, row=1).aggregate(m=Max('col'))['m']
+                    OrgUnitMembership.objects.create(unit=unit, reviewee=member, row=1,
+                                                     col=0 if last_col is None else last_col + 1)
 
         emptied = units.filter(pk__in=had_members).exclude(memberships__role=MEMBER)
+        # The name was taken by a unit that is now empty: that unit stays, with the new people.
+        for unit, wanted in renamed:
+            old = emptied.filter(name=wanted).first()
+            if old:
+                memberships.filter(unit=old).delete()
+                memberships.filter(unit=unit).update(unit=old)
+                stats['units_created'].remove(unit.name)
+                unit.delete()
         stats['units_removed'] = list(emptied.values_list('name', flat=True))
         emptied.delete()
         stats['units'] = units.count()
@@ -327,6 +393,9 @@ def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False
         # What changes per person, from the chart before and after.
         places_after = _placements(organization)
         nowhere = [((), _('Not in a unit'))]
+        stats['placed'] = {
+            (pk, *key[:2]) for pk, places in places_after.items() for key, _text in places
+            if key[:2] not in {before[:2] for before, _text in places_before.get(pk, [])}}
 
         def texts(places):
             return [text for _key, text in places]
@@ -369,6 +438,8 @@ def import_org_chart(organization, rows, deactivate_missing=False, dry_run=False
         stats['active'] = Reviewee.objects.filter(organization=organization, is_active=True).count()
 
         if dry_run:
+            if preview:
+                stats['preview'] = preview(stats)
             transaction.set_rollback(True)
 
     return stats, []

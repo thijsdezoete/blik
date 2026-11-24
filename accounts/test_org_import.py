@@ -8,12 +8,24 @@ from accounts.org_import import guess_mapping, import_org_chart, map_rows, read_
 from core.factories import OrganizationFactory
 from reviews.services import derive_reviewers
 
+# Hilde has no staff. She has the department of Ada, so she stays in the unit of Ada.
 CSV = """name;email;department;manager_email
 Owner Ada;ada@acme.example;Engineering;
 Hank Head;hank@acme.example;Platform;ada@acme.example
-Hilde Head;hilde@acme.example;Mobile;ada@acme.example
+Hilde Head;hilde@acme.example;Engineering;ada@acme.example
 Sam Staff;sam@acme.example;Platform;hank@acme.example
 Sue Staff;sue@acme.example;Platform;hank@acme.example
+"""
+
+# Hank leads two units: his staff have two departments that are not his own.
+SPLIT = """name;email;department;manager_email
+Owner Ada;ada@acme.example;Engineering;
+Hank Head;hank@acme.example;Platform;ada@acme.example
+Hilde Head;hilde@acme.example;Mobile;ada@acme.example
+Sam Staff;sam@acme.example;Research;hank@acme.example
+Sue Staff;sue@acme.example;Research;hank@acme.example
+Sid Service;sid@acme.example;Service Center;hank@acme.example
+Hugo Help;hugo@acme.example;Mobile;hilde@acme.example
 """
 
 
@@ -56,13 +68,14 @@ class ImportOrgChartTests(TestCase):
         before = list(OrgUnitMembership.objects.filter(unit=platform).values_list('pk', flat=True))
 
         # Hilde now reports to Hank; nothing else changes.
-        stats, errors = self._import(CSV.replace('Mobile;ada@acme.example', 'Mobile;hank@acme.example'))
+        stats, errors = self._import(CSV.replace('Engineering;ada@acme.example', 'Platform;hank@acme.example'))
 
         self.assertEqual(errors, [])
         self.assertEqual((stats['updated'], stats['unchanged'], stats['units_created'], stats['units_removed']), (5, 4, [], []))
         self.assertEqual(stats['people'], [{
             'name': 'Hilde Head', 'email': 'hilde@acme.example', 'kind': 'moved',
-            'before': ['In Engineering, reports to Owner Ada'], 'after': ['In Platform lab, reports to Hank Head']}])
+            'before': ['In Engineering, reports to Owner Ada', 'Department: Engineering'],
+            'after': ['In Platform lab, reports to Hank Head', 'Department: Platform']}])
         platform.refresh_from_db()
         self.assertEqual((platform.name, platform.display_order), ('Platform lab', 7))
         self.assertEqual(self._members('Platform lab', 'member'), ['hilde@acme.example', 'sam@acme.example', 'sue@acme.example'])
@@ -99,7 +112,7 @@ class ImportOrgChartTests(TestCase):
             user = UserFactory(email=email)
             UserProfileFactory(user=user, organization=self.org)
             assign(user)
-        without_both = (CSV.replace('Hilde Head;hilde@acme.example;Mobile;ada@acme.example\n', '')
+        without_both = (CSV.replace('Hilde Head;hilde@acme.example;Engineering;ada@acme.example\n', '')
                         .replace('Sue Staff;sue@acme.example;Platform;hank@acme.example\n', ''))
 
         stats, errors = self._import(without_both, deactivate_missing=True)
@@ -115,6 +128,8 @@ class ImportOrgChartTests(TestCase):
         self._import()
         text = CSV.replace('Sam Staff;sam@acme.example;Platform;hank@acme.example\nSue Staff;sue@acme.example;Platform;hank@acme.example\n',
                            'New Nia;nia@acme.example;Mobile;hilde@acme.example\n')
+        # Hank has no staff left. With the department of Ada he stays in the unit of Ada.
+        text = text.replace('Hank Head;hank@acme.example;Platform', 'Hank Head;hank@acme.example;Engineering')
 
         stats, errors = self._import(text, deactivate_missing=True, dry_run=True)
 
@@ -135,7 +150,7 @@ class ImportOrgChartTests(TestCase):
         stats, errors = self._import(
             'name;email;department;manager_email\n'
             'Owner Ada;ada@acme.example;Engineering;\n'
-            'Hilde Head;hilde@acme.example;Mobile;ada@acme.example\n'
+            'Hilde Head;hilde@acme.example;Engineering;ada@acme.example\n'
             'Sam Staff;sam@acme.example;Platform;ada@acme.example\n'
             'Hank Head;hank@acme.example;Platform;sam@acme.example\n'
             'Sue Staff;sue@acme.example;Platform;sam@acme.example\n')
@@ -146,6 +161,100 @@ class ImportOrgChartTests(TestCase):
         self.assertEqual(self._members('Platform', 'manager'), ['sam@acme.example'])
         self.assertEqual(self._members('Platform', 'member'), ['hank@acme.example', 'sue@acme.example'])
         self.assertEqual(self._members('Engineering', 'member'), ['hilde@acme.example', 'sam@acme.example'])
+
+    def test_staff_of_one_manager_with_other_departments_get_a_unit_per_department(self):
+        stats, errors = self._import(SPLIT)
+
+        self.assertEqual(errors, [])
+        self.assertEqual(self._members('Research', 'manager'), ['hank@acme.example'])
+        self.assertEqual(self._members('Research', 'member'), ['sam@acme.example', 'sue@acme.example'])
+        self.assertEqual(self._members('Service Center', 'manager'), ['hank@acme.example'])
+        self.assertEqual(self._members('Service Center', 'member'), ['sid@acme.example'])
+        # Hank and Hilde manage people, so they stay together in the unit of Ada.
+        self.assertEqual(self._members('Engineering', 'member'), ['hank@acme.example', 'hilde@acme.example'])
+        self.assertEqual(sorted(OrgUnit.objects.values_list('name', flat=True)),
+                         ['Engineering', 'Mobile', 'Research', 'Service Center'])
+
+        sam = derive_reviewers(Reviewee.objects.get(email='sam@acme.example'))
+        self.assertEqual([r.email for r in sam['manager']], ['hank@acme.example'])
+        self.assertEqual([r.email for r in sam['peer']], ['sue@acme.example'])
+        hank = derive_reviewers(Reviewee.objects.get(email='hank@acme.example'))
+        self.assertEqual([r.email for r in hank['direct_report']],
+                         ['sam@acme.example', 'sid@acme.example', 'sue@acme.example'])
+
+    def test_the_same_file_with_department_units_again_changes_nothing(self):
+        self._import(SPLIT)
+        units = set(OrgUnit.objects.values_list('pk', 'name'))
+
+        stats, errors = self._import(SPLIT)
+
+        self.assertEqual(errors, [])
+        self.assertEqual((stats['unchanged'], stats['people'], stats['units_created'], stats['units_removed']),
+                         (7, [], [], []))
+        self.assertEqual(set(OrgUnit.objects.values_list('pk', 'name')), units)
+
+    def test_one_unit_of_a_manager_splits_when_the_departments_of_the_staff_differ(self):
+        self._import()  # Sam and Sue are both in Platform, the unit of Hank
+
+        stats, errors = self._import(
+            CSV.replace('Sam Staff;sam@acme.example;Platform', 'Sam Staff;sam@acme.example;Research')
+            .replace('Sue Staff;sue@acme.example;Platform', 'Sue Staff;sue@acme.example;Service Center'))
+
+        self.assertEqual(errors, [])
+        self.assertEqual((stats['units_created'], stats['units_removed']), (['Research', 'Service Center'], ['Platform']))
+        self.assertEqual(self._members('Research', 'manager'), ['hank@acme.example'])
+        self.assertEqual(self._members('Research', 'member'), ['sam@acme.example'])
+        self.assertEqual(self._members('Service Center', 'member'), ['sue@acme.example'])
+
+    def test_staff_without_a_department_stay_in_the_own_unit_of_the_manager(self):
+        self._import(SPLIT)
+
+        # A second import must not put Nia in Research, the first unit Hank leads.
+        stats, errors = self._import(SPLIT + 'New Nia;nia@acme.example;;hank@acme.example\n')
+
+        self.assertEqual(errors, [])
+        self.assertEqual(stats['units_created'], ['Platform'])
+        self.assertEqual(self._members('Platform', 'manager'), ['hank@acme.example'])
+        self.assertEqual(self._members('Platform', 'member'), ['nia@acme.example'])
+        self.assertEqual(self._members('Research', 'member'), ['sam@acme.example', 'sue@acme.example'])
+
+    def test_a_new_manager_takes_over_a_department_unit_by_its_name(self):
+        self._import(SPLIT)
+        research = OrgUnit.objects.get(name='Research')
+
+        # Hank is gone from the file; his staff now report to Hilde.
+        stats, errors = self._import(
+            SPLIT.replace('Hank Head;hank@acme.example;Platform;ada@acme.example\n', '')
+            .replace(';hank@acme.example', ';hilde@acme.example'))
+
+        self.assertEqual(errors, [])
+        self.assertEqual((stats['units_created'], stats['units_removed']), ([], []))
+        self.assertEqual(OrgUnit.objects.get(name='Research').pk, research.pk)
+        self.assertEqual(self._members('Research', 'manager'), ['hilde@acme.example'])
+        self.assertEqual(self._members('Service Center', 'manager'), ['hilde@acme.example'])
+        self.assertEqual(self._members('Mobile', 'member'), ['hugo@acme.example'])
+
+    def test_a_person_who_gets_staff_leads_the_unit_with_the_name_of_their_department(self):
+        first = 'name;email;department;manager_email\nOwner Ada;ada@acme.example;Engineering;\nHilde Head;hilde@acme.example;Mobile;ada@acme.example\n'
+        self._import(first)  # Hilde has no staff yet: she is the one member of Mobile, a unit of Ada
+        mobile = OrgUnit.objects.get(name='Mobile')
+
+        stats, errors = self._import(first + 'New Nia;nia@acme.example;Mobile;hilde@acme.example\n')
+
+        self.assertEqual(errors, [])
+        self.assertEqual((stats['units_created'], stats['units_removed']), (['Engineering'], []))
+        self.assertEqual(list(OrgUnit.objects.filter(name__startswith='Mobile').values_list('pk', 'name')), [(mobile.pk, 'Mobile')])
+        self.assertEqual(self._members('Mobile', 'manager'), ['hilde@acme.example'])
+        self.assertEqual(self._members('Mobile', 'member'), ['nia@acme.example'])
+        self.assertEqual(self._members('Engineering', 'member'), ['hilde@acme.example'])
+
+    def test_the_preview_of_a_dry_run_reads_the_chart_before_it_is_undone(self):
+        stats, errors = self._import(
+            dry_run=True, preview=lambda stats: sorted(OrgUnit.objects.values_list('name', flat=True)))
+
+        self.assertEqual(errors, [])
+        self.assertEqual(stats['preview'], ['Engineering', 'Platform'])
+        self.assertFalse(OrgUnit.objects.exists())
 
     def test_a_reporting_line_in_a_circle_is_an_error(self):
         stats, errors = self._import('name;email;manager\nA;a@x.example;b@x.example\nB;b@x.example;a@x.example\n')
@@ -246,7 +355,7 @@ class ImportViewTests(TestCase):
         self.assertRedirects(done, reverse('org_chart'))
         self.assertEqual(
             list(OrgUnitMembership.objects.filter(unit__organization=org).values_list('unit__name', 'reviewee__email', 'role')),
-            [('Board', 'ada@x.example', 'manager'), ('Board', 'bob@x.example', 'member')],
+            [('Tech', 'ada@x.example', 'manager'), ('Tech', 'bob@x.example', 'member')],  # the unit has the department of Bob
         )
         self.assertNotIn('org_import', self.client.session)
 

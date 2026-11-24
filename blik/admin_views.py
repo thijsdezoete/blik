@@ -3858,6 +3858,33 @@ def _org_chart_context(organization):
     }
 
 
+def import_preview_nodes(organization, stats):
+    """
+    The chart as it is after an import, for the preview. `stats` are the stats of
+    the import. A unit has `is_new`, and `changed` when it is new or has a marked
+    person. A person has `change`: 'new' or 'reactivated' for the person, 'moved'
+    when they did not have this place in this unit before, or None.
+    """
+    marks = {row['email'].lower(): row['kind'] for row in stats['people'] if row['kind'] in ('new', 'reactivated')}
+    new_units = set(stats['units_created'])
+
+    def mark(node):
+        people = node['managers'] + node['members']
+        for person in people:
+            membership = person['membership']
+            moved = (membership.reviewee_id, membership.role, membership.unit_id) in stats['placed']
+            person['change'] = marks.get(person['reviewee'].email.lower()) or ('moved' if moved else None)
+        node['is_new'] = node['unit'].name in new_units
+        node['changed'] = node['is_new'] or any(person['change'] for person in people)
+        for child in node['children']:
+            mark(child)
+
+    nodes = _org_nodes(_build_org_tree(organization))
+    for node in nodes:
+        mark(node)
+    return nodes
+
+
 def _chart_change_response(organization):
     """
     Response after any mutation: both views and the unplaced pool, rendered
@@ -3972,7 +3999,8 @@ def org_chart_import_map(request):
         confirmed = request.POST.get('confirm') == f'{mapping_key},{int(deactivate)}'
         if not errors and not over_limit:
             stats, errors = import_org_chart(
-                request.organization, mapped, deactivate_missing=deactivate, dry_run=not confirmed)
+                request.organization, mapped, deactivate_missing=deactivate, dry_run=not confirmed,
+                preview=lambda stats: import_preview_nodes(request.organization, stats))
             if not errors and confirmed:
                 del request.session['org_import']
                 messages.success(

@@ -1,7 +1,8 @@
 {% load i18n %}<ul class="oc-people oc-zone" data-unit-uuid="{{ unit.uuid }}" data-role="{{ role }}">
     {% for p in people %}
-    <li class="oc-person"{% if can_manage %} draggable="true"{% endif %} data-reviewee-uuid="{{ p.reviewee.uuid }}" data-unit-uuid="{{ unit.uuid }}" data-membership-id="{{ p.membership.id }}" title="{{ p.reviewee.email }}{% if p.other_units %} · {% blocktrans with units=p.other_units %}Also in: {{ units }}{% endblocktrans %}{% endif %}">
+    <li class="oc-person{% if p.change %} oc-person-changed{% endif %}"{% if can_manage %} draggable="true"{% endif %} data-reviewee-uuid="{{ p.reviewee.uuid }}" data-unit-uuid="{{ unit.uuid }}" data-membership-id="{{ p.membership.id }}" title="{{ p.reviewee.email }}{% if p.other_units %} · {% blocktrans with units=p.other_units %}Also in: {{ units }}{% endblocktrans %}{% endif %}">
         <span class="oc-person-name">{{ p.reviewee.name }}</span>
+        {% if p.change %}<span class="badge badge-success">{% if p.change == 'new' %}{% trans 'New' context 'mark in the org chart' %}{% elif p.change == 'moved' %}{% trans 'New here' context 'mark in the org chart' %}{% else %}{% trans 'Active again' %}{% endif %}</span>{% endif %}
         {% if p.other_units %}<svg class="oc-person-also" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-label="{% blocktrans with units=p.other_units %}Also in: {{ units }}{% endblocktrans %}"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 16 9 5 9-5"/></svg>{% endif %}
         {% if can_manage %}<button type="button" class="oc-person-remove" aria-label="{% blocktrans with name=p.reviewee.name unit=unit.name %}Remove {{ name }} from {{ unit }}{% endblocktrans %}">&times;</button>{% endif %}
     </li>

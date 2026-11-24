@@ -50,6 +50,14 @@
         <p>{% trans 'The file is the same as the org chart. Nothing changes.' %}</p>
         {% endif %}
 
+        {% if changes.preview and not changes.nothing %}
+        <h3 class="oc-role">{% trans 'The org chart after the import' %}</h3>
+        <p class="help-text">{% trans 'New units have a mark, and so have the people who are new in Blik or new in a unit. The members of a unit with a change are shown.' %}</p>
+        <div class="oc-viewport oc-import-chart" role="region" aria-label="{% trans 'The org chart after the import' %}" tabindex="0">
+            {% include "admin_dashboard/org_chart/_chart.html" with nodes=changes.preview can_manage=False %}
+        </div>
+        {% endif %}
+
         {% if changes.people %}
         <h3 class="oc-role">{% trans 'People who change' %}</h3>
         <div class="table-wrapper{% if changes.people|length > 12 %} oc-import-scroll{% endif %}" role="region" aria-label="{% trans 'People who change' %}" tabindex="0">
@@ -142,7 +150,8 @@
                     {% for header in headers %}<option value="{{ forloop.counter0 }}"{% if selected == forloop.counter0 %} selected{% endif %}>{{ header|default:'—' }}</option>{% endfor %}
                 </select>
                 {% if field == 'name' %}<p class="help-text">{% trans 'Or choose first and last name.' %}</p>
-                {% elif field == 'manager' %}<p class="help-text">{% trans 'Each manager gets a unit with the people who report to them.' %}</p>{% endif %}
+                {% elif field == 'manager' %}<p class="help-text">{% trans 'Each manager gets a unit with the people who report to them.' %}</p>
+                {% elif field == 'department' %}<p class="help-text">{% trans 'People with the same manager and different departments get a unit per department.' %}</p>{% endif %}
             </div>
             {% endfor %}
         </div>
@@ -167,6 +176,11 @@
 </form>
 
 <script>
+    // Show or hide the units below a unit in the chart of the import.
+    document.querySelector('.oc-import-chart')?.addEventListener('click', event => {
+        const button = event.target.closest('.oc-collapse');
+        if (button) button.setAttribute('aria-expanded', String(!button.closest('.oc-node').classList.toggle('oc-collapsed')));
+    });
     // Label each preview column with the field it is mapped to.
     (() => {
         const selects = document.querySelectorAll('[data-map-field]');

@@ -179,7 +179,20 @@ The file has one row per person. Give the email column and a name column, or a f
 
 Blik recognises common column names in English, German and Dutch, in any letter case: for example `Name`, `Vollständiger Name`, `Naam`; `First name`, `Vorname`, `Voornaam`; `Last name`, `Nachname`, `Achternaam`; `Email`, `E-Mail-Adresse`, `E-mailadres`; `Department`, `Team`, `Abteilung`, `Afdeling`; `Manager`, `Supervisor`, `Reports to`, `Vorgesetzter`, `Leidinggevende`. Other column names work too: map them by hand in step 2.
 
-Each person who is named as a manager gets one unit. They are its manager. The people who report to them are its members. The unit is named after the manager's department, or after the manager when the department is empty. So a head of department is a member of the director's unit and the manager of their own unit.
+Each person who is named as a manager gets a unit. They are its manager. The people who report to them are its members. The unit is named after the manager's department, or after the manager when the department is empty. So a head of department is a member of the director's unit and the manager of their own unit.
+
+A manager can lead more than one unit. People who have the same manager and different departments get one unit per department, named after that department. The people of one unit are not the peers of the people of the other unit. In this example Tom Vos leads the units Research and Service Center:
+
+| Name | Email | Department | Manager |
+|------|-------|------------|---------|
+| Tom Vos | tom@example.com | Production | anna@example.com |
+| Lea Kuhn | lea@example.com | Research | tom@example.com |
+| Jan Smit | jan@example.com | Research | tom@example.com |
+| Eva Bos | eva@example.com | Service Center | tom@example.com |
+
+Two groups of people stay in the manager's own unit: people who are a manager themselves, and people with no department or with the department of their manager. To get one unit per manager, as before, set **Department** to **Not in the file** in step 2.
+
+Before the import, Blik shows the org chart as it is after the import. New units have a mark, and so have the people who are new in Blik or new in a unit.
 
 Blik checks the file before it writes anything. It reports these errors with the line number: an invalid email, an email that is in the file twice, an empty name, a manager who is not in the file, a manager name that matches more than one person (use the email instead), and a person who is their own manager. Nothing is imported while there is an error.
 

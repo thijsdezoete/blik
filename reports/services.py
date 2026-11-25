@@ -19,8 +19,15 @@ from . import dreyfus_service
 # Version of report_data's layout: 2 stores codes and numbers where version 1 stored English text
 REPORT_SCHEMA = 2
 
+# Optionally combine Peers and Direct Reports below the anonymity threshold
+COMBINED_ANONYMOUS_CATEGORY = 'combined_anonymous'
+COMBINABLE_ANONYMOUS_CATEGORIES = ('peer', 'direct_report')
+
 # Everyone but the reviewee: every "others" score is about these groups, as the section scores are
-OTHERS_CATEGORIES = tuple(category for category in CATEGORY_ORDER if category != 'self')
+OTHERS_CATEGORIES = tuple(category for category in CATEGORY_ORDER if category != 'self') + (
+    COMBINED_ANONYMOUS_CATEGORY,
+)
+
 
 # Overall ratings, see report_texts.py for their texts
 RATING_OUTSTANDING = 'outstanding'
@@ -240,8 +247,171 @@ def _calculate_peer_benchmarks(cycle, section_summary):
 
     return benchmarks if benchmarks else None
 
+def _combined_category_result(question_data, category_data):
+    """Build display data for a combined reviewer group from its raw responses."""
+    responses = []
+    unmapped = 0
 
-def apply_display_anonymization(report_data, min_threshold, exempt_categories=None):
+    for data in category_data:
+        responses.extend(data.get('responses') or [])
+        unmapped += data.get('unmapped', 0)
+
+    result = {
+        'count': sum(data.get('count', 0) for data in category_data),
+        'responses': responses,
+    }
+
+    if unmapped:
+        result['unmapped'] = unmapped
+
+    question_type = question_data.get('question_type')
+    config = question_data.get('question_config') or {}
+    options = question_data.get('options') or []
+    weight_by_id = {option['id']: option.get('weight') for option in options}
+
+    if question_type in ('rating', 'scale'):
+        numeric = [r for r in responses if isinstance(r, (int, float))]
+        if numeric:
+            result['avg'] = round(sum(numeric) / len(numeric), 2)
+            if question_type == 'rating':
+                result['distribution'] = {
+                    str(value): count
+                    for value, count in Counter(numeric).items()
+                }
+
+    elif question_type in ('likert', 'single_choice'):
+        values = [r for r in responses if r]
+        if values:
+            result['distribution'] = count_answers(values)
+
+            if question_type == 'single_choice' and config.get('scoring_enabled'):
+                scores = [
+                    weight_by_id[value]
+                    for value in values
+                    if weight_by_id.get(value) is not None
+                ]
+                if scores:
+                    result['avg'] = round(sum(scores) / len(scores), 2)
+
+    elif question_type == 'multiple_choice':
+        selected = []
+
+        for response in responses:
+            if response and isinstance(response, list):
+                selected.extend(response)
+
+        if selected:
+            result['distribution'] = count_answers(selected)
+
+        if config.get('scoring_enabled'):
+            scores = []
+
+            for response in responses:
+                if not response or not isinstance(response, list):
+                    continue
+
+                weights = [
+                    weight_by_id[value]
+                    for value in response
+                    if weight_by_id.get(value) is not None
+                ]
+
+                if weights:
+                    scores.append(sum(weights))
+
+            if scores:
+                result['avg'] = round(sum(scores) / len(scores), 2)
+
+    return result
+
+
+def _combine_small_reviewer_groups(report_data, min_threshold):
+    """
+    Combine peer and direct-report feedback for display when both groups are
+    individually below the anonymity threshold but satisfy it together.
+    """
+    counts = reviewer_counts(report_data)
+    peer_count = counts.get('peer', 0)
+    direct_report_count = counts.get('direct_report', 0)
+
+    if not (
+        peer_count > 0
+        and direct_report_count > 0
+        and (
+            peer_count < min_threshold
+            or direct_report_count < min_threshold
+        )
+        and peer_count + direct_report_count >= min_threshold
+    ):
+        return copy.deepcopy(report_data), False
+
+
+
+
+    combined_data = copy.deepcopy(report_data)
+
+    for section_data in combined_data.get('by_section', {}).values():
+        for question_data in section_data.get('questions', {}).values():
+            by_category = question_data.get('by_category', {})
+
+            sources = [
+                by_category[category]
+                for category in COMBINABLE_ANONYMOUS_CATEGORIES
+                if category in by_category
+            ]
+
+            if not sources:
+                continue
+
+            by_category.pop('peer', None)
+            by_category.pop('direct_report', None)
+
+            by_category[COMBINED_ANONYMOUS_CATEGORY] = (
+                _combined_category_result(question_data, sources)
+            )
+
+            old_order = question_data.get('category_order') or []
+            new_order = []
+            combined_added = False
+
+            for category in old_order:
+                if category in COMBINABLE_ANONYMOUS_CATEGORIES:
+                    if not combined_added:
+                        new_order.append(COMBINED_ANONYMOUS_CATEGORY)
+                        combined_added = True
+                elif category in by_category:
+                    new_order.append(category)
+
+            if (
+                COMBINED_ANONYMOUS_CATEGORY in by_category
+                and COMBINED_ANONYMOUS_CATEGORY not in new_order
+            ):
+                new_order.append(COMBINED_ANONYMOUS_CATEGORY)
+
+            question_data['category_order'] = new_order
+
+    insights, section_summary = _calculate_insights(combined_data)
+    combined_data['insights'] = insights
+    combined_data['section_summary'] = section_summary
+    combined_data['charts'] = _calculate_chart_data(combined_data)
+
+    # These were calculated using the original category structure.
+    combined_data.pop('peer_benchmarks', None)
+
+    if comparison := combined_data.get('comparison'):
+        comparison.pop('overall_trend', None)
+        comparison.pop('section_trends', None)
+
+    combined_data['combined_anonymous_feedback'] = True
+
+    return combined_data, True
+
+def apply_display_anonymization(
+    report_data,
+    min_threshold,
+    exempt_categories=None,
+    combine_small_groups=False,
+):
     """
     Apply anonymization filtering to report data for display purposes.
 
@@ -270,6 +440,12 @@ def apply_display_anonymization(report_data, min_threshold, exempt_categories=No
     """
     if exempt_categories is None:
         exempt_categories = ['self', 'manager']
+
+    if combine_small_groups:
+        report_data, was_combined = _combine_small_reviewer_groups(
+            report_data,
+            min_threshold,
+        )
 
     # Deep copy to avoid modifying original data
     filtered_data = copy.deepcopy(report_data)
@@ -421,7 +597,7 @@ def _calculate_insights(report_data):
     # Calculate section-level averages
     # Ensure 'self' is always listed first
     section_summary = {}
-    category_order = CATEGORY_ORDER
+    category_order = CATEGORY_ORDER + (COMBINED_ANONYMOUS_CATEGORY,)
 
     for section_title, categories in section_averages.items():
         section_summary[section_title] = {}

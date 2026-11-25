@@ -17,7 +17,7 @@ from reviews.templatetags.feedback_tags import distribution_key, likert_positive
     report_options
 
 from .report_texts import RATING_RANGES, RATINGS
-from .services import _hidden_groups, get_rating_key
+from .services import COMBINED_ANONYMOUS_CATEGORY, _hidden_groups, get_rating_key
 
 from .context import build_report_context
 from .dreyfus_service import AGENCY_STAGES, QUADRANTS
@@ -26,7 +26,7 @@ from .pdf_summary import executive_summary
 
 FONT_DIR = settings.BASE_DIR / 'static' / 'fonts' / 'roboto'
 # One colour per reviewer group in the radars; self is a dashed dark outline
-GROUP_COLOURS = {'self': '#111827', 'peer': '#4f46e5', 'manager': '#0891b2', 'direct_report': '#db2777'}
+GROUP_COLOURS = {'self': '#111827', 'peer': '#4f46e5', 'manager': '#0891b2', 'direct_report': '#db2777','combined_anonymous': '#8b5cf6',}
 
 # What it takes to reach an agency level: the same texts as the web report (_dreyfus_profile.html)
 AGENCY_NEXT_STEPS = {
@@ -205,9 +205,10 @@ def _feedback_groups(summary, hidden, message):
         'peer': lambda n: ngettext('%(count)s peer', '%(count)s peers', n),
         'manager': lambda n: ngettext('%(count)s manager', '%(count)s managers', n),
         'direct_report': lambda n: ngettext('%(count)s direct report', '%(count)s direct reports', n),
+        'combined_anonymous': lambda n: ngettext('%(count)s combined anonymous response', '%(count)s combined anonymous responses', n,),
     }
     lines = []
-    for category in [c for c in CATEGORY_ORDER if c != 'self'] + ['self']:
+    for category in [c for c in (*CATEGORY_ORDER, COMBINED_ANONYMOUS_CATEGORY) if c != 'self'] + ['self']:
         if not counts.get(category):
             continue
         if category in hidden:
@@ -232,7 +233,12 @@ def _section_table(data, insights, comparison):
     benchmarks = data.get('peer_benchmarks') or {}
     strengths = {item['area'] for item in insights.get('strengths') or []}
     growth = {item['area']: item for item in insights.get('development_areas') or []}
-    groups = [c for c in CATEGORY_ORDER if c != 'self' and any(c in cats for cats in summary.values())]
+    groups = [
+    category
+    for category in (*CATEGORY_ORDER, COMBINED_ANONYMOUS_CATEGORY)
+    if category != 'self'
+    and any(category in categories for categories in summary.values())
+    ]
     hidden = {}
     rows = []
     for name, categories in summary.items():

@@ -1,0 +1,39 @@
+{% load i18n %}{% comment %}
+The question before the org chart changes, for one manager or direct report added on the reviewers card.
+A place in the chart lets the managers of a unit read the reports of its members, so every text names who gets to read whose reports.
+data-chart-summary is the sentence the start dialog lists for a choice that changes the chart.
+{% endcomment %}
+{% if also_count %}{% blocktrans trimmed count counter=also_count with names=also_names person=person.name unit=relation.unit_name asvar also_text %}{{ names }} also manages the unit {{ unit }} and can read the reports of {{ person }} too.{% plural %}{{ names }} also manage the unit {{ unit }} and can read the reports of {{ person }} too.{% endblocktrans %}{% endif %}
+{% if relation.state == 'missing' %}
+<label class="rv-chart-check" data-chart-choice="{{ picked.uuid }}">
+    <input type="checkbox" name="{{ field }}" value="place" checked data-chart-summary="{% blocktrans trimmed with manager=manager.name person=person.name %}{{ manager }} becomes the manager of {{ person }} in the org chart.{% endblocktrans %}">
+    <span>{% blocktrans trimmed with manager=manager.name person=person.name %}Also make {{ manager }} the manager of {{ person }} in the org chart.{% endblocktrans %}
+        <small>{% if relation.new_unit %}{% blocktrans trimmed with person=person.name unit=relation.unit_name %}Blik makes a new unit {{ unit }} and puts {{ person }} in it.{% endblocktrans %}{% else %}{% blocktrans trimmed with person=person.name unit=relation.unit_name %}{{ person }} goes into the unit {{ unit }}.{% endblocktrans %}{% endif %}
+        {% blocktrans trimmed with manager=manager.name person=person.name %}{{ manager }} can then read the reports of {{ person }}.{% endblocktrans %}
+        {{ also_text }}</small>
+    </span>
+</label>
+{% elif relation.state == 'conflict' %}
+<fieldset class="rv-chart-choice" data-chart-choice="{{ picked.uuid }}">
+    <legend>{% blocktrans trimmed count counter=managers_count with managers=managers_names person=person.name %}The org chart names {{ managers }} as the manager of {{ person }}.{% plural %}The org chart names {{ managers }} as the managers of {{ person }}.{% endblocktrans %}</legend>
+    <label>
+        <input type="radio" name="{{ field }}" value="" checked>
+        <span>{% trans 'Do not change the org chart.' %}
+            <small>{% if category == 'manager' %}{% blocktrans trimmed with name=picked.name %}{{ name }} gets an invitation as a manager in this list only.{% endblocktrans %}{% else %}{% blocktrans trimmed with name=picked.name %}{{ name }} gets an invitation as a direct report in this list only.{% endblocktrans %}{% endif %}</small>
+        </span>
+    </label>
+    <label>
+        <input type="radio" name="{{ field }}" value="move"{% if also_count %} aria-describedby="{{ field }}-also"{% endif %} data-chart-summary="{% blocktrans trimmed with manager=manager.name person=person.name %}{{ person }} moves to {{ manager }} in the org chart.{% endblocktrans %}">
+        <span>{% blocktrans trimmed with manager=manager.name person=person.name %}Move {{ person }} to {{ manager }} in the org chart.{% endblocktrans %}
+            <small>{% blocktrans trimmed count counter=managers_count with manager=manager.name managers=managers_names person=person.name %}{{ manager }} can then read the reports of {{ person }}. {{ managers }} can no longer read them.{% plural %}{{ manager }} can then read the reports of {{ person }}. {{ managers }} can no longer read them.{% endblocktrans %}</small>
+        </span>
+    </label>
+    <label>
+        <input type="radio" name="{{ field }}" value="both"{% if also_count %} aria-describedby="{{ field }}-also"{% endif %} data-chart-summary="{% blocktrans trimmed with manager=manager.name person=person.name %}{{ manager }} also becomes a manager of {{ person }} in the org chart.{% endblocktrans %}">
+        <span>{% blocktrans trimmed with manager=manager.name person=person.name %}Make {{ manager }} a manager of {{ person }} too.{% endblocktrans %}
+            <small>{% blocktrans trimmed count counter=managers_count with manager=manager.name managers=managers_names person=person.name %}{{ manager }} and {{ managers }} can both read the reports of {{ person }}.{% plural %}{{ manager }}, {{ managers }} can all read the reports of {{ person }}.{% endblocktrans %}</small>
+        </span>
+    </label>
+    {% if also_count %}<small id="{{ field }}-also">{{ also_text }}</small>{% endif %}
+</fieldset>
+{% endif %}

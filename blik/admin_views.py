@@ -24,6 +24,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone, translation
 from django.utils.functional import partition
+from django.utils.text import get_text_list
 from django.utils.translation import gettext as _, gettext_lazy, ngettext
 from django.views.decorators.http import require_POST
 
@@ -735,8 +736,45 @@ REVIEWER_CARD_CATEGORIES = (
 )
 
 
-def save_posted_reviewers(request, reviewee):
-    """The POST of the reviewers card: save the list and, with `start`, create the cycle from it."""
+CHART_CHOICES_FOR_STATE = {'missing': ('place',), 'conflict': ('move', 'both')}
+
+
+def chart_pair(reviewee, picked, category):
+    """(manager, person) in the org chart for `picked` on the reviewee's list as a manager or a direct report."""
+    return (picked, reviewee) if category == 'manager' else (reviewee, picked)
+
+
+def apply_posted_chart_choices(request, reviewee):
+    """
+    The org chart choices of the card, for the managers and direct reports of
+    the list as saved now. A choice that no longer fits the chart is skipped.
+    """
+    saved = review_setup(reviewee)
+    changes = 0
+    for category in ('manager', 'direct_report'):
+        for picked in saved.people[category]:
+            action = request.POST.get(f'chart_{category}_{picked.uuid}')
+            if action not in ('place', 'move', 'both'):
+                continue
+            manager, person = chart_pair(reviewee, picked, category)
+            if action not in CHART_CHOICES_FOR_STATE.get(chart_relation(manager, person)['state'], ()):
+                continue
+            try:
+                apply_chart_choice(manager, person, action)
+            except ValueError:
+                continue
+            changes += 1
+    if changes:
+        messages.success(request, ngettext(
+            '%(count)s change saved in the org chart.', '%(count)s changes saved in the org chart.', changes)
+            % {'count': changes})
+
+
+def save_posted_reviewers(request, reviewee, chart=False):
+    """
+    The POST of the reviewers card: save the list and, with `start`, create the cycle from it.
+    With `chart` (the user may edit the org chart), apply the org chart choices of the card.
+    """
     org = request.organization
     try:
         questionnaire = Questionnaire.objects.get(
@@ -753,6 +791,9 @@ def save_posted_reviewers(request, reviewee):
         messages.warning(request, warning)
     save_review_setup(reviewee, questionnaire, flags,
                       {c: people[c] for c in listed}, {c: emails[c] for c in listed})
+    if chart:
+        # Before the cycle: a cycle that fails to start does not undo what the user chose for the chart.
+        apply_posted_chart_choices(request, reviewee)
     if request.POST.get('action') != 'start':
         messages.success(request, _('Reviewers saved.'))
         return
@@ -797,7 +838,7 @@ def reviewee_detail(request, reviewee_uuid):
     if request.method == 'POST':
         if not access['setup']:
             raise Http404
-        save_posted_reviewers(request, reviewee)
+        save_posted_reviewers(request, reviewee, chart=access['chart'])
         return redirect('reviewee_detail', reviewee_uuid=reviewee.uuid)
 
     setup = review_setup(reviewee)
@@ -845,6 +886,44 @@ def reviewee_detail(request, reviewee_uuid):
         'default_language_name': language_name(default_language(org)),
         **billing_context(org, request.user),
     })
+
+
+@login_required
+def reviewee_chart_relation(request, reviewee_uuid):
+    """
+    What the org chart says about a manager or direct report just picked on the
+    reviewers card, with the choice the card shows (empty when the chart has it).
+
+    GET `person=<uuid>&category=manager|direct_report`. Only for those who may edit the chart.
+    """
+    denied = _manage_required(request)
+    if denied:
+        return denied
+    org = request.organization
+    reviewee = get_object_or_404(Reviewee.objects.for_organization(org), uuid=reviewee_uuid)
+    category = request.GET.get('category')
+    if category not in ('manager', 'direct_report'):
+        return JsonResponse({'error': 'category must be manager or direct_report.'}, status=400)
+    try:
+        picked = Reviewee.objects.for_organization(org).get(uuid=request.GET.get('person'))
+    except (Reviewee.DoesNotExist, ValidationError, ValueError):
+        return JsonResponse({'error': 'Reviewee not found.'}, status=404)
+    if picked.pk == reviewee.pk:
+        return JsonResponse({'error': 'A person cannot be their own manager.'}, status=400)
+
+    manager, person = chart_pair(reviewee, picked, category)
+    relation = chart_relation(manager, person)
+    managers = [m.name for m in relation['managers']]
+    also = [m.name for m in relation['also_managers']]
+    html = '' if relation['state'] == 'has' else render_to_string(
+        'admin_dashboard/partials/reviewee_chart_choice.html', {
+            'category': category, 'picked': picked, 'manager': manager, 'person': person,
+            'relation': relation, 'field': f'chart_{category}_{picked.uuid}',
+            'managers_names': get_text_list(managers, _('and')), 'managers_count': len(managers),
+            'also_names': get_text_list(also, _('and')), 'also_count': len(also),
+        }, request=request)
+    return JsonResponse({'state': relation['state'], 'managers': managers, 'unit_name': relation['unit_name'],
+                         'new_unit': relation['new_unit'], 'also_managers': also, 'html': html})
 
 
 @login_required

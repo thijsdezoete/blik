@@ -1,7 +1,7 @@
 {% load i18n %}
 <section class="card" aria-labelledby="reviewers-title">
 {% if access.setup %}
-<form method="post" id="reviewers-form" data-reviewers-form data-fill-url="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ reviewee.uuid }}" data-threshold="{{ threshold }}">
+<form method="post" id="reviewers-form" data-reviewers-form data-fill-url="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ reviewee.uuid }}" data-threshold="{{ threshold }}" data-source="{{ setup.source }}"{% if access.chart %} data-chart-url="{% url 'reviewee_chart_relation' reviewee.uuid %}"{% endif %}>
     {% csrf_token %}
     <input type="hidden" name="categories_submitted" value="1">
     <div class="card-header">
@@ -14,6 +14,7 @@
     <div class="card-body">
         <p>{% trans 'These people get an invitation when you start a review. Nobody can see who gave which answer.' %}</p>
         <p class="rv-note" data-source-line data-chart="{% trans 'From the org chart' %}" data-previous="{% trans 'From the previous review' %}" aria-live="polite"{% if setup.source != 'chart' and setup.source != 'previous' %} hidden{% endif %}>{% if setup.source == 'chart' %}{% trans 'From the org chart' %}{% elif setup.source == 'previous' %}{% trans 'From the previous review' %}{% endif %}</p>
+        <p class="help-text rv-fill-error" data-fill-error role="alert" hidden>{% trans 'The reviewers could not be loaded. Try again.' %}</p>
         <div class="rv-cats">
             {% for category in categories %}
             <div class="rv-cat" data-category="{{ category.code }}">
@@ -23,6 +24,7 @@
                     <div class="rv-people"><span class="rv-chip">{{ reviewee.name }}</span></div>
                     {% else %}
                     {% if access.manage %}<div data-reviewee-picker data-field-name="{{ category.code }}_reviewees" data-initial="{{ category.initial }}" data-placeholder="{{ category.placeholder }}"></div>
+                    {% if access.chart and category.code != 'peer' %}<div data-chart-choices aria-live="polite"></div>{% endif %}
                     {% else %}<label class="sr-only" for="{{ category.code }}-emails">{{ category.email_label }}</label><textarea id="{{ category.code }}-emails" name="{{ category.code }}_emails" class="form-control" rows="2">{{ category.email_text }}</textarea>{% endif %}
                     {% if category.code != 'manager' %}<span class="help-text" data-threshold-line{% if not category.under_threshold %} hidden{% endif %}>{% blocktrans trimmed count counter=threshold %}Fewer than {{ counter }} person. The report does not show this group.{% plural %}Fewer than {{ counter }} people. The report does not show this group.{% endblocktrans %}</span>{% endif %}
                     {% endif %}

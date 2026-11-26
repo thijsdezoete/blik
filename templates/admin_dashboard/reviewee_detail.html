@@ -83,6 +83,7 @@
     <div class="card-body">
         {% if active_cycles %}<p class="help-text reviewee-start-note">{% trans 'This person already has an active cycle. This will start another review.' %}</p>{% endif %}
         <p data-reviewer-count>{% blocktrans trimmed count counter=invited_count %}{{ counter }} reviewer gets an invitation.{% plural %}{{ counter }} reviewers get an invitation.{% endblocktrans %}</p>
+        {% if access.chart %}<ul class="rv-chart-summary" data-chart-summary-list hidden></ul>{% endif %}
         <p class="help-text">{% trans 'The reviewee is notified by email right away.' %}</p>
         {% if cycle_credits is not None %}<p class="help-text">{% trans 'A cycle for one reviewee with one questionnaire costs one credit. Reviewers are free.' %} {% blocktrans trimmed count counter=cycle_credits %}{{ counter }} credit left.{% plural %}{{ counter }} credits left.{% endblocktrans %}</p>{% endif %}
         <label class="form-check rv-send-now"><input type="checkbox" class="form-check-input" name="send_invitations_now" value="1" form="reviewers-form">{% trans 'Send invitation emails immediately after creating cycle' %}</label>

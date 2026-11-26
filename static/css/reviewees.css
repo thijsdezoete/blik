@@ -75,6 +75,19 @@
 .rv-emails { margin-top: 1.5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light); }
 .rv-emails summary { padding: 0.75rem 1rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); }
 .rv-emails > :not(summary) { margin: 0 1rem 1rem; }
+.rv-fill-error { margin: 1rem 0 0; color: var(--danger-700); }
+.rv-fill-error[hidden] { display: none; }
+/* Asked before the org chart changes: a box when the chart gives no manager */
+.rv-chart-check { display: flex; align-items: flex-start; gap: 0.625rem; margin-top: 0.75rem; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light); font-size: 0.875rem; }
+.rv-chart-check input { width: 1rem; height: 1rem; margin-top: 0.2rem; accent-color: var(--primary); flex-shrink: 0; }
+.rv-chart-check small { display: block; font-size: 0.8125rem; color: var(--text-secondary); }
+/* The same question when the chart names another manager: three choices, the first changes nothing */
+.rv-chart-choice { min-width: 0; margin: 0.75rem 0 0; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light); font-size: 0.875rem; }
+.rv-chart-choice legend { float: left; width: 100%; padding: 0; margin-bottom: 0.5rem; font-size: 0.8125rem; color: var(--warning-800); }
+.rv-chart-choice label { clear: both; display: flex; align-items: flex-start; gap: 0.625rem; padding: 0.375rem 0; }
+.rv-chart-choice input { width: 1rem; height: 1rem; margin-top: 0.2rem; accent-color: var(--primary); flex-shrink: 0; }
+.rv-chart-choice small { display: block; font-size: 0.8125rem; color: var(--text-secondary); }
+.rv-chart-summary { margin: 0.75rem 0 0; padding-left: 1.25rem; font-size: 0.875rem; }
 .rv-dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.625rem 1rem; margin: 0; font-size: 0.875rem; }
 .rv-dl dt { color: var(--text-secondary); }
 .rv-dl dd { margin: 0; overflow-wrap: anywhere; }

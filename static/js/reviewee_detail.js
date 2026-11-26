@@ -17,14 +17,71 @@
     form.addEventListener('input', showThresholds);
     form.addEventListener('reviewee-picker:change', showThresholds);
 
+    // Org chart: for a manager or direct report the user adds, the server says what the chart has and
+    // gives the question to show (empty when the chart has the relation). Only for those who may edit the chart.
+    const chartUrl = form.dataset.chartUrl;
+    const chartCategories = ['manager', 'direct_report'];
+    const known = {};  // category -> uuids the card has seen, so only added people are asked about
+    let filling = false;
+    const choices = category => row(category).querySelector('[data-chart-choices]');
+    const selectedUuids = category => (picker(category)?.getSelected() || []).map(person => person.uuid);
+    const choiceOf = (category, uuid) => choices(category).querySelector('[data-chart-choice="' + CSS.escape(uuid) + '"]');
+
+    const askChart = async (category, uuid) => {
+        let response;
+        try {
+            response = await fetch(chartUrl + '?' + new URLSearchParams({person: uuid, category}), {
+                headers: {'Accept': 'application/json'}, credentials: 'same-origin',
+            });
+        } catch (error) {
+            return;
+        }
+        if (!response.ok) return;
+        const data = await response.json();
+        // The person may be gone, or asked about twice, by the time the answer comes.
+        if (!data.html || !selectedUuids(category).includes(uuid) || choiceOf(category, uuid)) return;
+        choices(category).insertAdjacentHTML('beforeend', data.html);
+    };
+
+    const syncChart = category => {
+        const now = selectedUuids(category);
+        choices(category).querySelectorAll('[data-chart-choice]').forEach(choice => {
+            if (!now.includes(choice.dataset.chartChoice)) choice.remove();
+        });
+        now.filter(uuid => !known[category].includes(uuid)).forEach(uuid => askChart(category, uuid));
+        known[category] = now;
+    };
+
+    if (chartUrl) {
+        form.addEventListener('reviewee-picker:change', event => {
+            const category = event.target.closest('.rv-cat')?.dataset.category;
+            if (!filling && chartCategories.includes(category)) syncChart(category);
+        });
+        const startChart = () => chartCategories.forEach(category => {
+            // A saved list or the org chart is not new: only the people of a previous review count as added.
+            known[category] = form.dataset.source === 'previous' ? [] : selectedUuids(category);
+            syncChart(category);
+        });
+        // A deferred script runs before DOMContentLoaded, when the pickers are built (their listener comes first).
+        document.addEventListener('DOMContentLoaded', startChart);
+    }
+
     // The fill buttons replace what the card shows. Nothing is saved until "Save reviewers".
     form.querySelectorAll('[data-fill]').forEach(button => {
         button.addEventListener('click', async () => {
-            const response = await fetch(form.dataset.fillUrl + '&source=' + button.dataset.fill, {
-                headers: {'Accept': 'application/json'}, credentials: 'same-origin',
-            });
-            if (!response.ok) return;
+            const error = form.querySelector('[data-fill-error]');
+            let response;
+            try {
+                response = await fetch(form.dataset.fillUrl + '&source=' + button.dataset.fill, {
+                    headers: {'Accept': 'application/json'}, credentials: 'same-origin',
+                });
+            } catch (failure) {
+                response = null;
+            }
+            error.hidden = Boolean(response?.ok);
+            if (!response?.ok) return;
             const data = await response.json();
+            filling = true;
             listed.forEach(category => {
                 const people = data[category] || [];
                 const emails = data.emails[category] || [];
@@ -38,6 +95,15 @@
                     field(category).value = people.map(person => person.email).concat(emails).join(', ');
                 }
             });
+            filling = false;
+            if (chartUrl) {
+                // The people of the previous review count as added; the org chart has its own people already.
+                chartCategories.forEach(category => {
+                    known[category] = data.source === 'previous' ? [] : selectedUuids(category);
+                    choices(category).replaceChildren();
+                    syncChart(category);
+                });
+            }
             Object.entries(data.flags).forEach(([name, on]) => {
                 const box = form.querySelector('input[name="' + name + '"]');
                 if (box) box.checked = on;
@@ -59,5 +125,11 @@
         document.querySelector('[data-reviewer-count]').textContent = interpolate(ngettext(
             '%(counter)s reviewer gets an invitation.', '%(counter)s reviewers get an invitation.', invited),
             {counter: invited}, true);
+        // Each org chart change the card will make, in the sentence the server put on its choice.
+        const summary = document.querySelector('[data-chart-summary-list]');
+        if (!summary) return;
+        summary.replaceChildren(...[...form.querySelectorAll('[data-chart-choices] input:checked[data-chart-summary]')]
+            .map(input => Object.assign(document.createElement('li'), {textContent: input.dataset.chartSummary})));
+        summary.hidden = !summary.children.length;
     });
 })();

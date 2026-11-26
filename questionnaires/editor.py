@@ -434,18 +434,29 @@ def _rating_count(post):
 
 
 def _scale_config(post):
+    """The lowest and highest value of a slider (whole numbers) and its step, which can be below 1 (0.5, 0.1)."""
+
     try:
-        config = {
-            key: int(post.get(f'scale_{key}', default)) for key, default in (('min', 1), ('max', 100), ('step', 1))
-        }
+        config = {key: int(post.get(f'scale_{key}', default)) for key, default in (('min', 1), ('max', 100))}
     except ValueError:
-        raise EditorError(_('The lowest value, the highest value and the step of a slider must be whole numbers.'))
+        raise EditorError(_('The lowest and the highest value of a slider must be whole numbers.'))
 
     if config['min'] >= config['max']:
         raise EditorError(_('The highest value of a slider must be more than its lowest value.'))
 
-    if config['step'] <= 0:
-        raise EditorError(_('The step of a slider must be more than 0.'))
+    try:
+        step = float(post.get('scale_step', 1))
+    except ValueError:
+        step = 0
+
+    if not isfinite(step) or step <= 0:
+        raise EditorError(_('The step of a slider must be a number above 0, such as 1 or 0.5.'))
+
+    if step > config['max'] - config['min']:
+        raise EditorError(_('The step of a slider must fit between its lowest and its highest value.'))
+
+    # A whole step stays a whole number, as it was always stored
+    config['step'] = int(step) if step == int(step) else round(step, 4)
 
     return config
 

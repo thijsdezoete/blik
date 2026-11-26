@@ -151,7 +151,7 @@
             <span class="scale-label-min">{{ question.labels.min }}</span>
             {% endif %}
             <span class="scale-value-display" id="scale_value_{{ question.id }}">
-                {% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ question.config.min }}{% endif %}
+                {% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id|browser_number }}{% else %}{{ question.config.min|browser_number }}{% endif %}
             </span>
             {% if question.labels.max %}
             <span class="scale-label-max">{{ question.labels.max }}</span>
@@ -162,10 +162,10 @@
             name="question_{{ question.id }}"
             id="scale_input_{{ question.id }}"
             class="scale-slider"
-            min="{{ question.config.min }}"
-            max="{{ question.config.max }}"
-            step="{{ question.config.step }}"
-            value="{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% else %}{{ question.config.min }}{% endif %}"
+            min="{{ question.config.min|browser_number }}"
+            max="{{ question.config.max|browser_number }}"
+            step="{{ question.config.step|browser_number|default:'1' }}"
+            value="{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id|browser_number }}{% else %}{{ question.config.min|browser_number }}{% endif %}"
             {% if question.required %}required{% endif %}
             oninput="document.getElementById('scale_value_{{ question.id }}').textContent = this.value"
         >

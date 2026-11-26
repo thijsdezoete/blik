@@ -1,4 +1,4 @@
-{% load i18n l10n %}{# "More options" of the open question: closed at first; the script keeps it open for the next question once opened #}
+{% load i18n l10n feedback_tags %}{# "More options" of the open question: closed at first; the script keeps it open for the next question once opened #}
 <details data-more style="margin-top: 1rem;">
     <summary style="cursor: pointer; font-weight: 500; color: var(--primary);">{% trans 'More options' %}</summary>
     <div style="margin-top: 1rem;">
@@ -34,8 +34,8 @@
 
         <div class="form-group" data-types="scale">
             <label class="form-label" for="question-{{ id }}-step">{% trans 'Step of the slider' %}</label>
-            <input id="question-{{ id }}-step" type="number" min="1" step="1" class="form-control" style="max-width: 12rem;" name="scale_step" value="{{ values.scale.step }}">
-            <span class="help-text">{% trans 'With a step of 5 on a slider from 0 to 100, reviewers can pick 0, 5, 10 and so on.' %}</span>
+            <input id="question-{{ id }}-step" type="number" min="0" step="any" class="form-control" style="max-width: 12rem;" name="scale_step" value="{{ values.scale.step|browser_number }}">
+            <span class="help-text">{% trans 'With a step of 5 on a slider from 0 to 100, reviewers can pick 0, 5, 10 and so on. A step below 1 works too: with 0.5 on a slider from 1 to 5 they can pick 1, 1.5, 2 and so on.' %}</span>
         </div>
 
         {% if 'skill' in models_on and question.scoring.has_score %}

@@ -269,14 +269,16 @@ def submit_feedback(request, token):
                     continue
             elif question.question_type == 'scale':
                 try:
-                    scale_value = int(answer_value)
+                    # A slider with a step below 1 gives numbers such as 3.5; nan and inf fail the comparison below
+                    scale_value = float(answer_value)
                     min_val = question.config.get('min', 1)
                     max_val = question.config.get('max', 100)
-                    if scale_value < min_val or scale_value > max_val:
+                    if not min_val <= scale_value <= max_val:
                         errors.append(_('Scale value must be between %(min)s and %(max)s') % {'min': min_val, 'max': max_val})
                         continue
-                    answer_data = {'value': scale_value}
-                except ValueError:
+                    # A whole number stays a whole number, as it was always stored
+                    answer_data = {'value': int(scale_value) if scale_value == int(scale_value) else round(scale_value, 4)}
+                except (TypeError, ValueError):
                     errors.append(_('Invalid scale value'))
                     continue
             elif question.question_type in OPTION_TYPES:

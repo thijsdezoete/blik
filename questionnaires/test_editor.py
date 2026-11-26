@@ -414,6 +414,39 @@ class SaveQuestionTests(EditorTestCase):
                 self.save(question, question_text='Question 0', question_type='scale', **fields)
 
 
+    def test_a_slider_can_have_a_step_below_one(self):
+        question = self.add_question()
+
+        for posted, stored in (('0.5', 0.5), ('0.1', 0.1), ('2', 2), ('2.0', 2)):
+            with self.subTest(step=posted):
+                self.save(question, question_text='Question 0', question_type='scale', scale_min='1', scale_max='5',
+                          scale_step=posted)
+                question.refresh_from_db()
+
+                self.assertEqual(question.config['step'], stored)
+                # A whole step stays a whole number, as before
+                self.assertIs(type(question.config['step']), type(stored))
+
+    def test_a_step_that_is_no_number_above_zero_or_does_not_fit_is_refused(self):
+        question = self.add_question()
+        self.save(question, question_text='Question 0', question_type='scale', scale_min='1', scale_max='5',
+                  scale_step='1')
+
+        for step in ('0', '-0.5', 'nan', 'inf', '0,5', 'half', '', '4.5', '9'):
+            with self.subTest(step=step), self.assertRaises(EditorError):
+                self.save(question, question_text='Question 0', question_type='scale', scale_min='1', scale_max='5',
+                          scale_step=step)
+
+        question.refresh_from_db()
+        self.assertEqual(question.config['step'], 1)
+
+    def test_the_ends_of_a_slider_stay_whole_numbers(self):
+        question = self.add_question()
+
+        with self.assertRaises(EditorError):
+            self.save(question, question_text='Question 0', question_type='scale', scale_min='0.5', scale_max='5')
+
+
 class SaveAdviceTests(EditorTestCase):
     """The advice of a question, written per skill stage in the advice dialog of the editor."""
 

@@ -190,6 +190,19 @@ def report_labels(question_data):
 
 
 @register.filter
+def browser_number(value):
+    """A number as an attribute of an input needs it: with a point in every language, and whole when it is whole.
+
+    A template writes 0.5 as "0,5" in a language with a decimal comma, which a range or number input does not read.
+    """
+
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return ''
+
+    return f'{value:g}'
+
+
+@register.filter
 def rating_values(question):
     """The values of a score question as text, '1' up to its config's max: a Question or a report question dict.
 

@@ -94,7 +94,7 @@ from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
-from reviews.setup import previous_cycle_reviewers
+from reviews.setup import previous_cycle_reviewers, review_setup, save_review_setup
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     CREDITS_PER_PACK,
@@ -144,21 +144,21 @@ def legacy_id_redirect(request, pk, model, url_name):
     return redirect(url_name, obj.uuid, permanent=True)
 
 
-def collect_reviewer_emails(request, organization, categories):
+def posted_setup(request, organization, categories):
     """
-    Merge reviewer selections from the picker and the email textareas into
-    {category: [email, ...]}, deduplicated by normalized email.
+    Read the reviewer selections of the cycle form: people from the picker and
+    emails from the textareas, per category.
 
     Picker hidden inputs are named `<category>_reviewees` and carry Reviewee
     UUIDs. Textareas are named `<category>_emails` and carry comma/newline
-    separated emails. Categories not in `categories` come back empty.
+    separated emails. Categories not in `categories` come back empty. An email
+    of a person already picked in that category is not repeated.
 
-    Per the anonymity invariant, only emails are returned: the Reviewee
-    identity is dropped here and never stored on the token.
-
-    Returns (email_assignments, warnings).
+    Returns (people, emails, warnings): {category: [Reviewee]},
+    {category: [email]} and the texts for the emails skipped as invalid.
     """
-    email_assignments = {code: [] for code, _label in ReviewerToken.CATEGORY_CHOICES}
+    people = {code: [] for code, _label in ReviewerToken.CATEGORY_CHOICES}
+    emails = {code: [] for code, _label in ReviewerToken.CATEGORY_CHOICES}
     warnings = []
     labels = dict(ReviewerToken.CATEGORY_CHOICES)
 
@@ -166,7 +166,7 @@ def collect_reviewer_emails(request, organization, categories):
     all_uuids = set()
     for code in categories:
         all_uuids.update(request.POST.getlist(f'{code}_reviewees'))
-    uuid_to_email = {}
+    by_uuid = {}
     if all_uuids and organization:
         valid = []
         for u in all_uuids:
@@ -174,21 +174,21 @@ def collect_reviewer_emails(request, organization, categories):
                 valid.append(UUID(str(u)))
             except ValueError:
                 continue
-        uuid_to_email = {
-            str(r.uuid): r.email
+        by_uuid = {
+            str(r.uuid): r
             for r in Reviewee.objects.for_organization(organization).filter(uuid__in=valid)
         }
 
     for code in categories:
         seen = set()
-        collected = []
 
         # Unknown UUIDs (stale page, deleted reviewee, other org) are skipped.
         for u in request.POST.getlist(f'{code}_reviewees'):
-            email = (uuid_to_email.get(str(u)) or '').strip().lower()
+            person = by_uuid.get(str(u))
+            email = ((person.email if person else '') or '').strip().lower()
             if email and email not in seen:
                 seen.add(email)
-                collected.append(email)
+                people[code].append(person)
 
         raw = (request.POST.get(f'{code}_emails') or '').strip()
         for candidate in re.split(r'[,\n]+', raw) if raw else []:
@@ -206,11 +206,24 @@ def collect_reviewer_emails(request, organization, categories):
             normalized = candidate.lower()
             if normalized not in seen:
                 seen.add(normalized)
-                collected.append(normalized)
+                emails[code].append(normalized)
 
-        email_assignments[code] = collected
+    return people, emails, warnings
 
-    return email_assignments, warnings
+
+def collect_reviewer_emails(request, organization, categories):
+    """
+    The reviewer selections of the cycle form as {category: [email, ...]},
+    deduplicated by normalized email. Per the anonymity invariant, only emails
+    are returned: the Reviewee identity is dropped here and never stored on the
+    token.
+
+    Returns (email_assignments, warnings).
+    """
+    people, emails, warnings = posted_setup(request, organization, categories)
+    return {
+        code: [p.email.strip().lower() for p in people[code]] + emails[code] for code in people
+    }, warnings
 
 
 @login_required
@@ -1975,6 +1988,37 @@ def review_cycle_bulk_preview(request):
 
 
 @login_required
+def create_single_cycle(request, reviewee, questionnaire, category_flags, email_assignments, send_now):
+    """
+    Create the cycle of one reviewee with a token per reviewer email, put the
+    reviewee's emails in the outbox and, with `send_now`, the invitations.
+    Raises NoCycleCredits and ReviewerLimit; a refused token leaves no cycle behind.
+    """
+    with transaction.atomic():
+        cycle = ReviewCycle.objects.create(
+            reviewee=reviewee,
+            questionnaire=questionnaire,
+            created_by=request.user,
+            status='active',
+            **category_flags
+        )
+
+        # Create tokens dynamically based on email count, then assign them
+        # to the emails with randomization.
+        for category_code, emails in email_assignments.items():
+            for _email in emails:
+                ReviewerToken.objects.create(cycle=cycle, category=category_code)
+        assign_stats = assign_tokens_to_emails(cycle, email_assignments) if any(email_assignments.values()) else None
+
+    # The reviewee's emails go in the outbox. After the tokens: the
+    # self-assessment goes to the one the form addressed.
+    queue_reviewee_notifications(cycle)
+
+    if send_now and assign_stats and assign_stats['assigned'] > 0:
+        queue_invitations(cycle.tokens.all())
+    return cycle
+
+
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
     if request.method == 'POST':
@@ -2085,67 +2129,48 @@ def review_cycle_create(request):
 
                 reviewee = creatable_reviewees(request.user, org).get(id=reviewee_id)
 
-                with transaction.atomic():
-                    # The cycle and its tokens together: a refused token leaves no cycle behind.
-                    cycle = ReviewCycle.objects.create(
-                        reviewee=reviewee,
-                        questionnaire=questionnaire,
-                        created_by=request.user,
-                        status='active',
-                        **category_flags
-                    )
+                # Reviewer selections from the picker and the email textareas.
+                # The form hides categories this cycle skips; a stale or
+                # hand-made POST must not reinstate them.
+                active = [c for c in CATEGORY_ORDER if category_flags.get(f'include_{c}', True)]
+                people, emails, warnings = posted_setup(request, org, active)
+                email_assignments = {
+                    code: [p.email.strip().lower() for p in people[code]] + emails[code] for code in people}
+                send_now = request.POST.get('send_invitations_now') == '1'
 
-                    # Reviewer emails from the picker (<category>_reviewees UUIDs)
-                    # and the email textareas (<category>_emails). The form hides
-                    # categories this cycle skips; a stale or hand-made POST must
-                    # not reinstate them.
-                    email_assignments, warnings = collect_reviewer_emails(
-                        request, org, cycle.active_categories,
-                    )
-                    for w in warnings:
-                        messages.warning(request, w)
-                    has_emails = any(email_assignments.values())
+                cycle = create_single_cycle(
+                    request, reviewee, questionnaire, category_flags, email_assignments, send_now)
+                for w in warnings:
+                    messages.warning(request, w)
 
-                    # If emails were provided, create tokens and assign them
-                    if has_emails:
-                        # Create tokens dynamically based on email count
-                        for category_code, emails in email_assignments.items():
-                            if emails:
-                                for i in range(len(emails)):
-                                    ReviewerToken.objects.create(
-                                        cycle=cycle,
-                                        category=category_code
-                                    )
+                # The list of the reviewee is what the form sent, once the cycle stands.
+                listed = ('manager', 'peer', 'direct_report')
+                if any(people[c] or emails[c] for c in listed):
+                    save_review_setup(
+                        reviewee, questionnaire,
+                        {f'include_{c}': getattr(cycle, f'include_{c}') for c in CATEGORY_ORDER},
+                        {c: people[c] for c in listed}, {c: emails[c] for c in listed})
 
-                        # Assign tokens to emails with randomization
-                        assign_stats = assign_tokens_to_emails(cycle, email_assignments)
-
-                # The reviewee's emails go in the outbox. After the tokens: the
-                # self-assessment goes to the one the form addressed.
-                queue_reviewee_notifications(cycle)
-
-                if has_emails:
-                    # Does the user want the invitations to go out right away?
-                    send_now = request.POST.get('send_invitations_now') == '1'
-                    if send_now and assign_stats['assigned'] > 0:
-                        queue_invitations(cycle.tokens.all())
+                if any(email_assignments.values()):
+                    assigned = cycle.tokens.filter(reviewer_email__isnull=False).count()
+                    if send_now and assigned > 0:
                         messages.success(
                             request,
                             _('Review cycle created for "%(name)s" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes.')
-                            % {'name': reviewee.name, 'assigned': assign_stats['assigned']}
+                            % {'name': reviewee.name, 'assigned': assigned}
                         )
                         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                     else:
                         messages.success(
                             request,
                             _('Review cycle created for "%(name)s" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails.')
-                            % {'name': reviewee.name, 'assigned': assign_stats['assigned']}
+                            % {'name': reviewee.name, 'assigned': assigned}
                         )
                         # Redirect to invitations page to send emails
                         return redirect('review_cycle_detail', cycle_uuid=cycle.uuid)
                 else:
                     # No emails provided, show success and redirect to invitations.
-                    # The reviewee's emails were queued above.
+                    # The reviewee's emails were queued by create_single_cycle.
                     messages.success(
                         request,
                         _('Review cycle created for "%(name)s". The reviewee\'s emails go out within about five minutes.')
@@ -4335,8 +4360,9 @@ def org_chart_membership_delete(request, membership_id):
 @login_required
 def derive_reviewers_for_cycle(request):
     """
-    AJAX endpoint that returns the four reviewer buckets derived from the org
-    chart for a given reviewee UUID.
+    AJAX endpoint that returns the reviewer list of a reviewee UUID: the saved
+    list, else the org chart, else the previous review; `source=chart` or
+    `source=previous` forces one of the last two.
 
     Response:
         {
@@ -4344,6 +4370,10 @@ def derive_reviewers_for_cycle(request):
             'manager':        [...],
             'peer':           [...],
             'direct_report':  [...],
+            'emails':         {'manager': [email, ...], 'peer': [...], 'direct_report': [...]},
+            'source':         'saved' | 'chart' | 'previous' | 'empty',
+            'flags':          {'include_self': bool, ...},
+            'questionnaire':  id or null,
         }
     """
     org = request.organization
@@ -4359,12 +4389,27 @@ def derive_reviewers_for_cycle(request):
     except Reviewee.DoesNotExist:
         return JsonResponse({'error': 'Reviewee not found.'}, status=404)
 
-    buckets = derive_reviewers(reviewee)
+    shown = {c: [] for c in ('manager', 'peer', 'direct_report')}
+    emails = {c: [] for c in shown}
+    flags = {f'include_{c}': True for c in CATEGORY_ORDER}
+    source, questionnaire = 'chart', None
+    # The saved list and the previous review hold more than the chart (emails
+    # someone typed): only a user who may start a cycle for the person gets them.
+    if creatable_reviewees(request.user, org).filter(pk=reviewee.pk).exists():
+        setup = review_setup(reviewee, source=request.GET.get('source'))
+        shown, emails, flags, source = setup.people, setup.emails, setup.flags, setup.source
+        questionnaire = setup.questionnaire.id if setup.questionnaire else None
+    else:
+        shown = {c: people for c, people in derive_reviewers(reviewee).items() if c != 'self'}
 
     return JsonResponse({
-        cat: [
-            {'uuid': str(r.uuid), 'name': r.name, 'email': r.email}
-            for r in people
-        ]
-        for cat, people in buckets.items()
+        'self': [{'uuid': str(reviewee.uuid), 'name': reviewee.name, 'email': reviewee.email}],
+        **{
+            cat: [{'uuid': str(r.uuid), 'name': r.name, 'email': r.email} for r in people]
+            for cat, people in shown.items()
+        },
+        'emails': emails,
+        'source': source,
+        'flags': flags,
+        'questionnaire': questionnaire,
     })

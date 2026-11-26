@@ -519,6 +519,8 @@ async function updateChipsFromReviewee() {
     ['manager', 'peer', 'direct_report'].forEach(cat => {
         const p = _pickerForCategory(cat);
         if (p) _clearPicker(p);
+        const field = document.querySelector(`textarea[name="${cat}_emails"]`);
+        if (field) field.value = '';
     });
 
     const opt = revieweeSelect.options[revieweeSelect.selectedIndex];
@@ -530,7 +532,7 @@ async function updateChipsFromReviewee() {
     if (selfPicker && uuid) selfPicker.add({ uuid, name, email });
     if (!uuid) return;
 
-    // Fetch derived reviewers from the chart.
+    // Fetch the saved list of the person, or else the org chart.
     try {
         const resp = await fetch(
             `{% url 'derive_reviewers_for_cycle' %}?reviewee=${encodeURIComponent(uuid)}`,
@@ -547,6 +549,16 @@ async function updateChipsFromReviewee() {
                 picker.add(p);
                 nonSelfTotal++;
             });
+        });
+
+        // Emails of the saved list or the previous review go in the advanced block.
+        ['manager', 'peer', 'direct_report'].forEach(cat => {
+            const field = document.querySelector(`textarea[name="${cat}_emails"]`);
+            const emails = (data.emails && data.emails[cat]) || [];
+            if (!field || !emails.length) return;
+            field.value = emails.join(', ');
+            field.closest('details').open = true;
+            nonSelfTotal += emails.length;
         });
 
         if (nonSelfTotal === 0 && notice) {

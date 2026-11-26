@@ -469,11 +469,11 @@ def report_preview(questionnaire, shown):
     """The example report the editor shows next to the questions: the topics that are a point on the radar, the
     example scores of the chart, and how each level that is on is made from the questions that count.
 
-    A model is on when it is in shown (ticked in this visit) or a question has a weight for it. Uses the prefetched
+    A model is on when it is in shown (ticked in this visit) or a question has a weight for it, in either format. Uses the prefetched
     sections, questions and options.
     """
 
-    on = {model for model, present in zip(MODELS, questionnaire.dreyfus_dimensions) if present or model in shown}
+    on = set(shown)
     rows = {model: [] for model in MODELS}
     topics = []
     section_scores = {}
@@ -488,8 +488,12 @@ def report_preview(questionnaire, shown):
             if scoring.in_radar:
                 radar_scores.append(example_score(question))
 
+            # A weight turns its model on, in both formats, also on a question that cannot count
+            mapping = _mapping(question.config) if isinstance(question.config, dict) else {}
+            on.update(mapping)
+
             if scoring.nonzero:
-                for model, weight in _mapping(question.config).items():
+                for model, weight in mapping.items():
                     rows[model].append({'question': question, 'score': example_score(question), 'weight': weight})
 
         topics.append({
@@ -506,11 +510,10 @@ def report_preview(questionnaire, shown):
                 group: round(min(5, max(1, mean + shift)), 2) for group, shift in EXAMPLE_GROUP_SHIFTS.items()
             }
 
-    points = sum(topic['point'] for topic in topics)
-
+    # Like the report, the chart is keyed by title, so two topics with one title are one point
     return {
         'topics': topics,
-        'case': EXAMPLE_CASES.get(points, 'radar'),
+        'case': EXAMPLE_CASES.get(len(section_scores), 'radar'),
         'chart': {'section_scores': section_scores},
         'radar_axes': radar_axes(section_scores),
         'levels': [_example_level(model, rows[model]) for model in MODELS if model in on],

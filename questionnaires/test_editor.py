@@ -425,6 +425,18 @@ class ReportPreviewTests(EditorTestCase):
         self.assertEqual(preview['case'], 'bars')
         self.assertIsNone(preview['radar_axes'])
 
+    def test_two_topics_with_one_title_are_one_point(self):
+        self.add_question()
+        self.add_topic('Communication')
+        self.add_topic('Delivery')
+
+        preview = self.preview()
+        self.assertEqual(preview['case'], 'overall')
+        self.assertEqual(len(preview['chart']['section_scores']), 2)
+        self.assertEqual(len(preview['radar_axes']), 3)
+        self.assertIn('Overall', preview['radar_axes'])
+        self.assertEqual([topic['point'] for topic in preview['topics']], [True, True, True])
+
     def test_a_topic_with_only_written_answers_is_no_point(self):
         self.section.delete()
         written = self.add_topic('Comments', 'text', count=2, config={})
@@ -486,6 +498,13 @@ class ReportPreviewTests(EditorTestCase):
         self.assertIsNone(levels[0]['level'])
         self.assertIsNone(levels[0]['stage'])
         self.assertIsNone(levels[0]['profile'])
+
+    def test_an_older_mapping_turns_its_model_on(self):
+        self.add_question(config={'min': 1, 'max': 5, 'dreyfus_mapping': {'dimension': 'skill', 'weight': 1.5}})
+
+        levels = self.preview()['levels']
+        self.assertEqual([level['model'] for level in levels], ['skill'])
+        self.assertEqual([row['weight'] for row in levels[0]['rows']], [1.5])
 
     def test_the_two_models_stand_alone(self):
         self.add_question(config={'min': 1, 'max': 5, 'dreyfus_mapping': {'agency': 1}})

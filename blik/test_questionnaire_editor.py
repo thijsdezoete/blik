@@ -513,7 +513,13 @@ class EditorAdviceTests(TestCase):
         self.assertEqual(self.stored(), [])
 
     def test_a_bad_value_is_refused_without_an_error_of_the_server(self):
-        for fields in ({'threshold': '9'}, {'try_stage': '8'}, {'try_score': 'abc'}, {'question_id': 'x'}):
+        cases = [
+            {'threshold': '9'}, {'try_stage': '8'}, {'try_score': 'abc'}, {'question_id': 'x'},
+            *({name: '²'} for name in ('threshold', 'try_stage', 'try_score', 'question_id', 'advice[0][stage]')),
+            {'question_id': '9' * 5000},
+        ]
+
+        for fields in cases:
             post = {'action': 'save_advice', 'question_id': self.question.id, 'threshold': '3', 'try_stage': '1',
                     'try_score': '2.4', **self.lines(('Write the reason down', '')), **fields}
 
@@ -523,6 +529,30 @@ class EditorAdviceTests(TestCase):
                 self.assertEqual(answer.status_code, 400)
                 self.assertFalse(answer.json()['ok'])
                 self.assertEqual(self.stored(), [])
+
+    def test_try_it_and_the_dialog_refuse_an_odd_number_without_an_error_of_the_server(self):
+        for fields in ({'try_stage': '²'}, {'try_score': '²'}, {'question_id': '²'}):
+            post = {'action': 'try_advice', 'question_id': self.question.id, 'try_stage': '1', 'try_score': '2.4',
+                    **fields}
+
+            with self.subTest(fields=fields):
+                self.assertEqual(self.post(**post).status_code, 400)
+
+        for advice in ('²', '9' * 5000):
+            with self.subTest(advice=advice[:5]):
+                self.assertEqual(self.client.get(self.url(), {'advice': advice}).status_code, 400)
+
+    def test_advice_of_an_odd_shape_opens_tries_and_saves(self):
+        self.question.action_items = ['Practise', {'key': ['a'], 'text': 'Odd', 'threshold': 'high', 'stages': '1'}]
+        self.question.save()
+
+        self.assertTrue(self.client.get(self.url(), {'advice': self.question.id}).json()['ok'])
+        tried = self.post(action='try_advice', question_id=self.question.id, try_stage='1', try_score='2.4').json()
+        self.assertIn('Odd', tried['slots']['advice-try'])
+        saved = self.post(action='save_advice', question_id=self.question.id, threshold='3', try_stage='1',
+                          try_score='2.4', **self.lines(('Odd', '')))
+        self.assertEqual(saved.status_code, 200)
+        self.assertEqual([item['text'] for item in self.stored()], ['Odd'])
 
     def test_try_it_stores_nothing_and_answers_what_the_person_reads(self):
         self.question.action_items = [{'key': 'a', 'text': 'For a Novice', 'threshold': 3.0, 'stages': [1]}]

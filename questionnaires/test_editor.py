@@ -502,7 +502,7 @@ class SaveAdviceTests(EditorTestCase):
         text_question = self.add_question('text', config={})
         cases = [
             *({'lines': [('Practise more', '', 'a')], 'threshold': number} for number in ('0', '6', 'abc', 'nan')),
-            *({'lines': [('Practise more', stage, 'a')]} for stage in ('7', 'x')),
+            *({'lines': [('Practise more', stage, 'a')]} for stage in ('7', 'x', '²', '9' * 5000)),
             {'lines': [('Practise more', '', '')], 'question': text_question},
             {'lines': [('x' * 501, '', 'a')]},
         ]
@@ -513,6 +513,15 @@ class SaveAdviceTests(EditorTestCase):
 
             self.assertEqual(self.stored(), stored)
             self.assertEqual(Question.objects.get(pk=text_question.pk).action_items, [])
+
+    def test_a_field_with_an_odd_number_is_no_line(self):
+        fields = {'threshold': '3', 'advice[0][text]': 'Write it down', 'advice[0][stage]': '', 'advice[0][key]': ''}
+
+        for index in ('²', '9' * 5000, '-1'):
+            with self.subTest(index=index[:5]):
+                save_advice(self.question, post(**fields, **{f'advice[{index}][text]': 'Other'}))
+
+                self.assertEqual([item['text'] for item in self.stored()], ['Write it down'])
 
     def test_lines_without_text_are_dropped_and_an_empty_dialog_empties_the_advice(self):
         self.save([('Write it down', '', ''), ('  ', '1', ''), ('', '2', '')])
@@ -540,6 +549,23 @@ class SaveAdviceTests(EditorTestCase):
         ), question=self.question)
 
         self.assertEqual(self.stored(), stored)
+
+    def test_advice_of_an_odd_shape_shows_its_usable_lines(self):
+        self.store([
+            'Practise',
+            {'key': 'a', 'text': 'Text threshold', 'threshold': 'high'},
+            {'key': 'b', 'text': 'Text stages', 'threshold': 2.0, 'stages': '12'},
+            {'key': 'c', 'threshold': 4.0},
+            {'key': 'd', 'text': 'For a Novice', 'threshold': 2.5, 'stages': [1]},
+        ])
+        question = Question.objects.get(pk=self.question.pk)
+
+        rows = advice_rows(question)
+
+        self.assertEqual([line['text'] for line in rows[0]['lines']], ['Text threshold', 'Text stages'])
+        self.assertEqual([line['text'] for line in rows[1]['lines']], ['For a Novice'])
+        self.assertEqual(advice_threshold(question), 3.0)
+        self.assertEqual(advice_for(question, 1, 2.4), ['Text threshold', 'For a Novice'])
 
     def test_advice_for_a_stage_and_score(self):
         self.store([

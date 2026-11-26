@@ -53,11 +53,13 @@
                 <input type="number" class="form-control" style="width: 6rem;" min="1" max="5" step="0.1" value="{{ try_score|stringformat:'g' }}" data-try-score>
             </label>
         </div>
+        {# A div around the text: the display of help-text would win over hidden #}
+        <div data-try-invalid hidden><span class="help-text" style="margin: 0.75rem 0 0;">{% trans 'Write a score from 1 to 5 to try it.' %}</span></div>
         <div data-slot="advice-try" aria-live="polite" style="margin-top: 0.75rem;">{% include 'admin_dashboard/editor/_advice_try.html' %}</div>
     </div>
 </div>
 <div class="card-footer" style="align-items: center;">
-    {# The save state of the page, which is behind the dialog; the script writes both #}
-    <span data-dialog-state style="font-size: 0.875rem;"></span>
+    {# The save state of the page, which is behind the dialog and inert; the script writes both, here with only the refusal of this dialog #}
+    <span data-dialog-state role="status" style="font-size: 0.875rem;"></span>
     <button type="button" class="btn btn-primary" data-act="advice-done">{% trans 'Done' %}</button>
 </div>

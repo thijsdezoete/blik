@@ -268,27 +268,35 @@
         });
     };
 
-    function showState() {
+    // The text and color of a save state, with refusal as the refusal to show when nothing else is going on
+    function stateOf(refusal) {
         const states = Array.from(queues.values());
-        const refusal = refusals.values().next().value;
-        let text = saveState.dataset.saved;
-        let color = 'var(--success)';
 
         if (states.some(queue => queue.loggedOut)) {
-            [text, color] = [saveState.dataset.loggedOut, 'var(--danger)'];
-        } else if (states.some(queue => queue.failed)) {
-            [text, color] = [saveState.dataset.failed, 'var(--danger)'];
-        } else if (typing.size || states.some(queue => queue.running || queue.waiting)) {
-            [text, color] = [saveState.dataset.saving, 'var(--text-secondary)'];
-        } else if (refusal) {
-            [text, color] = [refusal, 'var(--danger)'];
+            return [saveState.dataset.loggedOut, 'var(--danger)'];
         }
 
-        // The advice dialog shows the same state: the page's is behind it
-        [saveState, root.querySelector('[data-dialog-state]')].forEach(function(element) {
+        if (states.some(queue => queue.failed)) {
+            return [saveState.dataset.failed, 'var(--danger)'];
+        }
+
+        if (typing.size || states.some(queue => queue.running || queue.waiting)) {
+            return [saveState.dataset.saving, 'var(--text-secondary)'];
+        }
+
+        return refusal ? [refusal, 'var(--danger)'] : [saveState.dataset.saved, 'var(--success)'];
+    }
+
+    function showState() {
+        // The advice dialog has its own copy, as the page's is behind it; it shows only the refusal of its own group,
+        // the one the creator can correct there
+        const dialogState = root.querySelector('[data-dialog-state]');
+        const dialogKey = dialogState?.closest('dialog').querySelector('[data-save-key]')?.dataset.saveKey;
+        const shown = [[saveState, refusals.values().next().value], [dialogState, refusals.get(dialogKey)]];
+
+        shown.forEach(function([element, refusal]) {
             if (element) {
-                element.textContent = text;
-                element.style.color = color;
+                [element.textContent, element.style.color] = stateOf(refusal);
             }
         });
     }
@@ -1881,6 +1889,16 @@
         });
 
         adviceDialog.addEventListener('close', function() {
+            const group = adviceGroup();
+
+            // A second Escape closes a modal dialog although its cancel is prevented. A refused change, or one still
+            // on its way, must not go with the dialog: it opens again as it was, and its saves go on
+            if (group && (refusals.has(group.dataset.saveKey) || !isIdle())) {
+                adviceDialog.showModal();
+                (group.querySelector('[data-dirty]') || field(group, 'threshold')).focus();
+                return;
+            }
+
             const back = adviceOpener?.isConnected ? adviceOpener : root.querySelector(
                 `[data-act="row-advice"][data-question-id="${adviceGroup()?.dataset.questionId}"]`,
             );
@@ -1894,7 +1912,16 @@
             if (event.target.matches('[data-move-advice]')) {
                 moveAdviceLine(event.target);
             } else if (event.target.matches('[data-try-stage], [data-try-score]')) {
-                tryAdvice();
+                // A score that is not a number from 1 to 5 shows a sentence in place of the result
+                const score = adviceDialog.querySelector('[data-try-score]');
+                const valid = score.value !== '' && score.validity.valid;
+
+                adviceDialog.querySelector('[data-try-invalid]').hidden = valid;
+                adviceDialog.querySelector('[data-slot="advice-try"]').hidden = !valid;
+
+                if (valid) {
+                    tryAdvice();
+                }
             }
         });
     }

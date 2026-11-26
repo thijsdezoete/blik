@@ -10,6 +10,7 @@ References:
   Involved in Directed Skill Acquisition. Operations Research Center, UC Berkeley.
 """
 
+from math import isfinite
 from statistics import mean
 from typing import Dict, List, Optional
 
@@ -656,15 +657,41 @@ def development_plan_with_texts(plan: Dict, skill_profile: Dict) -> Dict:
 
 # Helper functions
 
-def advice_applies(item: Dict, score: float, stage: int) -> bool:
-    """Whether a person at this skill stage, with this score of the question on the 1 to 5 scale, gets the advice item:
-    it has a text, the score is below its threshold (3.0 when it has none), and it names no stages or this one. The
-    report and the advice dialog of the questionnaire editor both use it."""
+DEFAULT_ADVICE_THRESHOLD = 3.0
 
-    if not item.get('text') or score >= item.get('threshold', 3.0):
-        return False
+
+def advice_threshold_of(item: Dict) -> float:
+    """The threshold of an advice item; 3.0 when it has none or one that is not a number (older or imported data)."""
+
+    value = item.get('threshold')
+
+    if isinstance(value, (int, float)) and not isinstance(value, bool) and isfinite(value):
+        return value
+
+    return DEFAULT_ADVICE_THRESHOLD
+
+
+def advice_stages_of(item: Dict) -> list:
+    """The stages an advice item names; empty, so every stage, when its stages are not a list."""
 
     stages = item.get('stages')
+
+    return stages if isinstance(stages, list) else []
+
+
+def advice_applies(item: Dict, score: float, stage: int) -> bool:
+    """Whether a person at this skill stage, with this score of the question on the 1 to 5 scale, gets the advice item:
+    it is a dict with a text, the score is below its threshold (3.0 when it has none), and it names no stages or this
+    one. A value of an odd shape counts as its default. The report and the advice dialog of the questionnaire editor
+    both use it."""
+
+    if not isinstance(item, dict) or not isinstance(item.get('text'), str) or not item['text']:
+        return False
+
+    if score >= advice_threshold_of(item):
+        return False
+
+    stages = advice_stages_of(item)
 
     return not stages or stage in stages
 
@@ -726,7 +753,7 @@ def _get_personalized_action_items(report_data: Dict, current_stage: int) -> Lis
             continue
 
         for action_item in question.action_items:
-            if isinstance(action_item, dict) and advice_applies(action_item, score, current_stage):
+            if advice_applies(action_item, score, current_stage):
                 personalized_actions.append(
                     {'question_id': question.id, 'key': action_item.get('key'), 'text': action_item['text']}
                 )

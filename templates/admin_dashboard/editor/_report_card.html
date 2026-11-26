@@ -76,7 +76,7 @@
                 </span>
                 {% endfor %}
                 {% if 'skill' in models_on %}
-                {# Opens the question at its advice; the advice itself is written there, in one place. The column says "Advice", #}
+                {# Opens the advice dialog of the question, the one place where advice is written. The column says "Advice", #}
                 {# so the button says only "Add"; a text that is too long is cut with dots, not drawn over the edge #}
                 <span style="width: 9rem; flex: 0 0 auto;">
                     <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; overflow: hidden; text-overflow: ellipsis;" data-act="row-advice" data-question-id="{{ row.question.id }}">{% with count=row.question.action_items|length %}{% if count %}{% blocktrans trimmed %}Advice ({{ count }}){% endblocktrans %}{% else %}{% trans 'Add' %}{% endif %}{% endwith %}</button>

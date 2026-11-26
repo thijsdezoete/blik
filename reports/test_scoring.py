@@ -89,6 +89,16 @@ class AdviceAppliesTests(SimpleTestCase):
             for stage in range(1, 6):
                 self.assertTrue(advice_applies({'text': 'Practise', 'threshold': 3.0, **stages}, 2.0, stage))
 
+    def test_a_threshold_that_is_no_number_is_3_and_stages_that_are_no_list_are_every_stage(self):
+        self.assertTrue(advice_applies({'text': 'Practise', 'threshold': 'high'}, 2.9, 1))
+        self.assertFalse(advice_applies({'text': 'Practise', 'threshold': 'high'}, 3.0, 1))
+        self.assertTrue(advice_applies({'text': 'Practise', 'stages': '12'}, 2.0, 5))
+        self.assertTrue(advice_applies({'text': 'Practise', 'stages': {'1': True}}, 2.0, 3))
+
+    def test_an_item_that_is_no_dict_never_applies(self):
+        for item in ('Practise', ['Practise'], None):
+            self.assertFalse(advice_applies(item, 1.0, 1))
+
 
 class ReportScaleTests(TestCase):
     def setUp(self):

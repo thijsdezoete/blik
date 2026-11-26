@@ -7,6 +7,7 @@ page shows next to the questions.
 """
 
 import random
+import re
 from functools import partial
 from math import isfinite
 
@@ -17,7 +18,8 @@ from django.utils.translation import gettext as _, gettext_lazy
 
 from core.languages import is_language, language_name
 from reports.dreyfus_service import (
-    DREYFUS_STAGES, _level_to_stage, advice_applies, agency_profile_with_texts, skill_profile_with_texts,
+    DEFAULT_ADVICE_THRESHOLD, DREYFUS_STAGES, _level_to_stage, advice_applies, advice_stages_of, advice_threshold_of,
+    agency_profile_with_texts, skill_profile_with_texts,
 )
 from reports.scoring import rating_option_count, score_range
 from reports.services import radar_axes
@@ -619,30 +621,33 @@ def save_question(questionnaire, post, question=None, section=None):
 
 
 ADVICE_LENGTH = 500
-DEFAULT_ADVICE_THRESHOLD = 3.0
+def _stored_items(question):
+    """The stored advice items of the question that are dicts; older or imported data may hold anything."""
+
+    items = question.action_items if isinstance(question.action_items, list) else []
+
+    return [item for item in items if isinstance(item, dict)]
 
 
 def _advice_items(question):
     """The stored advice items of the question that have a text."""
 
-    return [item for item in question.action_items if isinstance(item, dict) and item.get('text')]
+    return [item for item in _stored_items(question) if isinstance(item.get('text'), str) and item['text']]
 
 
 def _item_stages(item):
     """The stages 1 to 5 an advice item is for; empty for every stage."""
 
-    stages = item.get('stages') or []
+    stages = advice_stages_of(item)
 
     return [stage for stage in DREYFUS_STAGES if stage in stages]
 
 
 def advice_threshold(question):
     """The one number of the advice dialog: the highest threshold of the stored advice, so no advice that showed
-    before stops showing; 3 without advice."""
+    before stops showing; 3 without advice. A threshold that is not a number counts as 3."""
 
-    thresholds = [item.get('threshold', DEFAULT_ADVICE_THRESHOLD) for item in _advice_items(question)]
-
-    return max((value for value in thresholds if _is_number(value)), default=DEFAULT_ADVICE_THRESHOLD)
+    return max((advice_threshold_of(item) for item in _advice_items(question)), default=DEFAULT_ADVICE_THRESHOLD)
 
 
 def advice_rows(question):
@@ -661,7 +666,7 @@ def advice_rows(question):
     for item in _advice_items(question):
         stages = _item_stages(item)
 
-        if item.get('stages') and not stages:
+        if advice_stages_of(item) and not stages:
             continue
 
         for stage in stages or [None]:
@@ -675,14 +680,16 @@ def _posted_advice(post, known_keys):
     of i. Lines without a text are dropped. A key is kept only when the question has it and no earlier line took it.
     """
 
-    indices = {name.split('[')[1].split(']')[0] for name in post if name.startswith('advice[') and '][' in name}
+    # Only ASCII digits, and few: isdigit() also takes "²", which int() refuses, as it refuses a very long number
+    indices = {match[1] for name in post if (match := re.fullmatch(r'advice\[([0-9]{1,4})\]\[text\]', name))}
+    stages = {f'{stage}' for stage in DREYFUS_STAGES}
     lines = []
 
-    for index in sorted((index for index in indices if index.isdigit()), key=int):
+    for index in sorted(indices, key=int):
         text = post.get(f'advice[{index}][text]', '').strip()
         stage = post.get(f'advice[{index}][stage]', '').strip()
 
-        if stage and not (stage.isdigit() and int(stage) in DREYFUS_STAGES):
+        if stage and stage not in stages:
             raise EditorError(_('This skill stage does not exist. Reload the page.'))
 
         if len(text) > ADVICE_LENGTH:
@@ -735,7 +742,7 @@ def save_advice(question, post):
         if not question_scoring(stored).has_score:
             raise EditorError(_('Only a question with a score can have advice.'))
 
-        known_keys = {item.get('key') for item in stored.action_items if isinstance(item, dict) and item.get('key')}
+        known_keys = {item['key'] for item in _stored_items(stored) if isinstance(item.get('key'), str) and item['key']}
         items = _posted_advice(post, known_keys)
 
         for item in items:

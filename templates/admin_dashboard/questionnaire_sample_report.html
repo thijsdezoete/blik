@@ -58,9 +58,6 @@
     </div>
 </div>
 
-{# Dreyfus diamond + agency levels + quadrant — reuses the real report partial #}
-{% include "reports/_dreyfus_profile.html" with insights=insights %}
-
 <div class="report-section">
     <h2>{% trans 'Performance Overview' %}</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
@@ -70,6 +67,9 @@
         <canvas id="sectionRadarChart" style="max-height: 500px;"></canvas>
     </div>
 </div>
+
+{# Below the radar, which every report has. Dreyfus diamond + agency levels + quadrant — reuses the real report partial #}
+{% include "reports/_dreyfus_profile.html" with insights=insights %}
 
 <div class="report-section">
     <h2>{% trans 'Self vs Others Comparison' %}</h2>

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 12:31+0000\n"
+"POT-Creation-Date: 2026-11-26 12:39+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1056,6 +1056,12 @@ msgstr ""
 
 #, python-format
 msgid "Error creating questionnaire: %(error)s"
+msgstr ""
+
+msgid "Only a question with a score can have advice."
+msgstr ""
+
+msgid "Choose a stage and write a score from 1 to 5."
 msgstr ""
 
 msgid "This topic does not exist any more. Reload the page."
@@ -2199,7 +2205,13 @@ msgstr ""
 msgid "This text is too long. Use at most %(count)s characters."
 msgstr ""
 
-msgid "The threshold and the stages of an advice item must be numbers."
+msgid "Every stage"
+msgstr ""
+
+msgid "This skill stage does not exist. Reload the page."
+msgstr ""
+
+msgid "Write a number from 1 to 5."
 msgstr ""
 
 msgid "Choose a language."
@@ -4917,7 +4929,44 @@ msgstr ""
 msgid "Submit Review"
 msgstr ""
 
+#, python-format
+msgid "Advice for: \"%(text)s\""
+msgstr ""
+
 msgid "How advice works"
+msgstr ""
+
+msgid "Show advice when the score is below"
+msgstr ""
+
+msgid "(scale of 1 to 5)"
+msgstr ""
+
+msgid "One number for all advice of this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr ""
+
+msgid "Stage"
+msgstr ""
+
+msgid "Who this is"
+msgstr ""
+
+msgid "Advice the report gives"
+msgstr ""
+
+msgid "Add advice"
+msgstr ""
+
+msgid "Try it"
+msgstr ""
+
+msgid "Stage of the person"
+msgstr ""
+
+msgid "Score of this question"
+msgstr ""
+
+msgid "Done"
 msgstr ""
 
 msgid "Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score."
@@ -4948,16 +4997,22 @@ msgstr ""
 msgid "The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count."
 msgstr ""
 
-msgid "The report shows the advice when that score is below the number next to the advice. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgid "The report shows the advice when that score is below the number you choose for this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
 msgstr ""
 
 msgid "Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10."
 msgstr ""
 
-msgid "Only for these stages"
+msgid "Advice per stage"
 msgstr ""
 
-msgid "Leave all boxes empty to give the advice at every skill stage. Tick stages to give it only to a person who is at one of them, for example only to a Novice."
+msgid "Advice in the row \"Every stage\" goes to every person. Advice in the row of a stage, for example Novice, goes only to a person at that stage."
+msgstr ""
+
+msgid "A person gets the advice of \"Every stage\" and the advice of their own stage."
+msgstr ""
+
+msgid "To move advice to another stage, drag it by its handle to that row. Or choose the stage in \"Move to...\"."
 msgstr ""
 
 msgid "Pay attention"
@@ -4972,16 +5027,29 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Drag to move"
+msgstr ""
+
 msgid "Ask a senior colleague to review your next proposal"
 msgstr ""
 
-msgid "when the score is below"
+msgid "Move this advice to another stage"
+msgstr ""
+
+msgid "Move to..."
 msgstr ""
 
 msgid "Remove this advice"
 msgstr ""
 
-msgid "Only for these stages (optional):"
+msgid "There is no advice for this stage yet."
+msgstr ""
+
+msgid "With this score the report gives no advice for this question."
+msgstr ""
+
+#, python-format
+msgid "A person at the stage %(stage)s with a score of %(score)s reads:"
 msgstr ""
 
 #, python-format
@@ -5147,13 +5215,10 @@ msgstr ""
 msgid "With a step of 5 on a slider from 0 to 100, reviewers can pick 0, 5, 10 and so on."
 msgstr ""
 
-msgid "Advice when the score is low"
+msgid "The report gives advice when this question scores low. You can write other advice for each skill stage."
 msgstr ""
 
-msgid "Add advice"
-msgstr ""
-
-msgid "The report adds the advice to the development plan when this question scores below the number."
+msgid "Write advice per stage"
 msgstr ""
 
 msgid "In the report"
@@ -5429,9 +5494,6 @@ msgid "Reviewers see it under the title of the topic."
 msgstr ""
 
 msgid "Delete topic"
-msgstr ""
-
-msgid "Done"
 msgstr ""
 
 msgid "Add a question"
@@ -6217,9 +6279,6 @@ msgid "Move topic up"
 msgstr ""
 
 msgid "Move question up"
-msgstr ""
-
-msgid "Drag to move"
 msgstr ""
 
 msgid "Move topic down"

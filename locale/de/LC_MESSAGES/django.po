@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 12:31+0000\n"
+"POT-Creation-Date: 2026-11-26 12:39+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1057,6 +1057,12 @@ msgstr "Fragebogen „%(name)s“ angelegt."
 #, python-format
 msgid "Error creating questionnaire: %(error)s"
 msgstr "Fehler beim Anlegen des Fragebogens: %(error)s"
+
+msgid "Only a question with a score can have advice."
+msgstr "Nur eine Frage mit Bewertung kann Maßnahmen haben."
+
+msgid "Choose a stage and write a score from 1 to 5."
+msgstr "Eine Stufe wählen und eine Bewertung von 1 bis 5 eingeben."
 
 msgid "This topic does not exist any more. Reload the page."
 msgstr "Dieses Thema gibt es nicht mehr. Bitte die Seite neu laden."
@@ -2199,8 +2205,14 @@ msgstr "Eine Bewertung muss eine Zahl sein."
 msgid "This text is too long. Use at most %(count)s characters."
 msgstr "Dieser Text ist zu lang. Höchstens %(count)s Zeichen sind möglich."
 
-msgid "The threshold and the stages of an advice item must be numbers."
-msgstr "Schwellenwert und Stufen einer Maßnahme müssen Zahlen sein."
+msgid "Every stage"
+msgstr "Jede Stufe"
+
+msgid "This skill stage does not exist. Reload the page."
+msgstr "Diese Kompetenzstufe gibt es nicht. Bitte die Seite neu laden."
+
+msgid "Write a number from 1 to 5."
+msgstr "Eine Zahl von 1 bis 5 eingeben."
 
 msgid "Choose a language."
 msgstr "Eine Sprache auswählen."
@@ -4916,8 +4928,45 @@ msgstr "Bewertungen werden vor der Veröffentlichung geprüft."
 msgid "Submit Review"
 msgstr "Bewertung absenden"
 
+#, python-format
+msgid "Advice for: \"%(text)s\""
+msgstr "Maßnahmen für: „%(text)s“"
+
 msgid "How advice works"
 msgstr "So funktionieren Maßnahmen"
+
+msgid "Show advice when the score is below"
+msgstr "Maßnahme zeigen bei einer Bewertung unter"
+
+msgid "(scale of 1 to 5)"
+msgstr "(Skala von 1 bis 5)"
+
+msgid "One number for all advice of this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Eine Zahl für alle Maßnahmen dieser Frage. Bei 3 erscheint die Maßnahme bei einer Bewertung von 2,9, aber nicht bei einer Bewertung von 3."
+
+msgid "Stage"
+msgstr "Stufe"
+
+msgid "Who this is"
+msgstr "Wer das ist"
+
+msgid "Advice the report gives"
+msgstr "Maßnahme im Bericht"
+
+msgid "Add advice"
+msgstr "Maßnahme hinzufügen"
+
+msgid "Try it"
+msgstr "Ausprobieren"
+
+msgid "Stage of the person"
+msgstr "Stufe der Person"
+
+msgid "Score of this question"
+msgstr "Bewertung dieser Frage"
+
+msgid "Done"
+msgstr "Erledigt"
 
 msgid "Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score."
 msgstr "Eine Maßnahme ist ein Tipp für die Person, die den Bericht erhält. Der Bericht zeigt sie nur, wenn Feedbackgebende diese Frage niedrig bewerten."
@@ -4947,17 +4996,23 @@ msgstr "Wann der Bericht sie zeigt"
 msgid "The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count."
 msgstr "Die Bewertung dieser Frage ist der Durchschnitt der Antworten der anderen, auf der Skala von 1 bis 5. Die eigene Antwort der Person zählt nicht."
 
-msgid "The report shows the advice when that score is below the number next to the advice. With 3, the advice shows for a score of 2.9 and not for a score of 3."
-msgstr "Der Bericht zeigt die Maßnahme, wenn diese Bewertung unter der Zahl neben der Maßnahme liegt. Bei 3 erscheint die Maßnahme bei einer Bewertung von 2,9, aber nicht bei einer Bewertung von 3."
+msgid "The report shows the advice when that score is below the number you choose for this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Der Bericht zeigt die Maßnahme, wenn diese Bewertung unter der Zahl liegt, die für diese Frage gewählt ist. Bei 3 erscheint die Maßnahme bei einer Bewertung von 2,9, aber nicht bei einer Bewertung von 3."
 
 msgid "Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10."
 msgstr "Jeder Antworttyp zählt hier auf der Skala von 1 bis 5, auch ein Schieberegler von 1 bis 10."
 
-msgid "Only for these stages"
-msgstr "Nur für diese Stufen"
+msgid "Advice per stage"
+msgstr "Maßnahmen pro Stufe"
 
-msgid "Leave all boxes empty to give the advice at every skill stage. Tick stages to give it only to a person who is at one of them, for example only to a Novice."
-msgstr "Bleiben alle Kästchen leer, gilt die Maßnahme auf jeder Kompetenzstufe. Sind Stufen angekreuzt, gilt sie nur für eine Person auf einer dieser Stufen, zum Beispiel nur für einen Neuling."
+msgid "Advice in the row \"Every stage\" goes to every person. Advice in the row of a stage, for example Novice, goes only to a person at that stage."
+msgstr "Eine Maßnahme in der Zeile „Jede Stufe“ geht an jede Person. Eine Maßnahme in der Zeile einer Stufe, zum Beispiel Neuling, geht nur an eine Person auf dieser Stufe."
+
+msgid "A person gets the advice of \"Every stage\" and the advice of their own stage."
+msgstr "Eine Person erhält die Maßnahmen von „Jede Stufe“ und die Maßnahmen der eigenen Stufe."
+
+msgid "To move advice to another stage, drag it by its handle to that row. Or choose the stage in \"Move to...\"."
+msgstr "Eine Maßnahme lässt sich am Griff in die Zeile einer anderen Stufe ziehen. Oder die Stufe unter „Verschieben nach …“ wählen."
 
 msgid "Pay attention"
 msgstr "Zu beachten"
@@ -4971,17 +5026,30 @@ msgstr "Eine Maßnahme ist ein Text des Fragebogens: Sie wird wie die Fragen in 
 msgid "Close"
 msgstr "Schließen"
 
+msgid "Drag to move"
+msgstr "Zum Verschieben ziehen"
+
 msgid "Ask a senior colleague to review your next proposal"
 msgstr "Den nächsten Vorschlag von einer erfahrenen Person aus dem Team prüfen lassen"
 
-msgid "when the score is below"
-msgstr "bei einer Bewertung unter"
+msgid "Move this advice to another stage"
+msgstr "Diese Maßnahme auf eine andere Stufe verschieben"
+
+msgid "Move to..."
+msgstr "Verschieben nach …"
 
 msgid "Remove this advice"
 msgstr "Diese Maßnahme entfernen"
 
-msgid "Only for these stages (optional):"
-msgstr "Nur für diese Stufen (optional):"
+msgid "There is no advice for this stage yet."
+msgstr "Für diese Stufe gibt es noch keine Maßnahme."
+
+msgid "With this score the report gives no advice for this question."
+msgstr "Bei dieser Bewertung gibt der Bericht für diese Frage keine Maßnahme."
+
+#, python-format
+msgid "A person at the stage %(stage)s with a score of %(score)s reads:"
+msgstr "Eine Person auf der Stufe %(stage)s mit einer Bewertung von %(score)s liest:"
 
 #, python-format
 msgid "counts as %(score)s"
@@ -5146,14 +5214,11 @@ msgstr "Schrittweite des Schiebereglers"
 msgid "With a step of 5 on a slider from 0 to 100, reviewers can pick 0, 5, 10 and so on."
 msgstr "Mit einer Schrittweite von 5 bei einem Schieberegler von 0 bis 100 wählen Feedbackgebende 0, 5, 10 und so weiter."
 
-msgid "Advice when the score is low"
-msgstr "Maßnahme bei niedriger Bewertung"
+msgid "The report gives advice when this question scores low. You can write other advice for each skill stage."
+msgstr "Der Bericht gibt Maßnahmen, wenn diese Frage niedrig bewertet wird. Für jede Kompetenzstufe sind eigene Maßnahmen möglich."
 
-msgid "Add advice"
-msgstr "Maßnahme hinzufügen"
-
-msgid "The report adds the advice to the development plan when this question scores below the number."
-msgstr "Der Bericht nimmt die Maßnahme in den Entwicklungsplan auf, wenn die Bewertung dieser Frage unter der Zahl liegt."
+msgid "Write advice per stage"
+msgstr "Maßnahmen pro Stufe schreiben"
 
 msgid "In the report"
 msgstr "Im Bericht"
@@ -5429,9 +5494,6 @@ msgstr "Feedbackgebende sehen sie unter dem Titel des Themas."
 
 msgid "Delete topic"
 msgstr "Thema löschen"
-
-msgid "Done"
-msgstr "Erledigt"
 
 msgid "Add a question"
 msgstr "Frage hinzufügen"
@@ -6217,9 +6279,6 @@ msgstr "Thema nach oben verschieben"
 
 msgid "Move question up"
 msgstr "Frage nach oben verschieben"
-
-msgid "Drag to move"
-msgstr "Zum Verschieben ziehen"
 
 msgid "Move topic down"
 msgstr "Thema nach unten verschieben"

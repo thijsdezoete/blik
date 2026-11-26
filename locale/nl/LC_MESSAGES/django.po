@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 12:31+0000\n"
+"POT-Creation-Date: 2026-11-26 12:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1068,6 +1068,12 @@ msgstr "Vragenlijst \"%(name)s\" aangemaakt."
 #, python-format
 msgid "Error creating questionnaire: %(error)s"
 msgstr "Fout bij het aanmaken van de vragenlijst: %(error)s"
+
+msgid "Only a question with a score can have advice."
+msgstr "Alleen een vraag met een score kan actiepunten hebben."
+
+msgid "Choose a stage and write a score from 1 to 5."
+msgstr "Kies een fase en vul een score van 1 tot 5 in."
 
 msgid "This topic does not exist any more. Reload the page."
 msgstr "Dit onderwerp bestaat niet meer. Laad de pagina opnieuw."
@@ -2210,8 +2216,14 @@ msgstr "Een score moet een getal zijn."
 msgid "This text is too long. Use at most %(count)s characters."
 msgstr "Deze tekst is te lang. Gebruik maximaal %(count)s tekens."
 
-msgid "The threshold and the stages of an advice item must be numbers."
-msgstr "De drempel en de fasen van een actiepunt moeten getallen zijn."
+msgid "Every stage"
+msgstr "Elke fase"
+
+msgid "This skill stage does not exist. Reload the page."
+msgstr "Deze vaardigheidsfase bestaat niet. Laad de pagina opnieuw."
+
+msgid "Write a number from 1 to 5."
+msgstr "Vul een getal van 1 tot 5 in."
 
 msgid "Choose a language."
 msgstr "Kies een taal."
@@ -4925,8 +4937,45 @@ msgstr "Je review wordt eerst beoordeeld en pas daarna gepubliceerd."
 msgid "Submit Review"
 msgstr "Review versturen"
 
+#, python-format
+msgid "Advice for: \"%(text)s\""
+msgstr "Actiepunten voor: ‘%(text)s’"
+
 msgid "How advice works"
 msgstr "Zo werken actiepunten"
+
+msgid "Show advice when the score is below"
+msgstr "Actiepunt tonen bij een score onder"
+
+msgid "(scale of 1 to 5)"
+msgstr "(schaal van 1 tot 5)"
+
+msgid "One number for all advice of this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Eén getal voor alle actiepunten van deze vraag. Bij 3 verschijnt het actiepunt bij een score van 2,9 en niet bij een score van 3."
+
+msgid "Stage"
+msgstr "Fase"
+
+msgid "Who this is"
+msgstr "Wie dit is"
+
+msgid "Advice the report gives"
+msgstr "Actiepunt in het rapport"
+
+msgid "Add advice"
+msgstr "Actiepunt toevoegen"
+
+msgid "Try it"
+msgstr "Probeer het"
+
+msgid "Stage of the person"
+msgstr "Fase van de persoon"
+
+msgid "Score of this question"
+msgstr "Score van deze vraag"
+
+msgid "Done"
+msgstr "Klaar"
 
 msgid "Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score."
 msgstr "Een actiepunt is een tip voor de persoon die het rapport krijgt. Het rapport toont het alleen als feedbackgevers deze vraag een lage score geven."
@@ -4956,17 +5005,23 @@ msgstr "Wanneer het rapport het toont"
 msgid "The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count."
 msgstr "De score van deze vraag is het gemiddelde van wat de anderen antwoordden, op een schaal van 1 tot en met 5. Het eigen antwoord van de persoon telt niet mee."
 
-msgid "The report shows the advice when that score is below the number next to the advice. With 3, the advice shows for a score of 2.9 and not for a score of 3."
-msgstr "Het rapport toont het actiepunt als die score lager is dan het getal naast het actiepunt. Bij 3 verschijnt het actiepunt bij een score van 2,9 en niet bij een score van 3."
+msgid "The report shows the advice when that score is below the number you choose for this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Het rapport toont het actiepunt als die score lager is dan het getal dat voor deze vraag is gekozen. Bij 3 verschijnt het actiepunt bij een score van 2,9 en niet bij een score van 3."
 
 msgid "Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10."
 msgstr "Elk antwoordtype telt hier op de schaal van 1 tot en met 5, ook een schuifregelaar van 1 tot 10."
 
-msgid "Only for these stages"
-msgstr "Alleen voor deze fasen"
+msgid "Advice per stage"
+msgstr "Actiepunten per fase"
 
-msgid "Leave all boxes empty to give the advice at every skill stage. Tick stages to give it only to a person who is at one of them, for example only to a Novice."
-msgstr "Laat alle vakjes leeg om het actiepunt in elke fase te geven. Vink fasen aan om het alleen te geven aan iemand die in een van die fasen zit, bijvoorbeeld alleen aan een beginner."
+msgid "Advice in the row \"Every stage\" goes to every person. Advice in the row of a stage, for example Novice, goes only to a person at that stage."
+msgstr "Een actiepunt in de rij ‘Elke fase’ gaat naar iedereen. Een actiepunt in de rij van een fase, bijvoorbeeld Beginner, gaat alleen naar een persoon in die fase."
+
+msgid "A person gets the advice of \"Every stage\" and the advice of their own stage."
+msgstr "Een persoon krijgt de actiepunten van ‘Elke fase’ en de actiepunten van de eigen fase."
+
+msgid "To move advice to another stage, drag it by its handle to that row. Or choose the stage in \"Move to...\"."
+msgstr "Een actiepunt gaat naar een andere fase door het aan de greep naar die rij te slepen. Of kies de fase bij ‘Verplaatsen naar …’."
 
 msgid "Pay attention"
 msgstr "Let op"
@@ -4980,17 +5035,30 @@ msgstr "Een actiepunt is een tekst van de vragenlijst: je vertaalt het op de taa
 msgid "Close"
 msgstr "Sluiten"
 
+msgid "Drag to move"
+msgstr "Sleep om te verplaatsen"
+
 msgid "Ask a senior colleague to review your next proposal"
 msgstr "Vraag een ervaren collega om je volgende voorstel te bekijken"
 
-msgid "when the score is below"
-msgstr "bij een score onder"
+msgid "Move this advice to another stage"
+msgstr "Dit actiepunt naar een andere fase verplaatsen"
+
+msgid "Move to..."
+msgstr "Verplaatsen naar …"
 
 msgid "Remove this advice"
 msgstr "Dit actiepunt verwijderen"
 
-msgid "Only for these stages (optional):"
-msgstr "Alleen voor deze fasen (optioneel):"
+msgid "There is no advice for this stage yet."
+msgstr "Er is nog geen actiepunt voor deze fase."
+
+msgid "With this score the report gives no advice for this question."
+msgstr "Bij deze score geeft het rapport geen actiepunt voor deze vraag."
+
+#, python-format
+msgid "A person at the stage %(stage)s with a score of %(score)s reads:"
+msgstr "Een persoon in de fase %(stage)s met een score van %(score)s leest:"
 
 #, python-format
 msgid "counts as %(score)s"
@@ -5155,14 +5223,11 @@ msgstr "Stapgrootte van de schuifregelaar"
 msgid "With a step of 5 on a slider from 0 to 100, reviewers can pick 0, 5, 10 and so on."
 msgstr "Met een stapgrootte van 5 op een schuifregelaar van 0 tot 100 kunnen feedbackgevers 0, 5, 10 enzovoort kiezen."
 
-msgid "Advice when the score is low"
-msgstr "Actiepunt bij een lage score"
+msgid "The report gives advice when this question scores low. You can write other advice for each skill stage."
+msgstr "Het rapport geeft actiepunten als deze vraag een lage score krijgt. Voor elke vaardigheidsfase zijn eigen actiepunten mogelijk."
 
-msgid "Add advice"
-msgstr "Actiepunt toevoegen"
-
-msgid "The report adds the advice to the development plan when this question scores below the number."
-msgstr "Het rapport zet het actiepunt in het ontwikkelplan als deze vraag lager scoort dan het getal."
+msgid "Write advice per stage"
+msgstr "Actiepunten per fase schrijven"
 
 msgid "In the report"
 msgstr "In het rapport"
@@ -5438,9 +5503,6 @@ msgstr "Feedbackgevers zien die onder de titel van het onderwerp."
 
 msgid "Delete topic"
 msgstr "Onderwerp verwijderen"
-
-msgid "Done"
-msgstr "Klaar"
 
 msgid "Add a question"
 msgstr "Vraag toevoegen"
@@ -6226,9 +6288,6 @@ msgstr "Onderwerp omhoog verplaatsen"
 
 msgid "Move question up"
 msgstr "Vraag omhoog verplaatsen"
-
-msgid "Drag to move"
-msgstr "Sleep om te verplaatsen"
 
 msgid "Move topic down"
 msgstr "Onderwerp omlaag verplaatsen"

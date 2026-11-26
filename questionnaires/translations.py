@@ -10,11 +10,8 @@ import copy
 import hashlib
 from collections import defaultdict
 from dataclasses import dataclass
-from itertools import groupby
-from operator import attrgetter
 
 from django.conf import settings
-from django.db import transaction
 from django.db.models import prefetch_related_objects
 from django.utils.translation import get_language, gettext, gettext_lazy as _, pgettext_lazy
 
@@ -331,7 +328,12 @@ def has_translation(questionnaire, language):
 
 
 def save_part_translation(part, language, texts, data):
-    """Store the posted translations of one part's texts, see save_text_translations()."""
+    """
+    Store the posted translations of one part's texts.
+
+    An empty text removes its translation. A changed text, and an outdated one confirmed as still correct, get the
+    checksum of their source text. Translations of texts the source no longer has are dropped.
+    """
 
     relation = part.translations
     translation = next((row for row in relation.all() if row.language == language), None)
@@ -384,30 +386,10 @@ def get_length_errors(texts, data):
     ]
 
 
-def save_text_translations(questionnaire, language, data):
-    """
-    Store the translations posted on the translation page; returns the errors, and stores nothing if there are any.
-
-    An empty text removes its translation. A changed text, and an outdated one confirmed as still correct, get the
-    checksum of their source text. Translations of texts the source no longer has are dropped.
-    """
-
-    texts = get_text_translations(questionnaire, language)
-
-    if errors := get_length_errors(texts, data):
-        return errors
-
-    with transaction.atomic():
-        for part, part_texts in groupby(texts, key=attrgetter('part')):
-            save_part_translation(part, language, list(part_texts), data)
-
-    return []
-
-
 def save_one_translation(questionnaire, language, field_name, value, still_correct=False):
     """
-    Store the translation of the text with field_name, as save_text_translations() does for all texts; returns the
-    errors, and stores nothing if there are any. The other texts of the same part keep their translations and checksums.
+    Store the translation of the text with field_name, see save_part_translation(); returns the errors, and stores
+    nothing if there are any. The other texts of the same part keep their translations and checksums.
     """
 
     texts = get_text_translations(questionnaire, language)

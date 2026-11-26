@@ -521,9 +521,11 @@ class Command(BaseCommand):
                 ('signup_desktop', '/landing/signup/', '.plans-grid', {}),
                 ('questionnaires_desktop', '/dashboard/questionnaires/', 'table', {}),
                 ('questionnaire_edit_desktop',
-                 f'/dashboard/questionnaires/{config.get("questionnaire_id")}/edit/', '.container form', {}),
+                 f'/dashboard/questionnaires/{config.get("questionnaire_uuid")}/edit/', '#questionnaire-editor', {}),
+                # Translating is the translate mode of the editor
                 ('questionnaire_translate_desktop',
-                 f'/dashboard/questionnaires/{config.get("questionnaire_uuid")}/translate/de/', '.container form', {}),
+                 f'/dashboard/questionnaires/{config.get("questionnaire_uuid")}/edit/?lang=de',
+                 '#questionnaire-editor[data-lang]', {}),
                 ('reviewees_desktop', '/dashboard/reviewees/', 'table', {}),
                 # Sorting by gap switches on the self-vs-others column; skipped if
                 # the column is not shown.

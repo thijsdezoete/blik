@@ -72,13 +72,7 @@ from questionnaires.models import AnswerOption, Question, QuestionSection, Quest
 from questionnaires.ordering import save_layout
 from questionnaires.presentation import question_scoring, questionnaire_report_features
 from reports.dreyfus_service import DREYFUS_STAGES
-from questionnaires.translations import (
-    LanguageState,
-    get_language_states,
-    get_text_translations,
-    save_one_translation,
-    save_text_translations,
-)
+from questionnaires.translations import get_language_states, get_text_translations, save_one_translation
 from notifications.lifecycle import cycle_summary, send_cycle_summary
 from reports.dreyfus_service import (
     agency_profile_with_texts,
@@ -1496,7 +1490,7 @@ def questionnaire_edit(request, questionnaire_uuid):
 @login_required
 @can_manage_questionnaires_required
 def questionnaire_translate(request, questionnaire_uuid, language):
-    """Translate the texts of a questionnaire into another language, next to its source texts."""
+    """The old translation page: translating is the translate mode of the questionnaire editor now."""
 
     questionnaire = get_object_or_404(
         Questionnaire,
@@ -1507,24 +1501,7 @@ def questionnaire_translate(request, questionnaire_uuid, language):
     if not is_language(language) or language == questionnaire.source_language:
         raise Http404
 
-    if request.method == 'POST':
-        if errors := save_text_translations(questionnaire, language, request.POST):
-            for error in errors:
-                messages.error(request, error)
-        else:
-            messages.success(request, _('Translation saved.'))
-
-        return redirect('questionnaire_translate', questionnaire_uuid=questionnaire.uuid, language=language)
-
-    texts = get_text_translations(questionnaire, language)
-    context = {
-        'questionnaire': questionnaire,
-        'texts': texts,
-        'state': LanguageState.from_texts(language, texts),
-        'source_language_name': language_name(questionnaire.source_language),
-    }
-
-    return render(request, 'admin_dashboard/questionnaire_translate.html', context)
+    return redirect(f"{reverse('questionnaire_edit', args=[questionnaire.uuid])}?lang={language}")
 
 
 @login_required

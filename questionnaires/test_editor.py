@@ -532,6 +532,12 @@ class SaveAdviceTests(EditorTestCase):
 
         self.assertEqual(self.stored(), [])
 
+    def test_a_line_break_in_a_line_is_stored_as_one_space(self):
+        # The field has two rows, so Enter can put a break in the text; the report shows a line as one line
+        self.save([('Write it\r\ndown   now', '', '')])
+
+        self.assertEqual([item['text'] for item in self.stored()], ['Write it down now'])
+
     def test_the_lines_are_stored_in_the_order_of_the_rows(self):
         self.save([('For a Competent', '3', ''), ('For everyone', '', ''), ('For a Novice', '1', ''),
                    ('Also for a Novice', '1', '')])

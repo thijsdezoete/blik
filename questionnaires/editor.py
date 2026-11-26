@@ -686,7 +686,8 @@ def _posted_advice(post, known_keys):
     lines = []
 
     for index in sorted(indices, key=int):
-        text = post.get(f'advice[{index}][text]', '').strip()
+        # One line in the report: a line break typed in the two-row field counts as a space
+        text = ' '.join(post.get(f'advice[{index}][text]', '').split())
         stage = post.get(f'advice[{index}][stage]', '').strip()
 
         if stage and stage not in stages:

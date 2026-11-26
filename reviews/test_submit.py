@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from accounts.models import UserProfile
@@ -32,6 +32,7 @@ class LastSubmissionTests(TestCase):
         self.assertNotIn([cycle.reviewee.email], [message.to for message in mail.outbox])
 
 
+@override_settings(RATELIMIT_ENABLE=False)
 class SliderAnswerTests(TestCase):
     """A slider takes every number of its range, also between whole numbers when its step is below 1."""
 

@@ -87,6 +87,27 @@
         placeholder="{% trans 'Share your thoughts...' %}"
     >{% if existing_responses|get_item:question.id %}{{ existing_responses|get_item:question.id }}{% endif %}</textarea>
 
+    {% elif question.question_type == 'single_choice' and question.config.display != 'dropdown' %}
+    {# A list unless the question asks for a dropdown; the script checks a required radio group itself #}
+    <div class="multiple-choice-group">
+        {% for option in question.options.all %}
+        <div class="multiple-choice-option">
+            <input
+                type="radio"
+                name="question_{{ question.id }}"
+                value="{{ option.id }}"
+                id="q{{ question.id }}_{{ forloop.counter }}"
+                {% if existing_responses|get_item:question.id == option.id %}checked{% endif %}
+                {% if question.required %}required{% endif %}
+                class="multiple-choice-checkbox"
+            >
+            <label for="q{{ question.id }}_{{ forloop.counter }}" class="multiple-choice-label">
+                {{ option.label }}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+
     {% elif question.question_type == 'single_choice' %}
     <select
         name="question_{{ question.id }}"

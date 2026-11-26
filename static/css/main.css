@@ -1440,6 +1440,8 @@ body {
     transition: all 0.2s;
 }
 
+.multiple-choice-checkbox[type="radio"] + .multiple-choice-label::before { border-radius: 50%; }
+
 /* Checkmark */
 .multiple-choice-label::after {
     content: '';
@@ -1601,14 +1603,14 @@ body {
 .scale-slider::-webkit-slider-runnable-track {
     width: 100%;
     height: 8px;
-    background: linear-gradient(to right, #e0e7ff 0%, var(--primary) 100%);
+    background: var(--border);
     border-radius: 4px;
 }
 
 .scale-slider::-moz-range-track {
     width: 100%;
     height: 8px;
-    background: linear-gradient(to right, #e0e7ff 0%, var(--primary) 100%);
+    background: var(--border);
     border-radius: 4px;
 }
 

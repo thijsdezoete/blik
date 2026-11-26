@@ -325,6 +325,15 @@ class EditorQuestionTests(TestCase):
         self.assertIn('data-ask="count"', html)
         self.assertIn('data-ask="type"', html)
 
+    def test_the_open_question_names_every_language_it_is_translated_into(self):
+        QuestionTranslation.objects.create(question=self.question, language='de', question_text='Wie gut löst {name}?')
+
+        html = self.open(question=self.question.id)
+
+        # Only the question text is translated: a change of type loses nothing, so it does not ask
+        self.assertIn('Translated into Deutsch (Sie)', html)
+        self.assertNotIn('data-ask="type"', html)
+
     def test_a_new_question_offers_did_not_observe_unless_all_questions_are_without(self):
         def box(html):
             return re.search(r'<input[^>]*name="did_not_observe"[^>]*>', html)[0]

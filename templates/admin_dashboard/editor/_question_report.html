@@ -11,7 +11,7 @@
         {% if type == 'text' %}
         {% trans 'Written answers show as text in the report. They do not count in the radar.' %}
         {% elif question.scoring.has_score %}
-        {% trans 'This question is set to stay out of the radar.' %}
+        {% trans 'This question does not count for the radar. It was set that way when the questionnaire was made.' %}
         {% elif type == 'likert' %}
         {% trans 'A Likert question needs at least two answers to count in the radar.' %}
         {% else %}

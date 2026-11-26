@@ -92,8 +92,7 @@
             const request = {action, fields, resolvers: [resolve], afters: options.after ? [options.after] : []};
 
             if (queue.waiting) {
-                request.resolvers.push(...queue.waiting.resolvers);
-                request.afters.push(...queue.waiting.afters);
+                takePlace(request, queue.waiting);
             }
 
             queue.waiting = request;
@@ -106,6 +105,28 @@
             showState();
         });
     };
+
+    /*
+     * A newer request takes the place of an older waiting one: the callers of the older one get the newer answer. Its
+     * after hooks come along only for the same action; they read the answer of their own action (a delete answers no
+     * save).
+     */
+    function takePlace(newer, older) {
+        newer.resolvers.push(...older.resolvers);
+
+        if (newer.action === older.action) {
+            newer.afters.push(...older.afters);
+        }
+    }
+
+    // A part of the page that fails to update must not stop the queue, the save state or the waiting flush
+    function safely(run) {
+        try {
+            run();
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     async function run(key, queue) {
         const request = queue.waiting;
@@ -137,8 +158,7 @@
             queue.failed = true;
 
             if (queue.waiting) {
-                queue.waiting.resolvers.push(...request.resolvers);
-                queue.waiting.afters.push(...request.afters);
+                takePlace(queue.waiting, request);
             } else {
                 queue.waiting = request;
             }
@@ -152,14 +172,14 @@
 
         if (answer.ok) {
             refusals.delete(key);
-            applyAnswer(answer, number);
+            safely(() => applyAnswer(answer, number));
         } else {
             refusals.set(key, answer.message);
         }
 
         // The callers learn which fields were stored: those of the newest request, which took the place of theirs
         answer.fields = request.built;
-        request.afters.forEach(after => after(answer, number));
+        request.afters.forEach(after => safely(() => after(answer, number)));
         request.resolvers.forEach(resolve => resolve(answer));
 
         if (queue.waiting) {
@@ -865,9 +885,18 @@
 
     function removeAnswer(form, row) {
         const ask = form.querySelector('template[data-ask="answer"]');
+        // A refused save (a Likert without answers) puts the row back where it was; the refusal shows in the save state
         const run = function() {
+            const [list, next] = [row.parentElement, row.nextElementSibling];
+
             row.remove();
-            saveQuestion(form);
+            saveQuestion(form).then(function(answer) {
+                if (!answer.ok && answer.message && !row.isConnected && list.isConnected) {
+                    // Back as stored: not a change of its own
+                    list.insertBefore(row, next?.parentElement === list ? next : null);
+                    refreshForm(form);
+                }
+            });
         };
 
         // Only a stored answer can have answers from reviewers or a translation
@@ -1202,6 +1231,10 @@
             if (!item.dataset.question) {
                 item.remove();
             }
+
+            // Its refusal speaks of fields that are gone; the row shows what is stored
+            refusals.delete(key);
+            showState();
         });
 
         return closing;

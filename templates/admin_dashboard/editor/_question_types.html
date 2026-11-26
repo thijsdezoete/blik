@@ -59,7 +59,7 @@
     <label class="form-check" data-types="single_choice" style="margin: 1rem 0 0;">
         <input type="checkbox" class="form-check-input" name="display_list"{% if question.question_type != 'single_choice' or question.config.display != 'dropdown' %} checked{% endif %}>
         <span>{% trans 'Show all answers as a list' %}
-            <span class="help-text">{% trans 'Off: reviewers open a dropdown to see the answers. That is shorter when there are many answers.' %}</span>
+            <span class="help-text">{% trans 'Off: reviewers open a short list and pick one answer from it.' %}</span>
         </span>
     </label>
 </div>

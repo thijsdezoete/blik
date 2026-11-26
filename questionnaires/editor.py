@@ -268,6 +268,22 @@ def question_form_values(questionnaire, question):
     }
 
 
+def languages_with_translation(question):
+    """The names of the languages that have any translation of the question: its text, labels, descriptions, advice
+    or answers. Uses the prefetched translations."""
+
+    if question.pk is None:
+        return []
+
+    languages = _translation_languages(question)
+    languages.update(
+        row.language for row in question.translations.all()
+        if row.question_text or any(row.action_items.values())
+    )
+
+    return sorted(language_name(language) for language in languages)
+
+
 def answer_counts(questionnaire):
     """The number of answers per question id, for the questions that have answers."""
 
@@ -470,7 +486,13 @@ def save_question(questionnaire, post, question=None, section=None):
         descriptions = posted_descriptions(post, 'rating', count)
         config = {'min': 1, 'max': count}
     elif question_type == 'likert':
-        option_rows = posted_option_rows(post, 'likert') or [(None, label, None) for label in default_likert_scale]
+        option_rows = posted_option_rows(post, 'likert')
+
+        # A stored likert would lose its answers and their translations; a new one starts with the default scale
+        if not option_rows and question is not None:
+            raise EditorError(_('A question of this type needs answers. Add at least two.'))
+
+        option_rows = option_rows or [(None, label, None) for label in default_likert_scale]
 
         if post.get('reverse_scored') == 'on':
             config['reverse_scored'] = True

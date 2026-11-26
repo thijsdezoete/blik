@@ -59,6 +59,7 @@ from questionnaires.editor import (
     add_section,
     editor_context,
     get_default_labels,
+    languages_with_translation,
     load_for_editor,
     posted_action_items,
     posted_descriptions,
@@ -1229,7 +1230,14 @@ def _question_form(request, context, question):
     """The HTML of the open question: the form of a question of the context, or of a new, unsaved one."""
 
     if question.pk:
-        question = next(item for section in context['sections'] for item in section.questions.all() if item == question)
+        question = next(
+            (item for section in context['sections'] for item in section.questions.all() if item == question), None,
+        )
+
+        # Deleted after it was looked up
+        if question is None:
+            raise EditorError(_('This question does not exist any more. Reload the page.'))
+
         did_not_observe = question.offers_did_not_observe
     else:
         question.scoring = question_scoring(question)
@@ -1243,6 +1251,7 @@ def _question_form(request, context, question):
     form_context = {
         **_question_context(context, question),
         'translated': translated_into(question),
+        'translated_any': languages_with_translation(question),
         'did_not_observe_checked': did_not_observe,
         'stages': [(stage, info['name']) for stage, info in DREYFUS_STAGES.items()],
     }

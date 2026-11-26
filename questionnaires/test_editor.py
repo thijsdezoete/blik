@@ -236,6 +236,29 @@ class SaveQuestionTests(EditorTestCase):
         self.assertFalse(AnswerOption.objects.filter(question=question).exists())
         self.assertNotIn('reverse_scored', question.config)
 
+    def test_a_likert_is_a_negative_statement_while_the_box_is_ticked(self):
+        question = self.add_question('likert', config={})
+        options = self.add_options(question, ['Never', 'Often'])
+        rows = {
+            'likert_option_id': [f'{option.id}' for option in options],
+            'likert_option_label': [option.label for option in options],
+        }
+
+        self.save(question, question_text='Question 0', question_type='likert', reverse_scored='on', **rows)
+        self.assertIs(question.config['reverse_scored'], True)
+
+        self.save(question, question_text='Question 0', question_type='likert', **rows)
+        self.assertNotIn('reverse_scored', question.config)
+
+    def test_an_existing_likert_keeps_its_answers_when_none_are_posted(self):
+        question = self.add_question('likert', config={})
+        ids = [option.id for option in self.add_options(question, ['Never', 'Rarely', 'Often', 'Always'])]
+
+        with self.assertRaises(EditorError):
+            self.save(question, question_text='Question 0', question_type='likert')
+
+        self.assertEqual(list(question.options.values_list('id', flat=True)), ids)
+
     def test_a_switch_back_stores_the_answers_as_new_options(self):
         question = self.add_question('likert', config={})
         options = self.add_options(question, ['Never', 'Rarely', 'Often', 'Always'])

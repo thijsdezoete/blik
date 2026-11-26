@@ -3,7 +3,7 @@
     <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
         <input type="hidden" name="action_items[{{ index }}][key]" value="{{ item.key|default:'' }}">
         <input type="text" class="form-control" style="flex: 1 1 14rem;" name="action_items[{{ index }}][text]" value="{{ item.text|default:'' }}" placeholder="{% trans 'Ask a senior colleague to review your next proposal' %}" aria-label="{% trans 'Advice' %}">
-        <label class="help-text" style="margin: 0; white-space: nowrap;" for="question-{{ question.pk|default:'new' }}-threshold-{{ index }}">{% trans 'below' %}</label>
+        <label class="help-text" style="margin: 0; white-space: nowrap;" for="question-{{ question.pk|default:'new' }}-threshold-{{ index }}">{% trans 'when the score is below' %}</label>
         <input id="question-{{ question.pk|default:'new' }}-threshold-{{ index }}" type="number" class="form-control" style="width: 80px;" min="1" max="5" step="0.5" name="action_items[{{ index }}][threshold]" value="{{ item.threshold|default:3|floatformat:'-1u' }}">
         <button type="button" class="btn btn-sm btn-secondary" data-act="remove-advice" title="{% trans 'Remove this advice' %}" aria-label="{% trans 'Remove this advice' %}">&times;</button>
     </div>

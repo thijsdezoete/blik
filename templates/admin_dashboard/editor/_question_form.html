@@ -11,8 +11,8 @@
             {% trans 'You can change the texts. The page asks you first before a change that makes their answers unusable.' %}
         </span>
         {% endif %}
-        {% if translated %}
-        <span class="help-text" style="margin: 0 0 1rem;">{% blocktrans trimmed with languages=translated|join:', ' %}Translated into {{ languages }}. When you change a text here, its translation is marked as outdated, so the translator sees it.{% endblocktrans %}</span>
+        {% if translated_any %}
+        <span class="help-text" style="margin: 0 0 1rem;">{% blocktrans trimmed with languages=translated_any|join:', ' %}Translated into {{ languages }}. When you change a text here, its translation is marked as outdated, so the translator sees it.{% endblocktrans %}</span>
         {% endif %}
 
         {# 1. Question #}

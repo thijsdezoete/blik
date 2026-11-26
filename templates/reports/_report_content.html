@@ -46,9 +46,6 @@
 </div>
 {% endif %}
 
-{# Dreyfus Model Skill Profile - Comprehensive view with visualization and development plan #}
-{% include "reports/_dreyfus_profile.html" with insights=report_data.insights %}
-
 {% if report_data.insights.perception_gaps %}
 <div id="perception-gaps">
 {% for gap in report_data.insights.perception_gaps %}
@@ -147,7 +144,13 @@
     <p class="radar-note">{% trans '“Overall” is the average of the sections, added so that the chart has three points.' %}</p>
     {% endif %}
 </div>
+{% endif %}
 
+{# Below the radar, which every report has: the skill level and the initiative, with the development plan. Outside the #}
+{# check on the chart scores, so a report without a chart still shows them #}
+{% include "reports/_dreyfus_profile.html" with insights=report_data.insights %}
+
+{% if display_data.charts.section_scores %}
 <div class="report-section">
     <h2>{% trans 'Self vs Others Comparison' %}</h2>
     <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">

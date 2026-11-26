@@ -201,9 +201,14 @@ class GDPRDeletionService:
         from accounts.models import ReviewSetup, SetupReviewer
 
         # A list's own rows go with the list; count them with the rest.
-        _, by_rows = SetupReviewer.objects.filter(
-            Q(person=reviewee) | Q(email__iexact=reviewee.email)
-        ).delete()
+        named = Q(person=reviewee)
+        if reviewee.email:
+            # Rows by person have email=''; an empty match would take them all.
+            named |= Q(
+                email__iexact=reviewee.email,
+                setup__reviewee__organization=reviewee.organization_id,
+            )
+        _, by_rows = SetupReviewer.objects.filter(named).delete()
         _, by_lists = ReviewSetup.objects.filter(reviewee=reviewee).delete()
         return {
             'saved_reviewer_rows_deleted': by_rows.get('accounts.SetupReviewer', 0)

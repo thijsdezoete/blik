@@ -46,3 +46,21 @@ class ReviewSetupModelTests(TestCase):
         self.assertFalse(ReviewSetup.objects.filter(reviewee=self.a).exists())
         self.assertEqual([r.person for r in setup_b.reviewers.all()], [self.c])
         self.assertEqual([r.email for r in setup_c.reviewers.all()], ['x@acme.example'])
+
+    def test_soft_delete_keeps_rows_of_other_organizations_with_the_same_email(self):
+        other = RevieweeFactory(organization=OrganizationFactory(), email='o@other.example')
+        other_setup = ReviewSetup.objects.create(reviewee=other)
+        SetupReviewer.objects.create(setup=other_setup, category='peer', email='a@acme.example')
+
+        GDPRDeletionService.delete_reviewee(self.a.id)
+
+        self.assertEqual(other_setup.reviewers.count(), 1)
+
+    def test_soft_delete_of_a_reviewee_without_email_keeps_person_rows(self):
+        nameless = RevieweeFactory(organization=self.org, email='')
+        setup_b = ReviewSetup.objects.create(reviewee=self.b)
+        SetupReviewer.objects.create(setup=setup_b, category='peer', person=self.c)
+
+        GDPRDeletionService.delete_reviewee(nameless.id)
+
+        self.assertEqual(setup_b.reviewers.count(), 1)

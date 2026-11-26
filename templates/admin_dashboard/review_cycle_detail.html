@@ -181,7 +181,7 @@
 <!-- Progress Bar (Active cycles only) -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-body">
-        {% if claimed_tokens > 0 %}
+        {% if claimed_tokens > 0 and shows_reviewer_status %}
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
             <div style="font-weight: 500;">{% trans 'Progress' %}</div>
             <div style="font-size: 0.875rem; color: var(--text-secondary);">
@@ -323,7 +323,7 @@
 {% else %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h2 class="card-title">{% trans 'Reviewer Response Status' %}</h2>
+        <h2 class="card-title">{% if shows_reviewer_status %}{% trans 'Reviewer Response Status' %}{% else %}{% trans 'Reviewers' %}{% endif %}</h2>
     </div>
     <div class="card-body">
 {% endif %}
@@ -342,14 +342,17 @@
                         <thead>
                             <tr>
                                 <th style="border: none;">{% trans 'Reviewer' %}</th>
+                                {% if shows_reviewer_status %}
                                 <th style="border: none;">{% trans 'Invitation Status' %}</th>
-                                {% if shows_reviewer_status %}<th style="border: none;">{% trans 'Response Status' %}</th>{% endif %}
+                                <th style="border: none;">{% trans 'Response Status' %}</th>
                                 <th style="border: none;">{% trans 'Actions' %}</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
                             {% for token in tokens %}
-                            <tr data-email="{{ token.reviewer_email|default:'' }}" data-sent="{% if token.invitation_sent_at %}yes{% else %}no{% endif %}">
+                            {# Without the status a row is the address and nothing else: no state, no action, no data-sent #}
+                            <tr data-email="{{ token.reviewer_email|default:'' }}"{% if shows_reviewer_status %} data-sent="{% if token.invitation_sent_at %}yes{% else %}no{% endif %}"{% endif %}>
                                 <td style="font-size: 0.875rem; border-bottom: 1px solid var(--border);" class="reviewer-col">
                                     {% if token.reviewer_email %}
                                     <span style="color: var(--success); font-weight: 500;">✓ {% trans 'Invited by email' %}</span>
@@ -360,10 +363,10 @@
                                     <span style="color: var(--text-secondary);">{% trans 'Awaiting claim' %}</span>
                                     {% endif %}
                                 </td>
+                                {% if shows_reviewer_status %}
                                 <td style="border-bottom: 1px solid var(--border); font-size: 0.875rem;">
                                     {% include 'admin_dashboard/partials/token_invitation_status.html' %}
                                 </td>
-                                {% if shows_reviewer_status %}
                                 <td style="border-bottom: 1px solid var(--border); font-size: 0.875rem;">
                                     {% if token.completed_at %}
                                     <span style="color: var(--insight-perception); font-weight: 500;">✓ {% blocktrans trimmed with date=token.completed_at|date:'SHORT_DATE_FORMAT' %}Completed {{ date }}{% endblocktrans %}</span>
@@ -381,22 +384,8 @@
                                     <span style="color: var(--text-secondary);">—</span>
                                     {% endif %}
                                 </td>
-                                {% endif %}
                                 <td style="border-bottom: 1px solid var(--border);">
-                                    {% if not shows_reviewer_status %}
-                                    {# Only the invitation decides here; reminders go to everyone at once, below #}
-                                    {% if token.reviewer_email and not token.invitation_sent_at %}
-                                    {% if not token.invitation_queued_at or token.email_error %}
-                                    <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: inline; margin: 0;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="token_id" value="{{ token.id }}">
-                                        <button type="submit" class="btn btn-sm btn-primary" style="white-space: nowrap;">
-                                            {% trans 'Send Invite' %}
-                                        </button>
-                                    </form>
-                                    {% endif %}
-                                    {% endif %}
-                                    {% elif token.reviewer_email and not token.invitation_sent_at and not token.completed_at %}
+                                    {% if token.reviewer_email and not token.invitation_sent_at and not token.completed_at %}
                                     <div style="display: flex; gap: 0.5rem;">
                                         {% if not token.invitation_queued_at or token.email_error %}
                                         <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: inline; margin: 0;">
@@ -456,6 +445,7 @@
                                     {% endif %}
                                     {% endif %}
                                 </td>
+                                {% endif %}
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -466,6 +456,24 @@
             {% endfor %}
         </div>
 
+        {% if not shows_reviewer_status %}
+        {# One action each for the whole cycle, with no number: a count of pending invitations or reminders moves when someone answers #}
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
+            <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                {% csrf_token %}
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans 'Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes.' %}</div>
+                <button type="submit" class="btn btn-primary" style="white-space: nowrap;">{% trans 'Send All Pending Invites' %}</button>
+            </form>
+        </div>
+
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border);">
+            <form method="post" action="{% url 'send_reminder' cycle.uuid %}" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                {% csrf_token %}
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes." %}</div>
+                <button type="submit" class="btn btn-secondary">{% trans 'Remind All Pending Reviewers' %}</button>
+            </form>
+        </div>
+        {% else %}
         {% if queued_invites > 0 %}
         <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border); font-size: 0.875rem; color: var(--text-secondary);">
             {% blocktrans trimmed count counter=queued_invites %}{{ counter }} invitation is queued and goes out within about five minutes.{% plural %}{{ counter }} invitations are queued and go out within about five minutes, one email per reviewer.{% endblocktrans %}
@@ -496,6 +504,7 @@
                 <button type="submit" class="btn btn-secondary">{% trans 'Remind All Pending Reviewers' %}</button>
             </form>
         </div>
+        {% endif %}
         {% endif %}
         {% else %}
         <div class="empty-state">
@@ -560,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="action-grid">
             <a href="{% url 'manage_invitations' cycle.uuid %}" class="btn btn-primary">{% trans 'Manage Invitations' %}</a>
 
-            {% if pending_invites > 0 %}
+            {% if pending_invites > 0 and shows_reviewer_status %}
             <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
@@ -571,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             {% if pending_tokens > 0 %}
             <a href="{% url 'send_reminder_form' cycle.uuid %}" class="btn btn-warning" style="color: white;">
-                {% blocktrans trimmed with count=pending_tokens %}Send Reminders ({{ count }}){% endblocktrans %}
+                {% if shows_reviewer_status %}{% blocktrans trimmed with count=pending_tokens %}Send Reminders ({{ count }}){% endblocktrans %}{% else %}{% trans 'Send Reminder' %}{% endif %}
             </a>
             {% endif %}
 

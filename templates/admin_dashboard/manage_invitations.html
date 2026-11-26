@@ -21,10 +21,12 @@
                 <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans 'Invited' %}</div>
                 <div style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">{{ assigned_tokens }}</div>
             </div>
+            {% if shows_reviewer_status %}
             <div>
                 <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans 'Emails Sent' %}</div>
                 <div style="font-size: 2rem; font-weight: 700; color: var(--success);">{{ sent_tokens }}</div>
             </div>
+            {% endif %}
             <div>
                 <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans 'Completed' %}</div>
                 <div style="font-size: 2rem; font-weight: 700; color: var(--insight-perception);">{{ completed_tokens }}</div>
@@ -180,15 +182,17 @@
 {% if total_tokens > 0 and shows_reviewer_status or total_tokens > 0 and cycle.status == 'active' %}
 <div class="card">
     <div class="card-header">
-        <h2 class="card-title">{% trans 'Reviewer Response Status' %}</h2>
+        <h2 class="card-title">{% if shows_reviewer_status %}{% trans 'Reviewer Response Status' %}{% else %}{% trans 'Reviewers' %}{% endif %}</h2>
     </div>
     <div class="card-body">
+        {% if shows_reviewer_status %}
         <div class="alert alert-info" style="margin-bottom: 1.5rem;">
             <strong>{% trans 'Privacy Notice' %}</strong>
             <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">
                 {% trans 'Email addresses are never displayed to protect reviewer anonymity. Only response status is shown.' %}
             </p>
         </div>
+        {% endif %}
 
         {% for category, tokens in tokens_by_category.items %}
         {% if tokens %}
@@ -199,13 +203,15 @@
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border);">
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Reviewer' %}</th>
+                            {% if shows_reviewer_status %}
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Invitation Status' %}</th>
-                            {% if shows_reviewer_status %}<th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Response Status' %}</th>{% endif %}
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Response Status' %}</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for token in tokens %}
-                        <tr style="border-bottom: 1px solid var(--border);" data-email="{{ token.reviewer_email|default:'' }}" data-sent="{% if token.invitation_sent_at %}yes{% else %}no{% endif %}">
+                        <tr style="border-bottom: 1px solid var(--border);" data-email="{{ token.reviewer_email|default:'' }}"{% if shows_reviewer_status %} data-sent="{% if token.invitation_sent_at %}yes{% else %}no{% endif %}"{% endif %}>
                             <td style="padding: 0.75rem;" class="reviewer-col">
                                 {% if token.reviewer_email %}
                                 <span style="color: var(--success); font-weight: 500;">✓ {% trans 'Invited by email' %}</span>
@@ -216,10 +222,11 @@
                                 <span style="color: var(--text-secondary);">{% trans 'Awaiting claim' %}</span>
                                 {% endif %}
                             </td>
+                            {# Without the status a row is the address and nothing else: no state, no data-sent #}
+                            {% if shows_reviewer_status %}
                             <td style="padding: 0.75rem;">
                                 {% include 'admin_dashboard/partials/token_invitation_status.html' %}
                             </td>
-                            {% if shows_reviewer_status %}
                             <td style="padding: 0.75rem;">
                                 {% if token.completed_at %}
                                 <span style="color: var(--insight-perception); font-weight: 500;">✓ {% blocktrans trimmed with date=token.completed_at|date:'SHORT_DATE_FORMAT' %}Completed {{ date }}{% endblocktrans %}</span>
@@ -246,7 +253,18 @@
     </div>
 </div>
 
-{% if assigned_tokens > sent_tokens %}
+{% if not shows_reviewer_status %}
+{# One action for the whole cycle, with no number: the count of pending invitations moves when someone answers #}
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-body">
+        <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+            {% csrf_token %}
+            <div style="font-size: 0.875rem; color: var(--text-secondary);">{% trans "Queue the email invitations to reviewers who haven't received one yet. They go out within about five minutes." %}</div>
+            <button type="submit" class="btn btn-primary">{% trans 'Send Pending Invitations' %}</button>
+        </form>
+    </div>
+</div>
+{% elif assigned_tokens > sent_tokens %}
 <div class="card" style="margin-top: 2rem;">
     <div class="card-body">
         <form method="post" action="{% url 'send_invitations' cycle.uuid %}" data-sends-mail="reviewer" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">

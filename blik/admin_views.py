@@ -95,7 +95,7 @@ from reports.finalize import finalize_cycle
 from reports.services import generate_report, self_vs_others_gap
 from reports.summary import reviewee_summary
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
-from reviews.outbox import addressed, queue_invitations, queue_reminders, queue_reviewee_notifications
+from reviews.outbox import due_reminders, queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
 from reviews.setup import has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup
@@ -2788,9 +2788,11 @@ def send_reminder_form(request, cycle_uuid):
     }
     if context['shows_reviewer_status']:
         context['pending_tokens'] = pending_tokens
+        # The number on the button, as admins and HR have always had it
+        context['reminder_count'] = context['pending_count']
     else:
         # The people queue_reminders reaches, as a number only
-        context['reminder_count'] = addressed(pending_tokens).filter(invitation_sent_at__isnull=False).count()
+        context['reminder_count'] = due_reminders(pending_tokens).count()
 
     return render(request, 'admin_dashboard/send_reminder.html', context)
 
@@ -2802,7 +2804,7 @@ def manage_invitations(request, cycle_uuid):
 
     # Group tokens by category
     tokens_by_category = {}
-    for token in cycle.tokens.all().order_by('category'):
+    for token in cycle.tokens.all().order_by('category', 'created_at'):
         category = token.get_category_display()
         if category not in tokens_by_category:
             tokens_by_category[category] = []
@@ -2887,7 +2889,10 @@ def assign_invitations(request, cycle_uuid):
             # Put the invitations in the outbox
             queued = queue_invitations(cycle.tokens.all())
 
-            if queued:
+            if not sees_reviewer_status(request.user):
+                # The number queued counts earlier places too, minus those who answered
+                messages.success(request, INVITATIONS_GO_OUT)
+            elif queued:
                 messages.success(request, _('Invited %(assigned)s reviewer(s). %(queued)s invitation email(s) go out within about five minutes.') % {'assigned': stats['assigned'], 'queued': queued})
             else:
                 messages.success(request, _('Successfully assigned %(assigned)s email(s). Invitations will be sent separately.') % {'assigned': stats['assigned']})
@@ -2899,6 +2904,10 @@ def assign_invitations(request, cycle_uuid):
     return redirect('manage_invitations', cycle_uuid=cycle.uuid)
 
 
+# One text, whatever was queued: for the users who do not see the status per reviewer
+INVITATIONS_GO_OUT = gettext_lazy('The invitations that were not sent yet go out within about five minutes.')
+
+
 @login_required
 def send_invitations(request, cycle_uuid):
     """Queue the email invitations to assigned reviewers: all pending ones, or the one token posted"""
@@ -2907,11 +2916,18 @@ def send_invitations(request, cycle_uuid):
     if request.method == 'POST':
         tokens = cycle.tokens.all()
         token_id = request.POST.get('token_id')
+        shows_status = sees_reviewer_status(request.user)
         if token_id:
+            # Whether one person still needs an invitation tells whether they answered
+            if not shows_status:
+                raise Http404
             tokens = tokens.filter(id=token_id)
         queued = queue_invitations(tokens)
 
-        if queued:
+        if not shows_status:
+            # How many went out says how many people answered before their invitation
+            messages.success(request, INVITATIONS_GO_OUT)
+        elif queued:
             messages.success(request, ngettext(
                 '%(count)s invitation email goes out within about five minutes.',
                 '%(count)s invitation emails go out within about five minutes.',

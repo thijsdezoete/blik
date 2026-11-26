@@ -1,4 +1,5 @@
 import re
+from datetime import timedelta
 
 from django.test import TestCase
 from django.urls import reverse
@@ -100,8 +101,11 @@ class CycleStatusVisibilityTests(TestCase):
         self.cycle.status = 'completed'
         self.cycle.save()
 
-        html = self.get(self.reviewee_user()).content.decode()
+        response = self.get(self.reviewee_user())
+        html = response.content.decode()
 
+        self.assertEqual([{key: value for key, value in row.items() if key != 'label'} for row in response.context['progress']],
+                         cycle_progress(self.cycle))
         self.assertNotIn('dana@acme.example', html)
         self.assertNotIn('eli@acme.example', html)
         self.assertIn('dana@acme.example', self.get(self.admin).content.decode())
@@ -150,3 +154,81 @@ class CycleStatusVisibilityTests(TestCase):
         self.assertNotIn('eli@acme.example', html)
 
         self.assertEqual(list(self.get(self.admin, url).context['pending_tokens']), [self.open])
+
+    def three_peers(self):
+        """One never invited, one invited, one with an address and no invitation yet."""
+        sent = timezone.now()
+        return [ReviewerToken.objects.create(cycle=self.cycle, category='peer', reviewer_email=email,
+                                             invitation_sent_at=sent if email == 'gus@acme.example' else None)
+                for email in ('fay@acme.example', 'gus@acme.example', 'ivy@acme.example')]
+
+    def counts_page(self, user, tokens):
+        """The cycle page, without the emails of `tokens` and without the per-request CSRF values."""
+        html = self.get(user).content.decode()
+        for token in tokens:
+            html = html.replace(token.reviewer_email, '')
+        return re.sub(r'name="csrfmiddlewaretoken" value="[^"]*"', '', html)
+
+    def test_rows_of_the_counts_view_differ_only_in_email_and_category(self):
+        tokens = self.three_peers()
+        user = self.reviewee_user()
+        open_page = self.counts_page(user, tokens)
+
+        pages = []
+        for answered in tokens:
+            ReviewerToken.objects.filter(pk__in=[t.pk for t in tokens]).update(completed_at=None, claimed_at=None)
+            ReviewerToken.objects.filter(pk=answered.pk).update(completed_at=timezone.now(), claimed_at=timezone.now())
+            html = self.get(user).content.decode()
+            self.assertEqual(len({self.row(html, token) for token in tokens}), 1)
+            pages.append(self.counts_page(user, tokens))
+
+        # Whichever of the three answered, the page is the same
+        self.assertEqual(pages[0], pages[1])
+        self.assertEqual(pages[0], pages[2])
+        # The list and its actions carry no number that moves with an answer;
+        # only the counts of cycle_progress, above the list, do
+        part = lambda html: html[html.index('<!-- Reviewer Response Status -->'):html.index('<!-- Confirmation Modal -->')]
+        self.assertEqual(part(pages[0]), part(open_page))
+
+    def test_send_invitation_for_one_person_is_refused_for_the_reviewee(self):
+        never_invited = self.three_peers()[0]
+        self.client.force_login(self.reviewee_user())
+
+        response = self.client.post(reverse('send_invitations', args=[self.cycle.uuid]), {'token_id': never_invited.pk})
+
+        self.assertEqual(response.status_code, 404)
+        never_invited.refresh_from_db()
+        self.assertIsNone(never_invited.invitation_queued_at)
+
+    def test_send_all_invitations_gives_the_reviewee_the_same_message_whatever_was_sent(self):
+        never_invited = self.three_peers()[0]
+        self.client.force_login(self.reviewee_user())
+        url = reverse('send_invitations', args=[self.cycle.uuid])
+
+        def message():
+            response = self.client.post(url, follow=True)
+            return [str(m) for m in response.context['messages']]
+
+        with_pending = message()
+        never_invited.refresh_from_db()
+        self.assertIsNotNone(never_invited.invitation_queued_at)
+        ReviewerToken.objects.filter(cycle=self.cycle).update(invitation_sent_at=timezone.now())
+        without_pending = message()
+
+        self.assertEqual(with_pending, without_pending)
+        self.assertEqual(len(with_pending), 1)
+        self.assertFalse(re.search(r'\d', with_pending[0]))
+
+    def test_invitations_page_keeps_the_creation_order(self):
+        tokens = self.three_peers()
+        start = timezone.now() - timedelta(days=1)
+        # Created in another order than their ids, so the order cannot come from the row ids
+        for n, token in enumerate([self.done, self.open, *reversed(tokens)]):
+            ReviewerToken.objects.filter(pk=token.pk).update(created_at=start + timedelta(minutes=n))
+        ReviewerToken.objects.filter(pk=tokens[0].pk).update(completed_at=timezone.now())
+
+        html = self.get(self.reviewee_user(), reverse('manage_invitations', args=[self.cycle.uuid])).content.decode()
+
+        emails = re.findall(r'<tr[^>]* data-email="([^"]+)"', html)
+        self.assertEqual(emails, ['dana@acme.example', 'eli@acme.example',
+                                  'ivy@acme.example', 'gus@acme.example', 'fay@acme.example'])

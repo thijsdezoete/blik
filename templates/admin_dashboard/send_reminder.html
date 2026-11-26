@@ -112,7 +112,7 @@
                 {% endif %}
 
                 <div style="display: flex; gap: 1rem;">
-                    <button type="submit" class="btn btn-primary">{% if shows_reviewer_status %}{% blocktrans trimmed with count=pending_count %}Send {{ count }} Reminder(s){% endblocktrans %}{% else %}{% blocktrans trimmed with count=reminder_count %}Send {{ count }} Reminder(s){% endblocktrans %}{% endif %}</button>
+                    <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=reminder_count %}Send {{ count }} Reminder(s){% endblocktrans %}</button>
                     <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
                 </div>
             </form>

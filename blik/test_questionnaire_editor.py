@@ -12,7 +12,7 @@ from accounts.models import Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin, ensure_permission_groups
 from core.models import Organization
 from questionnaires.answer_options import save_options
-from questionnaires.editor import example_score, save_question, translated_into
+from questionnaires.editor import example_score, save_question, set_weight, translated_into
 from questionnaires.models import (
     AnswerOptionTranslation, Question, QuestionSection, QuestionTranslation, Questionnaire, QuestionnaireTranslation,
 )
@@ -400,6 +400,26 @@ class SaveQuestionTests(TestCase):
         self.assertEqual(self.question.labels, {})
         self.assertEqual(self.question.config['dreyfus_mapping'], {'skill': 1.5})
 
+    def test_a_save_keeps_a_weight_stored_after_the_question_was_loaded(self):
+        stale = Question.objects.get(pk=self.question.pk)
+        set_weight(Question.objects.get(pk=self.question.pk), 'skill', 2)
+
+        save_question(self.questionnaire, QueryDict(
+            'question_type=rating&rating_count=5&question_text=Solves+problems&required=on'
+        ), stale)
+
+        self.assertEqual(Question.objects.get(pk=self.question.pk).config['dreyfus_mapping'], {'skill': 2.0})
+
+    def test_two_weights_set_on_two_loaded_copies_are_both_stored(self):
+        first, second = Question.objects.get(pk=self.question.pk), Question.objects.get(pk=self.question.pk)
+
+        set_weight(first, 'skill', 2)
+        set_weight(second, 'agency', 0.5)
+
+        self.assertEqual(
+            Question.objects.get(pk=self.question.pk).config['dreyfus_mapping'], {'skill': 2.0, 'agency': 0.5},
+        )
+
 
 class TranslatedIntoTests(TestCase):
 
@@ -545,3 +565,37 @@ class EditorReportCardTests(TestCase):
         self.assertIn('<td>Counts double</td>', report)
         self.assertIn('data-level="agency"', report)
         self.assertNotIn('data-level="skill"', report)
+        self.assertIn(' is stage ', report)
+
+    def test_an_older_weight_outside_the_five_shows_with_its_number(self):
+        self.question.config['dreyfus_mapping'] = {'skill': 0.75}
+        self.question.save()
+
+        slots = self.post(action='refresh').json()['slots']
+        score = example_score(self.question)
+
+        self.assertRegex(slots['report-card'], r'<option value="0.75" selected>Counts 0.75 times</option>')
+        self.assertIn(f'({score:.1f} x 0.75) / 0.75 = ', slots['report'])
+        self.assertIn('<td>Counts 0.75 times</td>', slots['report'])
+
+    def test_unticking_asks_only_about_questions_with_a_score(self):
+        Question.objects.create(
+            section=self.section, question_text='What should {name} keep doing?', question_type='text',
+            config={'dreyfus_mapping': {'skill': 1}}, order=1,
+        )
+
+        card = self.post(action='refresh').json()['slots']['report-card']
+
+        # The model is on through the old weight, but no question in the table counts
+        self.assertIn('data-model="skill" checked', card)
+        self.assertNotIn('data-ask="model-skill"', card)
+
+    def test_an_open_question_that_is_no_id_is_ignored(self):
+        for action in ('refresh', 'set_weight'):
+            with self.subTest(action=action):
+                response = self.post(
+                    action=action, open='\u00b2', question_id=self.question.id, model='skill', weight='1',
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertNotIn('question-\u00b2-report', response.json()['slots'])

@@ -50,10 +50,10 @@
     {% if level.rows %}
     <div class="current-stage-summary">
         <div class="stage-header-compact">
-            <div class="stage-name-large">{% firstof profile.skill_stage profile.agency_stage %}</div>
+            <div class="stage-name-large">{{ level.stage_name }}</div>
             <div class="stage-level-compact">{% blocktrans trimmed with level=level.level|floatformat:"-2" %}Level {{ level }}/5.0{% endblocktrans %}</div>
         </div>
-        <div class="stage-description">{% firstof profile.stage_info.description profile.description %}</div>
+        <div class="stage-description">{{ level.description }}</div>
     </div>
     <p style="margin: 1.25rem 0 0.5rem; font-weight: 500;">{% trans 'How this level is made' %}</p>
     <span class="help-text" style="margin: 0 0 0.5rem;">{% trans 'The scores are examples. The way they make the level is real.' %}</span>
@@ -67,10 +67,9 @@
         </tbody>
     </table></div>
     <span class="help-text">
-        {% trans 'The level is the average of the scores. Each score is multiplied by how much it counts, and the total is divided by the sum of how much they count:' %}
-        <strong>({% for row in level.rows %}{{ row.score|floatformat:1 }} x {{ row.weight|floatformat:"-1" }}{% if not forloop.last %} + {% endif %}{% endfor %}) / {{ level.weight_sum|floatformat:"-1" }} = {{ level.level|floatformat:"-2" }}</strong>.
-        {% firstof profile.skill_stage profile.agency_stage as stage_name %}
-        {% blocktrans trimmed with low=level.low|floatformat:"-1" high=level.high|floatformat:"-1" stage=stage_name %}A level from {{ low }} to {{ high }} is the stage "{{ stage }}". The diagram marks that stage.{% endblocktrans %}
+        {% trans 'The level is the average of the scores. Each score is multiplied by how much it counts ("Counts double" is x 2, "Counts half" is x 0.5), and the total is divided by the sum of how much they count:' %}
+        <strong>({% for row in level.rows %}{{ row.score|floatformat:1 }} x {{ row.weight_text }}{% if not forloop.last %} + {% endif %}{% endfor %}) / {{ level.weight_sum_text }} = {{ level.level|floatformat:"-2" }}</strong>.
+        {% blocktrans trimmed with low=level.low|floatformat:"-1" high=level.high|floatformat:"-1" stage=level.stage name=level.stage_name %}A level from {{ low }} to {{ high }} is stage {{ stage }} of 5, "{{ name }}". The diagram marks step {{ stage }} of its five steps.{% endblocktrans %}
     </span>
     {% else %}
     <div class="empty-state">{% blocktrans trimmed with name=entry.name %}No question counts toward "{{ name }}" yet. Choose the questions in the card "The report" on the left.{% endblocktrans %}</div>

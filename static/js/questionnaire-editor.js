@@ -1585,18 +1585,20 @@
         }
 
         const ask = reportCard.querySelector(`template[data-ask="model-${model}"]`);
-
-        if (!ask) {
+        const clear = function() {
             off();
-            refreshModels();
+            Editor.send('clear_model', {model}, {key: `model-${model}`});
+        };
+
+        // Without the question no question with a score counts for the model. A weight left on a question without a
+        // score (older data) would keep it on, so it goes too; it never counted, so nothing is lost.
+        if (!ask) {
+            clear();
             return;
         }
 
         box.checked = true;
-        Editor.ask(ask, box.closest('label'), function() {
-            off();
-            Editor.send('clear_model', {model}, {key: `model-${model}`});
-        });
+        Editor.ask(ask, box.closest('label'), clear);
     }
 
     /*

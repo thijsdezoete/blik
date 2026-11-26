@@ -519,6 +519,10 @@ class ReportPreviewTests(EditorTestCase):
         self.assertEqual((level['low'], level['high']), (max(1, level['stage'] - 0.5), min(5, level['stage'] + 0.5)))
         self.assertEqual(level['profile']['skill_level'], level['level'])
         self.assertEqual(level['profile']['stage'], level['stage'])
+        self.assertEqual(level['stage_name'], level['profile']['skill_stage'])
+        self.assertEqual(level['description'], level['profile']['stage_info']['description'])
+        self.assertEqual(level['weight_sum_text'], '3')
+        self.assertEqual([row['weight_text'] for row in level['rows']], ['1', '2'])
 
     def test_a_model_ticked_in_this_visit_shows_without_questions(self):
         self.add_question()
@@ -530,6 +534,8 @@ class ReportPreviewTests(EditorTestCase):
         self.assertIsNone(levels[0]['level'])
         self.assertIsNone(levels[0]['stage'])
         self.assertIsNone(levels[0]['profile'])
+        self.assertIsNone(levels[0]['stage_name'])
+        self.assertIsNone(levels[0]['description'])
 
     def test_an_older_mapping_turns_its_model_on(self):
         self.add_question(config={'min': 1, 'max': 5, 'dreyfus_mapping': {'dimension': 'skill', 'weight': 1.5}})
@@ -543,4 +549,6 @@ class ReportPreviewTests(EditorTestCase):
 
         levels = self.preview()['levels']
         self.assertEqual([level['model'] for level in levels], ['agency'])
+        self.assertEqual(levels[0]['stage_name'], levels[0]['profile']['agency_stage'])
+        self.assertEqual(levels[0]['description'], levels[0]['profile']['description'])
         self.assertEqual(levels[0]['profile']['agency_level'], levels[0]['level'])

@@ -12,7 +12,7 @@ from math import isfinite
 
 from django.db import transaction
 from django.db.models import Count, Max
-from django.utils import translation
+from django.utils import formats, translation
 from django.utils.translation import gettext as _, gettext_lazy
 
 from core.languages import is_language, language_name
@@ -57,7 +57,13 @@ MODEL_TEXTS = {
 # The example scores of the reviewer groups in the report preview, as shifts of a topic's example score
 EXAMPLE_GROUP_SHIFTS = {'self': -0.2, 'peer': 0, 'manager': 0.2, 'direct_report': 0.1}
 EXAMPLE_CASES = {0: 'none', 1: 'bars', 2: 'overall'}
-PROFILES = {'skill': skill_profile_with_texts, 'agency': agency_profile_with_texts}
+# Per model: the function that builds the report's profile, and the stage name and description in that profile
+PROFILES = {
+    'skill': (
+        skill_profile_with_texts, lambda profile: (profile['skill_stage'], profile['stage_info']['description']),
+    ),
+    'agency': (agency_profile_with_texts, lambda profile: (profile['agency_stage'], profile['description'])),
+}
 
 # The names of the answer types on the editor page
 ANSWER_TYPES = {
@@ -276,7 +282,7 @@ def question_form_values(questionnaire, question):
             'max_label': question.labels.get('max', '') if scale else '',
         },
         'rating_counts': RATING_COUNTS,
-        'weights': [{'model': model, 'weight': _mapping(question.config).get(model, 0)} for model in MODELS],
+        'weights': [weight_choice(model, _mapping(question.config).get(model, 0)) for model in MODELS],
         'weight_names': WEIGHT_NAMES,
         'range': bounds,
         'label_languages': sorted(
@@ -317,6 +323,28 @@ def _is_number(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and isfinite(value)
 
 
+def number_text(value):
+    """A weight or a sum of weights as the page writes it: in the active language, with only the decimals it has, so
+    an older weight of 0.75 stays 0.75 and 2.0 is 2."""
+
+    value = round(value, 2)
+    decimals = next(places for places in (0, 1, 2) if round(value, places) == value)
+
+    return formats.number_format(value, decimal_pos=decimals)
+
+
+def weight_choice(model, weight):
+    """One model's weight of a question for its select: the name of the five weights, or for an older weight outside
+    the five a name with its number, which the select shows as one more option."""
+
+    return {
+        'model': model,
+        **MODEL_TEXTS[model],
+        'weight': weight,
+        'other': None if weight in WEIGHT_NAMES else _('Counts %(weight)s times') % {'weight': number_text(weight)},
+    }
+
+
 def _mapping(config):
     """The question's weights in the current format, {'skill': 1.5}, without the weights of 0.
 
@@ -355,11 +383,25 @@ def _apply_weight(config, model, weight):
         config['dreyfus_mapping'] = {model: mapping[model] for model in MODELS if model in mapping}
 
 
-def set_weight(question, model, weight):
-    """Store how much the question counts for the skill or initiative level."""
+def _locked(question):
+    """The question's row as it is stored now, locked until the end of the transaction. Every write of a config
+    changes the stored config, so two requests for one question (a save and a weight) never undo each other."""
 
-    _apply_weight(question.config, model, weight)
-    question.save(update_fields=['config', 'updated_at'])
+    try:
+        return Question.objects.select_for_update().get(pk=question.pk)
+    except Question.DoesNotExist:
+        raise EditorError(_('This question does not exist any more. Reload the page.'))
+
+
+def set_weight(question, model, weight):
+    """Store how much the question counts for the skill or initiative level, on the stored config."""
+
+    with transaction.atomic():
+        stored = _locked(question)
+        _apply_weight(stored.config, model, weight)
+        stored.save(update_fields=['config', 'updated_at'])
+
+    question.config = stored.config
 
 
 def _questions(questionnaire):
@@ -374,7 +416,7 @@ def clear_model(questionnaire, model):
         raise EditorError(_('This model does not exist.'))
 
     with transaction.atomic():
-        for question in _questions(questionnaire):
+        for question in _questions(questionnaire).select_for_update():
             if 'dreyfus_mapping' in question.config:
                 _apply_weight(question.config, model, 0)
                 question.save(update_fields=['config', 'updated_at'])
@@ -384,7 +426,7 @@ def set_did_not_observe(questionnaire, on):
     """Offer "Did not observe" on every score and likert of the questionnaire, or on none."""
 
     with transaction.atomic():
-        for question in _questions(questionnaire).filter(question_type__in=DID_NOT_OBSERVE_TYPES):
+        for question in _questions(questionnaire).filter(question_type__in=DID_NOT_OBSERVE_TYPES).select_for_update():
             question.config['did_not_observe'] = on
             question.save(update_fields=['config', 'updated_at'])
 
@@ -538,9 +580,7 @@ def save_question(questionnaire, post, question=None, section=None):
     if question_type in DID_NOT_OBSERVE_TYPES:
         config['did_not_observe'] = post.get('did_not_observe') == 'on'
 
-    for key in ('dreyfus_mapping', 'chart_weight', 'exclude_from_charts'):
-        if key in stored_config:
-            config[key] = stored_config[key]
+    posted_weights = {}
 
     for model in MODELS:
         if f'{model}_weight' in post:
@@ -549,7 +589,9 @@ def save_question(questionnaire, post, question=None, section=None):
             except ValueError:
                 raise EditorError(_('This weight is not possible.'))
 
-            _apply_weight(config, model, weight)
+            # Checked now, written on the stored config below
+            _apply_weight({}, model, weight)
+            posted_weights[model] = weight
 
     label_length = AnswerOption._meta.get_field('label').max_length
 
@@ -569,6 +611,17 @@ def save_question(questionnaire, post, question=None, section=None):
             question = Question(section=section)
             order = section.questions.aggregate(Max('order'))['order__max']
             question.order = 0 if order is None else order + 1
+        else:
+            # The weights and chart settings of the row as it is stored now, locked: a weight set by itself
+            # (set_weight) after this question was loaded is kept
+            stored_config = _locked(question).config
+
+        for key in ('dreyfus_mapping', 'chart_weight', 'exclude_from_charts'):
+            if key in stored_config:
+                config[key] = stored_config[key]
+
+        for model, weight in posted_weights.items():
+            _apply_weight(config, model, weight)
 
         question.question_text = question_text
         question.question_type = question_type
@@ -596,27 +649,33 @@ def example_score(question):
 
 
 def _example_level(model, rows):
-    """The level of one model made from rows of {'question', 'score', 'weight', 'weight_name'}, as the report shows
-    it."""
+    """The level of one model made from rows of {'question', 'score', 'weight', 'weight_text', 'weight_name'}, as the
+    report shows it."""
 
     weight_sum = sum(row['weight'] for row in rows)
-    level = stage = low = high = profile = None
+    level = stage = low = high = profile = stage_name = description = None
 
     if rows:
         level = round(sum(row['score'] * row['weight'] for row in rows) / weight_sum, 2)
         stage = _level_to_stage(level)
         low, high = max(1, stage - 0.5), min(5, stage + 0.5)
         # The same profile the sample report builds
-        profile = PROFILES[model]({f'{model}_level': level, 'stage': stage, 'confidence': 0.85})
+        build, texts = PROFILES[model]
+        profile = build({f'{model}_level': level, 'stage': stage, 'confidence': 0.85})
+        stage_name, description = texts(profile)
 
     return {
         'model': model,
         'rows': rows,
         'weight_sum': weight_sum,
+        'weight_sum_text': number_text(weight_sum),
         'level': level,
         'stage': stage,
         'low': low,
         'high': high,
+        'stage_name': stage_name,
+        'description': description,
+        # For the diagram, which each model draws from its own profile
         'profile': profile,
     }
 
@@ -652,8 +711,9 @@ def report_preview(questionnaire, shown):
                 for model, weight in mapping.items():
                     rows[model].append({
                         'question': question, 'score': example_score(question), 'weight': weight,
-                        # An older weight outside the five shows as its number
-                        'weight_name': WEIGHT_NAMES.get(weight, weight),
+                        'weight_text': number_text(weight),
+                        # An older weight outside the five gets a name with its number
+                        'weight_name': WEIGHT_NAMES.get(weight) or weight_choice(model, weight)['other'],
                     })
 
         topics.append({
@@ -779,16 +839,14 @@ def editor_context(questionnaire, shown, topic=None):
             section.answer_count += question.answer_count
             mapping = _mapping(question.config) if isinstance(question.config, dict) else {}
 
-            for model in mapping:
-                weighted[model] += 1
-
             if question.scoring.has_score:
+                # The questions the table shows as counting; unticking asks about these
+                for model in mapping:
+                    weighted[model] += 1
+
                 scored.append({
                     'question': question,
-                    'weights': [
-                        {'model': model, 'name': MODEL_TEXTS[model]['name'], 'weight': mapping.get(model, 0)}
-                        for model in levels
-                    ],
+                    'weights': [weight_choice(model, mapping.get(model, 0)) for model in levels],
                 })
 
         if scored:

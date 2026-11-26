@@ -1152,7 +1152,8 @@ EDITOR_SLOTS = {
     'report': 'admin_dashboard/editor/_report.html',
 }
 # The slots of one topic or question: topic-<id>-head, and the row of a question and the parts of the open question
-EDITOR_ITEM_SLOT = re.compile(r'^(?:(topic)-(\d+)-head|(question)-(\d+)-(row|labels|report))$')
+# [0-9], not \d: \d also matches other digits, which no id has
+EDITOR_ITEM_SLOT = re.compile(r'(?:(topic)-([0-9]+)-head|(question)-([0-9]+)-(row|labels|report))')
 QUESTION_SLOTS = {
     'row': 'admin_dashboard/editor/_question_row.html',
     'labels': 'admin_dashboard/editor/_rating_labels.html',
@@ -1169,7 +1170,7 @@ def _question_context(context, question):
 def _render_editor_slot(request, context, name):
     """The HTML of one slot, or None for a topic or question that no longer exists."""
 
-    if not (match := EDITOR_ITEM_SLOT.match(name)):
+    if not (match := EDITOR_ITEM_SLOT.fullmatch(name)):
         return render_to_string(EDITOR_SLOTS[name], context, request=request)
 
     sections = context['sections']
@@ -1353,7 +1354,8 @@ def _editor_action(request, questionnaire, action):
         )
 
     # The weight and the models also show in part 3 of the open question
-    open_report = [f'question-{post["open"]}-report'] if post.get('open', '').isdigit() else []
+    # Only ASCII digits: isdigit() also takes "²", which is no id and no slot
+    open_report = [f'question-{post["open"]}-report'] if re.fullmatch('[0-9]+', post.get('open', '')) else []
 
     if action == 'set_weight':
         question = _posted_question(questionnaire, post)

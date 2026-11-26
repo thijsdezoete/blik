@@ -44,6 +44,8 @@ def chart_relation(manager, person):
     What the chart says about `manager` above `person`:
     'has' (the chart gives this manager), 'missing' (it gives no manager) or
     'conflict' (it gives other managers, listed in 'managers').
+    'also_managers': the other active managers of the unit `place` would use;
+    they get read access to the person's reports too.
     """
     from reviews.services import derive_reviewers
 
@@ -55,7 +57,12 @@ def chart_relation(manager, person):
         state, managers = 'conflict', current
     else:
         state, managers = 'missing', []
-    return {'state': state, 'managers': managers, 'unit_name': name, 'new_unit': unit is None}
+    also = [] if unit is None else list(
+        Reviewee.objects.filter(
+            unit_memberships__unit=unit, unit_memberships__role=OrgUnitMembership.MANAGER, is_active=True,
+        ).exclude(pk=manager.pk).order_by('name', 'pk'))
+    return {'state': state, 'managers': managers, 'unit_name': name, 'new_unit': unit is None,
+            'also_managers': also}
 
 
 @transaction.atomic
@@ -71,6 +78,8 @@ def apply_chart_choice(manager, person, action):
         raise ValueError('A person cannot be their own manager')
     if manager.organization_id != person.organization_id:
         raise ValueError('Manager and person are in different organizations')
+    if not (manager.is_active and person.is_active):
+        raise ValueError('Manager and person must both be active')
 
     relation = chart_relation(manager, person)
     unit, name = _target(manager, person)
@@ -79,7 +88,8 @@ def apply_chart_choice(manager, person, action):
             memberships__reviewee=manager, memberships__role=OrgUnitMembership.MANAGER,
         ).filter(memberships__reviewee=person, memberships__role=OrgUnitMembership.MEMBER).first()
     if unit is not None and unit.memberships.filter(reviewee=person).exists():
-        # The person leads this unit with the manager: a second row would break the unique rule.
+        # A second row would break the unique rule. The person leads this unit with the manager,
+        # or is a member of it already (that is state 'has', returned above; kept as a guard).
         return unit
 
     if action == 'move' and relation['managers']:

@@ -38,7 +38,8 @@ class ChartLinkTests(TestCase):
     def test_place_puts_the_person_in_the_unit_the_manager_leads(self):
         unit = self.unit('Platform', manager=self.tom, members=[self.lena])
         self.assertEqual(chart_relation(self.tom, self.maya),
-                         {'state': 'missing', 'managers': [], 'unit_name': 'Platform', 'new_unit': False})
+                         {'state': 'missing', 'managers': [], 'unit_name': 'Platform', 'new_unit': False,
+                          'also_managers': []})
 
         self.assertEqual(apply_chart_choice(self.tom, self.maya, 'place'), unit)
 
@@ -101,7 +102,22 @@ class ChartLinkTests(TestCase):
         self.unit('Sales', manager=self.lena, members=[self.maya])
         self.assertEqual(chart_relation(self.tom, self.maya),
                          {'state': 'conflict', 'managers': [self.lena],
-                          'unit_name': 'Product Engineering', 'new_unit': True})
+                          'unit_name': 'Product Engineering', 'new_unit': True, 'also_managers': []})
+
+    def test_relation_names_the_other_managers_of_the_target_unit(self):
+        zoe = self.person('Zoe Lim', 'zoe@acme.example')
+        gone = self.person('Ann Gone', 'ann@acme.example')
+        gone.is_active = False
+        gone.save()
+        shared = self.unit('Platform', manager=self.tom)
+        for col, co_manager in enumerate([zoe, gone, self.lena], start=1):
+            OrgUnitMembershipFactory(unit=shared, reviewee=co_manager, row=0, col=col)
+        self.assertEqual(chart_relation(self.tom, self.maya)['also_managers'], [self.lena, zoe])
+
+        alone = self.person('Noor Smit', 'noor@acme.example')
+        self.unit('Mobile', manager=alone)
+        self.assertEqual(chart_relation(alone, self.maya)['also_managers'], [])
+        self.assertEqual(chart_relation(self.maya, self.lena)['also_managers'], [])  # a new unit
 
     def test_relation_is_missing_when_only_units_without_a_manager_have_the_person(self):
         self.unit('Guild', members=[self.maya])
@@ -158,10 +174,12 @@ class ChartLinkTests(TestCase):
 
         self.assertEqual(set(OrgUnitMembership.objects.values_list('unit', 'reviewee', 'role')), before)
 
-    def test_refuses_unknown_action_the_person_as_own_manager_and_another_organization(self):
+    def test_refuses_unknown_action_the_person_as_own_manager_another_organization_and_inactive_people(self):
         outsider = RevieweeFactory(organization=OrganizationFactory(), email='kim@other.example')
+        inactive = RevieweeFactory(organization=self.org, email='ann@acme.example', is_active=False)
         for manager, person, action in ((self.tom, self.maya, 'swap'), (self.maya, self.maya, 'place'),
-                                        (outsider, self.maya, 'place'), (self.tom, outsider, 'place')):
+                                        (outsider, self.maya, 'place'), (self.tom, outsider, 'place'),
+                                        (inactive, self.maya, 'place'), (self.tom, inactive, 'place')):
             with self.assertRaises(ValueError):
                 apply_chart_choice(manager, person, action)
         self.assertFalse(OrgUnit.objects.exists())

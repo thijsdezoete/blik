@@ -143,17 +143,47 @@ class CycleStatusVisibilityTests(TestCase):
         self.assertNotIn('eli@acme.example', texts)
         self.assertNotIn('dana@acme.example', texts)
 
-    def test_reminder_form_gives_the_reviewee_a_number_and_no_names(self):
+    def test_reminder_form_gives_the_reviewee_no_number_and_no_names(self):
+        never_invited = self.three_peers()[0]
         url = reverse('send_reminder_form', args=[self.cycle.uuid])
-        response = self.get(self.reviewee_user(), url)
-        html = response.content.decode()
+        user = self.reviewee_user()
 
+        def form():
+            html = self.get(user, url).content.decode()
+            return re.sub(r'name="csrfmiddlewaretoken" value="[^"]*"', '', html)
+
+        before = form()
+        response = self.get(user, url)
         self.assertNotIn('pending_tokens', response.context)
-        self.assertEqual(response.context['reminder_count'], 1)
-        self.assertNotIn(str(self.open.token), html)
-        self.assertNotIn('eli@acme.example', html)
+        self.assertNotIn('reminder_count', response.context)
+        self.assertNotIn(str(self.open.token), before)
+        self.assertNotIn('eli@acme.example', before)
 
-        self.assertEqual(list(self.get(self.admin, url).context['pending_tokens']), [self.open])
+        # One invited person answers; others are still open
+        ReviewerToken.objects.filter(pk=self.open.pk).update(completed_at=timezone.now())
+        self.assertEqual(form(), before)
+        self.assertTrue(ReviewerToken.objects.filter(pk=never_invited.pk, completed_at__isnull=True).exists())
+
+        self.assertEqual(list(self.get(self.admin, url).context['pending_tokens']),
+                         list(self.cycle.tokens.filter(completed_at__isnull=True).order_by('category')))
+
+    def test_remind_all_gives_the_reviewee_the_same_message_whatever_was_queued(self):
+        self.client.force_login(self.reviewee_user())
+        url = reverse('send_reminder', args=[self.cycle.uuid])
+
+        def message():
+            response = self.client.post(url, follow=True)
+            return [str(m) for m in response.context['messages']]
+
+        with_due = message()
+        self.open.refresh_from_db()
+        self.assertIsNotNone(self.open.reminder_queued_at)
+        ReviewerToken.objects.filter(pk=self.open.pk).update(completed_at=timezone.now())
+        without_due = message()
+
+        self.assertEqual(with_due, without_due)
+        self.assertEqual(len(with_due), 1)
+        self.assertFalse(re.search(r'\d', with_due[0]))
 
     def three_peers(self):
         """One never invited, one invited, one with an address and no invitation yet."""

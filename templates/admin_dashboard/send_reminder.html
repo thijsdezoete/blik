@@ -21,9 +21,11 @@
 
                 <div style="font-weight: 500;">{% trans 'Questionnaire:' %}</div>
                 <div>{{ cycle.questionnaire.name }}</div>
+                {% if shows_reviewer_status %}
 
                 <div style="font-weight: 500;">{% trans 'Pending Reviews:' %}</div>
                 <div>{{ pending_count }}</div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -107,12 +109,12 @@
                 </div>
 
                 {% else %}
-                {# One reminder to everyone who has not answered: a number, no names and no choice of people #}
-                <p style="margin: 0 0 1.5rem;">{% trans 'The reminders go out within about five minutes, one email per reviewer' %}</p>
+                {# One reminder to everyone who has not answered: no number, no names and no choice of people #}
+                <p style="margin: 0 0 1.5rem;">{% trans "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes." %}</p>
                 {% endif %}
 
                 <div style="display: flex; gap: 1rem;">
-                    <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=reminder_count %}Send {{ count }} Reminder(s){% endblocktrans %}</button>
+                    <button type="submit" class="btn btn-primary">{% if shows_reviewer_status %}{% blocktrans trimmed with count=pending_count %}Send {{ count }} Reminder(s){% endblocktrans %}{% else %}{% trans 'Remind All Pending Reviewers' %}{% endif %}</button>
                     <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
                 </div>
             </form>

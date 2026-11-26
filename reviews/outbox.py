@@ -51,14 +51,10 @@ def queue_invitations(tokens):
     return pending.update(invitation_queued_at=timezone.now(), email_error='', email_attempts=0)
 
 
-def due_reminders(tokens):
-    """The tokens among `tokens` a reminder goes to: invited and unfinished."""
-    return addressed(tokens).filter(invitation_sent_at__isnull=False, completed_at__isnull=True)
-
-
 def queue_reminders(tokens):
     """Put a reminder for every invited, unfinished token among `tokens` in the outbox. Returns how many."""
-    return due_reminders(tokens).update(reminder_queued_at=timezone.now(), email_error='', email_attempts=0)
+    due = addressed(tokens).filter(invitation_sent_at__isnull=False, completed_at__isnull=True)
+    return due.update(reminder_queued_at=timezone.now(), email_error='', email_attempts=0)
 
 
 def queue_reviewee_notifications(cycle):

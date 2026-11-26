@@ -132,9 +132,10 @@ class QuestionnaireReportFeaturesTests(TestCase):
                 finally:
                     question.delete()
 
-    def test_agency_only_is_not_shown_by_the_report(self):
+    def test_initiative_shows_without_skill_level(self):
         QuestionFactory(section=self.section, config={'dreyfus_mapping': {'agency': 1}})
-        self.assertEqual(self.feature_keys(), ['radar', 'distribution'])
+        self.assertIn('agency', self.feature_keys())
+        self.assertNotIn('dreyfus', self.feature_keys())
 
     def test_dimensions_on_separate_questions_enable_both_profiles(self):
         QuestionFactory(section=self.section, config={'dreyfus_mapping': {'skill': 1}})

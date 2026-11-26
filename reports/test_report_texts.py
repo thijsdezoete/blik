@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from django.utils import translation
 from rest_framework.test import APIClient
@@ -20,6 +20,7 @@ from questionnaires.models import (
     QuestionTranslation,
     Questionnaire,
 )
+from reports.dreyfus_service import agency_profile_with_texts
 from reports.report_texts import with_texts
 from reports.services import generate_report
 from reviews.models import Response, ReviewCycle, ReviewerToken
@@ -109,6 +110,15 @@ class ReportTextsTest(TestCase):
         self.assertEqual(data['insights']['skill_profile']['skill_stage'], 'Advanced Beginner')
         self.assertEqual(data['insights']['skill_profile']['stage_key'], 'advanced_beginner')
 
+
+class DevelopmentCardTest(SimpleTestCase):
+
+    def test_the_development_card_shows_initiative_alone(self):
+        insights = {'agency_profile': agency_profile_with_texts({'agency_level': 4.0, 'stage': 4, 'confidence': 1.0})}
+        html = render_to_string('reports/_dreyfus_profile.html', {'insights': insights})
+        self.assertIn(insights['agency_profile']['agency_stage'], html)
+        self.assertIn('data-tab-content="agency"', html)
+        self.assertNotIn('data-tab-content="skill"', html)
 
 class TrendChangeTest(TestCase):
 

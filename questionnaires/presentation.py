@@ -65,10 +65,6 @@ def questionnaire_report_features(questionnaire):
                 if _is_number(weight) and weight != 0:
                     available.add(feature)
 
-    # _dreyfus_profile.html renders the agency tab inside the skill-profile gate.
-    if 'dreyfus' not in available:
-        available.discard('agency')
-
     features = [
         {
             'key': 'radar',

@@ -85,6 +85,7 @@
                                             Auto-assign managers, peers, and direct reports based on each reviewee's
                                             team memberships. You'll confirm before invitations send.
                                         {% endblocktrans %}
+                                        {% trans "A person's saved list is used when there is one." %}
                                     </div>
                                 </div>
                             </label>
@@ -96,6 +97,7 @@
                                     <div style="font-weight: 600;">{% if has_previous_cycles %}{% trans 'Reuse previous settings per cycle' %}{% else %}{% blocktrans trimmed %}Reuse previous settings per cycle <span style="color: var(--text-tertiary); font-weight: normal;">(no cycles yet)</span>{% endblocktrans %}{% endif %}</div>
                                     <div style="font-size: 0.875rem; color: var(--text-secondary);">
                                         {% trans 'Copy the questionnaire, the categories and the reviewer emails of the previous cycle of each person. People without a previous cycle are skipped.' %}
+                                        {% trans "A person's saved list is used when there is one." %}
                                     </div>
                                 </div>
                             </label>

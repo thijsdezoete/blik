@@ -28,7 +28,7 @@ from django.utils.translation import gettext as _, gettext_lazy, ngettext
 from django.views.decorators.http import require_POST
 
 from accounts.chart_link import append_membership, apply_chart_choice, chart_relation, unplaced_with_manager
-from accounts.models import Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
+from accounts.models import Reviewee, ReviewSetup, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
 from accounts.permissions import (
     assign_organization_admin,
     assign_organization_member,
@@ -465,6 +465,7 @@ def reviewee_list(request):
         latest_questionnaire_id=Subquery(latest_cycles.values('questionnaire_id')[:1]),
         active_cycle_id=Subquery(latest_cycles.filter(status='active').values('id')[:1]),
         latest_report_id=Subquery(latest_reports.values('id')[:1]),
+        has_saved_list=Exists(ReviewSetup.objects.filter(reviewee=OuterRef('pk'))),
     ).order_by('name', 'pk')
 
     # Facets come from this organization's visible people, including archived
@@ -557,6 +558,7 @@ def reviewee_list(request):
             'active_cycle': cycles_by_id.get(person.active_cycle_id),
             'latest_completed_report': report,
             'gap': gap,
+            'has_saved_list': person.has_saved_list,
         })
 
     return render(request, 'admin_dashboard/reviewee_list.html', {
@@ -847,6 +849,8 @@ def quick_cycle_create(request, reviewee_uuid):
             for category in CATEGORY_ORDER
         }
 
+    has_saved_list = ReviewSetup.objects.filter(reviewee=reviewee).exists()
+
     # Create the cycle and its tokens together: a refused token leaves no cycle behind.
     try:
         with transaction.atomic():
@@ -860,7 +864,17 @@ def quick_cycle_create(request, reviewee_uuid):
             total_tokens = 0
             email_invited_count = 0
 
-            if previous_cycle:
+            if has_saved_list:
+                # The list on the person's page: emails only, and the invitations are queued below.
+                saved_assignments = review_setup(reviewee).email_assignments(
+                    [c for c in cycle.active_categories if c != 'self'])
+                for category, emails in saved_assignments.items():
+                    for _email in emails:
+                        ReviewerToken.objects.create(cycle=cycle, category=category)
+                assign_tokens_to_emails(cycle, saved_assignments)
+                total_tokens = sum(len(emails) for emails in saved_assignments.values())
+                email_invited_count = total_tokens
+            elif previous_cycle:
                 # Copy tokens from previous cycle, including email assignments. The self-assessment
                 # token comes from queue_reviewee_notifications below. A colleague deactivated
                 # since then is not invited again, as in a bulk run.
@@ -902,16 +916,20 @@ def quick_cycle_create(request, reviewee_uuid):
         limit_error(request, e)
         return redirect('reviewee_list')
 
-    if previous_cycle:
+    if has_saved_list or previous_cycle:
         # Queue the invitations of all email-assigned tokens
         if email_invited_count > 0:
             queued = queue_invitations(cycle.tokens.all())
 
             messages.success(
                 request,
-                _('Review cycle created for "%(name)s" using "%(questionnaire)s". '
-                  'Copied %(count)s reviewer(s) from previous cycle. '
-                  '%(queued)s invitation email(s) go out within about five minutes.')
+                (_('Review cycle created for "%(name)s" using "%(questionnaire)s". '
+                   'Took %(count)s reviewer(s) from the saved list. '
+                   '%(queued)s invitation email(s) go out within about five minutes.')
+                 if has_saved_list else
+                 _('Review cycle created for "%(name)s" using "%(questionnaire)s". '
+                   'Copied %(count)s reviewer(s) from previous cycle. '
+                   '%(queued)s invitation email(s) go out within about five minutes.'))
                 % {'name': reviewee.name, 'questionnaire': questionnaire.name,
                    'count': total_tokens, 'queued': queued}
             )
@@ -1904,6 +1922,8 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
 
     `bulk_source` controls the reviewers of each cycle:
         'chart' — derive from the org chart for each reviewee
+        both 'chart' and 'previous' take the reviewers of a person from the
+                     person's saved list instead, when there is one
         'previous' — each reviewee's latest cycle: its questionnaire,
                      categories and reviewer email strings (never FKs),
                      without the addresses of deactivated people
@@ -1918,6 +1938,7 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
     active_categories = ReviewCycle(**category_flags).active_categories
     unplaced_count = 0
     planned = []
+    has_saved_list = set(ReviewSetup.objects.filter(reviewee__in=reviewees).values_list('reviewee_id', flat=True))
     for reviewee in reviewees:
         email_assignments = None
         cycle_questionnaire, cycle_flags = questionnaire, category_flags
@@ -1930,6 +1951,14 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
             cycle, email_assignments = previous
             cycle_questionnaire = cycle.questionnaire
             cycle_flags = {f'include_{c}': getattr(cycle, f'include_{c}') for c in CATEGORY_ORDER}
+        if bulk_source in ('chart', 'previous') and reviewee.pk in has_saved_list:
+            # The saved list of a person wins over the chart and the previous cycle,
+            # an empty one too: then nobody but the person is left, and the person is skipped.
+            email_assignments = review_setup(reviewee).email_assignments(
+                ReviewCycle(**cycle_flags).active_categories)
+            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
+                unplaced_count += 1
+                continue
         elif bulk_source == 'chart':
             buckets = derive_reviewers(reviewee)
             # Build the email_assignments dict the existing

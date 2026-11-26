@@ -1,10 +1,17 @@
+from datetime import timedelta
+
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
+from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, RevieweeFactory, UserProfileFactory
 from accounts.models import Reviewee
+from accounts.permissions import assign_organization_admin, assign_organization_member
 from blik.admin_views import cycle_progress
 from core.models import Organization
+from questionnaires.factories import QuestionnaireFactory
 from questionnaires.models import Questionnaire
+from reviews.factories import ReviewCycleFactory
 from reviews.models import ReviewCycle, ReviewerToken
 
 
@@ -61,3 +68,56 @@ class CycleProgressTests(TestCase):
 
         ReviewerToken.objects.filter(cycle=self.cycle, completed_at__isnull=True).update(completed_at=timezone.now())
         self.assertEqual((self.row('peer')['shows'], self.row('peer')['needed']), ('yes', 0))
+
+
+class RevieweeDetailCurrentReviewTests(TestCase):
+    def setUp(self):
+        self.profile = UserProfileFactory()
+        self.org = self.profile.organization
+        assign_organization_admin(self.profile.user)
+        self.alex = RevieweeFactory(organization=self.org, name='Alex Morgan', email='alex@acme.example',
+                                    department='Product Engineering')
+        self.older = ReviewCycleFactory(reviewee=self.alex, questionnaire=QuestionnaireFactory(organization=self.org))
+        self.newer = ReviewCycleFactory(reviewee=self.alex, questionnaire=QuestionnaireFactory(organization=self.org))
+        ReviewCycle.objects.filter(pk=self.older.pk).update(created_at=timezone.now() - timedelta(days=30))
+        self.url = reverse('reviewee_detail', args=[self.alex.uuid])
+
+    def page(self, user):
+        self.client.force_login(user)
+        return self.client.get(self.url).context
+
+    def test_two_active_cycles_give_two_blocks(self):
+        ReviewerToken.objects.create(cycle=self.newer, category='peer', reviewer_email='dana@acme.example',
+                                     completed_at=timezone.now())
+        ReviewCycleFactory(reviewee=self.alex, questionnaire=self.newer.questionnaire, status='completed')
+
+        reviews = self.page(self.profile.user)['current_reviews']
+
+        self.assertEqual([review['cycle'] for review in reviews], [self.newer, self.older])
+        # Each row of cycle_progress, with the label of its category for the table
+        self.assertEqual([[{key: value for key, value in row.items() if key != 'label'} for row in review['progress']]
+                          for review in reviews],
+                         [cycle_progress(self.newer), cycle_progress(self.older)])
+        self.assertEqual(
+            [(review['answered'], review['invited']) for review in reviews],
+            [(self.newer.tokens.filter(completed_at__isnull=False).count(), self.newer.tokens.count()),
+             (0, self.older.tokens.count())])
+
+    def test_cycle_links_for_a_user_who_may_run_the_cycle(self):
+        context = self.page(self.profile.user)
+
+        self.assertEqual([review['runs'] for review in context['current_reviews']], [True, True])
+        self.assertEqual(context['reminder_cycle'], self.newer)
+
+    def test_manager_who_only_reads_gets_no_cycle_links(self):
+        manager = UserProfileFactory(organization=self.org, user__email='hank@acme.example').user
+        assign_organization_member(manager)
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=Reviewee.objects.get(email='hank@acme.example'), row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.alex, row=1, col=0)
+
+        context = self.page(manager)
+
+        self.assertEqual(context['access']['reader'], 'manager')
+        self.assertEqual([review['runs'] for review in context['current_reviews']], [False, False])
+        self.assertIsNone(context['reminder_cycle'])

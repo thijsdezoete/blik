@@ -15,14 +15,16 @@
         </div>
         <p>{{ reviewee.email }}{% if reviewee.department %} · {{ reviewee.department }}{% endif %}</p>
     </div>
-    {% if access.manage or access.setup %}
+    {% if access.manage or access.setup or reminder_cycle %}
     <div class="rv-actions">
         {% if access.manage %}<a href="{% url 'reviewee_edit' reviewee.uuid %}" class="btn btn-secondary">{% trans 'Edit details' %}</a>{% endif %}
-        {% if access.setup and questionnaires %}<button type="button" class="btn btn-primary" data-reviewee-dialog="start-review-detail" aria-haspopup="dialog">{% trans 'Start review' %}</button>{% endif %}
-        {% if access.manage %}
+        {% if reminder_cycle %}<a href="{% url 'send_reminder_form' reminder_cycle.uuid %}" class="btn btn-primary">{% trans 'Send reminder' %}</a>
+        {% elif access.setup and questionnaires %}<button type="button" class="btn btn-primary" data-reviewee-dialog="start-review-detail" aria-haspopup="dialog">{% trans 'Start review' %}</button>{% endif %}
+        {% if access.manage or reminder_cycle and access.setup and questionnaires %}
         <button type="button" class="btn btn-secondary reviewee-more" popovertarget="reviewee-actions" data-reviewee-popover aria-label="{% trans 'Actions' %}: {{ reviewee.name }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
         <div id="reviewee-actions" class="reviewee-popover reviewee-menu" popover="auto" aria-label="{% trans 'Actions' %}: {{ reviewee.name }}">
-            <a href="{% url 'reviewee_delete' reviewee.uuid %}" class="reviewee-delete">{% trans 'Delete' %}</a>
+            {% if reminder_cycle and access.setup and questionnaires %}<button type="button" data-reviewee-dialog="start-review-detail" aria-haspopup="dialog">{% trans 'Start review' %}</button>{% endif %}
+            {% if access.manage %}<a href="{% url 'reviewee_delete' reviewee.uuid %}" class="reviewee-delete">{% trans 'Delete' %}</a>{% endif %}
         </div>
         {% endif %}
     </div>
@@ -40,7 +42,10 @@
 
 <div class="rv-grid">
     <div class="rv-main">
+        {% for review in current_reviews %}{% include 'admin_dashboard/partials/reviewee_current_review.html' %}{% endfor %}
+        {% if results_first %}{% include 'admin_dashboard/partials/reviewee_results.html' %}{% endif %}
         {% if shows_reviewers %}{% include 'admin_dashboard/partials/reviewee_reviewers_card.html' %}{% endif %}
+        {% if not results_first %}{% include 'admin_dashboard/partials/reviewee_results.html' %}{% endif %}
     </div>
 
     <aside class="rv-side">

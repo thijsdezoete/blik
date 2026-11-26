@@ -1,0 +1,59 @@
+{% load i18n %}
+{# Every number comes from reviewee_summary: the version of the report this reader may open #}
+{% if reports %}
+<section class="card" aria-label="{% trans 'Latest review in figures' %}">
+    <div class="card-body rv-figures">
+        <div>
+            <p class="dash-subhead is-first">{% trans 'Latest score' %}</p>
+            <p class="dash-figure">{% if summary.latest_score is None %}–{% else %}{{ summary.latest_score }} <small>{% trans 'of 5' %}</small>{% endif %}</p>
+            {% if summary.change is not None %}
+            <p class="help-text">{% if summary.change > 0 %}<span class="rv-up"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1l4 7H1z" fill="currentColor"></path></svg>+{{ summary.change|floatformat:1 }}</span>{% elif summary.change < 0 %}<span class="rv-down"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 9L1 2h8z" fill="currentColor"></path></svg>{{ summary.change|floatformat:1 }}</span>{% else %}<span class="rv-same">{{ summary.change|floatformat:1 }}</span>{% endif %}
+                {% blocktrans trimmed with date=summary.change_since|date:'DATE_FORMAT' %}since {{ date }}{% endblocktrans %}</p>
+            {% endif %}
+        </div>
+        <div>
+            <p class="dash-subhead is-first">{% trans 'Self vs others' %}</p>
+            {% if summary.gap is None %}<p class="dash-figure">–</p><p class="help-text">{% trans 'Not available yet' %}</p>
+            {% else %}
+            <p class="dash-figure">{% if summary.gap > 0 %}+{% endif %}{{ summary.gap|floatformat:2 }}</p>
+            <p class="help-text">{% if summary.gap > 0 %}{% trans 'Rates self higher than others' %}{% elif summary.gap < 0 %}{% trans 'Rates self lower than others' %}{% else %}{% trans 'Same as others' %}{% endif %}</p>
+            {% endif %}
+        </div>
+        <div>
+            <p class="dash-subhead is-first">{% trans 'Answers' %}</p>
+            <p class="dash-figure">{% blocktrans trimmed with count=latest_review.answered max=latest_review.invited %}{{ count }} of {{ max }}{% endblocktrans %}</p>
+            <p class="help-text">{% blocktrans trimmed with date=latest_review.cycle.created_at|date:'DATE_FORMAT' %}In the review of {{ date }}{% endblocktrans %}</p>
+        </div>
+    </div>
+</section>
+{% else %}
+<section class="card" aria-labelledby="results-title">
+    <div class="card-header"><h2 class="card-title" id="results-title">{% trans 'Results' %}</h2></div>
+    <div class="card-body">
+        <p><strong>{% trans 'No results yet' %}</strong></p>
+        <p class="help-text">{% trans 'After the first review, the scores show here. After two reviews with the same questionnaire, you see where the scores went up or down.' %}</p>
+    </div>
+</section>
+{% endif %}
+
+{% if summary.reviews %}
+<section class="card rv-reviews" aria-labelledby="reviews-title">
+    <div class="card-header"><h2 class="card-title" id="reviews-title">{% trans 'Reviews' %}</h2></div>
+    <div class="table-wrapper">
+        <table class="table" aria-labelledby="reviews-title">
+            <thead><tr><th scope="col">{% trans 'Started' %}</th><th scope="col">{% trans 'Questionnaire' %}</th><th scope="col" class="rv-num">{% trans 'Answered' %}</th><th scope="col" class="rv-num">{% trans 'Score' %}</th><th scope="col">{% trans 'Report' %}</th></tr></thead>
+            <tbody>
+            {% for review in summary.reviews %}
+                <tr>
+                    <td>{{ review.cycle.created_at|date:'DATE_FORMAT' }}</td>
+                    <td>{{ review.cycle.questionnaire.name }}</td>
+                    <td class="rv-num">{% blocktrans trimmed with count=review.answered max=review.invited %}{{ count }} of {{ max }}{% endblocktrans %}</td>
+                    <td class="rv-num">{% if review.score is None %}–{% else %}{{ review.score }}{% endif %}</td>
+                    <td>{% if review.report %}<a href="{% url 'reports:view_report' review.cycle.uuid %}" class="rv-link">{% trans 'View Report' %}</a>{% elif review.cycle.status == 'active' %}<span class="badge badge-info">{% trans 'In progress' %}</span>{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}

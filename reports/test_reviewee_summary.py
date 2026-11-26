@@ -103,6 +103,18 @@ class RevieweeSummaryTests(TestCase):
         self.assertEqual(own, 3.0)
         self.assertNotEqual(own, admin)
 
+    def test_the_reviewee_gets_no_change_when_the_previous_report_hid_a_group(self):
+        self.organization.hide_below_threshold_from_managers = False
+        self.organization.save()
+        # Two peers are below the threshold of 3: the change would give their answers away
+        self.review([('self', 2), ('manager', 3), ('peer', 5), ('peer', 5)], days_ago=200)
+        self.review([('self', 3), ('manager', 4), ('peer', 4), ('peer', 4), ('peer', 4)], days_ago=10)
+
+        self.assertIsNotNone(reviewee_summary(self.reviewee, 'all')['change'])
+        own = reviewee_summary(self.reviewee, 'own')
+        self.assertIsNone(own['change'])
+        self.assertIsNone(own['change_since'])
+
     def test_unavailable_report_gives_no_numbers(self):
         cycle = self.review([('self', 3), ('manager', 4), ('peer', 4), ('peer', 4), ('peer', 4)], days_ago=10)
         cycle.report.available = False

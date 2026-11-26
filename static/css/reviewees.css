@@ -95,3 +95,25 @@
 @media (max-width: 900px) {
     .rv-cat { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* The current review and the results of one reviewee */
+.table th.rv-num, .table td.rv-num { text-align: right; font-variant-numeric: tabular-nums; }
+.rv-answered { margin: 0 0 0.5rem; font-variant-numeric: tabular-nums; }
+.rv-current .table-wrapper { margin-top: 1.5rem; }
+.rv-current .table { min-width: 0; }
+.rv-current .table th, .rv-current .badge { white-space: normal; }
+.rv-current tbody th { font-weight: 400; font-size: 0.875rem; color: inherit; border-bottom: 1px solid var(--border); }
+.rv-current-note { margin-top: 0.75rem; }
+.rv-current .card-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.rv-close { margin: 0; }
+.rv-figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.rv-figures p { margin: 0; }
+.rv-figures .dash-subhead { margin-bottom: 0.5rem; }
+.rv-up, .rv-down, .rv-same { display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rv-up { color: var(--success-700); }
+.rv-down { color: var(--danger-700); }
+.rv-same { color: var(--text-secondary); }
+.rv-reviews .table th:first-child, .rv-reviews .table td:first-child { padding-left: 1.5rem; }
+@media (max-width: 900px) {
+    .rv-figures { grid-template-columns: minmax(0, 1fr); }
+}

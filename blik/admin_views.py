@@ -92,6 +92,7 @@ from reports.dreyfus_service import (
 from reports.models import Report
 from reports.finalize import finalize_cycle
 from reports.services import generate_report, self_vs_others_gap
+from reports.summary import reviewee_summary
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
@@ -121,11 +122,10 @@ def limit_error(request, error):
         messages.error(request, str(error))
 
 
-def get_cycle_or_404(request, cycle_uuid):
+def runnable_cycles(request):
     """
-    Get a ReviewCycle by UUID, filtered by organization and by what the current
-    user is allowed to see. Returns 404 for cycles in another organization or
-    belonging to a reviewee whose cycles this user does not run.
+    The ReviewCycles the current user may open and run: those of their organization
+    that they may see, and those of the reviewees whose cycles they run.
     """
     cycles_qs = ReviewCycle.objects.select_related('reviewee', 'questionnaire', 'created_by')
     if request.organization:
@@ -136,7 +136,16 @@ def get_cycle_or_404(request, cycle_uuid):
         # A manager who may create cycles for their direct reports also runs those cycles.
         allowed = cycles_qs.annotate(reviewee_email_lower=Lower('reviewee__email')).filter(
             Q(pk__in=allowed.values('pk')) | Q(reviewee_email_lower__in=team))
-    return get_object_or_404(allowed, uuid=cycle_uuid)
+    return allowed
+
+
+def get_cycle_or_404(request, cycle_uuid):
+    """
+    Get a ReviewCycle by UUID, filtered by organization and by what the current
+    user is allowed to see. Returns 404 for cycles in another organization or
+    belonging to a reviewee whose cycles this user does not run.
+    """
+    return get_object_or_404(runnable_cycles(request), uuid=cycle_uuid)
 
 
 @login_required
@@ -849,6 +858,15 @@ def reviewee_detail(request, reviewee_uuid):
         cycle__reviewee=reviewee, cycle__status='completed', available=True,
     ).select_related('cycle').order_by('-cycle__created_at', '-pk'))
 
+    summary = reviewee_summary(reviewee, access['reader'])
+    runs = set(runnable_cycles(request).filter(reviewee=reviewee, status='active').values_list('pk', flat=True))
+    labels = {code: label for code, label, *_rest in REVIEWER_CARD_CATEGORIES}
+    current_reviews = [{
+        **review,
+        'progress': [{**row, 'label': labels[row['category']]} for row in cycle_progress(review['cycle'])],
+        'runs': review['cycle'].pk in runs,
+    } for review in summary['reviews'] if review['cycle'].status == 'active']
+
     threshold = org.min_responses_for_anonymity
     categories = []
     for code, label, description, placeholder, email_label in REVIEWER_CARD_CATEGORIES:
@@ -872,6 +890,12 @@ def reviewee_detail(request, reviewee_uuid):
         'status': status,
         'active_cycles': active_cycles,
         'reports': reports,
+        'summary': summary,
+        'current_reviews': current_reviews,
+        # Newest first: the header's reminder goes to the newest active cycle this user runs
+        'reminder_cycle': next((review['cycle'] for review in current_reviews if review['runs']), None),
+        'latest_review': next((review for review in summary['reviews'] if review['report']), None),
+        'results_first': bool(reports) and not current_reviews,
         'has_cycles': bool(cycles),
         'categories': categories,
         'shows_reviewers': access['setup'] or access['reader'] == 'all',

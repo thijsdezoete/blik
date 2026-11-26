@@ -132,15 +132,17 @@ def rating_labels(stored, stored_count, posted, count, defaults):
     """The labels of a score after its number of options changed from stored_count to count.
 
     Labels the creator typed are kept for the values that remain. Default labels that nobody changed follow the new
-    number, so a scale of 4 does not show "Agree" on its highest value.
+    number, so a scale of 4 does not show "Agree" on its highest value. The form may post the fields of the old or of
+    the new number of options, so the stored labels decide: they are the default, and no posted field (empty ones
+    included) differs from them.
     """
 
-    posted = {key: label for key, label in posted.items() if label}
+    unchanged = all(label == stored.get(key, '') for key, label in posted.items())
 
-    if count != stored_count and stored == posted == default_rating_labels(stored_count, defaults):
+    if count != stored_count and unchanged and stored == default_rating_labels(stored_count, defaults):
         return default_rating_labels(count, defaults)
 
-    return {key: label for key, label in posted.items() if key.isdigit() and 1 <= int(key) <= count}
+    return {key: label for key, label in posted.items() if label and key.isdigit() and 1 <= int(key) <= count}
 
 
 def answer_counts(questionnaire):
@@ -312,6 +314,14 @@ def save_question(questionnaire, post, question=None, section=None):
     if question_type not in dict(Question.QUESTION_TYPES):
         raise EditorError(_('Choose an answer type.'))
 
+    # Old answers of another type would be read as numbers, such as the id of an answer option as a score
+    answered = question is not None and question.responses.exists()
+
+    if answered and question_type in ('rating', 'scale') and question_type != question.question_type:
+        raise EditorError(
+            _('Reviewers already answered this question as another type. Add a new question for a score or a slider.')
+        )
+
     default_likert_scale, defaults = get_default_labels(questionnaire)
     stored_config = question.config if question else {}
     config = {}
@@ -328,12 +338,18 @@ def save_question(questionnaire, post, question=None, section=None):
             stored_count = stored_config.get('max', len(defaults))
             stored_labels = question.labels
 
-            if count != stored_count and question.responses.exists():
+            if count != stored_count and answered:
                 raise EditorError(_('Reviewers already answered this question, so its number of options stays.'))
 
-        posted = posted_labels(post, 'rating', count)
-        labels = rating_labels(stored_labels, stored_count, posted, count, defaults)
-        labels = labels or default_rating_labels(count, defaults)
+        # Every posted field counts, also an empty one, up to the higher of the two numbers
+        fields = {f'{value}': f'rating_label_{value}' for value in range(1, max(count, stored_count) + 1)}
+        posted = {key: post[field].strip() for key, field in fields.items() if field in post}
+
+        if question is None and not any(name.startswith('rating_label_') for name in post):
+            labels = default_rating_labels(count, defaults)
+        else:
+            labels = rating_labels(stored_labels, stored_count, posted, count, defaults)
+
         descriptions = posted_descriptions(post, 'rating', count)
         config = {'min': 1, 'max': count}
     elif question_type == 'likert':

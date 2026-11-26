@@ -107,16 +107,81 @@ class SaveQuestionTests(EditorTestCase):
                 self.assertEqual(question.question_text, 'Question 0')
                 self.assertEqual(question.question_type, 'rating')
 
-    def test_an_answered_score_keeps_its_number_of_options(self):
-        question = self.add_question()
+    def answer(self, question):
         cycle = ReviewCycleFactory(questionnaire=self.questionnaire)
         ResponseFactory(question=question, cycle=cycle, token=ReviewerTokenFactory(cycle=cycle))
+
+    def test_an_answered_score_keeps_its_number_of_options(self):
+        question = self.add_question()
+        self.answer(question)
 
         with self.assertRaises(EditorError):
             self.save(question, question_text='Question 0', question_type='rating', rating_count='4')
 
         question.refresh_from_db()
         self.assertEqual(question.config['max'], 5)
+
+    def test_an_answered_question_cannot_become_a_score_or_a_slider(self):
+        likert = self.add_question('likert', config={})
+        self.answer(likert)
+
+        for fields in ({'question_type': 'rating', 'rating_count': '5'}, {'question_type': 'scale'}):
+            with self.subTest(fields=fields):
+                with self.assertRaises(EditorError):
+                    self.save(likert, question_text='Question 0', **fields)
+
+                likert.refresh_from_db()
+                self.assertEqual(likert.question_type, 'likert')
+
+        rating = self.add_question()
+        self.answer(rating)
+        self.save(rating, question_text='Question 1', question_type='text')
+        rating.refresh_from_db()
+        self.assertEqual(rating.question_type, 'text')
+
+        with self.assertRaises(EditorError):
+            self.save(rating, question_text='Question 1', question_type='rating', rating_count='4')
+
+    def test_default_labels_follow_the_number_of_options(self):
+        question = self.add_question(labels=D)
+
+        self.save(
+            question,
+            question_text='Question 0',
+            question_type='rating',
+            rating_count='4',
+            **{f'rating_label_{key}': label for key, label in D.items()},
+        )
+        self.assertEqual(question.labels, {'1': 'Strongly Disagree', '4': 'Strongly Agree'})
+
+        self.save(
+            question,
+            question_text='Question 0',
+            question_type='rating',
+            rating_count='3',
+            rating_label_1='Strongly Disagree',
+            rating_label_4='Strongly Agree',
+        )
+        self.assertEqual(question.labels, {'1': 'Strongly Disagree', '3': 'Strongly Agree'})
+
+    def test_cleared_labels_stay_cleared(self):
+        question = self.add_question(labels={'1': 'Never', '5': 'Always'})
+
+        self.save(
+            question,
+            question_text='Question 0',
+            question_type='rating',
+            rating_count='5',
+            **{f'rating_label_{value}': '' for value in range(1, 6)},
+        )
+        self.assertEqual(question.labels, {})
+
+        new = save_question(
+            self.questionnaire,
+            post(question_text='Listens well', question_type='rating', rating_count='5'),
+            section=self.section,
+        )
+        self.assertEqual(new.labels, D)
 
     def test_fewer_options_drop_the_labels_above_and_their_translations(self):
         typed = {f'{value}': f'Label {value}' for value in range(1, 6)}
@@ -285,6 +350,8 @@ class WeightTests(EditorTestCase):
         question.refresh_from_db()
         self.assertEqual(question.config['dreyfus_mapping'], {'skill': 1.5, 'agency': 2})
 
+
+class ClearModelTests(EditorTestCase):
     def test_clearing_a_model_keeps_the_other(self):
         questions = [self.add_question(config={'dreyfus_mapping': {'skill': 1, 'agency': 2}}) for _ in range(2)]
 
@@ -296,6 +363,8 @@ class WeightTests(EditorTestCase):
 
         self.assertEqual(Questionnaire.objects.get(pk=self.questionnaire.pk).dreyfus_dimensions, (False, True))
 
+
+class DidNotObserveTests(EditorTestCase):
     def test_one_switch_sets_every_score_and_likert(self):
         rating = self.add_question()
         self.add_question('likert', config={})

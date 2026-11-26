@@ -1,12 +1,11 @@
 {% load i18n l10n %}{# Slot "question-<id>-report": what the stored question does in the report, and the choices for it #}
 {% with id=question.pk|default:'new' type=question.question_type %}
 <span class="form-label">{% trans 'In the report' %}</span>
-<div style="display: flex; gap: 0.75rem; align-items: baseline;">
+{# One plain sentence, no pill: it tells a fact and nothing can be done with it #}
+<div>
     {% if question.scoring.in_radar %}
-    <span class="badge badge-success" style="white-space: nowrap;">{% trans 'Counts' %}</span>
     <span>{% blocktrans trimmed with topic=question.section.title %}Counts for "{{ topic }}" on the radar.{% endblocktrans %}</span>
     {% else %}
-    <span class="badge badge-secondary" style="white-space: nowrap;">{% trans 'Does not count' %}</span>
     <span>
         {% if type == 'text' %}
         {% trans 'Written answers show as text in the report. They do not count in the radar.' %}

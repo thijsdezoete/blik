@@ -45,30 +45,27 @@ class ActionItemKeyTests(TestCase):
         self.assertEqual(len(item['key']), 8)
         self.assertEqual(self.question.action_items, [item])
 
+    def save_new(self, **data):
+        return self.edit(action='save_question', section_id=self.section.id, question_type='text',
+                         question_text='Notes', action_items_posted='1', **data)
+
+    def save_stored(self, **data):
+        return self.edit(action='save_question', question_id=self.question.id, question_type='rating',
+                         question_text='Shares knowledge', rating_count='5', action_items_posted='1', **data)
+
     def test_a_new_question_keys_its_items(self):
-        self.edit(**{
-            'action': 'add_question',
-            'section_id': self.section.id,
-            'question_type': 'text',
-            'question_text': 'Notes',
-            'add_action_items[0][text]': 'Write it down',
-            'add_action_items[0][threshold]': '3',
-        })
+        self.save_new(**{'action_items[0][text]': 'Write it down', 'action_items[0][threshold]': '3'})
 
         [item] = Question.objects.get(question_text='Notes').action_items
         self.assertEqual(item['text'], 'Write it down')
         self.assertTrue(item['key'])
 
-    def test_the_dreyfus_dialog_keeps_the_keys_and_keys_new_items(self):
+    def test_a_save_keeps_the_keys_and_keys_new_items(self):
         [item] = self.question.action_items
         item['key'] = 'pairing'
         self.question.save()
 
-        self.edit(**{
-            'action': 'update_dreyfus_config',
-            'question_id': self.question.id,
-            'skill_weight': '1',
-            'agency_weight': '0',
+        self.save_stored(**{
             'action_items[0][key]': 'pairing',
             'action_items[0][text]': 'Pair every week',
             'action_items[0][threshold]': '3.5',
@@ -86,18 +83,14 @@ class ActionItemKeyTests(TestCase):
     def test_more_than_ten_items_keep_their_order(self):
         texts = [f'Step {i}' for i in range(12)]
 
-        self.edit(action='add_question', section_id=self.section.id, question_type='text', question_text='Notes',
-                  **{f'add_action_items[{i}][text]': text for i, text in enumerate(texts)})
-        self.edit(action='update_dreyfus_config', question_id=self.question.id,
-                  **{f'action_items[{i}][text]': text for i, text in enumerate(texts)})
+        self.save_new(**{f'action_items[{i}][text]': text for i, text in enumerate(texts)})
+        self.save_stored(**{f'action_items[{i}][text]': text for i, text in enumerate(texts)})
 
         for question in Question.objects.get(question_text='Notes'), Question.objects.get(id=self.question.id):
             self.assertEqual([item['text'] for item in question.action_items], texts)
 
-    def test_the_dreyfus_dialog_replaces_keys_the_question_does_not_have(self):
-        self.edit(**{
-            'action': 'update_dreyfus_config',
-            'question_id': self.question.id,
+    def test_a_save_replaces_keys_the_question_does_not_have(self):
+        self.save_stored(**{
             'action_items[0][key]': '"><img src=x onerror=alert(1)>',
             'action_items[0][text]': 'Pair weekly',
         })

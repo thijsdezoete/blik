@@ -50,8 +50,6 @@ from core.languages import default_language, is_language, language_name
 from core.gdpr import GDPRDeletionService
 from core.models import Organization
 from productreviews.models import ProductReview, anonymous_name
-from questionnaires.action_items import add_action_item_keys
-from questionnaires.answer_options import save_options
 from questionnaires.editor import (
     DID_NOT_OBSERVE_TYPES,
     MODELS,
@@ -62,10 +60,6 @@ from questionnaires.editor import (
     get_default_labels,
     languages_with_translation,
     load_for_editor,
-    posted_action_items,
-    posted_descriptions,
-    posted_labels,
-    posted_option_rows,
     question_form_values,
     save_info,
     save_question,
@@ -82,7 +76,6 @@ from questionnaires.translations import (
     LanguageState,
     get_language_states,
     get_text_translations,
-    has_translation,
     save_text_translations,
 )
 from notifications.lifecycle import cycle_summary, send_cycle_summary
@@ -1403,8 +1396,6 @@ def questionnaire_edit(request, questionnaire_uuid):
         except EditorError as error:
             return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
 
-    default_likert_scale, default_rating_labels = get_default_labels(questionnaire)
-
     if request.method == 'POST':
         action = request.POST.get('action')
 
@@ -1414,300 +1405,7 @@ def questionnaire_edit(request, questionnaire_uuid):
             except EditorError as error:
                 return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
 
-        # The full-page actions below go with the old editor dialogs; the new page does not use them
-        if action == 'update_info':
-            source_language = request.POST.get('source_language')
-
-            if not is_language(source_language):
-                source_language = questionnaire.source_language
-
-            # The source language cannot also have a translation
-            if source_language != questionnaire.source_language and has_translation(questionnaire, source_language):
-                messages.error(
-                    request,
-                    _('This questionnaire is already translated into %(language)s. Empty that translation first to '
-                      'make %(language)s its source language.') % {'language': language_name(source_language)},
-                )
-                return redirect('questionnaire_edit', questionnaire_uuid=questionnaire.uuid)
-
-            questionnaire.name = request.POST.get('name', questionnaire.name)
-            questionnaire.description = request.POST.get('description', '')
-            questionnaire.is_default = request.POST.get('is_default') == 'on'
-            questionnaire.source_language = source_language
-
-            try:
-                questionnaire.save()
-                messages.success(request, _('Questionnaire "%(name)s" updated successfully.') % {'name': questionnaire.name})
-            except Exception as e:
-                messages.error(request, _('Error updating questionnaire: %(error)s') % {'error': str(e)})
-
-        elif action == 'edit_section':
-            section_id = request.POST.get('section_id')
-            section_title = request.POST.get('section_title')
-            section_description = request.POST.get('section_description', '')
-
-            if section_id and section_title:
-                try:
-                    section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                    section.title = section_title
-                    section.description = section_description
-                    section.save()
-                    messages.success(request, _('Section "%(title)s" updated successfully.') % {'title': section_title})
-                except QuestionSection.DoesNotExist:
-                    messages.error(request, _('Section not found.'))
-                except Exception as e:
-                    messages.error(request, _('Error updating section: %(error)s') % {'error': str(e)})
-
-        elif action == 'add_question':
-            section_id = request.POST.get('section_id')
-            question_text = request.POST.get('question_text')
-            question_type = request.POST.get('question_type', 'rating')
-            required = request.POST.get('required') == 'on'
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
-            if section_id and question_text:
-                try:
-                    section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                    max_order = section.questions.aggregate(Max('order'))['order__max']
-                    next_order = (max_order + 1) if max_order is not None else 0
-
-                    # Build config based on question type
-                    config = {}
-                    option_rows = []
-                    labels = posted_labels(request.POST, question_type)
-                    if question_type == 'rating':
-                        config = {'min': 1, 'max': 5}
-                        labels = labels or default_rating_labels
-                    elif question_type == 'likert':
-                        option_rows = posted_option_rows(request.POST, 'likert')
-
-                        if not option_rows:
-                            option_rows = [(None, label, None) for label in default_likert_scale]
-
-                        if request.POST.get('reverse_scored') == 'on':
-                            config = {'reverse_scored': True}
-                    elif question_type == 'single_choice' or question_type == 'multiple_choice':
-                        # Weights only count with scoring enabled
-                        enable_scoring = request.POST.get('enable_scoring') == 'on'
-
-                        try:
-                            option_rows = posted_option_rows(request.POST, 'choice', with_weights=enable_scoring)
-                        except ValueError:
-                            option_rows = posted_option_rows(request.POST, 'choice')
-                            messages.warning(request, _('Invalid weight values. Scoring disabled for this question.'))
-                        else:
-                            config = {'scoring_enabled': True} if enable_scoring else {}
-                    elif question_type == 'scale':
-                        try:
-                            min_val = int(request.POST.get('scale_min', 1))
-                            max_val = int(request.POST.get('scale_max', 100))
-                            step_val = int(request.POST.get('scale_step', 1))
-
-                            config = {
-                                'min': min_val,
-                                'max': max_val,
-                                'step': step_val
-                            }
-                        except (ValueError, TypeError):
-                            # Use defaults if parsing fails
-                            config = {'min': 1, 'max': 100, 'step': 1}
-                            messages.warning(request, _('Invalid scale values. Using defaults (1-100, step 1).'))
-
-                    # Add Dreyfus/Agency configuration if provided
-                    skill_weight = request.POST.get('add_skill_weight', 0)
-                    agency_weight = request.POST.get('add_agency_weight', 0)
-
-                    if skill_weight or agency_weight:
-                        config['dreyfus_mapping'] = {
-                            'skill': float(skill_weight),
-                            'agency': float(agency_weight)
-                        }
-
-                    # Parse action items for new question
-                    action_items = []
-                    action_item_indices = set()
-
-                    # Extract all action item indices from POST data
-                    for key in request.POST.keys():
-                        if key.startswith('add_action_items[') and '][text]' in key:
-                            idx_str = key.split('[')[1].split(']')[0]
-                            action_item_indices.add(idx_str)
-
-                    # Build action items list
-                    for idx in sorted(action_item_indices, key=int):
-                        text = request.POST.get(f'add_action_items[{idx}][text]', '').strip()
-                        threshold = request.POST.get(f'add_action_items[{idx}][threshold]', 3.0)
-                        stages_raw = request.POST.getlist(f'add_action_items[{idx}][stages][]')
-
-                        if text:
-                            item = {
-                                'text': text,
-                                'threshold': float(threshold)
-                            }
-                            if stages_raw:
-                                item['stages'] = [int(s) for s in stages_raw]
-                            action_items.append(item)
-
-                    question = Question.objects.create(
-                        section=section,
-                        question_text=question_text,
-                        question_type=question_type,
-                        config=config,
-                        labels=labels,
-                        descriptions=posted_descriptions(request.POST, question_type),
-                        required=required,
-                        order=next_order,
-                        action_items=add_action_item_keys(action_items)
-                    )
-                    save_options(question, option_rows)
-
-                    if is_ajax:
-                        question_html = render_to_string(
-                            'admin_dashboard/partials/question_card.html',
-                            {'question': question},
-                            request=request,
-                        )
-                        return JsonResponse({
-                            'success': True,
-                            'message': _('Question added successfully.'),
-                            'section_id': section.id,
-                            'question_id': question.id,
-                            'question_html': question_html,
-                        })
-
-                    messages.success(request, _('Question added successfully.'))
-                except Exception as e:
-                    logger.exception('Error adding question')
-                    if is_ajax:
-                        return JsonResponse({
-                            'success': False,
-                            'message': _('Error adding question. Please try again.'),
-                        }, status=400)
-                    messages.error(request, _('Error adding question. Please try again.'))
-
-        elif action == 'edit_question':
-            question_id = request.POST.get('question_id')
-            question_text = request.POST.get('question_text')
-            question_type = request.POST.get('question_type', 'rating')
-            required = request.POST.get('required') == 'on'
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
-            if question_id and question_text:
-                try:
-                    question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
-                    previous_config = question.config
-
-                    # Update basic fields
-                    question.question_text = question_text
-                    question.question_type = question_type
-                    question.required = required
-
-                    # Build config based on question type
-                    config = {}
-                    option_rows = []
-                    labels = posted_labels(request.POST, question_type)
-                    if question_type == 'rating':
-                        config = {'min': 1, 'max': 5}
-                        labels = labels or default_rating_labels
-                    elif question_type == 'likert':
-                        option_rows = posted_option_rows(request.POST, 'likert')
-
-                        if not option_rows:
-                            option_rows = [(None, label, None) for label in default_likert_scale]
-
-                        if request.POST.get('reverse_scored') == 'on':
-                            config = {'reverse_scored': True}
-                    elif question_type == 'single_choice' or question_type == 'multiple_choice':
-                        # Weights only count with scoring enabled
-                        enable_scoring = request.POST.get('enable_scoring') == 'on'
-
-                        try:
-                            option_rows = posted_option_rows(request.POST, 'choice', with_weights=enable_scoring)
-                        except ValueError:
-                            option_rows = posted_option_rows(request.POST, 'choice')
-                            messages.warning(request, _('Invalid weight values. Scoring disabled for this question.'))
-                        else:
-                            config = {'scoring_enabled': True} if enable_scoring else {}
-                    elif question_type == 'scale':
-                        try:
-                            min_val = int(request.POST.get('scale_min', 1))
-                            max_val = int(request.POST.get('scale_max', 100))
-                            step_val = int(request.POST.get('scale_step', 1))
-
-                            config = {
-                                'min': min_val,
-                                'max': max_val,
-                                'step': step_val
-                            }
-                        except (ValueError, TypeError):
-                            # Use defaults if parsing fails
-                            config = {'min': 1, 'max': 100, 'step': 1}
-                            messages.warning(request, _('Invalid scale values. Using defaults (1-100, step 1).'))
-
-                    # The dialog doesn't show the Dreyfus weights and the chart settings, so keep them
-                    for key in ('dreyfus_mapping', 'chart_weight', 'exclude_from_charts'):
-                        if key in previous_config:
-                            config[key] = previous_config[key]
-
-                    question.config = config
-                    question.labels = labels
-                    question.descriptions = posted_descriptions(request.POST, question_type)
-                    question.save()
-                    save_options(question, option_rows)
-
-                    if is_ajax:
-                        return JsonResponse({
-                            'success': True,
-                            'message': _('Question updated successfully.'),
-                            'question': {
-                                'id': question.id,
-                                'question_text': question.question_text,
-                                'question_type': question.question_type,
-                                'question_type_display': question.get_question_type_display(),
-                                'required': question.required,
-                                'config': question.config,
-                                'options': question.options_data,
-                                'labels': question.labels,
-                                'descriptions': question.descriptions,
-                            },
-                        })
-
-                    messages.success(request, _('Question updated successfully.'))
-                except Exception as e:
-                    logger.exception('Error updating question')
-                    if is_ajax:
-                        return JsonResponse({
-                            'success': False,
-                            'message': _('Error updating question. Please try again.'),
-                        }, status=400)
-                    messages.error(request, _('Error updating question. Please try again.'))
-
-        elif action == 'update_dreyfus_config':
-            question_id = request.POST.get('question_id')
-            skill_weight = request.POST.get('skill_weight', 0)
-            agency_weight = request.POST.get('agency_weight', 0)
-
-            if question_id:
-                try:
-                    question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
-
-                    # Update dreyfus_mapping in config
-                    if 'dreyfus_mapping' not in question.config:
-                        question.config['dreyfus_mapping'] = {}
-
-                    question.config['dreyfus_mapping']['skill'] = float(skill_weight)
-                    question.config['dreyfus_mapping']['agency'] = float(agency_weight)
-
-                    question.action_items = posted_action_items(request.POST, question)
-                    question.save()
-
-                    messages.success(request, _('Dreyfus/Agency configuration updated successfully.'))
-                except Question.DoesNotExist:
-                    messages.error(request, _('Question not found.'))
-                except Exception as e:
-                    messages.error(request, _('Error updating Dreyfus configuration: %(error)s') % {'error': str(e)})
-
-        return redirect('questionnaire_edit', questionnaire_uuid=questionnaire.uuid)
+        return JsonResponse({'ok': False, 'message': _('This change is not possible. Reload the page.')}, status=400)
 
     context = editor_context(load_for_editor(questionnaire), [])
 

@@ -128,15 +128,15 @@ class QuestionnaireFlowTests(TestCase):
         self.edit(action='save_section', section_id=section_id, title='Collaboration', description='')
 
         def add(question_type, text, **fields):
-            self.edit(action='add_question', section_id=section_id, question_type=question_type,
+            self.edit(action='save_question', section_id=section_id, question_type=question_type,
                       question_text=text, required='on', **fields)
 
-        add('rating', 'Shares knowledge', add_skill_weight='1.0',
-            **{'add_action_items[0][text]': 'Pair with a colleague every week',
-               'add_action_items[0][threshold]': '4.5'})
+        add('rating', 'Shares knowledge', rating_count='5', did_not_observe='on', skill_weight='1',
+            action_items_posted='1', **{'action_items[0][text]': 'Pair with a colleague every week',
+                                        'action_items[0][threshold]': '4.5'})
         add('likert', 'Gives useful feedback', **option_rows('likert', DEFAULT_LIKERT))
         add('likert', 'Asks for help', **option_rows('likert', ['Never', 'Sometimes', 'Often', 'Always']))
-        add('single_choice', 'Seniority', enable_scoring='on',
+        add('single_choice', 'Seniority', enable_scoring='on', display_list='on',
             **option_rows('choice', ['Novice', 'Advanced', 'Expert'], ['1', '3', '5']))
         add('multiple_choice', 'Strong areas', **option_rows('choice', ['Code', 'Docs', 'Talks']))
         add('scale', 'Energy', scale_min='0', scale_max='10', scale_step='1',

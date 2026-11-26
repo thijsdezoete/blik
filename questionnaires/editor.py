@@ -93,18 +93,10 @@ def get_default_labels(questionnaire):
     return likert_scale, rating_labels
 
 
-def posted_labels(post, question_type, count=len(DEFAULT_RATING_LABELS)):
-    """The rating labels of the values 1 to count, or the scale labels, the question editor posted, without the empty
-    ones."""
+def posted_scale_labels(post):
+    """The labels of the two ends of a slider the question editor posted, without the empty ones."""
 
-    if question_type == 'rating':
-        fields = {f'{value}': f'rating_label_{value}' for value in range(1, count + 1)}
-    elif question_type == 'scale':
-        fields = {'min': 'scale_min_label', 'max': 'scale_max_label'}
-    else:
-        return {}
-
-    labels = {key: post.get(field, '').strip() for key, field in fields.items()}
+    labels = {key: post.get(f'scale_{key}_label', '').strip() for key in ('min', 'max')}
 
     return {key: label for key, label in labels.items() if label}
 
@@ -575,7 +567,7 @@ def save_question(questionnaire, post, question=None, section=None):
             config['display'] = 'dropdown'
     elif question_type == 'scale':
         config = _scale_config(post)
-        labels = posted_labels(post, 'scale')
+        labels = posted_scale_labels(post)
 
     if question_type in DID_NOT_OBSERVE_TYPES:
         config['did_not_observe'] = post.get('did_not_observe') == 'on'

@@ -524,12 +524,12 @@ class TranslationEditorTest(TranslatedQuestionnaireTestCase):
         self.assertContains(listing, 'Deutsch (Sie):')
 
     def test_the_source_language_can_change_to_a_language_without_translation(self):
-        self.edit(action='update_info', name='Skills', source_language='de-informal')
+        self.edit(action='save_info', name='Skills', source_language='de-informal')
         self.questionnaire.refresh_from_db()
         self.assertEqual(self.questionnaire.source_language, 'en')
 
         QuestionSectionTranslation.objects.filter(language='de-informal').delete()
-        self.edit(action='update_info', name='Skills', source_language='de-informal')
+        self.edit(action='save_info', name='Skills', source_language='de-informal')
         self.questionnaire.refresh_from_db()
         self.assertEqual(self.questionnaire.source_language, 'de-informal')
 
@@ -542,8 +542,11 @@ class TranslationEditorTest(TranslatedQuestionnaireTestCase):
         self.questionnaire.source_language = 'de'
         self.questionnaire.save()
 
-        self.edit(action='add_question', section_id=self.section.id, question_type='likert', question_text='Hilft')
-        self.edit(action='add_question', section_id=self.section.id, question_type='rating', question_text='Plant')
+        self.edit(action='save_question', section_id=self.section.id, question_type='likert', question_text='Hilft')
+        self.edit(
+            action='save_question', section_id=self.section.id, question_type='rating', question_text='Plant',
+            rating_count='5',
+        )
 
         with translation.override('de'):
             scale = [f'{label}' for label in DEFAULT_LIKERT_SCALE]

@@ -137,6 +137,9 @@ class EditorTopicTests(TestCase):
             {'action': 'reorder', 'layout': 'null'},
             {'action': 'save_section', 'section_id': 'abc', 'title': 'Mine', 'description': ''},
             {'action': 'save_section', 'title': 'Mine', 'description': ''},
+            # An action the page does not have, such as one of the old editor, or none
+            {'action': 'edit_section', 'section_id': self.section.id, 'section_title': 'Mine'},
+            {'section_id': self.section.id, 'title': 'Mine'},
         ]
 
         for fields in broken:

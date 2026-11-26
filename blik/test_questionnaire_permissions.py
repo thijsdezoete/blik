@@ -84,7 +84,7 @@ class QuestionnaireEditAccessTests(QuestionnairePermissionTestCase):
 
     def test_member_cannot_rename_a_questionnaire(self):
         self.client.force_login(self.member)
-        self.client.post(self._edit_url(), {'action': 'update_info', 'name': 'Renamed'})
+        self.client.post(self._edit_url(), {'action': 'save_info', 'name': 'Renamed', 'source_language': 'en'})
 
         self.questionnaire.refresh_from_db()
         self.assertEqual(self.questionnaire.name, 'Professional Skills')
@@ -102,7 +102,7 @@ class QuestionnaireEditAccessTests(QuestionnairePermissionTestCase):
 
     def test_admin_can_rename_a_questionnaire(self):
         self.client.force_login(self.admin)
-        self.client.post(self._edit_url(), {'action': 'update_info', 'name': 'Renamed'})
+        self.client.post(self._edit_url(), {'action': 'save_info', 'name': 'Renamed', 'source_language': 'en'})
 
         self.questionnaire.refresh_from_db()
         self.assertEqual(self.questionnaire.name, 'Renamed')

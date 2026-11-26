@@ -635,9 +635,10 @@
 
     /* ---------- The open question: opens in place of its row; every change saves by itself ---------- */
 
-    // The <li> of the open question, the closing of the last one while its saves finish, the newest open request
+    // The <li> of the open question; the newest request to open one (openTicket)
     let openItem = null;
-    let closing = Promise.resolve();
+    // The close on its way: a promise of true (closed) or false (kept open by a refusal)
+    let closing = null;
     let openTicket = 0;
     let newCount = 0;
     // "More options" stays open for the next question once it was opened
@@ -1142,8 +1143,8 @@
 
         const ticket = ++openTicket;
 
-        closeQuestion().then(function() {
-            if (ticket !== openTicket || !item.isConnected) {
+        closeQuestion().then(function(closed) {
+            if (!closed || ticket !== openTicket || !item.isConnected) {
                 return null;
             }
 
@@ -1168,8 +1169,8 @@
     function addQuestion(card) {
         const ticket = ++openTicket;
 
-        closeQuestion().then(function() {
-            if (ticket !== openTicket) {
+        closeQuestion().then(function(closed) {
+            if (!closed || ticket !== openTicket) {
                 return null;
             }
 
@@ -1190,22 +1191,25 @@
         });
     }
 
-    // Shows the row again at once; the form goes when its saves are done, as they read their fields from it
+    /*
+     * Close the open question after its last changes are stored. Resolves true when it closed (or none was open), false
+     * when a change sent by this close was refused: the question then stays open with the refusal in the save state,
+     * so a refused change is never dropped unseen. A refusal shown before is dropped first; only this close's saves
+     * decide.
+     */
     function closeQuestion() {
         const item = openItem;
 
-        if (!item) {
+        if (closing) {
             return closing;
+        }
+
+        if (!item) {
+            return Promise.resolve(true);
         }
 
         const form = questionForm(item);
         const key = form.dataset.saveKey;
-        const row = item.querySelector(':scope > [data-slot]');
-
-        openItem = null;
-        Editor.open = '';
-        item.style.borderColor = 'var(--border)';
-        outlineOpenQuestion();
 
         if (openAsk && form.contains(openAsk)) {
             openAsk.remove();
@@ -1214,30 +1218,52 @@
 
         // A new question without a text was never stored
         if (!field(form, 'question_id').value && !typing.has(key) && !queues.has(key)) {
-            item.remove();
-            return closing;
+            closeForm(item, form);
+            return Promise.resolve(true);
         }
 
-        form.hidden = true;
+        refusals.delete(key);
+        showState();
+
+        closing = Editor.flush().then(function() {
+            closing = null;
+
+            // Deleted meanwhile
+            if (openItem !== item) {
+                return true;
+            }
+
+            if (refusals.has(key)) {
+                field(form, 'question_text').focus();
+                return false;
+            }
+
+            closeForm(item, form);
+            return true;
+        });
+
+        return closing;
+    }
+
+    function closeForm(item, form) {
+        const row = item.querySelector(':scope > [data-slot]');
+
+        openItem = null;
+        Editor.open = '';
+        outlineOpenQuestion();
+        form.remove();
+
+        // A new question that was never stored goes with its form
+        if (!item.dataset.question) {
+            item.remove();
+            return;
+        }
+
+        item.style.borderColor = 'var(--border)';
 
         if (row) {
             row.hidden = false;
         }
-
-        closing = Editor.flush().then(function() {
-            form.remove();
-
-            // A new question whose first save was refused
-            if (!item.dataset.question) {
-                item.remove();
-            }
-
-            // Its refusal speaks of fields that are gone; the row shows what is stored
-            refusals.delete(key);
-            showState();
-        });
-
-        return closing;
     }
 
     function deleteQuestion(form) {
@@ -1372,6 +1398,15 @@
     /* ---------- Buttons ---------- */
 
     root.addEventListener('click', function(event) {
+        // A language tab loads the page again: the open question is saved and closed first, unless that is refused
+        const language = event.target.closest('[data-slot="langs"] a[href]');
+
+        if (language && openItem) {
+            event.preventDefault();
+            closeQuestion().then(ok => ok && Editor.flush().then(() => { window.location.href = language.href; }));
+            return;
+        }
+
         const move = event.target.closest('[data-move]');
 
         if (move) {
@@ -1402,10 +1437,8 @@
             return;
         }
 
-        // The buttons of the header save and close the open question first
-        if (button.closest('.page-header')) {
-            closeQuestion();
-        }
+        // The buttons of the header save and close the open question first; a refused change keeps the page here
+        const closed = button.closest('.page-header') ? closeQuestion() : Promise.resolve(true);
 
         switch (button.dataset.act) {
         case 'settings': {
@@ -1417,7 +1450,18 @@
         case 'open-tab': {
             // A tab opened after waiting counts as a pop-up, so it opens now and gets its address after the save
             const opened = window.open('', '_blank');
-            Editor.flush().then(function() {
+            closed.then(function(ok) {
+                if (!ok) {
+                    opened?.close();
+                    return null;
+                }
+
+                return Editor.flush();
+            }).then(function(saved) {
+                if (saved === null) {
+                    return;
+                }
+
                 if (opened) {
                     opened.opener = null;
                     opened.location = button.dataset.href;
@@ -1428,7 +1472,7 @@
             break;
         }
         case 'leave':
-            Editor.flush().then(() => { window.location.href = button.dataset.href; });
+            closed.then(ok => ok && Editor.flush().then(() => { window.location.href = button.dataset.href; }));
             break;
         case 'add-topic':
             addTopic();

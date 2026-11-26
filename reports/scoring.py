@@ -28,6 +28,10 @@ def score_range(question_data):
     if question_type in ('rating', 'scale'):
         low = _number(config.get('min'), 1)
         high = _number(config.get('max'), 5 if question_type == 'rating' else 100)
+
+        # A min or max that is not a number (text, a list, True) gives no range; a bool is an int to Python
+        if not all(isinstance(bound, (int, float)) and not isinstance(bound, bool) for bound in (low, high)):
+            return None
     elif question_type in ('single_choice', 'multiple_choice'):
         weights = [
             option.get('weight') for option in question_data.get('options') or []

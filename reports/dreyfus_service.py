@@ -11,9 +11,11 @@ References:
 """
 
 from statistics import mean
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from django.utils.translation import gettext, gettext_lazy as _
+
+from .scoring import score_on_five
 
 
 # Dreyfus stage definitions
@@ -264,7 +266,7 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
     Calculate Dreyfus skill level from weighted question responses.
 
     This function looks for questions tagged with 'dreyfus_mapping' metadata
-    in their config. If no metadata exists, falls back to section-based detection.
+    in their config. Without such questions there is no skill level.
 
     Args:
         report_data: The complete report data structure with responses
@@ -309,6 +311,7 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
                     # Check for avg (report_data format) or average (alternative format)
                     avg_score = cat_data.get('avg') or cat_data.get('average')
                     if avg_score and not cat_data.get('insufficient', False):
+                        avg_score = score_on_five(question_data, avg_score)
                         if category == 'self':
                             # Store self score separately as fallback
                             self_score = avg_score
@@ -338,10 +341,7 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
         confidence = min(1.0, (len(contributing_questions) / 5.0) * (total_weight / 3.0))
 
     else:
-        # Fallback: section-based detection (legacy behavior)
-        skill_level, confidence = _fallback_section_based_detection(report_data)
-        if skill_level is None:
-            return None
+        return None
 
     return {
         'skill_level': round(skill_level, 2),
@@ -397,6 +397,7 @@ def calculate_agency_level(report_data: Dict, questionnaire_id: Optional[int] = 
                     # Check for avg (report_data format) or average (alternative format)
                     avg_score = cat_data.get('avg') or cat_data.get('average')
                     if avg_score and not cat_data.get('insufficient', False):
+                        avg_score = score_on_five(question_data, avg_score)
                         if category == 'self':
                             # Store self score separately as fallback
                             self_score = avg_score
@@ -672,7 +673,7 @@ def _get_personalized_action_items(report_data: Dict, current_stage: int) -> Lis
                     continue
                 avg_score = cat_data.get('avg') or cat_data.get('average')
                 if avg_score and not cat_data.get('insufficient', False):
-                    category_scores.append(avg_score)
+                    category_scores.append(score_on_five(question_data, avg_score))
 
             if category_scores:
                 question_scores[str(question_id)] = mean(category_scores)
@@ -750,30 +751,3 @@ def _get_development_focus(current_stage: int, next_stage: int) -> List[str]:
         ]
     }
     return focus_areas.get((current_stage, next_stage), [_('Continue developing expertise')])
-
-
-def _fallback_section_based_detection(report_data: Dict) -> Tuple[Optional[float], float]:
-    """
-    Legacy fallback: detect skill level from 'Technical Expertise & Skill Level' section.
-    Returns (skill_level, confidence) or (None, 0.0) if not found.
-    """
-    # Look for technical expertise section (Software Engineering questionnaire)
-    tech_section_names = ['Technical Expertise & Skill Level', 'Problem Solving & Decision Making']
-
-    for section_data in report_data.get('by_section', {}).values():
-        section_title = section_data.get('title', '')
-
-        if section_title in tech_section_names:
-            # Collect all question averages from this section
-            section_scores = []
-            for question_data in section_data.get('questions', {}).values():
-                for cat_data in question_data.get('by_category', {}).values():
-                    if not cat_data.get('insufficient', False) and cat_data.get('average'):
-                        section_scores.append(cat_data['average'])
-
-            if section_scores:
-                skill_level = mean(section_scores)
-                confidence = 0.6  # Lower confidence for fallback method
-                return skill_level, confidence
-
-    return None, 0.0

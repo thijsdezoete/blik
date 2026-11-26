@@ -15,6 +15,7 @@ import copy
 
 # Import Dreyfus service functions
 from . import dreyfus_service
+from .scoring import score_on_five
 
 # Version of report_data's layout: 2 stores codes and numbers where version 1 stored English text
 REPORT_SCHEMA = 2
@@ -362,7 +363,7 @@ def reviewer_counts(report_data):
 
 
 def _numeric_category_averages(report_data):
-    """Yield (section title, category, average) for each category average that is valid to use in scores."""
+    """Yield (section title, category, average on the 1 to 5 scale) for each average that is valid in scores."""
     for section_data in report_data.get('by_section', {}).values():
         section_title = section_data.get('title', '')
 
@@ -389,7 +390,7 @@ def _numeric_category_averages(report_data):
 
                 avg = cat_data.get('avg')
                 if avg is not None:
-                    yield section_title, category, avg
+                    yield section_title, category, score_on_five(question_data, avg)
 
 
 def _calculate_insights(report_data):
@@ -586,39 +587,8 @@ def _calculate_chart_data(report_data):
 
                 avg = cat_data.get('avg')
                 if avg is not None:
-                    # Normalize to 1-5 scale for consistent charting
-                    normalized_avg = avg
-
-                    if question_type == 'scale':
-                        # Scale questions may have different ranges - normalize to 1-5
-                        try:
-                            config = question_data.get('question_config', {})
-                            min_val = config.get('min', 1)
-                            max_val = config.get('max', 100)
-
-                            if max_val > min_val:
-                                # Normalize: 1 + ((value - min) / (max - min)) * 4
-                                normalized_avg = 1 + ((avg - min_val) / (max_val - min_val)) * 4
-                        except (KeyError, ZeroDivisionError, TypeError):
-                            # If normalization fails, use raw value
-                            pass
-
-                    elif question_type in ['single_choice', 'multiple_choice']:
-                        # Choice questions with weights - normalize based on weight range
-                        try:
-                            options = question_data.get('options', [])
-                            weights = [option['weight'] for option in options if option['weight'] is not None]
-
-                            if weights:
-                                min_weight = min(weights)
-                                max_weight = max(weights)
-
-                                if max_weight > min_weight:
-                                    # Normalize: 1 + ((value - min) / (max - min)) * 4
-                                    normalized_avg = 1 + ((avg - min_weight) / (max_weight - min_weight)) * 4
-                        except (KeyError, ZeroDivisionError, TypeError, ValueError):
-                            # If normalization fails, use raw value
-                            pass
+                    # Bring the average to the 1 to 5 scale, so every answer type counts alike
+                    normalized_avg = score_on_five(question_data, avg)
 
                     section_scores[category]['total'] += normalized_avg * chart_weight
                     section_scores[category]['weight_sum'] += chart_weight

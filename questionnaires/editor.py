@@ -17,16 +17,24 @@ from django.utils.translation import gettext as _, gettext_lazy
 
 from core.languages import is_language, language_name
 from reports.dreyfus_service import _level_to_stage, agency_profile_with_texts, skill_profile_with_texts
+from reports.scoring import score_range
 from reports.services import radar_axes
 from reviews.models import Response
 
 from .action_items import add_action_item_keys
-from .answer_options import DEFAULT_LIKERT_SCALE, DEFAULT_RATING_LABELS, save_options
-from .models import Question, QuestionSection, Questionnaire
+from .answer_options import DEFAULT_LIKERT_SCALE, DEFAULT_RATING_LABELS, OPTION_TYPES, save_options
+from .models import AnswerOption, Question, QuestionSection, Questionnaire
 from .presentation import question_scoring
 from .translations import get_language_states, has_translation
 
 WEIGHTS = (0, 0.5, 1, 1.5, 2)
+WEIGHT_NAMES = {
+    0: gettext_lazy('Does not count'),
+    0.5: gettext_lazy('Counts half'),
+    1: gettext_lazy('Counts once'),
+    1.5: gettext_lazy('Counts 1.5 times'),
+    2: gettext_lazy('Counts double'),
+}
 MODELS = ('skill', 'agency')
 
 # The example scores of the reviewer groups in the report preview, as shifts of a topic's example score
@@ -166,6 +174,98 @@ def rating_labels(stored, stored_count, posted, count, defaults):
         return default_rating_labels(count, defaults)
 
     return {key: label for key, label in posted.items() if label and key.isdigit() and 1 <= int(key) <= count}
+
+
+def _translation_languages(question, options=True):
+    """The codes of the languages with a translated label or description of the question, or of one of its answers."""
+
+    languages = {
+        row.language for row in question.translations.all()
+        if any(row.labels.values()) or any(row.descriptions.values())
+    }
+
+    if options:
+        languages.update(
+            row.language for option in question.options.all() for row in option.translations.all() if row.label
+        )
+
+    return languages
+
+
+def translated_into(question):
+    """The names of the languages that have a translation of the question's labels, descriptions or answers: the
+    texts a change of the answer type removes. Uses the prefetched translations."""
+
+    if question.pk is None:
+        return []
+
+    return sorted(language_name(language) for language in _translation_languages(question))
+
+
+def _on_five(value, low, high):
+    """value on the report's 1 to 5 scale, as reports.scoring.score_on_five() computes it."""
+
+    return round(1 + (value - low) / (high - low) * 4, 1)
+
+
+def question_form_values(questionnaire, question):
+    """The values the open question shows that its stored fields do not hold as such.
+
+    Each answer type has its fields in the form, also the types the question does not have, so a switch to another
+    type and back keeps what was typed. A type the question does not have shows what a new question of that type
+    starts with. Gives the rows of a score with what each counts as on the report's 1 to 5 scale, a description field
+    for each possible value, the answers of a likert and of a pick question, the slider, the weight per model, the
+    lowest and highest score of a slider or a pick several, and the languages of translated labels and descriptions.
+    """
+
+    default_likert_scale, default_labels = get_default_labels(questionnaire)
+    question_type = question.question_type
+    options = question.options_data if question.pk and question_type in OPTION_TYPES else []
+    count = len(default_labels)
+    labels = default_labels
+
+    if question_type == 'rating':
+        stored_max = question.config.get('max')
+        # As the reviewer form reads it: a max that is not a whole number from 2 to 7 gives five options
+        if isinstance(stored_max, int) and not isinstance(stored_max, bool) and stored_max in RATING_COUNTS:
+            count = stored_max
+        labels = question.labels
+
+    choices = options if question_type in ('single_choice', 'multiple_choice') else []
+    scale = question.config if question_type == 'scale' else {}
+    bounds = score_range({'question_type': question_type, 'question_config': question.config, 'options': options})
+
+    return {
+        'rating_rows': [
+            {'value': value, 'label': labels.get(f'{value}', ''), 'counts_as': _on_five(value, 1, count)}
+            for value in range(1, count + 1)
+        ],
+        'rating_count': count,
+        'descriptions': [
+            {'value': value, 'text': question.descriptions.get(f'{value}', '')}
+            for value in range(1, RATING_COUNTS[-1] + 1)
+        ],
+        'likert_options': options if question_type == 'likert' else [
+            {'id': '', 'label': f'{label}'} for label in default_likert_scale
+        ],
+        # A choice without scores shows the position as the score to start from
+        'choice_options': [
+            {**option, 'weight': option['weight'] if option['weight'] is not None else position}
+            for position, option in enumerate(choices, 1)
+        ] or [{'id': '', 'label': '', 'weight': position} for position in range(1, 4)],
+        'scale': {
+            'min': scale.get('min', 1), 'max': scale.get('max', 10), 'step': scale.get('step', 1),
+            'min_label': question.labels.get('min', '') if scale else '',
+            'max_label': question.labels.get('max', '') if scale else '',
+        },
+        'rating_counts': RATING_COUNTS,
+        'weights': [{'model': model, 'weight': _mapping(question.config).get(model, 0)} for model in MODELS],
+        'weight_names': WEIGHT_NAMES,
+        'range': bounds,
+        'label_languages': sorted(
+            language_name(language) for language in _translation_languages(question, options=False)
+        ) if question.pk else [],
+    }
 
 
 def answer_counts(questionnaire):
@@ -408,6 +508,11 @@ def save_question(questionnaire, post, question=None, section=None):
 
             _apply_weight(config, model, weight)
 
+    label_length = AnswerOption._meta.get_field('label').max_length
+
+    if any(len(label) > label_length for option_id, label, weight in option_rows):
+        raise EditorError(_('This text is too long. Use at most %(count)s characters.') % {'count': label_length})
+
     if post.get('action_items_posted'):
         try:
             action_items = posted_action_items(post, question)
@@ -602,7 +707,8 @@ def editor_context(questionnaire, shown, topic=None):
 
     questionnaire comes from load_for_editor(). shown holds the report models ticked in this visit. topic is the id of
     the section the reviewer tab shows, by default the first. Each section gets its entry of the report preview's
-    topics and the number of answers to its questions, each question its Scoring. The language states and the state
+    topics and the number of answers to its questions, each question its Scoring and its number of answers. The
+    language states and the state
     of "Did not observe" are computed only when a slot shows them.
     """
 
@@ -617,7 +723,8 @@ def editor_context(questionnaire, shown, topic=None):
 
         for question in section.questions.all():
             question.scoring = question_scoring(question)
-            section.answer_count += answers.get(question.id, 0)
+            question.answer_count = answers.get(question.id, 0)
+            section.answer_count += question.answer_count
 
     reviewer_section = next((section for section in sections if f'{section.id}' == f'{topic}'), None)
 

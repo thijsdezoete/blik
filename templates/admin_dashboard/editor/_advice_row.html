@@ -1,0 +1,19 @@
+{% load i18n %}{# One advice item of the open question: its text, the score below which the report gives it, and the stages it is for (optional). The key ties it to its translations. #}
+<div data-advice-row style="margin-bottom: 0.75rem;">
+    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <input type="hidden" name="action_items[{{ index }}][key]" value="{{ item.key|default:'' }}">
+        <input type="text" class="form-control" style="flex: 1 1 14rem;" name="action_items[{{ index }}][text]" value="{{ item.text|default:'' }}" placeholder="{% trans 'Ask a senior colleague to review your next proposal' %}" aria-label="{% trans 'Advice' %}">
+        <label class="help-text" style="margin: 0; white-space: nowrap;" for="question-{{ question.pk|default:'new' }}-threshold-{{ index }}">{% trans 'below' %}</label>
+        <input id="question-{{ question.pk|default:'new' }}-threshold-{{ index }}" type="number" class="form-control" style="width: 80px;" min="1" max="5" step="0.5" name="action_items[{{ index }}][threshold]" value="{{ item.threshold|default:3|floatformat:'-1u' }}">
+        <button type="button" class="btn btn-sm btn-secondary" data-act="remove-advice" title="{% trans 'Remove this advice' %}" aria-label="{% trans 'Remove this advice' %}">&times;</button>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 0 1rem; align-items: center; margin-top: 0.25rem;">
+        <span class="help-text" style="margin: 0;">{% trans 'Only for these stages (optional):' %}</span>
+        {% for stage, name in stages %}
+        <label class="form-check" style="margin: 0;">
+            <input type="checkbox" class="form-check-input" name="action_items[{{ index }}][stages][]" value="{{ stage }}"{% if stage in item.stages %} checked{% endif %}>
+            <span class="help-text" style="margin: 0;">{{ name }}</span>
+        </label>
+        {% endfor %}
+    </div>
+</div>

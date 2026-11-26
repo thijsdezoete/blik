@@ -53,6 +53,7 @@ from productreviews.models import ProductReview, anonymous_name
 from questionnaires.action_items import add_action_item_keys
 from questionnaires.answer_options import save_options
 from questionnaires.editor import (
+    DID_NOT_OBSERVE_TYPES,
     MODELS,
     EditorError,
     add_section,
@@ -63,13 +64,17 @@ from questionnaires.editor import (
     posted_descriptions,
     posted_labels,
     posted_option_rows,
+    question_form_values,
     save_info,
+    save_question,
     save_section,
     set_did_not_observe,
+    translated_into,
 )
 from questionnaires.models import Question, QuestionSection, Questionnaire
 from questionnaires.ordering import save_layout
-from questionnaires.presentation import questionnaire_report_features
+from questionnaires.presentation import question_scoring, questionnaire_report_features
+from reports.dreyfus_service import DREYFUS_STAGES
 from questionnaires.translations import (
     LanguageState,
     get_language_states,
@@ -1143,8 +1148,19 @@ EDITOR_SLOTS = {
     'reviewer': 'admin_dashboard/editor/_reviewer.html',
     'report': 'admin_dashboard/editor/_report.html',
 }
-# The slots of one topic or question: topic-<id>-head, question-<id>-row
-EDITOR_ITEM_SLOT = re.compile(r'^(?:(topic)-(\d+)-head|(question)-(\d+)-row)$')
+# The slots of one topic or question: topic-<id>-head, and the row of a question and the parts of the open question
+EDITOR_ITEM_SLOT = re.compile(r'^(?:(topic)-(\d+)-head|(question)-(\d+)-(row|labels|report))$')
+QUESTION_SLOTS = {
+    'row': 'admin_dashboard/editor/_question_row.html',
+    'labels': 'admin_dashboard/editor/_rating_labels.html',
+    'report': 'admin_dashboard/editor/_question_report.html',
+}
+
+
+def _question_context(context, question):
+    """The context of the open question and its slots: the slot context with the question and its form values."""
+
+    return {**context, 'question': question, 'values': question_form_values(context['questionnaire'], question)}
 
 
 def _render_editor_slot(request, context, name):
@@ -1156,25 +1172,33 @@ def _render_editor_slot(request, context, name):
     sections = context['sections']
 
     if match[1]:
-        template, key, items, item_id = 'admin_dashboard/editor/_topic_head.html', 'section', sections, match[2]
-    else:
-        questions = [question for section in sections for question in section.questions.all()]
-        template, key, items, item_id = 'admin_dashboard/editor/_question_row.html', 'question', questions, match[4]
+        section = next((section for section in sections if f'{section.id}' == match[2]), None)
 
-    item = next((item for item in items if f'{item.id}' == item_id), None)
+        return section and render_to_string(
+            'admin_dashboard/editor/_topic_head.html', {**context, 'section': section}, request=request,
+        )
 
-    return None if item is None else render_to_string(template, {**context, key: item}, request=request)
+    questions = [question for section in sections for question in section.questions.all()]
+    question = next((question for question in questions if f'{question.id}' == match[4]), None)
+
+    if question is None:
+        return None
+
+    part_context = {**context, 'question': question} if match[5] == 'row' else _question_context(context, question)
+
+    return render_to_string(QUESTION_SLOTS[match[5]], part_context, request=request)
 
 
 def editor_response(request, questionnaire, slots, **extra):
     """The answer to an action of the editor page: the named slots, the reviewer and the report, and the chart data.
 
     The questionnaire is loaded anew, so the slots show what is stored now. An extra value that is a function gets the
-    slot context and gives the value to send.
+    slot context and gives the value to send. A GET (the open question) carries shown and topic in its query.
     """
 
-    shown = [model for model in request.POST.get('shown', '').split(',') if model in MODELS]
-    context = editor_context(load_for_editor(questionnaire), shown, request.POST.get('topic'))
+    params = request.POST if request.method == 'POST' else request.GET
+    shown = [model for model in params.get('shown', '').split(',') if model in MODELS]
+    context = editor_context(load_for_editor(questionnaire), shown, params.get('topic'))
     rendered = {name: _render_editor_slot(request, context, name) for name in [*slots, 'reviewer', 'report']}
     extra = {key: value(context) if callable(value) else value for key, value in extra.items()}
 
@@ -1186,11 +1210,61 @@ def editor_response(request, questionnaire, slots, **extra):
     })
 
 
-def _posted_section(questionnaire, post):
+def _posted_section(questionnaire, post, field='section_id'):
     try:
-        return questionnaire.sections.get(id=int(post.get('section_id', '')))
+        return questionnaire.sections.get(id=int(post.get(field, '')))
     except (ValueError, QuestionSection.DoesNotExist):
         raise EditorError(_('This topic does not exist any more. Reload the page.'))
+
+
+def _posted_question(questionnaire, post, field='question_id'):
+    # The questionnaire is the organization's, so another organization's question is not found
+    try:
+        return Question.objects.get(id=int(post.get(field, '')), section__questionnaire=questionnaire)
+    except (ValueError, Question.DoesNotExist):
+        raise EditorError(_('This question does not exist any more. Reload the page.'))
+
+
+def _question_form(request, context, question):
+    """The HTML of the open question: the form of a question of the context, or of a new, unsaved one."""
+
+    if question.pk:
+        question = next(item for section in context['sections'] for item in section.questions.all() if item == question)
+        did_not_observe = question.offers_did_not_observe
+    else:
+        question.scoring = question_scoring(question)
+        question.answer_count = 0
+        did_not_observe = None
+
+    # A new question, or a type without the box, offers it unless no question of the questionnaire does
+    if did_not_observe is None or question.question_type not in DID_NOT_OBSERVE_TYPES:
+        did_not_observe = context['did_not_observe']() != 'off'
+
+    form_context = {
+        **_question_context(context, question),
+        'translated': translated_into(question),
+        'did_not_observe_checked': did_not_observe,
+        'stages': [(stage, info['name']) for stage, info in DREYFUS_STAGES.items()],
+    }
+
+    return render_to_string('admin_dashboard/editor/_question_form.html', form_context, request=request)
+
+
+def _open_question(request, questionnaire):
+    """The answer to GET ?question=<id> (a stored question) or ?new_in=<section id> (a new question in that topic)."""
+
+    if 'question' in request.GET:
+        question = _posted_question(questionnaire, request.GET, 'question')
+    else:
+        section = _posted_section(questionnaire, request.GET, 'new_in')
+        _, labels = get_default_labels(questionnaire)
+        # Nothing is stored until the creator writes the question
+        question = Question(
+            section=section, question_type='rating', config={'min': 1, 'max': len(labels)}, labels=labels,
+            required=True,
+        )
+
+    return editor_response(request, questionnaire, [], html=lambda context: _question_form(request, context, question))
 
 
 def _editor_action(request, questionnaire, action):
@@ -1226,6 +1300,36 @@ def _editor_action(request, questionnaire, action):
         _posted_section(questionnaire, post).delete()
         return editor_response(request, questionnaire, [])
 
+    if action == 'save_question':
+        question = _posted_question(questionnaire, post) if post.get('question_id') else None
+        section = None if question else _posted_section(questionnaire, post)
+        question = save_question(questionnaire, post, question, section)
+        # The labels are sent only for a score: a question of another type keeps the fields typed for a score
+        parts = ['row', 'report', 'labels'] if question.question_type == 'rating' else ['row', 'report']
+        extra = {
+            'question_id': question.id,
+            # The ids of the stored answers in their order, for the answer rows that were posted
+            'option_ids': list(question.options.values_list('id', flat=True)),
+        }
+
+        if section:
+            extra['row_html'] = lambda context: _render_editor_slot(request, context, f'question-{question.id}-row')
+
+        return editor_response(
+            request, questionnaire,
+            [*(f'question-{question.id}-{part}' for part in parts), f'topic-{question.section_id}-head', 'report-card',
+             'langs', 'did-not-observe'],
+            **extra,
+        )
+
+    if action == 'delete_question':
+        question = _posted_question(questionnaire, post)
+        question.delete()
+
+        return editor_response(
+            request, questionnaire, [f'topic-{question.section_id}-head', 'report-card', 'langs', 'did-not-observe'],
+        )
+
     if action == 'reorder':
         try:
             save_layout(questionnaire, json.loads(post.get('layout', '')))
@@ -1242,13 +1346,15 @@ def _editor_action(request, questionnaire, action):
 
 EDITOR_ACTIONS = (
     'refresh', 'save_info', 'set_did_not_observe', 'add_section', 'save_section', 'delete_section', 'reorder',
+    'save_question', 'delete_question',
 )
 
 
 @login_required
 @can_manage_questionnaires_required
 def questionnaire_edit(request, questionnaire_uuid):
-    """The editor of a questionnaire: GET gives the page, every POST of the page answers JSON (editor_response)."""
+    """The editor of a questionnaire: GET gives the page, GET ?question= or ?new_in= the open question, and every POST
+    of the page answers JSON (editor_response)."""
     # Get organization from request context
     org = getattr(request, 'organization', None)
 
@@ -1258,6 +1364,12 @@ def questionnaire_edit(request, questionnaire_uuid):
         uuid=questionnaire_uuid,
         organization=org
     )
+
+    if request.method == 'GET' and ('question' in request.GET or 'new_in' in request.GET):
+        try:
+            return _open_question(request, questionnaire)
+        except EditorError as error:
+            return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
 
     default_likert_scale, default_rating_labels = get_default_labels(questionnaire)
 
@@ -1440,15 +1552,6 @@ def questionnaire_edit(request, questionnaire_uuid):
                             'message': _('Error adding question. Please try again.'),
                         }, status=400)
                     messages.error(request, _('Error adding question. Please try again.'))
-
-        elif action == 'delete_question':
-            question_id = request.POST.get('question_id')
-            try:
-                question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
-                question.delete()
-                messages.success(request, _('Question deleted.'))
-            except Exception as e:
-                messages.error(request, _('Error deleting question: %(error)s') % {'error': str(e)})
 
         elif action == 'edit_question':
             question_id = request.POST.get('question_id')

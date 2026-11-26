@@ -1,0 +1,65 @@
+{% load i18n l10n %}{# Slot "question-<id>-report": what the stored question does in the report, and the choices for it #}
+{% with id=question.pk|default:'new' type=question.question_type %}
+<span class="form-label">{% trans 'In the report' %}</span>
+<div style="display: flex; gap: 0.75rem; align-items: baseline;">
+    {% if question.scoring.in_radar %}
+    <span class="badge badge-success" style="white-space: nowrap;">{% trans 'Counts' %}</span>
+    <span>{% blocktrans trimmed with topic=question.section.title %}Counts in the point "{{ topic }}" on the radar.{% endblocktrans %}</span>
+    {% else %}
+    <span class="badge badge-secondary" style="white-space: nowrap;">{% trans 'Does not count' %}</span>
+    <span>
+        {% if type == 'text' %}
+        {% trans 'Written answers show as text in the report. They do not count in the radar.' %}
+        {% elif question.scoring.has_score %}
+        {% trans 'This question is set to stay out of the radar.' %}
+        {% elif type == 'likert' %}
+        {% trans 'A Likert question needs at least two answers to count in the radar.' %}
+        {% else %}
+        {% trans 'The report shows how often each answer was picked. Without scores, this question does not count in the radar.' %}
+        {% endif %}
+    </span>
+    {% endif %}
+</div>
+
+{# Shown for the Pick types; for another stored type the script keeps the box as the creator left it (data-keep) #}
+<label class="form-check" data-types="single_choice multiple_choice" style="margin: 0.75rem 0 0;">
+    <input type="checkbox" class="form-check-input" name="enable_scoring"{% if question.config.scoring_enabled %} checked{% endif %}{% if type != 'single_choice' and type != 'multiple_choice' %} data-keep{% endif %}>
+    <span>{% trans 'Give each answer a score' %}
+        <span class="help-text">{% trans 'Then this question counts in the radar. You type the scores next to the answers above.' %}</span>
+    </span>
+</label>
+
+{% if values.range %}
+{% if type == 'scale' %}
+<span class="help-text" style="margin-top: 0.75rem;">{% blocktrans trimmed with low=values.range.0 high=values.range.1 %}{{ low }} counts as 1, {{ high }} counts as 5. The report uses one scale of 1 to 5 for all questions.{% endblocktrans %}</span>
+{% elif type == 'multiple_choice' and question.scoring.has_score %}
+<span class="help-text" style="margin-top: 0.75rem;">{% blocktrans trimmed with low=values.range.0|floatformat:"-1" high=values.range.1|floatformat:"-1" %}The score of a reviewer is the sum of the answers they tick. The lowest sum, {{ low }}, counts as 1. The highest sum, {{ high }}, counts as 5.{% endblocktrans %}</span>
+{% endif %}
+{% endif %}
+
+{% if question.scoring.has_score %}
+{% for entry in values.weights %}
+{% if entry.model in models_on %}
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-top: 0.75rem;">
+    <label for="question-{{ id }}-{{ entry.model }}" style="flex: 1 1 12rem; margin: 0;">
+        {% if entry.model == 'skill' %}
+        {% trans 'Skill level' %}
+        <span class="help-text">{% trans 'Example: "Alex solves hard problems without help" says something about skill.' %}</span>
+        {% else %}
+        {% trans 'Initiative' %}
+        <span class="help-text">{% trans 'Example: "Alex starts improvements without being asked" says something about initiative.' %}</span>
+        {% endif %}
+    </label>
+    <select id="question-{{ id }}-{{ entry.model }}" class="form-control" style="width: 10rem; flex: 0 0 auto;" name="{{ entry.model }}_weight">
+        {% for weight, name in values.weight_names.items %}
+        <option value="{{ weight|unlocalize }}"{% if weight == entry.weight %} selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if not models_on %}
+<span class="help-text" style="margin-top: 0.75rem;">{% trans 'Skill level and initiative are off for this questionnaire. You turn them on in "The report" at the top of this page.' %}</span>
+{% endif %}
+{% endwith %}

@@ -1,0 +1,10 @@
+{% load i18n %}{# One answer of a Likert or Pick question in the open question. The id keeps the answers reviewers gave to it; a new row has none. #}
+<div data-answer-row style="display: flex; gap: 0.5rem; align-items: center;">
+    <input type="hidden" name="{{ prefix }}_option_id" value="{{ option.id|default:'' }}">
+    <input type="text" class="form-control" style="flex: 1;" name="{{ prefix }}_option_label" value="{{ option.label|default:'' }}" maxlength="255" placeholder="{% trans 'Answer' %}" aria-label="{% trans 'Answer' %}">
+    {% if prefix == 'choice' %}
+    <input type="number" class="form-control" style="width: 80px;" step="0.5" name="choice_option_weight" value="{{ option.weight|default_if_none:''|floatformat:'-1u' }}" title="{% trans 'Score' %}" aria-label="{% trans 'Score' %}" data-scored-field>
+    {% endif %}
+    <span class="help-text" style="margin: 0; white-space: nowrap; width: 6.5rem;" data-counts-as data-text="{% trans 'counts as' %}"></span>
+    <button type="button" class="btn btn-sm btn-secondary" data-act="remove-answer" title="{% trans 'Remove this answer' %}" aria-label="{% trans 'Remove this answer' %}">&times;</button>
+</div>

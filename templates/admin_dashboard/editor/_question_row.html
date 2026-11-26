@@ -19,4 +19,6 @@
             {% if question.scoring.in_radar %}{% trans 'counts in the radar' %}{% elif question.question_type == 'text' %}{% trans 'shown as text in the report' %}{% else %}{% trans 'shown as counts in the report' %}{% endif %}
         </div>
     </div>
+    {# A click anywhere on the row opens the question; the button is the way for the keyboard #}
+    <button type="button" class="btn btn-sm btn-secondary" data-act="open-question">{% trans 'Edit' %}</button>
 </div>

@@ -1,15 +1,22 @@
 """The editor page changes topics and settings without a page load and answers the parts of the page to show again."""
 
 import json
+import re
 
 from django.contrib.auth.models import User
+from django.http import QueryDict
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.models import UserProfile
+from accounts.models import Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin, ensure_permission_groups
 from core.models import Organization
-from questionnaires.models import Question, QuestionSection, Questionnaire, QuestionnaireTranslation
+from questionnaires.answer_options import save_options
+from questionnaires.editor import save_question, translated_into
+from questionnaires.models import (
+    AnswerOptionTranslation, Question, QuestionSection, QuestionTranslation, Questionnaire, QuestionnaireTranslation,
+)
+from reviews.models import Response, ReviewCycle, ReviewerToken
 
 
 class EditorTopicTests(TestCase):
@@ -140,3 +147,268 @@ class EditorTopicTests(TestCase):
                 self.assertFalse(response.json()['ok'])
                 self.section.refresh_from_db()
                 self.assertEqual((self.section.title, self.section.order), ('Communication', 0))
+
+
+LABELS = {
+    '1': 'Needs clear direction',
+    '2': 'Handles routine problems',
+    '3': 'Solves problems independently',
+    '4': 'Handles complex situations',
+    '5': 'Expert problem solver',
+}
+
+
+class EditorQuestionTests(TestCase):
+
+    def setUp(self):
+        ensure_permission_groups()
+        self.organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        admin = User.objects.create_user('admin', 'admin@acme.example', 'pw')
+        UserProfile.objects.create(user=admin, organization=self.organization)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+        self.q = Questionnaire.objects.create(
+            name='Team lead 360', organization=self.organization, source_language='en',
+        )
+        self.section = QuestionSection.objects.create(questionnaire=self.q, title='Problem solving', order=0)
+        self.question = Question.objects.create(
+            section=self.section, question_text='How well does {name} solve problems?', question_type='rating',
+            config={'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 1.5}}, labels=LABELS, order=0,
+        )
+
+    def url(self):
+        return reverse('questionnaire_edit', args=[self.q.uuid])
+
+    def post(self, **fields):
+        return self.client.post(self.url(), fields)
+
+    def open(self, **params):
+        return self.client.get(self.url(), params).json()['html']
+
+    def labels(self):
+        return {f'rating_label_{value}': label for value, label in LABELS.items()}
+
+    def answer(self, question):
+        reviewee = Reviewee.objects.create(name='Rita', email='rita@acme.example', organization=self.organization)
+        cycle = ReviewCycle.objects.create(reviewee=reviewee, questionnaire=self.q)
+        token = ReviewerToken.objects.create(cycle=cycle, category='peer')
+        Response.objects.create(cycle=cycle, question=question, token=token, category='peer', answer_data={'value': 4})
+
+    def test_a_new_question_is_stored_with_its_first_text(self):
+        saved = self.post(
+            action='save_question', section_id=self.section.id, question_text='Listens well', question_type='rating',
+            rating_count='5', required='on',
+        ).json()
+
+        question = Question.objects.get(id=saved['question_id'])
+        self.assertEqual(question.section, self.section)
+        self.assertEqual(question.question_text, 'Listens well')
+        self.assertIn('row_html', saved)
+
+    def test_a_save_answers_everything_the_page_must_show_again(self):
+        slots = self.post(
+            action='save_question', question_id=self.question.id, question_text='Explains decisions',
+            question_type='text',
+        ).json()['slots']
+
+        for name in (f'question-{self.question.id}-row', f'question-{self.question.id}-report',
+                     f'topic-{self.section.id}-head', 'report-card', 'langs', 'reviewer', 'report'):
+            self.assertIn(name, slots)
+
+    def test_a_refused_save_changes_nothing_and_says_why(self):
+        self.answer(self.question)
+
+        response = self.post(
+            action='save_question', question_id=self.question.id, question_text='How well does {name} decide?',
+            question_type='rating', rating_count='4', **self.labels(),
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()['ok'])
+        self.assertTrue(response.json()['message'])
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.config['max'], 5)
+        self.assertEqual(self.question.question_text, 'How well does {name} solve problems?')
+
+    def test_an_emptied_text_keeps_the_stored_text(self):
+        response = self.post(
+            action='save_question', question_id=self.question.id, question_text='  ', question_type='rating',
+            rating_count='5', **self.labels(),
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.question_text, 'How well does {name} solve problems?')
+
+    def test_a_question_of_another_organization_is_not_found(self):
+        other = Organization.objects.create(name='Other', email='org@other.acme.example')
+        questionnaire = Questionnaire.objects.create(name='Other 360', organization=other)
+        section = QuestionSection.objects.create(questionnaire=questionnaire, title='Theirs', order=0)
+        theirs = Question.objects.create(
+            section=section, question_text='Theirs', question_type='rating', config={'min': 1, 'max': 5},
+        )
+
+        saved = self.post(
+            action='save_question', question_id=theirs.id, question_text='Mine', question_type='rating',
+            rating_count='5',
+        )
+        added = self.post(
+            action='save_question', section_id=section.id, question_text='Mine', question_type='rating',
+            rating_count='5',
+        )
+        deleted = self.post(action='delete_question', question_id=theirs.id)
+        opened = self.client.get(self.url(), {'question': theirs.id})
+        opened_new = self.client.get(self.url(), {'new_in': section.id})
+
+        for response in (saved, added, deleted, opened, opened_new):
+            self.assertIn(response.status_code, (400, 404))
+
+        theirs.refresh_from_db()
+        self.assertEqual(theirs.question_text, 'Theirs')
+        self.assertEqual(section.questions.count(), 1)
+
+    def test_broken_values_are_refused_not_an_error(self):
+        broken = [
+            {'question_id': 'abc'},
+            {'question_id': ''},
+            {'rating_count': '9'},
+            {'question_type': 'scale', 'scale_min': 'low'},
+            {'question_type': 'single_choice', 'choice_option_id': [''], 'choice_option_label': ['x' * 300]},
+            {'skill_weight': '3'},
+        ]
+
+        for fields in broken:
+            with self.subTest(fields=fields):
+                response = self.post(**{
+                    'action': 'save_question', 'question_id': self.question.id, 'question_text': 'Changed',
+                    'question_type': 'rating', 'rating_count': '5', **fields,
+                })
+
+                self.assertEqual(response.status_code, 400)
+                self.assertFalse(response.json()['ok'])
+                self.question.refresh_from_db()
+                self.assertEqual(self.question.question_text, 'How well does {name} solve problems?')
+
+        for params in ({'question': 'abc'}, {'new_in': ''}):
+            with self.subTest(params=params):
+                self.assertEqual(self.client.get(self.url(), params).status_code, 400)
+
+    def test_a_question_is_deleted(self):
+        answer = self.post(action='delete_question', question_id=self.question.id).json()
+
+        self.assertTrue(answer['ok'])
+        self.assertIn(f'topic-{self.section.id}-head', answer['slots'])
+        self.assertFalse(Question.objects.filter(id=self.question.id).exists())
+
+    def test_the_open_question_asks_only_when_something_is_lost(self):
+        html = self.open(question=self.question.id)
+
+        self.assertNotIn('data-ask="type"', html)
+        self.assertNotIn('data-ask="count"', html)
+        self.assertIn('data-ask="delete"', html)
+
+        self.answer(self.question)
+        html = self.open(question=self.question.id)
+
+        self.assertIn('data-ask="type"', html)
+        self.assertRegex(html, r'<select[^>]*name="rating_count"[^>]*disabled')
+        # The stored number is still posted, and a Slider cannot be chosen
+        self.assertRegex(html, r'<input type="hidden" name="rating_count" value="5">')
+        self.assertRegex(html, r'<input[^>]*value="scale"[^>]*disabled')
+
+    def test_a_translated_label_asks_before_fewer_options(self):
+        QuestionTranslation.objects.create(question=self.question, language='de', labels={'5': 'Experte'})
+
+        html = self.open(question=self.question.id)
+
+        self.assertIn('data-ask="count"', html)
+        self.assertIn('data-ask="type"', html)
+
+    def test_a_new_question_offers_did_not_observe_unless_all_questions_are_without(self):
+        def box(html):
+            return re.search(r'<input[^>]*name="did_not_observe"[^>]*>', html)[0]
+
+        self.assertIn('checked', box(self.open(new_in=self.section.id)))
+
+        self.post(action='set_did_not_observe', on='')
+
+        self.assertNotIn('checked', box(self.open(new_in=self.section.id)))
+
+    def test_the_advice_is_in_the_form_only_with_its_marker(self):
+        self.assertIn('name="action_items_posted"', self.open(question=self.question.id))
+
+        self.question.config = {'min': 1, 'max': 5}
+        self.question.save()
+
+        self.assertNotIn('name="action_items_posted"', self.open(question=self.question.id))
+
+
+class SaveQuestionTests(TestCase):
+    """What the question dialog of the old editor kept, through save_question."""
+
+    def setUp(self):
+        organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        self.questionnaire = Questionnaire.objects.create(name='Skills', organization=organization)
+        section = QuestionSection.objects.create(questionnaire=self.questionnaire, title='Problem solving')
+        self.question = Question.objects.create(
+            section=section,
+            question_text='How effectively does {name} solve problems?',
+            question_type='rating',
+            config={'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 1.5}},
+            labels=LABELS,
+        )
+
+    def save(self, **fields):
+        post = QueryDict(mutable=True)
+
+        for name, value in {'required': 'on', **fields}.items():
+            post.setlist(name, value if isinstance(value, list) else [value])
+
+        save_question(self.questionnaire, post, self.question)
+        self.question.refresh_from_db()
+
+    def test_fixing_the_text_keeps_the_labels_and_the_weights(self):
+        labels = {f'rating_label_{value}': label for value, label in LABELS.items()}
+
+        self.save(
+            question_type='rating', rating_count='5', question_text='How well does {name} solve problems?', **labels,
+        )
+
+        self.assertEqual(self.question.question_text, 'How well does {name} solve problems?')
+        self.assertEqual(self.question.labels, LABELS)
+        self.assertEqual(self.question.config['dreyfus_mapping'], {'skill': 1.5})
+
+    def test_another_type_drops_the_labels_but_keeps_the_weights(self):
+        self.save(
+            question_type='likert',
+            question_text=self.question.question_text,
+            likert_option_id=['', ''],
+            likert_option_label=['Never', 'Often'],
+        )
+
+        self.assertEqual(list(self.question.options.values_list('label', flat=True)), ['Never', 'Often'])
+        self.assertEqual(self.question.labels, {})
+        self.assertEqual(self.question.config['dreyfus_mapping'], {'skill': 1.5})
+
+
+class TranslatedIntoTests(TestCase):
+
+    def test_the_languages_of_the_translated_labels_descriptions_and_answers(self):
+        organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        questionnaire = Questionnaire.objects.create(name='Skills', organization=organization)
+        section = QuestionSection.objects.create(questionnaire=questionnaire, title='Problem solving')
+        rating = Question.objects.create(
+            section=section, question_text='Solves problems', question_type='rating', config={'max': 5},
+            labels=LABELS, order=0,
+        )
+        likert = Question.objects.create(section=section, question_text='Shares', question_type='likert', order=1)
+        save_options(likert, [(None, 'Never', None), (None, 'Often', None)])
+        QuestionTranslation.objects.create(question=rating, language='de', question_text='Löst Probleme')
+        QuestionTranslation.objects.create(question=rating, language='nl', descriptions={'1': 'Weinig'})
+        AnswerOptionTranslation.objects.create(option=likert.options.first(), language='de', label='Nie')
+        AnswerOptionTranslation.objects.create(option=likert.options.last(), language='nl', label='')
+
+        # The question text alone does not count, nor an empty translation
+        self.assertEqual(translated_into(rating), ['Nederlands'])
+        self.assertEqual(translated_into(likert), ['Deutsch (Sie)'])

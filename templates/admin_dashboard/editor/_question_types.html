@@ -1,0 +1,86 @@
+{% load i18n %}{# The fields of each answer type of the open question; the script shows those of the chosen type (data-types). All of them are posted. #}
+<div data-types="rating">
+    <div class="form-group">
+        <label class="form-label" for="question-{{ id }}-count">{% trans 'Number of options' %}</label>
+        {% if question.answer_count and question.question_type == 'rating' %}
+        <select id="question-{{ id }}-count" class="form-control" style="max-width: 12rem;" name="rating_count" disabled>
+            <option value="{{ values.rating_count }}" selected>{% blocktrans trimmed count counter=values.rating_count %}{{ counter }} option{% plural %}{{ counter }} options{% endblocktrans %}</option>
+        </select>
+        {# A disabled field is not posted, and a score cannot be stored without its number #}
+        <input type="hidden" name="rating_count" value="{{ values.rating_count }}">
+        <span class="help-text">{% trans 'Reviewers already answered this question, so the number of options cannot change. Add a new question if you need another number.' %}</span>
+        {% else %}
+        <select id="question-{{ id }}-count" class="form-control" style="max-width: 12rem;" name="rating_count" data-value="{{ values.rating_count }}">
+            {% for count in values.rating_counts %}
+            <option value="{{ count }}"{% if count == values.rating_count %} selected{% endif %}>{% blocktrans trimmed count counter=count %}{{ counter }} option{% plural %}{{ counter }} options{% endblocktrans %}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+        <span class="form-label">{% trans 'What each number means' %}</span>
+        <div data-slot="question-{{ id }}-labels">{% include 'admin_dashboard/editor/_rating_labels.html' %}</div>
+    </div>
+</div>
+
+<div data-types="likert">
+    <div class="form-group">
+        <span class="form-label">{% trans 'Answers, from low to high' %}</span>
+        <div data-answer-rows="likert" style="display: flex; flex-direction: column; gap: 0.5rem;">
+            {% for option in values.likert_options %}
+            {% include 'admin_dashboard/editor/_answer_row.html' with prefix='likert' %}
+            {% endfor %}
+        </div>
+        <template data-new-row>{% include 'admin_dashboard/editor/_answer_row.html' with prefix='likert' option=None %}</template>
+        <button type="button" class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;" data-act="add-answer">{% trans 'Add an answer' %}</button>
+        <span class="help-text">{% trans 'Add or remove answers as you want. "Counts as" is the score each answer gets in the report, on its scale of 1 to 5.' %}</span>
+    </div>
+    <label class="form-check" style="margin-bottom: 0;">
+        <input type="checkbox" class="form-check-input" name="reverse_scored"{% if question.question_type == 'likert' and question.config.reverse_scored %} checked{% endif %}>
+        <span>{% trans 'This is a negative statement' %}
+            <span class="help-text">{% trans 'Example: "Alex often misses deadlines". To agree is then bad, so the scores turn around: the first answer counts as 5 and the last as 1. Tick it and look at "counts as" above.' %}</span>
+        </span>
+    </label>
+</div>
+
+{# Pick one and Pick several share their answers #}
+<div data-types="single_choice multiple_choice">
+    <div class="form-group" style="margin-bottom: 0;">
+        <span class="form-label">{% trans 'Answers' %}</span>
+        <div data-answer-rows="choice" style="display: flex; flex-direction: column; gap: 0.5rem;">
+            {% for option in values.choice_options %}
+            {% include 'admin_dashboard/editor/_answer_row.html' with prefix='choice' %}
+            {% endfor %}
+        </div>
+        <template data-new-row>{% include 'admin_dashboard/editor/_answer_row.html' with prefix='choice' option=None %}</template>
+        <button type="button" class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;" data-act="add-answer">{% trans 'Add an answer' %}</button>
+        <span class="help-text" data-scored-field>{% trans 'The number next to each answer is its score. A higher number is a better answer.' %}</span>
+    </div>
+    <label class="form-check" data-types="single_choice" style="margin: 1rem 0 0;">
+        <input type="checkbox" class="form-check-input" name="display_list"{% if question.question_type != 'single_choice' or question.config.display != 'dropdown' %} checked{% endif %}>
+        <span>{% trans 'Show all answers as a list' %}
+            <span class="help-text">{% trans 'Off: reviewers open a dropdown to see the answers. That is shorter when there are many answers.' %}</span>
+        </span>
+    </label>
+</div>
+
+<div data-types="scale">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0.5rem;">
+        <div>
+            <label class="help-text" for="question-{{ id }}-min">{% trans 'Lowest number' %}</label>
+            <input id="question-{{ id }}-min" type="number" step="1" class="form-control" name="scale_min" value="{{ values.scale.min }}">
+        </div>
+        <div>
+            <label class="help-text" for="question-{{ id }}-max">{% trans 'Highest number' %}</label>
+            <input id="question-{{ id }}-max" type="number" step="1" class="form-control" name="scale_max" value="{{ values.scale.max }}">
+        </div>
+        <div>
+            <label class="help-text" for="question-{{ id }}-min-label">{% trans 'Text at the low end (optional)' %}</label>
+            <input id="question-{{ id }}-min-label" type="text" class="form-control" name="scale_min_label" value="{{ values.scale.min_label }}">
+        </div>
+        <div>
+            <label class="help-text" for="question-{{ id }}-max-label">{% trans 'Text at the high end (optional)' %}</label>
+            <input id="question-{{ id }}-max-label" type="text" class="form-control" name="scale_max_label" value="{{ values.scale.max_label }}">
+        </div>
+    </div>
+</div>

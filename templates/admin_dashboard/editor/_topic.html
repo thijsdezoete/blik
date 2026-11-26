@@ -28,6 +28,10 @@
             </li>
             {% endfor %}
         </ul>
+        {# The place of a new question; it gets its id and its row with the first save #}
+        <template data-new-question>
+            <li data-question="" class="editor-question" style="padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;"></li>
+        </template>
         <button type="button" class="btn btn-sm btn-secondary" style="margin-top: 0.75rem;" data-act="add-question">{% trans 'Add a question' %}</button>
     </div>
 </div>

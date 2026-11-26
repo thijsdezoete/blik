@@ -1570,36 +1570,6 @@ def questionnaire_restore(request, questionnaire_uuid):
     return redirect('questionnaire_list')
 
 
-@login_required(as_json=True)
-@can_manage_questionnaires_required(as_json=True)
-def question_dreyfus_config_api(request, question_id):
-    """API endpoint to get Dreyfus/Agency configuration for a question"""
-    try:
-        # Get the organization from request
-        org = getattr(request, 'organization', None)
-
-        # Get question and verify it belongs to the user's organization
-        question = Question.objects.select_related('section__questionnaire').get(
-            id=question_id,
-            section__questionnaire__organization=org
-        )
-
-        # Extract dreyfus_mapping from config
-        dreyfus_mapping = question.config.get('dreyfus_mapping', {})
-
-        # Return configuration
-        return JsonResponse({
-            'dreyfus_mapping': dreyfus_mapping,
-            'action_items': question.action_items
-        })
-
-    except Question.DoesNotExist:
-        return JsonResponse({'error': _('Question not found')}, status=404)
-    except Exception as e:
-        logger.exception('Error fetching Dreyfus config')
-        return JsonResponse({'error': _('Internal server error')}, status=500)
-
-
 # Where a cycle stands, from its status and response counts. Together the
 # stages cover every cycle exactly once. Conditions use the token_count and
 # completed_count annotations of review_cycle_list.

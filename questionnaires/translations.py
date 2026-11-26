@@ -370,6 +370,19 @@ def save_part_translation(part, language, texts, data):
     translation.save()
 
 
+def get_length_errors(texts, data):
+    """The errors for the posted translations in data that are longer than their texts allow."""
+
+    return [
+        gettext('The translation of "%(text)s" is longer than %(max_length)s characters.') % {
+            'text': text.source,
+            'max_length': text.max_length,
+        }
+        for text in texts
+        if text.max_length and len(data.get(text.field_name, '').strip()) > text.max_length
+    ]
+
+
 def save_text_translations(questionnaire, language, data):
     """
     Store the translations posted on the translation page; returns the errors, and stores nothing if there are any.
@@ -379,21 +392,41 @@ def save_text_translations(questionnaire, language, data):
     """
 
     texts = get_text_translations(questionnaire, language)
-    errors = [
-        gettext('The translation of "%(text)s" is longer than %(max_length)s characters.') % {
-            'text': text.source,
-            'max_length': text.max_length,
-        }
-        for text in texts
-        if text.max_length and len(data.get(text.field_name, '').strip()) > text.max_length
-    ]
 
-    if errors:
+    if errors := get_length_errors(texts, data):
         return errors
 
     with transaction.atomic():
         for part, part_texts in groupby(texts, key=attrgetter('part')):
             save_part_translation(part, language, list(part_texts), data)
+
+    return []
+
+
+def save_one_translation(questionnaire, language, field_name, value, still_correct=False):
+    """
+    Store the translation of the text with field_name, as save_text_translations() does for all texts; returns the
+    errors, and stores nothing if there are any. The other texts of the same part keep their translations and checksums.
+    """
+
+    texts = get_text_translations(questionnaire, language)
+    text = next((text for text in texts if text.field_name == field_name), None)
+
+    if text is None:
+        return [gettext('The questionnaire has no text to translate here.')]
+
+    # save_part_translation() stores the part's texts from data alone, so data holds the stored ones as well
+    part_texts = [other for other in texts if other.part == text.part]
+    data = {other.field_name: other.text for other in part_texts}
+    data[field_name] = value
+
+    if still_correct:
+        data[f'current-{field_name}'] = 'on'
+
+    if errors := get_length_errors([text], data):
+        return errors
+
+    save_part_translation(text.part, language, part_texts, data)
 
     return []
 

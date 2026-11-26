@@ -25,7 +25,12 @@ from questionnaires.models import (
     QuestionnaireTranslation,
 )
 from questionnaires.signals import clone_questionnaire_for_organization
-from questionnaires.translations import get_checksum, get_text_translations, save_text_translations
+from questionnaires.translations import (
+    get_checksum,
+    get_text_translations,
+    save_one_translation,
+    save_text_translations,
+)
 from reviews.models import ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, send_queued_emails
 
@@ -375,6 +380,66 @@ class TranslationStateTest(TranslatedQuestionnaireTestCase):
 
         self.assertEqual(len(errors), 1)
         self.assertFalse(self.likert.translations.exists())
+
+    def test_one_text_is_saved_and_the_others_of_its_part_stay(self):
+        self.save(confirm=True)
+        checksums = self.rating.translations.get(language='de').source_checksums
+
+        errors = save_one_translation(self.get_questionnaire(), 'de', self.get_text(self.rating, 'labels.5').field_name,
+                                      'Immer')
+
+        translation = self.rating.translations.get(language='de')
+        self.assertEqual(errors, [])
+        self.assertEqual(translation.labels, {'1': 'Schwach', '5': 'Immer'})
+        self.assertEqual(translation.question_text, 'Teilt Wissen')
+        self.assertEqual(translation.source_checksums['labels.1'], checksums['labels.1'])
+        self.assertEqual(translation.source_checksums['question_text'], checksums['question_text'])
+        self.assertEqual(translation.source_checksums['labels.5'], get_checksum('Excellent'))
+
+    def test_an_empty_value_removes_that_text_only(self):
+        self.save(confirm=True)
+        checksums = self.rating.translations.get(language='de').source_checksums
+
+        errors = save_one_translation(self.get_questionnaire(), 'de', self.get_text(self.rating, 'labels.1').field_name,
+                                      '')
+
+        translation = self.rating.translations.get(language='de')
+        self.assertEqual(errors, [])
+        self.assertEqual(translation.labels, {})
+        self.assertEqual(translation.question_text, 'Teilt Wissen')
+        self.assertEqual(translation.action_items, {'pairing': 'Wöchentlich zu zweit arbeiten'})
+        self.assertEqual(translation.source_checksums, {
+            'question_text': checksums['question_text'],
+            'action_items.pairing': checksums['action_items.pairing'],
+        })
+
+    def test_still_correct_clears_outdated_without_a_new_text(self):
+        self.save(confirm=True)
+        self.rating.question_text = 'Shares what they know'
+        self.rating.save()
+        self.assertTrue(self.get_text(self.rating, 'question_text').outdated)
+        field_name = self.get_text(self.rating, 'question_text').field_name
+
+        save_one_translation(self.get_questionnaire(), 'de', field_name, 'Teilt Wissen')
+        self.assertTrue(self.get_text(self.rating, 'question_text').outdated)
+
+        errors = save_one_translation(self.get_questionnaire(), 'de', field_name, 'Teilt Wissen', still_correct=True)
+
+        self.assertEqual(errors, [])
+        self.assertFalse(self.get_text(self.rating, 'question_text').outdated)
+        self.assertEqual(self.get_text(self.rating, 'question_text').text, 'Teilt Wissen')
+
+    def test_a_too_long_text_or_an_unknown_field_saves_nothing(self):
+        agree, disagree = self.likert.options.all()
+        field_name = self.get_text(disagree, 'label').field_name
+
+        too_long = save_one_translation(self.get_questionnaire(), 'de', field_name, 'x' * 256)
+        unknown = save_one_translation(self.get_questionnaire(), 'de', 'question-0-x', 'Hallo')
+
+        self.assertEqual(len(too_long), 1)
+        self.assertEqual(len(unknown), 1)
+        self.assertFalse(disagree.translations.exists())
+        self.assertEqual(self.get_text(agree, 'label').text, 'Stimme zu')
 
     def test_a_variant_shows_the_texts_of_its_base_language(self):
         question_text = self.get_text(self.rating, 'question_text', 'de-informal')

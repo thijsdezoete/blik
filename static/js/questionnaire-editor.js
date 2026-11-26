@@ -612,7 +612,17 @@
         }
     }
 
+    // The creator went on to something else: a topic whose fields are still open closes as with "Done"
+    function closeTopics(keep) {
+        topicsList.querySelectorAll('[data-section][data-editing]').forEach(function(card) {
+            if (card !== keep) {
+                closeTopic(card, false);
+            }
+        });
+    }
+
     function editTopic(card) {
+        closeTopics(card);
         setEditing(card, true);
         const title = card.querySelector('[data-topic-edit] [name="title"]');
         title.focus();
@@ -620,11 +630,15 @@
         showTopic(card);
     }
 
-    function closeTopic(card) {
+    // focus false: the focus goes to what the creator opened next, not back to the "Edit" button
+    function closeTopic(card, focus = true) {
         const group = card.querySelector('[data-topic-edit]');
         const close = function() {
             setEditing(card, false);
-            card.querySelector('[data-act="edit-topic"]').focus();
+
+            if (focus) {
+                card.querySelector('[data-act="edit-topic"]').focus();
+            }
         };
 
         if (!group.querySelector('[data-dirty]')) {
@@ -677,6 +691,7 @@
     }
 
     function addTopic() {
+        closeTopics();
         Editor.send('add_section').then(function(answer) {
             if (!answer.ok) {
                 return;
@@ -1213,6 +1228,7 @@
 
         const ticket = ++openTicket;
 
+        closeTopics();
         closeQuestion().then(function(closed) {
             if (!closed || ticket !== openTicket || !item.isConnected) {
                 return null;
@@ -1240,6 +1256,7 @@
     function addQuestion(card) {
         const ticket = ++openTicket;
 
+        closeTopics();
         closeQuestion().then(function(closed) {
             if (!closed || ticket !== openTicket) {
                 return null;

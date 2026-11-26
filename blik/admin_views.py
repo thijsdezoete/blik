@@ -2356,6 +2356,35 @@ def lock_cycle(cycle):
     return ReviewCycle.objects.select_for_update().get(pk=cycle.pk)
 
 
+def cycle_progress(cycle):
+    """
+    Invited and answered per active category, counted from the tokens only, and whether the
+    group will show in the report. The report hides peers and direct reports below the threshold.
+    """
+    threshold = cycle.organization.min_responses_for_anonymity
+    counts = {
+        row['category']: row
+        for row in cycle.tokens.values('category').annotate(
+            invited=Count('id'), answered=Count('id', filter=Q(completed_at__isnull=False)))
+    }
+    progress = []
+    for category in cycle.active_categories:
+        invited = counts.get(category, {}).get('invited', 0)
+        answered = counts.get(category, {}).get('answered', 0)
+        needed = 0
+        if category in ('self', 'manager'):
+            shows = 'yes'
+        elif invited < threshold:
+            shows = 'no'
+        elif answered < threshold:
+            shows, needed = 'not_yet', threshold - answered
+        else:
+            shows = 'yes'
+        progress.append({'category': category, 'invited': invited, 'answered': answered,
+                         'shows': shows, 'needed': needed})
+    return progress
+
+
 @login_required
 def generate_report_view(request, cycle_uuid):
     """Generate or regenerate report for a review cycle"""

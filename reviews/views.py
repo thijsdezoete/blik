@@ -247,37 +247,38 @@ def submit_feedback(request, token):
             if not answer_value:
                 continue
 
+            # An explicit non-numeric answer when the behaviour was not observed, for the questions that offer it.
+            # Elsewhere the value falls through: the type branches refuse it, and a written answer keeps it as text.
+            if answer_value == 'did_not_observe' and question.offers_did_not_observe:
+                answer_data = {
+                    'value': None,
+                    'did_not_observe': True,
+                }
             # Validate based on question type
-            if question.question_type == 'rating':
-                # Accept an explicit non-numeric response when the behaviour
-                # was not observed; otherwise validate the numeric rating.
-                if answer_value == 'did_not_observe':
-                    answer_data = {
-                        'value': None,
-                        'did_not_observe': True,
-                    }
-                else:
-                    try:
-                        rating = int(answer_value)
-                        min_val = int((question.config or {}).get('min', 1))
-                        max_val = int((question.config or {}).get('max', 5))
-                        if rating < min_val or rating > max_val:
-                            errors.append(_('Rating must be between %(min)s and %(max)s') % {'min': min_val, 'max': max_val})
-                            continue
-                        answer_data = {'value': rating}
-                    except (TypeError, ValueError):
-                        errors.append(_('Invalid rating value'))
+            elif question.question_type == 'rating':
+                try:
+                    rating = int(answer_value)
+                    min_val = int((question.config or {}).get('min', 1))
+                    max_val = int((question.config or {}).get('max', 5))
+                    if rating < min_val or rating > max_val:
+                        errors.append(_('Rating must be between %(min)s and %(max)s') % {'min': min_val, 'max': max_val})
                         continue
+                    answer_data = {'value': rating}
+                except (TypeError, ValueError):
+                    errors.append(_('Invalid rating value'))
+                    continue
             elif question.question_type == 'scale':
                 try:
-                    scale_value = int(answer_value)
+                    # A slider with a step below 1 gives numbers such as 3.5; nan and inf fail the comparison below
+                    scale_value = float(answer_value)
                     min_val = question.config.get('min', 1)
                     max_val = question.config.get('max', 100)
-                    if scale_value < min_val or scale_value > max_val:
+                    if not min_val <= scale_value <= max_val:
                         errors.append(_('Scale value must be between %(min)s and %(max)s') % {'min': min_val, 'max': max_val})
                         continue
-                    answer_data = {'value': scale_value}
-                except ValueError:
+                    # A whole number stays a whole number, as it was always stored
+                    answer_data = {'value': int(scale_value) if scale_value == int(scale_value) else round(scale_value, 4)}
+                except (TypeError, ValueError):
                     errors.append(_('Invalid scale value'))
                     continue
             elif question.question_type in OPTION_TYPES:

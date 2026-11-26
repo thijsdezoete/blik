@@ -1,0 +1,96 @@
+{% load i18n l10n feedback_tags %}{# Slot "report-card": what the report shows. The radar is always on. Each model of report_models is on when it was ticked in this visit or a question counts for it, each without the other. The table sets how much each question with a score counts for each model that is on (static/js/questionnaire-editor.js, "The report card"). #}
+<div class="card mb-2">
+    <div class="card-header"><h2 class="card-title">{% trans 'The report' %}</h2></div>
+    <div class="card-body">
+        <span class="help-text" style="margin: 0 0 1rem;">{% trans 'Choose what the report shows. The example on the right follows your choices.' %}</span>
+        <label class="form-check">
+            <input type="checkbox" class="form-check-input" checked disabled>
+            <span>{% trans 'Scores per topic (radar)' %}
+                <span class="help-text">{% trans 'Always there. Each topic with a scored question gets its own axis on the radar.' %}</span>
+            </span>
+        </label>
+        {% for entry in report_models %}
+        <label class="form-check"{% if forloop.last %} style="margin-bottom: 0;"{% endif %}>
+            <input type="checkbox" class="form-check-input" data-model="{{ entry.model }}" data-untick="{{ entry.untick }}"{% if entry.level %} checked{% endif %}>
+            <span>{{ entry.choice }}
+                <span class="help-text">{{ entry.help }}</span>
+            </span>
+        </label>
+        {% if entry.weighted %}
+        {# Unticking removes the weights of this model, so the page asks first #}
+        <template data-ask="model-{{ entry.model }}">
+            <p style="margin-bottom: 0.75rem;">{% blocktrans trimmed count counter=entry.weighted with name=entry.name %}{{ counter }} question counts toward "{{ name }}" now. If you switch it off, the report no longer shows it and this question no longer counts toward it.{% plural %}{{ counter }} questions count toward "{{ name }}" now. If you switch it off, the report no longer shows it and these questions no longer count toward it.{% endblocktrans %}</p>
+            <button type="button" class="btn btn-sm btn-danger">{% trans 'Switch it off' %}</button>
+            <button type="button" class="btn btn-sm btn-secondary">{% trans 'Keep it on' %}</button>
+        </template>
+        {% endif %}
+        {% endfor %}
+
+        {% if models_on %}
+        {# Folded when the page opens, because it lists every question; the script keeps it as the creator left it #}
+        <details data-weights style="padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 0.5rem; margin-top: 1rem;">
+            <summary style="cursor: pointer;">
+                <span class="form-label" style="display: inline; margin: 0;">{% trans 'Which questions count, and how much?' %}</span>
+                <span class="help-text" style="margin: 0.25rem 0 0;">
+                    {% for entry in report_models %}{% if entry.level %}<span style="margin-right: 1rem; white-space: nowrap;">{% if entry.weighted %}{% blocktrans trimmed count counter=entry.weighted with name=entry.name %}{{ name }}: {{ counter }} question{% plural %}{{ name }}: {{ counter }} questions{% endblocktrans %}{% else %}{% blocktrans trimmed with name=entry.name %}{{ name }}: no question yet{% endblocktrans %}{% endif %}</span>{% endif %}{% endfor %}
+                </span>
+            </summary>
+            <span class="help-text" style="margin: 1rem 0 0;">
+                {% trans 'A level in the report is the average score of the questions you choose here. A question that "Counts double" weighs twice as much in that average.' %}
+                {% for entry in report_models %}{% if entry.level %} {{ entry.example }}{% endif %}{% endfor %}
+            </span>
+            {% if weight_table %}
+            {# In a narrow column the selects of a question go under its text, still under the names of their models #}
+            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                <span style="flex: 1 1 0;"></span>
+                {% for entry in report_models %}{% if entry.level %}
+                <span class="help-text" style="margin: 0; width: 10rem; flex: 0 0 auto; font-weight: 700;">{{ entry.name }}</span>
+                {% endif %}{% endfor %}
+                {% if 'skill' in models_on %}
+                {# Advice goes with the skill level: the report gives it with the steps to the next stage #}
+                <span class="help-text" style="margin: 0; width: 9rem; flex: 0 0 auto; font-weight: 700; display: flex; align-items: center;">
+                    {% trans 'Advice' %}
+                    <button type="button" class="tab-info-link" style="border: 0; background: none; cursor: pointer; color: var(--primary);" data-act="advice-help" aria-haspopup="dialog" title="{% trans 'How advice works' %}" aria-label="{% trans 'How advice works' %}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                    </button>
+                </span>
+                {% endif %}
+            </div>
+            {% for topic in weight_table %}
+            <div class="help-text" style="margin-top: 0.75rem; font-weight: 700;">{{ topic.title }}</div>
+            {% for row in topic.questions %}
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding: 0.375rem 0;">
+                <span style="flex: 1 1 12rem;">{% for part in row.question.question_text|name_parts %}{% if not forloop.first %}<span class="rp-chip" style="padding: 0 0.5rem;">{% trans 'name' context 'placeholder for the name of the person reviewed' %}</span>{% endif %}{{ part }}{% endfor %}</span>
+                <span style="display: flex; gap: 0.75rem; margin-left: auto;">
+                {% for entry in row.weights %}
+                <span style="width: 10rem; flex: 0 0 auto;">
+                    <select class="form-control" style="width: 100%;" name="{{ entry.model }}_weight" data-weight="{{ entry.model }}" data-question-id="{{ row.question.id }}" aria-label="{{ entry.name }}: {{ row.question.question_text|personalize:'Alex' }}">
+                        {# An older weight outside the five stays selected, with its number #}
+                        {% if entry.other %}<option value="{{ entry.weight|unlocalize }}" selected>{{ entry.other }}</option>{% endif %}
+                        {% for weight, name in weight_names.items %}
+                        <option value="{{ weight|unlocalize }}"{% if weight == entry.weight %} selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </span>
+                {% endfor %}
+                {% if 'skill' in models_on %}
+                {# Opens the advice dialog of the question, the one place where advice is written. The column says "Advice", #}
+                {# so the button says only "Add"; a text that is too long is cut with dots, not drawn over the edge #}
+                <span style="width: 9rem; flex: 0 0 auto;">
+                    <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; overflow: hidden; text-overflow: ellipsis;" data-act="row-advice" data-question-id="{{ row.question.id }}">{% with count=row.question.action_items|length %}{% if count %}{% blocktrans trimmed %}Advice ({{ count }}){% endblocktrans %}{% else %}{% trans 'Add' %}{% endif %}{% endwith %}</button>
+                </span>
+                {% endif %}
+                </span>
+            </div>
+            {% endfor %}
+            {% endfor %}
+            <span class="help-text" style="margin-top: 0.75rem;">{% trans 'A question without a score, such as a written answer, cannot count toward a level. So it is not in this list.' %}</span>
+            {% else %}
+            <span class="help-text" style="margin-top: 0.75rem;">{% trans 'No question has a score yet. Add a question with a score first; then you choose here how much it counts.' %}</span>
+            {% endif %}
+        </details>
+        {% endif %}
+    </div>
+</div>

@@ -124,19 +124,23 @@ class QuestionnaireFlowTests(TestCase):
         """Build a questionnaire with every question type the way the editor does."""
         self.client.post(reverse('questionnaire_create'), {'name': 'Safety Net'})
         self.questionnaire = Questionnaire.objects.get(name='Safety Net', organization=self.organization)
-        self.edit(action='add_section', section_title='Collaboration')
-        section_id = self.questionnaire.sections.get().id
+        section_id = self.edit(action='add_section').json()['section_id']
+        self.edit(action='save_section', section_id=section_id, title='Collaboration', description='')
 
         def add(question_type, text, **fields):
-            self.edit(action='add_question', section_id=section_id, question_type=question_type,
+            self.edit(action='save_question', section_id=section_id, question_type=question_type,
                       question_text=text, required='on', **fields)
 
-        add('rating', 'Shares knowledge', add_skill_weight='1.0',
-            **{'add_action_items[0][text]': 'Pair with a colleague every week',
-               'add_action_items[0][threshold]': '4.5'})
+        add('rating', 'Shares knowledge', rating_count='5', did_not_observe='on', skill_weight='1')
+        # The advice of a question is written in its advice dialog
+        self.edit(
+            action='save_advice', question_id=Question.objects.get(question_text='Shares knowledge').id,
+            threshold='4.5', try_stage='1', try_score='2.4',
+            **{'advice[0][text]': 'Pair with a colleague every week', 'advice[0][key]': '', 'advice[0][stage]': ''},
+        )
         add('likert', 'Gives useful feedback', **option_rows('likert', DEFAULT_LIKERT))
         add('likert', 'Asks for help', **option_rows('likert', ['Never', 'Sometimes', 'Often', 'Always']))
-        add('single_choice', 'Seniority', enable_scoring='on',
+        add('single_choice', 'Seniority', enable_scoring='on', display_list='on',
             **option_rows('choice', ['Novice', 'Advanced', 'Expert'], ['1', '3', '5']))
         add('multiple_choice', 'Strong areas', **option_rows('choice', ['Code', 'Docs', 'Talks']))
         add('scale', 'Energy', scale_min='0', scale_max='10', scale_step='1',
@@ -197,9 +201,9 @@ class QuestionnaireFlowTests(TestCase):
         for text in ['Shares knowledge', 'Gives useful feedback', 'Asks for help', 'Seniority',
                      'Strong areas', 'Energy', 'Anything else?']:
             self.assertIn(text, page)
-        self.assertIn('Gives useful feedback * Type: Likert Scale | 5-point scale', page)
-        self.assertIn('Asks for help * Type: Likert Scale | 4-point scale', page)
-        # The list shows the options only in the edit dialog, which the page fills from its markup
+        self.assertIn('Gives useful feedback * Agree / disagree (Likert) · 5 answers Edit', page)
+        self.assertIn('Asks for help * Agree / disagree (Likert) · 4 answers Edit', page)
+        # The reviewer tab shows the topic with every option
         for label in ['Sometimes', 'Often', 'Always', 'Novice', 'Advanced', 'Expert', 'Code', 'Docs', 'Talks']:
             self.assertContains(response, label)
 

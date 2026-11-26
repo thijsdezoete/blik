@@ -3,6 +3,7 @@ Admin dashboard views for Blik
 """
 import json
 import logging
+import math
 import random
 import re
 from datetime import date
@@ -50,18 +51,33 @@ from core.languages import default_language, is_language, language_name
 from core.gdpr import GDPRDeletionService
 from core.models import Organization
 from productreviews.models import ProductReview, anonymous_name
-from questionnaires.action_items import add_action_item_keys
-from questionnaires.answer_options import DEFAULT_LIKERT_SCALE, DEFAULT_RATING_LABELS, save_options
-from questionnaires.models import Question, QuestionSection, Questionnaire
-from questionnaires.ordering import save_layout
-from questionnaires.presentation import questionnaire_report_features
-from questionnaires.translations import (
-    LanguageState,
-    get_language_states,
-    get_text_translations,
-    has_translation,
-    save_text_translations,
+from questionnaires.editor import (
+    DID_NOT_OBSERVE_TYPES,
+    MODELS,
+    EditorError,
+    add_section,
+    advice_for,
+    advice_rows,
+    advice_threshold,
+    clear_model,
+    editor_context,
+    get_default_labels,
+    languages_with_translation,
+    load_for_editor,
+    question_form_values,
+    save_advice,
+    save_info,
+    save_question,
+    save_section,
+    set_did_not_observe,
+    set_weight,
+    translated_into,
 )
+from questionnaires.models import AnswerOption, Question, QuestionSection, Questionnaire
+from questionnaires.ordering import save_layout
+from questionnaires.presentation import question_scoring, questionnaire_report_features
+from reports.dreyfus_service import DREYFUS_STAGES
+from questionnaires.translations import get_language_states, get_text_translations, save_one_translation
 from notifications.lifecycle import cycle_summary, send_cycle_summary
 from reports.dreyfus_service import (
     agency_profile_with_texts,
@@ -99,16 +115,6 @@ def limit_error(request, error):
         messages.error(request, format_html('{} <a href="{}">{}</a>', str(error), reverse('billing'), _('Go to Billing')))
     else:
         messages.error(request, str(error))
-
-
-def get_default_labels(questionnaire):
-    """The default likert scale and rating labels of a new question, in the questionnaire's source language."""
-
-    with translation.override(questionnaire.source_language):
-        likert_scale = [f'{label}' for label in DEFAULT_LIKERT_SCALE]
-        rating_labels = {key: f'{label}' for key, label in DEFAULT_RATING_LABELS.items()}
-
-    return likert_scale, rating_labels
 
 
 def get_cycle_or_404(request, cycle_uuid):
@@ -962,6 +968,23 @@ def questionnaire_list(request):
     return render(request, 'admin_dashboard/questionnaire_list.html', context)
 
 
+def editor_url_for(request, questionnaire, language=None):
+    """The address of the questionnaire editor, for a page the editor opened (?from=editor) and a user who may edit.
+
+    None for every other visit: the page then leads back to the list.
+    """
+
+    if request.GET.get('from') != 'editor' or not request.user.has_perm('accounts.can_manage_questionnaires'):
+        return None
+
+    url = reverse('questionnaire_edit', args=[questionnaire.uuid])
+
+    if language and language != questionnaire.source_language:
+        return f'{url}?lang={language}'
+
+    return url
+
+
 @login_required
 def questionnaire_preview(request, questionnaire_uuid):
     """Preview a questionnaire in its source language, or in the language that ?lang= picks."""
@@ -972,12 +995,14 @@ def questionnaire_preview(request, questionnaire_uuid):
     if not is_language(language):
         language = questionnaire.source_language
 
+    editor_url = editor_url_for(request, questionnaire, language)
     questionnaire = questionnaire.translated(language)
 
     context = {
         'questionnaire': questionnaire,
         'sections': questionnaire.sections.all(),
         'preview_language': language,
+        'editor_url': editor_url,
     }
 
     if request.GET.get('fragment') == 'questions':
@@ -1083,6 +1108,7 @@ def questionnaire_sample_report(request, questionnaire_uuid):
         'overall_score': overall_score,
         'insights': insights,
         'chart_data': {'section_scores': section_scores},
+        'editor_url': editor_url_for(request, questionnaire),
     }
 
     return render(request, 'admin_dashboard/questionnaire_sample_report.html', context)
@@ -1103,10 +1129,7 @@ def questionnaire_create(request):
 
         if not name:
             messages.error(request, _('Questionnaire name is required.'))
-            return render(request, 'admin_dashboard/questionnaire_form.html', {
-                'action': 'Create',
-                'source_language': source_language,
-            })
+            return render(request, 'admin_dashboard/questionnaire_form.html', {'source_language': source_language})
 
         try:
             # Get organization from request context
@@ -1125,7 +1148,6 @@ def questionnaire_create(request):
             messages.error(request, _('Error creating questionnaire: %(error)s') % {'error': str(e)})
 
     context = {
-        'action': 'Create',
         # New questionnaires are most likely written in the language their author works in
         'source_language': translation.get_language(),
     }
@@ -1133,56 +1155,418 @@ def questionnaire_create(request):
     return render(request, 'admin_dashboard/questionnaire_form.html', context)
 
 
-def posted_labels(post, question_type):
-    """The rating or scale labels the question editor posted, without the empty ones."""
-
-    if question_type == 'rating':
-        fields = {key: f'rating_label_{key}' for key in DEFAULT_RATING_LABELS}
-    elif question_type == 'scale':
-        fields = {'min': 'scale_min_label', 'max': 'scale_max_label'}
-    else:
-        return {}
-
-    labels = {key: post.get(field, '').strip() for key, field in fields.items()}
-
-    return {key: label for key, label in labels.items() if label}
-
-
-def posted_descriptions(post, question_type):
-    """The descriptions of the rating values the question editor posted, without the empty ones."""
-
-    if question_type != 'rating' or post.get('rating_descriptions') != 'on':
-        return {}
-
-    descriptions = {key: post.get(f'rating_description_{key}', '').strip() for key in DEFAULT_RATING_LABELS}
-
-    return {key: text for key, text in descriptions.items() if text}
+# The templates of the parts of the editor page that an answer can send again, by slot name
+EDITOR_SLOTS = {
+    'langs': 'admin_dashboard/editor/_langs.html',
+    'settings': 'admin_dashboard/editor/_settings.html',
+    'did-not-observe': 'admin_dashboard/editor/_did_not_observe.html',
+    'report-card': 'admin_dashboard/editor/_report_card.html',
+    'reviewer': 'admin_dashboard/editor/_reviewer.html',
+    'report': 'admin_dashboard/editor/_report.html',
+}
+# The slots of one topic or question: topic-<id>-head, and the row of a question and the parts of the open question
+# [0-9], not \d: \d also matches other digits, which no id has
+EDITOR_ITEM_SLOT = re.compile(r'(?:(topic)-([0-9]+)-head|(question)-([0-9]+)-(row|labels|report))')
+QUESTION_SLOTS = {
+    'row': 'admin_dashboard/editor/_question_row.html',
+    'labels': 'admin_dashboard/editor/_rating_labels.html',
+    'report': 'admin_dashboard/editor/_question_report.html',
+}
 
 
-def posted_option_rows(post, prefix, with_weights=False):
-    """The answer options the question editor posted, as [(id or None, label, weight), ...].
+def _question_context(context, question):
+    """The context of the open question and its slots: the slot context with the question and its form values."""
 
-    Each row posts the id of its option (empty for a new one), its label and, for choice questions, its weight. Rows
-    without a label are dropped. Raises ValueError for a weight that is not a number.
+    return {**context, 'question': question, 'values': question_form_values(context['questionnaire'], question)}
+
+
+def _translation_language(questionnaire, params):
+    """The language of the translate mode that lang asks for: a language of the site other than the questionnaire's
+    original language. None for the page in the original language."""
+
+    language = params.get('lang')
+
+    return language if is_language(language) and language != questionnaire.source_language else None
+
+
+def _with_language(context, language):
+    """The context of the editor page in the mode of language: for a translation language its texts, each with the id
+    of the question it belongs to, and the reviewer's topic translated into it."""
+
+    if language is None:
+        return {**context, 'language': None}
+
+    texts = get_text_translations(context['questionnaire'], language)
+
+    for text in texts:
+        if isinstance(text.part, Question):
+            text.question_id = text.part.id
+        elif isinstance(text.part, AnswerOption):
+            text.question_id = text.part.question_id
+
+    topic = context['reviewer_section']
+    sections = context['questionnaire'].translated(language).sections.all()
+
+    return {
+        **context,
+        'language': language,
+        'language_name': language_name(language),
+        'texts': texts,
+        'reviewer_section': next((section for section in sections if topic and section.id == topic.id), None),
+    }
+
+
+# The person "Try it" of the advice dialog starts with
+ADVICE_TRY_START = {'try_stage': 1, 'try_score': 2.4}
+
+
+def _advice_question(questionnaire, params, field='question_id'):
+    """The question of the advice dialog: one of this questionnaire, with a score."""
+
+    question = _posted_question(questionnaire, params, field)
+
+    if not question_scoring(question).has_score:
+        raise EditorError(_('Only a question with a score can have advice.'))
+
+    return question
+
+
+def _advice_try_values(params):
+    """The skill stage (1 to 5) and the score of the person in "Try it" of the advice dialog."""
+
+    try:
+        stage = int(params.get('try_stage', ''))
+        score = float(params.get('try_score', ''))
+    except ValueError:
+        stage = score = None
+
+    if stage not in DREYFUS_STAGES or score is None or not (math.isfinite(score) and 1 <= score <= 5):
+        raise EditorError(_('Choose a stage and write a score from 1 to 5.'))
+
+    return {'try_stage': stage, 'try_score': score}
+
+
+def _advice_try_context(question, try_stage, try_score):
+    """What "Try it" shows: the advice the person gets, and whether the stage has any advice at all."""
+
+    return {
+        'question': question,
+        'try_stage': try_stage,
+        'try_score': try_score,
+        'try_stage_name': DREYFUS_STAGES[try_stage]['name'],
+        'try_texts': advice_for(question, try_stage, try_score),
+        # With the lowest possible score every line of the stage applies: whether the stage has advice at all
+        'try_has_advice': bool(advice_for(question, try_stage, float('-inf'))),
+    }
+
+
+def _render_advice_try(request, context):
+    """The slot advice-try of the posted question, for the posted "Try it" values."""
+
+    question_id = request.POST.get('question_id', '')
+    question = next(
+        (item for section in context['sections'] for item in section.questions.all() if f'{item.id}' == question_id),
+        None,
+    )
+
+    return question and render_to_string(
+        'admin_dashboard/editor/_advice_try.html',
+        _advice_try_context(question, **_advice_try_values(request.POST)),
+        request=request,
+    )
+
+
+def _advice_dialog(request, questionnaire):
+    """The answer to GET ?advice=<id>: the inside of the advice dialog of that question."""
+
+    question = _advice_question(questionnaire, request.GET, 'advice')
+    html = render_to_string('admin_dashboard/editor/_advice_dialog.html', {
+        **_advice_try_context(question, **ADVICE_TRY_START),
+        'rows': advice_rows(question),
+        'threshold': advice_threshold(question),
+    }, request=request)
+
+    return JsonResponse({'ok': True, 'html': html})
+
+
+def _render_editor_slot(request, context, name):
+    """The HTML of one slot, or None for a topic, question or text that no longer exists."""
+
+    if name == 'advice-try':
+        return _render_advice_try(request, context)
+
+    # The state of one text in the translate mode
+    if name.startswith('text-'):
+        text = next((text for text in context['texts'] if f'text-{text.field_name}' == name), None)
+
+        return text and render_to_string(
+            'admin_dashboard/editor/_translate_row.html', {**context, 'text': text}, request=request,
+        )
+
+    if not (match := EDITOR_ITEM_SLOT.fullmatch(name)):
+        return render_to_string(EDITOR_SLOTS[name], context, request=request)
+
+    sections = context['sections']
+
+    if match[1]:
+        section = next((section for section in sections if f'{section.id}' == match[2]), None)
+
+        return section and render_to_string(
+            'admin_dashboard/editor/_topic_head.html', {**context, 'section': section}, request=request,
+        )
+
+    questions = [question for section in sections for question in section.questions.all()]
+    question = next((question for question in questions if f'{question.id}' == match[4]), None)
+
+    if question is None:
+        return None
+
+    part_context = {**context, 'question': question} if match[5] == 'row' else _question_context(context, question)
+
+    return render_to_string(QUESTION_SLOTS[match[5]], part_context, request=request)
+
+
+def editor_response(request, questionnaire, slots, **extra):
+    """The answer to an action of the editor page: the named slots, the reviewer and the report, and the chart data.
+
+    The questionnaire is loaded anew, so the slots show what is stored now. An extra value that is a function gets the
+    slot context and gives the value to send. A GET (the open question) carries shown and topic in its query. A request
+    of the translate mode carries its language in lang.
     """
 
-    ids = post.getlist(f'{prefix}_option_id')
-    labels = post.getlist(f'{prefix}_option_label')
-    weights = post.getlist(f'{prefix}_option_weight') if with_weights else [''] * len(labels)
-    rows = []
+    params = request.POST if request.method == 'POST' else request.GET
+    shown = [model for model in params.get('shown', '').split(',') if model in MODELS]
+    context = _with_language(
+        editor_context(load_for_editor(questionnaire), shown, params.get('topic')),
+        _translation_language(questionnaire, params),
+    )
+    rendered = {name: _render_editor_slot(request, context, name) for name in [*slots, 'reviewer', 'report']}
+    extra = {key: value(context) if callable(value) else value for key, value in extra.items()}
 
-    for posted_id, label, weight in zip(ids, labels, weights):
-        if label := label.strip():
-            option_id = int(posted_id) if posted_id.isdigit() else None
-            rows.append((option_id, label, float(weight) if with_weights else None))
+    return JsonResponse({
+        'ok': True,
+        'slots': {name: html for name, html in rendered.items() if html is not None},
+        'chart': context['chart'],
+        **extra,
+    })
 
-    return rows
+
+def _posted_section(questionnaire, post, field='section_id'):
+    try:
+        return questionnaire.sections.get(id=int(post.get(field, '')))
+    except (ValueError, QuestionSection.DoesNotExist):
+        raise EditorError(_('This topic does not exist any more. Reload the page.'))
+
+
+def _posted_question(questionnaire, post, field='question_id'):
+    # The questionnaire is the organization's, so another organization's question is not found
+    try:
+        return Question.objects.get(id=int(post.get(field, '')), section__questionnaire=questionnaire)
+    except (ValueError, Question.DoesNotExist):
+        raise EditorError(_('This question does not exist any more. Reload the page.'))
+
+
+def _question_form(request, context, question):
+    """The HTML of the open question: the form of a question of the context, or of a new, unsaved one."""
+
+    if question.pk:
+        question = next(
+            (item for section in context['sections'] for item in section.questions.all() if item == question), None,
+        )
+
+        # Deleted after it was looked up
+        if question is None:
+            raise EditorError(_('This question does not exist any more. Reload the page.'))
+
+        did_not_observe = question.offers_did_not_observe
+    else:
+        question.scoring = question_scoring(question)
+        question.answer_count = 0
+        did_not_observe = None
+
+    # A new question, or a type without the box, offers it unless no question of the questionnaire does
+    if did_not_observe is None or question.question_type not in DID_NOT_OBSERVE_TYPES:
+        did_not_observe = context['did_not_observe']() != 'off'
+
+    form_context = {
+        **_question_context(context, question),
+        'translated': translated_into(question),
+        'translated_any': languages_with_translation(question),
+        'did_not_observe_checked': did_not_observe,
+    }
+
+    return render_to_string('admin_dashboard/editor/_question_form.html', form_context, request=request)
+
+
+def _open_question(request, questionnaire):
+    """The answer to GET ?question=<id> (a stored question) or ?new_in=<section id> (a new question in that topic)."""
+
+    if 'question' in request.GET:
+        question = _posted_question(questionnaire, request.GET, 'question')
+    else:
+        section = _posted_section(questionnaire, request.GET, 'new_in')
+        _, labels = get_default_labels(questionnaire)
+        # Nothing is stored until the creator writes the question
+        question = Question(
+            section=section, question_type='rating', config={'min': 1, 'max': len(labels)}, labels=labels,
+            required=True,
+        )
+
+    return editor_response(request, questionnaire, [], html=lambda context: _question_form(request, context, question))
+
+
+def _translate_action(request, questionnaire, action):
+    """Run one action of the translate mode. It saves translations only: an action that changes the structure or the
+    original texts is refused and changes nothing, as is a language that is no translation language."""
+
+    post = request.POST
+
+    if action == 'refresh':
+        return editor_response(request, questionnaire, [])
+
+    language = _translation_language(questionnaire, post)
+
+    if action != 'save_translation' or language is None:
+        raise EditorError(_('This change is not possible. Reload the page.'))
+
+    field_name = post.get('field_name', '')
+    errors = save_one_translation(
+        questionnaire, language, field_name, post.get('value', ''), still_correct=bool(post.get('still_correct')),
+    )
+
+    if errors:
+        raise EditorError(errors[0])
+
+    return editor_response(request, questionnaire, ['langs', f'text-{field_name}'])
+
+
+def _editor_action(request, questionnaire, action):
+    """Run one action of the editor page and answer the slots it can change."""
+
+    post = request.POST
+
+    if 'lang' in post or action == 'save_translation':
+        return _translate_action(request, questionnaire, action)
+
+    if action == 'save_info':
+        save_info(questionnaire, post)
+        return editor_response(request, questionnaire, ['langs'])
+
+    if action == 'set_did_not_observe':
+        set_did_not_observe(questionnaire, bool(post.get('on')))
+        return editor_response(request, questionnaire, ['did-not-observe'])
+
+    if action == 'add_section':
+        section = add_section(questionnaire)
+
+        def topic_card(context):
+            card_section = next(item for item in context['sections'] if item.id == section.id)
+            return render_to_string(
+                'admin_dashboard/editor/_topic.html', {**context, 'section': card_section}, request=request,
+            )
+
+        # The count on the language tabs: the new topic's title has no translation
+        return editor_response(request, questionnaire, ['langs'], section_id=section.id, html=topic_card)
+
+    if action == 'save_section':
+        section = _posted_section(questionnaire, post)
+        save_section(section, post.get('title'), post.get('description'))
+        return editor_response(request, questionnaire, [f'topic-{section.id}-head', 'langs'])
+
+    if action == 'delete_section':
+        _posted_section(questionnaire, post).delete()
+        return editor_response(request, questionnaire, ['langs'])
+
+    if action == 'save_question':
+        question = _posted_question(questionnaire, post) if post.get('question_id') else None
+        section = None if question else _posted_section(questionnaire, post)
+        question = save_question(questionnaire, post, question, section)
+        # The labels are sent only for a score: a question of another type keeps the fields typed for a score
+        parts = ['row', 'report', 'labels'] if question.question_type == 'rating' else ['row', 'report']
+        extra = {
+            'question_id': question.id,
+            # The ids of the stored answers in their order, for the answer rows that were posted
+            'option_ids': list(question.options.values_list('id', flat=True)),
+        }
+
+        if section:
+            extra['row_html'] = lambda context: _render_editor_slot(request, context, f'question-{question.id}-row')
+
+        return editor_response(
+            request, questionnaire,
+            [*(f'question-{question.id}-{part}' for part in parts), f'topic-{question.section_id}-head', 'report-card',
+             'langs', 'did-not-observe'],
+            **extra,
+        )
+
+    if action == 'delete_question':
+        question = _posted_question(questionnaire, post)
+        question.delete()
+
+        return editor_response(
+            request, questionnaire, [f'topic-{question.section_id}-head', 'report-card', 'langs', 'did-not-observe'],
+        )
+
+    if action == 'reorder':
+        try:
+            save_layout(questionnaire, json.loads(post.get('layout', '')))
+        except (ValueError, TypeError, KeyError):
+            raise EditorError(_('The new order could not be saved. Reload the page and try again.'))
+
+        # A question that moved to another topic can change the radar point of both
+        return editor_response(
+            request, questionnaire, [f'topic-{section.id}-head' for section in questionnaire.sections.all()],
+        )
+
+    if action in ('save_advice', 'try_advice'):
+        question = _advice_question(questionnaire, post)
+        # Checked before anything is stored, so a stored change never answers a refusal
+        _advice_try_values(post)
+
+        if action == 'save_advice':
+            stored = save_advice(question, post)
+            # "Advice (n)" in the table of the report card. The keys of the stored lines, in their order, for the lines
+            # that were posted, so the next save keeps them
+            keys = [item['key'] for item in stored.action_items]
+
+            return editor_response(request, questionnaire, ['report-card', 'advice-try'], keys=keys)
+
+        return editor_response(request, questionnaire, ['advice-try'])
+
+    # The weight and the models also show in part 3 of the open question
+    # Only ASCII digits: isdigit() also takes "²", which is no id and no slot
+    open_report = [f'question-{post["open"]}-report'] if re.fullmatch('[0-9]+', post.get('open', '')) else []
+
+    if action == 'set_weight':
+        question = _posted_question(questionnaire, post)
+
+        try:
+            weight = float(post.get('weight', ''))
+        except ValueError:
+            raise EditorError(_('This weight is not possible.'))
+
+        set_weight(question, post.get('model'), weight)
+        return editor_response(request, questionnaire, ['report-card', f'question-{question.id}-report'])
+
+    if action == 'clear_model':
+        clear_model(questionnaire, post.get('model'))
+        return editor_response(request, questionnaire, ['report-card', *open_report])
+
+    # refresh: a model ticked or unticked changes the card and the open question
+    return editor_response(request, questionnaire, ['report-card', *open_report])
+
+
+EDITOR_ACTIONS = (
+    'refresh', 'save_info', 'set_did_not_observe', 'add_section', 'save_section', 'delete_section', 'reorder',
+    'save_question', 'delete_question', 'set_weight', 'clear_model', 'save_translation', 'save_advice', 'try_advice',
+)
 
 
 @login_required
 @can_manage_questionnaires_required
 def questionnaire_edit(request, questionnaire_uuid):
-    """Edit an existing questionnaire"""
+    """The editor of a questionnaire: GET gives the page, GET ?lang= the page in the translate mode, GET ?question= or
+    ?new_in= the open question, and every POST of the page answers JSON (editor_response)."""
     # Get organization from request context
     org = getattr(request, 'organization', None)
 
@@ -1193,406 +1577,41 @@ def questionnaire_edit(request, questionnaire_uuid):
         organization=org
     )
 
-    default_likert_scale, default_rating_labels = get_default_labels(questionnaire)
+    if request.method == 'GET' and 'advice' in request.GET:
+        try:
+            return _advice_dialog(request, questionnaire)
+        except EditorError as error:
+            return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
+
+    if request.method == 'GET' and ('question' in request.GET or 'new_in' in request.GET):
+        try:
+            return _open_question(request, questionnaire)
+        except EditorError as error:
+            return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
 
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        if action == 'update_info':
-            source_language = request.POST.get('source_language')
-
-            if not is_language(source_language):
-                source_language = questionnaire.source_language
-
-            # The source language cannot also have a translation
-            if source_language != questionnaire.source_language and has_translation(questionnaire, source_language):
-                messages.error(
-                    request,
-                    _('This questionnaire is already translated into %(language)s. Empty that translation first to '
-                      'make %(language)s its source language.') % {'language': language_name(source_language)},
-                )
-                return redirect('questionnaire_edit', questionnaire_uuid=questionnaire.uuid)
-
-            questionnaire.name = request.POST.get('name', questionnaire.name)
-            questionnaire.description = request.POST.get('description', '')
-            questionnaire.is_default = request.POST.get('is_default') == 'on'
-            questionnaire.source_language = source_language
-
+        if action in EDITOR_ACTIONS:
             try:
-                questionnaire.save()
-                messages.success(request, _('Questionnaire "%(name)s" updated successfully.') % {'name': questionnaire.name})
-            except Exception as e:
-                messages.error(request, _('Error updating questionnaire: %(error)s') % {'error': str(e)})
+                return _editor_action(request, questionnaire, action)
+            except EditorError as error:
+                return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
 
-        elif action == 'reorder':
-            try:
-                save_layout(questionnaire, json.loads(request.POST.get('layout', '')))
-            except (ValueError, TypeError, KeyError):
-                return JsonResponse({
-                    'success': False,
-                    'message': _('The new order could not be saved. Reload the page and try again.'),
-                }, status=400)
+        return JsonResponse({'ok': False, 'message': _('This change is not possible. Reload the page.')}, status=400)
 
-            return JsonResponse({'success': True})
+    # An unknown language and the original one give the page in the original language
+    context = _with_language(
+        editor_context(load_for_editor(questionnaire), []), _translation_language(questionnaire, request.GET),
+    )
 
-        elif action == 'add_section':
-            section_title = request.POST.get('section_title')
-            section_description = request.POST.get('section_description', '')
-
-            if section_title:
-                max_order = questionnaire.sections.aggregate(Max('order'))['order__max']
-                next_order = (max_order + 1) if max_order is not None else 0
-                try:
-                    QuestionSection.objects.create(
-                        questionnaire=questionnaire,
-                        title=section_title,
-                        description=section_description,
-                        order=next_order
-                    )
-                    messages.success(request, _('Section "%(title)s" added.') % {'title': section_title})
-                except Exception as e:
-                    messages.error(request, _('Error adding section: %(error)s') % {'error': str(e)})
-
-        elif action == 'edit_section':
-            section_id = request.POST.get('section_id')
-            section_title = request.POST.get('section_title')
-            section_description = request.POST.get('section_description', '')
-
-            if section_id and section_title:
-                try:
-                    section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                    section.title = section_title
-                    section.description = section_description
-                    section.save()
-                    messages.success(request, _('Section "%(title)s" updated successfully.') % {'title': section_title})
-                except QuestionSection.DoesNotExist:
-                    messages.error(request, _('Section not found.'))
-                except Exception as e:
-                    messages.error(request, _('Error updating section: %(error)s') % {'error': str(e)})
-
-        elif action == 'add_question':
-            section_id = request.POST.get('section_id')
-            question_text = request.POST.get('question_text')
-            question_type = request.POST.get('question_type', 'rating')
-            required = request.POST.get('required') == 'on'
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
-            if section_id and question_text:
-                try:
-                    section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                    max_order = section.questions.aggregate(Max('order'))['order__max']
-                    next_order = (max_order + 1) if max_order is not None else 0
-
-                    # Build config based on question type
-                    config = {}
-                    option_rows = []
-                    labels = posted_labels(request.POST, question_type)
-                    if question_type == 'rating':
-                        config = {'min': 1, 'max': 5}
-                        labels = labels or default_rating_labels
-                    elif question_type == 'likert':
-                        option_rows = posted_option_rows(request.POST, 'likert')
-
-                        if not option_rows:
-                            option_rows = [(None, label, None) for label in default_likert_scale]
-
-                        if request.POST.get('reverse_scored') == 'on':
-                            config = {'reverse_scored': True}
-                    elif question_type == 'single_choice' or question_type == 'multiple_choice':
-                        # Weights only count with scoring enabled
-                        enable_scoring = request.POST.get('enable_scoring') == 'on'
-
-                        try:
-                            option_rows = posted_option_rows(request.POST, 'choice', with_weights=enable_scoring)
-                        except ValueError:
-                            option_rows = posted_option_rows(request.POST, 'choice')
-                            messages.warning(request, _('Invalid weight values. Scoring disabled for this question.'))
-                        else:
-                            config = {'scoring_enabled': True} if enable_scoring else {}
-                    elif question_type == 'scale':
-                        try:
-                            min_val = int(request.POST.get('scale_min', 1))
-                            max_val = int(request.POST.get('scale_max', 100))
-                            step_val = int(request.POST.get('scale_step', 1))
-
-                            config = {
-                                'min': min_val,
-                                'max': max_val,
-                                'step': step_val
-                            }
-                        except (ValueError, TypeError):
-                            # Use defaults if parsing fails
-                            config = {'min': 1, 'max': 100, 'step': 1}
-                            messages.warning(request, _('Invalid scale values. Using defaults (1-100, step 1).'))
-
-                    # Add Dreyfus/Agency configuration if provided
-                    skill_weight = request.POST.get('add_skill_weight', 0)
-                    agency_weight = request.POST.get('add_agency_weight', 0)
-
-                    if skill_weight or agency_weight:
-                        config['dreyfus_mapping'] = {
-                            'skill': float(skill_weight),
-                            'agency': float(agency_weight)
-                        }
-
-                    # Parse action items for new question
-                    action_items = []
-                    action_item_indices = set()
-
-                    # Extract all action item indices from POST data
-                    for key in request.POST.keys():
-                        if key.startswith('add_action_items[') and '][text]' in key:
-                            idx_str = key.split('[')[1].split(']')[0]
-                            action_item_indices.add(idx_str)
-
-                    # Build action items list
-                    for idx in sorted(action_item_indices, key=int):
-                        text = request.POST.get(f'add_action_items[{idx}][text]', '').strip()
-                        threshold = request.POST.get(f'add_action_items[{idx}][threshold]', 3.0)
-                        stages_raw = request.POST.getlist(f'add_action_items[{idx}][stages][]')
-
-                        if text:
-                            item = {
-                                'text': text,
-                                'threshold': float(threshold)
-                            }
-                            if stages_raw:
-                                item['stages'] = [int(s) for s in stages_raw]
-                            action_items.append(item)
-
-                    question = Question.objects.create(
-                        section=section,
-                        question_text=question_text,
-                        question_type=question_type,
-                        config=config,
-                        labels=labels,
-                        descriptions=posted_descriptions(request.POST, question_type),
-                        required=required,
-                        order=next_order,
-                        action_items=add_action_item_keys(action_items)
-                    )
-                    save_options(question, option_rows)
-
-                    if is_ajax:
-                        question_html = render_to_string(
-                            'admin_dashboard/partials/question_card.html',
-                            {'question': question},
-                            request=request,
-                        )
-                        return JsonResponse({
-                            'success': True,
-                            'message': _('Question added successfully.'),
-                            'section_id': section.id,
-                            'question_id': question.id,
-                            'question_html': question_html,
-                        })
-
-                    messages.success(request, _('Question added successfully.'))
-                except Exception as e:
-                    logger.exception('Error adding question')
-                    if is_ajax:
-                        return JsonResponse({
-                            'success': False,
-                            'message': _('Error adding question. Please try again.'),
-                        }, status=400)
-                    messages.error(request, _('Error adding question. Please try again.'))
-
-        elif action == 'delete_section':
-            section_id = request.POST.get('section_id')
-            try:
-                section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                section_title = section.title
-                section.delete()
-                messages.success(request, _('Section "%(title)s" deleted.') % {'title': section_title})
-            except Exception as e:
-                messages.error(request, _('Error deleting section: %(error)s') % {'error': str(e)})
-
-        elif action == 'delete_question':
-            question_id = request.POST.get('question_id')
-            try:
-                question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
-                question.delete()
-                messages.success(request, _('Question deleted.'))
-            except Exception as e:
-                messages.error(request, _('Error deleting question: %(error)s') % {'error': str(e)})
-
-        elif action == 'edit_question':
-            question_id = request.POST.get('question_id')
-            question_text = request.POST.get('question_text')
-            question_type = request.POST.get('question_type', 'rating')
-            required = request.POST.get('required') == 'on'
-            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
-            if question_id and question_text:
-                try:
-                    question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
-                    previous_config = question.config
-
-                    # Update basic fields
-                    question.question_text = question_text
-                    question.question_type = question_type
-                    question.required = required
-
-                    # Build config based on question type
-                    config = {}
-                    option_rows = []
-                    labels = posted_labels(request.POST, question_type)
-                    if question_type == 'rating':
-                        config = {'min': 1, 'max': 5}
-                        labels = labels or default_rating_labels
-                    elif question_type == 'likert':
-                        option_rows = posted_option_rows(request.POST, 'likert')
-
-                        if not option_rows:
-                            option_rows = [(None, label, None) for label in default_likert_scale]
-
-                        if request.POST.get('reverse_scored') == 'on':
-                            config = {'reverse_scored': True}
-                    elif question_type == 'single_choice' or question_type == 'multiple_choice':
-                        # Weights only count with scoring enabled
-                        enable_scoring = request.POST.get('enable_scoring') == 'on'
-
-                        try:
-                            option_rows = posted_option_rows(request.POST, 'choice', with_weights=enable_scoring)
-                        except ValueError:
-                            option_rows = posted_option_rows(request.POST, 'choice')
-                            messages.warning(request, _('Invalid weight values. Scoring disabled for this question.'))
-                        else:
-                            config = {'scoring_enabled': True} if enable_scoring else {}
-                    elif question_type == 'scale':
-                        try:
-                            min_val = int(request.POST.get('scale_min', 1))
-                            max_val = int(request.POST.get('scale_max', 100))
-                            step_val = int(request.POST.get('scale_step', 1))
-
-                            config = {
-                                'min': min_val,
-                                'max': max_val,
-                                'step': step_val
-                            }
-                        except (ValueError, TypeError):
-                            # Use defaults if parsing fails
-                            config = {'min': 1, 'max': 100, 'step': 1}
-                            messages.warning(request, _('Invalid scale values. Using defaults (1-100, step 1).'))
-
-                    # The dialog doesn't show the Dreyfus weights and the chart settings, so keep them
-                    for key in ('dreyfus_mapping', 'chart_weight', 'exclude_from_charts'):
-                        if key in previous_config:
-                            config[key] = previous_config[key]
-
-                    question.config = config
-                    question.labels = labels
-                    question.descriptions = posted_descriptions(request.POST, question_type)
-                    question.save()
-                    save_options(question, option_rows)
-
-                    if is_ajax:
-                        return JsonResponse({
-                            'success': True,
-                            'message': _('Question updated successfully.'),
-                            'question': {
-                                'id': question.id,
-                                'question_text': question.question_text,
-                                'question_type': question.question_type,
-                                'question_type_display': question.get_question_type_display(),
-                                'required': question.required,
-                                'config': question.config,
-                                'options': question.options_data,
-                                'labels': question.labels,
-                                'descriptions': question.descriptions,
-                            },
-                        })
-
-                    messages.success(request, _('Question updated successfully.'))
-                except Exception as e:
-                    logger.exception('Error updating question')
-                    if is_ajax:
-                        return JsonResponse({
-                            'success': False,
-                            'message': _('Error updating question. Please try again.'),
-                        }, status=400)
-                    messages.error(request, _('Error updating question. Please try again.'))
-
-        elif action == 'update_dreyfus_config':
-            question_id = request.POST.get('question_id')
-            skill_weight = request.POST.get('skill_weight', 0)
-            agency_weight = request.POST.get('agency_weight', 0)
-
-            if question_id:
-                try:
-                    question = Question.objects.get(id=question_id, section__questionnaire=questionnaire)
-
-                    # Update dreyfus_mapping in config
-                    if 'dreyfus_mapping' not in question.config:
-                        question.config['dreyfus_mapping'] = {}
-
-                    question.config['dreyfus_mapping']['skill'] = float(skill_weight)
-                    question.config['dreyfus_mapping']['agency'] = float(agency_weight)
-
-                    # Parse action items from form
-                    action_items = []
-                    action_item_indices = set()
-                    # A posted key may only name an item the question has, so the client cannot set keys of its own
-                    known_keys = {item.get('key') for item in question.action_items if isinstance(item, dict)}
-
-                    # Extract all action item indices from the POST data
-                    for key in request.POST.keys():
-                        if key.startswith('action_items[') and '][text]' in key:
-                            # Extract index from key like "action_items[0][text]"
-                            idx_str = key.split('[')[1].split(']')[0]
-                            action_item_indices.add(idx_str)
-
-                    # Build action items list
-                    for idx in sorted(action_item_indices, key=int):
-                        text = request.POST.get(f'action_items[{idx}][text]', '').strip()
-                        threshold = request.POST.get(f'action_items[{idx}][threshold]', 3.0)
-                        stages_raw = request.POST.getlist(f'action_items[{idx}][stages][]')
-                        key = request.POST.get(f'action_items[{idx}][key]', '').strip()
-
-                        if text:  # Only add if text is not empty
-                            item = {
-                                'text': text,
-                                'threshold': float(threshold)
-                            }
-
-                            if key in known_keys:
-                                item['key'] = key
-
-                            # Add stages if any are selected
-                            if stages_raw:
-                                item['stages'] = [int(s) for s in stages_raw]
-
-                            action_items.append(item)
-
-                    question.action_items = add_action_item_keys(action_items)
-                    question.save()
-
-                    messages.success(request, _('Dreyfus/Agency configuration updated successfully.'))
-                except Question.DoesNotExist:
-                    messages.error(request, _('Question not found.'))
-                except Exception as e:
-                    messages.error(request, _('Error updating Dreyfus configuration: %(error)s') % {'error': str(e)})
-
-        return redirect('questionnaire_edit', questionnaire_uuid=questionnaire.uuid)
-
-    context = {
-        'action': 'Edit',
-        'questionnaire': questionnaire,
-        'source_language': questionnaire.source_language,
-        'translation_states': get_language_states(questionnaire),
-        # The translation states prefetched the sections, questions and options
-        'sections': questionnaire.sections.all(),
-        'default_likert_scale': default_likert_scale,
-        'default_rating_labels': default_rating_labels,
-    }
-
-    return render(request, 'admin_dashboard/questionnaire_form.html', context)
+    return render(request, 'admin_dashboard/questionnaire_editor.html', context)
 
 
 @login_required
 @can_manage_questionnaires_required
 def questionnaire_translate(request, questionnaire_uuid, language):
-    """Translate the texts of a questionnaire into another language, next to its source texts."""
+    """The old translation page: translating is the translate mode of the questionnaire editor now."""
 
     questionnaire = get_object_or_404(
         Questionnaire,
@@ -1603,24 +1622,7 @@ def questionnaire_translate(request, questionnaire_uuid, language):
     if not is_language(language) or language == questionnaire.source_language:
         raise Http404
 
-    if request.method == 'POST':
-        if errors := save_text_translations(questionnaire, language, request.POST):
-            for error in errors:
-                messages.error(request, error)
-        else:
-            messages.success(request, _('Translation saved.'))
-
-        return redirect('questionnaire_translate', questionnaire_uuid=questionnaire.uuid, language=language)
-
-    texts = get_text_translations(questionnaire, language)
-    context = {
-        'questionnaire': questionnaire,
-        'texts': texts,
-        'state': LanguageState.from_texts(language, texts),
-        'source_language_name': language_name(questionnaire.source_language),
-    }
-
-    return render(request, 'admin_dashboard/questionnaire_translate.html', context)
+    return redirect(f"{reverse('questionnaire_edit', args=[questionnaire.uuid])}?lang={language}")
 
 
 @login_required
@@ -1687,36 +1689,6 @@ def questionnaire_restore(request, questionnaire_uuid):
     messages.success(request, _('Questionnaire "%(name)s" restored.') % {'name': questionnaire.name})
 
     return redirect('questionnaire_list')
-
-
-@login_required(as_json=True)
-@can_manage_questionnaires_required(as_json=True)
-def question_dreyfus_config_api(request, question_id):
-    """API endpoint to get Dreyfus/Agency configuration for a question"""
-    try:
-        # Get the organization from request
-        org = getattr(request, 'organization', None)
-
-        # Get question and verify it belongs to the user's organization
-        question = Question.objects.select_related('section__questionnaire').get(
-            id=question_id,
-            section__questionnaire__organization=org
-        )
-
-        # Extract dreyfus_mapping from config
-        dreyfus_mapping = question.config.get('dreyfus_mapping', {})
-
-        # Return configuration
-        return JsonResponse({
-            'dreyfus_mapping': dreyfus_mapping,
-            'action_items': question.action_items
-        })
-
-    except Question.DoesNotExist:
-        return JsonResponse({'error': _('Question not found')}, status=404)
-    except Exception as e:
-        logger.exception('Error fetching Dreyfus config')
-        return JsonResponse({'error': _('Internal server error')}, status=500)
 
 
 # Where a cycle stands, from its status and response counts. Together the

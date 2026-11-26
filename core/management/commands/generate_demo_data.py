@@ -8,6 +8,7 @@ from django.utils import timezone
 from accounts.models import Reviewee
 from questionnaires.models import Questionnaire, Question
 from reviews.models import ReviewCycle, ReviewerToken, Response
+from reports.scoring import rating_option_count
 from reports.services import generate_report
 from core.models import Organization
 import uuid
@@ -790,7 +791,8 @@ class Command(BaseCommand):
                 options = list(question.options.all())
                 return {'value': options[min(rating, len(options)) - 1].id if options else ''}
 
-            return {'value': rating}
+            # A Score can have fewer than five options; the ranges above assume five
+            return {'value': min(rating, rating_option_count(question.config))}
 
         elif question.question_type == 'text':
             # Generate contextual text responses

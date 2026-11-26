@@ -1,13 +1,13 @@
-{# Drag handle and arrows that move a section or a question; the reordering code in questionnaire_form.html handles them #}
+{# Drag handle and arrows that move a topic or a question; static/js/questionnaire-editor.js handles them #}
 {% load i18n %}
 <div class="move-controls">
-    <button type="button" class="move-button" data-move="up" {% if kind == 'section' %}aria-label="{% trans 'Move section up' %}" title="{% trans 'Move section up' %}"{% else %}aria-label="{% trans 'Move question up' %}" title="{% trans 'Move question up' %}"{% endif %}>
+    <button type="button" class="move-button" data-move="up" {% if kind == 'section' %}aria-label="{% trans 'Move topic up' %}" title="{% trans 'Move topic up' %}"{% else %}aria-label="{% trans 'Move question up' %}" title="{% trans 'Move question up' %}"{% endif %}>
         <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 7.5 6 4.5l3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <span class="drag-handle {{ kind }}-handle" title="{% trans 'Drag to move' %}" aria-hidden="true">
         <svg width="10" height="14" viewBox="0 0 10 14"><g fill="currentColor"><circle cx="3" cy="3" r="1.2"/><circle cx="7" cy="3" r="1.2"/><circle cx="3" cy="7" r="1.2"/><circle cx="7" cy="7" r="1.2"/><circle cx="3" cy="11" r="1.2"/><circle cx="7" cy="11" r="1.2"/></g></svg>
     </span>
-    <button type="button" class="move-button" data-move="down" {% if kind == 'section' %}aria-label="{% trans 'Move section down' %}" title="{% trans 'Move section down' %}"{% else %}aria-label="{% trans 'Move question down' %}" title="{% trans 'Move question down' %}"{% endif %}>
+    <button type="button" class="move-button" data-move="down" {% if kind == 'section' %}aria-label="{% trans 'Move topic down' %}" title="{% trans 'Move topic down' %}"{% else %}aria-label="{% trans 'Move question down' %}" title="{% trans 'Move question down' %}"{% endif %}>
         <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
 </div>

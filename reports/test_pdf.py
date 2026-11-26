@@ -295,6 +295,19 @@ class DetailQuestionTests(SimpleTestCase):
         self.assertEqual(detail['self']['avg'], 2.0)
         self.assertEqual(detail['self']['gap'], -2.5)
 
+    def test_a_four_point_score_has_four_columns_and_an_average_out_of_5(self):
+        question = {
+            'question_type': 'rating', 'question_config': {'min': 1, 'max': 4}, 'category_order': ['peer'],
+            'by_category': {'peer': {'count': 3, 'avg': 4, 'distribution': {'4': 3}}},
+        }
+
+        detail = _detail_question(question)
+
+        # The detail keeps only the column labels; the cells show each column counts the answers of its own value
+        self.assertEqual(detail['columns'], ['1', '2', '3', '4'])
+        self.assertEqual([cell['count'] for cell in detail['rows'][0]['cells']], [None, None, None, 3])
+        self.assertEqual(detail['rows'][0]['avg'], 5.0)
+
 
 class FeedbackGroupsTests(SimpleTestCase):
     def test_a_hidden_group_shows_the_message_not_its_count(self):

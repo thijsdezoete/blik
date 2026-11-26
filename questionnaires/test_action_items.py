@@ -45,37 +45,32 @@ class ActionItemKeyTests(TestCase):
         self.assertEqual(len(item['key']), 8)
         self.assertEqual(self.question.action_items, [item])
 
-    def test_a_new_question_keys_its_items(self):
-        self.edit(**{
-            'action': 'add_question',
-            'section_id': self.section.id,
-            'question_type': 'text',
-            'question_text': 'Notes',
-            'add_action_items[0][text]': 'Write it down',
-            'add_action_items[0][threshold]': '3',
-        })
+    def save_new(self, **data):
+        return self.edit(action='save_question', section_id=self.section.id, question_type='text',
+                         question_text='Notes', **data)
 
-        [item] = Question.objects.get(question_text='Notes').action_items
-        self.assertEqual(item['text'], 'Write it down')
-        self.assertTrue(item['key'])
+    def save_advice(self, lines):
+        """Save the advice dialog of the question with the lines (text, key) in the row "Every stage"."""
 
-    def test_the_dreyfus_dialog_keeps_the_keys_and_keys_new_items(self):
+        data = {'action': 'save_advice', 'question_id': self.question.id, 'threshold': '3.5', 'try_stage': '1',
+                'try_score': '2.4'}
+
+        for index, (text, key) in enumerate(lines):
+            data.update({f'advice[{index}][text]': text, f'advice[{index}][key]': key, f'advice[{index}][stage]': ''})
+
+        return self.edit(**data)
+
+    def test_a_new_question_has_no_advice(self):
+        self.save_new(**{'action_items[0][text]': 'Write it down', 'action_items[0][threshold]': '3'})
+
+        self.assertEqual(Question.objects.get(question_text='Notes').action_items, [])
+
+    def test_a_save_keeps_the_keys_and_keys_new_items(self):
         [item] = self.question.action_items
         item['key'] = 'pairing'
         self.question.save()
 
-        self.edit(**{
-            'action': 'update_dreyfus_config',
-            'question_id': self.question.id,
-            'skill_weight': '1',
-            'agency_weight': '0',
-            'action_items[0][key]': 'pairing',
-            'action_items[0][text]': 'Pair every week',
-            'action_items[0][threshold]': '3.5',
-            'action_items[1][key]': '',
-            'action_items[1][text]': 'Give a talk',
-            'action_items[1][threshold]': '4',
-        })
+        self.save_advice([('Pair every week', 'pairing'), ('Give a talk', '')])
 
         self.question.refresh_from_db()
         first, second = self.question.action_items
@@ -86,21 +81,13 @@ class ActionItemKeyTests(TestCase):
     def test_more_than_ten_items_keep_their_order(self):
         texts = [f'Step {i}' for i in range(12)]
 
-        self.edit(action='add_question', section_id=self.section.id, question_type='text', question_text='Notes',
-                  **{f'add_action_items[{i}][text]': text for i, text in enumerate(texts)})
-        self.edit(action='update_dreyfus_config', question_id=self.question.id,
-                  **{f'action_items[{i}][text]': text for i, text in enumerate(texts)})
+        self.save_advice([(text, '') for text in texts])
 
-        for question in Question.objects.get(question_text='Notes'), Question.objects.get(id=self.question.id):
-            self.assertEqual([item['text'] for item in question.action_items], texts)
+        self.question.refresh_from_db()
+        self.assertEqual([item['text'] for item in self.question.action_items], texts)
 
-    def test_the_dreyfus_dialog_replaces_keys_the_question_does_not_have(self):
-        self.edit(**{
-            'action': 'update_dreyfus_config',
-            'question_id': self.question.id,
-            'action_items[0][key]': '"><img src=x onerror=alert(1)>',
-            'action_items[0][text]': 'Pair weekly',
-        })
+    def test_a_save_replaces_keys_the_question_does_not_have(self):
+        self.save_advice([('Pair weekly', '"><img src=x onerror=alert(1)>')])
 
         self.question.refresh_from_db()
         [item] = self.question.action_items

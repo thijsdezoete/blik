@@ -1,12 +1,54 @@
 """Report capabilities for questionnaire selection, before any answers are collected."""
 
 from math import isfinite
+from typing import NamedTuple
 
 from django.utils.translation import gettext_lazy as _
 
 
 def _is_number(value):
     return isinstance(value, (int, float)) and isfinite(value)
+
+
+class Scoring(NamedTuple):
+    """What a question's score can do in the report.
+
+    has_score: the question produces a number. in_radar: the number counts in its topic's radar point. nonzero: the
+    number can be other than 0, which the skill and initiative levels need (the Dreyfus service ignores an average that
+    is 0 on the 1 to 5 scale, which only a question without a range gives).
+    """
+
+    has_score: bool
+    in_radar: bool
+    nonzero: bool
+
+
+def question_scoring(question):
+    """The Scoring of one question; uses the prefetched options."""
+
+    config = question.config
+    if question.question_type == 'text' or not isinstance(config, dict):
+        return Scoring(False, False, False)
+
+    options = []
+    if question.question_type in ('likert', 'single_choice', 'multiple_choice'):
+        options = list(question.options.all())
+
+    # A likert answer scores by the position of its option, which takes two options (see likert_score)
+    has_score = question.question_type in ('rating', 'scale') or (
+        question.question_type == 'likert' and len(options) >= 2
+    )
+    nonzero = has_score
+    if question.question_type in ('single_choice', 'multiple_choice') and config.get('scoring_enabled'):
+        weights = [option.weight for option in options if _is_number(option.weight)]
+        has_score = bool(weights)
+        # Charts still display zero averages
+        nonzero = any(weight != 0 for weight in weights)
+
+    chart_weight = config.get('chart_weight', 1)
+    in_radar = has_score and not config.get('exclude_from_charts') and _is_number(chart_weight) and chart_weight > 0
+
+    return Scoring(has_score, in_radar, nonzero)
 
 
 def questionnaire_report_features(questionnaire):
@@ -28,34 +70,17 @@ def questionnaire_report_features(questionnaire):
             if not isinstance(config, dict):
                 continue
 
-            options = []
-            if question.question_type in ('likert', 'single_choice', 'multiple_choice'):
-                options = list(question.options.all())
-            if question.question_type == 'rating' or options:
+            if question.question_type == 'rating' or (
+                question.question_type in ('likert', 'single_choice', 'multiple_choice') and question.options.all()
+            ):
                 available.add('distribution')
 
-            # A likert answer scores by the position of its option, which takes two options (see likert_score)
-            has_score = question.question_type in ('rating', 'scale') or (
-                question.question_type == 'likert' and len(options) >= 2
-            )
-            has_nonzero_score = has_score
-            if question.question_type in ('single_choice', 'multiple_choice') and config.get('scoring_enabled'):
-                weights = [
-                    option.weight for option in options if _is_number(option.weight)
-                ]
-                has_score = bool(weights)
-                # The Dreyfus service ignores zero averages; charts still display them.
-                has_nonzero_score = any(weight != 0 for weight in weights)
-
-            if not has_score:
-                continue
-
-            chart_weight = config.get('chart_weight', 1)
-            if not config.get('exclude_from_charts') and _is_number(chart_weight) and chart_weight > 0:
+            scoring = question_scoring(question)
+            if scoring.in_radar:
                 available.add('radar')
 
             mapping = config.get('dreyfus_mapping')
-            if not has_nonzero_score or not isinstance(mapping, dict):
+            if not scoring.nonzero or not isinstance(mapping, dict):
                 continue
 
             for dimension, feature in (('skill', 'dreyfus'), ('agency', 'agency')):
@@ -64,10 +89,6 @@ def questionnaire_report_features(questionnaire):
                     weight = mapping.get('weight', 1)
                 if _is_number(weight) and weight != 0:
                     available.add(feature)
-
-    # _dreyfus_profile.html renders the agency tab inside the skill-profile gate.
-    if 'dreyfus' not in available:
-        available.discard('agency')
 
     features = [
         {

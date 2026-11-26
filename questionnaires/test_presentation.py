@@ -8,7 +8,7 @@ from questionnaires.factories import (
     TextQuestionFactory,
 )
 from questionnaires.models import AnswerOption, Questionnaire
-from questionnaires.presentation import questionnaire_report_features
+from questionnaires.presentation import question_scoring, questionnaire_report_features
 
 
 class QuestionnaireReportFeaturesTests(TestCase):
@@ -132,9 +132,10 @@ class QuestionnaireReportFeaturesTests(TestCase):
                 finally:
                     question.delete()
 
-    def test_agency_only_is_not_shown_by_the_report(self):
+    def test_initiative_shows_without_skill_level(self):
         QuestionFactory(section=self.section, config={'dreyfus_mapping': {'agency': 1}})
-        self.assertEqual(self.feature_keys(), ['radar', 'distribution'])
+        self.assertIn('agency', self.feature_keys())
+        self.assertNotIn('dreyfus', self.feature_keys())
 
     def test_dimensions_on_separate_questions_enable_both_profiles(self):
         QuestionFactory(section=self.section, config={'dreyfus_mapping': {'skill': 1}})
@@ -205,3 +206,28 @@ class QuestionnaireReportFeaturesTests(TestCase):
         for feature in features:
             self.assertTrue(str(feature['label']))
             self.assertTrue(str(feature['description']))
+
+
+class QuestionScoringTests(TestCase):
+    def setUp(self):
+        self.section = QuestionSectionFactory()
+
+    def test_a_rating_has_a_score_in_the_radar_that_can_be_other_than_zero(self):
+        question = QuestionFactory(section=self.section)
+        self.assertEqual(question_scoring(question), (True, True, True))
+
+    def test_a_text_has_no_score(self):
+        question = TextQuestionFactory(section=self.section)
+        self.assertEqual(question_scoring(question), (False, False, False))
+
+    def test_a_rating_excluded_from_charts_is_not_in_the_radar(self):
+        question = QuestionFactory(section=self.section, config={'min': 1, 'max': 5, 'exclude_from_charts': True})
+        self.assertEqual(question_scoring(question), (True, False, True))
+
+    def test_a_scored_pick_one_with_only_zero_weights_scores_only_zero(self):
+        question = QuestionFactory(
+            section=self.section, question_type='single_choice', config={'scoring_enabled': True}
+        )
+        for order in range(2):
+            AnswerOption.objects.create(question=question, order=order, label=f'Option {order}', weight=0)
+        self.assertEqual(question_scoring(question), (True, True, False))

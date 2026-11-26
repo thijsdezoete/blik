@@ -2,6 +2,7 @@
 <section class="page development-page">
     <h2>{% trans 'Your Development Path' %}</h2>
 
+    {% if insights.skill_profile %}
     <div class="group skill">
         <div class="group-head">
             <div class="eyebrow">{% trans 'Skill Level' %} · {% trans 'Dreyfus model' %}</div>
@@ -25,6 +26,7 @@
         </div>
         {% endif %}
     </div>
+    {% endif %}
 
     {% if agency %}
     <div class="group agency">

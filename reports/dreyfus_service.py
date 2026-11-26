@@ -10,10 +10,13 @@ References:
   Involved in Directed Skill Acquisition. Operations Research Center, UC Berkeley.
 """
 
+from math import isfinite
 from statistics import mean
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from django.utils.translation import gettext, gettext_lazy as _
+
+from .scoring import score_on_five
 
 
 # Dreyfus stage definitions
@@ -264,7 +267,7 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
     Calculate Dreyfus skill level from weighted question responses.
 
     This function looks for questions tagged with 'dreyfus_mapping' metadata
-    in their config. If no metadata exists, falls back to section-based detection.
+    in their config. Without such questions there is no skill level.
 
     Args:
         report_data: The complete report data structure with responses
@@ -307,8 +310,16 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
 
                 for category, cat_data in question_data.get('by_category', {}).items():
                     # Check for avg (report_data format) or average (alternative format)
-                    avg_score = cat_data.get('avg') or cat_data.get('average')
-                    if avg_score and not cat_data.get('insufficient', False):
+                    # An average of 0 is a real score (the lowest of a slider from 0), so only a missing one falls back
+                    avg_score = cat_data.get('avg')
+                    if avg_score is None:
+                        avg_score = cat_data.get('average')
+                    if avg_score is not None and not cat_data.get('insufficient', False):
+                        avg_score = score_on_five(question_data, avg_score)
+                        # The 1 to 5 scale has no 0: a 0 here comes from a question without a range, such as a Pick
+                        # question whose every score is 0, which counts toward no level (see Scoring.nonzero)
+                        if not avg_score:
+                            continue
                         if category == 'self':
                             # Store self score separately as fallback
                             self_score = avg_score
@@ -338,10 +349,7 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
         confidence = min(1.0, (len(contributing_questions) / 5.0) * (total_weight / 3.0))
 
     else:
-        # Fallback: section-based detection (legacy behavior)
-        skill_level, confidence = _fallback_section_based_detection(report_data)
-        if skill_level is None:
-            return None
+        return None
 
     return {
         'skill_level': round(skill_level, 2),
@@ -395,8 +403,16 @@ def calculate_agency_level(report_data: Dict, questionnaire_id: Optional[int] = 
 
                 for category, cat_data in question_data.get('by_category', {}).items():
                     # Check for avg (report_data format) or average (alternative format)
-                    avg_score = cat_data.get('avg') or cat_data.get('average')
-                    if avg_score and not cat_data.get('insufficient', False):
+                    # An average of 0 is a real score (the lowest of a slider from 0), so only a missing one falls back
+                    avg_score = cat_data.get('avg')
+                    if avg_score is None:
+                        avg_score = cat_data.get('average')
+                    if avg_score is not None and not cat_data.get('insufficient', False):
+                        avg_score = score_on_five(question_data, avg_score)
+                        # The 1 to 5 scale has no 0: a 0 here comes from a question without a range, such as a Pick
+                        # question whose every score is 0, which counts toward no level (see Scoring.nonzero)
+                        if not avg_score:
+                            continue
                         if category == 'self':
                             # Store self score separately as fallback
                             self_score = avg_score
@@ -641,6 +657,45 @@ def development_plan_with_texts(plan: Dict, skill_profile: Dict) -> Dict:
 
 # Helper functions
 
+DEFAULT_ADVICE_THRESHOLD = 3.0
+
+
+def advice_threshold_of(item: Dict) -> float:
+    """The threshold of an advice item; 3.0 when it has none or one that is not a number (older or imported data)."""
+
+    value = item.get('threshold')
+
+    if isinstance(value, (int, float)) and not isinstance(value, bool) and isfinite(value):
+        return value
+
+    return DEFAULT_ADVICE_THRESHOLD
+
+
+def advice_stages_of(item: Dict) -> list:
+    """The stages an advice item names; empty, so every stage, when its stages are not a list."""
+
+    stages = item.get('stages')
+
+    return stages if isinstance(stages, list) else []
+
+
+def advice_applies(item: Dict, score: float, stage: int) -> bool:
+    """Whether a person at this skill stage, with this score of the question on the 1 to 5 scale, gets the advice item:
+    it is a dict with a text, the score is below its threshold (3.0 when it has none), and it names no stages or this
+    one. A value of an odd shape counts as its default. The report and the advice dialog of the questionnaire editor
+    both use it."""
+
+    if not isinstance(item, dict) or not isinstance(item.get('text'), str) or not item['text']:
+        return False
+
+    if score >= advice_threshold_of(item):
+        return False
+
+    stages = advice_stages_of(item)
+
+    return not stages or stage in stages
+
+
 def _get_personalized_action_items(report_data: Dict, current_stage: int) -> List[Dict]:
     """
     Extract personalized action items based on question scores and current Dreyfus stage.
@@ -670,9 +725,14 @@ def _get_personalized_action_items(report_data: Dict, current_stage: int) -> Lis
                 # Skip self-assessment
                 if category == 'self':
                     continue
-                avg_score = cat_data.get('avg') or cat_data.get('average')
-                if avg_score and not cat_data.get('insufficient', False):
-                    category_scores.append(avg_score)
+                # An average of 0 is a real score (the lowest of a slider from 0), so only a missing one falls back
+                avg_score = cat_data.get('avg')
+                if avg_score is None:
+                    avg_score = cat_data.get('average')
+                if avg_score is not None and not cat_data.get('insufficient', False):
+                    # A 0 on the 1 to 5 scale is a question without a range, as in the level functions above
+                    if score := score_on_five(question_data, avg_score):
+                        category_scores.append(score)
 
             if category_scores:
                 question_scores[str(question_id)] = mean(category_scores)
@@ -692,29 +752,11 @@ def _get_personalized_action_items(report_data: Dict, current_stage: int) -> Lis
         if not score or not question.action_items:
             continue
 
-        # Check each action item
         for action_item in question.action_items:
-            if not isinstance(action_item, dict):
-                continue
-
-            text = action_item.get('text')
-            threshold = action_item.get('threshold', 3.0)  # Default threshold
-            stages = action_item.get('stages')  # Optional: [1, 2, 3]
-
-            if not text:
-                continue
-
-            # Check if action item applies
-            # 1. Score is below threshold
-            if score >= threshold:
-                continue
-
-            # 2. If stages specified, check if current stage is in list
-            if stages and current_stage not in stages:
-                continue
-
-            # Add the action item
-            personalized_actions.append({'question_id': question.id, 'key': action_item.get('key'), 'text': text})
+            if advice_applies(action_item, score, current_stage):
+                personalized_actions.append(
+                    {'question_id': question.id, 'key': action_item.get('key'), 'text': action_item['text']}
+                )
 
     # Limit to top 5 most relevant action items
     return personalized_actions[:5]
@@ -750,30 +792,3 @@ def _get_development_focus(current_stage: int, next_stage: int) -> List[str]:
         ]
     }
     return focus_areas.get((current_stage, next_stage), [_('Continue developing expertise')])
-
-
-def _fallback_section_based_detection(report_data: Dict) -> Tuple[Optional[float], float]:
-    """
-    Legacy fallback: detect skill level from 'Technical Expertise & Skill Level' section.
-    Returns (skill_level, confidence) or (None, 0.0) if not found.
-    """
-    # Look for technical expertise section (Software Engineering questionnaire)
-    tech_section_names = ['Technical Expertise & Skill Level', 'Problem Solving & Decision Making']
-
-    for section_data in report_data.get('by_section', {}).values():
-        section_title = section_data.get('title', '')
-
-        if section_title in tech_section_names:
-            # Collect all question averages from this section
-            section_scores = []
-            for question_data in section_data.get('questions', {}).values():
-                for cat_data in question_data.get('by_category', {}).values():
-                    if not cat_data.get('insufficient', False) and cat_data.get('average'):
-                        section_scores.append(cat_data['average'])
-
-            if section_scores:
-                skill_level = mean(section_scores)
-                confidence = 0.6  # Lower confidence for fallback method
-                return skill_level, confidence
-
-    return None, 0.0

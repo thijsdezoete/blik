@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-25 19:56+0000\n"
+"POT-Creation-Date: 2026-11-26 14:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1069,85 +1069,26 @@ msgstr "Vragenlijst \"%(name)s\" aangemaakt."
 msgid "Error creating questionnaire: %(error)s"
 msgstr "Fout bij het aanmaken van de vragenlijst: %(error)s"
 
-#, python-format
-msgid "This questionnaire is already translated into %(language)s. Empty that translation first to make %(language)s its source language."
-msgstr "Er is al een vertaling van deze vragenlijst naar %(language)s. Maak die vertaling eerst leeg om van %(language)s de brontaal te maken."
+msgid "Only a question with a score can have advice."
+msgstr "Alleen een vraag met een score kan actiepunten hebben."
 
-#, python-format
-msgid "Questionnaire \"%(name)s\" updated successfully."
-msgstr "Vragenlijst \"%(name)s\" bijgewerkt."
+msgid "Choose a stage and write a score from 1 to 5."
+msgstr "Kies een fase en vul een score van 1 tot 5 in."
 
-#, python-format
-msgid "Error updating questionnaire: %(error)s"
-msgstr "Fout bij het bijwerken van de vragenlijst: %(error)s"
+msgid "This topic does not exist any more. Reload the page."
+msgstr "Dit onderwerp bestaat niet meer. Laad de pagina opnieuw."
+
+msgid "This question does not exist any more. Reload the page."
+msgstr "Deze vraag bestaat niet meer. Laad de pagina opnieuw."
+
+msgid "This change is not possible. Reload the page."
+msgstr "Deze wijziging is niet mogelijk. Laad de pagina opnieuw."
 
 msgid "The new order could not be saved. Reload the page and try again."
 msgstr "De nieuwe volgorde kon niet worden opgeslagen. Laad de pagina opnieuw en probeer het nog eens."
 
-#, python-format
-msgid "Section \"%(title)s\" added."
-msgstr "Sectie \"%(title)s\" toegevoegd."
-
-#, python-format
-msgid "Error adding section: %(error)s"
-msgstr "Fout bij het toevoegen van de sectie: %(error)s"
-
-#, python-format
-msgid "Section \"%(title)s\" updated successfully."
-msgstr "Sectie \"%(title)s\" bijgewerkt."
-
-msgid "Section not found."
-msgstr "Sectie niet gevonden."
-
-#, python-format
-msgid "Error updating section: %(error)s"
-msgstr "Fout bij het bijwerken van de sectie: %(error)s"
-
-msgid "Invalid weight values. Scoring disabled for this question."
-msgstr "Ongeldige wegingen. De scoreberekening is voor deze vraag uitgeschakeld."
-
-msgid "Invalid scale values. Using defaults (1-100, step 1)."
-msgstr "Ongeldige schaalwaarden. De standaardwaarden worden gebruikt (1-100, stap 1)."
-
-msgid "Question added successfully."
-msgstr "Vraag toegevoegd."
-
-msgid "Error adding question. Please try again."
-msgstr "Fout bij het toevoegen van de vraag. Probeer het opnieuw."
-
-#, python-format
-msgid "Section \"%(title)s\" deleted."
-msgstr "Sectie \"%(title)s\" verwijderd."
-
-#, python-format
-msgid "Error deleting section: %(error)s"
-msgstr "Fout bij het verwijderen van de sectie: %(error)s"
-
-msgid "Question deleted."
-msgstr "Vraag verwijderd."
-
-#, python-format
-msgid "Error deleting question: %(error)s"
-msgstr "Fout bij het verwijderen van de vraag: %(error)s"
-
-msgid "Question updated successfully."
-msgstr "Vraag bijgewerkt."
-
-msgid "Error updating question. Please try again."
-msgstr "Fout bij het bijwerken van de vraag. Probeer het opnieuw."
-
-msgid "Dreyfus/Agency configuration updated successfully."
-msgstr "Configuratie voor Dreyfus en initiatief bijgewerkt."
-
-msgid "Question not found."
-msgstr "Vraag niet gevonden."
-
-#, python-format
-msgid "Error updating Dreyfus configuration: %(error)s"
-msgstr "Fout bij het bijwerken van de Dreyfus-configuratie: %(error)s"
-
-msgid "Translation saved."
-msgstr "Vertaling opgeslagen."
+msgid "This weight is not possible."
+msgstr "Deze weging is niet mogelijk."
 
 #, python-format
 msgid "Questionnaire \"%(name)s\" archived. It is used by %(count)s review cycle(s) and cannot be deleted."
@@ -1164,12 +1105,6 @@ msgstr "Vragenlijst \"%(name)s\" verwijderd."
 #, python-format
 msgid "Questionnaire \"%(name)s\" restored."
 msgstr "Vragenlijst \"%(name)s\" hersteld."
-
-msgid "Question not found"
-msgstr "Vraag niet gevonden"
-
-msgid "Internal server error"
-msgstr "Interne serverfout"
 
 msgid "Newest first"
 msgstr "Nieuwste eerst"
@@ -2183,6 +2118,132 @@ msgstr "Mee eens"
 msgid "Strongly Agree"
 msgstr "Helemaal mee eens"
 
+msgid "Does not count"
+msgstr "Telt niet mee"
+
+msgid "Counts half"
+msgstr "Telt half mee"
+
+msgid "Counts once"
+msgstr "Telt één keer mee"
+
+msgid "Counts 1.5 times"
+msgstr "Telt 1,5 keer mee"
+
+msgid "Counts double"
+msgstr "Telt dubbel mee"
+
+msgid "Skill level (Dreyfus model)"
+msgstr "Vaardigheidsniveau (Dreyfusmodel)"
+
+msgid "Shows which of five stages the person is at, from Novice to Expert."
+msgstr "Laat zien in welke van vijf fasen de persoon zit, van Beginner tot Expert."
+
+msgid "Skill level"
+msgstr "Vaardigheidsniveau"
+
+msgid "Example: \"Alex solves hard problems without help\" says something about skill."
+msgstr "Voorbeeld: \"Alex lost moeilijke problemen zonder hulp op\" zegt iets over vaardigheid."
+
+msgid "Initiative (agency model)"
+msgstr "Initiatief (initiatiefmodel)"
+
+msgid "Shows how much the person acts without being asked, in five levels."
+msgstr "Laat in vijf niveaus zien hoeveel de persoon doet zonder dat iemand erom vraagt."
+
+msgid "Initiative"
+msgstr "Initiatief"
+
+msgid "Example: \"Alex starts improvements without being asked\" says something about initiative."
+msgstr "Voorbeeld: \"Alex zet verbeteringen in gang zonder dat iemand erom vraagt\" zegt iets over initiatief."
+
+msgid "Score"
+msgstr "Beoordelingsschaal"
+
+msgid "Agree / disagree (Likert)"
+msgstr "Eens / oneens (Likert)"
+
+msgid "Written answer"
+msgstr "Geschreven antwoord"
+
+msgid "Pick one"
+msgstr "Eén antwoord kiezen"
+
+msgid "Pick several"
+msgstr "Meerdere antwoorden kiezen"
+
+msgid "Slider"
+msgstr "Schuifregelaar"
+
+#, python-format
+msgid "Counts %(weight)s times"
+msgstr "Telt %(weight)s keer mee"
+
+msgid "This model does not exist."
+msgstr "Dit model bestaat niet."
+
+msgid "A score has 2 to 7 options."
+msgstr "Een beoordelingsschaal heeft 2 tot en met 7 opties."
+
+msgid "The lowest and the highest value of a slider must be whole numbers."
+msgstr "De laagste en de hoogste waarde van een schuifregelaar moeten hele getallen zijn."
+
+msgid "The highest value of a slider must be more than its lowest value."
+msgstr "De hoogste waarde van een schuifregelaar moet groter zijn dan de laagste waarde."
+
+msgid "The step of a slider must be a number above 0, such as 1 or 0.5."
+msgstr "De stapgrootte van een schuifregelaar moet een getal boven 0 zijn, bijvoorbeeld 1 of 0,5."
+
+msgid "The step of a slider must fit between its lowest and its highest value."
+msgstr "De stapgrootte van een schuifregelaar moet tussen de laagste en de hoogste waarde passen."
+
+msgid "Write the question."
+msgstr "Vul de vraag in."
+
+msgid "Choose an answer type."
+msgstr "Kies een antwoordtype."
+
+msgid "Reviewers already answered this question as another type. Add a new question for a score or a slider."
+msgstr "Feedbackgevers hebben deze vraag al als een ander type beantwoord. Voeg een nieuwe vraag toe voor een beoordelingsschaal of een schuifregelaar."
+
+msgid "Reviewers already answered this question, so its number of options stays."
+msgstr "Feedbackgevers hebben deze vraag al beantwoord, dus het aantal opties blijft gelijk."
+
+msgid "A question of this type needs answers. Add at least two."
+msgstr "Een vraag van dit type heeft antwoorden nodig. Voeg er minstens twee toe."
+
+msgid "A score must be a number."
+msgstr "Een score moet een getal zijn."
+
+#, python-format
+msgid "This text is too long. Use at most %(count)s characters."
+msgstr "Deze tekst is te lang. Gebruik maximaal %(count)s tekens."
+
+msgid "Every stage"
+msgstr "Elke fase"
+
+msgid "This skill stage does not exist. Reload the page."
+msgstr "Deze vaardigheidsfase bestaat niet. Laad de pagina opnieuw."
+
+msgid "Write a number from 1 to 5."
+msgstr "Vul een getal van 1 tot 5 in."
+
+msgid "Choose a language."
+msgstr "Kies een taal."
+
+#, python-format
+msgid "This questionnaire is already translated into %(language)s. Empty that translation first to make %(language)s its original language."
+msgstr "Er is al een vertaling van deze vragenlijst in %(language)s. Maak die vertaling eerst leeg om %(language)s de oorspronkelijke taal te maken."
+
+msgid "Write a name."
+msgstr "Vul een naam in."
+
+msgid "New topic"
+msgstr "Nieuw onderwerp"
+
+msgid "A topic needs a title."
+msgstr "Een onderwerp heeft een titel nodig."
+
 msgid "description"
 msgstr "beschrijving"
 
@@ -2312,14 +2373,8 @@ msgstr "Vaardighedenoverzicht"
 msgid "Compare strengths across topics in a radar chart."
 msgstr "Vergelijk sterke punten per onderwerp in een radardiagram."
 
-msgid "Skill level"
-msgstr "Vaardigheidsniveau"
-
 msgid "See the stage of skill development (Dreyfus model)."
 msgstr "Bekijk in welke fase de ontwikkeling van de vaardigheden zit (Dreyfusmodel)."
-
-msgid "Initiative"
-msgstr "Initiatief"
 
 msgid "Understand initiative and independence (agency model)."
 msgstr "Krijg inzicht in initiatief en zelfstandigheid (initiatiefmodel)."
@@ -2339,17 +2394,18 @@ msgstr "Lees opmerkingen en voorbeelden van feedbackgevers."
 msgid "Description"
 msgstr "Beschrijving"
 
-msgid "Section title"
-msgstr "Titel van de sectie"
+msgid "Topic title"
+msgstr "Titel van het onderwerp"
 
-msgid "Section description"
-msgstr "Beschrijving van de sectie"
+msgid "Topic description"
+msgstr "Beschrijving van het onderwerp"
 
-msgid "Action item"
+msgid "Advice"
 msgstr "Actiepunt"
 
-msgid "Answer option"
-msgstr "Antwoordoptie"
+msgctxt "noun"
+msgid "Answer"
+msgstr "Antwoord"
 
 msgid "Label of the lowest value"
 msgstr "Label van de laagste waarde"
@@ -2368,6 +2424,9 @@ msgstr "Label van score %(value)s"
 #, python-format
 msgid "The translation of \"%(text)s\" is longer than %(max_length)s characters."
 msgstr "De vertaling van \"%(text)s\" is langer dan %(max_length)s tekens."
+
+msgid "The questionnaire has no text to translate here."
+msgstr "De vragenlijst heeft hier geen tekst om te vertalen."
 
 msgid "No expiry"
 msgstr "Verloopt niet"
@@ -4881,6 +4940,621 @@ msgstr "Je review wordt eerst beoordeeld en pas daarna gepubliceerd."
 msgid "Submit Review"
 msgstr "Review versturen"
 
+#, python-format
+msgid "Advice for: \"%(text)s\""
+msgstr "Actiepunten voor: ‘%(text)s’"
+
+msgid "How advice works"
+msgstr "Zo werken actiepunten"
+
+msgid "Show advice when the score is below"
+msgstr "Actiepunt tonen bij een score onder"
+
+msgid "(scale of 1 to 5)"
+msgstr "(schaal van 1 tot 5)"
+
+msgid "One number for all advice of this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Eén getal voor alle actiepunten van deze vraag. Bij 3 verschijnt het actiepunt bij een score van 2,9 en niet bij een score van 3."
+
+msgid "Stage"
+msgstr "Fase"
+
+msgid "Advice the report gives"
+msgstr "Actiepunt in het rapport"
+
+msgid "Add advice"
+msgstr "Actiepunt toevoegen"
+
+msgid "Try it"
+msgstr "Probeer het"
+
+msgid "Stage of the person"
+msgstr "Fase van de persoon"
+
+msgid "Score of this question"
+msgstr "Score van deze vraag"
+
+msgid "Write a score from 1 to 5 to try it."
+msgstr "Vul een score van 1 tot 5 in om het te proberen."
+
+msgid "Done"
+msgstr "Klaar"
+
+msgid "Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score."
+msgstr "Een actiepunt is een tip voor de persoon die het rapport krijgt. Het rapport toont het alleen als feedbackgevers deze vraag een lage score geven."
+
+msgid "Where it shows"
+msgstr "Waar het staat"
+
+msgid "In the report, in the part \"Skill level\", under \"Action Items\". So advice shows only in a report that has a skill level."
+msgstr "In het rapport, in het deel \"Vaardigheidsniveau\", onder \"Actiepunten\". Actiepunten staan dus alleen in een rapport met een vaardigheidsniveau."
+
+msgid "How to write it"
+msgstr "Zo schrijf je het"
+
+msgid "Write to the person who reads the report, as one thing to do. Example: \"Ask a colleague to read your next proposal before you send it.\""
+msgstr "Schrijf aan de persoon die het rapport leest, als één ding om te doen. Voorbeeld: \"Vraag een collega je volgende voorstel te lezen voordat je het verstuurt.\""
+
+msgid "Keep it short: one sentence."
+msgstr "Houd het kort: één zin."
+
+#, python-brace-format
+msgid "You can use {name} for the first name of the person."
+msgstr "Je kunt {name} gebruiken voor de voornaam van de persoon."
+
+msgid "When the report shows it"
+msgstr "Wanneer het rapport het toont"
+
+msgid "The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count."
+msgstr "De score van deze vraag is het gemiddelde van wat de anderen antwoordden, op een schaal van 1 tot en met 5. Het eigen antwoord van de persoon telt niet mee."
+
+msgid "The report shows the advice when that score is below the number you choose for this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Het rapport toont het actiepunt als die score lager is dan het getal dat voor deze vraag is gekozen. Bij 3 verschijnt het actiepunt bij een score van 2,9 en niet bij een score van 3."
+
+msgid "Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10."
+msgstr "Elk antwoordtype telt hier op de schaal van 1 tot en met 5, ook een schuifregelaar van 1 tot 10."
+
+msgid "Advice per stage"
+msgstr "Actiepunten per fase"
+
+msgid "Advice in the row \"Every stage\" goes to every person. Advice in the row of a stage, for example Novice, goes only to a person at that stage."
+msgstr "Een actiepunt in de rij ‘Elke fase’ gaat naar iedereen. Een actiepunt in de rij van een fase, bijvoorbeeld Beginner, gaat alleen naar een persoon in die fase."
+
+msgid "A person gets the advice of \"Every stage\" and the advice of their own stage."
+msgstr "Een persoon krijgt de actiepunten van ‘Elke fase’ en de actiepunten van de eigen fase."
+
+msgid "To move advice to another stage, drag it by its handle to that row. Or choose the stage in \"Move to...\"."
+msgstr "Een actiepunt gaat naar een andere fase door het aan de greep naar die rij te slepen. Of kies de fase bij ‘Verplaatsen naar …’."
+
+msgid "Pay attention"
+msgstr "Let op"
+
+msgid "The report has room for three lines under \"Action Items\". With advice on many questions, only the first ones show. So give advice for the questions that matter most, not for every question."
+msgstr "Het rapport heeft onder \"Actiepunten\" ruimte voor drie regels. Met actiepunten bij veel vragen verschijnen alleen de eerste. Geef dus actiepunten bij de vragen die het belangrijkst zijn, niet bij elke vraag."
+
+msgid "Advice is a text of the questionnaire: it is translated on the language tabs, like the questions."
+msgstr "Een actiepunt is een tekst van de vragenlijst: je vertaalt het op de taaltabbladen, net als de vragen."
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Drag to move"
+msgstr "Sleep om te verplaatsen"
+
+msgid "Ask a senior colleague to review your next proposal"
+msgstr "Vraag een ervaren collega om je volgende voorstel te bekijken"
+
+msgid "Move this advice to another stage"
+msgstr "Dit actiepunt naar een andere fase verplaatsen"
+
+msgid "Move to..."
+msgstr "Verplaatsen naar …"
+
+msgid "Remove this advice"
+msgstr "Dit actiepunt verwijderen"
+
+msgid "There is no advice for this stage yet."
+msgstr "Er is nog geen actiepunt voor deze fase."
+
+msgid "With this score the report gives no advice for this question."
+msgstr "Bij deze score geeft het rapport geen actiepunt voor deze vraag."
+
+#, python-format
+msgid "A person at the stage %(stage)s with a score of %(score)s reads:"
+msgstr "Een persoon in de fase %(stage)s met een score van %(score)s leest:"
+
+#, python-format
+msgid "counts as %(score)s"
+msgstr "telt als %(score)s"
+
+msgid "Remove this answer"
+msgstr "Dit antwoord verwijderen"
+
+msgid "Offer \"Did not observe\" in every question with a score"
+msgstr "\"Niet waargenomen\" aanbieden bij elke vraag met een score"
+
+msgid "Now some questions offer it and others do not."
+msgstr "Nu bieden sommige vragen het aan en andere niet."
+
+msgid "Sets all questions at once. You can still change one question afterwards."
+msgstr "Stelt alle vragen tegelijk in. Daarna kun je elke vraag nog apart wijzigen."
+
+#, python-format
+msgid "%(language)s (original)"
+msgstr "%(language)s (origineel)"
+
+#, python-format
+msgid "%(counter)s text is missing or outdated"
+msgid_plural "%(counter)s texts are missing or outdated"
+msgstr[0] "%(counter)s tekst ontbreekt of is verouderd"
+msgstr[1] "%(counter)s teksten ontbreken of zijn verouderd"
+
+#, python-format
+msgid "%(counter)s reviewer already answered this question."
+msgid_plural "%(counter)s reviewers already answered this question."
+msgstr[0] "%(counter)s feedbackgever heeft deze vraag al beantwoord."
+msgstr[1] "%(counter)s feedbackgevers hebben deze vraag al beantwoord."
+
+msgid "With another answer type, their answers no longer count in reports."
+msgstr "Met een ander antwoordtype tellen hun antwoorden niet meer mee in rapporten."
+
+msgid "This question cannot become a Score again."
+msgstr "Deze vraag kan daarna geen beoordelingsschaal meer worden."
+
+msgid "This question cannot become a Slider again."
+msgstr "Deze vraag kan daarna geen schuifregelaar meer worden."
+
+#, python-format
+msgid "The translations of its answers (%(languages)s) are removed."
+msgstr "De vertalingen van de antwoorden (%(languages)s) worden verwijderd."
+
+msgid "Change the answer type"
+msgstr "Antwoordtype wijzigen"
+
+msgid "Keep \"<span data-fill=\"type\"></span>\""
+msgstr "\"<span data-fill=\"type\"></span>\" houden"
+
+msgid "Reviewers who picked \"<span data-fill=\"label\"></span>\" stay in the report, but that answer no longer counts."
+msgstr "Feedbackgevers die \"<span data-fill=\"label\"></span>\" kozen, blijven in het rapport, maar dat antwoord telt niet meer mee."
+
+#, python-format
+msgid "Its translation is removed, if it has one (%(languages)s)."
+msgstr "De vertaling wordt verwijderd, als die er is (%(languages)s)."
+
+msgid "Remove the answer"
+msgstr "Antwoord verwijderen"
+
+msgid "Keep it"
+msgstr "Behouden"
+
+#, python-format
+msgid "The options above <span data-fill=\"count\"></span> are removed, with their translations (%(languages)s)."
+msgstr "De opties boven <span data-fill=\"count\"></span> worden verwijderd, met hun vertalingen (%(languages)s)."
+
+msgid "Change the number"
+msgstr "Aantal wijzigen"
+
+msgid "Delete this question?"
+msgstr "Deze vraag verwijderen?"
+
+#, python-format
+msgid "%(counter)s reviewer already answered it. That answer is deleted with it."
+msgid_plural "%(counter)s reviewers already answered it. Their answers are deleted with it."
+msgstr[0] "%(counter)s feedbackgever heeft de vraag al beantwoord. Dat antwoord wordt mee verwijderd."
+msgstr[1] "%(counter)s feedbackgevers hebben de vraag al beantwoord. Hun antwoorden worden mee verwijderd."
+
+msgid "Delete the question"
+msgstr "Vraag verwijderen"
+
+msgid "You can change the texts. The page asks you first before a change that makes their answers unusable."
+msgstr "Je kunt de teksten wijzigen. Voor een wijziging die hun antwoorden onbruikbaar maakt, vraagt de pagina het je eerst."
+
+#, python-format
+msgid "Translated into %(languages)s. When you change a text here, its translation is marked as outdated, so the translator sees it."
+msgstr "Vertaald in: %(languages)s. Als je hier een tekst wijzigt, wordt de vertaling als verouderd gemarkeerd, zodat de vertaler dat ziet."
+
+#, python-brace-format
+msgid "How well does {name} ...?"
+msgstr "Hoe goed kan {name} ...?"
+
+msgid "Insert the person's name"
+msgstr "Naam van de persoon invoegen"
+
+msgid "Reviewers read:"
+msgstr "Feedbackgevers lezen:"
+
+msgid "Tip: a question with the name reads better than \"this person\". Reviewers then see \"Alex\"."
+msgstr "Tip: een vraag met de naam leest beter dan \"deze persoon\". Feedbackgevers zien dan \"Alex\"."
+
+msgid "Reviewers already answered this question, so it cannot become a Score or a Slider. Add a new question for that."
+msgstr "Feedbackgevers hebben deze vraag al beantwoord, dus die kan geen beoordelingsschaal of schuifregelaar worden. Voeg daarvoor een nieuwe vraag toe."
+
+msgid "Reviewers already answered this question, so it cannot become a Slider. Add a new question for that."
+msgstr "Feedbackgevers hebben deze vraag al beantwoord, dus die kan geen schuifregelaar worden. Voeg daarvoor een nieuwe vraag toe."
+
+msgid "Reviewers already answered this question, so it cannot become a Score. Add a new question for that."
+msgstr "Feedbackgevers hebben deze vraag al beantwoord, dus die kan geen beoordelingsschaal worden. Voeg daarvoor een nieuwe vraag toe."
+
+msgid "Reviewers pick a number."
+msgstr "Feedbackgevers kiezen een getal."
+
+msgid "Reviewers pick one answer in words, from low to high."
+msgstr "Feedbackgevers kiezen één antwoord in woorden, van laag naar hoog."
+
+msgid "Reviewers type their answer."
+msgstr "Feedbackgevers typen hun antwoord."
+
+msgid "Reviewers pick one answer from a list."
+msgstr "Feedbackgevers kiezen één antwoord uit een lijst."
+
+msgid "Reviewers tick all answers that fit."
+msgstr "Feedbackgevers vinken alle antwoorden aan die passen."
+
+msgid "Reviewers move a slider between two numbers."
+msgstr "Feedbackgevers schuiven een schuifregelaar tussen twee getallen."
+
+msgid "The example on the right shows how it looks."
+msgstr "Het voorbeeld rechts laat zien hoe het eruitziet."
+
+msgid "Delete question"
+msgstr "Vraag verwijderen"
+
+msgid "Done with this question"
+msgstr "Klaar met deze vraag"
+
+msgid "More options"
+msgstr "Meer opties"
+
+msgid "Reviewers must answer this question"
+msgstr "Feedbackgevers moeten deze vraag beantwoorden"
+
+msgid "Offer \"Did not observe\""
+msgstr "\"Niet waargenomen\" aanbieden"
+
+msgid "For reviewers who cannot judge this. The answer does not count in the score."
+msgstr "Voor feedbackgevers die dit niet kunnen beoordelen. Het antwoord telt niet mee in de score."
+
+msgid "Describe what each score means"
+msgstr "Beschrijven wat elke score betekent"
+
+msgid "Reviewers can open the descriptions under the question. Example for 1: \"Needs help with every step\"."
+msgstr "Feedbackgevers kunnen de beschrijvingen onder de vraag openen. Voorbeeld voor 1: \"Heeft bij elke stap hulp nodig\"."
+
+msgid "Step of the slider"
+msgstr "Stapgrootte van de schuifregelaar"
+
+msgid "With a step of 5 on a slider from 0 to 100, reviewers can pick 0, 5, 10 and so on. A step below 1 works too: with 0.5 on a slider from 1 to 5 they can pick 1, 1.5, 2 and so on."
+msgstr "Met een stapgrootte van 5 op een schuifregelaar van 0 tot 100 kunnen feedbackgevers 0, 5, 10 enzovoort kiezen. Een stapgrootte onder 1 kan ook: met 0,5 op een schuifregelaar van 1 tot 5 kunnen ze 1, 1,5, 2 enzovoort kiezen."
+
+msgid "The report gives advice when this question scores low. You can write other advice for each skill stage."
+msgstr "Het rapport geeft actiepunten als deze vraag een lage score krijgt. Voor elke vaardigheidsfase zijn eigen actiepunten mogelijk."
+
+msgid "Write advice per stage"
+msgstr "Actiepunten per fase schrijven"
+
+msgid "First write the question. Then you can add advice."
+msgstr "Schrijf eerst de vraag. Daarna zijn actiepunten mogelijk."
+
+msgid "In the report"
+msgstr "In het rapport"
+
+#, python-format
+msgid "The score is included on the axis \"%(topic)s\"."
+msgstr "De score telt mee op de as \"%(topic)s\"."
+
+msgid "Written answers show as text in the report. They have no score."
+msgstr "Geschreven antwoorden staan als tekst in het rapport. Ze hebben geen score."
+
+msgid "The score of this question is not included on an axis. It was set that way when the questionnaire was made."
+msgstr "De score van deze vraag telt op geen enkele as mee. Dat is zo ingesteld toen de vragenlijst werd gemaakt."
+
+msgid "A Likert question needs at least two answers to have a score."
+msgstr "Een Likert-vraag heeft minstens twee antwoorden nodig om een score te hebben."
+
+msgid "The report shows how often each answer was picked. Without a score per answer, this question has no score for an axis."
+msgstr "Het rapport laat zien hoe vaak elk antwoord is gekozen. Zonder score per antwoord heeft deze vraag geen score voor een as."
+
+msgid "Give each answer a score"
+msgstr "Elk antwoord een score geven"
+
+msgid "Then the score of this question is included on the axis of its topic. You type the scores next to the answers above."
+msgstr "Dan telt de score van deze vraag mee op de as van het onderwerp. Je typt de scores naast de antwoorden hierboven."
+
+#, python-format
+msgid "%(low)s counts as 1, %(high)s counts as 5. The report uses one scale of 1 to 5 for all questions."
+msgstr "%(low)s telt als 1, %(high)s telt als 5. Het rapport gebruikt voor alle vragen één schaal van 1 tot 5."
+
+#, python-format
+msgid "The score of a reviewer is the sum of the answers they tick. The lowest sum, %(low)s, counts as 1. The highest sum, %(high)s, counts as 5."
+msgstr "De score van een feedbackgever is de som van de aangevinkte antwoorden. De laagste som, %(low)s, telt als 1. De hoogste som, %(high)s, telt als 5."
+
+msgid "Skill level and initiative are off for this questionnaire. You turn them on in \"The report\" at the top of this page."
+msgstr "Vaardigheidsniveau en initiatief staan uit voor deze vragenlijst. Je zet ze aan bij \"Het rapport\" bovenaan deze pagina."
+
+msgctxt "placeholder for the name of the person reviewed"
+msgid "name"
+msgstr "naam"
+
+#, python-format
+msgid "%(counter)s option"
+msgid_plural "%(counter)s options"
+msgstr[0] "%(counter)s optie"
+msgstr[1] "%(counter)s opties"
+
+#, python-format
+msgid "%(low)s to %(high)s"
+msgstr "%(low)s tot %(high)s"
+
+#, python-format
+msgid "%(counter)s answer"
+msgid_plural "%(counter)s answers"
+msgstr[0] "%(counter)s antwoord"
+msgstr[1] "%(counter)s antwoorden"
+
+msgid "not on the radar"
+msgstr "niet in het radardiagram"
+
+msgid "no score"
+msgstr "geen score"
+
+msgid "Edit"
+msgstr "Bewerken"
+
+msgid "Number of options"
+msgstr "Aantal opties"
+
+msgid "Reviewers already answered this question, so the number of options cannot change. Add a new question if you need another number."
+msgstr "Feedbackgevers hebben deze vraag al beantwoord, dus het aantal opties kan niet veranderen. Voeg een nieuwe vraag toe als je een ander aantal nodig hebt."
+
+msgid "What each number means"
+msgstr "Wat elk getal betekent"
+
+msgid "Answers, from low to high"
+msgstr "Antwoorden, van laag naar hoog"
+
+msgid "Add an answer"
+msgstr "Antwoord toevoegen"
+
+msgid "Add or remove answers as you want. \"Counts as\" is the score each answer gets in the report, on its scale of 1 to 5."
+msgstr "Voeg antwoorden toe of verwijder ze zoals je wilt. \"Telt als\" is de score die elk antwoord in het rapport krijgt, op de schaal van 1 tot 5."
+
+msgid "This is a negative statement"
+msgstr "Dit is een negatieve stelling"
+
+msgid "Example: \"Alex often misses deadlines\". To agree is then bad, so the scores turn around: the first answer counts as 5 and the last as 1. Tick it and look at \"counts as\" above."
+msgstr "Voorbeeld: \"Alex mist vaak deadlines\". Eens zijn is dan slecht, dus de scores draaien om: het eerste antwoord telt als 5 en het laatste als 1. Vink het aan en kijk naar \"telt als\" hierboven."
+
+msgid "Answers"
+msgstr "Antwoorden"
+
+msgid "The number next to each answer is its score. A higher number is a better answer."
+msgstr "Het getal naast elk antwoord is de score. Een hoger getal is een beter antwoord."
+
+msgid "Show all answers as a list"
+msgstr "Alle antwoorden als lijst tonen"
+
+msgid "Off: reviewers open a short list and pick one answer from it."
+msgstr "Uit: feedbackgevers openen een korte lijst en kiezen daaruit één antwoord."
+
+msgid "Lowest number"
+msgstr "Laagste getal"
+
+msgid "Highest number"
+msgstr "Hoogste getal"
+
+msgid "Text at the low end (optional)"
+msgstr "Tekst aan de lage kant (optioneel)"
+
+msgid "Text at the high end (optional)"
+msgstr "Tekst aan de hoge kant (optioneel)"
+
+msgid "The report uses one scale of 1 to 5 for all questions. \"Counts as\" shows where each option lands on it."
+msgstr "Het rapport gebruikt voor alle vragen één schaal van 1 tot 5. \"Telt als\" laat zien waar elke optie daarop uitkomt."
+
+msgid "The numbers are examples. The shape is real."
+msgstr "De getallen zijn voorbeelden. De vorm is echt."
+
+#, python-format
+msgid "%(counter)s topic has a question with a score, so the radar has %(counter)s axis."
+msgid_plural "%(counter)s topics have a question with a score, so the radar has %(counter)s axes."
+msgstr[0] "%(counter)s onderwerp heeft een vraag met een score, dus het radardiagram heeft %(counter)s as."
+msgstr[1] "%(counter)s onderwerpen hebben een vraag met een score, dus het radardiagram heeft %(counter)s assen."
+
+msgid "Two topics have a question with a score. The radar gets a third axis, \"Overall\". A third topic makes it a full radar."
+msgstr "Twee onderwerpen hebben een vraag met een score. Het radardiagram krijgt een derde as, \"Totaal\". Een derde onderwerp maakt er een volledig radardiagram van."
+
+msgid "The report shows bars, not a radar. Three topics with a question with a score give a radar."
+msgstr "Het rapport toont balken, geen radardiagram. Drie onderwerpen met een vraag met een score geven een radardiagram."
+
+msgid "No question has a score yet, so the report has no chart. Each topic with a question with a score gets its own axis on the radar."
+msgstr "Nog geen vraag heeft een score, dus het rapport heeft geen diagram. Elk onderwerp met een vraag met een score krijgt een eigen as in het radardiagram."
+
+#, python-format
+msgid "The score of %(counting)s of %(counter)s question is included."
+msgid_plural "The score of %(counting)s of %(counter)s questions is included."
+msgstr[0] "De score van %(counting)s van %(counter)s vraag telt mee."
+msgstr[1] "De scores van %(counting)s van %(counter)s vragen tellen mee."
+
+msgid "No questions yet."
+msgstr "Nog geen vragen."
+
+msgid "On the radar"
+msgstr "In het radardiagram"
+
+msgid "Not on the radar"
+msgstr "Niet in het radardiagram"
+
+#, python-format
+msgid "Level %(level)s/5.0"
+msgstr "Niveau %(level)s/5,0"
+
+msgid "How this level is made"
+msgstr "Hoe dit niveau tot stand komt"
+
+msgid "The scores are examples. The way they make the level is real."
+msgstr "De scores zijn voorbeelden. De manier waarop ze het niveau vormen is echt."
+
+msgid "Example score"
+msgstr "Voorbeeldscore"
+
+msgid "How much it counts"
+msgstr "Hoeveel die meetelt"
+
+msgid "The level is the average of the scores. Each score is multiplied by how much it counts (\"Counts double\" is x 2, \"Counts half\" is x 0.5), and the total is divided by the sum of how much they count:"
+msgstr "Het niveau is het gemiddelde van de scores. Elke score wordt vermenigvuldigd met hoeveel die meetelt (\"Telt dubbel mee\" is x 2, \"Telt half mee\" is x 0,5), en het totaal wordt gedeeld door de som van hoeveel ze meetellen:"
+
+#, python-format
+msgid "A level from %(low)s to %(high)s is stage %(stage)s of 5, \"%(name)s\". The diagram marks step %(stage)s of its five steps."
+msgstr "Een niveau van %(low)s tot %(high)s is fase %(stage)s van 5, \"%(name)s\". Het diagram markeert stap %(stage)s van de vijf stappen."
+
+#, python-format
+msgid "No question counts toward \"%(name)s\" yet. Choose the questions in the card \"The report\" on the left."
+msgstr "Nog geen vraag telt mee voor \"%(name)s\". Kies de vragen in de kaart \"Het rapport\" links."
+
+msgid "See the full sample report"
+msgstr "Volledig voorbeeldrapport bekijken"
+
+msgid "Choose what the report shows. The example on the right follows your choices."
+msgstr "Kies wat het rapport laat zien. Het voorbeeld rechts volgt je keuzes."
+
+msgid "Scores per topic (radar)"
+msgstr "Scores per onderwerp (radardiagram)"
+
+msgid "Always there. Each topic with a scored question gets its own axis on the radar."
+msgstr "Altijd aanwezig. Elk onderwerp met een vraag met een score krijgt een eigen as in het radardiagram."
+
+#, python-format
+msgid "%(counter)s question counts toward \"%(name)s\" now. If you switch it off, the report no longer shows it and this question no longer counts toward it."
+msgid_plural "%(counter)s questions count toward \"%(name)s\" now. If you switch it off, the report no longer shows it and these questions no longer count toward it."
+msgstr[0] "%(counter)s vraag telt nu mee voor \"%(name)s\". Als je het uitzet, laat het rapport het niet meer zien en telt deze vraag er niet meer voor mee."
+msgstr[1] "%(counter)s vragen tellen nu mee voor \"%(name)s\". Als je het uitzet, laat het rapport het niet meer zien en tellen deze vragen er niet meer voor mee."
+
+msgid "Switch it off"
+msgstr "Uitzetten"
+
+msgid "Keep it on"
+msgstr "Aan laten"
+
+msgid "Which questions count, and how much?"
+msgstr "Welke vragen tellen mee, en hoeveel?"
+
+#, python-format
+msgid "%(name)s: %(counter)s question"
+msgid_plural "%(name)s: %(counter)s questions"
+msgstr[0] "%(name)s: %(counter)s vraag"
+msgstr[1] "%(name)s: %(counter)s vragen"
+
+#, python-format
+msgid "%(name)s: no question yet"
+msgstr "%(name)s: nog geen vraag"
+
+msgid "A level in the report is the average score of the questions you choose here. A question that \"Counts double\" weighs twice as much in that average."
+msgstr "Een niveau in het rapport is de gemiddelde score van de vragen die je hier kiest. Een vraag die \"Telt dubbel mee\" weegt in dat gemiddelde twee keer zo zwaar."
+
+#, python-format
+msgid "Advice (%(count)s)"
+msgstr "Actiepunten (%(count)s)"
+
+msgid "A question without a score, such as a written answer, cannot count toward a level. So it is not in this list."
+msgstr "Een vraag zonder score, zoals een geschreven antwoord, kan niet meetellen voor een niveau. Daarom staat die niet in deze lijst."
+
+msgid "No question has a score yet. Add a question with a score first; then you choose here how much it counts."
+msgstr "Nog geen vraag heeft een score. Voeg eerst een vraag met een score toe; daarna kies je hier hoeveel die meetelt."
+
+#, python-format
+msgid "The page a reviewer gets for the topic \"%(title)s\". Example name: Alex. You can click the answers."
+msgstr "De pagina die een feedbackgever krijgt voor het onderwerp \"%(title)s\". Voorbeeldnaam: Alex. Je kunt de antwoorden aanklikken."
+
+msgid "Add a topic to start."
+msgstr "Voeg een onderwerp toe om te beginnen."
+
+msgid "Name of the questionnaire"
+msgstr "Naam van de vragenlijst"
+
+msgid "Description (optional)"
+msgstr "Beschrijving (optioneel)"
+
+msgid "Reviewers do not see this text."
+msgstr "Feedbackgevers zien deze tekst niet."
+
+msgid "Original language"
+msgstr "Oorspronkelijke taal"
+
+msgid "The language you write the questions in. Translations are made from these texts."
+msgstr "De taal waarin je de vragen schrijft. Vertalingen worden van deze teksten gemaakt."
+
+msgid "Default questionnaire"
+msgstr "Standaardvragenlijst"
+
+msgid "It comes first when you choose a questionnaire for a review."
+msgstr "Die staat bovenaan als je een vragenlijst kiest voor een feedbackronde."
+
+msgid "Topic"
+msgstr "Onderwerp"
+
+msgid "For example: Communication"
+msgstr "Bijvoorbeeld: Communicatie"
+
+msgid "One line for the reviewer (optional)"
+msgstr "Eén regel voor de feedbackgever (optioneel)"
+
+msgid "Reviewers see it under the title of the topic."
+msgstr "Feedbackgevers zien die onder de titel van het onderwerp."
+
+msgid "Delete topic"
+msgstr "Onderwerp verwijderen"
+
+msgid "Add a question"
+msgstr "Vraag toevoegen"
+
+msgid "This topic has no question with a score, so it is not on the radar. That is fine for written feedback."
+msgstr "Dit onderwerp heeft geen vraag met een score, dus het staat niet in het radardiagram. Voor geschreven feedback is dat prima."
+
+#, python-format
+msgid "Delete the topic \"%(title)s\" and its question?"
+msgid_plural "Delete the topic \"%(title)s\" and its %(counter)s questions?"
+msgstr[0] "Het onderwerp \"%(title)s\" en de vraag ervan verwijderen?"
+msgstr[1] "Het onderwerp \"%(title)s\" en de %(counter)s vragen ervan verwijderen?"
+
+#, python-format
+msgid "Delete the topic \"%(title)s\"?"
+msgstr "Het onderwerp \"%(title)s\" verwijderen?"
+
+#, python-format
+msgid "Reviewers gave %(counter)s answer to it. That answer is deleted too."
+msgid_plural "Reviewers gave %(counter)s answers to it. These answers are deleted too."
+msgstr[0] "Feedbackgevers gaven er %(counter)s antwoord op. Dat antwoord wordt ook verwijderd."
+msgstr[1] "Feedbackgevers gaven er %(counter)s antwoorden op. Die antwoorden worden ook verwijderd."
+
+msgid "Delete the topic"
+msgstr "Onderwerp verwijderen"
+
+#, python-format
+msgid "You translate into %(language)s. Each row has the original text on the left and your translation on the right. The example on the right of the page shows the form in %(language)s."
+msgstr "Je vertaalt naar %(language)s. Elke rij heeft links de originele tekst en rechts je vertaling. Het voorbeeld rechts op de pagina toont het formulier in %(language)s."
+
+#, python-format
+msgid "You change topics, questions, answer types and the report choices in %(source)s, the first tab above. A text without a translation shows in %(source)s to reviewers."
+msgstr "Onderwerpen, vragen, antwoordtypes en de keuzes voor het rapport wijzig je in %(source)s, het eerste tabblad hierboven. Een tekst zonder vertaling zien feedbackgevers in %(source)s."
+
+msgid "Show only texts that are missing or outdated"
+msgstr "Alleen ontbrekende of verouderde teksten tonen"
+
+msgid "Everything is translated."
+msgstr "Alles is vertaald."
+
+msgid "Missing"
+msgstr "Ontbreekt"
+
+msgid "Outdated"
+msgstr "Verouderd"
+
+msgid "The original text changed after this translation."
+msgstr "De originele tekst is na deze vertaling gewijzigd."
+
+msgid "Still correct"
+msgstr "Klopt nog"
+
 msgid "GDPR Data Management"
 msgstr "AVG-gegevensbeheer"
 
@@ -5488,9 +6162,6 @@ msgstr "Sleep een persoon om die te verplaatsen. Houd Alt ingedrukt om te kopië
 msgid "Rename unit"
 msgstr "Afdeling hernoemen"
 
-msgid "Close"
-msgstr "Sluiten"
-
 msgid "For example: Sales, Engineering"
 msgstr "Bijvoorbeeld: Verkoop, Ontwikkeling"
 
@@ -5554,12 +6225,6 @@ msgid "closed on %(date)s"
 msgstr "afgesloten op %(date)s"
 
 #, python-format
-msgid "%(counter)s answer"
-msgid_plural "%(counter)s answers"
-msgstr[0] "%(counter)s antwoord"
-msgstr[1] "%(counter)s antwoorden"
-
-#, python-format
 msgid "hidden for fewer than %(counter)s answer: %(groups)s"
 msgid_plural "hidden for fewer than %(counter)s answers: %(groups)s"
 msgstr[0] "verborgen bij minder dan %(counter)s antwoord: %(groups)s"
@@ -5618,17 +6283,14 @@ msgstr "Vraag een organisatiebeheerder om credits te kopen."
 msgid "€%(amount)s"
 msgstr "€ %(amount)s"
 
-msgid "Move section up"
-msgstr "Sectie omhoog verplaatsen"
+msgid "Move topic up"
+msgstr "Onderwerp omhoog verplaatsen"
 
 msgid "Move question up"
 msgstr "Vraag omhoog verplaatsen"
 
-msgid "Drag to move"
-msgstr "Sleep om te verplaatsen"
-
-msgid "Move section down"
-msgstr "Sectie omlaag verplaatsen"
+msgid "Move topic down"
+msgstr "Onderwerp omlaag verplaatsen"
 
 msgid "Move question down"
 msgstr "Vraag omlaag verplaatsen"
@@ -5636,36 +6298,6 @@ msgstr "Vraag omlaag verplaatsen"
 #, python-brace-format
 msgid "{name} stands for the first name of the person reviewed."
 msgstr "{name} staat voor de voornaam van de feedbackontvanger."
-
-msgid "Add option"
-msgstr "Optie toevoegen"
-
-#, python-format
-msgid "Type: %(type)s"
-msgstr "Type: %(type)s"
-
-#, python-format
-msgid "Scale: %(min)s-%(max)s"
-msgstr "Schaal: %(min)s-%(max)s"
-
-#, python-format
-msgid "%(count)s-point scale"
-msgstr "%(count)s-puntsschaal"
-
-msgid "Configure Dreyfus/Agency weights and action items"
-msgstr "Wegingen voor Dreyfus/initiatief en actiepunten instellen"
-
-msgid "Dreyfus/Agency"
-msgstr "Dreyfus/initiatief"
-
-msgid "Edit"
-msgstr "Bewerken"
-
-msgid "Delete this question?"
-msgstr "Deze vraag verwijderen?"
-
-msgid "Delete"
-msgstr "Verwijderen"
 
 #, python-format
 msgid "%(counter)s question"
@@ -5766,14 +6398,8 @@ msgstr "Herstellen"
 msgid "Archive"
 msgstr "Archiveren"
 
-msgid "What this score means (optional)"
-msgstr "Wat deze score betekent (optioneel)"
-
-msgid "Describe what each score means"
-msgstr "Beschrijven wat elke score betekent"
-
-msgid "Reviewers can open the descriptions below the question."
-msgstr "Feedbackgevers kunnen de beschrijvingen onder de vraag openen."
+msgid "Delete"
+msgstr "Verwijderen"
 
 msgid "Start a review"
 msgstr "Feedbackronde starten"
@@ -6137,15 +6763,35 @@ msgstr "Beschrijving:"
 msgid "Used in cycles:"
 msgstr "Gebruikt in feedbackrondes:"
 
-msgid "Edit Questionnaire"
-msgstr "Vragenlijst bewerken"
+msgid "Saving..."
+msgstr "Bezig met opslaan..."
+
+msgid "All changes saved"
+msgstr "Alle wijzigingen opgeslagen"
+
+msgid "Not saved. Trying again."
+msgstr "Niet opgeslagen. Er wordt opnieuw geprobeerd."
+
+msgid "You are logged out. Log in again in another tab. This page then saves by itself."
+msgstr "Je bent uitgelogd. Log opnieuw in op een ander tabblad. Deze pagina slaat daarna vanzelf op."
+
+msgid "Try the whole questionnaire"
+msgstr "Hele vragenlijst uitproberen"
+
+msgid "Languages"
+msgstr "Talen"
+
+msgid "Add a topic"
+msgstr "Onderwerp toevoegen"
+
+msgid "What the reviewer sees"
+msgstr "Wat de feedbackgever ziet"
+
+msgid "What the report shows"
+msgstr "Wat het rapport laat zien"
 
 msgid "Create Questionnaire"
 msgstr "Vragenlijst aanmaken"
-
-#, python-format
-msgid "Edit questionnaire \"%(name)s\""
-msgstr "Vragenlijst \"%(name)s\" bewerken"
 
 msgid "Create a new feedback questionnaire"
 msgstr "Nieuwe vragenlijst voor feedback aanmaken"
@@ -6168,416 +6814,6 @@ msgstr "De taal waarin de vragenlijst is geschreven. Vertalingen naar andere tal
 msgid "Set as default questionnaire"
 msgstr "Instellen als standaardvragenlijst"
 
-msgid "Update Information"
-msgstr "Gegevens bijwerken"
-
-msgid "Preview"
-msgstr "Voorbeeld"
-
-msgid "Translate"
-msgstr "Vertalen"
-
-msgid "Edit Section"
-msgstr "Sectie bewerken"
-
-msgid "Section Title"
-msgstr "Titel van de sectie"
-
-msgid "e.g., Technical Skills"
-msgstr "bijv. Technische vaardigheden"
-
-msgid "Brief description of what this section covers"
-msgstr "Korte beschrijving van waar deze sectie over gaat"
-
-msgid "Dreyfus/Agency Configuration"
-msgstr "Instellingen voor Dreyfus/initiatief"
-
-msgid "Dreyfus Model Weights"
-msgstr "Wegingen in het Dreyfus-model"
-
-msgid "Configure how this question contributes to the Dreyfus skill and agency dimensions. Higher weights (up to 2.0) indicate stronger impact on that dimension."
-msgstr "Stel in hoe deze vraag meetelt voor de Dreyfus-dimensies vaardigheid en initiatief. Een hogere weging (tot 2,0) betekent meer invloed op die dimensie."
-
-msgid "Skill Weight"
-msgstr "Weging vaardigheid"
-
-msgctxt "weight level"
-msgid "None"
-msgstr "Geen"
-
-msgid "Low (0.5)"
-msgstr "Laag (0,5)"
-
-msgid "Medium (1.0)"
-msgstr "Gemiddeld (1,0)"
-
-msgid "High (1.5)"
-msgstr "Hoog (1,5)"
-
-msgid "Very High (2.0)"
-msgstr "Zeer hoog (2,0)"
-
-msgid "Agency Weight"
-msgstr "Weging initiatief"
-
-msgid "Personalized Action Items"
-msgstr "Persoonlijke actiepunten"
-
-msgid "Add Action Item"
-msgstr "Actiepunt toevoegen"
-
-msgid "Define action items that will appear in development plans when this question scores below a threshold."
-msgstr "Stel actiepunten in die in het ontwikkelplan verschijnen als de score op deze vraag onder een drempel ligt."
-
-msgid "Save Configuration"
-msgstr "Instellingen opslaan"
-
-msgid "Edit Question"
-msgstr "Vraag bewerken"
-
-msgid "Question Text"
-msgstr "Vraagtekst"
-
-msgid "Question Type"
-msgstr "Vraagtype"
-
-msgid "Rating Scale (1-5)"
-msgstr "Beoordelingsschaal (1-5)"
-
-msgid "Single Choice (Dropdown)"
-msgstr "Eén keuze (keuzelijst)"
-
-msgid "Multiple Choice (Checkboxes)"
-msgstr "Meerdere keuzes (selectievakjes)"
-
-msgid "Rating labels"
-msgstr "Labels van de beoordelingsschaal"
-
-msgid "Likert Scale Items"
-msgstr "Antwoordopties van de Likertschaal"
-
-msgid "Reverse scored"
-msgstr "Omgekeerde score"
-
-msgid "Select this for a negatively worded statement, for example “This person often misses deadlines”. The first option then gets the highest score."
-msgstr "Kies dit voor een negatief geformuleerde stelling, bijvoorbeeld “Deze persoon haalt deadlines vaak niet”. De eerste optie krijgt dan de hoogste score."
-
-msgid "Scale Configuration"
-msgstr "Schaalinstellingen"
-
-msgid "Min"
-msgstr "Min."
-
-msgid "Max"
-msgstr "Max."
-
-msgctxt "scale increment"
-msgid "Step"
-msgstr "Stapgrootte"
-
-msgid "Min Label (Optional)"
-msgstr "Label minimum (optioneel)"
-
-msgid "e.g., Not at all"
-msgstr "bijv. Helemaal niet"
-
-msgid "Max Label (Optional)"
-msgstr "Label maximum (optioneel)"
-
-msgid "e.g., Extremely"
-msgstr "bijv. Heel erg"
-
-msgid "Choices"
-msgstr "Opties"
-
-msgid "Enable numeric scoring for analytics"
-msgstr "Numerieke score inschakelen voor analyses"
-
-msgid "Required question"
-msgstr "Verplichte vraag"
-
-msgid "Sections and Questions"
-msgstr "Secties en vragen"
-
-msgid "Delete section and all its questions?"
-msgstr "Sectie en alle bijbehorende vragen verwijderen?"
-
-msgid "Delete Section"
-msgstr "Sectie verwijderen"
-
-msgid "No questions in this section yet."
-msgstr "Nog geen vragen in deze sectie."
-
-msgid "Add Question to This Section"
-msgstr "Vraag aan deze sectie toevoegen"
-
-#, python-brace-format
-msgid "How effectively does {name} communicate complex ideas?"
-msgstr "Hoe goed brengt {name} complexe ideeën over?"
-
-msgid "Default 5-point scale provided. Customize or use 3-point, 7-point, etc."
-msgstr "Standaard staat er een 5-puntsschaal. Pas die aan of gebruik een 3-puntsschaal, 7-puntsschaal, enz."
-
-msgid "Creates a slider or numeric input for precise measurement (e.g., 1-100 scale)."
-msgstr "Maakt een schuifregelaar of getalveld voor een nauwkeurige meting (bijv. een schaal van 1-100)."
-
-msgid "When enabled, this question will contribute to section scores and charts"
-msgstr "Als dit aanstaat, telt deze vraag mee in de sectiescores en grafieken"
-
-msgid "Learn more about scoring"
-msgstr "Meer over scores"
-
-msgid "Dreyfus/Agency Configuration (Optional)"
-msgstr "Instellingen voor Dreyfus/initiatief (optioneel)"
-
-msgid "Model Weights"
-msgstr "Wegingen in het model"
-
-msgid "Set how this question contributes to Dreyfus skill and agency dimensions"
-msgstr "Stel in hoe deze vraag meetelt voor de Dreyfus-dimensies vaardigheid en initiatief"
-
-msgid "None (0)"
-msgstr "Geen (0)"
-
-msgid "Action Items"
-msgstr "Actiepunten"
-
-msgid "Define action items for development plans when this question scores low"
-msgstr "Stel actiepunten in voor het ontwikkelplan bij een lage score op deze vraag"
-
-msgid "Add Question"
-msgstr "Vraag toevoegen"
-
-#, python-format
-msgid "Action Item #%(number)s"
-msgstr "Actiepunt #%(number)s"
-
-msgid "e.g., Practice pair programming with senior developers"
-msgstr "bijv. Oefen pair programming met ervaren ontwikkelaars"
-
-msgid "Threshold"
-msgstr "Drempel"
-
-msgid "Stages (optional)"
-msgstr "Fasen (optioneel)"
-
-msgid "Question Scoring Guide"
-msgstr "Uitleg over het scoren van vragen"
-
-msgid "How Question Types Are Scored"
-msgstr "Zo wordt elk vraagtype gescoord"
-
-msgid "Scoring Method"
-msgstr "Scoremethode"
-
-msgid "Automatically scored 1-5"
-msgstr "Automatisch een score van 1-5"
-
-msgid "Position-based (1st option=1, 2nd=2, etc.)"
-msgstr "Op basis van positie (1e optie=1, 2e=2, enz.)"
-
-msgid "Not scored (qualitative only)"
-msgstr "Geen score (alleen kwalitatief)"
-
-msgid "Optional weighted scoring"
-msgstr "Optioneel een gewogen score"
-
-msgid "What is Weighted Scoring?"
-msgstr "Wat is een gewogen score?"
-
-msgid "Weighted scoring lets you assign numeric values to each choice option. This allows choice-based questions to contribute to:"
-msgstr "Met een gewogen score geef je elke keuzeoptie een getalswaarde. Zo tellen keuzevragen mee in:"
-
-msgid "Section averages and overall scores"
-msgstr "Sectiegemiddelden en totaalscores"
-
-msgid "Performance charts and visualizations"
-msgstr "Grafieken en visualisaties van prestaties"
-
-msgid "Insights & analytics (strengths/development areas)"
-msgstr "Inzichten en analyses (sterke punten/ontwikkelpunten)"
-
-msgid "Comparisons across review cycles"
-msgstr "Vergelijkingen tussen feedbackrondes"
-
-msgid "How It Works"
-msgstr "Zo werkt het"
-
-msgid "User selects ONE option. Score = weight of selected option."
-msgstr "De gebruiker kiest ÉÉN optie. Score = weging van de gekozen optie."
-
-msgid "Example:"
-msgstr "Voorbeeld:"
-
-msgid "How would you rate their communication?"
-msgstr "Hoe beoordeel je de communicatie van deze persoon?"
-
-msgid "Excellent Communication"
-msgstr "Uitstekende communicatie"
-
-msgid "Good Communication"
-msgstr "Goede communicatie"
-
-msgid "Average Communication"
-msgstr "Gemiddelde communicatie"
-
-msgid "Needs Improvement"
-msgstr "Verbetering nodig"
-
-msgid "Poor Communication"
-msgstr "Slechte communicatie"
-
-msgid "If user selects \"Good\" → Score: 4"
-msgstr "Als de gebruiker \"Goede communicatie\" kiest → Score: 4"
-
-msgid "User selects MULTIPLE options. Score = sum of selected option weights."
-msgstr "De gebruiker kiest MEERDERE opties. Score = som van de wegingen van de gekozen opties."
-
-msgid "Which leadership qualities do they demonstrate?"
-msgstr "Welke leiderschapskwaliteiten laat deze persoon zien?"
-
-msgid "Strategic thinking"
-msgstr "Strategisch denken"
-
-msgid "Team motivation"
-msgstr "Het team motiveren"
-
-msgid "Clear communication"
-msgstr "Duidelijke communicatie"
-
-msgid "Delegation"
-msgstr "Delegeren"
-
-msgid "Time management"
-msgstr "Timemanagement"
-
-msgid "If user selects \"Strategic thinking\" + \"Clear communication\" + \"Team motivation\"<br> → Score: 5 + 4 + 5 = 14 (rewards demonstrating more qualities)"
-msgstr "Als de gebruiker \"Strategisch denken\" + \"Duidelijke communicatie\" + \"Het team motiveren\" kiest<br> → Score: 5 + 4 + 5 = 14 (meer getoonde kwaliteiten geven een hogere score)"
-
-msgid "Multiple choice uses SUM (not average) to reward selecting more positive attributes. This makes it ideal for competency checklists where more is better."
-msgstr "Bij meerdere keuzes wordt de SOM gebruikt (niet het gemiddelde), zodat meer gekozen positieve eigenschappen een hogere score geven. Dat is ideaal voor competentiechecklists waarbij meer beter is."
-
-msgid "Best Practices"
-msgstr "Aanbevelingen"
-
-msgid "Use consistent scales:"
-msgstr "Gebruik dezelfde schalen:"
-
-msgid "Stick to 1-5 or 1-10 throughout your questionnaire"
-msgstr "Houd in de hele vragenlijst 1-5 of 1-10 aan"
-
-msgid "Higher = Better:"
-msgstr "Hoger = beter:"
-
-msgid "Assign higher weights to more positive/desirable options"
-msgstr "Geef positievere of wenselijkere opties een hogere weging"
-
-msgid "Frequency questions:"
-msgstr "Vragen over frequentie:"
-
-msgid "Daily=5, Weekly=4, Monthly=3, Rarely=2, Never=1"
-msgstr "Dagelijks=5, Wekelijks=4, Maandelijks=3, Zelden=2, Nooit=1"
-
-msgid "Competency checklists:"
-msgstr "Competentiechecklists:"
-
-msgid "Weight by importance/difficulty level, or set all weights to 1 to simply count how many competencies were selected"
-msgstr "Weeg op belang of moeilijkheid, of zet alle wegingen op 1 om alleen te tellen hoeveel competenties zijn gekozen"
-
-msgid "Equal weighting:"
-msgstr "Gelijke weging:"
-
-msgid "For multiple choice questions where all options are equally valuable, set all weights to 1. This creates a simple counter (3 selections = score of 3)"
-msgstr "Zet bij vragen met meerdere keuzes waarbij alle opties evenveel waard zijn alle wegingen op 1. Zo krijg je een eenvoudige teller (3 keuzes = score 3)"
-
-msgid "Skip scoring when:"
-msgstr "Gebruik geen score als:"
-
-msgid "Choices are purely categorical (e.g., department names, roles)"
-msgstr "de opties alleen categorieën zijn (bijv. afdelingsnamen, rollen)"
-
-msgid "Tip:"
-msgstr "Tip:"
-
-msgid "You can leave scoring disabled for simple multiple choice questions. Enable it only when you need numeric analytics for that specific question."
-msgstr "Bij eenvoudige vragen met meerdere keuzes kun je de score uit laten staan. Zet die alleen aan als je voor die vraag numerieke analyses nodig hebt."
-
-msgid "Got it!"
-msgstr "Duidelijk!"
-
-msgid "No sections yet. Add a section to start building your questionnaire."
-msgstr "Nog geen secties. Voeg een sectie toe om je vragenlijst op te bouwen."
-
-msgid "Add Section"
-msgstr "Sectie toevoegen"
-
-msgid "Leadership & Management"
-msgstr "Leiderschap en management"
-
-msgid "Section Description (Optional)"
-msgstr "Beschrijving van de sectie (optioneel)"
-
-msgid "Questions about leadership style, decision-making, and team management"
-msgstr "Vragen over leiderschapsstijl, besluitvorming en het aansturen van een team"
-
-msgid "Option"
-msgstr "Optie"
-
-msgid "Weight"
-msgstr "Weging"
-
-msgid "Move up"
-msgstr "Omhoog"
-
-msgid "Move down"
-msgstr "Omlaag"
-
-msgid "Remove option"
-msgstr "Optie verwijderen"
-
-msgid "Request failed."
-msgstr "Verzoek mislukt."
-
-msgid "Saving..."
-msgstr "Bezig met opslaan..."
-
-msgid "Failed to update question."
-msgstr "De vraag kon niet worden bijgewerkt."
-
-msgid "Adding..."
-msgstr "Bezig met toevoegen..."
-
-msgid "Question list container not found."
-msgstr "Container voor de lijst met vragen niet gevonden."
-
-msgid "Failed to add question."
-msgstr "De vraag kon niet worden toegevoegd."
-
-msgid "No action items configured. Click \"+ Add Action Item\" to create one."
-msgstr "Geen actiepunten ingesteld. Klik op \"+ Actiepunt toevoegen\" om er een aan te maken."
-
-#, python-format
-msgid "Stage %(stage)s"
-msgstr "Fase %(stage)s"
-
-msgid "Action Item Text"
-msgstr "Tekst van het actiepunt"
-
-msgid "Threshold Score"
-msgstr "Drempelscore"
-
-msgid "Show if score &lt; this value"
-msgstr "Tonen als de score &lt; deze waarde is"
-
-msgid "Relevant Stages (Optional)"
-msgstr "Relevante fasen (optioneel)"
-
-msgid "Leave unchecked for all stages"
-msgstr "Laat alles uitgevinkt voor alle fasen"
-
-msgid "Saved"
-msgstr "Opgeslagen"
-
 msgid "Choose a questionnaire, preview the questions, and see an example feedback report."
 msgstr "Kies een vragenlijst, bekijk de vragen en bekijk een voorbeeldrapport."
 
@@ -6597,24 +6833,8 @@ msgstr "Een beheerder heeft nog geen vragenlijst ingesteld"
 msgid "Preview: %(name)s"
 msgstr "Voorbeeld: %(name)s"
 
-msgid "1 (Strongly Disagree) to 5 (Strongly Agree)"
-msgstr "1 (helemaal mee oneens) tot 5 (helemaal mee eens)"
-
-msgid "1 (Needs Improvement) to 5 (Exceptional)"
-msgstr "1 (verbetering nodig) tot 5 (uitzonderlijk)"
-
-msgid "1 (Never) to 5 (Always)"
-msgstr "1 (nooit) tot 5 (altijd)"
-
-#, python-format
-msgid "1 to %(max)s"
-msgstr "1 tot en met %(max)s"
-
-msgid "Likert scale options:"
-msgstr "Opties van de Likertschaal:"
-
-msgid "Options:"
-msgstr "Opties:"
+msgid "Back to the editor"
+msgstr "Terug naar de editor"
 
 #, python-format
 msgid "Sample Report — %(name)s"
@@ -6658,29 +6878,6 @@ msgstr "Prestaties uitgesplitst per competentiegebied"
 
 msgid "Overall score (excluding self-assessment)"
 msgstr "Totaalscore (zonder zelfevaluatie)"
-
-#, python-format
-msgid "Translate %(name)s into %(language)s"
-msgstr "%(name)s vertalen naar het %(language)s"
-
-#, python-format
-msgid "Translate into %(language)s"
-msgstr "Vertalen naar: %(language)s"
-
-msgid "Back to Editor"
-msgstr "Terug naar de editor"
-
-msgid "Missing"
-msgstr "Ontbreekt"
-
-msgid "Outdated"
-msgstr "Verouderd"
-
-msgid "Still correct"
-msgstr "Klopt nog"
-
-msgid "Save Translation"
-msgstr "Vertaling opslaan"
 
 msgid "Submit Your Review"
 msgstr "Je review versturen"
@@ -8465,6 +8662,9 @@ msgstr "Raad niet wie wat heeft geschreven. De feedback is anoniem. Praat over g
 msgid "Agree on one or two goals. Write them down. Set a date to look at the progress together."
 msgstr "Spreek één of twee doelen af. Schrijf ze op. Kies een datum om samen naar de voortgang te kijken."
 
+msgid "Tip:"
+msgstr "Tip:"
+
 msgid "Open the report:"
 msgstr "Open het rapport:"
 
@@ -9487,12 +9687,11 @@ msgid "Learn more about Agency Levels"
 msgstr "Meer over de niveaus van initiatief"
 
 #, python-format
-msgid "Level %(level)s/5.0"
-msgstr "Niveau %(level)s/5,0"
-
-#, python-format
 msgid "To Reach %(stage)s"
 msgstr "Om %(stage)s te bereiken"
+
+msgid "Action Items"
+msgstr "Actiepunten"
 
 #, python-format
 msgid "To Reach Level %(level)s:"
@@ -9504,11 +9703,12 @@ msgstr "Meer over de prestatiematrix"
 msgid "Question Format:"
 msgstr "Vraagtype:"
 
-msgid "Rating scale (1-5):"
-msgstr "Beoordelingsschaal (1-5):"
+#, python-format
+msgid "Rating scale: 1 to %(max)s"
+msgstr "Beoordelingsschaal: 1 tot en met %(max)s"
 
-msgid "Rating scale: 1 to 5"
-msgstr "Beoordelingsschaal: 1 tot en met 5"
+msgid "Likert scale options:"
+msgstr "Opties van de Likertschaal:"
 
 msgid "Single choice (select one):"
 msgstr "Enkele keuze (kies één optie):"
@@ -9817,11 +10017,14 @@ msgstr "Starten"
 msgid "Continue"
 msgstr "Verdergaan"
 
-msgid "Done"
-msgstr "Klaar"
-
 msgid "Closed"
 msgstr "Afgesloten"
+
+msgid "Share your thoughts..."
+msgstr "Deel je gedachten..."
+
+msgid "Select an option"
+msgstr "Kies een optie"
 
 msgid "Unable to Claim Token"
 msgstr "Uitnodigingslink kan niet worden gebruikt"
@@ -9860,12 +10063,6 @@ msgstr "360-gradenfeedback"
 #, python-format
 msgid "Step 1 of %(total)s"
 msgstr "Stap 1 van %(total)s"
-
-msgid "Share your thoughts..."
-msgstr "Deel je gedachten..."
-
-msgid "Select an option"
-msgstr "Kies een optie"
 
 msgid "Submit Feedback"
 msgstr "Feedback versturen"

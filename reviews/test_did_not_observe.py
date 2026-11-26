@@ -5,15 +5,17 @@ This feature allows reviewers to indicate they did not observe behavior
 for a rating question, which is stored as {"value": None, "did_not_observe": True}
 and excluded from all numerical calculations.
 """
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
+from django.urls import reverse
 from core.models import Organization
-from accounts.models import Reviewee
-from questionnaires.models import Questionnaire, QuestionSection, Question
+from accounts.models import Reviewee, UserProfile
+from questionnaires.models import AnswerOption, Questionnaire, QuestionSection, Question
 from reviews.models import ReviewCycle, ReviewerToken, Response
 from reports.services import generate_report
 
 
+@override_settings(RATELIMIT_ENABLE=False)
 class DidNotObserveTestCase(TestCase):
     """Test that 'Did not observe' responses are properly handled."""
 
@@ -21,6 +23,8 @@ class DidNotObserveTestCase(TestCase):
         """Create test data for rating questions."""
         self.organization = Organization.objects.create(name='Test Org')
         self.user = User.objects.create_user(username='testuser')
+        # Without a user and an organization, the setup middleware redirects every request
+        UserProfile.objects.create(user=self.user, organization=self.organization)
         self.reviewee = Reviewee.objects.create(
             organization=self.organization,
             name='Test Reviewee',
@@ -49,6 +53,94 @@ class DidNotObserveTestCase(TestCase):
             questionnaire=self.questionnaire,
             created_by=self.user,
         )
+
+    def create_likert(self, config):
+        likert = Question.objects.create(
+            section=self.section,
+            question_text='Does this person keep their promises?',
+            question_type='likert',
+            config=config,
+            required=True,
+            order=2,
+        )
+        for order, label in enumerate(['Disagree', 'Somewhat disagree', 'Somewhat agree', 'Agree'], start=1):
+            AnswerOption.objects.create(question=likert, order=order, label=label)
+        return likert
+
+    def submit(self, answers):
+        token = ReviewerToken.objects.create(cycle=self.cycle, category='peer')
+        data = {f'question_{question.id}': value for question, value in answers.items()}
+        return self.client.post(reverse('reviews:submit_feedback', args=[token.token]), data)
+
+    def test_a_missing_setting_means_on_for_a_score_and_off_for_a_likert(self):
+        self.assertTrue(Question(question_type='rating', config={}).offers_did_not_observe)
+        self.assertFalse(Question(question_type='likert', config={}).offers_did_not_observe)
+        self.assertFalse(Question(question_type='rating', config={'did_not_observe': False}).offers_did_not_observe)
+        self.assertFalse(Question(question_type='scale', config={'did_not_observe': True}).offers_did_not_observe)
+
+    def test_a_likert_that_offers_it_stores_it_like_a_score(self):
+        likert = self.create_likert({'did_not_observe': True})
+
+        result = self.submit({self.rating_question: '3', likert: 'did_not_observe'})
+
+        self.assertEqual(result.status_code, 200, result.content)
+        response = Response.objects.get(question=likert)
+        self.assertEqual(response.answer_data, {'value': None, 'did_not_observe': True})
+
+    def test_a_question_that_does_not_offer_it_refuses_it(self):
+        self.rating_question.config = {'min': 1, 'max': 5, 'did_not_observe': False}
+        self.rating_question.save()
+
+        result = self.submit({self.rating_question: 'did_not_observe'})
+
+        self.assertEqual(result.status_code, 400)
+        self.assertFalse(Response.objects.filter(question=self.rating_question).exists())
+
+        likert = self.create_likert({})
+
+        result = self.submit({self.rating_question: '3', likert: 'did_not_observe'})
+
+        self.assertEqual(result.status_code, 400)
+        self.assertFalse(Response.objects.filter(question=likert).exists())
+
+    def test_a_written_answer_with_that_text_is_stored_as_text(self):
+        written = Question.objects.create(
+            section=self.section,
+            question_text='What should this person keep doing?',
+            question_type='text',
+            required=True,
+            order=2,
+        )
+
+        result = self.submit({self.rating_question: '3', written: 'did_not_observe'})
+
+        self.assertEqual(result.status_code, 200, result.content)
+        self.assertEqual(Response.objects.get(question=written).answer_data, {'value': 'did_not_observe'})
+
+    def test_a_score_without_the_setting_still_accepts_it(self):
+        self.assertNotIn('did_not_observe', self.rating_question.config)
+
+        result = self.submit({self.rating_question: 'did_not_observe'})
+
+        self.assertEqual(result.status_code, 200, result.content)
+        response = Response.objects.get(question=self.rating_question)
+        self.assertEqual(response.answer_data, {'value': None, 'did_not_observe': True})
+
+    def test_a_likert_did_not_observe_does_not_count_in_the_average(self):
+        likert = self.create_likert({'did_not_observe': True})
+        last = likert.options.last().id
+        for answer_data in [{'value': last}, {'value': last}, {'value': None, 'did_not_observe': True}]:
+            token = ReviewerToken.objects.create(cycle=self.cycle, category='peer')
+            Response.objects.create(
+                cycle=self.cycle, token=token, question=likert, category='peer', answer_data=answer_data
+            )
+
+        report = generate_report(self.cycle)
+
+        question_data = report.report_data['by_section'][str(self.section.id)]['questions'][str(likert.id)]
+        peer = question_data['by_category']['peer']
+        self.assertEqual(peer['avg'], 5.0)
+        self.assertEqual(peer['count'], 3)
 
     def test_normal_numeric_rating_still_works(self):
         """Verify that regular numeric ratings continue to work as before."""

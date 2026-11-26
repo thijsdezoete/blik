@@ -2,8 +2,9 @@ from django import template
 from django.utils.translation import gettext_lazy as _
 
 from questionnaires.models import Question
-from questionnaires.placeholders import personalize as personalize_text
+from questionnaires.placeholders import NAME_PLACEHOLDER, personalize as personalize_text
 from reports.report_texts import RATING_RANGES
+from reports.scoring import rating_option_count, score_on_five
 from reports.services import RATING_EXCELLENT, RATING_OUTSTANDING, RATING_STRONG, get_rating_key
 from reviews.models import CATEGORY_ORDER
 
@@ -189,6 +190,38 @@ def report_labels(question_data):
 
 
 @register.filter
+def browser_number(value):
+    """A number as an attribute of an input needs it: with a point in every language, and whole when it is whole.
+
+    A template writes 0.5 as "0,5" in a language with a decimal comma, which a range or number input does not read.
+    """
+
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return ''
+
+    return f'{value:g}'
+
+
+@register.filter
+def rating_values(question):
+    """The values of a score question as text, '1' up to its config's max: a Question or a report question dict.
+
+    A max that is missing or not a whole number from 2 to 7 gives the five values every score had before.
+    """
+
+    config = question.get('question_config') if isinstance(question, dict) else question.config
+
+    return [str(value) for value in range(1, rating_option_count(config) + 1)]
+
+
+@register.filter
+def on_five(question_data, value):
+    """An average of a report question on the 1 to 5 scale, rounded to two decimals."""
+
+    return round(score_on_five(question_data, value), 2)
+
+
+@register.filter
 def get_rating_label(question_data, rating_value):
     """Get label for a rating value of a report question"""
 
@@ -213,6 +246,12 @@ def count_value(lst, value):
 def personalize(text, name):
     """The text with the reviewee's first name, see questionnaires/placeholders.py."""
     return personalize_text(text, name)
+
+
+@register.filter
+def name_parts(text):
+    """The text split at the {name} placeholder; the editor shows the placeholder as a chip between the parts."""
+    return text.split(NAME_PLACEHOLDER)
 
 
 @register.filter

@@ -15,7 +15,6 @@ from accounts.permissions import (
     ensure_permission_groups,
 )
 from core.models import Organization
-from questionnaires.factories import QuestionFactory, QuestionSectionFactory
 from questionnaires.models import Questionnaire
 
 
@@ -36,8 +35,6 @@ class QuestionnairePermissionTestCase(TestCase):
 
         self.questionnaire = Questionnaire.objects.create(
             name='Professional Skills', organization=self.org)
-        section = QuestionSectionFactory(questionnaire=self.questionnaire)
-        self.question = QuestionFactory(section=section)
 
 
 class QuestionnaireGroupPermissionTests(QuestionnairePermissionTestCase):
@@ -84,7 +81,7 @@ class QuestionnaireEditAccessTests(QuestionnairePermissionTestCase):
 
     def test_member_cannot_rename_a_questionnaire(self):
         self.client.force_login(self.member)
-        self.client.post(self._edit_url(), {'action': 'update_info', 'name': 'Renamed'})
+        self.client.post(self._edit_url(), {'action': 'save_info', 'name': 'Renamed', 'source_language': 'en'})
 
         self.questionnaire.refresh_from_db()
         self.assertEqual(self.questionnaire.name, 'Professional Skills')
@@ -102,37 +99,10 @@ class QuestionnaireEditAccessTests(QuestionnairePermissionTestCase):
 
     def test_admin_can_rename_a_questionnaire(self):
         self.client.force_login(self.admin)
-        self.client.post(self._edit_url(), {'action': 'update_info', 'name': 'Renamed'})
+        self.client.post(self._edit_url(), {'action': 'save_info', 'name': 'Renamed', 'source_language': 'en'})
 
         self.questionnaire.refresh_from_db()
         self.assertEqual(self.questionnaire.name, 'Renamed')
-
-
-class DreyfusConfigApiAccessTests(QuestionnairePermissionTestCase):
-    def _api_url(self):
-        return reverse('question_dreyfus_config_api', args=[self.question.id])
-
-    def test_member_gets_json_403_not_a_redirect(self):
-        """The endpoint's callers parse JSON, so it must not redirect."""
-        self.client.force_login(self.member)
-        response = self.client.get(self._api_url())
-
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response['Content-Type'], 'application/json')
-
-    def test_anonymous_gets_json_401_not_the_login_page(self):
-        """@login_required would redirect to HTML the caller cannot parse."""
-        response = self.client.get(self._api_url())
-
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response['Content-Type'], 'application/json')
-
-    def test_admin_gets_the_configuration(self):
-        self.client.force_login(self.admin)
-        response = self.client.get(self._api_url())
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('dreyfus_mapping', response.json())
 
 
 class QuestionnaireListVisibilityTests(QuestionnairePermissionTestCase):

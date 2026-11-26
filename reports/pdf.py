@@ -14,9 +14,10 @@ from weasyprint.urls import URLFetcher
 from core.languages import recipient_language
 from reviews.models import CATEGORY_ORDER
 from reviews.templatetags.feedback_tags import distribution_key, likert_positive_count, others_average, percentage, \
-    report_options
+    rating_values, report_options
 
 from .report_texts import RATING_RANGES, RATINGS
+from .scoring import score_on_five
 from .services import _hidden_groups, get_rating_key
 
 from .context import build_report_context
@@ -348,7 +349,7 @@ def _detail_question(question):
     qtype = question.get('question_type')
     options = report_options(question)
     if qtype == 'rating':
-        columns = [(str(rating), str(rating)) for rating in range(1, 6)]
+        columns = [(rating, rating) for rating in rating_values(question)]
     elif qtype in ('likert', 'single_choice', 'multiple_choice'):
         columns = [(distribution_key(option), option['label']) for option in options]
     else:
@@ -361,7 +362,11 @@ def _detail_question(question):
     for category in order:
         group = by_category[category]
         count = group.get('count') or 0
-        row = {'category': category, 'group': group, 'count': count, 'avg': group.get('avg') if has_avg else None}
+        avg = group.get('avg') if has_avg else None
+        if qtype == 'rating' and avg is not None:
+            # A score with fewer or more than five options is shown on the 1 to 5 scale, as on the web
+            avg = round(score_on_five(question, avg), 2)
+        row = {'category': category, 'group': group, 'count': count, 'avg': avg}
         if not group.get('insufficient'):
             distribution = group.get('distribution') or {}
             row['cells'] = [_cell(distribution.get(key, 0), count) for key, _label in columns]

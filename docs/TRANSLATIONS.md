@@ -11,7 +11,7 @@ for each language.
 | Templates, Python code, emails | `locale/<locale>/LC_MESSAGES/django.po` |
 | JavaScript in `static/js/` | `locale/<locale>/LC_MESSAGES/djangojs.po` |
 | The questionnaires Blik ships | `locale/<locale>/LC_MESSAGES/questionnaires.po`, taken from `questionnaires/fixtures/` (see `questionnaires/shipped.py`) |
-| Questionnaires an organization writes or edits | Translation tables in the database, edited with *Translate* in the questionnaire editor |
+| Questionnaires an organization writes or edits | Translation tables in the database, edited on the language tabs of the questionnaire editor |
 
 Reports store codes and numbers. `reports/report_texts.py` adds the texts in the reader's
 language when a report is shown. Emails are rendered in the recipient's language

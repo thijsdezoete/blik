@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-24 11:15+0000\n"
+"POT-Creation-Date: 2026-11-26 14:34+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1058,85 +1058,26 @@ msgstr "Fragebogen „%(name)s“ angelegt."
 msgid "Error creating questionnaire: %(error)s"
 msgstr "Fehler beim Anlegen des Fragebogens: %(error)s"
 
-#, python-format
-msgid "This questionnaire is already translated into %(language)s. Empty that translation first to make %(language)s its source language."
-msgstr "Für %(language)s gibt es bereits eine Übersetzung dieses Fragebogens. Leeren Sie diese zuerst, um %(language)s zur Ausgangssprache zu machen."
+msgid "Only a question with a score can have advice."
+msgstr "Nur eine Frage mit Bewertung kann Maßnahmen haben."
 
-#, python-format
-msgid "Questionnaire \"%(name)s\" updated successfully."
-msgstr "Fragebogen „%(name)s“ aktualisiert."
+msgid "Choose a stage and write a score from 1 to 5."
+msgstr "Eine Stufe wählen und eine Bewertung von 1 bis 5 eingeben."
 
-#, python-format
-msgid "Error updating questionnaire: %(error)s"
-msgstr "Fehler beim Aktualisieren des Fragebogens: %(error)s"
+msgid "This topic does not exist any more. Reload the page."
+msgstr "Dieses Thema gibt es nicht mehr. Bitte die Seite neu laden."
+
+msgid "This question does not exist any more. Reload the page."
+msgstr "Diese Frage gibt es nicht mehr. Bitte die Seite neu laden."
+
+msgid "This change is not possible. Reload the page."
+msgstr "Diese Änderung ist nicht möglich. Bitte die Seite neu laden."
 
 msgid "The new order could not be saved. Reload the page and try again."
 msgstr "Die neue Reihenfolge konnte nicht gespeichert werden. Bitte die Seite neu laden und erneut versuchen."
 
-#, python-format
-msgid "Section \"%(title)s\" added."
-msgstr "Abschnitt „%(title)s“ hinzugefügt."
-
-#, python-format
-msgid "Error adding section: %(error)s"
-msgstr "Fehler beim Hinzufügen des Abschnitts: %(error)s"
-
-#, python-format
-msgid "Section \"%(title)s\" updated successfully."
-msgstr "Abschnitt „%(title)s“ aktualisiert."
-
-msgid "Section not found."
-msgstr "Abschnitt nicht gefunden."
-
-#, python-format
-msgid "Error updating section: %(error)s"
-msgstr "Fehler beim Aktualisieren des Abschnitts: %(error)s"
-
-msgid "Invalid weight values. Scoring disabled for this question."
-msgstr "Ungültige Gewichtungen. Die Bewertung ist für diese Frage deaktiviert."
-
-msgid "Invalid scale values. Using defaults (1-100, step 1)."
-msgstr "Ungültige Skalenwerte. Es gelten die Standardwerte (1–100, Schrittweite 1)."
-
-msgid "Question added successfully."
-msgstr "Frage hinzugefügt."
-
-msgid "Error adding question. Please try again."
-msgstr "Fehler beim Hinzufügen der Frage. Bitte erneut versuchen."
-
-#, python-format
-msgid "Section \"%(title)s\" deleted."
-msgstr "Abschnitt „%(title)s“ gelöscht."
-
-#, python-format
-msgid "Error deleting section: %(error)s"
-msgstr "Fehler beim Löschen des Abschnitts: %(error)s"
-
-msgid "Question deleted."
-msgstr "Frage gelöscht."
-
-#, python-format
-msgid "Error deleting question: %(error)s"
-msgstr "Fehler beim Löschen der Frage: %(error)s"
-
-msgid "Question updated successfully."
-msgstr "Frage aktualisiert."
-
-msgid "Error updating question. Please try again."
-msgstr "Fehler beim Aktualisieren der Frage. Bitte erneut versuchen."
-
-msgid "Dreyfus/Agency configuration updated successfully."
-msgstr "Dreyfus- und Eigeninitiative-Konfiguration aktualisiert."
-
-msgid "Question not found."
-msgstr "Frage nicht gefunden."
-
-#, python-format
-msgid "Error updating Dreyfus configuration: %(error)s"
-msgstr "Fehler beim Aktualisieren der Dreyfus-Konfiguration: %(error)s"
-
-msgid "Translation saved."
-msgstr "Übersetzung gespeichert."
+msgid "This weight is not possible."
+msgstr "Diese Gewichtung ist nicht möglich."
 
 #, python-format
 msgid "Questionnaire \"%(name)s\" archived. It is used by %(count)s review cycle(s) and cannot be deleted."
@@ -1153,12 +1094,6 @@ msgstr "Fragebogen „%(name)s“ gelöscht."
 #, python-format
 msgid "Questionnaire \"%(name)s\" restored."
 msgstr "Fragebogen „%(name)s“ wiederhergestellt."
-
-msgid "Question not found"
-msgstr "Frage nicht gefunden"
-
-msgid "Internal server error"
-msgstr "Interner Serverfehler"
 
 msgid "Newest first"
 msgstr "Neueste zuerst"
@@ -2172,6 +2107,132 @@ msgstr "Stimme zu"
 msgid "Strongly Agree"
 msgstr "Stimme voll zu"
 
+msgid "Does not count"
+msgstr "Zählt nicht"
+
+msgid "Counts half"
+msgstr "Zählt halb"
+
+msgid "Counts once"
+msgstr "Zählt einfach"
+
+msgid "Counts 1.5 times"
+msgstr "Zählt 1,5-fach"
+
+msgid "Counts double"
+msgstr "Zählt doppelt"
+
+msgid "Skill level (Dreyfus model)"
+msgstr "Kompetenzstufe (Dreyfus-Modell)"
+
+msgid "Shows which of five stages the person is at, from Novice to Expert."
+msgstr "Zeigt, auf welcher von fünf Stufen die Person steht, von Neuling bis Expert:in."
+
+msgid "Skill level"
+msgstr "Kompetenzstufe"
+
+msgid "Example: \"Alex solves hard problems without help\" says something about skill."
+msgstr "Beispiel: „Alex löst schwierige Probleme ohne Hilfe“ sagt etwas über die Kompetenz."
+
+msgid "Initiative (agency model)"
+msgstr "Eigeninitiative (Agency-Modell)"
+
+msgid "Shows how much the person acts without being asked, in five levels."
+msgstr "Zeigt in fünf Stufen, wie sehr die Person handelt, ohne dazu aufgefordert zu werden."
+
+msgid "Initiative"
+msgstr "Eigeninitiative"
+
+msgid "Example: \"Alex starts improvements without being asked\" says something about initiative."
+msgstr "Beispiel: „Alex stößt Verbesserungen an, ohne dazu aufgefordert zu werden“ sagt etwas über die Eigeninitiative."
+
+msgid "Score"
+msgstr "Bewertungsskala"
+
+msgid "Agree / disagree (Likert)"
+msgstr "Zustimmung / Ablehnung (Likert)"
+
+msgid "Written answer"
+msgstr "Schriftliche Antwort"
+
+msgid "Pick one"
+msgstr "Einfachauswahl"
+
+msgid "Pick several"
+msgstr "Mehrfachauswahl"
+
+msgid "Slider"
+msgstr "Schieberegler"
+
+#, python-format
+msgid "Counts %(weight)s times"
+msgstr "Zählt %(weight)s-fach"
+
+msgid "This model does not exist."
+msgstr "Dieses Modell gibt es nicht."
+
+msgid "A score has 2 to 7 options."
+msgstr "Eine Bewertungsskala hat 2 bis 7 Optionen."
+
+msgid "The lowest and the highest value of a slider must be whole numbers."
+msgstr "Der niedrigste und der höchste Wert eines Schiebereglers müssen ganze Zahlen sein."
+
+msgid "The highest value of a slider must be more than its lowest value."
+msgstr "Der höchste Wert eines Schiebereglers muss größer als sein niedrigster Wert sein."
+
+msgid "The step of a slider must be a number above 0, such as 1 or 0.5."
+msgstr "Die Schrittweite eines Schiebereglers muss eine Zahl über 0 sein, zum Beispiel 1 oder 0,5."
+
+msgid "The step of a slider must fit between its lowest and its highest value."
+msgstr "Die Schrittweite eines Schiebereglers muss zwischen seinen niedrigsten und seinen höchsten Wert passen."
+
+msgid "Write the question."
+msgstr "Die Frage eingeben."
+
+msgid "Choose an answer type."
+msgstr "Einen Antworttyp auswählen."
+
+msgid "Reviewers already answered this question as another type. Add a new question for a score or a slider."
+msgstr "Feedbackgebende haben diese Frage bereits als anderen Typ beantwortet. Für eine Bewertungsskala oder einen Schieberegler eine neue Frage hinzufügen."
+
+msgid "Reviewers already answered this question, so its number of options stays."
+msgstr "Feedbackgebende haben diese Frage bereits beantwortet, daher bleibt die Anzahl der Optionen gleich."
+
+msgid "A question of this type needs answers. Add at least two."
+msgstr "Eine Frage dieses Typs braucht Antworten. Mindestens zwei hinzufügen."
+
+msgid "A score must be a number."
+msgstr "Eine Bewertung muss eine Zahl sein."
+
+#, python-format
+msgid "This text is too long. Use at most %(count)s characters."
+msgstr "Dieser Text ist zu lang. Höchstens %(count)s Zeichen sind möglich."
+
+msgid "Every stage"
+msgstr "Jede Stufe"
+
+msgid "This skill stage does not exist. Reload the page."
+msgstr "Diese Kompetenzstufe gibt es nicht. Bitte die Seite neu laden."
+
+msgid "Write a number from 1 to 5."
+msgstr "Eine Zahl von 1 bis 5 eingeben."
+
+msgid "Choose a language."
+msgstr "Eine Sprache auswählen."
+
+#, python-format
+msgid "This questionnaire is already translated into %(language)s. Empty that translation first to make %(language)s its original language."
+msgstr "Für %(language)s gibt es bereits eine Übersetzung dieses Fragebogens. Diese Übersetzung zuerst leeren, um %(language)s zur Originalsprache zu machen."
+
+msgid "Write a name."
+msgstr "Einen Namen eingeben."
+
+msgid "New topic"
+msgstr "Neues Thema"
+
+msgid "A topic needs a title."
+msgstr "Ein Thema braucht einen Titel."
+
 msgid "description"
 msgstr "Beschreibung"
 
@@ -2301,14 +2362,8 @@ msgstr "Kompetenzübersicht"
 msgid "Compare strengths across topics in a radar chart."
 msgstr "Vergleichen Sie Stärken in verschiedenen Themen anhand eines Netzdiagramms."
 
-msgid "Skill level"
-msgstr "Kompetenzstufe"
-
 msgid "See the stage of skill development (Dreyfus model)."
 msgstr "Erkennen Sie den Entwicklungsstand der Kompetenzen (Dreyfus-Modell)."
-
-msgid "Initiative"
-msgstr "Eigeninitiative"
 
 msgid "Understand initiative and independence (agency model)."
 msgstr "Verstehen Sie Eigeninitiative und Selbstständigkeit (Dreyfus-Modell)."
@@ -2328,17 +2383,18 @@ msgstr "Lesen Sie Kommentare und Beispiele der Feedbackgebenden."
 msgid "Description"
 msgstr "Beschreibung"
 
-msgid "Section title"
-msgstr "Titel des Abschnitts"
+msgid "Topic title"
+msgstr "Titel des Themas"
 
-msgid "Section description"
-msgstr "Beschreibung des Abschnitts"
+msgid "Topic description"
+msgstr "Beschreibung des Themas"
 
-msgid "Action item"
+msgid "Advice"
 msgstr "Maßnahme"
 
-msgid "Answer option"
-msgstr "Antwortoption"
+msgctxt "noun"
+msgid "Answer"
+msgstr "Antwort"
 
 msgid "Label of the lowest value"
 msgstr "Beschriftung des niedrigsten Werts"
@@ -2357,6 +2413,9 @@ msgstr "Beschriftung der Bewertung %(value)s"
 #, python-format
 msgid "The translation of \"%(text)s\" is longer than %(max_length)s characters."
 msgstr "Die Übersetzung von „%(text)s“ ist länger als %(max_length)s Zeichen."
+
+msgid "The questionnaire has no text to translate here."
+msgstr "Der Fragebogen hat hier keinen Text zum Übersetzen."
 
 msgid "No expiry"
 msgstr "Kein Ablauf"
@@ -4872,6 +4931,621 @@ msgstr "Bewertungen werden vor der Veröffentlichung geprüft."
 msgid "Submit Review"
 msgstr "Bewertung absenden"
 
+#, python-format
+msgid "Advice for: \"%(text)s\""
+msgstr "Maßnahmen für: „%(text)s“"
+
+msgid "How advice works"
+msgstr "So funktionieren Maßnahmen"
+
+msgid "Show advice when the score is below"
+msgstr "Maßnahme zeigen bei einer Bewertung unter"
+
+msgid "(scale of 1 to 5)"
+msgstr "(Skala von 1 bis 5)"
+
+msgid "One number for all advice of this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Eine Zahl für alle Maßnahmen dieser Frage. Bei 3 erscheint die Maßnahme bei einer Bewertung von 2,9, aber nicht bei einer Bewertung von 3."
+
+msgid "Stage"
+msgstr "Stufe"
+
+msgid "Advice the report gives"
+msgstr "Maßnahme im Bericht"
+
+msgid "Add advice"
+msgstr "Maßnahme hinzufügen"
+
+msgid "Try it"
+msgstr "Ausprobieren"
+
+msgid "Stage of the person"
+msgstr "Stufe der Person"
+
+msgid "Score of this question"
+msgstr "Bewertung dieser Frage"
+
+msgid "Write a score from 1 to 5 to try it."
+msgstr "Zum Ausprobieren eine Bewertung von 1 bis 5 eingeben."
+
+msgid "Done"
+msgstr "Erledigt"
+
+msgid "Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score."
+msgstr "Eine Maßnahme ist ein Tipp für die Person, die den Bericht erhält. Der Bericht zeigt sie nur, wenn Feedbackgebende diese Frage niedrig bewerten."
+
+msgid "Where it shows"
+msgstr "Wo sie erscheint"
+
+msgid "In the report, in the part \"Skill level\", under \"Action Items\". So advice shows only in a report that has a skill level."
+msgstr "Im Bericht, im Teil „Kompetenzstufe“, unter „Maßnahmen“. Maßnahmen erscheinen also nur in einem Bericht mit Kompetenzstufe."
+
+msgid "How to write it"
+msgstr "So wird sie formuliert"
+
+msgid "Write to the person who reads the report, as one thing to do. Example: \"Ask a colleague to read your next proposal before you send it.\""
+msgstr "An die Person schreiben, die den Bericht liest, als eine konkrete Handlung. Beispiel: „Den nächsten Vorschlag vor dem Absenden von einer Kollegin oder einem Kollegen lesen lassen.“"
+
+msgid "Keep it short: one sentence."
+msgstr "Kurz halten: ein Satz."
+
+#, python-brace-format
+msgid "You can use {name} for the first name of the person."
+msgstr "{name} steht für den Vornamen der Person."
+
+msgid "When the report shows it"
+msgstr "Wann der Bericht sie zeigt"
+
+msgid "The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count."
+msgstr "Die Bewertung dieser Frage ist der Durchschnitt der Antworten der anderen, auf der Skala von 1 bis 5. Die eigene Antwort der Person zählt nicht."
+
+msgid "The report shows the advice when that score is below the number you choose for this question. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Der Bericht zeigt die Maßnahme, wenn diese Bewertung unter der Zahl liegt, die für diese Frage gewählt ist. Bei 3 erscheint die Maßnahme bei einer Bewertung von 2,9, aber nicht bei einer Bewertung von 3."
+
+msgid "Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10."
+msgstr "Jeder Antworttyp zählt hier auf der Skala von 1 bis 5, auch ein Schieberegler von 1 bis 10."
+
+msgid "Advice per stage"
+msgstr "Maßnahmen pro Stufe"
+
+msgid "Advice in the row \"Every stage\" goes to every person. Advice in the row of a stage, for example Novice, goes only to a person at that stage."
+msgstr "Eine Maßnahme in der Zeile „Jede Stufe“ geht an jede Person. Eine Maßnahme in der Zeile einer Stufe, zum Beispiel Neuling, geht nur an eine Person auf dieser Stufe."
+
+msgid "A person gets the advice of \"Every stage\" and the advice of their own stage."
+msgstr "Eine Person erhält die Maßnahmen von „Jede Stufe“ und die Maßnahmen der eigenen Stufe."
+
+msgid "To move advice to another stage, drag it by its handle to that row. Or choose the stage in \"Move to...\"."
+msgstr "Eine Maßnahme lässt sich am Griff in die Zeile einer anderen Stufe ziehen. Oder die Stufe unter „Verschieben nach …“ wählen."
+
+msgid "Pay attention"
+msgstr "Zu beachten"
+
+msgid "The report has room for three lines under \"Action Items\". With advice on many questions, only the first ones show. So give advice for the questions that matter most, not for every question."
+msgstr "Der Bericht hat unter „Maßnahmen“ Platz für drei Zeilen. Bei Maßnahmen zu vielen Fragen erscheinen nur die ersten. Maßnahmen deshalb für die wichtigsten Fragen angeben, nicht für jede Frage."
+
+msgid "Advice is a text of the questionnaire: it is translated on the language tabs, like the questions."
+msgstr "Eine Maßnahme ist ein Text des Fragebogens: Sie wird wie die Fragen in den Sprach-Tabs übersetzt."
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Drag to move"
+msgstr "Zum Verschieben ziehen"
+
+msgid "Ask a senior colleague to review your next proposal"
+msgstr "Den nächsten Vorschlag von einer erfahrenen Person aus dem Team prüfen lassen"
+
+msgid "Move this advice to another stage"
+msgstr "Diese Maßnahme auf eine andere Stufe verschieben"
+
+msgid "Move to..."
+msgstr "Verschieben nach …"
+
+msgid "Remove this advice"
+msgstr "Diese Maßnahme entfernen"
+
+msgid "There is no advice for this stage yet."
+msgstr "Für diese Stufe gibt es noch keine Maßnahme."
+
+msgid "With this score the report gives no advice for this question."
+msgstr "Bei dieser Bewertung gibt der Bericht für diese Frage keine Maßnahme."
+
+#, python-format
+msgid "A person at the stage %(stage)s with a score of %(score)s reads:"
+msgstr "Eine Person auf der Stufe %(stage)s mit einer Bewertung von %(score)s liest:"
+
+#, python-format
+msgid "counts as %(score)s"
+msgstr "zählt als %(score)s"
+
+msgid "Remove this answer"
+msgstr "Diese Antwort entfernen"
+
+msgid "Offer \"Did not observe\" in every question with a score"
+msgstr "„Nicht beobachtet“ bei jeder Frage mit Bewertung anbieten"
+
+msgid "Now some questions offer it and others do not."
+msgstr "Zurzeit bieten manche Fragen es an, andere nicht."
+
+msgid "Sets all questions at once. You can still change one question afterwards."
+msgstr "Gilt für alle Fragen auf einmal. Einzelne Fragen lassen sich danach noch ändern."
+
+#, python-format
+msgid "%(language)s (original)"
+msgstr "%(language)s (Original)"
+
+#, python-format
+msgid "%(counter)s text is missing or outdated"
+msgid_plural "%(counter)s texts are missing or outdated"
+msgstr[0] "%(counter)s Text fehlt oder ist veraltet"
+msgstr[1] "%(counter)s Texte fehlen oder sind veraltet"
+
+#, python-format
+msgid "%(counter)s reviewer already answered this question."
+msgid_plural "%(counter)s reviewers already answered this question."
+msgstr[0] "%(counter)s feedbackgebende Person hat diese Frage bereits beantwortet."
+msgstr[1] "%(counter)s Feedbackgebende haben diese Frage bereits beantwortet."
+
+msgid "With another answer type, their answers no longer count in reports."
+msgstr "Mit einem anderen Antworttyp zählen ihre Antworten in Berichten nicht mehr."
+
+msgid "This question cannot become a Score again."
+msgstr "Diese Frage kann danach keine Bewertungsskala mehr werden."
+
+msgid "This question cannot become a Slider again."
+msgstr "Diese Frage kann danach kein Schieberegler mehr werden."
+
+#, python-format
+msgid "The translations of its answers (%(languages)s) are removed."
+msgstr "Die Übersetzungen ihrer Antworten (%(languages)s) werden entfernt."
+
+msgid "Change the answer type"
+msgstr "Antworttyp ändern"
+
+msgid "Keep \"<span data-fill=\"type\"></span>\""
+msgstr "„<span data-fill=\"type\"></span>“ behalten"
+
+msgid "Reviewers who picked \"<span data-fill=\"label\"></span>\" stay in the report, but that answer no longer counts."
+msgstr "Feedbackgebende, die „<span data-fill=\"label\"></span>“ gewählt haben, bleiben im Bericht, aber diese Antwort zählt nicht mehr."
+
+#, python-format
+msgid "Its translation is removed, if it has one (%(languages)s)."
+msgstr "Eine vorhandene Übersetzung dieser Antwort wird entfernt (%(languages)s)."
+
+msgid "Remove the answer"
+msgstr "Antwort entfernen"
+
+msgid "Keep it"
+msgstr "Beibehalten"
+
+#, python-format
+msgid "The options above <span data-fill=\"count\"></span> are removed, with their translations (%(languages)s)."
+msgstr "Die Optionen über <span data-fill=\"count\"></span> werden entfernt, mit ihren Übersetzungen (%(languages)s)."
+
+msgid "Change the number"
+msgstr "Anzahl ändern"
+
+msgid "Delete this question?"
+msgstr "Diese Frage löschen?"
+
+#, python-format
+msgid "%(counter)s reviewer already answered it. That answer is deleted with it."
+msgid_plural "%(counter)s reviewers already answered it. Their answers are deleted with it."
+msgstr[0] "%(counter)s feedbackgebende Person hat sie bereits beantwortet. Diese Antwort wird mit ihr gelöscht."
+msgstr[1] "%(counter)s Feedbackgebende haben sie bereits beantwortet. Diese Antworten werden mit der Frage gelöscht."
+
+msgid "Delete the question"
+msgstr "Frage löschen"
+
+msgid "You can change the texts. The page asks you first before a change that makes their answers unusable."
+msgstr "Die Texte lassen sich ändern. Vor einer Änderung, die ihre Antworten unbrauchbar macht, fragt die Seite zuerst nach."
+
+#, python-format
+msgid "Translated into %(languages)s. When you change a text here, its translation is marked as outdated, so the translator sees it."
+msgstr "Übersetzt in: %(languages)s. Wird hier ein Text geändert, wird seine Übersetzung als veraltet markiert, damit die übersetzende Person es sieht."
+
+#, python-brace-format
+msgid "How well does {name} ...?"
+msgstr "Wie gut kann {name} ...?"
+
+msgid "Insert the person's name"
+msgstr "Namen der Person einfügen"
+
+msgid "Reviewers read:"
+msgstr "Feedbackgebende lesen:"
+
+msgid "Tip: a question with the name reads better than \"this person\". Reviewers then see \"Alex\"."
+msgstr "Tipp: Eine Frage mit dem Namen liest sich besser als „diese Person“. Feedbackgebende sehen dann „Alex“."
+
+msgid "Reviewers already answered this question, so it cannot become a Score or a Slider. Add a new question for that."
+msgstr "Feedbackgebende haben diese Frage bereits beantwortet, daher kann sie keine Bewertungsskala und kein Schieberegler werden. Dafür eine neue Frage hinzufügen."
+
+msgid "Reviewers already answered this question, so it cannot become a Slider. Add a new question for that."
+msgstr "Feedbackgebende haben diese Frage bereits beantwortet, daher kann sie kein Schieberegler werden. Dafür eine neue Frage hinzufügen."
+
+msgid "Reviewers already answered this question, so it cannot become a Score. Add a new question for that."
+msgstr "Feedbackgebende haben diese Frage bereits beantwortet, daher kann sie keine Bewertungsskala werden. Dafür eine neue Frage hinzufügen."
+
+msgid "Reviewers pick a number."
+msgstr "Feedbackgebende wählen eine Zahl."
+
+msgid "Reviewers pick one answer in words, from low to high."
+msgstr "Feedbackgebende wählen eine Antwort in Worten, von niedrig bis hoch."
+
+msgid "Reviewers type their answer."
+msgstr "Feedbackgebende schreiben ihre Antwort."
+
+msgid "Reviewers pick one answer from a list."
+msgstr "Feedbackgebende wählen eine Antwort aus einer Liste."
+
+msgid "Reviewers tick all answers that fit."
+msgstr "Feedbackgebende kreuzen alle passenden Antworten an."
+
+msgid "Reviewers move a slider between two numbers."
+msgstr "Feedbackgebende bewegen einen Schieberegler zwischen zwei Zahlen."
+
+msgid "The example on the right shows how it looks."
+msgstr "Das Beispiel rechts zeigt, wie es aussieht."
+
+msgid "Delete question"
+msgstr "Frage löschen"
+
+msgid "Done with this question"
+msgstr "Fertig mit dieser Frage"
+
+msgid "More options"
+msgstr "Weitere Optionen"
+
+msgid "Reviewers must answer this question"
+msgstr "Feedbackgebende müssen diese Frage beantworten"
+
+msgid "Offer \"Did not observe\""
+msgstr "„Nicht beobachtet“ anbieten"
+
+msgid "For reviewers who cannot judge this. The answer does not count in the score."
+msgstr "Für Feedbackgebende, die das nicht beurteilen können. Diese Antwort fließt nicht in die Bewertung ein."
+
+msgid "Describe what each score means"
+msgstr "Beschreiben, was jede Bewertung bedeutet"
+
+msgid "Reviewers can open the descriptions under the question. Example for 1: \"Needs help with every step\"."
+msgstr "Feedbackgebende können die Beschreibungen unter der Frage öffnen. Beispiel für 1: „Braucht bei jedem Schritt Hilfe“."
+
+msgid "Step of the slider"
+msgstr "Schrittweite des Schiebereglers"
+
+msgid "With a step of 5 on a slider from 0 to 100, reviewers can pick 0, 5, 10 and so on. A step below 1 works too: with 0.5 on a slider from 1 to 5 they can pick 1, 1.5, 2 and so on."
+msgstr "Mit einer Schrittweite von 5 bei einem Schieberegler von 0 bis 100 wählen Feedbackgebende 0, 5, 10 und so weiter. Eine Schrittweite unter 1 geht auch: mit 0,5 bei einem Schieberegler von 1 bis 5 wählen sie 1, 1,5, 2 und so weiter."
+
+msgid "The report gives advice when this question scores low. You can write other advice for each skill stage."
+msgstr "Der Bericht gibt Maßnahmen, wenn diese Frage niedrig bewertet wird. Für jede Kompetenzstufe sind eigene Maßnahmen möglich."
+
+msgid "Write advice per stage"
+msgstr "Maßnahmen pro Stufe schreiben"
+
+msgid "First write the question. Then you can add advice."
+msgstr "Zuerst die Frage schreiben. Danach lassen sich Maßnahmen hinzufügen."
+
+msgid "In the report"
+msgstr "Im Bericht"
+
+#, python-format
+msgid "The score is included on the axis \"%(topic)s\"."
+msgstr "Die Bewertung zählt auf der Achse „%(topic)s“."
+
+msgid "Written answers show as text in the report. They have no score."
+msgstr "Schriftliche Antworten erscheinen im Bericht als Text. Sie haben keine Bewertung."
+
+msgid "The score of this question is not included on an axis. It was set that way when the questionnaire was made."
+msgstr "Die Bewertung dieser Frage zählt auf keiner Achse. Das wurde beim Erstellen des Fragebogens so festgelegt."
+
+msgid "A Likert question needs at least two answers to have a score."
+msgstr "Eine Likert-Frage braucht mindestens zwei Antworten, um eine Bewertung zu haben."
+
+msgid "The report shows how often each answer was picked. Without a score per answer, this question has no score for an axis."
+msgstr "Der Bericht zeigt, wie oft jede Antwort gewählt wurde. Ohne Bewertung pro Antwort hat diese Frage keine Bewertung für eine Achse."
+
+msgid "Give each answer a score"
+msgstr "Jeder Antwort eine Bewertung geben"
+
+msgid "Then the score of this question is included on the axis of its topic. You type the scores next to the answers above."
+msgstr "Dann zählt die Bewertung dieser Frage auf der Achse ihres Themas. Die Bewertungen kommen in die Felder neben den Antworten oben."
+
+#, python-format
+msgid "%(low)s counts as 1, %(high)s counts as 5. The report uses one scale of 1 to 5 for all questions."
+msgstr "%(low)s zählt als 1, %(high)s zählt als 5. Der Bericht nutzt für alle Fragen eine Skala von 1 bis 5."
+
+#, python-format
+msgid "The score of a reviewer is the sum of the answers they tick. The lowest sum, %(low)s, counts as 1. The highest sum, %(high)s, counts as 5."
+msgstr "Die Bewertung einer feedbackgebenden Person ist die Summe der angekreuzten Antworten. Die niedrigste Summe, %(low)s, zählt als 1. Die höchste Summe, %(high)s, zählt als 5."
+
+msgid "Skill level and initiative are off for this questionnaire. You turn them on in \"The report\" at the top of this page."
+msgstr "Kompetenzstufe und Eigeninitiative sind für diesen Fragebogen aus. Einschalten lassen sie sich in „Der Bericht“ oben auf dieser Seite."
+
+msgctxt "placeholder for the name of the person reviewed"
+msgid "name"
+msgstr "Name"
+
+#, python-format
+msgid "%(counter)s option"
+msgid_plural "%(counter)s options"
+msgstr[0] "%(counter)s Option"
+msgstr[1] "%(counter)s Optionen"
+
+#, python-format
+msgid "%(low)s to %(high)s"
+msgstr "%(low)s bis %(high)s"
+
+#, python-format
+msgid "%(counter)s answer"
+msgid_plural "%(counter)s answers"
+msgstr[0] "%(counter)s Antwort"
+msgstr[1] "%(counter)s Antworten"
+
+msgid "not on the radar"
+msgstr "nicht im Netzdiagramm"
+
+msgid "no score"
+msgstr "keine Bewertung"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Number of options"
+msgstr "Anzahl der Optionen"
+
+msgid "Reviewers already answered this question, so the number of options cannot change. Add a new question if you need another number."
+msgstr "Feedbackgebende haben diese Frage bereits beantwortet, daher bleibt die Anzahl der Optionen gleich. Für eine andere Anzahl eine neue Frage hinzufügen."
+
+msgid "What each number means"
+msgstr "Was jede Zahl bedeutet"
+
+msgid "Answers, from low to high"
+msgstr "Antworten, von niedrig bis hoch"
+
+msgid "Add an answer"
+msgstr "Antwort hinzufügen"
+
+msgid "Add or remove answers as you want. \"Counts as\" is the score each answer gets in the report, on its scale of 1 to 5."
+msgstr "Antworten nach Bedarf hinzufügen oder entfernen. „Zählt als“ ist die Bewertung, die jede Antwort im Bericht bekommt, auf der Skala von 1 bis 5."
+
+msgid "This is a negative statement"
+msgstr "Das ist eine negative Aussage"
+
+msgid "Example: \"Alex often misses deadlines\". To agree is then bad, so the scores turn around: the first answer counts as 5 and the last as 1. Tick it and look at \"counts as\" above."
+msgstr "Beispiel: „Alex verpasst oft Fristen“. Zustimmung ist dann schlecht, also drehen sich die Bewertungen um: Die erste Antwort zählt als 5 und die letzte als 1. Nach dem Ankreuzen zeigt „zählt als“ oben die neuen Werte."
+
+msgid "Answers"
+msgstr "Antworten"
+
+msgid "The number next to each answer is its score. A higher number is a better answer."
+msgstr "Die Zahl neben jeder Antwort ist ihre Bewertung. Eine höhere Zahl ist eine bessere Antwort."
+
+msgid "Show all answers as a list"
+msgstr "Alle Antworten als Liste zeigen"
+
+msgid "Off: reviewers open a short list and pick one answer from it."
+msgstr "Aus: Feedbackgebende öffnen eine kurze Liste und wählen daraus eine Antwort."
+
+msgid "Lowest number"
+msgstr "Niedrigste Zahl"
+
+msgid "Highest number"
+msgstr "Höchste Zahl"
+
+msgid "Text at the low end (optional)"
+msgstr "Text am unteren Ende (optional)"
+
+msgid "Text at the high end (optional)"
+msgstr "Text am oberen Ende (optional)"
+
+msgid "The report uses one scale of 1 to 5 for all questions. \"Counts as\" shows where each option lands on it."
+msgstr "Der Bericht nutzt für alle Fragen eine Skala von 1 bis 5. „Zählt als“ zeigt, wo jede Option darauf liegt."
+
+msgid "The numbers are examples. The shape is real."
+msgstr "Die Zahlen sind Beispiele. Die Form ist echt."
+
+#, python-format
+msgid "%(counter)s topic has a question with a score, so the radar has %(counter)s axis."
+msgid_plural "%(counter)s topics have a question with a score, so the radar has %(counter)s axes."
+msgstr[0] "%(counter)s Thema hat eine Frage mit Bewertung, also hat das Netzdiagramm %(counter)s Achse."
+msgstr[1] "%(counter)s Themen haben eine Frage mit Bewertung, also hat das Netzdiagramm %(counter)s Achsen."
+
+msgid "Two topics have a question with a score. The radar gets a third axis, \"Overall\". A third topic makes it a full radar."
+msgstr "Zwei Themen haben eine Frage mit Bewertung. Das Netzdiagramm bekommt eine dritte Achse, „Gesamt“. Ein drittes Thema macht es zu einem vollständigen Netzdiagramm."
+
+msgid "The report shows bars, not a radar. Three topics with a question with a score give a radar."
+msgstr "Der Bericht zeigt Balken, kein Netzdiagramm. Drei Themen mit einer Frage mit Bewertung ergeben ein Netzdiagramm."
+
+msgid "No question has a score yet, so the report has no chart. Each topic with a question with a score gets its own axis on the radar."
+msgstr "Noch hat keine Frage eine Bewertung, also hat der Bericht kein Diagramm. Jedes Thema mit einer Frage mit Bewertung bekommt eine eigene Achse im Netzdiagramm."
+
+#, python-format
+msgid "The score of %(counting)s of %(counter)s question is included."
+msgid_plural "The score of %(counting)s of %(counter)s questions is included."
+msgstr[0] "Die Bewertung von %(counting)s von %(counter)s Frage zählt."
+msgstr[1] "Die Bewertungen von %(counting)s von %(counter)s Fragen zählen."
+
+msgid "No questions yet."
+msgstr "Noch keine Fragen."
+
+msgid "On the radar"
+msgstr "Im Netzdiagramm"
+
+msgid "Not on the radar"
+msgstr "Nicht im Netzdiagramm"
+
+#, python-format
+msgid "Level %(level)s/5.0"
+msgstr "Stufe %(level)s/5,0"
+
+msgid "How this level is made"
+msgstr "Wie dieses Niveau entsteht"
+
+msgid "The scores are examples. The way they make the level is real."
+msgstr "Die Bewertungen sind Beispiele. Wie sie das Niveau ergeben, ist echt."
+
+msgid "Example score"
+msgstr "Beispielbewertung"
+
+msgid "How much it counts"
+msgstr "Wie viel sie zählt"
+
+msgid "The level is the average of the scores. Each score is multiplied by how much it counts (\"Counts double\" is x 2, \"Counts half\" is x 0.5), and the total is divided by the sum of how much they count:"
+msgstr "Das Niveau ist der Durchschnitt der Bewertungen. Jede Bewertung wird damit multipliziert, wie viel sie zählt („Zählt doppelt“ ist x 2, „Zählt halb“ ist x 0,5), und die Summe wird durch die Summe dieser Werte geteilt:"
+
+#, python-format
+msgid "A level from %(low)s to %(high)s is stage %(stage)s of 5, \"%(name)s\". The diagram marks step %(stage)s of its five steps."
+msgstr "Ein Niveau von %(low)s bis %(high)s ist Stufe %(stage)s von 5, „%(name)s“. Das Diagramm markiert Schritt %(stage)s seiner fünf Schritte."
+
+#, python-format
+msgid "No question counts toward \"%(name)s\" yet. Choose the questions in the card \"The report\" on the left."
+msgstr "Noch zählt keine Frage für „%(name)s“. Die Fragen werden in der Karte „Der Bericht“ links ausgewählt."
+
+msgid "See the full sample report"
+msgstr "Vollständigen Beispielbericht ansehen"
+
+msgid "Choose what the report shows. The example on the right follows your choices."
+msgstr "Auswählen, was der Bericht zeigt. Das Beispiel rechts folgt der Auswahl."
+
+msgid "Scores per topic (radar)"
+msgstr "Bewertungen je Thema (Netzdiagramm)"
+
+msgid "Always there. Each topic with a scored question gets its own axis on the radar."
+msgstr "Immer dabei. Jedes Thema mit einer Frage mit Bewertung bekommt eine eigene Achse im Netzdiagramm."
+
+#, python-format
+msgid "%(counter)s question counts toward \"%(name)s\" now. If you switch it off, the report no longer shows it and this question no longer counts toward it."
+msgid_plural "%(counter)s questions count toward \"%(name)s\" now. If you switch it off, the report no longer shows it and these questions no longer count toward it."
+msgstr[0] "%(counter)s Frage zählt jetzt für „%(name)s“. Nach dem Ausschalten zeigt der Bericht diesen Teil nicht mehr, und diese Frage zählt nicht mehr dafür."
+msgstr[1] "%(counter)s Fragen zählen jetzt für „%(name)s“. Nach dem Ausschalten zeigt der Bericht diesen Teil nicht mehr, und diese Fragen zählen nicht mehr dafür."
+
+msgid "Switch it off"
+msgstr "Ausschalten"
+
+msgid "Keep it on"
+msgstr "Eingeschaltet lassen"
+
+msgid "Which questions count, and how much?"
+msgstr "Welche Fragen zählen und wie stark?"
+
+#, python-format
+msgid "%(name)s: %(counter)s question"
+msgid_plural "%(name)s: %(counter)s questions"
+msgstr[0] "%(name)s: %(counter)s Frage"
+msgstr[1] "%(name)s: %(counter)s Fragen"
+
+#, python-format
+msgid "%(name)s: no question yet"
+msgstr "%(name)s: noch keine Frage"
+
+msgid "A level in the report is the average score of the questions you choose here. A question that \"Counts double\" weighs twice as much in that average."
+msgstr "Ein Niveau im Bericht ist die durchschnittliche Bewertung der hier gewählten Fragen. Eine Frage mit „Zählt doppelt“ wiegt in diesem Durchschnitt doppelt so viel."
+
+#, python-format
+msgid "Advice (%(count)s)"
+msgstr "Maßnahmen (%(count)s)"
+
+msgid "A question without a score, such as a written answer, cannot count toward a level. So it is not in this list."
+msgstr "Eine Frage ohne Bewertung, etwa eine schriftliche Antwort, kann nicht für ein Niveau zählen. Deshalb fehlt sie in dieser Liste."
+
+msgid "No question has a score yet. Add a question with a score first; then you choose here how much it counts."
+msgstr "Noch hat keine Frage eine Bewertung. Zuerst eine Frage mit Bewertung hinzufügen; dann lässt sich hier wählen, wie viel sie zählt."
+
+#, python-format
+msgid "The page a reviewer gets for the topic \"%(title)s\". Example name: Alex. You can click the answers."
+msgstr "Die Seite, die Feedbackgebende für das Thema „%(title)s“ bekommen. Beispielname: Alex. Die Antworten lassen sich anklicken."
+
+msgid "Add a topic to start."
+msgstr "Zum Start ein Thema hinzufügen."
+
+msgid "Name of the questionnaire"
+msgstr "Name des Fragebogens"
+
+msgid "Description (optional)"
+msgstr "Beschreibung (optional)"
+
+msgid "Reviewers do not see this text."
+msgstr "Feedbackgebende sehen diesen Text nicht."
+
+msgid "Original language"
+msgstr "Originalsprache"
+
+msgid "The language you write the questions in. Translations are made from these texts."
+msgstr "Die Sprache, in der die Fragen geschrieben werden. Übersetzungen entstehen aus diesen Texten."
+
+msgid "Default questionnaire"
+msgstr "Standardfragebogen"
+
+msgid "It comes first when you choose a questionnaire for a review."
+msgstr "Er steht an erster Stelle, wenn ein Fragebogen für eine Feedbackrunde ausgewählt wird."
+
+msgid "Topic"
+msgstr "Thema"
+
+msgid "For example: Communication"
+msgstr "Zum Beispiel: Kommunikation"
+
+msgid "One line for the reviewer (optional)"
+msgstr "Eine Zeile für Feedbackgebende (optional)"
+
+msgid "Reviewers see it under the title of the topic."
+msgstr "Feedbackgebende sehen sie unter dem Titel des Themas."
+
+msgid "Delete topic"
+msgstr "Thema löschen"
+
+msgid "Add a question"
+msgstr "Frage hinzufügen"
+
+msgid "This topic has no question with a score, so it is not on the radar. That is fine for written feedback."
+msgstr "Dieses Thema hat keine Frage mit Bewertung, also steht es nicht im Netzdiagramm. Für schriftliches Feedback ist das in Ordnung."
+
+#, python-format
+msgid "Delete the topic \"%(title)s\" and its question?"
+msgid_plural "Delete the topic \"%(title)s\" and its %(counter)s questions?"
+msgstr[0] "Das Thema „%(title)s“ und seine Frage löschen?"
+msgstr[1] "Das Thema „%(title)s“ und seine %(counter)s Fragen löschen?"
+
+#, python-format
+msgid "Delete the topic \"%(title)s\"?"
+msgstr "Das Thema „%(title)s“ löschen?"
+
+#, python-format
+msgid "Reviewers gave %(counter)s answer to it. That answer is deleted too."
+msgid_plural "Reviewers gave %(counter)s answers to it. These answers are deleted too."
+msgstr[0] "Feedbackgebende haben %(counter)s Antwort darauf gegeben. Diese Antwort wird ebenfalls gelöscht."
+msgstr[1] "Feedbackgebende haben %(counter)s Antworten darauf gegeben. Diese Antworten werden ebenfalls gelöscht."
+
+msgid "Delete the topic"
+msgstr "Thema löschen"
+
+#, python-format
+msgid "You translate into %(language)s. Each row has the original text on the left and your translation on the right. The example on the right of the page shows the form in %(language)s."
+msgstr "Zielsprache: %(language)s. Jede Zeile zeigt links den Originaltext und rechts die Übersetzung. Das Beispiel rechts auf der Seite zeigt das Formular in der Sprache %(language)s."
+
+#, python-format
+msgid "You change topics, questions, answer types and the report choices in %(source)s, the first tab above. A text without a translation shows in %(source)s to reviewers."
+msgstr "Themen, Fragen, Antworttypen und die Auswahl für den Bericht lassen sich in der Originalsprache (%(source)s) ändern, im ersten Tab oben. Ein Text ohne Übersetzung erscheint für Feedbackgebende in der Originalsprache (%(source)s)."
+
+msgid "Show only texts that are missing or outdated"
+msgstr "Nur fehlende oder veraltete Texte zeigen"
+
+msgid "Everything is translated."
+msgstr "Alles ist übersetzt."
+
+msgid "Missing"
+msgstr "Fehlt"
+
+msgid "Outdated"
+msgstr "Veraltet"
+
+msgid "The original text changed after this translation."
+msgstr "Der Originaltext hat sich nach dieser Übersetzung geändert."
+
+msgid "Still correct"
+msgstr "Passt noch"
+
 msgid "GDPR Data Management"
 msgstr "DSGVO-Datenverwaltung"
 
@@ -5479,9 +6153,6 @@ msgstr "Eine Person ziehen, um sie zu verschieben. Alt gedrückt halten, um sie 
 msgid "Rename unit"
 msgstr "Einheit umbenennen"
 
-msgid "Close"
-msgstr "Schließen"
-
 msgid "For example: Sales, Engineering"
 msgstr "Zum Beispiel: Vertrieb, Entwicklung"
 
@@ -5545,12 +6216,6 @@ msgid "closed on %(date)s"
 msgstr "geschlossen am %(date)s"
 
 #, python-format
-msgid "%(counter)s answer"
-msgid_plural "%(counter)s answers"
-msgstr[0] "%(counter)s Antwort"
-msgstr[1] "%(counter)s Antworten"
-
-#, python-format
 msgid "hidden for fewer than %(counter)s answer: %(groups)s"
 msgid_plural "hidden for fewer than %(counter)s answers: %(groups)s"
 msgstr[0] "verborgen bei weniger als %(counter)s Antwort: %(groups)s"
@@ -5609,17 +6274,14 @@ msgstr "Weitere Pakete können nur Organisations-Admins kaufen."
 msgid "€%(amount)s"
 msgstr "%(amount)s €"
 
-msgid "Move section up"
-msgstr "Abschnitt nach oben verschieben"
+msgid "Move topic up"
+msgstr "Thema nach oben verschieben"
 
 msgid "Move question up"
 msgstr "Frage nach oben verschieben"
 
-msgid "Drag to move"
-msgstr "Zum Verschieben ziehen"
-
-msgid "Move section down"
-msgstr "Abschnitt nach unten verschieben"
+msgid "Move topic down"
+msgstr "Thema nach unten verschieben"
 
 msgid "Move question down"
 msgstr "Frage nach unten verschieben"
@@ -5627,36 +6289,6 @@ msgstr "Frage nach unten verschieben"
 #, python-brace-format
 msgid "{name} stands for the first name of the person reviewed."
 msgstr "{name} steht für den Vornamen der feedbacknehmenden Person."
-
-msgid "Add option"
-msgstr "Option hinzufügen"
-
-#, python-format
-msgid "Type: %(type)s"
-msgstr "Typ: %(type)s"
-
-#, python-format
-msgid "Scale: %(min)s-%(max)s"
-msgstr "Skala: %(min)s-%(max)s"
-
-#, python-format
-msgid "%(count)s-point scale"
-msgstr "%(count)s-Punkte-Skala"
-
-msgid "Configure Dreyfus/Agency weights and action items"
-msgstr "Dreyfus- und Eigeninitiative-Gewichtungen sowie Maßnahmen konfigurieren"
-
-msgid "Dreyfus/Agency"
-msgstr "Dreyfus/Eigeninitiative"
-
-msgid "Edit"
-msgstr "Bearbeiten"
-
-msgid "Delete this question?"
-msgstr "Diese Frage löschen?"
-
-msgid "Delete"
-msgstr "Löschen"
 
 #, python-format
 msgid "%(counter)s question"
@@ -5757,14 +6389,8 @@ msgstr "Wiederherstellen"
 msgid "Archive"
 msgstr "Archivieren"
 
-msgid "What this score means (optional)"
-msgstr "Was diese Bewertung bedeutet (optional)"
-
-msgid "Describe what each score means"
-msgstr "Beschreiben, was jede Bewertung bedeutet"
-
-msgid "Reviewers can open the descriptions below the question."
-msgstr "Feedbackgebende können die Beschreibungen unter der Frage öffnen."
+msgid "Delete"
+msgstr "Löschen"
 
 msgid "Start a review"
 msgstr "Feedbackrunde starten"
@@ -6128,15 +6754,35 @@ msgstr "Beschreibung:"
 msgid "Used in cycles:"
 msgstr "Verwendet in Feedbackrunden:"
 
-msgid "Edit Questionnaire"
-msgstr "Fragebogen bearbeiten"
+msgid "Saving..."
+msgstr "Wird gespeichert..."
+
+msgid "All changes saved"
+msgstr "Alle Änderungen gespeichert"
+
+msgid "Not saved. Trying again."
+msgstr "Nicht gespeichert. Wird erneut versucht."
+
+msgid "You are logged out. Log in again in another tab. This page then saves by itself."
+msgstr "Die Anmeldung ist abgelaufen. In einem anderen Tab neu anmelden. Diese Seite speichert danach von selbst."
+
+msgid "Try the whole questionnaire"
+msgstr "Ganzen Fragebogen ausprobieren"
+
+msgid "Languages"
+msgstr "Sprachen"
+
+msgid "Add a topic"
+msgstr "Thema hinzufügen"
+
+msgid "What the reviewer sees"
+msgstr "Was Feedbackgebende sehen"
+
+msgid "What the report shows"
+msgstr "Was der Bericht zeigt"
 
 msgid "Create Questionnaire"
 msgstr "Fragebogen anlegen"
-
-#, python-format
-msgid "Edit questionnaire \"%(name)s\""
-msgstr "Fragebogen „%(name)s“ bearbeiten"
 
 msgid "Create a new feedback questionnaire"
 msgstr "Neuen Feedbackfragebogen anlegen"
@@ -6159,416 +6805,6 @@ msgstr "Die Sprache, in der der Fragebogen geschrieben ist. Übersetzungen in an
 msgid "Set as default questionnaire"
 msgstr "Als Standardfragebogen festlegen"
 
-msgid "Update Information"
-msgstr "Angaben aktualisieren"
-
-msgid "Preview"
-msgstr "Vorschau"
-
-msgid "Translate"
-msgstr "Übersetzen"
-
-msgid "Edit Section"
-msgstr "Abschnitt bearbeiten"
-
-msgid "Section Title"
-msgstr "Titel des Abschnitts"
-
-msgid "e.g., Technical Skills"
-msgstr "z. B. Fachliche Fähigkeiten"
-
-msgid "Brief description of what this section covers"
-msgstr "Kurze Beschreibung, worum es in diesem Abschnitt geht"
-
-msgid "Dreyfus/Agency Configuration"
-msgstr "Konfiguration Dreyfus/Eigeninitiative"
-
-msgid "Dreyfus Model Weights"
-msgstr "Gewichtungen im Dreyfus-Modell"
-
-msgid "Configure how this question contributes to the Dreyfus skill and agency dimensions. Higher weights (up to 2.0) indicate stronger impact on that dimension."
-msgstr "Legt fest, wie diese Frage in die Dreyfus-Dimensionen Kompetenz und Eigeninitiative einfließt. Höhere Gewichtungen (bis 2,0) bedeuten einen stärkeren Einfluss auf die jeweilige Dimension."
-
-msgid "Skill Weight"
-msgstr "Gewichtung Kompetenz"
-
-msgctxt "weight level"
-msgid "None"
-msgstr "Keine"
-
-msgid "Low (0.5)"
-msgstr "Niedrig (0,5)"
-
-msgid "Medium (1.0)"
-msgstr "Mittel (1,0)"
-
-msgid "High (1.5)"
-msgstr "Hoch (1,5)"
-
-msgid "Very High (2.0)"
-msgstr "Sehr hoch (2,0)"
-
-msgid "Agency Weight"
-msgstr "Gewichtung Eigeninitiative"
-
-msgid "Personalized Action Items"
-msgstr "Personalisierte Maßnahmen"
-
-msgid "Add Action Item"
-msgstr "Maßnahme hinzufügen"
-
-msgid "Define action items that will appear in development plans when this question scores below a threshold."
-msgstr "Maßnahmen festlegen, die im Entwicklungsplan erscheinen, wenn der Wert dieser Frage unter einem Schwellenwert liegt."
-
-msgid "Save Configuration"
-msgstr "Konfiguration speichern"
-
-msgid "Edit Question"
-msgstr "Frage bearbeiten"
-
-msgid "Question Text"
-msgstr "Fragetext"
-
-msgid "Question Type"
-msgstr "Fragetyp"
-
-msgid "Rating Scale (1-5)"
-msgstr "Bewertungsskala (1-5)"
-
-msgid "Single Choice (Dropdown)"
-msgstr "Einfachauswahl (Dropdown)"
-
-msgid "Multiple Choice (Checkboxes)"
-msgstr "Mehrfachauswahl (Checkboxen)"
-
-msgid "Rating labels"
-msgstr "Beschriftungen der Bewertungsskala"
-
-msgid "Likert Scale Items"
-msgstr "Stufen der Likert-Skala"
-
-msgid "Reverse scored"
-msgstr "Umgekehrt gewertet"
-
-msgid "Select this for a negatively worded statement, for example “This person often misses deadlines”. The first option then gets the highest score."
-msgstr "Für negativ formulierte Aussagen auswählen, zum Beispiel „Diese Person verpasst oft Fristen“. Die erste Option erhält dann die höchste Wertung."
-
-msgid "Scale Configuration"
-msgstr "Skalenkonfiguration"
-
-msgid "Min"
-msgstr "Min."
-
-msgid "Max"
-msgstr "Max."
-
-msgctxt "scale increment"
-msgid "Step"
-msgstr "Schrittweite"
-
-msgid "Min Label (Optional)"
-msgstr "Beschriftung Minimum (optional)"
-
-msgid "e.g., Not at all"
-msgstr "z. B. Überhaupt nicht"
-
-msgid "Max Label (Optional)"
-msgstr "Beschriftung Maximum (optional)"
-
-msgid "e.g., Extremely"
-msgstr "z. B. Extrem"
-
-msgid "Choices"
-msgstr "Optionen"
-
-msgid "Enable numeric scoring for analytics"
-msgstr "Numerische Wertung für Auswertungen aktivieren"
-
-msgid "Required question"
-msgstr "Pflichtfrage"
-
-msgid "Sections and Questions"
-msgstr "Abschnitte und Fragen"
-
-msgid "Delete section and all its questions?"
-msgstr "Abschnitt mit allen Fragen löschen?"
-
-msgid "Delete Section"
-msgstr "Abschnitt löschen"
-
-msgid "No questions in this section yet."
-msgstr "Noch keine Fragen in diesem Abschnitt."
-
-msgid "Add Question to This Section"
-msgstr "Frage zu diesem Abschnitt hinzufügen"
-
-#, python-brace-format
-msgid "How effectively does {name} communicate complex ideas?"
-msgstr "Wie wirkungsvoll vermittelt {name} komplexe Ideen?"
-
-msgid "Default 5-point scale provided. Customize or use 3-point, 7-point, etc."
-msgstr "Standardmäßig ist eine 5-stufige Skala vorgegeben, anpassbar z. B. auf 3 oder 7 Stufen."
-
-msgid "Creates a slider or numeric input for precise measurement (e.g., 1-100 scale)."
-msgstr "Erzeugt einen Schieberegler oder ein Zahlenfeld für genaue Messungen (z. B. Skala 1-100)."
-
-msgid "When enabled, this question will contribute to section scores and charts"
-msgstr "Wenn aktiviert, fließt diese Frage in die Abschnittswerte und Diagramme ein"
-
-msgid "Learn more about scoring"
-msgstr "Mehr zur Wertung"
-
-msgid "Dreyfus/Agency Configuration (Optional)"
-msgstr "Konfiguration Dreyfus/Eigeninitiative (optional)"
-
-msgid "Model Weights"
-msgstr "Modellgewichtungen"
-
-msgid "Set how this question contributes to Dreyfus skill and agency dimensions"
-msgstr "Festlegen, wie diese Frage in die Dreyfus-Dimensionen Kompetenz und Eigeninitiative einfließt"
-
-msgid "None (0)"
-msgstr "Keine (0)"
-
-msgid "Action Items"
-msgstr "Maßnahmen"
-
-msgid "Define action items for development plans when this question scores low"
-msgstr "Maßnahmen für Entwicklungspläne festlegen, wenn diese Frage niedrig bewertet wird"
-
-msgid "Add Question"
-msgstr "Frage hinzufügen"
-
-#, python-format
-msgid "Action Item #%(number)s"
-msgstr "Maßnahme #%(number)s"
-
-msgid "e.g., Practice pair programming with senior developers"
-msgstr "z. B. Pair Programming mit erfahrenen Entwickler:innen üben"
-
-msgid "Threshold"
-msgstr "Schwellenwert"
-
-msgid "Stages (optional)"
-msgstr "Stufen (optional)"
-
-msgid "Question Scoring Guide"
-msgstr "Leitfaden zur Wertung von Fragen"
-
-msgid "How Question Types Are Scored"
-msgstr "Wie Fragetypen gewertet werden"
-
-msgid "Scoring Method"
-msgstr "Wertungsmethode"
-
-msgid "Automatically scored 1-5"
-msgstr "Automatisch mit 1-5 gewertet"
-
-msgid "Position-based (1st option=1, 2nd=2, etc.)"
-msgstr "Nach Position (1. Option=1, 2.=2 usw.)"
-
-msgid "Not scored (qualitative only)"
-msgstr "Nicht gewertet (nur qualitativ)"
-
-msgid "Optional weighted scoring"
-msgstr "Optionale gewichtete Wertung"
-
-msgid "What is Weighted Scoring?"
-msgstr "Was ist gewichtete Wertung?"
-
-msgid "Weighted scoring lets you assign numeric values to each choice option. This allows choice-based questions to contribute to:"
-msgstr "Mit gewichteter Wertung erhält jede Auswahloption einen Zahlenwert. So fließen auch Auswahlfragen ein in:"
-
-msgid "Section averages and overall scores"
-msgstr "Abschnittsdurchschnitte und Gesamtwerte"
-
-msgid "Performance charts and visualizations"
-msgstr "Leistungsdiagramme und Visualisierungen"
-
-msgid "Insights & analytics (strengths/development areas)"
-msgstr "Erkenntnisse & Auswertungen (Stärken/Entwicklungsfelder)"
-
-msgid "Comparisons across review cycles"
-msgstr "Vergleiche zwischen Feedbackrunden"
-
-msgid "How It Works"
-msgstr "So funktioniert es"
-
-msgid "User selects ONE option. Score = weight of selected option."
-msgstr "Es wird EINE Option gewählt. Wert = Gewichtung der gewählten Option."
-
-msgid "Example:"
-msgstr "Beispiel:"
-
-msgid "How would you rate their communication?"
-msgstr "Wie bewerten Sie die Kommunikation dieser Person?"
-
-msgid "Excellent Communication"
-msgstr "Hervorragende Kommunikation"
-
-msgid "Good Communication"
-msgstr "Gute Kommunikation"
-
-msgid "Average Communication"
-msgstr "Durchschnittliche Kommunikation"
-
-msgid "Needs Improvement"
-msgstr "Verbesserungsbedarf"
-
-msgid "Poor Communication"
-msgstr "Schwache Kommunikation"
-
-msgid "If user selects \"Good\" → Score: 4"
-msgstr "Wird „Gute Kommunikation“ gewählt → Wert: 4"
-
-msgid "User selects MULTIPLE options. Score = sum of selected option weights."
-msgstr "Es werden MEHRERE Optionen gewählt. Wert = Summe der Gewichtungen der gewählten Optionen."
-
-msgid "Which leadership qualities do they demonstrate?"
-msgstr "Welche Führungsqualitäten zeigt die Person?"
-
-msgid "Strategic thinking"
-msgstr "Strategisches Denken"
-
-msgid "Team motivation"
-msgstr "Teammotivation"
-
-msgid "Clear communication"
-msgstr "Klare Kommunikation"
-
-msgid "Delegation"
-msgstr "Delegieren"
-
-msgid "Time management"
-msgstr "Zeitmanagement"
-
-msgid "If user selects \"Strategic thinking\" + \"Clear communication\" + \"Team motivation\"<br> → Score: 5 + 4 + 5 = 14 (rewards demonstrating more qualities)"
-msgstr "Werden „Strategisches Denken“ + „Klare Kommunikation“ + „Teammotivation“ gewählt<br> → Wert: 5 + 4 + 5 = 14 (mehr gezeigte Eigenschaften ergeben einen höheren Wert)"
-
-msgid "Multiple choice uses SUM (not average) to reward selecting more positive attributes. This makes it ideal for competency checklists where more is better."
-msgstr "Mehrfachauswahl verwendet die SUMME (nicht den Durchschnitt), damit mehr gewählte positive Eigenschaften zu einem höheren Wert führen. Das eignet sich besonders für Kompetenz-Checklisten, bei denen mehr besser ist."
-
-msgid "Best Practices"
-msgstr "Empfehlungen"
-
-msgid "Use consistent scales:"
-msgstr "Einheitliche Skalen verwenden:"
-
-msgid "Stick to 1-5 or 1-10 throughout your questionnaire"
-msgstr "Im ganzen Fragebogen bei 1-5 oder 1-10 bleiben"
-
-msgid "Higher = Better:"
-msgstr "Höher = besser:"
-
-msgid "Assign higher weights to more positive/desirable options"
-msgstr "Positiveren bzw. erwünschteren Optionen höhere Gewichtungen geben"
-
-msgid "Frequency questions:"
-msgstr "Fragen nach Häufigkeit:"
-
-msgid "Daily=5, Weekly=4, Monthly=3, Rarely=2, Never=1"
-msgstr "Täglich=5, Wöchentlich=4, Monatlich=3, Selten=2, Nie=1"
-
-msgid "Competency checklists:"
-msgstr "Kompetenz-Checklisten:"
-
-msgid "Weight by importance/difficulty level, or set all weights to 1 to simply count how many competencies were selected"
-msgstr "Nach Bedeutung bzw. Schwierigkeit gewichten oder alle Gewichtungen auf 1 setzen, um nur zu zählen, wie viele Kompetenzen gewählt wurden"
-
-msgid "Equal weighting:"
-msgstr "Gleiche Gewichtung:"
-
-msgid "For multiple choice questions where all options are equally valuable, set all weights to 1. This creates a simple counter (3 selections = score of 3)"
-msgstr "Bei Mehrfachauswahl-Fragen, deren Optionen alle gleich viel wert sind, alle Gewichtungen auf 1 setzen. So entsteht ein einfacher Zähler (3 Auswahlen = Wert 3)"
-
-msgid "Skip scoring when:"
-msgstr "Auf Wertung verzichten, wenn:"
-
-msgid "Choices are purely categorical (e.g., department names, roles)"
-msgstr "die Optionen reine Kategorien sind (z. B. Bereiche, Rollen)"
-
-msgid "Tip:"
-msgstr "Tipp:"
-
-msgid "You can leave scoring disabled for simple multiple choice questions. Enable it only when you need numeric analytics for that specific question."
-msgstr "Bei einfachen Mehrfachauswahl-Fragen kann die Wertung ausgeschaltet bleiben. Einschalten lohnt sich nur, wenn für genau diese Frage numerische Auswertungen gebraucht werden."
-
-msgid "Got it!"
-msgstr "Verstanden!"
-
-msgid "No sections yet. Add a section to start building your questionnaire."
-msgstr "Noch keine Abschnitte. Einen Abschnitt hinzufügen, um mit dem Fragebogen zu beginnen."
-
-msgid "Add Section"
-msgstr "Abschnitt hinzufügen"
-
-msgid "Leadership & Management"
-msgstr "Führung & Management"
-
-msgid "Section Description (Optional)"
-msgstr "Abschnittsbeschreibung (optional)"
-
-msgid "Questions about leadership style, decision-making, and team management"
-msgstr "Fragen zu Führungsstil, Entscheidungsfindung und Teamführung"
-
-msgid "Option"
-msgstr "Option"
-
-msgid "Weight"
-msgstr "Gewichtung"
-
-msgid "Move up"
-msgstr "Nach oben"
-
-msgid "Move down"
-msgstr "Nach unten"
-
-msgid "Remove option"
-msgstr "Option entfernen"
-
-msgid "Request failed."
-msgstr "Anfrage fehlgeschlagen."
-
-msgid "Saving..."
-msgstr "Wird gespeichert..."
-
-msgid "Failed to update question."
-msgstr "Frage konnte nicht aktualisiert werden."
-
-msgid "Adding..."
-msgstr "Wird hinzugefügt..."
-
-msgid "Question list container not found."
-msgstr "Container für die Fragenliste nicht gefunden."
-
-msgid "Failed to add question."
-msgstr "Frage konnte nicht hinzugefügt werden."
-
-msgid "No action items configured. Click \"+ Add Action Item\" to create one."
-msgstr "Keine Maßnahmen konfiguriert. Mit „+ Maßnahme hinzufügen“ eine neue anlegen."
-
-#, python-format
-msgid "Stage %(stage)s"
-msgstr "Stufe %(stage)s"
-
-msgid "Action Item Text"
-msgstr "Text der Maßnahme"
-
-msgid "Threshold Score"
-msgstr "Schwellenwert"
-
-msgid "Show if score &lt; this value"
-msgstr "Anzeigen, wenn der Wert &lt; diesem Wert ist"
-
-msgid "Relevant Stages (Optional)"
-msgstr "Relevante Stufen (optional)"
-
-msgid "Leave unchecked for all stages"
-msgstr "Für alle Stufen leer lassen"
-
-msgid "Saved"
-msgstr "Gespeichert"
-
 # Questionnaire overview and quick preview
 msgid "Choose a questionnaire, preview the questions, and see an example feedback report."
 msgstr "Wählen Sie einen Fragebogen, sehen Sie sich die Fragen an und prüfen Sie einen Beispielbericht."
@@ -6589,24 +6825,8 @@ msgstr "Es wurde noch kein Fragebogen eingerichtet"
 msgid "Preview: %(name)s"
 msgstr "Vorschau: %(name)s"
 
-msgid "1 (Strongly Disagree) to 5 (Strongly Agree)"
-msgstr "1 (stimme überhaupt nicht zu) bis 5 (stimme voll zu)"
-
-msgid "1 (Needs Improvement) to 5 (Exceptional)"
-msgstr "1 (Verbesserungsbedarf) bis 5 (herausragend)"
-
-msgid "1 (Never) to 5 (Always)"
-msgstr "1 (nie) bis 5 (immer)"
-
-#, python-format
-msgid "1 to %(max)s"
-msgstr "1 bis %(max)s"
-
-msgid "Likert scale options:"
-msgstr "Optionen der Likert-Skala:"
-
-msgid "Options:"
-msgstr "Optionen:"
+msgid "Back to the editor"
+msgstr "Zurück zum Editor"
 
 #, python-format
 msgid "Sample Report — %(name)s"
@@ -6650,29 +6870,6 @@ msgstr "Leistung aufgeschlüsselt nach Kompetenzbereichen"
 
 msgid "Overall score (excluding self-assessment)"
 msgstr "Gesamtwert (ohne Selbsteinschätzung)"
-
-#, python-format
-msgid "Translate %(name)s into %(language)s"
-msgstr "%(name)s übersetzen: %(language)s"
-
-#, python-format
-msgid "Translate into %(language)s"
-msgstr "Übersetzung: %(language)s"
-
-msgid "Back to Editor"
-msgstr "Zurück zum Editor"
-
-msgid "Missing"
-msgstr "Fehlt"
-
-msgid "Outdated"
-msgstr "Veraltet"
-
-msgid "Still correct"
-msgstr "Passt noch"
-
-msgid "Save Translation"
-msgstr "Übersetzung speichern"
 
 msgid "Submit Your Review"
 msgstr "Bewertung abgeben"
@@ -8458,6 +8655,9 @@ msgstr "Nicht raten, wer was geschrieben hat. Das Feedback ist anonym. Über Ver
 msgid "Agree on one or two goals. Write them down. Set a date to look at the progress together."
 msgstr "Ein oder zwei Ziele vereinbaren. Die Ziele aufschreiben. Einen Termin festlegen, um die Fortschritte gemeinsam anzusehen."
 
+msgid "Tip:"
+msgstr "Tipp:"
+
 msgid "Open the report:"
 msgstr "Bericht öffnen:"
 
@@ -9481,12 +9681,11 @@ msgid "Learn more about Agency Levels"
 msgstr "Mehr über die Stufen der Eigeninitiative"
 
 #, python-format
-msgid "Level %(level)s/5.0"
-msgstr "Stufe %(level)s/5,0"
-
-#, python-format
 msgid "To Reach %(stage)s"
 msgstr "Weg zur Stufe %(stage)s"
+
+msgid "Action Items"
+msgstr "Maßnahmen"
 
 #, python-format
 msgid "To Reach Level %(level)s:"
@@ -9498,11 +9697,12 @@ msgstr "Mehr über die Leistungsmatrix"
 msgid "Question Format:"
 msgstr "Fragetyp:"
 
-msgid "Rating scale (1-5):"
-msgstr "Bewertungsskala (1–5):"
+#, python-format
+msgid "Rating scale: 1 to %(max)s"
+msgstr "Bewertungsskala: 1 bis %(max)s"
 
-msgid "Rating scale: 1 to 5"
-msgstr "Bewertungsskala: 1 bis 5"
+msgid "Likert scale options:"
+msgstr "Optionen der Likert-Skala:"
 
 msgid "Single choice (select one):"
 msgstr "Einfachauswahl (eine Option wählen):"
@@ -9811,11 +10011,14 @@ msgstr "Starten"
 msgid "Continue"
 msgstr "Fortsetzen"
 
-msgid "Done"
-msgstr "Erledigt"
-
 msgid "Closed"
 msgstr "Geschlossen"
+
+msgid "Share your thoughts..."
+msgstr "Ihre Gedanken..."
+
+msgid "Select an option"
+msgstr "Option auswählen"
 
 msgid "Unable to Claim Token"
 msgstr "Einladungslink kann nicht eingelöst werden"
@@ -9854,12 +10057,6 @@ msgstr "360°-Feedback"
 #, python-format
 msgid "Step 1 of %(total)s"
 msgstr "Schritt 1 von %(total)s"
-
-msgid "Share your thoughts..."
-msgstr "Ihre Gedanken..."
-
-msgid "Select an option"
-msgstr "Option auswählen"
 
 msgid "Submit Feedback"
 msgstr "Feedback absenden"

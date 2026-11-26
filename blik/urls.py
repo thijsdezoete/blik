@@ -58,7 +58,6 @@ urlpatterns = [
     path('dashboard/questionnaires/<uuid:questionnaire_uuid>/preview/', admin_views.questionnaire_preview, name='questionnaire_preview'),
     path('dashboard/questionnaires/<uuid:questionnaire_uuid>/translate/<str:language>/', admin_views.questionnaire_translate, name='questionnaire_translate'),
     path('dashboard/questionnaires/<uuid:questionnaire_uuid>/sample-report/', admin_views.questionnaire_sample_report, name='questionnaire_sample_report'),
-    path('api/questions/<int:question_id>/dreyfus-config/', admin_views.question_dreyfus_config_api, name='question_dreyfus_config_api'),
     # Org chart
     path('dashboard/org-chart/', admin_views.org_chart, name='org_chart'),
     path('dashboard/org-chart/import/', admin_views.org_chart_import, name='org_chart_import'),

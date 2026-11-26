@@ -10,13 +10,11 @@ import copy
 import hashlib
 from collections import defaultdict
 from dataclasses import dataclass
-from itertools import groupby
-from operator import attrgetter
 
 from django.conf import settings
 from django.db import transaction
 from django.db.models import prefetch_related_objects
-from django.utils.translation import get_language, gettext, gettext_lazy as _
+from django.utils.translation import get_language, gettext, gettext_lazy as _, pgettext_lazy
 
 from core.languages import get_base_language, is_language, language_name, translation_languages
 
@@ -30,11 +28,12 @@ MULTILINE_FIELDS = ['description', 'question_text', 'descriptions', 'action_item
 TEXT_LABELS = {
     ('questionnaire', 'name'): _('Name'),
     ('questionnaire', 'description'): _('Description'),
-    ('questionsection', 'title'): _('Section title'),
-    ('questionsection', 'description'): _('Section description'),
+    ('questionsection', 'title'): _('Topic title'),
+    ('questionsection', 'description'): _('Topic description'),
     ('question', 'question_text'): _('Question'),
-    ('question', 'action_items'): _('Action item'),
-    ('answeroption', 'label'): _('Answer option'),
+    # The words of the editor: the same msgids as its templates
+    ('question', 'action_items'): _('Advice'),
+    ('answeroption', 'label'): pgettext_lazy('noun', 'Answer'),
 }
 SCALE_LABELS = {
     'min': _('Label of the lowest value'),
@@ -330,7 +329,12 @@ def has_translation(questionnaire, language):
 
 
 def save_part_translation(part, language, texts, data):
-    """Store the posted translations of one part's texts, see save_text_translations()."""
+    """
+    Store the posted translations of one part's texts.
+
+    An empty text removes its translation. A changed text, and an outdated one confirmed as still correct, get the
+    checksum of their source text. Translations of texts the source no longer has are dropped.
+    """
 
     relation = part.translations
     translation = next((row for row in relation.all() if row.language == language), None)
@@ -370,16 +374,10 @@ def save_part_translation(part, language, texts, data):
     translation.save()
 
 
-def save_text_translations(questionnaire, language, data):
-    """
-    Store the translations posted on the translation page; returns the errors, and stores nothing if there are any.
+def get_length_errors(texts, data):
+    """The errors for the posted translations in data that are longer than their texts allow."""
 
-    An empty text removes its translation. A changed text, and an outdated one confirmed as still correct, get the
-    checksum of their source text. Translations of texts the source no longer has are dropped.
-    """
-
-    texts = get_text_translations(questionnaire, language)
-    errors = [
+    return [
         gettext('The translation of "%(text)s" is longer than %(max_length)s characters.') % {
             'text': text.source,
             'max_length': text.max_length,
@@ -388,12 +386,44 @@ def save_text_translations(questionnaire, language, data):
         if text.max_length and len(data.get(text.field_name, '').strip()) > text.max_length
     ]
 
-    if errors:
+
+def save_one_translation(questionnaire, language, field_name, value, still_correct=False):
+    """
+    Store the translation of the text with field_name, see save_part_translation(); returns the errors, and stores
+    nothing if there are any. The other texts of the same part keep their translations and checksums.
+    """
+
+    no_text = [gettext('The questionnaire has no text to translate here.')]
+    texts = get_text_translations(questionnaire, language)
+    text = next((text for text in texts if text.field_name == field_name), None)
+
+    if text is None:
+        return no_text
+
+    if errors := get_length_errors([text], {field_name: value}):
         return errors
 
     with transaction.atomic():
-        for part, part_texts in groupby(texts, key=attrgetter('part')):
-            save_part_translation(part, language, list(part_texts), data)
+        # Saves of other texts of the same part run at the same time and rewrite the same row: lock the part, then read
+        # its texts again, so this save keeps what another one stored since the read above
+        if not type(text.part).objects.select_for_update().filter(pk=text.part.pk).exists():
+            return no_text
+
+        texts = get_text_translations(type(questionnaire).objects.get(pk=questionnaire.pk), language)
+        text = next((text for text in texts if text.field_name == field_name), None)
+
+        if text is None:
+            return no_text
+
+        # save_part_translation() stores the part's texts from data alone, so data holds the stored ones as well
+        part_texts = [other for other in texts if other.part == text.part]
+        data = {other.field_name: other.text for other in part_texts}
+        data[field_name] = value
+
+        if still_correct:
+            data[f'current-{field_name}'] = 'on'
+
+        save_part_translation(text.part, language, part_texts, data)
 
     return []
 

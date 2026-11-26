@@ -1,11 +1,13 @@
 {% load i18n %}
 {% load static landing_tags %}
 
-{% if insights.skill_profile %}
+{% if insights.skill_profile or insights.agency_profile %}
 <div id="skill-development-path" class="insight-card skill-development">
     <div class="insight-title">
         {% trans 'Your Development Path' %}
+        {% if insights.skill_profile %}
         <span class="badge badge-dreyfus">{{ insights.skill_profile.skill_stage }}</span>
+        {% endif %}
         {% if insights.agency_profile %}
         <span class="badge badge-agency">{{ insights.agency_profile.agency_stage }}</span>
         {% endif %}
@@ -13,6 +15,7 @@
 
     <!-- Tab Navigation -->
     <div class="development-tabs">
+        {% if insights.skill_profile %}
         <button class="tab-button active" data-tab="skill">
             {% trans 'Skill Level' %}
             <a href="{% landing_url 'dreyfus_model' %}" class="tab-info-link" title="{% trans 'Learn more about the Dreyfus Model' %}" target="_blank" rel="noopener">
@@ -21,8 +24,9 @@
                 </svg>
             </a>
         </button>
+        {% endif %}
         {% if insights.agency_profile %}
-        <button class="tab-button" data-tab="agency">
+        <button class="tab-button{% if not insights.skill_profile %} active{% endif %}" data-tab="agency">
             {% trans 'Agency & Initiative' %}
             <a href="{% landing_url 'agency_levels' %}" class="tab-info-link" title="{% trans 'Learn more about Agency Levels' %}" target="_blank" rel="noopener">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -35,6 +39,7 @@
 
     <div class="dreyfus-compact-view">
         <!-- Skill Tab Content -->
+        {% if insights.skill_profile %}
         <div class="tab-content active" data-tab-content="skill">
             <!-- Dreyfus Diamond Visualization -->
             <div class="dreyfus-svg-container">
@@ -50,10 +55,11 @@
                 <div class="stage-description">{{ insights.skill_profile.stage_info.description }}</div>
             </div>
         </div>
+        {% endif %}
 
         <!-- Agency Tab Content -->
         {% if insights.agency_profile %}
-        <div class="tab-content" data-tab-content="agency">
+        <div class="tab-content{% if not insights.skill_profile %} active{% endif %}" data-tab-content="agency">
             <!-- Agency Levels Visualization -->
             <div class="agency-svg-container">
                 {% with agency_level=insights.agency_profile.agency_level|floatformat:0 %}
@@ -73,7 +79,7 @@
         {% endif %}
 
         <!-- Next Steps Section - Skill -->
-        {% if insights.development_plan and insights.skill_profile.stage_info.next_stage %}
+        {% if insights.skill_profile and insights.development_plan and insights.skill_profile.stage_info.next_stage %}
         <div class="next-steps-section" data-dimension="skill">
             <h4 class="next-steps-title">{% blocktrans trimmed with stage=insights.skill_profile.stage_info.next_stage %}To Reach {{ stage }}{% endblocktrans %}</h4>
 
@@ -106,7 +112,7 @@
 
         <!-- Next Steps Section - Agency -->
         {% if insights.agency_profile and insights.agency_profile.agency_level|floatformat:0|add:"0" < 5 %}
-        <div class="next-steps-section" data-dimension="agency" style="display: none;">
+        <div class="next-steps-section" data-dimension="agency"{% if insights.skill_profile %} style="display: none;"{% endif %}>
             {% with current_level=insights.agency_profile.agency_level|floatformat:0|add:"0" %}
             {% with next_level=current_level|add:"1" %}
             <h4 class="next-steps-title">{% blocktrans trimmed with level=next_level %}To Reach Level {{ level }}:{% endblocktrans %}

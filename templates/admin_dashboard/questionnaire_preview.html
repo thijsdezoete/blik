@@ -21,13 +21,17 @@
             <nav aria-label="{% trans 'Preview language' %}" style="display: flex; gap: 0.5rem;">
                 {% for code, name in LANGUAGES %}
                 {% if code == preview_language %}
-                <a href="?lang={{ code }}" class="btn btn-sm btn-primary" aria-current="page">{{ name }}</a>
+                <a href="?lang={{ code }}{% if editor_url %}&amp;from=editor{% endif %}" class="btn btn-sm btn-primary" aria-current="page">{{ name }}</a>
                 {% else %}
-                <a href="?lang={{ code }}" class="btn btn-sm btn-secondary">{{ name }}</a>
+                <a href="?lang={{ code }}{% if editor_url %}&amp;from=editor{% endif %}" class="btn btn-sm btn-secondary">{{ name }}</a>
                 {% endif %}
                 {% endfor %}
             </nav>
+            {% if editor_url %}
+            <a href="{{ editor_url }}" class="btn btn-secondary">{% trans 'Back to the editor' %}</a>
+            {% else %}
             <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary">{% trans 'Back to List' %}</a>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -40,61 +44,10 @@
         </div>
         <div class="card-body">
             {% if section.questions.all %}
-            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                {% for question in section.questions.all %}
-                <div style="padding: 1rem; background: var(--bg-light); border-radius: 6px;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
-                        <div style="font-weight: 500; color: var(--text-primary);">
-                            {{ forloop.counter }}. {{ question.question_text }}
-                            {% if question.required %}
-                            <span style="color: var(--danger);">*</span>
-                            {% endif %}
-                        </div>
-                        <span class="badge badge-info">{{ question.get_question_type_display }}</span>
-                    </div>
-
-                    {% if question.question_type == 'rating' %}
-                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                        {% trans 'Rating scale:' %}
-                        {% if question.config.scale_type == 'likert_5' %}
-                        {% trans '1 (Strongly Disagree) to 5 (Strongly Agree)' %}
-                        {% elif question.config.scale_type == 'performance_5' %}
-                        {% trans '1 (Needs Improvement) to 5 (Exceptional)' %}
-                        {% elif question.config.scale_type == 'frequency_5' %}
-                        {% trans '1 (Never) to 5 (Always)' %}
-                        {% else %}
-                        {% blocktrans trimmed with max=question.config.max_value|default:5 %}1 to {{ max }}{% endblocktrans %}
-                        {% endif %}
-                    </div>
-                    {% include 'reviews/rating_descriptions.html' with name='' %}
-                    {% elif question.question_type == 'likert' %}
-                    <div style="margin-top: 0.5rem;">
-                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% trans 'Likert scale options:' %}</div>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            {% for option in question.options.all %}
-                            <div style="padding: 0.5rem 0.75rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; font-size: 0.875rem; color: var(--text-primary);">
-                                {{ option.label }}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% elif question.question_type == 'multiple_choice' %}
-                    <div style="margin-top: 0.5rem;">
-                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{% trans 'Options:' %}</div>
-                        <ul style="margin-left: 1.5rem;">
-                            {% for option in question.options.all %}
-                            <li>{{ option.label }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% elif question.question_type == 'text' %}
-                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                        {% trans 'Open-ended text response' %}
-                    </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
+            {# The questions as a reviewer gets them; the inputs are for looking only, nothing is sent or stored #}
+            {% for question in section.questions.all %}
+            {% include 'reviews/_question.html' with name='Alex' existing_responses=None %}
+            {% endfor %}
             {% else %}
             <p style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">{% trans 'No questions in this section' %}</p>
             {% endif %}

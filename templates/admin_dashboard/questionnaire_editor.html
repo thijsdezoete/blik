@@ -1,0 +1,84 @@
+{% extends "admin_dashboard/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ questionnaire.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reports.css' %}">
+<link rel="stylesheet" href="{% static 'css/reviewees.css' %}">
+{% endblock %}
+
+{% block content %}
+{# Every element with data-slot is filled again from the answers of the server, see static/js/questionnaire-editor.js #}
+{# With a language (?lang=) the page is in the translate mode: the left column holds the texts and their translations #}
+<div id="questionnaire-editor" data-url="{% url 'questionnaire_edit' questionnaire.uuid %}"{% if language %} data-lang="{{ language }}"{% endif %}>
+    {% csrf_token %}
+    {% if not language %}
+    {% include 'admin_dashboard/editor/_advice_help.html' %}
+    {# The advice of one question; its inside comes from GET ?advice=<id> (editor/_advice_dialog.html) #}
+    <dialog id="adviceDialog" class="modal-content reviewee-dialog" style="max-width: 56rem;" aria-labelledby="adviceDialogTitle"></dialog>
+    {% endif %}
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+        <div>
+            <h1 data-header="name">{{ questionnaire.name }}</h1>
+            <p data-header="description" style="color: var(--text-secondary);">{{ questionnaire.description }}</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <span data-save-state role="status" style="font-size: 0.875rem; color: var(--success);"
+                  data-saving="{% trans 'Saving...' %}"
+                  data-saved="{% trans 'All changes saved' %}"
+                  data-failed="{% trans 'Not saved. Trying again.' %}"
+                  data-logged-out="{% trans 'You are logged out. Log in again in another tab. This page then saves by itself.' %}">{% trans 'All changes saved' %}</span>
+            {% if not language %}
+            <button type="button" class="btn btn-secondary" data-act="settings" aria-expanded="false">{% trans 'Settings' %}</button>
+            {% endif %}
+            <button type="button" class="btn btn-secondary" data-act="open-tab" data-href="{% url 'questionnaire_preview' questionnaire.uuid %}?from=editor{% if language %}&amp;lang={{ language }}{% endif %}">{% trans 'Try the whole questionnaire' %}</button>
+            <button type="button" class="btn btn-primary" data-act="leave" data-href="{% url 'questionnaire_list' %}">{% trans 'Done' %}</button>
+        </div>
+    </div>
+
+    {% if not language %}
+    <div data-slot="settings" hidden>{% include 'admin_dashboard/editor/_settings.html' %}</div>
+    {% endif %}
+
+    <nav class="stage-tabs" data-slot="langs" style="margin-bottom: 1.5rem;" aria-label="{% trans 'Languages' %}">{% include 'admin_dashboard/editor/_langs.html' %}</nav>
+
+    <div class="invite-split">
+        <div>
+            {% if language %}
+            {% include 'admin_dashboard/editor/_translate.html' %}
+            {% else %}
+            <div data-slot="report-card" data-follow="report">{% include 'admin_dashboard/editor/_report_card.html' %}</div>
+
+            <div id="topics">
+                {% for section in sections %}
+                {% include 'admin_dashboard/editor/_topic.html' %}
+                {% endfor %}
+            </div>
+            <button type="button" class="btn btn-secondary" data-act="add-topic">{% trans 'Add a topic' %}</button>
+            {% endif %}
+        </div>
+
+        <div class="card editor-preview">
+            <div class="card-header" style="padding-top: 0; padding-bottom: 0;">
+                {# main.css marks the selected stage tab by aria-current, which a tab does not have: the script sets its look #}
+                <nav class="stage-tabs" style="border-bottom: 0;" role="tablist">
+                    <button type="button" class="stage-tab" id="editor-tab-reviewer" role="tab" aria-selected="true" aria-controls="editor-panel-reviewer" data-tab="reviewer" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer; color: var(--primary); border-bottom-color: var(--primary);">{% trans 'What the reviewer sees' %}</button>
+                    <button type="button" class="stage-tab" id="editor-tab-report" role="tab" aria-selected="false" aria-controls="editor-panel-report" data-tab="report" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer;">{% trans 'What the report shows' %}</button>
+                </nav>
+            </div>
+            <div class="card-body">
+                <div id="editor-panel-reviewer" role="tabpanel" aria-labelledby="editor-tab-reviewer" data-panel="reviewer" data-slot="reviewer">{% include 'admin_dashboard/editor/_reviewer.html' %}</div>
+                <div id="editor-panel-report" role="tabpanel" aria-labelledby="editor-tab-report" data-panel="report" data-slot="report" hidden>{% include 'admin_dashboard/editor/_report.html' %}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ chart|json_script:"editor-chart" }}
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script src="{% url 'javascript-catalog' %}?language={{ LANGUAGE_CODE }}"></script>
+<script src="{% static 'js/report-charts.js' %}"></script>
+<script src="{% static 'js/sortable.min.js' %}"></script>
+<script src="{% static 'js/questionnaire-editor.js' %}"></script>
+{% endblock %}

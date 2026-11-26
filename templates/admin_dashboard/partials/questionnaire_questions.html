@@ -13,8 +13,8 @@
             {% elif question.question_type == 'rating' %}
             <p class="help-text">{% trans 'Rating scale:' %}</p>
             <ul class="questionnaire-preview-options">
-                {% for value in "12345" %}<li>{{ value }}{% if question.labels|get_item:value %} — {{ question.labels|get_item:value }}{% endif %}</li>{% endfor %}
-                <li>{% trans 'Did not observe' %}</li>
+                {% for value in question|rating_values %}<li>{{ value }}{% if question.labels|get_item:value %} — {{ question.labels|get_item:value }}{% endif %}</li>{% endfor %}
+                {% if question.offers_did_not_observe %}<li>{% trans 'Did not observe' %}</li>{% endif %}
             </ul>
             {% elif question.question_type == 'scale' %}
             <p class="help-text">{% trans 'Numeric Scale' %}: {% if question.config.min != None %}{{ question.config.min }}{% else %}1{% endif %} – {% if question.config.max != None %}{{ question.config.max }}{% else %}100{% endif %}</p>
@@ -23,6 +23,7 @@
             <p class="help-text">{% if question.question_type == 'multiple_choice' %}{% trans 'Select all that apply' %}{% else %}{% trans 'Select one answer' %}{% endif %}</p>
             <ul class="questionnaire-preview-options">
                 {% for option in question.options.all %}<li>{{ option.label }}</li>{% endfor %}
+                {% if question.offers_did_not_observe %}<li>{% trans 'Did not observe' %}</li>{% endif %}
             </ul>
             {% endif %}
         </li>

@@ -130,10 +130,11 @@ class EditorTest(AnswerOptionTestCase):
 
     def test_adding_a_question_stores_its_rows(self):
         self.edit(
-            action='add_question',
+            action='save_question',
             section_id=self.section.id,
             question_type='single_choice',
             question_text='Seniority',
+            display_list='on',
             enable_scoring='on',
             choice_option_id=['', ''],
             choice_option_label=['Novice', 'Expert'],
@@ -149,7 +150,7 @@ class EditorTest(AnswerOptionTestCase):
         options = list(reversed(self.likert.options.all()))
 
         self.edit(
-            action='edit_question',
+            action='save_question',
             question_id=self.likert.id,
             question_type='likert',
             question_text='Likert',
@@ -160,53 +161,43 @@ class EditorTest(AnswerOptionTestCase):
         self.assertEqual(self.option_labels(self.likert)[:2], ['Strongly Concur', 'Concur'])
         self.assertEqual(self.likert.options.get(id=answer.answer_data['value']).label, 'Concur')
 
-    def test_an_invalid_weight_disables_scoring(self):
-        self.edit(
-            action='edit_question',
-            question_id=self.choice.id,
-            question_type='single_choice',
-            question_text='Choice',
-            enable_scoring='on',
-            choice_option_id=[f'{option.id}' for option in self.choice.options.all()],
-            choice_option_label=['Low', 'High'],
-            choice_option_weight=['1', ''],
-        )
+    def test_an_empty_score_is_no_score_and_a_score_that_is_not_a_number_is_refused(self):
+        fields = {
+            'action': 'save_question', 'question_id': self.choice.id, 'question_type': 'single_choice',
+            'question_text': 'Choice', 'enable_scoring': 'on', 'choice_option_label': ['Low', 'High'],
+            'choice_option_id': [f'{option.id}' for option in self.choice.options.all()],
+        }
+
+        refused = self.edit(**fields, choice_option_weight=['1', 'abc'])
+
+        self.assertEqual(refused.status_code, 400)
+        self.assertEqual(list(self.choice.options.values_list('label', 'weight')), [('Low', 1), ('High', 5)])
+
+        self.edit(**fields, choice_option_weight=['1', ''])
 
         self.choice.refresh_from_db()
-        self.assertNotIn('scoring_enabled', self.choice.config)
-        self.assertEqual(list(self.choice.options.values_list('label', 'weight')), [('Low', None), ('High', None)])
+        self.assertIs(self.choice.config['scoring_enabled'], True)
+        self.assertEqual(list(self.choice.options.values_list('label', 'weight')), [('Low', 1), ('High', None)])
 
-    def test_another_type_drops_the_options(self):
-        self.edit(action='edit_question', question_id=self.multi.id, question_type='text', question_text='Multi')
-
-        self.assertFalse(self.multi.options.exists())
-
-    def test_rating_and_scale_labels_are_stored_without_the_empty_ones(self):
+    def test_slider_labels_are_stored_without_the_empty_ones(self):
         self.edit(
-            action='add_question',
-            section_id=self.section.id,
-            question_type='rating',
-            question_text='Rating',
-            rating_label_1='Rarely',
-            rating_label_5='Always',
-        )
-        self.edit(
-            action='add_question',
+            action='save_question',
             section_id=self.section.id,
             question_type='scale',
             question_text='Scale',
             scale_min_label='Drained',
+            scale_max_label='  ',
         )
 
-        self.assertEqual(Question.objects.get(question_text='Rating').labels, {'1': 'Rarely', '5': 'Always'})
         self.assertEqual(Question.objects.get(question_text='Scale').labels, {'min': 'Drained'})
 
     def test_rating_descriptions_are_stored_without_the_empty_ones(self):
         self.edit(
-            action='add_question',
+            action='save_question',
             section_id=self.section.id,
             question_type='rating',
             question_text='Timeliness',
+            rating_count='5',
             rating_descriptions='on',
             rating_description_1='Almost never on time',
             rating_description_2='  ',
@@ -224,10 +215,11 @@ class EditorTest(AnswerOptionTestCase):
         )
 
         self.edit(
-            action='edit_question',
+            action='save_question',
             question_id=question.id,
             question_type='rating',
             question_text='Timeliness',
+            rating_count='5',
             rating_description_1='Almost never on time',
         )
 
@@ -243,7 +235,7 @@ class EditorTest(AnswerOptionTestCase):
             order=self.section.questions.count(),
         )
 
-        self.edit(action='edit_question', question_id=question.id, question_type='text', question_text='Timeliness')
+        self.edit(action='save_question', question_id=question.id, question_type='text', question_text='Timeliness')
 
         question.refresh_from_db()
         self.assertEqual(question.descriptions, {})

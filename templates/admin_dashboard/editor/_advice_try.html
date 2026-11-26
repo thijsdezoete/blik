@@ -1,0 +1,13 @@
+{% load i18n feedback_tags %}{# Slot "advice-try": the stored advice of the question that a person at try_stage with try_score reads in the report (advice_applies in reports/dreyfus_service.py), with Alex for {name} #}
+{% if not try_has_advice %}
+<span class="help-text" style="margin: 0;">{% trans 'There is no advice for this stage yet.' %}</span>
+{% elif not try_texts %}
+<span class="help-text" style="margin: 0;">{% trans 'With this score the report gives no advice for this question.' %}</span>
+{% else %}
+<span class="help-text" style="margin: 0;">{% blocktrans trimmed with stage=try_stage_name score=try_score|floatformat:'-1' %}A person at the stage {{ stage }} with a score of {{ score }} reads:{% endblocktrans %}</span>
+<ul style="margin: 0.25rem 0 0 1.25rem;">
+    {% for text in try_texts %}
+    <li>{{ text|personalize:'Alex' }}</li>
+    {% endfor %}
+</ul>
+{% endif %}

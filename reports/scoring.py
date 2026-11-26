@@ -1,0 +1,86 @@
+"""The 1 to 5 scale that reports and charts show the average of every scored question on.
+
+This module imports nothing from the report services, so services.py and dreyfus_service.py can both import it.
+"""
+
+
+def _number(value, default):
+    # A missing or empty number takes the default; 0 is a real lowest number (a slider from 0 to 10)
+    return default if value is None else value
+
+
+def rating_option_count(config):
+    """The number of options of a score, which has the values 1 up to it: the config's max when that is a whole number
+    from 2 to 7, else the five options every score had before."""
+
+    highest = config.get('max') if isinstance(config, dict) else None
+
+    # bool is an int in Python, but True is not a number of options
+    if not isinstance(highest, int) or isinstance(highest, bool) or not 2 <= highest <= 7:
+        return 5
+
+    return highest
+
+
+def score_range(question_data):
+    """The lowest and highest score a question's answer can have, (low, high), or None when it has no range.
+
+    question_data is a question as report data holds it: 'question_type', 'question_config' (None or missing in old
+    reports) and 'options' ([{'id', 'label', 'weight'}]). A pick-several answer scores the sum of its picked weights,
+    so its lowest is the sum of the negative weights and its highest the sum of the positive ones. A likert average
+    is on the 1 to 5 scale already (see likert_score() in services.py) and has no range here.
+    """
+
+    config = question_data.get('question_config')
+
+    if not isinstance(config, dict):
+        return None
+
+    question_type = question_data.get('question_type')
+
+    if question_type == 'rating':
+        # As the reviewer form shows it
+        low, high = 1, rating_option_count(config)
+    elif question_type == 'scale':
+        low = _number(config.get('min'), 1)
+        high = _number(config.get('max'), 100)
+
+        # A min or max that is not a number (text, a list, True) gives no range; a bool is an int to Python
+        if not all(isinstance(bound, (int, float)) and not isinstance(bound, bool) for bound in (low, high)):
+            return None
+    elif question_type in ('single_choice', 'multiple_choice'):
+        weights = [
+            option.get('weight') for option in question_data.get('options') or []
+            if isinstance(option.get('weight'), (int, float))
+        ]
+
+        if not weights:
+            return None
+
+        if question_type == 'single_choice':
+            low, high = min(weights), max(weights)
+        else:
+            negative = [weight for weight in weights if weight < 0]
+            positive = [weight for weight in weights if weight > 0]
+            low = sum(negative) if negative else min(weights)
+            high = sum(positive) if positive else max(weights)
+    else:
+        return None
+
+    if high <= low:
+        return None
+
+    return low, high
+
+
+def score_on_five(question_data, value):
+    """value, an answer or average of the question, on the 1 to 5 scale; unchanged when the question has no range."""
+
+    bounds = score_range(question_data)
+
+    if bounds is None:
+        return value
+
+    low, high = bounds
+
+    return 1 + (value - low) / (high - low) * 4

@@ -1,0 +1,78 @@
+{% load i18n %}{# The open question, in place of its row. Every field saves by itself (static/js/questionnaire-editor.js). The fields of every answer type are in the form, those of the other types hidden, so a switch back shows what was typed. #}
+{% with id=question.pk|default:'new' %}
+<form data-question-form data-save-action="save_question" data-save-key="question-{{ id }}"{% if question.answer_count %} data-answered{% endif %}>
+    <input type="hidden" name="question_id" value="{{ question.pk|default:'' }}">
+    <input type="hidden" name="section_id" value="{{ question.section_id }}">
+
+    <div data-follow="reviewer">
+        {% if question.answer_count %}
+        <span class="help-text" style="margin: 0 0 1rem;">
+            {% blocktrans trimmed count counter=question.answer_count %}{{ counter }} reviewer already answered this question.{% plural %}{{ counter }} reviewers already answered this question.{% endblocktrans %}
+            {% trans 'You can change the texts. The page asks you first before a change that makes their answers unusable.' %}
+        </span>
+        {% endif %}
+        {% if translated_any %}
+        <span class="help-text" style="margin: 0 0 1rem;">{% blocktrans trimmed with languages=translated_any|join:', ' %}Translated into {{ languages }}. When you change a text here, its translation is marked as outdated, so the translator sees it.{% endblocktrans %}</span>
+        {% endif %}
+
+        {# 1. Question #}
+        <div class="form-group">
+            <label class="form-label" for="question-{{ id }}-text">{% trans 'Question' %}</label>
+            <textarea id="question-{{ id }}-text" name="question_text" class="form-control" rows="2" placeholder="{% trans 'How well does {name} ...?' %}">{{ question.question_text }}</textarea>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-sm btn-secondary" data-act="insert-name" style="white-space: nowrap;">{% trans "Insert the person's name" %}</button>
+                <span class="help-text" style="margin: 0; flex: 1 1 12rem;">
+                    <span data-with-name hidden>{% trans 'Reviewers read:' %} "<span data-sentence data-name="Alex"></span>"</span>
+                    <span data-without-name hidden>{% trans 'Tip: a question with the name reads better than "this person". Reviewers then see "Alex".' %}</span>
+                </span>
+            </div>
+        </div>
+
+        {# 2. Answer #}
+        <div class="form-group">
+            {# One group with a name for screen readers; without the border and space of a fieldset #}
+            <fieldset style="border: 0; padding: 0; margin: 0; min-width: 0;">
+                <legend class="form-label" style="padding: 0;">{% trans 'Answer' context 'noun' %}</legend>
+                <div data-type-choice style="display: flex; flex-wrap: wrap; gap: 0 1.25rem;">
+                    {% for type, name in answer_types.items %}
+                    <label class="form-check">
+                        <input type="radio" class="form-check-input" name="question_type" value="{{ type }}"{% if type == question.question_type %} checked{% endif %}{% if question.answer_count and type != question.question_type %}{% if type == 'rating' or type == 'scale' %} disabled{% endif %}{% endif %}>
+                        <span data-type-name>{{ name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            {% if question.answer_count %}
+            {# Reviewers' answers would be read as numbers of another scale #}
+            <span class="help-text" data-types="text likert single_choice multiple_choice">{% trans 'Reviewers already answered this question, so it cannot become a Score or a Slider. Add a new question for that.' %}</span>
+            <span class="help-text" data-types="rating">{% trans 'Reviewers already answered this question, so it cannot become a Slider. Add a new question for that.' %}</span>
+            <span class="help-text" data-types="scale">{% trans 'Reviewers already answered this question, so it cannot become a Score. Add a new question for that.' %}</span>
+            {% endif %}
+            <span class="help-text" style="margin: 0.25rem 0 1rem;">
+                <span data-types="rating">{% trans 'Reviewers pick a number.' %}</span>
+                <span data-types="likert">{% trans 'Reviewers pick one answer in words, from low to high.' %}</span>
+                <span data-types="text">{% trans 'Reviewers type their answer.' %}</span>
+                <span data-types="single_choice">{% trans 'Reviewers pick one answer from a list.' %}</span>
+                <span data-types="multiple_choice">{% trans 'Reviewers tick all answers that fit.' %}</span>
+                <span data-types="scale">{% trans 'Reviewers move a slider between two numbers.' %}</span>
+                {% trans 'The example on the right shows how it looks.' %}
+            </span>
+            {% include 'admin_dashboard/editor/_question_types.html' %}
+        </div>
+    </div>
+
+    {# 3. In the report #}
+    <div data-follow="report" style="padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 0.5rem;">
+        <div data-slot="question-{{ id }}-report">{% include 'admin_dashboard/editor/_question_report.html' %}</div>
+    </div>
+
+    <div data-follow="reviewer">{% include 'admin_dashboard/editor/_question_more.html' %}</div>
+
+    <div data-question-actions style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+        <button type="button" class="btn btn-sm btn-danger" data-act="delete-question">{% trans 'Delete question' %}</button>
+        <button type="button" class="btn btn-sm btn-primary" data-act="question-done">{% trans 'Done with this question' %}</button>
+    </div>
+
+    {% include 'admin_dashboard/editor/_question_asks.html' %}
+</form>
+{% endwith %}

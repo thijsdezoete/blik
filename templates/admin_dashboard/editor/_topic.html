@@ -1,0 +1,37 @@
+{% load i18n %}{# One topic: its head (a slot), the fields that "Edit" opens, and its questions #}
+<div class="card mb-2 editor-section" data-section="{{ section.id }}" data-follow="reviewer" style="background: var(--bg-light);">
+    <div class="card-header" style="background: var(--bg-light); display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;">
+        {# display: contents puts the parts of the head into this row, next to the fields below #}
+        <div data-slot="topic-{{ section.id }}-head" style="display: contents;">{% include 'admin_dashboard/editor/_topic_head.html' %}</div>
+        <div data-topic-edit hidden data-save-action="save_section" data-save-key="topic-{{ section.id }}" style="order: 1; flex: 1 1 16rem;">
+            <input type="hidden" name="section_id" value="{{ section.id }}">
+            <div class="form-group">
+                <label class="form-label" for="topic-{{ section.id }}-title">{% trans 'Topic' %}</label>
+                <input id="topic-{{ section.id }}-title" name="title" class="form-control" type="text" maxlength="255" value="{{ section.title }}" placeholder="{% trans 'For example: Communication' %}">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" for="topic-{{ section.id }}-description">{% trans 'One line for the reviewer (optional)' %}</label>
+                <input id="topic-{{ section.id }}-description" name="description" class="form-control" type="text" value="{{ section.description }}">
+                <span class="help-text">{% trans 'Reviewers see it under the title of the topic.' %}</span>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                <button type="button" class="btn btn-sm btn-danger" data-act="delete-topic">{% trans 'Delete topic' %}</button>
+                <button type="button" class="btn btn-sm btn-primary" data-act="topic-done">{% trans 'Done' %}</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <ul id="questions-{{ section.id }}" class="question-list" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1rem;">
+            {% for question in section.questions.all %}
+            <li data-question="{{ question.id }}" class="editor-question" style="padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;">
+                <div data-slot="question-{{ question.id }}-row">{% include 'admin_dashboard/editor/_question_row.html' %}</div>
+            </li>
+            {% endfor %}
+        </ul>
+        {# The place of a new question; it gets its id and its row with the first save #}
+        <template data-new-question>
+            <li data-question="" class="editor-question" style="padding: 1rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.5rem;"></li>
+        </template>
+        <button type="button" class="btn btn-sm btn-secondary" style="margin-top: 0.75rem;" data-act="add-question">{% trans 'Add a question' %}</button>
+    </div>
+</div>

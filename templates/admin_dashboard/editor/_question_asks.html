@@ -1,0 +1,48 @@
+{% load i18n %}{# The questions the page asks before a change of the open question loses something; rendered only when they must be asked. The script fills data-fill and shows the parts for the current type (data-types). #}
+{% if question.answer_count or translated %}
+<template data-ask="type">
+    <p style="margin-bottom: 0.75rem;">
+        {% if question.answer_count %}
+        {% blocktrans trimmed count counter=question.answer_count %}{{ counter }} reviewer already answered this question.{% plural %}{{ counter }} reviewers already answered this question.{% endblocktrans %}
+        {% trans 'With another answer type, their answers no longer count in reports.' %}
+        <span data-types="rating">{% trans 'This question cannot become a Score again.' %}</span>
+        <span data-types="scale">{% trans 'This question cannot become a Slider again.' %}</span>
+        {% endif %}
+        {% if translated %}
+        {% blocktrans trimmed with languages=translated|join:', ' %}The translations of its answers ({{ languages }}) are removed.{% endblocktrans %}
+        {% endif %}
+    </p>
+    <button type="button" class="btn btn-sm btn-danger">{% trans 'Change the answer type' %}</button>
+    <button type="button" class="btn btn-sm btn-secondary">{% blocktrans trimmed %}Keep "<span data-fill="type"></span>"{% endblocktrans %}</button>
+</template>
+<template data-ask="answer">
+    <p style="margin-bottom: 0.75rem;">
+        {% if question.answer_count %}
+        {% blocktrans trimmed count counter=question.answer_count %}{{ counter }} reviewer already answered this question.{% plural %}{{ counter }} reviewers already answered this question.{% endblocktrans %}
+        {% blocktrans trimmed %}Reviewers who picked "<span data-fill="label"></span>" stay in the report, but that answer no longer counts.{% endblocktrans %}
+        {% endif %}
+        {% if translated %}
+        {% blocktrans trimmed with languages=translated|join:', ' %}Its translation is removed, if it has one ({{ languages }}).{% endblocktrans %}
+        {% endif %}
+    </p>
+    <button type="button" class="btn btn-sm btn-danger">{% trans 'Remove the answer' %}</button>
+    <button type="button" class="btn btn-sm btn-secondary">{% trans 'Keep it' %}</button>
+</template>
+{% endif %}
+{% if values.label_languages %}
+<template data-ask="count">
+    <p style="margin-bottom: 0.75rem;">{% blocktrans trimmed with languages=values.label_languages|join:', ' %}The options above <span data-fill="count"></span> are removed, with their translations ({{ languages }}).{% endblocktrans %}</p>
+    <button type="button" class="btn btn-sm btn-danger">{% trans 'Change the number' %}</button>
+    <button type="button" class="btn btn-sm btn-secondary">{% trans 'Keep it' %}</button>
+</template>
+{% endif %}
+<template data-ask="delete">
+    <p style="margin-bottom: 0.75rem;">
+        {% trans 'Delete this question?' %}
+        {% if question.answer_count %}
+        {% blocktrans trimmed count counter=question.answer_count %}{{ counter }} reviewer already answered it. That answer is deleted with it.{% plural %}{{ counter }} reviewers already answered it. Their answers are deleted with it.{% endblocktrans %}
+        {% endif %}
+    </p>
+    <button type="button" class="btn btn-sm btn-danger">{% trans 'Delete the question' %}</button>
+    <button type="button" class="btn btn-sm btn-secondary">{% trans 'Keep it' %}</button>
+</template>

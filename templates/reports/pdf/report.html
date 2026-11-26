@@ -237,8 +237,9 @@ th { font-weight: 500; font-size: 7.5pt; color: #6b7280; text-align: left; verti
 <div class="footer-name">{{ reviewee_name }} · {% trans 'Confidential' %}</div>
 {% include "reports/pdf/_cover.html" %}
 {% include "reports/pdf/_summary.html" %}
-{% if report_data.insights.skill_profile %}{% include "reports/pdf/_development.html" with insights=report_data.insights %}{% endif %}
+{# The radar first, as on the web report; then the skill level and the initiative #}
 {% if radar %}{% include "reports/pdf/_overview.html" %}{% endif %}
+{% if report_data.insights.skill_profile or report_data.insights.agency_profile %}{% include "reports/pdf/_development.html" with insights=report_data.insights %}{% endif %}
 {% include "reports/pdf/_others.html" %}
 {% include "reports/pdf/_detail.html" %}
 </body>

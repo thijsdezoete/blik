@@ -1440,6 +1440,8 @@ body {
     transition: all 0.2s;
 }
 
+.multiple-choice-checkbox[type="radio"] + .multiple-choice-label::before { border-radius: 50%; }
+
 /* Checkmark */
 .multiple-choice-label::after {
     content: '';
@@ -1601,14 +1603,14 @@ body {
 .scale-slider::-webkit-slider-runnable-track {
     width: 100%;
     height: 8px;
-    background: linear-gradient(to right, #e0e7ff 0%, var(--primary) 100%);
+    background: var(--border);
     border-radius: 4px;
 }
 
 .scale-slider::-moz-range-track {
     width: 100%;
     height: 8px;
-    background: linear-gradient(to right, #e0e7ff 0%, var(--primary) 100%);
+    background: var(--border);
     border-radius: 4px;
 }
 
@@ -2727,6 +2729,8 @@ body {
 .invite-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
 .invite-split .form-label { margin: 0 0 0.25rem; }
 @media (max-width: 800px) { .invite-split { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+/* The right column of the questionnaire editor stays in view while the left column scrolls */
+.editor-preview { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow-y: auto; }
 .email-preview-frame { display: block; width: 100%; height: min(26rem, 40vh); border: 1px solid var(--border); border-radius: 8px; background: #fff; }
 .sender-identity { margin-bottom: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); }
 .sender-identity > .help-text { display: block; margin: 0 0 0.75rem; }

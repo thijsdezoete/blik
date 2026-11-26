@@ -1,0 +1,76 @@
+{% load i18n feedback_tags %}{# Slot "report": the example report. The script draws the chart into the canvas from the answer's chart data. #}
+<span class="help-text" style="margin: 0 0 1rem;">{% trans 'The numbers are examples. The shape is real.' %}</span>
+{% if preview.case != 'none' %}
+<div style="position: relative;"><canvas id="editorRadar" style="max-height: 360px;"></canvas></div>
+{% endif %}
+<p style="margin: 1rem 0 0.5rem; font-weight: 500;">
+    {% if preview.case == 'radar' %}
+    {% blocktrans trimmed count counter=preview.chart.section_scores|length %}{{ counter }} topic has a question with a score, so the radar has {{ counter }} axis.{% plural %}{{ counter }} topics have a question with a score, so the radar has {{ counter }} axes.{% endblocktrans %}
+    {% elif preview.case == 'overall' %}
+    {% trans 'Two topics have a question with a score. The radar gets a third axis, "Overall". A third topic makes it a full radar.' %}
+    {% elif preview.case == 'bars' %}
+    {% trans 'The report shows bars, not a radar. Three topics with a question with a score give a radar.' %}
+    {% else %}
+    {% trans 'No question has a score yet, so the report has no chart. Each topic with a question with a score gets its own axis on the radar.' %}
+    {% endif %}
+</p>
+{% for topic in preview.topics %}
+<div style="display: flex; gap: 0.75rem; align-items: baseline; padding: 0.5rem 0; border-top: 1px solid var(--border);">
+    <span style="flex: 1 1 0;"><strong>{{ topic.title }}</strong>
+        <span class="help-text">
+            {% if topic.questions %}
+            {% blocktrans trimmed count counter=topic.questions with counting=topic.counting %}The score of {{ counting }} of {{ counter }} question is included.{% plural %}The score of {{ counting }} of {{ counter }} questions is included.{% endblocktrans %}
+            {% else %}
+            {% trans 'No questions yet.' %}
+            {% endif %}
+        </span>
+    </span>
+    {# Plain text, as in the list of topics on the left #}
+    <span class="help-text" style="margin: 0; white-space: nowrap;">{% if topic.point %}{% trans 'On the radar' %}{% else %}{% trans 'Not on the radar' %}{% endif %}</span>
+</div>
+{% endfor %}
+{# Per model that is on: the diagram and the stage as the real report shows them (reports/_dreyfus_profile.html), and how the example level is made from the questions that count #}
+{% for entry in report_models %}{% if entry.level %}{% with level=entry.level profile=entry.level.profile %}
+<div class="insight-card skill-development" data-level="{{ entry.model }}" style="margin-top: 1.5rem;">
+    <div class="insight-title">{{ entry.name }}</div>
+    {% if entry.model == 'skill' %}
+    <div class="dreyfus-svg-container"{% if not level.rows %} style="opacity: 0.4;"{% endif %}>
+        {% include "components/dreyfus_model_svg.html" with current_stage=profile.stage_key %}
+    </div>
+    {% elif entry.model == 'agency' %}
+    <div class="agency-svg-container"{% if not level.rows %} style="opacity: 0.4;"{% endif %}>
+        {% with agency_level=profile.agency_level|floatformat:0 %}
+        {% include "components/agency_levels_svg.html" with current_level=agency_level %}
+        {% endwith %}
+    </div>
+    {% endif %}
+    {% if level.rows %}
+    <div class="current-stage-summary">
+        <div class="stage-header-compact">
+            <div class="stage-name-large">{{ level.stage_name }}</div>
+            <div class="stage-level-compact">{% blocktrans trimmed with level=level.level|floatformat:"-2" %}Level {{ level }}/5.0{% endblocktrans %}</div>
+        </div>
+        <div class="stage-description">{{ level.description }}</div>
+    </div>
+    <p style="margin: 1.25rem 0 0.5rem; font-weight: 500;">{% trans 'How this level is made' %}</p>
+    <span class="help-text" style="margin: 0 0 0.5rem;">{% trans 'The scores are examples. The way they make the level is real.' %}</span>
+    {# Without the table's minimum width, which is wider than the right column #}
+    <div class="table-wrapper"><table class="table" style="min-width: 0;">
+        <thead><tr><th>{% trans 'Question' %}</th><th style="white-space: normal;">{% trans 'Example score' %}</th><th style="white-space: normal;">{% trans 'How much it counts' %}</th></tr></thead>
+        <tbody>
+            {% for row in level.rows %}
+            <tr><td>{{ row.question.question_text|personalize:'Alex' }}</td><td>{{ row.score|floatformat:1 }}</td><td>{{ row.weight_name }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table></div>
+    <span class="help-text">
+        {% trans 'The level is the average of the scores. Each score is multiplied by how much it counts ("Counts double" is x 2, "Counts half" is x 0.5), and the total is divided by the sum of how much they count:' %}
+        <strong>({% for row in level.rows %}{{ row.score|floatformat:1 }} x {{ row.weight_text }}{% if not forloop.last %} + {% endif %}{% endfor %}) / {{ level.weight_sum_text }} = {{ level.level|floatformat:"-2" }}</strong>.
+        {% blocktrans trimmed with low=level.low|floatformat:"-1" high=level.high|floatformat:"-1" stage=level.stage name=level.stage_name %}A level from {{ low }} to {{ high }} is stage {{ stage }} of 5, "{{ name }}". The diagram marks step {{ stage }} of its five steps.{% endblocktrans %}
+    </span>
+    {% else %}
+    <div class="empty-state">{% blocktrans trimmed with name=entry.name %}No question counts toward "{{ name }}" yet. Choose the questions in the card "The report" on the left.{% endblocktrans %}</div>
+    {% endif %}
+</div>
+{% endwith %}{% endif %}{% endfor %}
+<button type="button" class="btn btn-sm btn-secondary" style="margin-top: 1.5rem;" data-act="open-tab" data-href="{% url 'questionnaire_sample_report' questionnaire.uuid %}?from=editor">{% trans 'See the full sample report' %}</button>

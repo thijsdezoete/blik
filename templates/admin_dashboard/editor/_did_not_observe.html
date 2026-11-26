@@ -1,0 +1,9 @@
+{% load i18n %}{# Slot "did-not-observe": the switch for every question with a score; "mixed" when they differ #}
+{% with state=did_not_observe %}
+<label class="form-check" style="margin-bottom: 0;" data-save-action="set_did_not_observe" data-save-key="did-not-observe">
+    <input type="checkbox" class="form-check-input" name="on" data-state="{{ state }}"{% if state == 'on' %} checked{% endif %}>
+    <span>{% trans 'Offer "Did not observe" in every question with a score' %}
+        <span class="help-text">{% if state == 'mixed' %}{% trans 'Now some questions offer it and others do not.' %} {% endif %}{% trans 'Sets all questions at once. You can still change one question afterwards.' %}</span>
+    </span>
+</label>
+{% endwith %}

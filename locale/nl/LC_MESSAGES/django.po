@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 11:52+0000\n"
+"POT-Creation-Date: 2026-11-26 12:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4925,6 +4925,61 @@ msgstr "Je review wordt eerst beoordeeld en pas daarna gepubliceerd."
 msgid "Submit Review"
 msgstr "Review versturen"
 
+msgid "How advice works"
+msgstr "Zo werken actiepunten"
+
+msgid "Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score."
+msgstr "Een actiepunt is een tip voor de persoon die het rapport krijgt. Het rapport toont het alleen als feedbackgevers deze vraag een lage score geven."
+
+msgid "Where it shows"
+msgstr "Waar het staat"
+
+msgid "In the report, in the part \"Skill level\", under \"Action Items\". So advice shows only in a report that has a skill level."
+msgstr "In het rapport, in het deel \"Vaardigheidsniveau\", onder \"Actiepunten\". Actiepunten staan dus alleen in een rapport met een vaardigheidsniveau."
+
+msgid "How to write it"
+msgstr "Zo schrijf je het"
+
+msgid "Write to the person who reads the report, as one thing to do. Example: \"Ask a colleague to read your next proposal before you send it.\""
+msgstr "Schrijf aan de persoon die het rapport leest, als één ding om te doen. Voorbeeld: \"Vraag een collega je volgende voorstel te lezen voordat je het verstuurt.\""
+
+msgid "Keep it short: one sentence."
+msgstr "Houd het kort: één zin."
+
+#, python-brace-format
+msgid "You can use {name} for the first name of the person."
+msgstr "Je kunt {name} gebruiken voor de voornaam van de persoon."
+
+msgid "When the report shows it"
+msgstr "Wanneer het rapport het toont"
+
+msgid "The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count."
+msgstr "De score van deze vraag is het gemiddelde van wat de anderen antwoordden, op een schaal van 1 tot en met 5. Het eigen antwoord van de persoon telt niet mee."
+
+msgid "The report shows the advice when that score is below the number next to the advice. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Het rapport toont het actiepunt als die score lager is dan het getal naast het actiepunt. Bij 3 verschijnt het actiepunt bij een score van 2,9 en niet bij een score van 3."
+
+msgid "Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10."
+msgstr "Elk antwoordtype telt hier op de schaal van 1 tot en met 5, ook een schuifregelaar van 1 tot 10."
+
+msgid "Only for these stages"
+msgstr "Alleen voor deze fasen"
+
+msgid "Leave all boxes empty to give the advice at every skill stage. Tick stages to give it only to a person who is at one of them, for example only to a Novice."
+msgstr "Laat alle vakjes leeg om het actiepunt in elke fase te geven. Vink fasen aan om het alleen te geven aan iemand die in een van die fasen zit, bijvoorbeeld alleen aan een beginner."
+
+msgid "Pay attention"
+msgstr "Let op"
+
+msgid "The report has room for three lines under \"Action Items\". With advice on many questions, only the first ones show. So give advice for the questions that matter most, not for every question."
+msgstr "Het rapport heeft onder \"Actiepunten\" ruimte voor drie regels. Met actiepunten bij veel vragen verschijnen alleen de eerste. Geef dus actiepunten bij de vragen die het belangrijkst zijn, niet bij elke vraag."
+
+msgid "Advice is a text of the questionnaire: it is translated on the language tabs, like the questions."
+msgstr "Een actiepunt is een tekst van de vragenlijst: je vertaalt het op de taaltabbladen, net als de vragen."
+
+msgid "Close"
+msgstr "Sluiten"
+
 msgid "Ask a senior colleague to review your next proposal"
 msgstr "Vraag een ervaren collega om je volgende voorstel te bekijken"
 
@@ -5318,8 +5373,22 @@ msgstr "Aan laten"
 msgid "Which questions count, and how much?"
 msgstr "Welke vragen tellen mee, en hoeveel?"
 
+#, python-format
+msgid "%(name)s: %(counter)s question"
+msgid_plural "%(name)s: %(counter)s questions"
+msgstr[0] "%(name)s: %(counter)s vraag"
+msgstr[1] "%(name)s: %(counter)s vragen"
+
+#, python-format
+msgid "%(name)s: no question yet"
+msgstr "%(name)s: nog geen vraag"
+
 msgid "A level in the report is the average score of the questions you choose here. A question that \"Counts double\" weighs twice as much in that average."
 msgstr "Een niveau in het rapport is de gemiddelde score van de vragen die je hier kiest. Een vraag die \"Telt dubbel mee\" weegt in dat gemiddelde twee keer zo zwaar."
+
+#, python-format
+msgid "Advice (%(count)s)"
+msgstr "Actiepunten (%(count)s)"
 
 msgid "A question without a score, such as a written answer, cannot count toward a level. So it is not in this list."
 msgstr "Een vraag zonder score, zoals een geschreven antwoord, kan niet meetellen voor een niveau. Daarom staat die niet in deze lijst."
@@ -6036,9 +6105,6 @@ msgstr "Sleep een persoon om die te verplaatsen. Houd Alt ingedrukt om te kopië
 
 msgid "Rename unit"
 msgstr "Afdeling hernoemen"
-
-msgid "Close"
-msgstr "Sluiten"
 
 msgid "For example: Sales, Engineering"
 msgstr "Bijvoorbeeld: Verkoop, Ontwikkeling"

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 11:52+0000\n"
+"POT-Creation-Date: 2026-11-26 12:06+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -4916,6 +4916,61 @@ msgstr "Bewertungen werden vor der Veröffentlichung geprüft."
 msgid "Submit Review"
 msgstr "Bewertung absenden"
 
+msgid "How advice works"
+msgstr "So funktionieren Maßnahmen"
+
+msgid "Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score."
+msgstr "Eine Maßnahme ist ein Tipp für die Person, die den Bericht erhält. Der Bericht zeigt sie nur, wenn Feedbackgebende diese Frage niedrig bewerten."
+
+msgid "Where it shows"
+msgstr "Wo sie erscheint"
+
+msgid "In the report, in the part \"Skill level\", under \"Action Items\". So advice shows only in a report that has a skill level."
+msgstr "Im Bericht, im Teil „Kompetenzstufe“, unter „Maßnahmen“. Maßnahmen erscheinen also nur in einem Bericht mit Kompetenzstufe."
+
+msgid "How to write it"
+msgstr "So wird sie formuliert"
+
+msgid "Write to the person who reads the report, as one thing to do. Example: \"Ask a colleague to read your next proposal before you send it.\""
+msgstr "An die Person schreiben, die den Bericht liest, als eine konkrete Handlung. Beispiel: „Den nächsten Vorschlag vor dem Absenden von einer Kollegin oder einem Kollegen lesen lassen.“"
+
+msgid "Keep it short: one sentence."
+msgstr "Kurz halten: ein Satz."
+
+#, python-brace-format
+msgid "You can use {name} for the first name of the person."
+msgstr "{name} steht für den Vornamen der Person."
+
+msgid "When the report shows it"
+msgstr "Wann der Bericht sie zeigt"
+
+msgid "The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count."
+msgstr "Die Bewertung dieser Frage ist der Durchschnitt der Antworten der anderen, auf der Skala von 1 bis 5. Die eigene Antwort der Person zählt nicht."
+
+msgid "The report shows the advice when that score is below the number next to the advice. With 3, the advice shows for a score of 2.9 and not for a score of 3."
+msgstr "Der Bericht zeigt die Maßnahme, wenn diese Bewertung unter der Zahl neben der Maßnahme liegt. Bei 3 erscheint die Maßnahme bei einer Bewertung von 2,9, aber nicht bei einer Bewertung von 3."
+
+msgid "Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10."
+msgstr "Jeder Antworttyp zählt hier auf der Skala von 1 bis 5, auch ein Schieberegler von 1 bis 10."
+
+msgid "Only for these stages"
+msgstr "Nur für diese Stufen"
+
+msgid "Leave all boxes empty to give the advice at every skill stage. Tick stages to give it only to a person who is at one of them, for example only to a Novice."
+msgstr "Bleiben alle Kästchen leer, gilt die Maßnahme auf jeder Kompetenzstufe. Sind Stufen angekreuzt, gilt sie nur für eine Person auf einer dieser Stufen, zum Beispiel nur für einen Neuling."
+
+msgid "Pay attention"
+msgstr "Zu beachten"
+
+msgid "The report has room for three lines under \"Action Items\". With advice on many questions, only the first ones show. So give advice for the questions that matter most, not for every question."
+msgstr "Der Bericht hat unter „Maßnahmen“ Platz für drei Zeilen. Bei Maßnahmen zu vielen Fragen erscheinen nur die ersten. Maßnahmen deshalb für die wichtigsten Fragen angeben, nicht für jede Frage."
+
+msgid "Advice is a text of the questionnaire: it is translated on the language tabs, like the questions."
+msgstr "Eine Maßnahme ist ein Text des Fragebogens: Sie wird wie die Fragen in den Sprach-Tabs übersetzt."
+
+msgid "Close"
+msgstr "Schließen"
+
 msgid "Ask a senior colleague to review your next proposal"
 msgstr "Den nächsten Vorschlag von einer erfahrenen Person aus dem Team prüfen lassen"
 
@@ -5309,8 +5364,22 @@ msgstr "Eingeschaltet lassen"
 msgid "Which questions count, and how much?"
 msgstr "Welche Fragen zählen und wie stark?"
 
+#, python-format
+msgid "%(name)s: %(counter)s question"
+msgid_plural "%(name)s: %(counter)s questions"
+msgstr[0] "%(name)s: %(counter)s Frage"
+msgstr[1] "%(name)s: %(counter)s Fragen"
+
+#, python-format
+msgid "%(name)s: no question yet"
+msgstr "%(name)s: noch keine Frage"
+
 msgid "A level in the report is the average score of the questions you choose here. A question that \"Counts double\" weighs twice as much in that average."
 msgstr "Ein Niveau im Bericht ist die durchschnittliche Bewertung der hier gewählten Fragen. Eine Frage mit „Zählt doppelt“ wiegt in diesem Durchschnitt doppelt so viel."
+
+#, python-format
+msgid "Advice (%(count)s)"
+msgstr "Maßnahmen (%(count)s)"
 
 msgid "A question without a score, such as a written answer, cannot count toward a level. So it is not in this list."
 msgstr "Eine Frage ohne Bewertung, etwa eine schriftliche Antwort, kann nicht für ein Niveau zählen. Deshalb fehlt sie in dieser Liste."
@@ -6027,9 +6096,6 @@ msgstr "Eine Person ziehen, um sie zu verschieben. Alt gedrückt halten, um sie 
 
 msgid "Rename unit"
 msgstr "Einheit umbenennen"
-
-msgid "Close"
-msgstr "Schließen"
 
 msgid "For example: Sales, Engineering"
 msgstr "Zum Beispiel: Vertrieb, Entwicklung"

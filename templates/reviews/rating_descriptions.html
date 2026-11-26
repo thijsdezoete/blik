@@ -4,7 +4,7 @@
 <details class="rating-descriptions">
     <summary>{% trans 'What does each score mean?' %}</summary>
     <dl>
-        {% for value in "12345" %}
+        {% for value in question|rating_values %}
         {% with text=question.descriptions|get_item:value %}
         {% if text %}
         <dt>{{ value }}{% if question.labels|get_item:value %} – {{ question.labels|get_item:value }}{% endif %}</dt>

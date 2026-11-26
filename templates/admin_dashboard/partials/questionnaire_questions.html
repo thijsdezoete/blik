@@ -13,7 +13,7 @@
             {% elif question.question_type == 'rating' %}
             <p class="help-text">{% trans 'Rating scale:' %}</p>
             <ul class="questionnaire-preview-options">
-                {% for value in "12345" %}<li>{{ value }}{% if question.labels|get_item:value %} — {{ question.labels|get_item:value }}{% endif %}</li>{% endfor %}
+                {% for value in question|rating_values %}<li>{{ value }}{% if question.labels|get_item:value %} — {{ question.labels|get_item:value }}{% endif %}</li>{% endfor %}
                 <li>{% trans 'Did not observe' %}</li>
             </ul>
             {% elif question.question_type == 'scale' %}

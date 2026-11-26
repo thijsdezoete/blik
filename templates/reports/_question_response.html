@@ -13,9 +13,9 @@
         {% if question_data.question_type == 'rating' %}
             <div style="font-size: 0.875rem; color: var(--text-secondary);">
                 {% if question_data|report_labels %}
-                    {% trans 'Rating scale (1-5):' %}
+                    {% trans 'Rating scale:' %}
                     <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
-                        {% for rating in "12345" %}
+                        {% for rating in question_data|rating_values %}
                             {% with rating_int=rating|add:"0" %}
                             {% with label=question_data|get_rating_label:rating_int %}
                             {% if label %}
@@ -26,7 +26,7 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    {% trans 'Rating scale: 1 to 5' %}
+                    {% trans 'Rating scale:' %} {% blocktrans trimmed with max=question_data|rating_values|last %}1 to {{ max }}{% endblocktrans %}
                 {% endif %}
             </div>
         {% elif question_data.question_type == 'likert' %}
@@ -102,18 +102,21 @@
                     {% endif %}
                     {# RATING QUESTIONS - Show average and distribution #}
                     {% if question_data.question_type == 'rating' and cat_data.avg %}
+                        {# A score with fewer or more than five options is shown on the 1 to 5 scale too #}
+                        {% with avg_on_five=question_data|on_five:cat_data.avg %}
                         <div class="rating-display">
-                            <span class="rating-score">{{ cat_data.avg }}</span>
+                            <span class="rating-score">{{ avg_on_five }}</span>
                             <div class="rating-bar-container">
-                                <div class="rating-bar-fill" style="width: {% widthratio cat_data.avg 5 100 %}%"></div>
+                                <div class="rating-bar-fill" style="width: {% widthratio avg_on_five 5 100 %}%"></div>
                             </div>
                             <span class="response-count">/ 5.0</span>
                         </div>
+                        {% endwith %}
 
                         {# Show distribution for rating questions - only show options that were selected #}
                         {% if cat_data.distribution %}
                         <div class="distribution-container" style="margin-top: 0.75rem;">
-                            {% for rating in "54321" %}
+                            {% for rating in question_data|rating_values reversed %}
                                 {% with rating_int=rating|add:"0" %}
                                 {% with count=cat_data.distribution|get_item:rating_int|default:0 %}
                                 {% if count > 0 %}

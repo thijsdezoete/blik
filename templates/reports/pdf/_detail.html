@@ -15,7 +15,7 @@
         <div class="question keep">
             <h4>{{ q.question_text }}</h4>
             {% if q.question_type == 'rating' and q|report_labels %}
-            <div class="scale">{% trans 'Scale:' %} {% for rating in "12345" %}{% with label=q|get_rating_label:rating %}{% if label %}{{ rating }} = {{ label }}{% if not forloop.last %} · {% endif %}{% endif %}{% endwith %}{% endfor %}</div>
+            <div class="scale">{% trans 'Scale:' %} {% for rating in q|rating_values %}{% with label=q|get_rating_label:rating %}{% if label %}{{ rating }} = {{ label }}{% if not forloop.last %} · {% endif %}{% endif %}{% endwith %}{% endfor %}</div>
             {% elif q.question_type == 'scale' %}
             <div class="scale">{% blocktrans trimmed with min=q.question_config.min|default:1 max=q.question_config.max|default:100 %}Scale: {{ min }} to {{ max }}{% endblocktrans %}</div>
             {% endif %}

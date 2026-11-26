@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from questionnaires.models import Question
 from questionnaires.placeholders import personalize as personalize_text
 from reports.report_texts import RATING_RANGES
+from reports.scoring import score_on_five
 from reports.services import RATING_EXCELLENT, RATING_OUTSTANDING, RATING_STRONG, get_rating_key
 from reviews.models import CATEGORY_ORDER
 
@@ -186,6 +187,30 @@ def report_labels(question_data):
     config = question_data.get('question_config') or {}
 
     return question_data.get('labels') or config.get('labels') or {}
+
+
+@register.filter
+def rating_values(question):
+    """The values of a score question as text, '1' up to its config's max: a Question or a report question dict.
+
+    A max that is missing or not a whole number from 2 to 7 gives the five values every score had before.
+    """
+
+    config = question.get('question_config') if isinstance(question, dict) else question.config
+    highest = config.get('max') if isinstance(config, dict) else None
+
+    # bool is an int in Python, but True is not a number of options
+    if not isinstance(highest, int) or isinstance(highest, bool) or not 2 <= highest <= 7:
+        highest = 5
+
+    return [str(value) for value in range(1, highest + 1)]
+
+
+@register.filter
+def on_five(question_data, value):
+    """An average of a report question on the 1 to 5 scale, rounded to two decimals."""
+
+    return round(score_on_five(question_data, value), 2)
 
 
 @register.filter

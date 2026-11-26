@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-24 11:15+0000\n"
+"POT-Creation-Date: 2026-11-26 06:45+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -2172,6 +2172,39 @@ msgstr "Stimme zu"
 msgid "Strongly Agree"
 msgstr "Stimme voll zu"
 
+msgid "This model does not exist."
+msgstr "Dieses Modell gibt es nicht."
+
+msgid "This weight is not possible."
+msgstr "Diese Gewichtung ist nicht möglich."
+
+msgid "A score has 2 to 7 options."
+msgstr "Eine Bewertungsskala hat 2 bis 7 Optionen."
+
+msgid "The lowest value, the highest value and the step of a slider must be whole numbers."
+msgstr "Der niedrigste Wert, der höchste Wert und die Schrittweite eines Schiebereglers müssen ganze Zahlen sein."
+
+msgid "The highest value of a slider must be more than its lowest value."
+msgstr "Der höchste Wert eines Schiebereglers muss größer als sein niedrigster Wert sein."
+
+msgid "The step of a slider must be more than 0."
+msgstr "Die Schrittweite eines Schiebereglers muss größer als 0 sein."
+
+msgid "Write the question."
+msgstr "Den Fragetext eingeben."
+
+msgid "Choose an answer type."
+msgstr "Einen Antworttyp auswählen."
+
+msgid "Reviewers already answered this question as another type. Add a new question for a score or a slider."
+msgstr "Feedbackgebende haben diese Frage bereits als anderen Typ beantwortet. Für eine Bewertungsskala oder einen Schieberegler eine neue Frage hinzufügen."
+
+msgid "Reviewers already answered this question, so its number of options stays."
+msgstr "Feedbackgebende haben diese Frage bereits beantwortet, daher bleibt die Anzahl der Optionen gleich."
+
+msgid "The threshold and the stages of an advice item must be numbers."
+msgstr "Schwellenwert und Stufen einer Maßnahme müssen Zahlen sein."
+
 msgid "description"
 msgstr "Beschreibung"
 
@@ -2357,6 +2390,9 @@ msgstr "Beschriftung der Bewertung %(value)s"
 #, python-format
 msgid "The translation of \"%(text)s\" is longer than %(max_length)s characters."
 msgstr "Die Übersetzung von „%(text)s“ ist länger als %(max_length)s Zeichen."
+
+msgid "The questionnaire has no text to translate here."
+msgstr "Der Fragebogen hat hier keinen Text zum Übersetzen."
 
 msgid "No expiry"
 msgstr "Kein Ablauf"
@@ -6589,25 +6625,6 @@ msgstr "Es wurde noch kein Fragebogen eingerichtet"
 msgid "Preview: %(name)s"
 msgstr "Vorschau: %(name)s"
 
-msgid "1 (Strongly Disagree) to 5 (Strongly Agree)"
-msgstr "1 (stimme überhaupt nicht zu) bis 5 (stimme voll zu)"
-
-msgid "1 (Needs Improvement) to 5 (Exceptional)"
-msgstr "1 (Verbesserungsbedarf) bis 5 (herausragend)"
-
-msgid "1 (Never) to 5 (Always)"
-msgstr "1 (nie) bis 5 (immer)"
-
-#, python-format
-msgid "1 to %(max)s"
-msgstr "1 bis %(max)s"
-
-msgid "Likert scale options:"
-msgstr "Optionen der Likert-Skala:"
-
-msgid "Options:"
-msgstr "Optionen:"
-
 #, python-format
 msgid "Sample Report — %(name)s"
 msgstr "Beispielbericht – %(name)s"
@@ -9498,11 +9515,12 @@ msgstr "Mehr über die Leistungsmatrix"
 msgid "Question Format:"
 msgstr "Fragetyp:"
 
-msgid "Rating scale (1-5):"
-msgstr "Bewertungsskala (1–5):"
+#, python-format
+msgid "1 to %(max)s"
+msgstr "1 bis %(max)s"
 
-msgid "Rating scale: 1 to 5"
-msgstr "Bewertungsskala: 1 bis 5"
+msgid "Likert scale options:"
+msgstr "Optionen der Likert-Skala:"
 
 msgid "Single choice (select one):"
 msgstr "Einfachauswahl (eine Option wählen):"
@@ -9817,6 +9835,12 @@ msgstr "Erledigt"
 msgid "Closed"
 msgstr "Geschlossen"
 
+msgid "Share your thoughts..."
+msgstr "Ihre Gedanken..."
+
+msgid "Select an option"
+msgstr "Option auswählen"
+
 msgid "Unable to Claim Token"
 msgstr "Einladungslink kann nicht eingelöst werden"
 
@@ -9854,12 +9878,6 @@ msgstr "360°-Feedback"
 #, python-format
 msgid "Step 1 of %(total)s"
 msgstr "Schritt 1 von %(total)s"
-
-msgid "Share your thoughts..."
-msgstr "Ihre Gedanken..."
-
-msgid "Select an option"
-msgstr "Option auswählen"
 
 msgid "Submit Feedback"
 msgstr "Feedback absenden"

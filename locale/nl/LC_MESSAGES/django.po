@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-25 19:56+0000\n"
+"POT-Creation-Date: 2026-11-26 06:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2183,6 +2183,39 @@ msgstr "Mee eens"
 msgid "Strongly Agree"
 msgstr "Helemaal mee eens"
 
+msgid "This model does not exist."
+msgstr "Dit model bestaat niet."
+
+msgid "This weight is not possible."
+msgstr "Deze weging is niet mogelijk."
+
+msgid "A score has 2 to 7 options."
+msgstr "Een beoordelingsschaal heeft 2 tot en met 7 opties."
+
+msgid "The lowest value, the highest value and the step of a slider must be whole numbers."
+msgstr "De laagste waarde, de hoogste waarde en de stapgrootte van een schuifregelaar moeten hele getallen zijn."
+
+msgid "The highest value of a slider must be more than its lowest value."
+msgstr "De hoogste waarde van een schuifregelaar moet groter zijn dan de laagste waarde."
+
+msgid "The step of a slider must be more than 0."
+msgstr "De stapgrootte van een schuifregelaar moet groter zijn dan 0."
+
+msgid "Write the question."
+msgstr "Schrijf de vraag."
+
+msgid "Choose an answer type."
+msgstr "Kies een antwoordtype."
+
+msgid "Reviewers already answered this question as another type. Add a new question for a score or a slider."
+msgstr "Feedbackgevers hebben deze vraag al als een ander type beantwoord. Voeg een nieuwe vraag toe voor een beoordelingsschaal of een schuifregelaar."
+
+msgid "Reviewers already answered this question, so its number of options stays."
+msgstr "Feedbackgevers hebben deze vraag al beantwoord, dus het aantal opties blijft gelijk."
+
+msgid "The threshold and the stages of an advice item must be numbers."
+msgstr "De drempel en de fasen van een actiepunt moeten getallen zijn."
+
 msgid "description"
 msgstr "beschrijving"
 
@@ -2368,6 +2401,9 @@ msgstr "Label van score %(value)s"
 #, python-format
 msgid "The translation of \"%(text)s\" is longer than %(max_length)s characters."
 msgstr "De vertaling van \"%(text)s\" is langer dan %(max_length)s tekens."
+
+msgid "The questionnaire has no text to translate here."
+msgstr "De vragenlijst heeft hier geen tekst om te vertalen."
 
 msgid "No expiry"
 msgstr "Verloopt niet"
@@ -6597,25 +6633,6 @@ msgstr "Een beheerder heeft nog geen vragenlijst ingesteld"
 msgid "Preview: %(name)s"
 msgstr "Voorbeeld: %(name)s"
 
-msgid "1 (Strongly Disagree) to 5 (Strongly Agree)"
-msgstr "1 (helemaal mee oneens) tot 5 (helemaal mee eens)"
-
-msgid "1 (Needs Improvement) to 5 (Exceptional)"
-msgstr "1 (verbetering nodig) tot 5 (uitzonderlijk)"
-
-msgid "1 (Never) to 5 (Always)"
-msgstr "1 (nooit) tot 5 (altijd)"
-
-#, python-format
-msgid "1 to %(max)s"
-msgstr "1 tot en met %(max)s"
-
-msgid "Likert scale options:"
-msgstr "Opties van de Likertschaal:"
-
-msgid "Options:"
-msgstr "Opties:"
-
 #, python-format
 msgid "Sample Report — %(name)s"
 msgstr "Voorbeeldrapport – %(name)s"
@@ -9504,11 +9521,12 @@ msgstr "Meer over de prestatiematrix"
 msgid "Question Format:"
 msgstr "Vraagtype:"
 
-msgid "Rating scale (1-5):"
-msgstr "Beoordelingsschaal (1-5):"
+#, python-format
+msgid "1 to %(max)s"
+msgstr "1 tot en met %(max)s"
 
-msgid "Rating scale: 1 to 5"
-msgstr "Beoordelingsschaal: 1 tot en met 5"
+msgid "Likert scale options:"
+msgstr "Opties van de Likertschaal:"
 
 msgid "Single choice (select one):"
 msgstr "Enkele keuze (kies één optie):"
@@ -9823,6 +9841,12 @@ msgstr "Klaar"
 msgid "Closed"
 msgstr "Afgesloten"
 
+msgid "Share your thoughts..."
+msgstr "Deel je gedachten..."
+
+msgid "Select an option"
+msgstr "Kies een optie"
+
 msgid "Unable to Claim Token"
 msgstr "Uitnodigingslink kan niet worden gebruikt"
 
@@ -9860,12 +9884,6 @@ msgstr "360-gradenfeedback"
 #, python-format
 msgid "Step 1 of %(total)s"
 msgstr "Stap 1 van %(total)s"
-
-msgid "Share your thoughts..."
-msgstr "Deel je gedachten..."
-
-msgid "Select an option"
-msgstr "Kies een optie"
 
 msgid "Submit Feedback"
 msgstr "Feedback versturen"

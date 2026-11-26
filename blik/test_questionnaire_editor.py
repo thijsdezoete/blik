@@ -572,7 +572,9 @@ class EditorReportCardTests(TestCase):
         card = self.post(action='refresh', shown='skill').json()['slots']['report-card']
 
         self.assertIn(f'data-question-id="{self.question.id}"', card)
-        self.assertEqual(card.count('data-question-id='), 1)
+        # One select of the model, and one button to the advice of that question
+        self.assertEqual(card.count('data-weight="skill"'), 1)
+        self.assertEqual(card.count('data-act="row-advice"'), 1)
 
     def test_how_a_level_is_made_shows_the_numbers_of_the_preview(self):
         self.post(action='set_weight', question_id=self.question.id, model='agency', weight='2')

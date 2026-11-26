@@ -1,0 +1,38 @@
+{% load i18n %}{# What "Advice when the score is low" does, opened by the "i" button next to that heading; the rules are those of reports/dreyfus_service.py #}
+<dialog id="adviceHelp" class="modal-content reviewee-dialog" aria-labelledby="adviceHelpTitle">
+    <div class="card-header">
+        <h2 class="card-title" id="adviceHelpTitle">{% trans 'How advice works' %}</h2>
+    </div>
+    <div class="card-body">
+        <p>{% trans 'Advice is a tip for the person who gets the report. The report shows it only when reviewers give this question a low score.' %}</p>
+
+        <h3 class="form-label" style="margin-top: 1.25rem;">{% trans 'Where it shows' %}</h3>
+        <p class="help-text">{% trans 'In the report, in the part "Skill level", under "Action Items". So advice shows only in a report that has a skill level.' %}</p>
+
+        <h3 class="form-label" style="margin-top: 1.25rem;">{% trans 'How to write it' %}</h3>
+        <ul class="help-text" style="margin: 0 0 0 1.25rem;">
+            <li>{% trans 'Write to the person who reads the report, as one thing to do. Example: "Ask a colleague to read your next proposal before you send it."' %}</li>
+            <li>{% trans 'Keep it short: one sentence.' %}</li>
+            <li>{% trans 'You can use {name} for the first name of the person.' %}</li>
+        </ul>
+
+        <h3 class="form-label" style="margin-top: 1.25rem;">{% trans 'When the report shows it' %}</h3>
+        <ul class="help-text" style="margin: 0 0 0 1.25rem;">
+            <li>{% trans 'The score of this question is the average of what the others answered, on a scale of 1 to 5. The own answer of the person does not count.' %}</li>
+            <li>{% trans 'The report shows the advice when that score is below the number next to the advice. With 3, the advice shows for a score of 2.9 and not for a score of 3.' %}</li>
+            <li>{% trans 'Every answer type counts on the scale of 1 to 5 here, also a slider from 1 to 10.' %}</li>
+        </ul>
+
+        <h3 class="form-label" style="margin-top: 1.25rem;">{% trans 'Only for these stages' %}</h3>
+        <p class="help-text">{% trans 'Leave all boxes empty to give the advice at every skill stage. Tick stages to give it only to a person who is at one of them, for example only to a Novice.' %}</p>
+
+        <h3 class="form-label" style="margin-top: 1.25rem;">{% trans 'Pay attention' %}</h3>
+        <ul class="help-text" style="margin: 0 0 0 1.25rem;">
+            <li>{% trans 'The report has room for three lines under "Action Items". With advice on many questions, only the first ones show. So give advice for the questions that matter most, not for every question.' %}</li>
+            <li>{% trans 'Advice is a text of the questionnaire: it is translated on the language tabs, like the questions.' %}</li>
+        </ul>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-primary" data-act="close-dialog">{% trans 'Close' %}</button>
+    </div>
+</dialog>

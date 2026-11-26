@@ -42,7 +42,15 @@
         {# The stored advice changes only when this marker is posted, so it goes with the fields #}
         <div class="form-group" data-types="rating likert single_choice multiple_choice scale" style="margin-bottom: 0;">
             <input type="hidden" name="action_items_posted" value="1">
-            <span class="form-label">{% trans 'Advice when the score is low' %}</span>
+            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                <span class="form-label" style="margin: 0;">{% trans 'Advice when the score is low' %}</span>
+                {# The same "i" as next to the tabs of the real report; it opens the dialog of _advice_help.html #}
+                <button type="button" class="tab-info-link" style="border: 0; background: none; cursor: pointer; color: var(--primary);" data-act="advice-help" aria-haspopup="dialog" title="{% trans 'How advice works' %}" aria-label="{% trans 'How advice works' %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                </button>
+            </div>
             <div data-advice-rows>
                 {% for item in question.action_items %}
                 {% include 'admin_dashboard/editor/_advice_row.html' with index=forloop.counter0 %}

@@ -27,9 +27,15 @@
         {% endfor %}
 
         {% if models_on %}
-        <div style="padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 0.5rem; margin-top: 1rem;">
-            <span class="form-label">{% trans 'Which questions count, and how much?' %}</span>
-            <span class="help-text" style="margin: 0;">
+        {# Folded when the page opens, because it lists every question; the script keeps it as the creator left it #}
+        <details data-weights style="padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 0.5rem; margin-top: 1rem;">
+            <summary style="cursor: pointer;">
+                <span class="form-label" style="display: inline; margin: 0;">{% trans 'Which questions count, and how much?' %}</span>
+                <span class="help-text" style="margin: 0.25rem 0 0;">
+                    {% for entry in report_models %}{% if entry.level %}<span style="margin-right: 1rem; white-space: nowrap;">{% if entry.weighted %}{% blocktrans trimmed count counter=entry.weighted with name=entry.name %}{{ name }}: {{ counter }} question{% plural %}{{ name }}: {{ counter }} questions{% endblocktrans %}{% else %}{% blocktrans trimmed with name=entry.name %}{{ name }}: no question yet{% endblocktrans %}{% endif %}</span>{% endif %}{% endfor %}
+                </span>
+            </summary>
+            <span class="help-text" style="margin: 1rem 0 0;">
                 {% trans 'A level in the report is the average score of the questions you choose here. A question that "Counts double" weighs twice as much in that average.' %}
                 {% for entry in report_models %}{% if entry.level %} {{ entry.example }}{% endif %}{% endfor %}
             </span>
@@ -40,6 +46,17 @@
                 {% for entry in report_models %}{% if entry.level %}
                 <span class="help-text" style="margin: 0; width: 10rem; flex: 0 0 auto; font-weight: 700;">{{ entry.name }}</span>
                 {% endif %}{% endfor %}
+                {% if 'skill' in models_on %}
+                {# Advice goes with the skill level: the report gives it with the steps to the next stage #}
+                <span class="help-text" style="margin: 0; width: 8rem; flex: 0 0 auto; font-weight: 700; display: flex; align-items: center;">
+                    {% trans 'Advice' %}
+                    <button type="button" class="tab-info-link" style="border: 0; background: none; cursor: pointer; color: var(--primary);" data-act="advice-help" aria-haspopup="dialog" title="{% trans 'How advice works' %}" aria-label="{% trans 'How advice works' %}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                    </button>
+                </span>
+                {% endif %}
             </div>
             {% for topic in weight_table %}
             <div class="help-text" style="margin-top: 0.75rem; font-weight: 700;">{{ topic.title }}</div>
@@ -58,6 +75,12 @@
                     </select>
                 </span>
                 {% endfor %}
+                {% if 'skill' in models_on %}
+                {# Opens the question at its advice; the advice itself is written there, in one place #}
+                <span style="width: 8rem; flex: 0 0 auto;">
+                    <button type="button" class="btn btn-sm btn-secondary" style="width: 100%;" data-act="row-advice" data-question-id="{{ row.question.id }}">{% with count=row.question.action_items|length %}{% if count %}{% blocktrans trimmed %}Advice ({{ count }}){% endblocktrans %}{% else %}{% trans 'Add advice' %}{% endif %}{% endwith %}</button>
+                </span>
+                {% endif %}
                 </span>
             </div>
             {% endfor %}
@@ -66,7 +89,7 @@
             {% else %}
             <span class="help-text" style="margin-top: 0.75rem;">{% trans 'No question has a score yet. Add a question with a score first; then you choose here how much it counts.' %}</span>
             {% endif %}
-        </div>
+        </details>
         {% endif %}
     </div>
 </div>

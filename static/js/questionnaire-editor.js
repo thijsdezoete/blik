@@ -379,8 +379,12 @@
         return true;
     }
 
+    // Whether "Which questions count, and how much?" is unfolded: the card is filled again after every change
+    let weightsOpen = false;
+
     function afterSlot(slot) {
         slot.querySelectorAll('[data-state="mixed"]').forEach(checkbox => { checkbox.indeterminate = true; });
+        slot.querySelectorAll('[data-weights]').forEach(details => { details.open = weightsOpen; });
 
         const card = slot.closest('[data-section]');
 
@@ -1221,15 +1225,17 @@
     }
 
     // Opening another question first saves and closes the open one; the newest click wins
+    // Resolves to the form of the question when it is open, null when it did not open
     function openQuestion(item) {
         if (item === openItem) {
-            return;
+            return Promise.resolve(questionForm(item));
         }
 
         const ticket = ++openTicket;
 
         closeTopics();
-        closeQuestion().then(function(closed) {
+
+        return closeQuestion().then(function(closed) {
             if (!closed || ticket !== openTicket || !item.isConnected) {
                 return null;
             }
@@ -1239,16 +1245,47 @@
 
             return load({question: item.dataset.question}).then(function(answer) {
                 if (ticket !== openTicket) {
-                    return;
+                    return null;
                 }
 
                 if (answer && item.isConnected) {
                     showForm(item, answer.html);
                     field(questionForm(item), 'question_text').focus();
-                } else {
-                    Editor.open = '';
+
+                    return questionForm(item);
                 }
+
+                Editor.open = '';
+
+                return null;
             });
+        });
+    }
+
+    // From the table of the report card: open the question at its advice, with an empty line when it has none
+    function showAdvice(questionId) {
+        const item = root.querySelector(`.question-list > [data-question="${questionId}"]`);
+
+        if (!item) {
+            return;
+        }
+
+        openQuestion(item).then(function(form) {
+            const rows = form?.querySelector('[data-advice-rows]');
+
+            if (!rows) {
+                return;
+            }
+
+            moreOpen = form.querySelector('[data-more]').open = true;
+
+            if (rows.children.length) {
+                rows.querySelector('[name$="[text]"]').focus();
+            } else {
+                addAdvice(form);
+            }
+
+            rows.closest('.form-group').scrollIntoView({block: 'center'});
         });
     }
 
@@ -1423,6 +1460,10 @@
         if (event.target.matches('[data-more]') && event.target.closest('[data-question-form]:not([hidden])')) {
             moreOpen = event.target.open;
         }
+
+        if (event.target.matches('[data-weights]')) {
+            weightsOpen = event.target.open;
+        }
     }, true);
 
     /* ---------- Order: drag a handle or use the arrows; each move saves the order of everything ---------- */
@@ -1546,6 +1587,12 @@
             return;
         }
 
+        // A click next to an open help dialog (on its backdrop) closes it
+        if (event.target.matches('dialog[open]')) {
+            event.target.close();
+            return;
+        }
+
         const move = event.target.closest('[data-move]');
 
         if (move) {
@@ -1648,6 +1695,21 @@
         case 'add-advice':
             addAdvice(form);
             break;
+        case 'row-advice':
+            showAdvice(button.dataset.questionId);
+            break;
+        case 'advice-help': {
+            const help = document.getElementById('adviceHelp');
+
+            // Back to the "i" when the dialog closes, also with Escape
+            help.addEventListener('close', () => button.focus(), {once: true});
+            help.showModal();
+            help.querySelector('.card-body').scrollTop = 0;
+            break;
+        }
+        case 'close-dialog':
+            button.closest('dialog').close();
+            break;
         case 'remove-advice':
             button.closest('[data-advice-row]').remove();
             saveQuestion(form);
@@ -1692,6 +1754,8 @@
 
         if (box.checked) {
             Editor.shown = [...new Set([...Editor.shown, model])];
+            // The creator sees at once what the tick brought: the table of questions
+            weightsOpen = true;
             showTab('report');
             refreshModels().then(answer => answer.ok && showLevel(model));
             return;

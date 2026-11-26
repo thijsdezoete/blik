@@ -58,10 +58,17 @@
         return typeof request.fields === 'function' ? request.fields() : request.fields;
     }
 
+    // A login in another tab (after the old one ended) gives a new token, which only the cookie has
+    function currentToken() {
+        const cookie = document.cookie.split('; ').find(item => item.startsWith('csrftoken='));
+
+        return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : csrfToken;
+    }
+
     // A field with a list of values (the rows of answers) is sent once per value
     function formData(request, fields = fieldsOf(request)) {
         const data = new FormData();
-        data.append('csrfmiddlewaretoken', csrfToken);
+        data.append('csrfmiddlewaretoken', currentToken());
         data.append('action', request.action);
         data.append('shown', Editor.shown.join(','));
         data.append('topic', Editor.topic);
@@ -79,7 +86,7 @@
 
     function queueOf(key) {
         if (!queues.has(key)) {
-            queues.set(key, {running: false, waiting: null, failed: false});
+            queues.set(key, {running: false, waiting: null, failed: false, loggedOut: false});
         }
 
         return queues.get(key);
@@ -88,8 +95,8 @@
     /*
      * Send an action. Requests with the same key run one after the other; a newer request that is still waiting
      * replaces an older waiting one, whose callers get the newer answer. The promise resolves with the answer, also
-     * with a refusal ({ok: false, message}); a request that fails (network, server error) is sent again after 3
-     * seconds and with the next change, and its promise waits for that.
+     * with a refusal ({ok: false, message}); a request that fails (network, server error, an ended login) is sent again
+     * after 3 seconds and with the next change, and its promise waits for that.
      *
      * fields may be a function: it is called when the request is sent, so a request that waited sends what the page
      * holds then. options.after(answer, number) runs with the answer (also a refusal) before the next request of the
@@ -143,6 +150,7 @@
         const request = queue.waiting;
         const number = ++requestCount;
         let answer = null;
+        let loggedOut = false;
 
         queue.waiting = null;
         queue.running = true;
@@ -152,11 +160,13 @@
             const response = await fetch(url, {
                 method: 'POST',
                 body: formData(request, request.built),
-                headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrfToken},
+                headers: {'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': currentToken()},
                 credentials: 'same-origin',
                 // The request still arrives when the page is left meanwhile
                 keepalive: true,
             });
+            // An ended login answers a redirect to the login page, which fetch follows; a lost right answers 403
+            loggedOut = response.redirected || response.status === 401 || response.status === 403;
             answer = await response.json();
         } catch (error) {
             answer = null;
@@ -167,6 +177,7 @@
         if (!answer || typeof answer.ok !== 'boolean') {
             // Sent again, unless a newer request of the same key took its place
             queue.failed = true;
+            queue.loggedOut = loggedOut;
 
             if (queue.waiting) {
                 takePlace(queue.waiting, request);
@@ -180,6 +191,7 @@
         }
 
         queue.failed = false;
+        queue.loggedOut = false;
 
         if (answer.ok) {
             refusals.delete(key);
@@ -262,7 +274,9 @@
         let text = saveState.dataset.saved;
         let color = 'var(--success)';
 
-        if (states.some(queue => queue.failed)) {
+        if (states.some(queue => queue.loggedOut)) {
+            [text, color] = [saveState.dataset.loggedOut, 'var(--danger)'];
+        } else if (states.some(queue => queue.failed)) {
             [text, color] = [saveState.dataset.failed, 'var(--danger)'];
         } else if (typing.size || states.some(queue => queue.running || queue.waiting)) {
             [text, color] = [saveState.dataset.saving, 'var(--text-secondary)'];
@@ -732,6 +746,19 @@
             form.postedRows = answerRows(form, ROW_GROUPS[currentType(form)]);
         },
         after: questionSaved,
+    };
+
+    // The switch for every question stored the open question as well: its own box shows what is stored now. Not a
+    // change of the question, so it sends nothing; a later save of the question sends the box as it is then
+    groupHooks.set_did_not_observe = {
+        after: function(group, answer) {
+            const form = questionForm(openItem);
+            const box = form && field(form, 'did_not_observe');
+
+            if (answer.ok && box && ['rating', 'likert'].includes(currentType(form))) {
+                box.checked = answer.fields.on === 'on';
+            }
+        },
     };
 
     // The answer to a save of the question, before its next save is sent
@@ -1278,6 +1305,30 @@
         return closing;
     }
 
+    /*
+     * Before the page is left: every change is stored. Resolves false while a refusal of a group of fields in the page
+     * is left (an empty name, an empty topic title): the page stays, the save state shows it, and the focus goes to its
+     * field. A refusal of a single action has no field to correct and does not keep the page.
+     */
+    function readyToLeave() {
+        return Editor.flush().then(function() {
+            const key = Array.from(refusals.keys()).find(name => findGroup(name));
+
+            if (!key) {
+                return true;
+            }
+
+            saveState.textContent = refusals.get(key);
+            saveState.style.color = 'var(--danger)';
+
+            const group = findGroup(key);
+            const input = group.querySelector('[data-dirty]') || group.querySelector('[name]');
+
+            input?.focus();
+            return false;
+        });
+    }
+
     function closeForm(item, form) {
         const row = item.querySelector(':scope > [data-slot]');
 
@@ -1343,8 +1394,10 @@
         return Array.from(topicsList.querySelectorAll(':scope > [data-section]:not([hidden])'), card => ({
             section: Number(card.dataset.section),
             // A new question that is not stored yet has no id
-            questions: Array.from(card.querySelectorAll('.question-list > [data-question]'), q => +q.dataset.question)
-                .filter(Boolean),
+            // A question whose delete is on its way is hidden and has no place any more
+            questions: Array.from(
+                card.querySelectorAll('.question-list > [data-question]:not([hidden])'), q => +q.dataset.question,
+            ).filter(Boolean),
         }));
     }
 
@@ -1434,16 +1487,20 @@
     /* ---------- Buttons ---------- */
 
     root.addEventListener('click', function(event) {
-        // A language tab loads the page again: the open question is saved and closed first, unless that is refused. In
-        // the translate mode its translations are stored first
+        // A language tab loads the page again: the open question is saved and closed first, and every other change is
+        // stored, unless one is refused. In the translate mode its translations are stored first
         const language = event.target.closest('[data-slot="langs"] a[href]');
 
         // Only a plain left click: one with a modifier key or the middle button opens a new tab, which the browser does
         const plain = event.button === 0 && !(event.ctrlKey || event.metaKey || event.shiftKey || event.altKey);
 
-        if (language && (openItem || Editor.lang) && plain) {
+        if (language && plain) {
             event.preventDefault();
-            closeQuestion().then(ok => ok && Editor.flush().then(() => { window.location.href = language.href; }));
+            closeQuestion().then(ok => ok && readyToLeave()).then(function(ready) {
+                if (ready) {
+                    window.location.href = language.href;
+                }
+            });
             return;
         }
 
@@ -1490,15 +1547,9 @@
         case 'open-tab': {
             // A tab opened after waiting counts as a pop-up, so it opens now and gets its address after the save
             const opened = window.open('', '_blank');
-            closed.then(function(ok) {
-                if (!ok) {
+            closed.then(ok => ok && readyToLeave()).then(function(ready) {
+                if (!ready) {
                     opened?.close();
-                    return null;
-                }
-
-                return Editor.flush();
-            }).then(function(saved) {
-                if (saved === null) {
                     return;
                 }
 
@@ -1512,7 +1563,11 @@
             break;
         }
         case 'leave':
-            closed.then(ok => ok && Editor.flush().then(() => { window.location.href = button.dataset.href; }));
+            closed.then(ok => ok && readyToLeave()).then(function(ready) {
+                if (ready) {
+                    window.location.href = button.dataset.href;
+                }
+            });
             break;
         case 'add-topic':
             addTopic();

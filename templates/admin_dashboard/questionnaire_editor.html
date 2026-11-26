@@ -21,7 +21,8 @@
             <span data-save-state role="status" style="font-size: 0.875rem; color: var(--success);"
                   data-saving="{% trans 'Saving...' %}"
                   data-saved="{% trans 'All changes saved' %}"
-                  data-failed="{% trans 'Not saved. Trying again.' %}">{% trans 'All changes saved' %}</span>
+                  data-failed="{% trans 'Not saved. Trying again.' %}"
+                  data-logged-out="{% trans 'You are logged out. Log in again in another tab. This page then saves by itself.' %}">{% trans 'All changes saved' %}</span>
             {% if not language %}
             <button type="button" class="btn btn-secondary" data-act="settings" aria-expanded="false">{% trans 'Settings' %}</button>
             {% endif %}

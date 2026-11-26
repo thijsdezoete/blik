@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 12:06+0000\n"
+"POT-Creation-Date: 2026-11-26 12:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5171,8 +5171,8 @@ msgid "Counts"
 msgstr "Telt mee"
 
 #, python-format
-msgid "Counts in the point \"%(topic)s\" on the radar."
-msgstr "Telt mee voor het punt \"%(topic)s\" in het radardiagram."
+msgid "Counts for \"%(topic)s\" on the radar."
+msgstr "Telt mee voor \"%(topic)s\" in het radardiagram."
 
 msgid "Written answers show as text in the report. They do not count in the radar."
 msgstr "Geschreven antwoorden staan als tekst in het rapport. Ze tellen niet mee in het radardiagram."
@@ -5290,25 +5290,19 @@ msgid "The numbers are examples. The shape is real."
 msgstr "De getallen zijn voorbeelden. De vorm is echt."
 
 #, python-format
-msgid "%(counter)s topic has a question with a score, so the radar has %(counter)s point."
-msgid_plural "%(counter)s topics have a question with a score, so the radar has %(counter)s points."
-msgstr[0] "%(counter)s onderwerp heeft een vraag met een score, dus het radardiagram heeft %(counter)s punt."
-msgstr[1] "%(counter)s onderwerpen hebben een vraag met een score, dus het radardiagram heeft %(counter)s punten."
+msgid "%(counter)s topic has a question with a score, so the radar has %(counter)s axis."
+msgid_plural "%(counter)s topics have a question with a score, so the radar has %(counter)s axes."
+msgstr[0] "%(counter)s onderwerp heeft een vraag met een score, dus het radardiagram heeft %(counter)s as."
+msgstr[1] "%(counter)s onderwerpen hebben een vraag met een score, dus het radardiagram heeft %(counter)s assen."
 
-msgid "Two topics have a question with a score. The radar gets a third point, \"Overall\". A third topic makes it a full radar."
-msgstr "Twee onderwerpen hebben een vraag met een score. Het radardiagram krijgt een derde punt, \"Totaal\". Een derde onderwerp maakt er een volledig radardiagram van."
+msgid "Two topics have a question with a score. The radar gets a third axis, \"Overall\". A third topic makes it a full radar."
+msgstr "Twee onderwerpen hebben een vraag met een score. Het radardiagram krijgt een derde as, \"Totaal\". Een derde onderwerp maakt er een volledig radardiagram van."
 
 msgid "The report shows bars, not a radar. Three topics with a question with a score give a radar."
 msgstr "Het rapport toont balken, geen radardiagram. Drie onderwerpen met een vraag met een score geven een radardiagram."
 
-msgid "No question has a score yet, so the report has no chart. Each topic with a question with a score becomes one point on the radar."
-msgstr "Nog geen vraag heeft een score, dus het rapport heeft geen diagram. Elk onderwerp met een vraag met een score wordt één punt in het radardiagram."
-
-msgid "Point"
-msgstr "Punt"
-
-msgid "No point"
-msgstr "Geen punt"
+msgid "No question has a score yet, so the report has no chart. Each topic with a question with a score gets its own axis on the radar."
+msgstr "Nog geen vraag heeft een score, dus het rapport heeft geen diagram. Elk onderwerp met een vraag met een score krijgt een eigen as in het radardiagram."
 
 #, python-format
 msgid "%(counting)s of %(counter)s question counts."
@@ -5318,6 +5312,12 @@ msgstr[1] "%(counting)s van %(counter)s vragen tellen mee."
 
 msgid "No questions yet."
 msgstr "Nog geen vragen."
+
+msgid "On the radar"
+msgstr "In het radardiagram"
+
+msgid "Not on the radar"
+msgstr "Niet in het radardiagram"
 
 #, python-format
 msgid "Level %(level)s/5.0"
@@ -5355,8 +5355,8 @@ msgstr "Kies wat het rapport laat zien. Het voorbeeld rechts volgt je keuzes."
 msgid "Scores per topic (radar)"
 msgstr "Scores per onderwerp (radardiagram)"
 
-msgid "Always there. Each topic with a scored question is one point on the radar."
-msgstr "Altijd aanwezig. Elk onderwerp met een vraag met een score is één punt in het radardiagram."
+msgid "Always there. Each topic with a scored question gets its own axis on the radar."
+msgstr "Altijd aanwezig. Elk onderwerp met een vraag met een score krijgt een eigen as in het radardiagram."
 
 #, python-format
 msgid "%(counter)s question counts toward \"%(name)s\" now. If you switch it off, the report no longer shows it and this question no longer counts toward it."
@@ -5445,14 +5445,8 @@ msgstr "Klaar"
 msgid "Add a question"
 msgstr "Vraag toevoegen"
 
-msgid "This topic has no question with a score, so it gets no point on the radar. That is fine for written feedback."
-msgstr "Dit onderwerp heeft geen vraag met een score, dus het krijgt geen punt in het radardiagram. Voor geschreven feedback is dat prima."
-
-msgid "Point on the radar"
-msgstr "Punt in het radardiagram"
-
-msgid "No point on the radar"
-msgstr "Geen punt in het radardiagram"
+msgid "This topic has no question with a score, so it is not on the radar. That is fine for written feedback."
+msgstr "Dit onderwerp heeft geen vraag met een score, dus het staat niet in het radardiagram. Voor geschreven feedback is dat prima."
 
 #, python-format
 msgid "Delete the topic \"%(title)s\" and its question?"

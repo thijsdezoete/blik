@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 12:06+0000\n"
+"POT-Creation-Date: 2026-11-26 12:31+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -5162,8 +5162,8 @@ msgid "Counts"
 msgstr "Zählt"
 
 #, python-format
-msgid "Counts in the point \"%(topic)s\" on the radar."
-msgstr "Zählt für den Punkt „%(topic)s“ im Netzdiagramm."
+msgid "Counts for \"%(topic)s\" on the radar."
+msgstr "Zählt für „%(topic)s“ im Netzdiagramm."
 
 msgid "Written answers show as text in the report. They do not count in the radar."
 msgstr "Schriftliche Antworten erscheinen im Bericht als Text. Im Netzdiagramm zählen sie nicht."
@@ -5281,25 +5281,19 @@ msgid "The numbers are examples. The shape is real."
 msgstr "Die Zahlen sind Beispiele. Die Form ist echt."
 
 #, python-format
-msgid "%(counter)s topic has a question with a score, so the radar has %(counter)s point."
-msgid_plural "%(counter)s topics have a question with a score, so the radar has %(counter)s points."
-msgstr[0] "%(counter)s Thema hat eine Frage mit Bewertung, also hat das Netzdiagramm %(counter)s Punkt."
-msgstr[1] "%(counter)s Themen haben eine Frage mit Bewertung, also hat das Netzdiagramm %(counter)s Punkte."
+msgid "%(counter)s topic has a question with a score, so the radar has %(counter)s axis."
+msgid_plural "%(counter)s topics have a question with a score, so the radar has %(counter)s axes."
+msgstr[0] "%(counter)s Thema hat eine Frage mit Bewertung, also hat das Netzdiagramm %(counter)s Achse."
+msgstr[1] "%(counter)s Themen haben eine Frage mit Bewertung, also hat das Netzdiagramm %(counter)s Achsen."
 
-msgid "Two topics have a question with a score. The radar gets a third point, \"Overall\". A third topic makes it a full radar."
-msgstr "Zwei Themen haben eine Frage mit Bewertung. Das Netzdiagramm bekommt einen dritten Punkt, „Gesamt“. Ein drittes Thema macht es zu einem vollständigen Netzdiagramm."
+msgid "Two topics have a question with a score. The radar gets a third axis, \"Overall\". A third topic makes it a full radar."
+msgstr "Zwei Themen haben eine Frage mit Bewertung. Das Netzdiagramm bekommt eine dritte Achse, „Gesamt“. Ein drittes Thema macht es zu einem vollständigen Netzdiagramm."
 
 msgid "The report shows bars, not a radar. Three topics with a question with a score give a radar."
 msgstr "Der Bericht zeigt Balken, kein Netzdiagramm. Drei Themen mit einer Frage mit Bewertung ergeben ein Netzdiagramm."
 
-msgid "No question has a score yet, so the report has no chart. Each topic with a question with a score becomes one point on the radar."
-msgstr "Noch hat keine Frage eine Bewertung, also hat der Bericht kein Diagramm. Jedes Thema mit einer Frage mit Bewertung wird ein Punkt im Netzdiagramm."
-
-msgid "Point"
-msgstr "Punkt"
-
-msgid "No point"
-msgstr "Kein Punkt"
+msgid "No question has a score yet, so the report has no chart. Each topic with a question with a score gets its own axis on the radar."
+msgstr "Noch hat keine Frage eine Bewertung, also hat der Bericht kein Diagramm. Jedes Thema mit einer Frage mit Bewertung bekommt eine eigene Achse im Netzdiagramm."
 
 #, python-format
 msgid "%(counting)s of %(counter)s question counts."
@@ -5309,6 +5303,12 @@ msgstr[1] "%(counting)s von %(counter)s Fragen zählen."
 
 msgid "No questions yet."
 msgstr "Noch keine Fragen."
+
+msgid "On the radar"
+msgstr "Im Netzdiagramm"
+
+msgid "Not on the radar"
+msgstr "Nicht im Netzdiagramm"
 
 #, python-format
 msgid "Level %(level)s/5.0"
@@ -5346,8 +5346,8 @@ msgstr "Auswählen, was der Bericht zeigt. Das Beispiel rechts folgt der Auswahl
 msgid "Scores per topic (radar)"
 msgstr "Bewertungen je Thema (Netzdiagramm)"
 
-msgid "Always there. Each topic with a scored question is one point on the radar."
-msgstr "Immer dabei. Jedes Thema mit einer Frage mit Bewertung ist ein Punkt im Netzdiagramm."
+msgid "Always there. Each topic with a scored question gets its own axis on the radar."
+msgstr "Immer dabei. Jedes Thema mit einer Frage mit Bewertung bekommt eine eigene Achse im Netzdiagramm."
 
 #, python-format
 msgid "%(counter)s question counts toward \"%(name)s\" now. If you switch it off, the report no longer shows it and this question no longer counts toward it."
@@ -5436,14 +5436,8 @@ msgstr "Erledigt"
 msgid "Add a question"
 msgstr "Frage hinzufügen"
 
-msgid "This topic has no question with a score, so it gets no point on the radar. That is fine for written feedback."
-msgstr "Dieses Thema hat keine Frage mit Bewertung, also bekommt es keinen Punkt im Netzdiagramm. Für schriftliches Feedback ist das in Ordnung."
-
-msgid "Point on the radar"
-msgstr "Punkt im Netzdiagramm"
-
-msgid "No point on the radar"
-msgstr "Kein Punkt im Netzdiagramm"
+msgid "This topic has no question with a score, so it is not on the radar. That is fine for written feedback."
+msgstr "Dieses Thema hat keine Frage mit Bewertung, also steht es nicht im Netzdiagramm. Für schriftliches Feedback ist das in Ordnung."
 
 #, python-format
 msgid "Delete the topic \"%(title)s\" and its question?"

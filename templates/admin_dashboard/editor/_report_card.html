@@ -11,7 +11,7 @@
         </label>
         {% for entry in report_models %}
         <label class="form-check"{% if forloop.last %} style="margin-bottom: 0;"{% endif %}>
-            <input type="checkbox" class="form-check-input" data-model="{{ entry.model }}"{% if entry.level %} checked{% endif %}>
+            <input type="checkbox" class="form-check-input" data-model="{{ entry.model }}" data-untick="{{ entry.untick }}"{% if entry.level %} checked{% endif %}>
             <span>{{ entry.choice }}
                 <span class="help-text">{{ entry.help }}</span>
             </span>

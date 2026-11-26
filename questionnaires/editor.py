@@ -400,6 +400,13 @@ def _questions(questionnaire):
     return Question.objects.filter(section__questionnaire=questionnaire)
 
 
+def _locked_questions(questionnaire):
+    """The questions of the questionnaire, locked until the end of the transaction. Only the question rows: the query
+    joins the sections, and a lock on those too (PostgreSQL) could deadlock with a reorder."""
+
+    return _questions(questionnaire).select_for_update(of=('self',))
+
+
 def clear_model(questionnaire, model):
     """Remove the weights of one model from every question of the questionnaire; the other model stays."""
 
@@ -408,7 +415,7 @@ def clear_model(questionnaire, model):
         raise EditorError(_('This model does not exist.'))
 
     with transaction.atomic():
-        for question in _questions(questionnaire).select_for_update():
+        for question in _locked_questions(questionnaire):
             if 'dreyfus_mapping' in question.config:
                 _apply_weight(question.config, model, 0)
                 question.save(update_fields=['config', 'updated_at'])
@@ -418,7 +425,7 @@ def set_did_not_observe(questionnaire, on):
     """Offer "Did not observe" on every score and likert of the questionnaire, or on none."""
 
     with transaction.atomic():
-        for question in _questions(questionnaire).filter(question_type__in=DID_NOT_OBSERVE_TYPES).select_for_update():
+        for question in _locked_questions(questionnaire).filter(question_type__in=DID_NOT_OBSERVE_TYPES):
             question.config['did_not_observe'] = on
             question.save(update_fields=['config', 'updated_at'])
 
@@ -485,12 +492,17 @@ def _drop_translations_above(question, count):
             row.save(update_fields=['labels', 'descriptions', 'source_checksums', 'updated_at'])
 
 
+@transaction.atomic
 def save_question(questionnaire, post, question=None, section=None):
     """Store the posted question: a new one in section when question is None, else the changes to question.
 
     The config is built anew for the posted type, so the answers and settings of another type are dropped. The weights
     and chart settings stay unless weights are posted. The action items change only when the post has the marker
     action_items_posted, which the form sends with the advice fields; a form that does not show them keeps them.
+
+    A stored question is read again from its locked row: the rules for answered questions, the labels a new number of
+    options starts from, the weights and the advice all use what is stored now, not the object loaded before. Its topic
+    and place are never written, so a save after a drag does not move it back.
     """
 
     question_text = post.get('question_text', '').strip()
@@ -502,16 +514,17 @@ def save_question(questionnaire, post, question=None, section=None):
     if question_type not in dict(Question.QUESTION_TYPES):
         raise EditorError(_('Choose an answer type.'))
 
+    stored = _locked(question) if question else None
     # Old answers of another type would be read as numbers, such as the id of an answer option as a score
-    answered = question is not None and question.responses.exists()
+    answered = stored is not None and stored.responses.exists()
 
-    if answered and question_type in ('rating', 'scale') and question_type != question.question_type:
+    if answered and question_type in ('rating', 'scale') and question_type != stored.question_type:
         raise EditorError(
             _('Reviewers already answered this question as another type. Add a new question for a score or a slider.')
         )
 
     default_likert_scale, defaults = get_default_labels(questionnaire)
-    stored_config = question.config if question else {}
+    stored_config = stored.config if stored else {}
     config = {}
     labels = {}
     descriptions = {}
@@ -522,9 +535,9 @@ def save_question(questionnaire, post, question=None, section=None):
         stored_count = len(defaults)
         stored_labels = defaults
 
-        if question and question.question_type == 'rating':
+        if stored and stored.question_type == 'rating':
             stored_count = stored_config.get('max', len(defaults))
-            stored_labels = question.labels
+            stored_labels = stored.labels
 
             if count != stored_count and answered:
                 raise EditorError(_('Reviewers already answered this question, so its number of options stays.'))
@@ -592,41 +605,49 @@ def save_question(questionnaire, post, question=None, section=None):
 
     if post.get('action_items_posted'):
         try:
-            action_items = posted_action_items(post, question)
+            action_items = posted_action_items(post, stored)
         except ValueError:
             raise EditorError(_('The threshold and the stages of an advice item must be numbers.'))
     else:
-        action_items = question.action_items if question else []
+        action_items = stored.action_items if stored else []
 
-    with transaction.atomic():
-        if question is None:
-            question = Question(section=section)
-            order = section.questions.aggregate(Max('order'))['order__max']
-            question.order = 0 if order is None else order + 1
-        else:
-            # The weights and chart settings of the row as it is stored now, locked: a weight set by itself
-            # (set_weight) after this question was loaded is kept
-            stored_config = _locked(question).config
+    if question is None:
+        question = Question(section=section)
+        order = section.questions.aggregate(Max('order'))['order__max']
+        question.order = 0 if order is None else order + 1
+    else:
+        # Where the question is now, also after a drag since it was loaded
+        question.section_id, question.order = stored.section_id, stored.order
 
-        for key in ('dreyfus_mapping', 'chart_weight', 'exclude_from_charts'):
-            if key in stored_config:
-                config[key] = stored_config[key]
+    # The weights and chart settings of the stored row: a weight set by itself (set_weight) after this question was
+    # loaded is kept
+    for key in ('dreyfus_mapping', 'chart_weight', 'exclude_from_charts'):
+        if key in stored_config:
+            config[key] = stored_config[key]
 
-        for model, weight in posted_weights.items():
-            _apply_weight(config, model, weight)
+    for model, weight in posted_weights.items():
+        _apply_weight(config, model, weight)
 
-        question.question_text = question_text
-        question.question_type = question_type
-        question.required = post.get('required') == 'on'
-        question.config = config
-        question.labels = labels
-        question.descriptions = descriptions
-        question.action_items = action_items
+    question.question_text = question_text
+    question.question_type = question_type
+    question.required = post.get('required') == 'on'
+    question.config = config
+    question.labels = labels
+    question.descriptions = descriptions
+    question.action_items = action_items
+
+    if stored:
+        question.save(update_fields=[
+            'question_text', 'question_type', 'required', 'config', 'labels', 'descriptions', 'action_items',
+            'updated_at',
+        ])
+    else:
         question.save()
-        save_options(question, option_rows)
 
-        if question_type == 'rating':
-            _drop_translations_above(question, config['max'])
+    save_options(question, option_rows)
+
+    if question_type == 'rating':
+        _drop_translations_above(question, config['max'])
 
     return question
 
@@ -818,6 +839,8 @@ def editor_context(questionnaire, shown, topic=None):
     sections = list(questionnaire.sections.all())
     levels = {level['model']: level for level in preview['levels']}
     weighted = dict.fromkeys(MODELS, 0)
+    # The models with a weight on any question, also on one without a score (older data)
+    mapped = set()
     weight_table = []
 
     for section in sections:
@@ -830,6 +853,7 @@ def editor_context(questionnaire, shown, topic=None):
             question.answer_count = answers.get(question.id, 0)
             section.answer_count += question.answer_count
             mapping = _mapping(question.config) if isinstance(question.config, dict) else {}
+            mapped.update(mapping)
 
             if question.scoring.has_score:
                 # The questions the table shows as counting; unticking asks about these
@@ -851,9 +875,14 @@ def editor_context(questionnaire, shown, topic=None):
         'sections': sections,
         'preview': preview,
         'models_on': list(levels),
-        # Per model: its texts, whether it is on, how many questions have a weight for it, and its example level
+        # Per model: its texts, whether it is on, how many questions have a weight for it, its example level, and what
+        # unticking it does: ask, then remove its weights (a question with a score counts); remove them without asking
+        # (only questions without a score have one, which never counted); or only take it off the card (no weight)
         'report_models': [
-            {'model': model, **MODEL_TEXTS[model], 'weighted': weighted[model], 'level': levels.get(model)}
+            {
+                'model': model, **MODEL_TEXTS[model], 'weighted': weighted[model], 'level': levels.get(model),
+                'untick': 'ask' if weighted[model] else 'clear' if model in mapped else 'refresh',
+            }
             for model in MODELS
         ],
         # The questions with a score, per topic, with their weight for each model that is on

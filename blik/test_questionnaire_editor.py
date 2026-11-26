@@ -590,8 +590,31 @@ class EditorReportCardTests(TestCase):
         card = self.post(action='refresh').json()['slots']['report-card']
 
         # The model is on through the old weight, but no question in the table counts
-        self.assertIn('data-model="skill" checked', card)
+        self.assertIn('data-model="skill" data-untick="clear" checked', card)
         self.assertNotIn('data-ask="model-skill"', card)
+
+    def test_the_card_tells_the_page_what_unticking_does(self):
+        text = Question.objects.create(
+            section=self.section, question_text='What should {name} keep doing?', question_type='text', order=1,
+        )
+        cases = (
+            # Ticked in this visit, no weight at all: only the card changes
+            ({}, {}, 'refresh'),
+            # A weight only on a question without a score: it never counted, so nothing is lost
+            ({}, {'skill': 1}, 'clear'),
+            # A question with a score counts: ask first
+            ({'skill': 1}, {}, 'ask'),
+        )
+
+        for scored, unscored, untick in cases:
+            with self.subTest(untick=untick):
+                for question, mapping in ((self.question, scored), (text, unscored)):
+                    question.config = {**question.config, 'dreyfus_mapping': mapping}
+                    question.save()
+
+                card = self.post(action='refresh', shown='skill').json()['slots']['report-card']
+
+                self.assertIn(f'data-model="skill" data-untick="{untick}"', card)
 
     def test_an_open_question_that_is_no_id_is_ignored(self):
         for action in ('refresh', 'set_weight'):

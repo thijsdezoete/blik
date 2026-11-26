@@ -1567,9 +1567,11 @@
     }
 
     /*
-     * Ticking a model shows its column, its select in the open question and its block on the right. Unticking a model
-     * that questions count for asks first (the card holds the template only then) and removes their weights for it;
-     * the box stays ticked until the creator says yes.
+     * Ticking a model shows its column, its select in the open question and its block on the right. What unticking does
+     * the server tells in data-untick, from the stored weights: "ask" when a question with a score counts for the model
+     * (the box stays ticked until the creator says yes, then its weights go); "clear" when only questions without a
+     * score have a weight for it (older data that never counted, so nothing is lost); "refresh" when it is on only
+     * because it was ticked in this visit, so no weight is removed, also not one that is still on its way.
      */
     function toggleModel(box) {
         const model = box.dataset.model;
@@ -1584,21 +1586,24 @@
             return;
         }
 
-        const ask = reportCard.querySelector(`template[data-ask="model-${model}"]`);
         const clear = function() {
             off();
             Editor.send('clear_model', {model}, {key: `model-${model}`});
         };
 
-        // Without the question no question with a score counts for the model. A weight left on a question without a
-        // score (older data) would keep it on, so it goes too; it never counted, so nothing is lost.
-        if (!ask) {
+        if (box.dataset.untick === 'refresh') {
+            off();
+            refreshModels();
+            return;
+        }
+
+        if (box.dataset.untick === 'clear') {
             clear();
             return;
         }
 
         box.checked = true;
-        Editor.ask(ask, box.closest('label'), clear);
+        Editor.ask(reportCard.querySelector(`template[data-ask="model-${model}"]`), box.closest('label'), clear);
     }
 
     /*

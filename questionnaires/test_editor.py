@@ -14,6 +14,7 @@ from questionnaires.editor import (
     set_weight,
 )
 from questionnaires.models import AnswerOption, Question, QuestionSection, QuestionTranslation, Questionnaire
+from questionnaires.ordering import save_layout
 from reviews.factories import ResponseFactory, ReviewCycleFactory, ReviewerTokenFactory
 
 D = {'1': 'Strongly Disagree', '2': 'Disagree', '3': 'Neutral', '4': 'Agree', '5': 'Strongly Agree'}
@@ -341,6 +342,36 @@ class SaveQuestionTests(EditorTestCase):
         )
         question.refresh_from_db()
         self.assertEqual(question.action_items, [{'key': 'a', 'text': 'Practise more', 'threshold': 2.5}])
+
+    def test_a_save_does_not_move_a_question_back(self):
+        first, second = self.add_question(), self.add_question()
+        other = QuestionSection.objects.create(questionnaire=self.questionnaire, title='Planning', order=1)
+        stale = Question.objects.get(pk=first.pk)
+
+        # Dragged to the other topic after the open question was loaded; the second question takes order 0
+        save_layout(self.questionnaire, [
+            {'section': self.section.id, 'questions': [second.id]},
+            {'section': other.id, 'questions': [first.id]},
+        ])
+
+        self.save(stale, question_text='Explains decisions', question_type='rating', rating_count='5')
+
+        first.refresh_from_db()
+        self.assertEqual((first.section_id, first.order), (other.id, 0))
+        self.assertEqual(first.question_text, 'Explains decisions')
+
+    def test_the_answered_rules_use_the_stored_question(self):
+        question = self.add_question()
+        stale = Question.objects.get(pk=question.pk)
+        question.config['max'] = 7
+        question.save()
+        self.answer(question)
+
+        with self.assertRaises(EditorError):
+            self.save(stale, question_text='Question 0', question_type='rating', rating_count='5')
+
+        question.refresh_from_db()
+        self.assertEqual(question.config['max'], 7)
 
     def test_a_slider_needs_a_range(self):
         question = self.add_question()

@@ -9,6 +9,7 @@ Complete guide for administrators setting up and managing the 360 feedback syste
 - [Who Can See What](#who-can-see-what)
 - [Managing Reviewees](#managing-reviewees)
 - [Org Chart](#org-chart)
+- [Saved Reviewer Lists](#saved-reviewer-lists)
 - [Creating Review Cycles](#creating-review-cycles)
 - [Managing Invitations](#managing-invitations)
 - [Closing Cycles & Generating Reports](#closing-cycles--generating-reports)
@@ -209,6 +210,57 @@ When Blik derives the reviewers of a person from the chart:
 When one person lands in more than one group, the first group in this order keeps them: self, manager, direct report, peer. Within a group the names are sorted alphabetically.
 
 In single cycle creation, Blik fills the reviewer pickers from the chart when you select a reviewee who is in a unit. Blik shows a notice when the reviewee is not in the chart. You can change the lists before you create the cycle.
+
+---
+
+## Saved Reviewer Lists
+
+Every reviewee can have a saved reviewer list: the managers, peers and direct reports who get an invitation in the next review, and the questionnaire and categories for it. The list is on the page of the reviewee (click the name in **Reviewees**). It holds people of the organization, and email addresses of reviewers who are not in Blik. A person is in one category only: manager comes first, then direct report, then peer. Deactivated people drop out of the list.
+
+### Where the list comes from and where it is used
+
+The list is saved when you click **Save reviewers** or **Start review** on the page of the reviewee, and when you create a single cycle with reviewers in the cycle form. Before anything is saved, the page fills the list from the org chart, or else from the previous review of the person.
+
+Blik uses the saved list in these places:
+
+- **Start review** on the page of the reviewee creates the cycle from the list.
+- **Start review** in the reviewee list: the dialog says "Reviewers come from the list on the person's page."
+- **Single cycle creation**: the reviewer pickers are filled from the list.
+- **Bulk cycle creation** with **Derive from org chart** or **Reuse previous settings per cycle**: a person's saved list is used instead of the chart or the previous cycle. A person whose saved list has no reviewers for the categories of the cycle is skipped.
+
+### The org chart question on the reviewers card
+
+A place in the org chart decides who can read whose reports: a manager can read the reports of the members of the units they manage. So when a user with the permission to manage the organization picks a manager or a direct report on the card, Blik checks the org chart and asks before it changes anything:
+
+- **The chart names no manager for the person.** A checkbox, ticked by default: "Also make Lena Visser the manager of Tom Bakker in the org chart." It says where the person goes and that the manager can then read their reports.
+- **The chart names another manager.** Three choices:
+  - **Do not change the org chart.** The default. The person gets an invitation in this list only. Who can read the reports stays the same.
+  - **Move Tom Bakker to Lena Visser in the org chart.** The person leaves the units of the managers the chart named before. Those managers can no longer read the person's reports. Lena Visser can.
+  - **Make Lena Visser a manager of Tom Bakker too.** The person stays where they are and also joins the unit of Lena Visser. Both managers can read the person's reports.
+- **The chart already names this manager.** No question.
+
+When the unit the person joins has other managers, the card names them: they can read the person's reports too.
+
+The choices take effect when you save the list or start the review, before the cycle is created. The start dialog lists the changes to the org chart. Peers never change the chart.
+
+The person goes into the unit the manager leads. When the manager leads more than one unit, the person goes into the unit with the name of their department, or else the first one. When the manager leads no unit, Blik makes a new unit, named after the manager's department, or after the manager when the department is empty. For example, a manager in "Product Engineering" gets the unit "Product Engineering". When that name is taken, the manager's name is added in brackets. A person with no department gets the name of the unit as their department.
+
+### People who are not in the org chart
+
+The org chart page shows a notice to users who may edit the chart: "N people are not in the org chart". It lists the active people who are a member of no unit and whose reviewer list names exactly one manager. Each row says under which manager and in which unit (an existing one or a new one) the person goes, and which other managers of that unit can read their reports too. Click **Place** to put one person in the chart, or **Place all** for everyone in the notice. You can move people in the chart afterwards.
+
+### Who sees what on the page of a reviewee
+
+- **Organization admins** see the page of every reviewee. They edit the details, and on the reviewers card they pick people of the organization and answer the org chart question.
+- **Users with "Can view all reports and cycles"** see the page of every reviewee, with the reviewer list.
+- **A manager** sees the pages of the members of the units they manage. A manager who may create cycles for others also edits their reviewer lists, as email addresses, and starts their reviews.
+- **A reviewee with an account** sees their own page, and can save their own reviewer list and start a review for themselves.
+
+The results on the page are the numbers of the report this user can open. The current review shows counts per category, never who answered. Nobody else can open the page.
+
+### Deleting a person's data
+
+When the data of a reviewee is deleted or anonymized with the GDPR actions, Blik also deletes their saved reviewer list and removes them from the saved lists of other people, by person and by email address.
 
 ---
 

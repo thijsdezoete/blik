@@ -5,6 +5,7 @@ Guide for reviewees and reviewers participating in the 360-degree feedback proce
 ## Table of Contents
 
 - [For Reviewees](#for-reviewees)
+- [The page of a reviewee](#the-page-of-a-reviewee)
 - [For Reviewers](#for-reviewers)
 - [Technical Details](#technical-details)
 - [Privacy & Anonymity](#privacy--anonymity)
@@ -96,6 +97,46 @@ When all reviews are completed (or the cycle is closed):
 4. **Create an action plan** - Focus on 1-3 key development areas
 5. **Discuss with your manager** - Schedule a follow-up conversation
 6. **Track progress** - Future review cycles will show your growth
+
+---
+
+## The page of a reviewee
+
+Every reviewee has a page in the dashboard. Click the name of the person in **Reviewees** to open it. Blik also opens it after you add a person or save their details.
+
+The page shows:
+
+- **Details** - email, department, language and the date the person was added.
+- **Reviewers** - the people who get an invitation when you start the next review, per category.
+- **Current review** - for each active cycle, how many reviewers were invited and how many answered, per category, and whether the category will show in the report. The page never shows who answered.
+- **Results** - the score of the latest report, the change since the review before it, the gap between the self-assessment and the others, and a list of all reviews with a link to each report.
+
+Until the person has a report, four steps at the top of the page show what is done and what comes next: details, reviewers, start review, report.
+
+### The reviewer list
+
+The reviewer list comes from the first source that has it:
+
+1. The list saved for this person.
+2. The org chart: the managers, peers and direct reports of the person.
+3. The previous review of the person.
+
+A line under the text of the card says when the list comes from the org chart or from the previous review. Two buttons fill the list again: **Fill from org chart**, and **Fill from the previous review** when the person had a review with reviewers before. Nothing is saved until you click **Save reviewers**. A change in the list applies to the next review. A review in progress keeps its reviewers.
+
+The card warns when there are fewer peers or direct reports than the anonymity threshold: the report does not show such a group.
+
+### Start a review
+
+Click **Start review**. The dialog says how many reviewers get an invitation. Click **Start review** in the dialog to save the list and create the cycle from it. When the person already has an active cycle that you run, the button in the header is **Send Reminder**, and **Start review** is in the **⋯** menu.
+
+### What you see on the page
+
+- **Your own page** - your details, your current review (counts per category) and your results, as your own report shows them. When you may start a review for yourself, you also see your reviewer list and **Start review**.
+- **The page of a person you manage** in the org chart - their details, their current review (counts per category) and their results. When you may create cycles for your direct reports, you also see and change their reviewer list and start their review.
+
+### The status per reviewer on the cycle page
+
+Only organization admins and users with **Can view all reports and cycles** (for example HR) see on the cycle page which reviewer completed their form, started it or did not start yet. Everyone else who can open the cycle sees **Answers per category**: how many reviewers were invited and how many answered, per category. They can remind everyone who has not answered with **Remind All Pending Reviewers**, but they cannot pick one reviewer.
 
 ---
 

@@ -7,6 +7,7 @@ from questionnaires.answer_options import save_options
 from questionnaires.models import Question, Questionnaire, QuestionSection
 from reviews.models import ReviewCycle, ReviewerToken, Response
 
+from .dreyfus_service import advice_applies
 from .scoring import score_on_five, score_range
 from .services import generate_report
 
@@ -59,6 +60,34 @@ class ScoreOnFiveTests(SimpleTestCase):
         for highest in ('4', 8, 4.0, True):
             with self.subTest(max=highest):
                 self.assertEqual(score_on_five(q('rating', {'min': 1, 'max': highest}), 3.2), 3.2)
+
+
+class AdviceAppliesTests(SimpleTestCase):
+    """Which advice a person gets: the rule of the report and of the advice dialog of the editor."""
+
+    def test_a_score_below_the_threshold_applies_and_at_the_threshold_not(self):
+        item = {'text': 'Practise', 'threshold': 3.0}
+
+        self.assertTrue(advice_applies(item, 2.9, 1))
+        self.assertFalse(advice_applies(item, 3.0, 1))
+
+    def test_no_threshold_means_3(self):
+        self.assertTrue(advice_applies({'text': 'Practise'}, 2.9, 1))
+        self.assertFalse(advice_applies({'text': 'Practise'}, 3.0, 1))
+
+    def test_advice_without_a_text_never_applies(self):
+        self.assertFalse(advice_applies({'threshold': 5.0}, 1.0, 1))
+        self.assertFalse(advice_applies({'text': '', 'threshold': 5.0}, 1.0, 1))
+
+    def test_stages_limit_the_advice_and_no_stages_is_every_stage(self):
+        item = {'text': 'Practise', 'threshold': 3.0, 'stages': [1, 2]}
+
+        self.assertTrue(advice_applies(item, 2.0, 2))
+        self.assertFalse(advice_applies(item, 2.0, 3))
+
+        for stages in ({}, {'stages': []}):
+            for stage in range(1, 6):
+                self.assertTrue(advice_applies({'text': 'Practise', 'threshold': 3.0, **stages}, 2.0, stage))
 
 
 class ReportScaleTests(TestCase):

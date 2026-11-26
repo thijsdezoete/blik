@@ -1,0 +1,63 @@
+{% load i18n feedback_tags %}{# The inside of the advice dialog (<dialog id="adviceDialog"> in questionnaire_editor.html), rendered per question by GET ?advice=<id>. Everything saves by itself (static/js/questionnaire-editor.js, "The advice dialog"): the stage of a line is the row it is in when the save is sent. "Try it" follows the stored advice, by the rule of the report. #}
+<div class="card-header" style="justify-content: flex-start; gap: 0.25rem;">
+    <h2 class="card-title" id="adviceDialogTitle">{% blocktrans trimmed with text=question.question_text|personalize:'Alex' %}Advice for: "{{ text }}"{% endblocktrans %}</h2>
+    {# The same "i" as next to the heading in "More options"; it opens _advice_help.html on top of this dialog #}
+    <button type="button" class="tab-info-link" style="border: 0; background: none; cursor: pointer; color: var(--primary); flex-shrink: 0;" data-act="advice-help" aria-haspopup="dialog" title="{% trans 'How advice works' %}" aria-label="{% trans 'How advice works' %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+    </button>
+</div>
+<div class="card-body" style="overflow-y: auto; min-height: 0;">
+    <div data-save-action="save_advice" data-save-key="advice-{{ question.id }}" data-question-id="{{ question.id }}">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
+            <label class="form-label" style="margin: 0;" for="advice-threshold">{% trans 'Show advice when the score is below' %}</label>
+            <input id="advice-threshold" type="number" class="form-control" style="width: 6rem;" min="1" max="5" step="0.1" name="threshold" value="{{ threshold|stringformat:'g' }}">
+            <span class="help-text" style="margin: 0;">{% trans '(scale of 1 to 5)' %}</span>
+        </div>
+        <span class="help-text" style="margin: 0.25rem 0 1rem;">{% trans 'One number for all advice of this question. With 3, the advice shows for a score of 2.9 and not for a score of 3.' %}</span>
+
+        {# The three parts of a row stand next to each other in a wide dialog and under each other in a narrow one (at 900 px and below): a flex-basis of (51.5rem - the row's width) x 999 is 0 or very large. The heads show only when the parts stand next to each other: the bottom padding, a percentage of the width, holds them. #}
+        <div aria-hidden="true" style="display: flex; gap: 1rem; height: 0; overflow: hidden; padding-bottom: clamp(0px, calc((100% - 51.5rem) * 999), 1.75rem);">
+            <span class="help-text" style="margin: 0; flex: 9 1 0; font-weight: 700;">{% trans 'Stage' %}</span>
+            <span class="help-text" style="margin: 0; flex: 10 1 0; font-weight: 700;">{% trans 'Who this is' %}</span>
+            <span class="help-text" style="margin: 0; flex: 30 1 0; font-weight: 700;">{% trans 'Advice the report gives' %}</span>
+        </div>
+        {% for row in rows %}
+        <div data-advice-stage="{{ row.stage|default_if_none:'' }}" style="display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0.75rem 0; border-top: 1px solid var(--border);">
+            <div style="flex: 9 1 calc((51.5rem - 100%) * 999); font-weight: 500;">{% if row.stage %}{{ row.stage }} {% endif %}{{ row.name }}</div>
+            <div class="help-text" style="margin: 0; flex: 10 1 calc((51.5rem - 100%) * 999);">{{ row.description }}</div>
+            <div style="flex: 30 1 calc((51.5rem - 100%) * 999); min-width: 0;">
+                <div data-advice-lines>{% for line in row.lines %}{% include 'admin_dashboard/editor/_advice_line.html' %}{% endfor %}</div>
+                <button type="button" class="btn btn-sm btn-secondary" data-act="add-advice-line">{% trans 'Add advice' %}</button>
+            </div>
+        </div>
+        {% endfor %}
+        <template data-new-advice-line>{% include 'admin_dashboard/editor/_advice_line.html' with line=None %}</template>
+    </div>
+
+    {# Not part of the save: the script sends these values with each save, and alone with try_advice #}
+    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 0.5rem;">
+        <span class="form-label">{% trans 'Try it' %}</span>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                {% trans 'Stage of the person' %}
+                <select class="form-control" style="width: auto;" data-try-stage>
+                    {% for row in rows %}{% if row.stage %}
+                    <option value="{{ row.stage }}"{% if row.stage == try_stage %} selected{% endif %}>{{ row.stage }} {{ row.name }}</option>
+                    {% endif %}{% endfor %}
+                </select>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                {% trans 'Score of this question' %}
+                <input type="number" class="form-control" style="width: 6rem;" min="1" max="5" step="0.1" value="{{ try_score|stringformat:'g' }}" data-try-score>
+            </label>
+        </div>
+        <div data-slot="advice-try" aria-live="polite" style="margin-top: 0.75rem;">{% include 'admin_dashboard/editor/_advice_try.html' %}</div>
+    </div>
+</div>
+<div class="card-footer" style="align-items: center;">
+    {# The save state of the page, which is behind the dialog; the script writes both #}
+    <span data-dialog-state style="font-size: 0.875rem;"></span>
+    <button type="button" class="btn btn-primary" data-act="advice-done">{% trans 'Done' %}</button>
+</div>

@@ -4,12 +4,16 @@ from django.test import SimpleTestCase, TestCase
 from core.models import Organization
 from questionnaires.editor import (
     EditorError,
+    advice_for,
+    advice_rows,
+    advice_threshold,
     clear_model,
     did_not_observe_state,
     example_score,
     question_form_values,
     rating_labels,
     report_preview,
+    save_advice,
     save_question,
     set_did_not_observe,
     set_weight,
@@ -372,34 +376,6 @@ class SaveQuestionTests(EditorTestCase):
         self.save(question, question_text='Question 0', question_type='scale', did_not_observe='on')
         self.assertNotIn('did_not_observe', question.config)
 
-    def test_advice_stays_when_the_form_does_not_show_it(self):
-        stored = [{'key': 'a', 'text': 'Practise', 'threshold': 3.0}]
-        question = self.add_question(action_items=stored)
-        fields = {'question_text': 'Question 0', 'question_type': 'rating', 'rating_count': '5'}
-
-        self.save(question, **fields)
-        question.refresh_from_db()
-        self.assertEqual(question.action_items, stored)
-
-        self.save(question, action_items_posted='1', **fields)
-        question.refresh_from_db()
-        self.assertEqual(question.action_items, [])
-
-        question.action_items = stored
-        question.save()
-        self.save(
-            question,
-            action_items_posted='1',
-            **{
-                'action_items[0][text]': 'Practise more',
-                'action_items[0][key]': 'a',
-                'action_items[0][threshold]': '2.5',
-            },
-            **fields,
-        )
-        question.refresh_from_db()
-        self.assertEqual(question.action_items, [{'key': 'a', 'text': 'Practise more', 'threshold': 2.5}])
-
     def test_a_save_does_not_move_a_question_back(self):
         first, second = self.add_question(), self.add_question()
         other = QuestionSection.objects.create(questionnaire=self.questionnaire, title='Planning', order=1)
@@ -436,6 +412,144 @@ class SaveQuestionTests(EditorTestCase):
         for fields in ({'scale_min': '5', 'scale_max': '5'}, {'scale_step': '0'}):
             with self.subTest(fields=fields), self.assertRaises(EditorError):
                 self.save(question, question_text='Question 0', question_type='scale', **fields)
+
+
+class SaveAdviceTests(EditorTestCase):
+    """The advice of a question, written per skill stage in the advice dialog of the editor."""
+
+    def setUp(self):
+        super().setUp()
+        self.question = self.add_question(config={'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 1}})
+
+    def save(self, lines, threshold='3', question=None):
+        """Post the lines as the dialog does: (text, stage, key) in the order of the page."""
+
+        fields = {'threshold': threshold}
+
+        for index, (text, stage, key) in enumerate(lines):
+            fields[f'advice[{index}][text]'] = text
+            fields[f'advice[{index}][stage]'] = stage
+            fields[f'advice[{index}][key]'] = key
+
+        return save_advice(question or self.question, post(**fields))
+
+    def stored(self):
+        return Question.objects.get(pk=self.question.pk).action_items
+
+    def store(self, items):
+        self.question.action_items = items
+        self.question.save()
+
+    def test_lines_are_stored_per_stage_with_one_number(self):
+        self.save([('Write it down', '', ''), ('Ask for a review', '1', '')], threshold='2.5')
+
+        first, second = self.stored()
+        self.assertEqual((first['text'], first['threshold']), ('Write it down', 2.5))
+        self.assertNotIn('stages', first)
+        self.assertEqual((second['text'], second['threshold'], second['stages']), ('Ask for a review', 2.5, [1]))
+        self.assertTrue(first['key'])
+        self.assertTrue(second['key'])
+
+    def test_a_known_key_stays_and_keeps_its_translation(self):
+        self.store([{'key': 'a', 'text': 'Write it down', 'threshold': 3.0}])
+        translation = QuestionTranslation.objects.create(
+            question=self.question, language='de', action_items={'a': 'Aufschreiben'},
+        )
+
+        self.save([('Write every decision down', '', 'a')])
+
+        [item] = self.stored()
+        self.assertEqual((item['key'], item['text']), ('a', 'Write every decision down'))
+        translation.refresh_from_db()
+        self.assertEqual(translation.action_items, {'a': 'Aufschreiben'})
+
+    def test_an_unknown_or_repeated_key_gets_a_new_key(self):
+        self.store([{'key': 'a', 'text': 'Write it down', 'threshold': 3.0}])
+
+        self.save([('Write it down', '', 'a'), ('Write it down twice', '', 'a'), ('Ask for a review', '1', 'zz')])
+
+        keys = [item['key'] for item in self.stored()]
+        self.assertEqual(keys[0], 'a')
+        self.assertEqual(len(set(keys)), 3)
+        self.assertNotIn('zz', keys)
+
+    def test_a_line_for_two_stages_becomes_one_line_per_stage(self):
+        self.store([{'key': 'a', 'text': 'Ask for a review', 'threshold': 3.0, 'stages': [1, 2]}])
+
+        rows = advice_rows(Question.objects.get(pk=self.question.pk))
+
+        self.assertEqual([row['stage'] for row in rows], [None, 1, 2, 3, 4, 5])
+        self.assertEqual([row['lines'] for row in rows[1:3]], [[{'key': 'a', 'text': 'Ask for a review'}]] * 2)
+        self.assertEqual([row['lines'] for row in [rows[0], *rows[3:]]], [[]] * 4)
+
+        self.save([('Ask for a review', '1', 'a'), ('Ask for a review', '2', 'a')])
+
+        first, second = self.stored()
+        self.assertEqual((first['stages'], first['key']), ([1], 'a'))
+        self.assertEqual(second['stages'], [2])
+        self.assertNotEqual(second['key'], 'a')
+
+    def test_the_number_starts_at_the_highest_stored_one(self):
+        self.store([{'key': 'a', 'text': 'Practise', 'threshold': 2.0}, {'key': 'b', 'text': 'Ask', 'threshold': 3.5}])
+        self.assertEqual(advice_threshold(self.question), 3.5)
+
+        self.store([])
+        self.assertEqual(advice_threshold(self.question), 3.0)
+
+    def test_a_bad_number_stage_or_question_is_refused(self):
+        stored = [{'key': 'a', 'text': 'Practise', 'threshold': 3.0}]
+        self.store(stored)
+        text_question = self.add_question('text', config={})
+        cases = [
+            *({'lines': [('Practise more', '', 'a')], 'threshold': number} for number in ('0', '6', 'abc', 'nan')),
+            *({'lines': [('Practise more', stage, 'a')]} for stage in ('7', 'x')),
+            {'lines': [('Practise more', '', '')], 'question': text_question},
+            {'lines': [('x' * 501, '', 'a')]},
+        ]
+
+        for case in cases:
+            with self.subTest(case=case), self.assertRaises(EditorError):
+                self.save(**case)
+
+            self.assertEqual(self.stored(), stored)
+            self.assertEqual(Question.objects.get(pk=text_question.pk).action_items, [])
+
+    def test_lines_without_text_are_dropped_and_an_empty_dialog_empties_the_advice(self):
+        self.save([('Write it down', '', ''), ('  ', '1', ''), ('', '2', '')])
+
+        self.assertEqual([item['text'] for item in self.stored()], ['Write it down'])
+
+        self.save([])
+
+        self.assertEqual(self.stored(), [])
+
+    def test_the_lines_are_stored_in_the_order_of_the_rows(self):
+        self.save([('For a Competent', '3', ''), ('For everyone', '', ''), ('For a Novice', '1', ''),
+                   ('Also for a Novice', '1', '')])
+
+        self.assertEqual([item['text'] for item in self.stored()],
+                         ['For everyone', 'For a Novice', 'Also for a Novice', 'For a Competent'])
+
+    def test_a_save_of_the_question_leaves_the_advice_alone(self):
+        stored = [{'key': 'a', 'text': 'Practise', 'threshold': 3.0}]
+        self.store(stored)
+
+        save_question(self.questionnaire, post(
+            question_id=f'{self.question.pk}', question_text='Question 0', question_type='rating', rating_count='5',
+            action_items_posted='1', **{'action_items[0][text]': 'Other', 'action_items[0][threshold]': '2'},
+        ), question=self.question)
+
+        self.assertEqual(self.stored(), stored)
+
+    def test_advice_for_a_stage_and_score(self):
+        self.store([
+            {'key': 'a', 'text': 'For everyone', 'threshold': 3.0},
+            {'key': 'b', 'text': 'For a Novice', 'threshold': 3.0, 'stages': [1]},
+        ])
+
+        self.assertEqual(advice_for(self.question, 1, 2.4), ['For everyone', 'For a Novice'])
+        self.assertEqual(advice_for(self.question, 3, 2.4), ['For everyone'])
+        self.assertEqual(advice_for(self.question, 1, 4.0), [])
 
 
 class QuestionFormValuesTests(EditorTestCase):

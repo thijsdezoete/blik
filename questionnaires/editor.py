@@ -16,7 +16,9 @@ from django.utils import formats, translation
 from django.utils.translation import gettext as _, gettext_lazy
 
 from core.languages import is_language, language_name
-from reports.dreyfus_service import _level_to_stage, agency_profile_with_texts, skill_profile_with_texts
+from reports.dreyfus_service import (
+    DREYFUS_STAGES, _level_to_stage, advice_applies, agency_profile_with_texts, skill_profile_with_texts,
+)
 from reports.scoring import rating_option_count, score_range
 from reports.services import radar_axes
 from reviews.models import Response
@@ -136,39 +138,6 @@ def posted_option_rows(post, prefix, with_weights=False):
             rows.append((option_id, label, weight))
 
     return rows
-
-
-def posted_action_items(post, question=None, prefix='action_items'):
-    """The action items posted as <prefix>[<i>][text|threshold|key|stages][], in the order of i.
-
-    Items without a text are dropped. A posted key is kept only when the question already has an item with it, so the
-    client cannot set keys of its own. Raises ValueError for a threshold or stage that is not a number.
-    """
-
-    known_keys = {item.get('key') for item in question.action_items if isinstance(item, dict)} if question else set()
-    indices = {
-        name.split('[')[1].split(']')[0] for name in post.keys() if name.startswith(f'{prefix}[') and '][text]' in name
-    }
-    action_items = []
-
-    for index in sorted(indices, key=int):
-        text = post.get(f'{prefix}[{index}][text]', '').strip()
-        threshold = post.get(f'{prefix}[{index}][threshold]', 3.0)
-        stages = post.getlist(f'{prefix}[{index}][stages][]')
-        key = post.get(f'{prefix}[{index}][key]', '').strip()
-
-        if text:
-            item = {'text': text, 'threshold': float(threshold)}
-
-            if key in known_keys:
-                item['key'] = key
-
-            if stages:
-                item['stages'] = [int(stage) for stage in stages]
-
-            action_items.append(item)
-
-    return add_action_item_keys(action_items)
 
 
 def default_rating_labels(count, defaults):
@@ -503,12 +472,12 @@ def save_question(questionnaire, post, question=None, section=None):
     """Store the posted question: a new one in section when question is None, else the changes to question.
 
     The config is built anew for the posted type, so the answers and settings of another type are dropped. The weights
-    and chart settings stay unless weights are posted. The action items change only when the post has the marker
-    action_items_posted, which the form sends with the advice fields; a form that does not show them keeps them.
+    and chart settings stay unless weights are posted. The advice (action items) is never written here: the advice
+    dialog stores it with save_advice, and a new question has none.
 
     A stored question is read again from its locked row: the rules for answered questions, the labels a new number of
-    options starts from, the weights and the advice all use what is stored now, not the object loaded before. Its topic
-    and place are never written, so a save after a drag does not move it back.
+    options starts from and the weights all use what is stored now, not the object loaded before. Its topic and place
+    are never written, so a save after a drag does not move it back.
     """
 
     question_text = post.get('question_text', '').strip()
@@ -610,14 +579,6 @@ def save_question(questionnaire, post, question=None, section=None):
     if any(len(label) > label_length for option_id, label, weight in option_rows):
         raise EditorError(_('This text is too long. Use at most %(count)s characters.') % {'count': label_length})
 
-    if post.get('action_items_posted'):
-        try:
-            action_items = posted_action_items(post, stored)
-        except ValueError:
-            raise EditorError(_('The threshold and the stages of an advice item must be numbers.'))
-    else:
-        action_items = stored.action_items if stored else []
-
     if question is None:
         question = Question(section=section)
         order = section.questions.aggregate(Max('order'))['order__max']
@@ -641,12 +602,10 @@ def save_question(questionnaire, post, question=None, section=None):
     question.config = config
     question.labels = labels
     question.descriptions = descriptions
-    question.action_items = action_items
 
     if stored:
         question.save(update_fields=[
-            'question_text', 'question_type', 'required', 'config', 'labels', 'descriptions', 'action_items',
-            'updated_at',
+            'question_text', 'question_type', 'required', 'config', 'labels', 'descriptions', 'updated_at',
         ])
     else:
         question.save()
@@ -657,6 +616,144 @@ def save_question(questionnaire, post, question=None, section=None):
         _drop_translations_above(question, config['max'])
 
     return question
+
+
+ADVICE_LENGTH = 500
+DEFAULT_ADVICE_THRESHOLD = 3.0
+
+
+def _advice_items(question):
+    """The stored advice items of the question that have a text."""
+
+    return [item for item in question.action_items if isinstance(item, dict) and item.get('text')]
+
+
+def _item_stages(item):
+    """The stages 1 to 5 an advice item is for; empty for every stage."""
+
+    stages = item.get('stages') or []
+
+    return [stage for stage in DREYFUS_STAGES if stage in stages]
+
+
+def advice_threshold(question):
+    """The one number of the advice dialog: the highest threshold of the stored advice, so no advice that showed
+    before stops showing; 3 without advice."""
+
+    thresholds = [item.get('threshold', DEFAULT_ADVICE_THRESHOLD) for item in _advice_items(question)]
+
+    return max((value for value in thresholds if _is_number(value)), default=DEFAULT_ADVICE_THRESHOLD)
+
+
+def advice_rows(question):
+    """The six rows of the advice dialog: "Every stage", then the five skill stages, each with its lines.
+
+    An older item for several stages shows in the row of each of them, with its key; the next save stores one line
+    per row. An item that names only stages outside 1 to 5 never applied, so it shows nowhere.
+    """
+
+    rows = [{'stage': None, 'name': _('Every stage'), 'description': '', 'lines': []}]
+    rows += [
+        {'stage': stage, 'name': info['name'], 'description': info['short_description'], 'lines': []}
+        for stage, info in DREYFUS_STAGES.items()
+    ]
+
+    for item in _advice_items(question):
+        stages = _item_stages(item)
+
+        if item.get('stages') and not stages:
+            continue
+
+        for stage in stages or [None]:
+            rows[stage or 0]['lines'].append({'key': item.get('key', ''), 'text': item['text']})
+
+    return rows
+
+
+def _posted_advice(post, known_keys):
+    """The advice lines the dialog posted as advice[<i>][text|key|stage], in the order of the rows and, inside a row,
+    of i. Lines without a text are dropped. A key is kept only when the question has it and no earlier line took it.
+    """
+
+    indices = {name.split('[')[1].split(']')[0] for name in post if name.startswith('advice[') and '][' in name}
+    lines = []
+
+    for index in sorted((index for index in indices if index.isdigit()), key=int):
+        text = post.get(f'advice[{index}][text]', '').strip()
+        stage = post.get(f'advice[{index}][stage]', '').strip()
+
+        if stage and not (stage.isdigit() and int(stage) in DREYFUS_STAGES):
+            raise EditorError(_('This skill stage does not exist. Reload the page.'))
+
+        if len(text) > ADVICE_LENGTH:
+            raise EditorError(_('This text is too long. Use at most %(count)s characters.') % {'count': ADVICE_LENGTH})
+
+        if text:
+            lines.append((int(stage) if stage else 0, text, post.get(f'advice[{index}][key]', '').strip()))
+
+    # sorted() keeps the order of the page inside a row
+    lines.sort(key=lambda line: line[0])
+    items = []
+    used = set()
+
+    for stage, text, key in lines:
+        item = {'text': text}
+
+        if key in known_keys and key not in used:
+            item['key'] = key
+            used.add(key)
+
+        if stage:
+            item['stages'] = [stage]
+
+        items.append(item)
+
+    return items
+
+
+def _posted_threshold(post):
+    try:
+        threshold = float(post.get('threshold', ''))
+    except ValueError:
+        threshold = None
+
+    if threshold is None or not isfinite(threshold) or not 1 <= threshold <= 5:
+        raise EditorError(_('Write a number from 1 to 5.'))
+
+    return threshold
+
+
+def save_advice(question, post):
+    """Store the advice the dialog posted: one line per stage row, each with the one number of the question as its
+    threshold. Refused for a question without a score; nothing is stored then."""
+
+    threshold = _posted_threshold(post)
+
+    with transaction.atomic():
+        stored = _locked(question)
+
+        if not question_scoring(stored).has_score:
+            raise EditorError(_('Only a question with a score can have advice.'))
+
+        known_keys = {item.get('key') for item in stored.action_items if isinstance(item, dict) and item.get('key')}
+        items = _posted_advice(post, known_keys)
+
+        for item in items:
+            item['threshold'] = threshold
+
+        stored.action_items = add_action_item_keys(items)
+        stored.save(update_fields=['action_items', 'updated_at'])
+
+    question.action_items = stored.action_items
+
+    return stored
+
+
+def advice_for(question, stage, score):
+    """The advice texts a person at this stage with this score on the 1 to 5 scale gets for the question, in the
+    stored order, by the rule of the report."""
+
+    return [item['text'] for item in _advice_items(question) if advice_applies(item, score, stage)]
 
 
 def example_score(question):

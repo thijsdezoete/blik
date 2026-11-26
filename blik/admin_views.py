@@ -3,6 +3,7 @@ Admin dashboard views for Blik
 """
 import json
 import logging
+import math
 import random
 import re
 from datetime import date
@@ -55,12 +56,16 @@ from questionnaires.editor import (
     MODELS,
     EditorError,
     add_section,
+    advice_for,
+    advice_rows,
+    advice_threshold,
     clear_model,
     editor_context,
     get_default_labels,
     languages_with_translation,
     load_for_editor,
     question_form_values,
+    save_advice,
     save_info,
     save_question,
     save_section,
@@ -1211,8 +1216,84 @@ def _with_language(context, language):
     }
 
 
+# The person "Try it" of the advice dialog starts with
+ADVICE_TRY_START = {'try_stage': 1, 'try_score': 2.4}
+
+
+def _advice_question(questionnaire, params, field='question_id'):
+    """The question of the advice dialog: one of this questionnaire, with a score."""
+
+    question = _posted_question(questionnaire, params, field)
+
+    if not question_scoring(question).has_score:
+        raise EditorError(_('Only a question with a score can have advice.'))
+
+    return question
+
+
+def _advice_try_values(params):
+    """The skill stage (1 to 5) and the score of the person in "Try it" of the advice dialog."""
+
+    try:
+        stage = int(params.get('try_stage', ''))
+        score = float(params.get('try_score', ''))
+    except ValueError:
+        stage = score = None
+
+    if stage not in DREYFUS_STAGES or score is None or not (math.isfinite(score) and 1 <= score <= 5):
+        raise EditorError(_('Choose a stage and write a score from 1 to 5.'))
+
+    return {'try_stage': stage, 'try_score': score}
+
+
+def _advice_try_context(question, try_stage, try_score):
+    """What "Try it" shows: the advice the person gets, and whether the stage has any advice at all."""
+
+    return {
+        'question': question,
+        'try_stage': try_stage,
+        'try_score': try_score,
+        'try_stage_name': DREYFUS_STAGES[try_stage]['name'],
+        'try_texts': advice_for(question, try_stage, try_score),
+        # With the lowest possible score every line of the stage applies: whether the stage has advice at all
+        'try_has_advice': bool(advice_for(question, try_stage, float('-inf'))),
+    }
+
+
+def _render_advice_try(request, context):
+    """The slot advice-try of the posted question, for the posted "Try it" values."""
+
+    question_id = request.POST.get('question_id', '')
+    question = next(
+        (item for section in context['sections'] for item in section.questions.all() if f'{item.id}' == question_id),
+        None,
+    )
+
+    return question and render_to_string(
+        'admin_dashboard/editor/_advice_try.html',
+        _advice_try_context(question, **_advice_try_values(request.POST)),
+        request=request,
+    )
+
+
+def _advice_dialog(request, questionnaire):
+    """The answer to GET ?advice=<id>: the inside of the advice dialog of that question."""
+
+    question = _advice_question(questionnaire, request.GET, 'advice')
+    html = render_to_string('admin_dashboard/editor/_advice_dialog.html', {
+        **_advice_try_context(question, **ADVICE_TRY_START),
+        'rows': advice_rows(question),
+        'threshold': advice_threshold(question),
+    }, request=request)
+
+    return JsonResponse({'ok': True, 'html': html})
+
+
 def _render_editor_slot(request, context, name):
     """The HTML of one slot, or None for a topic, question or text that no longer exists."""
+
+    if name == 'advice-try':
+        return _render_advice_try(request, context)
 
     # The state of one text in the translate mode
     if name.startswith('text-'):
@@ -1312,7 +1393,6 @@ def _question_form(request, context, question):
         'translated': translated_into(question),
         'translated_any': languages_with_translation(question),
         'did_not_observe_checked': did_not_observe,
-        'stages': [(stage, info['name']) for stage, info in DREYFUS_STAGES.items()],
     }
 
     return render_to_string('admin_dashboard/editor/_question_form.html', form_context, request=request)
@@ -1438,6 +1518,21 @@ def _editor_action(request, questionnaire, action):
             request, questionnaire, [f'topic-{section.id}-head' for section in questionnaire.sections.all()],
         )
 
+    if action in ('save_advice', 'try_advice'):
+        question = _advice_question(questionnaire, post)
+        # Checked before anything is stored, so a stored change never answers a refusal
+        _advice_try_values(post)
+
+        if action == 'save_advice':
+            stored = save_advice(question, post)
+            # "Advice (n)" in the table of the report card. The keys of the stored lines, in their order, for the lines
+            # that were posted, so the next save keeps them
+            keys = [item['key'] for item in stored.action_items]
+
+            return editor_response(request, questionnaire, ['report-card', 'advice-try'], keys=keys)
+
+        return editor_response(request, questionnaire, ['advice-try'])
+
     # The weight and the models also show in part 3 of the open question
     # Only ASCII digits: isdigit() also takes "²", which is no id and no slot
     open_report = [f'question-{post["open"]}-report'] if re.fullmatch('[0-9]+', post.get('open', '')) else []
@@ -1463,7 +1558,7 @@ def _editor_action(request, questionnaire, action):
 
 EDITOR_ACTIONS = (
     'refresh', 'save_info', 'set_did_not_observe', 'add_section', 'save_section', 'delete_section', 'reorder',
-    'save_question', 'delete_question', 'set_weight', 'clear_model', 'save_translation',
+    'save_question', 'delete_question', 'set_weight', 'clear_model', 'save_translation', 'save_advice', 'try_advice',
 )
 
 
@@ -1481,6 +1576,12 @@ def questionnaire_edit(request, questionnaire_uuid):
         uuid=questionnaire_uuid,
         organization=org
     )
+
+    if request.method == 'GET' and 'advice' in request.GET:
+        try:
+            return _advice_dialog(request, questionnaire)
+        except EditorError as error:
+            return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
 
     if request.method == 'GET' and ('question' in request.GET or 'new_in' in request.GET):
         try:

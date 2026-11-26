@@ -131,9 +131,13 @@ class QuestionnaireFlowTests(TestCase):
             self.edit(action='save_question', section_id=section_id, question_type=question_type,
                       question_text=text, required='on', **fields)
 
-        add('rating', 'Shares knowledge', rating_count='5', did_not_observe='on', skill_weight='1',
-            action_items_posted='1', **{'action_items[0][text]': 'Pair with a colleague every week',
-                                        'action_items[0][threshold]': '4.5'})
+        add('rating', 'Shares knowledge', rating_count='5', did_not_observe='on', skill_weight='1')
+        # The advice of a question is written in its advice dialog
+        self.edit(
+            action='save_advice', question_id=Question.objects.get(question_text='Shares knowledge').id,
+            threshold='4.5', try_stage='1', try_score='2.4',
+            **{'advice[0][text]': 'Pair with a colleague every week', 'advice[0][key]': '', 'advice[0][stage]': ''},
+        )
         add('likert', 'Gives useful feedback', **option_rows('likert', DEFAULT_LIKERT))
         add('likert', 'Asks for help', **option_rows('likert', ['Never', 'Sometimes', 'Often', 'Always']))
         add('single_choice', 'Seniority', enable_scoring='on', display_list='on',

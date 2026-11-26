@@ -284,8 +284,13 @@
             [text, color] = [refusal, 'var(--danger)'];
         }
 
-        saveState.textContent = text;
-        saveState.style.color = color;
+        // The advice dialog shows the same state: the page's is behind it
+        [saveState, root.querySelector('[data-dialog-state]')].forEach(function(element) {
+            if (element) {
+                element.textContent = text;
+                element.style.color = color;
+            }
+        });
     }
 
     // Changes that are still waiting go out with the page. Per key only the newest goes: the typed text if there is
@@ -438,6 +443,12 @@
      */
     function groupFields(group) {
         const fields = {};
+        const own = groupHooks[group.dataset.saveAction]?.fields;
+
+        // A kind of group that builds its fields itself (the advice dialog)
+        if (own) {
+            return own(group);
+        }
 
         if (group.tagName === 'FORM') {
             new FormData(group).forEach(function(value, name) {
@@ -455,7 +466,8 @@
     }
 
     // What a kind of group does besides sending its fields: ready(group) tells whether it can be saved,
-    // sent(group) runs when its request is sent, after(group, answer, number) with the answer (see Editor.send)
+    // sent(group) runs when its request is sent, after(group, answer, number) with the answer (see Editor.send),
+    // fields(group) gives the fields in place of those groupFields reads
     const groupHooks = {};
 
     function findGroup(key) {
@@ -1016,26 +1028,6 @@
         row.querySelector('[name$="_option_label"]').focus();
     }
 
-    // The index of a new advice follows the highest one, so the advice keeps its order
-    function addAdvice(form) {
-        const rows = form.querySelector('[data-advice-rows]');
-        const texts = rows.querySelectorAll('[name$="[text]"]');
-        const indices = Array.from(texts, text => Number(text.name.match(/\d+/)[0]));
-        const index = indices.length ? Math.max(...indices) + 1 : 0;
-
-        rows.append(form.querySelector('template[data-new-advice]').content.cloneNode(true));
-
-        const row = rows.lastElementChild;
-        row.querySelectorAll('[name], [id], [for]').forEach(function(element) {
-            ['name', 'id', 'htmlFor'].forEach(function(property) {
-                if (element[property]) {
-                    element[property] = element[property].replace('[new]', `[${index}]`).replace(/-new$/, `-${index}`);
-                }
-            });
-        });
-        row.querySelector('[name$="[text]"]').focus();
-    }
-
     function insertName(form) {
         const text = field(form, 'question_text');
 
@@ -1190,7 +1182,14 @@
         }
 
         showState();
-        return answer?.ok ? answer : null;
+
+        if (!answer?.ok) {
+            return null;
+        }
+
+        // The number of this request, for a slot the caller fills from the answer's html
+        answer.number = number;
+        return answer;
     }
 
     function showForm(item, html) {
@@ -1259,33 +1258,6 @@
 
                 return null;
             });
-        });
-    }
-
-    // From the table of the report card: open the question at its advice, with an empty line when it has none
-    function showAdvice(questionId) {
-        const item = root.querySelector(`.question-list > [data-question="${questionId}"]`);
-
-        if (!item) {
-            return;
-        }
-
-        openQuestion(item).then(function(form) {
-            const rows = form?.querySelector('[data-advice-rows]');
-
-            if (!rows) {
-                return;
-            }
-
-            moreOpen = form.querySelector('[data-more]').open = true;
-
-            if (rows.children.length) {
-                rows.querySelector('[name$="[text]"]').focus();
-            } else {
-                addAdvice(form);
-            }
-
-            rows.closest('.form-group').scrollIntoView({block: 'center'});
         });
     }
 
@@ -1587,7 +1559,12 @@
             return;
         }
 
-        // A click next to an open help dialog (on its backdrop) closes it
+        // A click next to an open dialog (on its backdrop) closes it; the advice dialog as with "Done"
+        if (event.target.matches('#adviceDialog[open]')) {
+            closeAdvice();
+            return;
+        }
+
         if (event.target.matches('dialog[open]')) {
             event.target.close();
             return;
@@ -1692,11 +1669,29 @@
         case 'remove-answer':
             removeAnswer(form, button.closest('[data-answer-row]'));
             break;
-        case 'add-advice':
-            addAdvice(form);
-            break;
         case 'row-advice':
-            showAdvice(button.dataset.questionId);
+            // From the table: the dialog opens without opening the question
+            openAdvice(button.dataset.questionId, button);
+            break;
+        case 'question-advice':
+            // The question's own changes are stored first, so the dialog knows its type and a new question its id; the
+            // question stays open
+            Editor.flush().then(function() {
+                const id = field(form, 'question_id').value;
+
+                if (id && form.isConnected) {
+                    openAdvice(id, button);
+                }
+            });
+            break;
+        case 'add-advice-line':
+            addAdviceLine(button);
+            break;
+        case 'remove-advice-line':
+            removeAdviceLine(button);
+            break;
+        case 'advice-done':
+            closeAdvice();
             break;
         case 'advice-help': {
             const help = document.getElementById('adviceHelp');
@@ -1710,12 +1705,199 @@
         case 'close-dialog':
             button.closest('dialog').close();
             break;
-        case 'remove-advice':
-            button.closest('[data-advice-row]').remove();
-            saveQuestion(form);
-            break;
         }
     });
+
+    /*
+     * ---------- The advice dialog: the advice of one question, per skill stage ----------
+     *
+     * Its inside comes from GET ?advice=<id> (_advice_dialog.html). The lines and the number are one group of fields
+     * (data-save-action="save_advice", key advice-<id>) that saves like every other group; its fields are built when the
+     * request is sent, and the stage of a line is the row it is in then. "Try it" is not part of the save: its values go
+     * with each save, and alone with try_advice (its own key, so a successful try never clears a refused save).
+     */
+
+    const adviceDialog = document.getElementById('adviceDialog');
+    // The button that opened the dialog, which gets the focus back
+    let adviceOpener = null;
+    let adviceClosing = false;
+
+    function adviceGroup() {
+        return adviceDialog.querySelector('[data-save-action="save_advice"]');
+    }
+
+    // The stage and score of "Try it"; a score that is not a number from 1 to 5 sends the last one that was
+    function tryValues() {
+        const score = adviceDialog.querySelector('[data-try-score]');
+
+        if (score.value !== '' && score.validity.valid) {
+            score.dataset.valid = score.value;
+        }
+
+        return {
+            try_stage: adviceDialog.querySelector('[data-try-stage]').value,
+            try_score: score.dataset.valid || score.defaultValue,
+        };
+    }
+
+    // The lines in the order of the rows, each with the stage of its row ('' for "Every stage")
+    function adviceLines(group) {
+        return Array.from(group.querySelectorAll('[data-advice-stage]')).flatMap(function(row) {
+            return Array.from(row.querySelectorAll('[data-advice-line]'), line => [line, row.dataset.adviceStage]);
+        });
+    }
+
+    groupHooks.save_advice = {
+        fields: function(group) {
+            const fields = {question_id: group.dataset.questionId, threshold: field(group, 'threshold').value};
+
+            adviceLines(group).forEach(function([line, stage], index) {
+                fields[`advice[${index}][text]`] = field(line, 'text').value;
+                fields[`advice[${index}][key]`] = field(line, 'key').value;
+                fields[`advice[${index}][stage]`] = stage;
+            });
+
+            return {...fields, ...tryValues()};
+        },
+        // The lines with a text are stored, in this order; the answer gives their keys
+        sent: function(group) {
+            group.postedLines = adviceLines(group).map(([line]) => line).filter(line => field(line, 'text').value.trim());
+        },
+        after: function(group, answer) {
+            if (answer.ok && group.postedLines?.length === answer.keys.length) {
+                group.postedLines.forEach(function(line, index) {
+                    field(line, 'key').value = answer.keys[index];
+                });
+            }
+        },
+    };
+
+    function sortAdvice(list) {
+        Sortable.create(list, {
+            group: 'advice',
+            handle: '.advice-handle',
+            animation: 150,
+            // An empty row takes a line dropped near it
+            emptyInsertThreshold: 24,
+            onEnd: function(event) {
+                if (event.from !== event.to || event.oldIndex !== event.newIndex) {
+                    saveGroup(adviceGroup().dataset.saveKey);
+                }
+            },
+        });
+    }
+
+    function openAdvice(questionId, opener) {
+        load({advice: questionId}).then(function(answer) {
+            if (!answer || adviceDialog.open) {
+                return;
+            }
+
+            adviceDialog.innerHTML = answer.html;
+            // An older answer never replaces what this one shows
+            applied['advice-try'] = answer.number;
+            adviceDialog.querySelectorAll('[data-advice-lines]').forEach(sortAdvice);
+            adviceOpener = opener;
+            adviceDialog.showModal();
+            showState();
+
+            const first = adviceDialog.querySelector('[data-advice-line] [name="text"]');
+            (first || adviceDialog.querySelector('[data-act="add-advice-line"]')).focus();
+        });
+    }
+
+    // "Done", Escape and a click next to the dialog: every change is stored first; a refused one keeps it open, with
+    // the message in its save state
+    function closeAdvice() {
+        if (adviceClosing) {
+            return;
+        }
+
+        adviceClosing = true;
+        Editor.flush().then(function() {
+            adviceClosing = false;
+
+            const group = adviceGroup();
+
+            if (group && refusals.has(group.dataset.saveKey)) {
+                (group.querySelector('[data-dirty]') || field(group, 'threshold')).focus();
+                return;
+            }
+
+            adviceDialog.close();
+        });
+    }
+
+    function addAdviceLine(button) {
+        const lines = button.parentElement.querySelector('[data-advice-lines]');
+
+        lines.append(adviceDialog.querySelector('template[data-new-advice-line]').content.cloneNode(true));
+        field(lines.lastElementChild, 'text').focus();
+    }
+
+    // No question first: the text can be typed again, and nothing else hangs on it
+    function removeAdviceLine(button) {
+        const line = button.closest('[data-advice-line]');
+
+        line.closest('[data-advice-stage]').querySelector('[data-act="add-advice-line"]').focus();
+        line.remove();
+        saveGroup(adviceGroup().dataset.saveKey);
+    }
+
+    // "Move to...": the way for the keyboard to drag a line to another row; its value is the number of the row
+    function moveAdviceLine(select) {
+        const line = select.closest('[data-advice-line]');
+        const row = adviceGroup().querySelectorAll('[data-advice-stage]')[Number(select.value)];
+
+        select.value = '';
+
+        if (!row) {
+            return;
+        }
+
+        row.querySelector('[data-advice-lines]').append(line);
+        select.focus();
+        line.scrollIntoView({block: 'nearest'});
+        saveGroup(adviceGroup().dataset.saveKey);
+    }
+
+    // What "Try it" shows follows the stored advice: the saves on their way are stored first
+    function tryAdvice() {
+        const questionId = adviceGroup().dataset.questionId;
+
+        Editor.flush().then(function() {
+            if (adviceGroup()?.dataset.questionId === questionId) {
+                Editor.send('try_advice', () => ({question_id: questionId, ...tryValues()}), {
+                    key: `advice-try-${questionId}`,
+                });
+            }
+        });
+    }
+
+    if (adviceDialog) {
+        adviceDialog.addEventListener('cancel', function(event) {
+            event.preventDefault();
+            closeAdvice();
+        });
+
+        adviceDialog.addEventListener('close', function() {
+            const back = adviceOpener?.isConnected ? adviceOpener : root.querySelector(
+                `[data-act="row-advice"][data-question-id="${adviceGroup()?.dataset.questionId}"]`,
+            );
+
+            adviceDialog.replaceChildren();
+            adviceOpener = null;
+            back?.focus();
+        });
+
+        adviceDialog.addEventListener('change', function(event) {
+            if (event.target.matches('[data-move-advice]')) {
+                moveAdviceLine(event.target);
+            } else if (event.target.matches('[data-try-stage], [data-try-score]')) {
+                tryAdvice();
+            }
+        });
+    }
 
     /* ---------- The report card: the models of the report and how much each question counts for them ---------- */
 

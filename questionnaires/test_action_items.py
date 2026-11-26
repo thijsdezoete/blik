@@ -47,32 +47,30 @@ class ActionItemKeyTests(TestCase):
 
     def save_new(self, **data):
         return self.edit(action='save_question', section_id=self.section.id, question_type='text',
-                         question_text='Notes', action_items_posted='1', **data)
+                         question_text='Notes', **data)
 
-    def save_stored(self, **data):
-        return self.edit(action='save_question', question_id=self.question.id, question_type='rating',
-                         question_text='Shares knowledge', rating_count='5', action_items_posted='1', **data)
+    def save_advice(self, lines):
+        """Save the advice dialog of the question with the lines (text, key) in the row "Every stage"."""
 
-    def test_a_new_question_keys_its_items(self):
+        data = {'action': 'save_advice', 'question_id': self.question.id, 'threshold': '3.5', 'try_stage': '1',
+                'try_score': '2.4'}
+
+        for index, (text, key) in enumerate(lines):
+            data.update({f'advice[{index}][text]': text, f'advice[{index}][key]': key, f'advice[{index}][stage]': ''})
+
+        return self.edit(**data)
+
+    def test_a_new_question_has_no_advice(self):
         self.save_new(**{'action_items[0][text]': 'Write it down', 'action_items[0][threshold]': '3'})
 
-        [item] = Question.objects.get(question_text='Notes').action_items
-        self.assertEqual(item['text'], 'Write it down')
-        self.assertTrue(item['key'])
+        self.assertEqual(Question.objects.get(question_text='Notes').action_items, [])
 
     def test_a_save_keeps_the_keys_and_keys_new_items(self):
         [item] = self.question.action_items
         item['key'] = 'pairing'
         self.question.save()
 
-        self.save_stored(**{
-            'action_items[0][key]': 'pairing',
-            'action_items[0][text]': 'Pair every week',
-            'action_items[0][threshold]': '3.5',
-            'action_items[1][key]': '',
-            'action_items[1][text]': 'Give a talk',
-            'action_items[1][threshold]': '4',
-        })
+        self.save_advice([('Pair every week', 'pairing'), ('Give a talk', '')])
 
         self.question.refresh_from_db()
         first, second = self.question.action_items
@@ -83,17 +81,13 @@ class ActionItemKeyTests(TestCase):
     def test_more_than_ten_items_keep_their_order(self):
         texts = [f'Step {i}' for i in range(12)]
 
-        self.save_new(**{f'action_items[{i}][text]': text for i, text in enumerate(texts)})
-        self.save_stored(**{f'action_items[{i}][text]': text for i, text in enumerate(texts)})
+        self.save_advice([(text, '') for text in texts])
 
-        for question in Question.objects.get(question_text='Notes'), Question.objects.get(id=self.question.id):
-            self.assertEqual([item['text'] for item in question.action_items], texts)
+        self.question.refresh_from_db()
+        self.assertEqual([item['text'] for item in self.question.action_items], texts)
 
     def test_a_save_replaces_keys_the_question_does_not_have(self):
-        self.save_stored(**{
-            'action_items[0][key]': '"><img src=x onerror=alert(1)>',
-            'action_items[0][text]': 'Pair weekly',
-        })
+        self.save_advice([('Pair weekly', '"><img src=x onerror=alert(1)>')])
 
         self.question.refresh_from_db()
         [item] = self.question.action_items

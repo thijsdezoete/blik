@@ -363,14 +363,6 @@ class EditorQuestionTests(TestCase):
 
         self.assertNotIn('checked', box(self.open(new_in=self.section.id)))
 
-    def test_the_advice_is_in_the_form_only_with_its_marker(self):
-        self.assertIn('name="action_items_posted"', self.open(question=self.question.id))
-
-        self.question.config = {'min': 1, 'max': 5}
-        self.question.save()
-
-        self.assertNotIn('name="action_items_posted"', self.open(question=self.question.id))
-
 
 class SaveQuestionTests(TestCase):
     """What the question dialog of the old editor kept, through save_question."""
@@ -438,6 +430,116 @@ class SaveQuestionTests(TestCase):
         self.assertEqual(
             Question.objects.get(pk=self.question.pk).config['dreyfus_mapping'], {'skill': 2.0, 'agency': 0.5},
         )
+
+
+class EditorAdviceTests(TestCase):
+    """The advice dialog: its inside per question, its saves and its "Try it"."""
+
+    def setUp(self):
+        ensure_permission_groups()
+        self.organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        admin = User.objects.create_user('admin', 'admin@acme.example', 'pw')
+        UserProfile.objects.create(user=admin, organization=self.organization)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+        self.q = Questionnaire.objects.create(
+            name='Team lead 360', organization=self.organization, source_language='en',
+        )
+        self.section = QuestionSection.objects.create(questionnaire=self.q, title='Communication', order=0)
+        self.question = Question.objects.create(
+            section=self.section, question_text='How clearly does {name} explain a decision?', question_type='rating',
+            config={'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 1}}, order=0,
+        )
+
+    def url(self):
+        return reverse('questionnaire_edit', args=[self.q.uuid])
+
+    def post(self, **fields):
+        return self.client.post(self.url(), fields)
+
+    def stored(self):
+        return Question.objects.get(pk=self.question.pk).action_items
+
+    def lines(self, *lines):
+        fields = {}
+
+        for index, (text, stage) in enumerate(lines):
+            fields.update({
+                f'advice[{index}][text]': text, f'advice[{index}][stage]': stage, f'advice[{index}][key]': '',
+            })
+
+        return fields
+
+    def test_the_dialog_has_a_row_for_every_stage_and_only_for_a_question_with_a_score(self):
+        answer = self.client.get(self.url(), {'advice': self.question.id})
+
+        self.assertTrue(answer.json()['ok'])
+        self.assertEqual(answer.json()['html'].count('data-advice-stage='), 6)
+
+        other = Questionnaire.objects.create(
+            name='Other', organization=Organization.objects.create(name='Other', email='org@other.example'),
+        )
+        foreign = Question.objects.create(
+            section=QuestionSection.objects.create(questionnaire=other, title='Other'), question_text='Other',
+            question_type='rating', config={'min': 1, 'max': 5},
+        )
+        text = Question.objects.create(section=self.section, question_text='Notes', question_type='text', order=1)
+
+        for question in foreign, text:
+            answer = self.client.get(self.url(), {'advice': question.id})
+
+            self.assertEqual(answer.status_code, 400)
+            self.assertFalse(answer.json()['ok'])
+
+    def test_a_save_stores_the_advice_and_answers_the_table_and_try_it(self):
+        answer = self.post(
+            action='save_advice', question_id=self.question.id, threshold='3', try_stage='1', try_score='2.4',
+            **self.lines(('Write the reason down', ''), ('Ask for a review', '1')),
+        ).json()
+
+        self.assertEqual([item['text'] for item in self.stored()], ['Write the reason down', 'Ask for a review'])
+        self.assertIn('Advice (2)', answer['slots']['report-card'])
+        self.assertIn('Write the reason down', answer['slots']['advice-try'])
+        self.assertIn('Ask for a review', answer['slots']['advice-try'])
+
+    def test_the_translate_mode_refuses_a_save_of_advice(self):
+        answer = self.post(
+            action='save_advice', lang='de', question_id=self.question.id, threshold='3', try_stage='1',
+            try_score='2.4', **self.lines(('Write the reason down', '')),
+        )
+
+        self.assertEqual(answer.status_code, 400)
+        self.assertEqual(self.stored(), [])
+
+    def test_a_bad_value_is_refused_without_an_error_of_the_server(self):
+        for fields in ({'threshold': '9'}, {'try_stage': '8'}, {'try_score': 'abc'}, {'question_id': 'x'}):
+            post = {'action': 'save_advice', 'question_id': self.question.id, 'threshold': '3', 'try_stage': '1',
+                    'try_score': '2.4', **self.lines(('Write the reason down', '')), **fields}
+
+            with self.subTest(fields=fields):
+                answer = self.post(**post)
+
+                self.assertEqual(answer.status_code, 400)
+                self.assertFalse(answer.json()['ok'])
+                self.assertEqual(self.stored(), [])
+
+    def test_try_it_stores_nothing_and_answers_what_the_person_reads(self):
+        self.question.action_items = [{'key': 'a', 'text': 'For a Novice', 'threshold': 3.0, 'stages': [1]}]
+        self.question.save()
+
+        novice = self.post(action='try_advice', question_id=self.question.id, try_stage='1', try_score='2.4').json()
+        competent = self.post(action='try_advice', question_id=self.question.id, try_stage='3', try_score='2.4').json()
+
+        self.assertIn('For a Novice', novice['slots']['advice-try'])
+        self.assertNotIn('For a Novice', competent['slots']['advice-try'])
+        self.assertEqual(self.stored(), [{'key': 'a', 'text': 'For a Novice', 'threshold': 3.0, 'stages': [1]}])
+
+    def test_the_question_form_has_no_advice_field(self):
+        html = self.client.get(self.url(), {'question': self.question.id}).json()['html']
+
+        self.assertFalse('action_items' in html)
+        self.assertTrue('data-act="question-advice"' in html)
 
 
 class TranslatedIntoTests(TestCase):

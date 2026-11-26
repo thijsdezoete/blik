@@ -1,0 +1,16 @@
+{% load i18n %}{# One line of advice in the advice dialog: its text, and its key that ties it to its translations. Its stage is the row it is in; "Move to..." is the way for the keyboard to another row. #}
+<div data-advice-line style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+    <span class="drag-handle advice-handle" title="{% trans 'Drag to move' %}" aria-hidden="true">
+        <svg width="10" height="14" viewBox="0 0 10 14"><g fill="currentColor"><circle cx="3" cy="3" r="1.2"/><circle cx="7" cy="3" r="1.2"/><circle cx="3" cy="7" r="1.2"/><circle cx="7" cy="7" r="1.2"/><circle cx="3" cy="11" r="1.2"/><circle cx="7" cy="11" r="1.2"/></g></svg>
+    </span>
+    <input type="hidden" name="key" value="{{ line.key|default:'' }}">
+    <input type="text" class="form-control" style="flex: 1; min-width: 0;" name="text" value="{{ line.text|default:'' }}" maxlength="500" placeholder="{% trans 'Ask a senior colleague to review your next proposal' %}" aria-label="{% trans 'Advice' %}">
+    {# No name: the move is not a field of the save; the line goes to the row with the chosen number, then saves #}
+    <select class="form-control" style="width: 8.5rem; flex: 0 0 auto;" data-move-advice aria-label="{% trans 'Move this advice to another stage' %}">
+        <option value="" selected>{% trans 'Move to...' %}</option>
+        {% for row in rows %}
+        <option value="{{ forloop.counter0 }}">{% if row.stage %}{{ row.stage }} {% endif %}{{ row.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="button" class="btn btn-sm btn-secondary" data-act="remove-advice-line" title="{% trans 'Remove this advice' %}" aria-label="{% trans 'Remove this advice' %}">&times;</button>
+</div>

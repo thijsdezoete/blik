@@ -13,7 +13,11 @@
 {# With a language (?lang=) the page is in the translate mode: the left column holds the texts and their translations #}
 <div id="questionnaire-editor" data-url="{% url 'questionnaire_edit' questionnaire.uuid %}"{% if language %} data-lang="{{ language }}"{% endif %}>
     {% csrf_token %}
-    {% if not language %}{% include 'admin_dashboard/editor/_advice_help.html' %}{% endif %}
+    {% if not language %}
+    {% include 'admin_dashboard/editor/_advice_help.html' %}
+    {# The advice of one question; its inside comes from GET ?advice=<id> (editor/_advice_dialog.html) #}
+    <dialog id="adviceDialog" class="modal-content reviewee-dialog" style="max-width: 56rem;" aria-labelledby="adviceDialogTitle"></dialog>
+    {% endif %}
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
         <div>
             <h1 data-header="name">{{ questionnaire.name }}</h1>

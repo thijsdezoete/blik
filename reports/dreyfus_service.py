@@ -656,6 +656,19 @@ def development_plan_with_texts(plan: Dict, skill_profile: Dict) -> Dict:
 
 # Helper functions
 
+def advice_applies(item: Dict, score: float, stage: int) -> bool:
+    """Whether a person at this skill stage, with this score of the question on the 1 to 5 scale, gets the advice item:
+    it has a text, the score is below its threshold (3.0 when it has none), and it names no stages or this one. The
+    report and the advice dialog of the questionnaire editor both use it."""
+
+    if not item.get('text') or score >= item.get('threshold', 3.0):
+        return False
+
+    stages = item.get('stages')
+
+    return not stages or stage in stages
+
+
 def _get_personalized_action_items(report_data: Dict, current_stage: int) -> List[Dict]:
     """
     Extract personalized action items based on question scores and current Dreyfus stage.
@@ -712,29 +725,11 @@ def _get_personalized_action_items(report_data: Dict, current_stage: int) -> Lis
         if not score or not question.action_items:
             continue
 
-        # Check each action item
         for action_item in question.action_items:
-            if not isinstance(action_item, dict):
-                continue
-
-            text = action_item.get('text')
-            threshold = action_item.get('threshold', 3.0)  # Default threshold
-            stages = action_item.get('stages')  # Optional: [1, 2, 3]
-
-            if not text:
-                continue
-
-            # Check if action item applies
-            # 1. Score is below threshold
-            if score >= threshold:
-                continue
-
-            # 2. If stages specified, check if current stage is in list
-            if stages and current_stage not in stages:
-                continue
-
-            # Add the action item
-            personalized_actions.append({'question_id': question.id, 'key': action_item.get('key'), 'text': text})
+            if isinstance(action_item, dict) and advice_applies(action_item, score, current_stage):
+                personalized_actions.append(
+                    {'question_id': question.id, 'key': action_item.get('key'), 'text': action_item['text']}
+                )
 
     # Limit to top 5 most relevant action items
     return personalized_actions[:5]

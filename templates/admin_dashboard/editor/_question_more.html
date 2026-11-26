@@ -39,11 +39,10 @@
         </div>
 
         {% if 'skill' in models_on and question.scoring.has_score %}
-        {# The stored advice changes only when this marker is posted, so it goes with the fields #}
+        {# The advice is written in the advice dialog only; its button saves this question first and keeps it open #}
         <div class="form-group" data-types="rating likert single_choice multiple_choice scale" style="margin-bottom: 0;">
-            <input type="hidden" name="action_items_posted" value="1">
             <div style="display: flex; align-items: center; gap: 0.25rem;">
-                <span class="form-label" style="margin: 0;">{% trans 'Advice when the score is low' %}</span>
+                <span class="form-label" style="margin: 0;">{% trans 'Advice' %}</span>
                 {# The same "i" as next to the tabs of the real report; it opens the dialog of _advice_help.html #}
                 <button type="button" class="tab-info-link" style="border: 0; background: none; cursor: pointer; color: var(--primary);" data-act="advice-help" aria-haspopup="dialog" title="{% trans 'How advice works' %}" aria-label="{% trans 'How advice works' %}">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -51,14 +50,8 @@
                     </svg>
                 </button>
             </div>
-            <div data-advice-rows>
-                {% for item in question.action_items %}
-                {% include 'admin_dashboard/editor/_advice_row.html' with index=forloop.counter0 %}
-                {% endfor %}
-            </div>
-            <template data-new-advice>{% include 'admin_dashboard/editor/_advice_row.html' with index='new' item=None %}</template>
-            <button type="button" class="btn btn-sm btn-secondary" data-act="add-advice">{% trans 'Add advice' %}</button>
-            <span class="help-text">{% trans 'The report adds the advice to the development plan when this question scores below the number.' %}</span>
+            <span class="help-text" style="margin: 0 0 0.5rem;">{% trans 'The report gives advice when this question scores low. You can write other advice for each skill stage.' %}</span>
+            <button type="button" class="btn btn-sm btn-secondary" data-act="question-advice" aria-haspopup="dialog">{% trans 'Write advice per stage' %}</button>
         </div>
         {% endif %}
     </div>

@@ -48,7 +48,7 @@
                 {% endif %}{% endfor %}
                 {% if 'skill' in models_on %}
                 {# Advice goes with the skill level: the report gives it with the steps to the next stage #}
-                <span class="help-text" style="margin: 0; width: 8rem; flex: 0 0 auto; font-weight: 700; display: flex; align-items: center;">
+                <span class="help-text" style="margin: 0; width: 9rem; flex: 0 0 auto; font-weight: 700; display: flex; align-items: center;">
                     {% trans 'Advice' %}
                     <button type="button" class="tab-info-link" style="border: 0; background: none; cursor: pointer; color: var(--primary);" data-act="advice-help" aria-haspopup="dialog" title="{% trans 'How advice works' %}" aria-label="{% trans 'How advice works' %}">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -76,9 +76,10 @@
                 </span>
                 {% endfor %}
                 {% if 'skill' in models_on %}
-                {# Opens the question at its advice; the advice itself is written there, in one place #}
-                <span style="width: 8rem; flex: 0 0 auto;">
-                    <button type="button" class="btn btn-sm btn-secondary" style="width: 100%;" data-act="row-advice" data-question-id="{{ row.question.id }}">{% with count=row.question.action_items|length %}{% if count %}{% blocktrans trimmed %}Advice ({{ count }}){% endblocktrans %}{% else %}{% trans 'Add advice' %}{% endif %}{% endwith %}</button>
+                {# Opens the question at its advice; the advice itself is written there, in one place. The column says "Advice", #}
+                {# so the button says only "Add"; a text that is too long is cut with dots, not drawn over the edge #}
+                <span style="width: 9rem; flex: 0 0 auto;">
+                    <button type="button" class="btn btn-sm btn-secondary" style="width: 100%; overflow: hidden; text-overflow: ellipsis;" data-act="row-advice" data-question-id="{{ row.question.id }}">{% with count=row.question.action_items|length %}{% if count %}{% blocktrans trimmed %}Advice ({{ count }}){% endblocktrans %}{% else %}{% trans 'Add' %}{% endif %}{% endwith %}</button>
                 </span>
                 {% endif %}
                 </span>

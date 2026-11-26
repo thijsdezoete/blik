@@ -30,7 +30,7 @@
 
         {# 2. Answer #}
         <div class="form-group">
-            <span class="form-label">{% trans 'Answer' %}</span>
+            <span class="form-label">{% trans 'Answer' context 'noun' %}</span>
             <div data-type-choice style="display: flex; flex-wrap: wrap; gap: 0 1.25rem;">
                 {% for type, name in answer_types.items %}
                 <label class="form-check">

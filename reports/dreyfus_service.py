@@ -309,9 +309,16 @@ def calculate_dreyfus_level(report_data: Dict, questionnaire_id: Optional[int] =
 
                 for category, cat_data in question_data.get('by_category', {}).items():
                     # Check for avg (report_data format) or average (alternative format)
-                    avg_score = cat_data.get('avg') or cat_data.get('average')
-                    if avg_score and not cat_data.get('insufficient', False):
+                    # An average of 0 is a real score (the lowest of a slider from 0), so only a missing one falls back
+                    avg_score = cat_data.get('avg')
+                    if avg_score is None:
+                        avg_score = cat_data.get('average')
+                    if avg_score is not None and not cat_data.get('insufficient', False):
                         avg_score = score_on_five(question_data, avg_score)
+                        # The 1 to 5 scale has no 0: a 0 here comes from a question without a range, such as a Pick
+                        # question whose every score is 0, which counts toward no level (see Scoring.nonzero)
+                        if not avg_score:
+                            continue
                         if category == 'self':
                             # Store self score separately as fallback
                             self_score = avg_score
@@ -395,9 +402,16 @@ def calculate_agency_level(report_data: Dict, questionnaire_id: Optional[int] = 
 
                 for category, cat_data in question_data.get('by_category', {}).items():
                     # Check for avg (report_data format) or average (alternative format)
-                    avg_score = cat_data.get('avg') or cat_data.get('average')
-                    if avg_score and not cat_data.get('insufficient', False):
+                    # An average of 0 is a real score (the lowest of a slider from 0), so only a missing one falls back
+                    avg_score = cat_data.get('avg')
+                    if avg_score is None:
+                        avg_score = cat_data.get('average')
+                    if avg_score is not None and not cat_data.get('insufficient', False):
                         avg_score = score_on_five(question_data, avg_score)
+                        # The 1 to 5 scale has no 0: a 0 here comes from a question without a range, such as a Pick
+                        # question whose every score is 0, which counts toward no level (see Scoring.nonzero)
+                        if not avg_score:
+                            continue
                         if category == 'self':
                             # Store self score separately as fallback
                             self_score = avg_score
@@ -671,9 +685,14 @@ def _get_personalized_action_items(report_data: Dict, current_stage: int) -> Lis
                 # Skip self-assessment
                 if category == 'self':
                     continue
-                avg_score = cat_data.get('avg') or cat_data.get('average')
-                if avg_score and not cat_data.get('insufficient', False):
-                    category_scores.append(score_on_five(question_data, avg_score))
+                # An average of 0 is a real score (the lowest of a slider from 0), so only a missing one falls back
+                avg_score = cat_data.get('avg')
+                if avg_score is None:
+                    avg_score = cat_data.get('average')
+                if avg_score is not None and not cat_data.get('insufficient', False):
+                    # A 0 on the 1 to 5 scale is a question without a range, as in the level functions above
+                    if score := score_on_five(question_data, avg_score):
+                        category_scores.append(score)
 
             if category_scores:
                 question_scores[str(question_id)] = mean(category_scores)

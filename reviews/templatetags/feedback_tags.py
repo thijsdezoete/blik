@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from questionnaires.models import Question
 from questionnaires.placeholders import NAME_PLACEHOLDER, personalize as personalize_text
 from reports.report_texts import RATING_RANGES
-from reports.scoring import score_on_five
+from reports.scoring import rating_option_count, score_on_five
 from reports.services import RATING_EXCELLENT, RATING_OUTSTANDING, RATING_STRONG, get_rating_key
 from reviews.models import CATEGORY_ORDER
 
@@ -197,13 +197,8 @@ def rating_values(question):
     """
 
     config = question.get('question_config') if isinstance(question, dict) else question.config
-    highest = config.get('max') if isinstance(config, dict) else None
 
-    # bool is an int in Python, but True is not a number of options
-    if not isinstance(highest, int) or isinstance(highest, bool) or not 2 <= highest <= 7:
-        highest = 5
-
-    return [str(value) for value in range(1, highest + 1)]
+    return [str(value) for value in range(1, rating_option_count(config) + 1)]
 
 
 @register.filter

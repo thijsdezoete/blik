@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _, gettext_lazy
 
 from core.languages import is_language, language_name
 from reports.dreyfus_service import _level_to_stage, agency_profile_with_texts, skill_profile_with_texts
-from reports.scoring import score_range
+from reports.scoring import rating_option_count, score_range
 from reports.services import radar_axes
 from reviews.models import Response
 
@@ -246,10 +246,8 @@ def question_form_values(questionnaire, question):
     labels = default_labels
 
     if question_type == 'rating':
-        stored_max = question.config.get('max')
-        # As the reviewer form reads it: a max that is not a whole number from 2 to 7 gives five options
-        if isinstance(stored_max, int) and not isinstance(stored_max, bool) and stored_max in RATING_COUNTS:
-            count = stored_max
+        # As the reviewer form reads it
+        count = rating_option_count(question.config)
         labels = question.labels
 
     choices = options if question_type in ('single_choice', 'multiple_choice') else []
@@ -544,7 +542,8 @@ def save_question(questionnaire, post, question=None, section=None):
         stored_labels = defaults
 
         if stored and stored.question_type == 'rating':
-            stored_count = stored_config.get('max', len(defaults))
+            # As the reviewer form reads it, so a broken max is the five options reviewers see
+            stored_count = rating_option_count(stored_config)
             stored_labels = stored.labels
 
             if count != stored_count and answered:

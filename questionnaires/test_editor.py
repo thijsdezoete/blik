@@ -125,6 +125,26 @@ class SaveQuestionTests(EditorTestCase):
         question.refresh_from_db()
         self.assertEqual(question.config['max'], 5)
 
+    def test_a_stored_number_of_options_that_is_text_counts_as_five(self):
+        question = self.add_question(config={'min': 1, 'max': '5'})
+
+        self.save(question, question_text='Question 0', question_type='rating', rating_count='5')
+
+        question.refresh_from_db()
+        self.assertEqual(question.config['max'], 5)
+
+    def test_an_answered_score_with_a_number_of_options_as_text_keeps_five(self):
+        question = self.add_question(config={'min': 1, 'max': '5'})
+        self.answer(question)
+
+        self.save(question, question_text='Question 0', question_type='rating', rating_count='5')
+
+        with self.assertRaises(EditorError):
+            self.save(question, question_text='Question 0', question_type='rating', rating_count='4')
+
+        question.refresh_from_db()
+        self.assertEqual(question.config['max'], 5)
+
     def test_an_answered_question_cannot_become_a_score_or_a_slider(self):
         likert = self.add_question('likert', config={})
         self.answer(likert)

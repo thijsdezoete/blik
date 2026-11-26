@@ -14,7 +14,8 @@ class Scoring(NamedTuple):
     """What a question's score can do in the report.
 
     has_score: the question produces a number. in_radar: the number counts in its topic's radar point. nonzero: the
-    number can be other than 0, which the skill and initiative levels need (the Dreyfus service ignores zero averages).
+    number can be other than 0, which the skill and initiative levels need (the Dreyfus service ignores an average that
+    is 0 on the 1 to 5 scale, which only a question without a range gives).
     """
 
     has_score: bool

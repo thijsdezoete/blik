@@ -55,6 +55,11 @@ class ScoreOnFiveTests(SimpleTestCase):
         self.assertEqual(score_on_five(q('scale', {'min': [1], 'max': 10}), 7), 7)
         self.assertEqual(score_on_five(q('rating', {'min': False, 'max': True}), 1), 1)
 
+    def test_a_score_whose_number_of_options_is_broken_counts_as_five_options(self):
+        for highest in ('4', 8, 4.0, True):
+            with self.subTest(max=highest):
+                self.assertEqual(score_on_five(q('rating', {'min': 1, 'max': highest}), 3.2), 3.2)
+
 
 class ReportScaleTests(TestCase):
     def setUp(self):
@@ -96,6 +101,27 @@ class ReportScaleTests(TestCase):
         data = self.report_data()
 
         self.assertEqual(data['insights']['skill_profile']['skill_level'], 3.96)  # 1 + 6.67 / 9 * 4
+
+    def test_an_average_of_zero_counts_toward_the_level(self):
+        question = self.add_question('scale', {'min': 0, 'max': 10, 'dreyfus_mapping': {'skill': 1}})
+        self.answer(question, [0, 0, 0])
+
+        data = self.report_data()
+
+        self.assertEqual(data['insights']['skill_profile']['skill_level'], 1.0)
+
+    def test_a_pick_question_whose_every_score_is_0_counts_toward_no_level(self):
+        # As the editor's preview says (Scoring.nonzero): such a question has no range on the 1 to 5 scale
+        question = self.add_question('single_choice', {'scoring_enabled': True, 'dreyfus_mapping': {'skill': 1}},
+                                     weights=(0, 0))
+        self.answer(question, [question.options.first().id] * 3)
+
+        self.assertIsNone(self.report_data()['insights']['skill_profile'])
+
+        other = self.add_question('rating', {'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 1}})
+        self.answer(other, [5, 5, 5])
+
+        self.assertEqual(self.report_data()['insights']['skill_profile']['skill_level'], 5.0)
 
     def test_pick_several_cannot_score_above_5_in_the_charts(self):
         question = self.add_question('multiple_choice', {'scoring_enabled': True}, weights=(1, 2, 3))

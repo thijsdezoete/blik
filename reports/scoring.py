@@ -9,6 +9,19 @@ def _number(value, default):
     return default if value is None else value
 
 
+def rating_option_count(config):
+    """The number of options of a score, which has the values 1 up to it: the config's max when that is a whole number
+    from 2 to 7, else the five options every score had before."""
+
+    highest = config.get('max') if isinstance(config, dict) else None
+
+    # bool is an int in Python, but True is not a number of options
+    if not isinstance(highest, int) or isinstance(highest, bool) or not 2 <= highest <= 7:
+        return 5
+
+    return highest
+
+
 def score_range(question_data):
     """The lowest and highest score a question's answer can have, (low, high), or None when it has no range.
 
@@ -25,9 +38,12 @@ def score_range(question_data):
 
     question_type = question_data.get('question_type')
 
-    if question_type in ('rating', 'scale'):
+    if question_type == 'rating':
+        # As the reviewer form shows it
+        low, high = 1, rating_option_count(config)
+    elif question_type == 'scale':
         low = _number(config.get('min'), 1)
-        high = _number(config.get('max'), 5 if question_type == 'rating' else 100)
+        high = _number(config.get('max'), 100)
 
         # A min or max that is not a number (text, a list, True) gives no range; a bool is an int to Python
         if not all(isinstance(bound, (int, float)) and not isinstance(bound, bool) for bound in (low, high)):

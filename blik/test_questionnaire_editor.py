@@ -1,5 +1,7 @@
 """The editor page changes topics and settings without a page load and answers the parts of the page to show again."""
 
+import json
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -89,7 +91,9 @@ class EditorTopicTests(TestCase):
 
         self.rating.refresh_from_db()
         self.assertIs(self.rating.config['did_not_observe'], False)
-        self.assertIn('settings', answer['slots'])
+        # Only the switch comes back, not the fields of the settings that may be typed in
+        self.assertIn('did-not-observe', answer['slots'])
+        self.assertNotIn('settings', answer['slots'])
 
     def test_the_original_language_cannot_become_a_translated_one(self):
         QuestionnaireTranslation.objects.create(questionnaire=self.q, language='de', name='Teamleitung 360')
@@ -102,3 +106,37 @@ class EditorTopicTests(TestCase):
         self.assertTrue(answer['message'])
         self.q.refresh_from_db()
         self.assertEqual(self.q.source_language, 'en')
+
+    def test_a_new_order_is_stored_and_answered(self):
+        second = self.add_scored_topic('Collaboration', 1)
+        layout = [
+            {'section': second.id, 'questions': [question.id for question in second.questions.all()]},
+            {'section': self.section.id, 'questions': [self.rating.id]},
+        ]
+
+        answer = self.post(action='reorder', layout=json.dumps(layout)).json()
+
+        self.assertTrue(answer['ok'])
+        self.assertEqual(list(self.q.sections.values_list('title', flat=True)), ['Collaboration', 'Communication'])
+        self.assertIn(f'topic-{second.id}-head', answer['slots'])
+        self.assertIn(f'topic-{self.section.id}-head', answer['slots'])
+        self.assertIn('reviewer', answer['slots'])
+
+    def test_a_broken_request_is_refused_not_an_error(self):
+        # A whole layout, but with the topic's id as a float
+        float_layout = [{'section': float(self.section.id), 'questions': [self.rating.id]}]
+        broken = [
+            {'action': 'reorder', 'layout': json.dumps(float_layout)},
+            {'action': 'reorder', 'layout': 'null'},
+            {'action': 'save_section', 'section_id': 'abc', 'title': 'Mine', 'description': ''},
+            {'action': 'save_section', 'title': 'Mine', 'description': ''},
+        ]
+
+        for fields in broken:
+            with self.subTest(fields=fields):
+                response = self.post(**fields)
+
+                self.assertEqual(response.status_code, 400)
+                self.assertFalse(response.json()['ok'])
+                self.section.refresh_from_db()
+                self.assertEqual((self.section.title, self.section.order), ('Communication', 0))

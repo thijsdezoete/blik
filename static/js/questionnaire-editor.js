@@ -144,6 +144,8 @@
             refusals.set(key, answer.message);
         }
 
+        // The callers learn which fields were stored: those of the newest request, which took the place of theirs
+        answer.fields = request.fields;
         request.resolvers.forEach(resolve => resolve(answer));
 
         if (queue.waiting) {
@@ -218,21 +220,24 @@
         saveState.style.color = color;
     }
 
-    // Changes that are still waiting go out with the page
+    // Changes that are still waiting go out with the page. Per key only the newest goes: the typed text if there is
+    // any, else the waiting request; with both, the older one could arrive last and be stored
     window.addEventListener('pagehide', function() {
-        typing.forEach(function(entry) {
-            clearTimeout(entry.timer);
-            const request = {action: entry.group.dataset.saveAction, fields: groupFields(entry.group)};
-            navigator.sendBeacon(url, formData(request));
-        });
-        typing.clear();
+        new Set([...typing.keys(), ...queues.keys()]).forEach(function(key) {
+            const queue = queues.get(key);
+            const request = typing.has(key) ? groupRequest(key) : queue?.waiting;
 
-        queues.forEach(function(queue) {
-            if (queue.waiting) {
-                navigator.sendBeacon(url, formData(queue.waiting));
+            clearTimeout(typing.get(key)?.timer);
+
+            if (request) {
+                navigator.sendBeacon(url, formData(request));
+            }
+
+            if (queue) {
                 queue.waiting = null;
             }
         });
+        typing.clear();
     });
 
     /* ---------- Slots ---------- */
@@ -345,42 +350,47 @@
         return fields;
     }
 
-    function saveGroup(group) {
-        const key = group.dataset.saveKey;
-        const entry = typing.get(key);
+    /*
+     * The request that saves the group of fields with this key. The fields are read from the group that is in the page
+     * now: a slot that came back replaced the elements that were there when the typing started.
+     */
+    function groupRequest(key) {
+        const group = root.querySelector(`[data-save-key="${key}"]`);
 
-        if (entry) {
-            clearTimeout(entry.timer);
-            typing.delete(key);
+        return group && {action: group.dataset.saveAction, fields: groupFields(group)};
+    }
+
+    function saveGroup(key) {
+        clearTimeout(typing.get(key)?.timer);
+        typing.delete(key);
+
+        const request = groupRequest(key);
+
+        if (!request) {
+            showState();
+            notifyIdle();
+            return Promise.resolve({ok: false, message: ''});
         }
 
-        return Editor.send(group.dataset.saveAction, groupFields(group), {key}).then(function(answer) {
-            if (answer.ok) {
-                afterSave(group);
+        return Editor.send(request.action, request.fields, {key}).then(function(answer) {
+            // The header shows the name and description that were stored
+            if (answer.ok && answer.fields && request.action === 'save_info') {
+                ['name', 'description'].forEach(function(name) {
+                    root.querySelector(`[data-header="${name}"]`).textContent = answer.fields[name].trim();
+                });
             }
 
             return answer;
         });
     }
 
-    function saveLater(group) {
-        const key = group.dataset.saveKey;
-        const entry = typing.get(key) || {group, save: () => saveGroup(group)};
+    function saveLater(key) {
+        const entry = typing.get(key) || {save: () => saveGroup(key)};
 
         clearTimeout(entry.timer);
         entry.timer = setTimeout(entry.save, TYPING_DELAY);
         typing.set(key, entry);
         showState();
-    }
-
-    function afterSave(group) {
-        // The header shows the stored name and description
-        if (group.dataset.saveAction === 'save_info') {
-            ['name', 'description'].forEach(function(name) {
-                const text = group.querySelector(`[name="${name}"]`).value.trim();
-                root.querySelector(`[data-header="${name}"]`).textContent = text;
-            });
-        }
     }
 
     root.addEventListener('input', function(event) {
@@ -390,7 +400,7 @@
             event.target.setAttribute('data-dirty', '');
 
             if (event.target.matches('input[type="text"], textarea')) {
-                saveLater(group);
+                saveLater(group.dataset.saveKey);
             }
         }
     });
@@ -400,7 +410,7 @@
 
         if (group && event.target.name) {
             event.target.setAttribute('data-dirty', '');
-            saveGroup(group);
+            saveGroup(group.dataset.saveKey);
         }
     });
 
@@ -470,7 +480,7 @@
         }
 
         // A title that is refused stays open, with the message in the save state
-        saveGroup(group).then(function(answer) {
+        saveGroup(group.dataset.saveKey).then(function(answer) {
             if (answer.ok) {
                 setEditing(card, false);
             }

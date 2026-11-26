@@ -1138,6 +1138,7 @@ def questionnaire_create(request):
 EDITOR_SLOTS = {
     'langs': 'admin_dashboard/editor/_langs.html',
     'settings': 'admin_dashboard/editor/_settings.html',
+    'did-not-observe': 'admin_dashboard/editor/_did_not_observe.html',
     'report-card': 'admin_dashboard/editor/_report_card.html',
     'reviewer': 'admin_dashboard/editor/_reviewer.html',
     'report': 'admin_dashboard/editor/_report.html',
@@ -1203,7 +1204,7 @@ def _editor_action(request, questionnaire, action):
 
     if action == 'set_did_not_observe':
         set_did_not_observe(questionnaire, bool(post.get('on')))
-        return editor_response(request, questionnaire, ['settings'])
+        return editor_response(request, questionnaire, ['did-not-observe'])
 
     if action == 'add_section':
         section = add_section(questionnaire)
@@ -1227,13 +1228,14 @@ def _editor_action(request, questionnaire, action):
 
     if action == 'reorder':
         try:
-            layout = json.loads(post.get('layout', ''))
-            save_layout(questionnaire, layout)
+            save_layout(questionnaire, json.loads(post.get('layout', '')))
         except (ValueError, TypeError, KeyError):
             raise EditorError(_('The new order could not be saved. Reload the page and try again.'))
 
         # A question that moved to another topic can change the radar point of both
-        return editor_response(request, questionnaire, [f'topic-{entry["section"]}-head' for entry in layout])
+        return editor_response(
+            request, questionnaire, [f'topic-{section.id}-head' for section in questionnaire.sections.all()],
+        )
 
     return editor_response(request, questionnaire, [])
 

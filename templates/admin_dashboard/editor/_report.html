@@ -19,7 +19,7 @@
     <span style="flex: 1 1 0;"><strong>{{ topic.title }}</strong>
         <span class="help-text">
             {% if topic.questions %}
-            {% blocktrans trimmed count counter=topic.questions with counting=topic.counting %}{{ counting }} of {{ counter }} question counts.{% plural %}{{ counting }} of {{ counter }} questions count.{% endblocktrans %}
+            {% blocktrans trimmed count counter=topic.questions with counting=topic.counting %}The score of {{ counting }} of {{ counter }} question is included.{% plural %}The score of {{ counting }} of {{ counter }} questions is included.{% endblocktrans %}
             {% else %}
             {% trans 'No questions yet.' %}
             {% endif %}

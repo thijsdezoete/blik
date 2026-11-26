@@ -201,8 +201,8 @@ class QuestionnaireFlowTests(TestCase):
         for text in ['Shares knowledge', 'Gives useful feedback', 'Asks for help', 'Seniority',
                      'Strong areas', 'Energy', 'Anything else?']:
             self.assertIn(text, page)
-        self.assertIn('Gives useful feedback * Agree / disagree (Likert) · 5 answers · counts in the radar', page)
-        self.assertIn('Asks for help * Agree / disagree (Likert) · 4 answers · counts in the radar', page)
+        self.assertIn('Gives useful feedback * Agree / disagree (Likert) · 5 answers Edit', page)
+        self.assertIn('Asks for help * Agree / disagree (Likert) · 4 answers Edit', page)
         # The reviewer tab shows the topic with every option
         for label in ['Sometimes', 'Often', 'Always', 'Novice', 'Advanced', 'Expert', 'Code', 'Docs', 'Talks']:
             self.assertContains(response, label)

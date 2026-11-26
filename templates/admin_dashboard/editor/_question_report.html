@@ -4,17 +4,17 @@
 {# One plain sentence, no pill: it tells a fact and nothing can be done with it #}
 <div>
     {% if question.scoring.in_radar %}
-    <span>{% blocktrans trimmed with topic=question.section.title %}Counts for "{{ topic }}" on the radar.{% endblocktrans %}</span>
+    <span>{% blocktrans trimmed with topic=question.section.title %}The score is included on the axis "{{ topic }}".{% endblocktrans %}</span>
     {% else %}
     <span>
         {% if type == 'text' %}
-        {% trans 'Written answers show as text in the report. They do not count in the radar.' %}
+        {% trans 'Written answers show as text in the report. They have no score.' %}
         {% elif question.scoring.has_score %}
-        {% trans 'This question does not count for the radar. It was set that way when the questionnaire was made.' %}
+        {% trans 'The score of this question is not included on an axis. It was set that way when the questionnaire was made.' %}
         {% elif type == 'likert' %}
-        {% trans 'A Likert question needs at least two answers to count in the radar.' %}
+        {% trans 'A Likert question needs at least two answers to have a score.' %}
         {% else %}
-        {% trans 'The report shows how often each answer was picked. Without scores, this question does not count in the radar.' %}
+        {% trans 'The report shows how often each answer was picked. Without a score per answer, this question has no score for an axis.' %}
         {% endif %}
     </span>
     {% endif %}
@@ -24,7 +24,7 @@
 <label class="form-check" data-types="single_choice multiple_choice" style="margin: 0.75rem 0 0;">
     <input type="checkbox" class="form-check-input" name="enable_scoring"{% if question.config.scoring_enabled %} checked{% endif %}{% if type != 'single_choice' and type != 'multiple_choice' %} data-keep{% endif %}>
     <span>{% trans 'Give each answer a score' %}
-        <span class="help-text">{% trans 'Then this question counts in the radar. You type the scores next to the answers above.' %}</span>
+        <span class="help-text">{% trans 'Then the score of this question is included on the axis of its topic. You type the scores next to the answers above.' %}</span>
     </span>
 </label>
 

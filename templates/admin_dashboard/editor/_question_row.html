@@ -1,4 +1,4 @@
-{% load i18n feedback_tags %}{# Slot "question-<id>-row": a closed question, with {name} as a chip and one line on what it does in the report #}
+{% load i18n feedback_tags %}{# Slot "question-<id>-row": a closed question, with {name} as a chip and one line on its answer type #}
 <div style="display: flex; align-items: start; gap: 1rem;">
     {% include 'admin_dashboard/partials/move_controls.html' with kind='question' %}
     <div style="flex: 1;">
@@ -15,8 +15,11 @@
             {% elif question.question_type != 'text' %}
             · {% with count=question.options.all|length %}{% blocktrans trimmed count counter=count %}{{ counter }} answer{% plural %}{{ counter }} answers{% endblocktrans %}{% endwith %}
             {% endif %}
-            ·
-            {% if question.scoring.in_radar %}{% trans 'counts in the radar' %}{% elif question.question_type == 'text' %}{% trans 'shown as text in the report' %}{% else %}{% trans 'shown as counts in the report' %}{% endif %}
+            {# Only the exception is named: a question that could have a score and has none, or is kept off the radar. #}
+            {# That most questions have a score on the axis of their topic goes without saying on every row. #}
+            {% if not question.scoring.in_radar and question.question_type != 'text' %}
+            · {% if question.scoring.has_score %}{% trans 'not on the radar' %}{% else %}{% trans 'no score' %}{% endif %}
+            {% endif %}
         </div>
     </div>
     {# A click anywhere on the row opens the question; the button is the way for the keyboard #}

@@ -50,7 +50,8 @@
         <span class="help-text">{% trans 'Example: "Alex starts improvements without being asked" says something about initiative.' %}</span>
         {% endif %}
     </label>
-    <select id="question-{{ id }}-{{ entry.model }}" class="form-control" style="width: 10rem; flex: 0 0 auto;" name="{{ entry.model }}_weight">
+    {# Without a name, so a save of the question never sends it: the weight is stored by itself (set_weight), once the question is stored #}
+    <select id="question-{{ id }}-{{ entry.model }}" class="form-control" style="width: 10rem; flex: 0 0 auto;" data-weight="{{ entry.model }}" data-question-id="{{ question.pk|default:'' }}"{% if not question.pk %} disabled{% endif %}>
         {% for weight, name in values.weight_names.items %}
         <option value="{{ weight|unlocalize }}"{% if weight == entry.weight %} selected{% endif %}>{{ name }}</option>
         {% endfor %}

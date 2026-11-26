@@ -36,6 +36,23 @@ WEIGHT_NAMES = {
     2: gettext_lazy('Counts double'),
 }
 MODELS = ('skill', 'agency')
+# The texts of each model in the card "The report" and in the report preview; a new model of MODELS needs its entry
+MODEL_TEXTS = {
+    'skill': {
+        'choice': gettext_lazy('Skill level (Dreyfus model)'),
+        'help': gettext_lazy('Shows which of five stages the person is at, from Novice to Expert.'),
+        'name': gettext_lazy('Skill level'),
+        'example': gettext_lazy('Example: "Alex solves hard problems without help" says something about skill.'),
+    },
+    'agency': {
+        'choice': gettext_lazy('Initiative (agency model)'),
+        'help': gettext_lazy('Shows how much the person acts without being asked, in five levels.'),
+        'name': gettext_lazy('Initiative'),
+        'example': gettext_lazy(
+            'Example: "Alex starts improvements without being asked" says something about initiative.'
+        ),
+    },
+}
 
 # The example scores of the reviewer groups in the report preview, as shifts of a topic's example score
 EXAMPLE_GROUP_SHIFTS = {'self': -0.2, 'peer': 0, 'manager': 0.2, 'direct_report': 0.1}
@@ -352,6 +369,10 @@ def _questions(questionnaire):
 def clear_model(questionnaire, model):
     """Remove the weights of one model from every question of the questionnaire; the other model stays."""
 
+    # Also refused when no question has a weight, which _apply_weight alone would not notice
+    if model not in MODELS:
+        raise EditorError(_('This model does not exist.'))
+
     with transaction.atomic():
         for question in _questions(questionnaire):
             if 'dreyfus_mapping' in question.config:
@@ -575,7 +596,8 @@ def example_score(question):
 
 
 def _example_level(model, rows):
-    """The level of one model made from rows of {'question', 'score', 'weight'}, as the report shows it."""
+    """The level of one model made from rows of {'question', 'score', 'weight', 'weight_name'}, as the report shows
+    it."""
 
     weight_sum = sum(row['weight'] for row in rows)
     level = stage = low = high = profile = None
@@ -628,7 +650,11 @@ def report_preview(questionnaire, shown):
 
             if scoring.nonzero:
                 for model, weight in mapping.items():
-                    rows[model].append({'question': question, 'score': example_score(question), 'weight': weight})
+                    rows[model].append({
+                        'question': question, 'score': example_score(question), 'weight': weight,
+                        # An older weight outside the five shows as its number
+                        'weight_name': WEIGHT_NAMES.get(weight, weight),
+                    })
 
         topics.append({
             'id': section.id,
@@ -729,24 +755,44 @@ def editor_context(questionnaire, shown, topic=None):
 
     questionnaire comes from load_for_editor(). shown holds the report models ticked in this visit. topic is the id of
     the section the reviewer tab shows, by default the first. Each section gets its entry of the report preview's
-    topics and the number of answers to its questions, each question its Scoring and its number of answers. The
-    language states and the state
-    of "Did not observe" are computed only when a slot shows them.
+    topics and the number of answers to its questions, each question its Scoring and its number of answers. The card
+    "The report" gets each model of MODELS and the table of the questions with a score. The language states and the
+    state of "Did not observe" are computed only when a slot shows them.
     """
 
     preview = report_preview(questionnaire, shown)
     topics = {entry['id']: entry for entry in preview['topics']}
     answers = answer_counts(questionnaire)
     sections = list(questionnaire.sections.all())
+    levels = {level['model']: level for level in preview['levels']}
+    weighted = dict.fromkeys(MODELS, 0)
+    weight_table = []
 
     for section in sections:
         section.editor_topic = topics[section.id]
         section.answer_count = 0
+        scored = []
 
         for question in section.questions.all():
             question.scoring = question_scoring(question)
             question.answer_count = answers.get(question.id, 0)
             section.answer_count += question.answer_count
+            mapping = _mapping(question.config) if isinstance(question.config, dict) else {}
+
+            for model in mapping:
+                weighted[model] += 1
+
+            if question.scoring.has_score:
+                scored.append({
+                    'question': question,
+                    'weights': [
+                        {'model': model, 'name': MODEL_TEXTS[model]['name'], 'weight': mapping.get(model, 0)}
+                        for model in levels
+                    ],
+                })
+
+        if scored:
+            weight_table.append({'title': section.title, 'questions': scored})
 
     reviewer_section = next((section for section in sections if f'{section.id}' == f'{topic}'), None)
 
@@ -754,7 +800,15 @@ def editor_context(questionnaire, shown, topic=None):
         'questionnaire': questionnaire,
         'sections': sections,
         'preview': preview,
-        'models_on': [level['model'] for level in preview['levels']],
+        'models_on': list(levels),
+        # Per model: its texts, whether it is on, how many questions have a weight for it, and its example level
+        'report_models': [
+            {'model': model, **MODEL_TEXTS[model], 'weighted': weighted[model], 'level': levels.get(model)}
+            for model in MODELS
+        ],
+        # The questions with a score, per topic, with their weight for each model that is on
+        'weight_table': weight_table,
+        'weight_names': WEIGHT_NAMES,
         'answer_types': ANSWER_TYPES,
         'reviewer_section': reviewer_section or (sections[0] if sections else None),
         'source_language_name': language_name(questionnaire.source_language),

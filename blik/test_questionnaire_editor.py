@@ -12,7 +12,7 @@ from accounts.models import Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin, ensure_permission_groups
 from core.models import Organization
 from questionnaires.answer_options import save_options
-from questionnaires.editor import save_question, translated_into
+from questionnaires.editor import example_score, save_question, translated_into
 from questionnaires.models import (
     AnswerOptionTranslation, Question, QuestionSection, QuestionTranslation, Questionnaire, QuestionnaireTranslation,
 )
@@ -421,3 +421,127 @@ class TranslatedIntoTests(TestCase):
         # The question text alone does not count, nor an empty translation
         self.assertEqual(translated_into(rating), ['Nederlands'])
         self.assertEqual(translated_into(likert), ['Deutsch (Sie)'])
+
+
+class EditorReportCardTests(TestCase):
+    """The card "The report": which models are on, and how much each question counts for them."""
+
+    def setUp(self):
+        ensure_permission_groups()
+        self.organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        admin = User.objects.create_user('admin', 'admin@acme.example', 'pw')
+        UserProfile.objects.create(user=admin, organization=self.organization)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+        self.q = Questionnaire.objects.create(name='Team lead 360', organization=self.organization)
+        self.section = QuestionSection.objects.create(questionnaire=self.q, title='Problem solving', order=0)
+        self.question = Question.objects.create(
+            section=self.section, question_text='How well does {name} solve problems?', question_type='rating',
+            config={'min': 1, 'max': 5}, order=0,
+        )
+
+    def post(self, **fields):
+        return self.client.post(reverse('questionnaire_edit', args=[self.q.uuid]), fields)
+
+    def config(self, question=None):
+        return Question.objects.get(id=(question or self.question).id).config
+
+    def test_a_weight_set_in_the_table_is_stored_and_shown(self):
+        slots = self.post(
+            action='set_weight', question_id=self.question.id, model='skill', weight='2', shown='skill',
+        ).json()['slots']
+
+        self.assertEqual(self.config()['dreyfus_mapping'], {'skill': 2.0})
+        self.assertIn('report-card', slots)
+        self.assertIn(f'question-{self.question.id}-report', slots)
+
+    def test_a_weight_outside_the_five_is_refused(self):
+        response = self.post(action='set_weight', question_id=self.question.id, model='skill', weight='3')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()['ok'])
+        self.assertNotIn('dreyfus_mapping', self.config())
+
+    def test_a_request_that_does_not_come_from_the_page_changes_nothing(self):
+        other = Organization.objects.create(name='Other', email='org@other.acme.example')
+        questionnaire = Questionnaire.objects.create(name='Other 360', organization=other)
+        section = QuestionSection.objects.create(questionnaire=questionnaire, title='Theirs', order=0)
+        theirs = Question.objects.create(
+            section=section, question_text='Theirs', question_type='rating', config={'min': 1, 'max': 5},
+        )
+        broken = [
+            {'question_id': self.question.id, 'model': 'disc', 'weight': '1'},
+            {'question_id': self.question.id, 'model': 'skill', 'weight': 'nan'},
+            {'question_id': self.question.id, 'model': 'skill', 'weight': ''},
+            {'question_id': 'abc', 'model': 'skill', 'weight': '1'},
+            {'question_id': theirs.id, 'model': 'skill', 'weight': '1'},
+        ]
+
+        for fields in broken:
+            with self.subTest(fields=fields):
+                response = self.post(action='set_weight', **fields)
+
+                self.assertEqual(response.status_code, 400)
+                self.assertFalse(response.json()['ok'])
+
+        self.assertNotIn('dreyfus_mapping', self.config())
+        self.assertNotIn('dreyfus_mapping', self.config(theirs))
+
+        response = self.post(action='clear_model', model='disc')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()['ok'])
+
+    def test_unticking_a_model_removes_its_weights_only(self):
+        second = Question.objects.create(
+            section=self.section, question_text='How often does {name} start an improvement?',
+            question_type='rating', config={'min': 1, 'max': 5}, order=1,
+        )
+
+        for question in (self.question, second):
+            question.config['dreyfus_mapping'] = {'skill': 1, 'agency': 1}
+            question.save()
+
+        answer = self.post(action='clear_model', model='skill', shown='agency').json()
+
+        self.assertTrue(answer['ok'])
+        self.assertIn('report-card', answer['slots'])
+        self.assertEqual(self.config()['dreyfus_mapping'], {'agency': 1})
+        self.assertEqual(self.config(second)['dreyfus_mapping'], {'agency': 1})
+
+    def test_a_ticked_model_without_questions_gets_its_column(self):
+        self.assertIn('name="agency_weight"', self.post(action='refresh', shown='agency').json()['slots']['report-card'])
+        self.assertNotIn('name="agency_weight"', self.post(action='refresh').json()['slots']['report-card'])
+
+    def test_unticking_asks_first_only_while_questions_count(self):
+        card = self.post(action='refresh', shown='skill').json()['slots']['report-card']
+
+        self.assertNotIn('data-ask="model-skill"', card)
+
+        self.post(action='set_weight', question_id=self.question.id, model='skill', weight='0.5')
+        card = self.post(action='refresh').json()['slots']['report-card']
+
+        self.assertIn('data-ask="model-skill"', card)
+        self.assertNotIn('data-ask="model-agency"', card)
+
+    def test_a_question_without_a_score_is_not_in_the_table(self):
+        Question.objects.create(
+            section=self.section, question_text='What should {name} keep doing?', question_type='text', order=1,
+        )
+
+        card = self.post(action='refresh', shown='skill').json()['slots']['report-card']
+
+        self.assertIn(f'data-question-id="{self.question.id}"', card)
+        self.assertEqual(card.count('data-question-id='), 1)
+
+    def test_how_a_level_is_made_shows_the_numbers_of_the_preview(self):
+        self.post(action='set_weight', question_id=self.question.id, model='agency', weight='2')
+
+        report = self.post(action='refresh').json()['slots']['report']
+        score = example_score(self.question)
+
+        self.assertIn(f'({score:.1f} x 2) / 2 = {score:.2f}<', report)
+        self.assertIn('<td>Counts double</td>', report)
+        self.assertIn('data-level="agency"', report)
+        self.assertNotIn('data-level="skill"', report)

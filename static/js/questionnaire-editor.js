@@ -291,6 +291,11 @@
     /* ---------- Slots ---------- */
 
     function focusSelector(element) {
+        // The weight selects of one model share a name in the table of the report card
+        if (element.dataset.weight) {
+            return `[data-weight="${element.dataset.weight}"][data-question-id="${element.dataset.questionId}"]`;
+        }
+
         if (element.name) {
             return `[name="${element.name}"]`;
         }
@@ -1537,6 +1542,84 @@
             button.closest('[data-advice-row]').remove();
             saveQuestion(form);
             break;
+        }
+    });
+
+    /* ---------- The report card: the models of the report and how much each question counts for them ---------- */
+
+    const reportCard = root.querySelector('[data-slot="report-card"]');
+
+    // A model that is on when the page opens stays on in this visit, also when its last question stops counting
+    Editor.shown = Array.from(reportCard.querySelectorAll('[data-model]:checked'), box => box.dataset.model);
+
+    // Scroll the right column, not the page, to the block of the model in "What the report shows"
+    function showLevel(model) {
+        const column = root.querySelector('.editor-preview');
+        const block = root.querySelector(`[data-slot="report"] [data-level="${model}"]`);
+
+        if (block && !block.closest('[hidden]')) {
+            column.scrollTop += block.getBoundingClientRect().top - column.getBoundingClientRect().top - 16;
+        }
+    }
+
+    function refreshModels() {
+        return Editor.send('refresh', {}, {key: 'refresh'});
+    }
+
+    /*
+     * Ticking a model shows its column, its select in the open question and its block on the right. Unticking a model
+     * that questions count for asks first (the card holds the template only then) and removes their weights for it;
+     * the box stays ticked until the creator says yes.
+     */
+    function toggleModel(box) {
+        const model = box.dataset.model;
+        const off = function() {
+            Editor.shown = Editor.shown.filter(item => item !== model);
+        };
+
+        if (box.checked) {
+            Editor.shown = [...new Set([...Editor.shown, model])];
+            showTab('report');
+            refreshModels().then(answer => answer.ok && showLevel(model));
+            return;
+        }
+
+        const ask = reportCard.querySelector(`template[data-ask="model-${model}"]`);
+
+        if (!ask) {
+            off();
+            refreshModels();
+            return;
+        }
+
+        box.checked = true;
+        Editor.ask(ask, box.closest('label'), function() {
+            off();
+            Editor.send('clear_model', {model}, {key: `model-${model}`});
+        });
+    }
+
+    /*
+     * A weight in the table or in part 3 of the open question stores at once, by itself: it is never part of a save of
+     * the question, so an older select in an open question cannot undo a choice made in the table. The value is the one
+     * chosen; a newer choice for the same question and model takes the place of a waiting one.
+     */
+    function setWeight(select) {
+        const {weight: model, questionId} = select.dataset;
+
+        Editor.send('set_weight', {question_id: questionId, model, weight: select.value}, {
+            key: `weight-${questionId}-${model}`,
+        });
+    }
+
+    root.addEventListener('change', function(event) {
+        const box = event.target.closest('[data-model]');
+        const select = event.target.closest('select[data-weight]');
+
+        if (box && reportCard.contains(box)) {
+            toggleModel(box);
+        } else if (select && select.dataset.questionId) {
+            setWeight(select);
         }
     });
 

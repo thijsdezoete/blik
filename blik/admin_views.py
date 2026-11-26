@@ -57,6 +57,7 @@ from questionnaires.editor import (
     MODELS,
     EditorError,
     add_section,
+    clear_model,
     editor_context,
     get_default_labels,
     languages_with_translation,
@@ -70,6 +71,7 @@ from questionnaires.editor import (
     save_question,
     save_section,
     set_did_not_observe,
+    set_weight,
     translated_into,
 )
 from questionnaires.models import Question, QuestionSection, Questionnaire
@@ -1350,12 +1352,31 @@ def _editor_action(request, questionnaire, action):
             request, questionnaire, [f'topic-{section.id}-head' for section in questionnaire.sections.all()],
         )
 
-    return editor_response(request, questionnaire, [])
+    # The weight and the models also show in part 3 of the open question
+    open_report = [f'question-{post["open"]}-report'] if post.get('open', '').isdigit() else []
+
+    if action == 'set_weight':
+        question = _posted_question(questionnaire, post)
+
+        try:
+            weight = float(post.get('weight', ''))
+        except ValueError:
+            raise EditorError(_('This weight is not possible.'))
+
+        set_weight(question, post.get('model'), weight)
+        return editor_response(request, questionnaire, ['report-card', f'question-{question.id}-report'])
+
+    if action == 'clear_model':
+        clear_model(questionnaire, post.get('model'))
+        return editor_response(request, questionnaire, ['report-card', *open_report])
+
+    # refresh: a model ticked or unticked changes the card and the open question
+    return editor_response(request, questionnaire, ['report-card', *open_report])
 
 
 EDITOR_ACTIONS = (
     'refresh', 'save_info', 'set_did_not_observe', 'add_section', 'save_section', 'delete_section', 'reorder',
-    'save_question', 'delete_question',
+    'save_question', 'delete_question', 'set_weight', 'clear_model',
 )
 
 

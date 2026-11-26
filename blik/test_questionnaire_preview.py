@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from accounts.models import UserProfile
-from accounts.permissions import assign_organization_member, ensure_permission_groups
+from accounts.permissions import assign_organization_admin, assign_organization_member, ensure_permission_groups
 from core.factories import OrganizationFactory, UserFactory
 from questionnaires.factories import QuestionFactory, QuestionnaireFactory, QuestionSectionFactory
 from questionnaires.models import QuestionTranslation
@@ -83,3 +83,45 @@ class QuestionnaireQuickPreviewTests(TestCase):
         response = self.client.get(reverse('questionnaire_preview', args=[empty.uuid]),
                                    {'fragment': 'questions'})
         self.assertContains(response, 'No sections yet')
+
+
+class BackToTheEditorTests(TestCase):
+    """A page that the editor opened leads back to the editor, for a user who may edit."""
+
+    def setUp(self):
+        ensure_permission_groups()
+        self.org = OrganizationFactory()
+        self.editor = UserFactory()
+        UserProfile.objects.create(user=self.editor, organization=self.org)
+        assign_organization_admin(self.editor)
+        self.member = UserFactory()
+        UserProfile.objects.create(user=self.member, organization=self.org)
+        assign_organization_member(self.member)
+        self.questionnaire = QuestionnaireFactory(organization=self.org, source_language='en')
+        self.edit_url = reverse('questionnaire_edit', args=[self.questionnaire.uuid])
+
+    def editor_url(self, user, page, query):
+        self.client.force_login(user)
+        response = self.client.get(reverse(page, args=[self.questionnaire.uuid]) + query, HTTP_HOST='localhost')
+
+        return response.context['editor_url']
+
+    def test_a_page_opened_from_the_editor_leads_back_to_it(self):
+        for page in ('questionnaire_preview', 'questionnaire_sample_report'):
+            with self.subTest(page=page):
+                self.assertEqual(self.editor_url(self.editor, page, '?from=editor'), self.edit_url)
+
+    def test_a_preview_in_another_language_leads_back_to_that_language_in_the_editor(self):
+        url = self.editor_url(self.editor, 'questionnaire_preview', '?from=editor&lang=de')
+
+        self.assertEqual(url, f'{self.edit_url}?lang=de')
+
+    def test_a_page_opened_from_the_list_leads_back_to_the_list(self):
+        for page in ('questionnaire_preview', 'questionnaire_sample_report'):
+            with self.subTest(page=page):
+                self.assertIsNone(self.editor_url(self.editor, page, ''))
+
+    def test_a_user_who_may_not_edit_is_never_sent_to_the_editor(self):
+        for page in ('questionnaire_preview', 'questionnaire_sample_report'):
+            with self.subTest(page=page):
+                self.assertIsNone(self.editor_url(self.member, page, '?from=editor'))

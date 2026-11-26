@@ -19,7 +19,11 @@
         <h1>{% trans 'Sample Report' %}</h1>
         <p style="color: var(--text-secondary);">{{ questionnaire.name }} · {{ questionnaire.report_type_label }}</p>
     </div>
+    {% if editor_url %}
+    <a href="{{ editor_url }}" class="btn btn-secondary">{% trans 'Back to the editor' %}</a>
+    {% else %}
     <a href="{% url 'questionnaire_list' %}" class="btn btn-secondary">{% trans 'Back to Questionnaires' %}</a>
+    {% endif %}
 </div>
 
 <div class="card" style="margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">

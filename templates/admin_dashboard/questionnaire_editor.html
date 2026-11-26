@@ -26,7 +26,7 @@
             {% if not language %}
             <button type="button" class="btn btn-secondary" data-act="settings" aria-expanded="false">{% trans 'Settings' %}</button>
             {% endif %}
-            <button type="button" class="btn btn-secondary" data-act="open-tab" data-href="{% url 'questionnaire_preview' questionnaire.uuid %}{% if language %}?lang={{ language }}{% endif %}">{% trans 'Try the whole questionnaire' %}</button>
+            <button type="button" class="btn btn-secondary" data-act="open-tab" data-href="{% url 'questionnaire_preview' questionnaire.uuid %}?from=editor{% if language %}&amp;lang={{ language }}{% endif %}">{% trans 'Try the whole questionnaire' %}</button>
             <button type="button" class="btn btn-primary" data-act="leave" data-href="{% url 'questionnaire_list' %}">{% trans 'Done' %}</button>
         </div>
     </div>

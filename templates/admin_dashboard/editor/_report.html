@@ -76,4 +76,4 @@
     {% endif %}
 </div>
 {% endwith %}{% endif %}{% endfor %}
-<button type="button" class="btn btn-sm btn-secondary" style="margin-top: 1.5rem;" data-act="open-tab" data-href="{% url 'questionnaire_sample_report' questionnaire.uuid %}">{% trans 'See the full sample report' %}</button>
+<button type="button" class="btn btn-sm btn-secondary" style="margin-top: 1.5rem;" data-act="open-tab" data-href="{% url 'questionnaire_sample_report' questionnaire.uuid %}?from=editor">{% trans 'See the full sample report' %}</button>

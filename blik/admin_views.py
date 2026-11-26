@@ -963,6 +963,23 @@ def questionnaire_list(request):
     return render(request, 'admin_dashboard/questionnaire_list.html', context)
 
 
+def editor_url_for(request, questionnaire, language=None):
+    """The address of the questionnaire editor, for a page the editor opened (?from=editor) and a user who may edit.
+
+    None for every other visit: the page then leads back to the list.
+    """
+
+    if request.GET.get('from') != 'editor' or not request.user.has_perm('accounts.can_manage_questionnaires'):
+        return None
+
+    url = reverse('questionnaire_edit', args=[questionnaire.uuid])
+
+    if language and language != questionnaire.source_language:
+        return f'{url}?lang={language}'
+
+    return url
+
+
 @login_required
 def questionnaire_preview(request, questionnaire_uuid):
     """Preview a questionnaire in its source language, or in the language that ?lang= picks."""
@@ -973,12 +990,14 @@ def questionnaire_preview(request, questionnaire_uuid):
     if not is_language(language):
         language = questionnaire.source_language
 
+    editor_url = editor_url_for(request, questionnaire, language)
     questionnaire = questionnaire.translated(language)
 
     context = {
         'questionnaire': questionnaire,
         'sections': questionnaire.sections.all(),
         'preview_language': language,
+        'editor_url': editor_url,
     }
 
     if request.GET.get('fragment') == 'questions':
@@ -1084,6 +1103,7 @@ def questionnaire_sample_report(request, questionnaire_uuid):
         'overall_score': overall_score,
         'insights': insights,
         'chart_data': {'section_scores': section_scores},
+        'editor_url': editor_url_for(request, questionnaire),
     }
 
     return render(request, 'admin_dashboard/questionnaire_sample_report.html', context)

@@ -130,6 +130,35 @@ class EditorTopicTests(TestCase):
         self.q.refresh_from_db()
         self.assertEqual(self.q.source_language, 'en')
 
+    def test_the_default_box_moves_the_default_of_the_organization_to_this_questionnaire(self):
+        organization = self.q.organization
+        before = Questionnaire.objects.create(name='Old default', organization=organization, is_default=True)
+        elsewhere = Questionnaire.objects.create(
+            name='Other default', organization=Organization.objects.create(name='Other', email='org@other.example'),
+            is_default=True,
+        )
+        template = Questionnaire.objects.create(name='Template', organization=None, is_default=True)
+        info = {'action': 'save_info', 'name': 'Team lead 360', 'description': '', 'source_language': 'en'}
+
+        self.assertTrue(self.post(**info, is_default='on').json()['ok'])
+
+        defaults = Questionnaire.objects.filter(organization=organization, is_default=True)
+        self.assertEqual(list(defaults), [self.q])
+        # The start of a cycle offers the default first, and marks only that one
+        form = self.client.get(reverse('review_cycle_create')).content.decode()
+        self.assertEqual(form.count('(Default)'), 1)
+        self.assertLess(form.index('Team lead 360'), form.index('Old default'))
+        # Another organization and the shipped templates keep theirs
+        elsewhere.refresh_from_db()
+        template.refresh_from_db()
+        self.assertTrue(elsewhere.is_default and template.is_default)
+
+        # The page sends an empty value for a box that is not ticked: then the organization has no default
+        self.assertTrue(self.post(**info, is_default='').json()['ok'])
+        self.assertFalse(Questionnaire.objects.filter(organization=organization, is_default=True).exists())
+        before.refresh_from_db()
+        self.assertFalse(before.is_default)
+
     def test_a_new_order_is_stored_and_answered(self):
         second = self.add_scored_topic('Collaboration', 1)
         layout = [

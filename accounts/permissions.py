@@ -486,6 +486,36 @@ def creatable_reviewees(user, org):
     return reviewees.annotate(email_lower=Lower('email')).filter(email_lower__in=scope)
 
 
+def reviewee_page_access(user, organization, reviewee):
+    """
+    What this user may see and do on the page of one reviewee, or None for a 404.
+
+    No rule of its own: it joins what the user may do elsewhere. `reader` is
+    which version of the results the user gets. A reviewee of another
+    organization is never reachable.
+    """
+    if reviewee.organization_id != organization.id:
+        return None
+
+    email = (reviewee.email or '').lower()
+    if can_view_all_reports(user):
+        reader = 'all'
+    elif email in direct_report_emails(user, organization):
+        reader = 'manager'
+    elif email and email == (user.email or '').lower():
+        reader = 'own'
+    else:
+        return None
+
+    can_manage = user.has_perm('accounts.can_manage_organization')
+    return {
+        'manage': can_manage,
+        'setup': creatable_reviewees(user, organization).filter(pk=reviewee.pk).exists(),
+        'chart': can_manage,
+        'reader': reader,
+    }
+
+
 def managers_without_account(organization):
     """
     The managers in the org chart who cannot log in: no account in this

@@ -559,6 +559,8 @@
     Editor.ask = function(template, anchor, run) {
         openAsk?.remove();
 
+        // The control that opened the box gets the focus back when the creator keeps things as they are
+        const opener = document.activeElement;
         const box = document.createElement('div');
         const content = document.createElement('div');
         box.className = 'alert alert-warning';
@@ -580,7 +582,13 @@
             close();
             run();
         });
-        back.addEventListener('click', close);
+        back.addEventListener('click', function() {
+            close();
+
+            if (opener?.isConnected && opener !== document.body) {
+                opener.focus();
+            }
+        });
         anchor.after(box);
         openAsk = box;
         box.scrollIntoView({block: 'nearest'});
@@ -614,16 +622,20 @@
 
     function closeTopic(card) {
         const group = card.querySelector('[data-topic-edit]');
+        const close = function() {
+            setEditing(card, false);
+            card.querySelector('[data-act="edit-topic"]').focus();
+        };
 
         if (!group.querySelector('[data-dirty]')) {
-            setEditing(card, false);
+            close();
             return;
         }
 
         // A title that is refused stays open, with the message in the save state
         saveGroup(group.dataset.saveKey).then(function(answer) {
             if (answer.ok) {
-                setEditing(card, false);
+                close();
             }
         });
     }
@@ -1215,6 +1227,7 @@
 
                 if (answer && item.isConnected) {
                     showForm(item, answer.html);
+                    field(questionForm(item), 'question_text').focus();
                 } else {
                     Editor.open = '';
                 }
@@ -1331,6 +1344,8 @@
 
     function closeForm(item, form) {
         const row = item.querySelector(':scope > [data-slot]');
+        // A close by another control (a header button, another question) leaves the focus there
+        const focused = form.contains(document.activeElement);
 
         openItem = null;
         Editor.open = '';
@@ -1347,6 +1362,10 @@
 
         if (row) {
             row.hidden = false;
+
+            if (focused) {
+                row.querySelector('[data-act="open-question"]')?.focus();
+            }
         }
     }
 
@@ -1469,7 +1488,12 @@
         }
 
         root.querySelectorAll('[data-tab]').forEach(function(tab) {
-            tab.toggleAttribute('aria-current', tab.dataset.tab === name);
+            const selected = tab.dataset.tab === name;
+
+            tab.setAttribute('aria-selected', `${selected}`);
+            // The look main.css gives a selected stage tab by aria-current
+            tab.style.color = selected ? 'var(--primary)' : '';
+            tab.style.borderBottomColor = selected ? 'var(--primary)' : '';
         });
         panels.forEach(panel => { panel.hidden = panel.dataset.panel !== name; });
         drawChart();

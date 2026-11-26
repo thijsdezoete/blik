@@ -30,15 +30,18 @@
 
         {# 2. Answer #}
         <div class="form-group">
-            <span class="form-label">{% trans 'Answer' context 'noun' %}</span>
-            <div data-type-choice style="display: flex; flex-wrap: wrap; gap: 0 1.25rem;">
-                {% for type, name in answer_types.items %}
-                <label class="form-check">
-                    <input type="radio" class="form-check-input" name="question_type" value="{{ type }}"{% if type == question.question_type %} checked{% endif %}{% if question.answer_count and type != question.question_type %}{% if type == 'rating' or type == 'scale' %} disabled{% endif %}{% endif %}>
-                    <span data-type-name>{{ name }}</span>
-                </label>
-                {% endfor %}
-            </div>
+            {# One group with a name for screen readers; without the border and space of a fieldset #}
+            <fieldset style="border: 0; padding: 0; margin: 0; min-width: 0;">
+                <legend class="form-label" style="padding: 0;">{% trans 'Answer' context 'noun' %}</legend>
+                <div data-type-choice style="display: flex; flex-wrap: wrap; gap: 0 1.25rem;">
+                    {% for type, name in answer_types.items %}
+                    <label class="form-check">
+                        <input type="radio" class="form-check-input" name="question_type" value="{{ type }}"{% if type == question.question_type %} checked{% endif %}{% if question.answer_count and type != question.question_type %}{% if type == 'rating' or type == 'scale' %} disabled{% endif %}{% endif %}>
+                        <span data-type-name>{{ name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </fieldset>
             {% if question.answer_count %}
             {# Reviewers' answers would be read as numbers of another scale #}
             <span class="help-text" data-types="text likert single_choice multiple_choice">{% trans 'Reviewers already answered this question, so it cannot become a Score or a Slider. Add a new question for that.' %}</span>

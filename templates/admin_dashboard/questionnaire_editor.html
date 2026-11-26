@@ -55,14 +55,15 @@
 
         <div class="card editor-preview">
             <div class="card-header" style="padding-top: 0; padding-bottom: 0;">
-                <nav class="stage-tabs" style="border-bottom: 0;">
-                    <button type="button" class="stage-tab" data-tab="reviewer" aria-current="page" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer;">{% trans 'What the reviewer sees' %}</button>
-                    <button type="button" class="stage-tab" data-tab="report" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer;">{% trans 'What the report shows' %}</button>
+                {# main.css marks the selected stage tab by aria-current, which a tab does not have: the script sets its look #}
+                <nav class="stage-tabs" style="border-bottom: 0;" role="tablist">
+                    <button type="button" class="stage-tab" id="editor-tab-reviewer" role="tab" aria-selected="true" aria-controls="editor-panel-reviewer" data-tab="reviewer" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer; color: var(--primary); border-bottom-color: var(--primary);">{% trans 'What the reviewer sees' %}</button>
+                    <button type="button" class="stage-tab" id="editor-tab-report" role="tab" aria-selected="false" aria-controls="editor-panel-report" data-tab="report" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer;">{% trans 'What the report shows' %}</button>
                 </nav>
             </div>
             <div class="card-body">
-                <div data-panel="reviewer" data-slot="reviewer">{% include 'admin_dashboard/editor/_reviewer.html' %}</div>
-                <div data-panel="report" data-slot="report" hidden>{% include 'admin_dashboard/editor/_report.html' %}</div>
+                <div id="editor-panel-reviewer" role="tabpanel" aria-labelledby="editor-tab-reviewer" data-panel="reviewer" data-slot="reviewer">{% include 'admin_dashboard/editor/_reviewer.html' %}</div>
+                <div id="editor-panel-report" role="tabpanel" aria-labelledby="editor-tab-report" data-panel="report" data-slot="report" hidden>{% include 'admin_dashboard/editor/_report.html' %}</div>
             </div>
         </div>
     </div>

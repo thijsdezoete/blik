@@ -1,7 +1,8 @@
 # Translations
 
 Blik's interface is translated with Django's gettext tools. This guide covers where the
-translations live, how to update the catalogues, how to mark texts, and the conventions for German.
+translations live, how to update the catalogues, how to mark texts, and the conventions and terms
+for each language.
 
 ## What is translated where
 
@@ -244,6 +245,65 @@ Use the same term throughout:
 | Agency | capacità di iniziativa | the second Dreyfus dimension next to skill |
 | Anonymity threshold | soglia di anonimato | |
 | Settings | impostazioni | |
+| Dashboard | dashboard | |
+
+## Dutch
+
+Dutch addresses the reader with *je*. There is no variant with *u*.
+
+- Buttons, menu items and titles of actions are in the infinitive: "Opslaan", "Rapport openen".
+  Instructions and running text use the imperative or *je*: "Beantwoord alle verplichte vragen
+  voordat je verdergaat."
+- Headings and labels are in sentence case: "Niveau van initiatief", not "Niveau Van Initiatief".
+- Write "e-mail". Emails are *verzonden*. Only feedback and a product review are *verstuurd*
+  ("Feedback versturen").
+- Don't use *zijn/haar*. Rephrase, use the name, or use *hun*.
+- A text does not say that an email is in a queue or an outbox. It says when the email goes out:
+  "De uitnodiging wordt binnen enkele minuten verzonden."
+
+## Dutch terms
+
+Use the same term throughout:
+
+| English | Dutch | Notes |
+|---|---|---|
+| Review cycle, cycle | feedbackronde | plural: feedbackrondes; a closed cycle is "afgesloten" |
+| Test cycle (on yourself) | proefronde | |
+| Trial | proefperiode | |
+| Review (what a reviewer gives) | feedback | no plural: "3 keer feedback", "openstaand feedbackverzoek" |
+| 360 review, 360-degree feedback | 360-gradenfeedback | |
+| Reviewee | feedbackontvanger | plural: feedbackontvangers |
+| Reviewer | feedbackgever | plural: feedbackgevers |
+| Questionnaire | vragenlijst | |
+| Report | rapport | |
+| Self-assessment, self | zelfevaluatie, Zelf | not "zelfbeoordeling" |
+| Peer | collega | plural: collega's |
+| Manager | leidinggevende | plural: leidinggevenden |
+| Direct report | medewerker die aan je rapporteert | plural: medewerkers die aan je rapporteren; about another person: "die aan %(name)s rapporteert"; never "directe medewerker" |
+| Direct reports (short label next to manager and peers) | Medewerkers | "Leidinggevende, collega's en medewerkers" |
+| Others' average | gemiddelde van de anderen | |
+| User | gebruiker | |
+| Team member | teamlid | |
+| Organization | organisatie | |
+| Admin, organization admin | beheerder, organisatiebeheerder | |
+| Department | afdeling | |
+| Org chart, unit | organogram, afdeling | a unit is an "afdeling" too; where a text has both, the department is the "afdelingsnaam" from the CSV file |
+| Invitation, invite link | uitnodiging, uitnodigingslink | |
+| Access token | toegangstoken | |
+| Response, answer | antwoord | not "reactie" |
+| Perception gap | perceptieverschil | |
+| Blind spot | blinde vlek | |
+| Strengths, development areas | sterke punten, ontwikkelpunten | |
+| Skill, skill level | vaardigheid, vaardigheidsniveau | |
+| Agency, initiative | initiatief | the second Dreyfus dimension next to skill; about a person: "initiatiefrijk" |
+| Ownership | eigenaarschap | |
+| Dreyfus stages | Beginner, Gevorderde beginner, Competent, Bekwaam, Expert | Novice, Advanced Beginner, Competent, Proficient, Expert |
+| Anonymity threshold | anonimiteitsdrempel | |
+| GDPR | AVG | |
+| Queued, goes out | wordt binnen enkele minuten verzonden | no word for the outbox |
+| Plan, upgrade your plan | abonnement, abonnement upgraden | |
+| Billing | facturering | |
+| Settings | instellingen | |
 | Dashboard | dashboard | |
 
 ## Adding a language

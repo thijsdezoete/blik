@@ -3,7 +3,8 @@ from django.urls import reverse
 
 from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, RevieweeFactory, UserProfileFactory
 from accounts.models import ReviewSetup, Reviewee
-from accounts.permissions import assign_organization_admin, assign_organization_member
+from accounts.permissions import assign_organization_admin, assign_organization_member, set_user_permission
+from core.factories import OrganizationFactory
 from questionnaires.factories import QuestionnaireFactory
 from reviews.models import ReviewCycle, ReviewerToken
 from reviews.setup import save_review_setup
@@ -124,6 +125,38 @@ class RevieweeDetailTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'dana@acme.example')
         self.assertNotContains(response, 'casey@acme.example')
+        self.assertNotContains(response, 'Casey Jones')
+
+    def test_report_reader_without_create_right_cannot_save(self):
+        reader = self.member()
+        set_user_permission(reader, 'can_view_all_reports', True)
+        self.client.force_login(reader)
+
+        response = self.post('save', peer_emails='dana@acme.example')
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(ReviewSetup.objects.exists())
+
+    def test_invalid_questionnaire_saves_nothing(self):
+        other = QuestionnaireFactory(organization=OrganizationFactory())
+        archived = QuestionnaireFactory(organization=self.org, is_active=False)
+
+        for questionnaire in (other, archived):
+            for action in ('save', 'start'):
+                with self.subTest(questionnaire=questionnaire.name, action=action):
+                    self.post(action, questionnaire=questionnaire.id, peer_emails='dana@acme.example')
+        self.assertFalse(ReviewSetup.objects.exists())
+        self.assertFalse(ReviewCycle.objects.exists())
+
+    def test_create_goes_to_the_list_for_a_user_who_cannot_open_the_page(self):
+        inviter = self.member()
+        set_user_permission(inviter, 'can_invite_members', True)
+        self.client.force_login(inviter)
+
+        response = self.client.post(reverse('reviewee_create'), {'name': 'Dana Visser', 'email': 'dana@acme.example'})
+
+        self.assertTrue(Reviewee.objects.filter(email='dana@acme.example').exists())
+        self.assertRedirects(response, reverse('reviewee_list'), fetch_redirect_response=False)
 
     def test_reviewee_can_save_their_own_list_by_email(self):
         self.client.force_login(self.member(email='alex@acme.example'))

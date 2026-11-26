@@ -651,6 +651,9 @@ def reviewee_create(request):
                         place_in_department(organization, reviewee, department, manager,
                                             leads=request.POST.get('department_lead') == '1')
                 messages.success(request, _('Reviewee "%(name)s" created successfully.') % {'name': reviewee.name})
+                # One who may add people but not read about them cannot open the page.
+                if reviewee_page_access(request.user, organization, reviewee) is None:
+                    return redirect('reviewee_list')
                 return redirect('reviewee_detail', reviewee_uuid=reviewee.uuid)
             except Exception as e:
                 messages.error(request, _('Error creating reviewee: %(error)s') % {'error': str(e)})

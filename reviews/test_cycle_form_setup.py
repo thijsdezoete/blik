@@ -5,6 +5,8 @@ from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, Reviewe
 from accounts.models import ReviewSetup
 from accounts.permissions import assign_organization_admin, assign_organization_member
 from questionnaires.factories import QuestionnaireFactory
+from subscriptions.testing import grant
+from reviews.models import ReviewCycle
 from reviews.setup import save_review_setup
 
 NO_PEOPLE = {'manager': [], 'peer': [], 'direct_report': []}
@@ -12,7 +14,7 @@ NO_EMAILS = {'manager': [], 'peer': [], 'direct_report': []}
 ALL_FLAGS = {'include_self': True, 'include_manager': True, 'include_peer': True, 'include_direct_report': True}
 
 
-class CycleFormSetupTests(TestCase):
+class CycleFormSaveTests(TestCase):
     def setUp(self):
         self.profile = UserProfileFactory()
         self.user = self.profile.user
@@ -29,10 +31,6 @@ class CycleFormSetupTests(TestCase):
             'categories_submitted': '1', 'include_self': 'on', 'include_manager': 'on', 'include_peer': 'on',
             **fields,
         })
-
-    def fill(self, **params):
-        return self.client.get(
-            reverse('derive_reviewers_for_cycle'), {'reviewee': self.alex.uuid, **params}).json()
 
     def save_list(self, people=None, emails=None, flags=None):
         save_review_setup(
@@ -55,6 +53,44 @@ class CycleFormSetupTests(TestCase):
         self.post_form()
 
         self.assertFalse(ReviewSetup.objects.exists())
+
+
+    def test_a_failed_cycle_creation_saves_no_list(self):
+        grant(self.org, 0)
+
+        self.post_form(manager_reviewees=[str(self.blair.uuid)], peer_emails='dana@acme.example')
+
+        self.assertFalse(ReviewSetup.objects.exists())
+        self.assertFalse(ReviewCycle.objects.exists())
+
+    def test_an_anonymous_request_to_the_form_goes_to_the_login_page(self):
+        self.client.logout()
+
+        response = self.client.post(reverse('review_cycle_create'), {'creation_mode': 'single'})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('login', response['Location'])
+
+
+class FillEndpointTests(TestCase):
+    def setUp(self):
+        self.profile = UserProfileFactory()
+        self.user = self.profile.user
+        self.org = self.profile.organization
+        assign_organization_admin(self.user)
+        self.client.force_login(self.user)
+        self.questionnaire = QuestionnaireFactory(organization=self.org, is_default=True)
+        self.alex = RevieweeFactory(organization=self.org, name='Alex Morgan', email='alex@acme.example')
+        self.blair = RevieweeFactory(organization=self.org, name='Blair Chen', email='blair@acme.example')
+
+    def fill(self, **params):
+        return self.client.get(
+            reverse('derive_reviewers_for_cycle'), {'reviewee': self.alex.uuid, **params}).json()
+
+    def save_list(self, people=None, emails=None, flags=None):
+        save_review_setup(
+            self.alex, self.questionnaire, flags or ALL_FLAGS,
+            {**NO_PEOPLE, **(people or {})}, {**NO_EMAILS, **(emails or {})})
 
     def test_the_fill_endpoint_gives_the_saved_list_before_the_org_chart(self):
         self.save_list(

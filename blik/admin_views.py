@@ -211,6 +211,11 @@ def posted_setup(request, organization, categories):
     return people, emails, warnings
 
 
+def posted_emails(people, emails):
+    """The posted people and emails of each category as one list of emails."""
+    return {code: [p.email.strip().lower() for p in people[code]] + emails[code] for code in people}
+
+
 def collect_reviewer_emails(request, organization, categories):
     """
     The reviewer selections of the cycle form as {category: [email, ...]},
@@ -221,9 +226,7 @@ def collect_reviewer_emails(request, organization, categories):
     Returns (email_assignments, warnings).
     """
     people, emails, warnings = posted_setup(request, organization, categories)
-    return {
-        code: [p.email.strip().lower() for p in people[code]] + emails[code] for code in people
-    }, warnings
+    return posted_emails(people, emails), warnings
 
 
 @login_required
@@ -1987,7 +1990,6 @@ def review_cycle_bulk_preview(request):
     return JsonResponse({'count': count, 'skipped': skipped, 'message': ' '.join(parts)})
 
 
-@login_required
 def create_single_cycle(request, reviewee, questionnaire, category_flags, email_assignments, send_now):
     """
     Create the cycle of one reviewee with a token per reviewer email, put the
@@ -2019,6 +2021,7 @@ def create_single_cycle(request, reviewee, questionnaire, category_flags, email_
     return cycle
 
 
+@login_required
 def review_cycle_create(request):
     """Create a new review cycle (single or bulk)"""
     if request.method == 'POST':
@@ -2134,14 +2137,13 @@ def review_cycle_create(request):
                 # hand-made POST must not reinstate them.
                 active = [c for c in CATEGORY_ORDER if category_flags.get(f'include_{c}', True)]
                 people, emails, warnings = posted_setup(request, org, active)
-                email_assignments = {
-                    code: [p.email.strip().lower() for p in people[code]] + emails[code] for code in people}
+                email_assignments = posted_emails(people, emails)
+                for w in warnings:
+                    messages.warning(request, w)
                 send_now = request.POST.get('send_invitations_now') == '1'
 
                 cycle = create_single_cycle(
                     request, reviewee, questionnaire, category_flags, email_assignments, send_now)
-                for w in warnings:
-                    messages.warning(request, w)
 
                 # The list of the reviewee is what the form sent, once the cycle stands.
                 listed = ('manager', 'peer', 'direct_report')

@@ -4,7 +4,7 @@
     <label for="question-{{ question.pk|default:'new' }}-label-{{ row.value }}" style="width: 1.5rem; margin: 0; color: var(--text-secondary);">{{ row.value }}</label>
     <input id="question-{{ question.pk|default:'new' }}-label-{{ row.value }}" type="text" class="form-control" style="flex: 1;" name="rating_label_{{ row.value }}" value="{{ row.label }}">
     {% if values.rating_count != 5 %}
-    <span class="help-text" style="margin: 0; white-space: nowrap; width: 6.5rem;">{% trans 'counts as' %} {{ row.counts_as|floatformat:"-1" }}</span>
+    <span class="help-text" style="margin: 0; white-space: nowrap; width: 6.5rem;">{% blocktrans trimmed with score=row.counts_as|floatformat:"-1" %}counts as {{ score }}{% endblocktrans %}</span>
     {% endif %}
 </div>
 {% endfor %}

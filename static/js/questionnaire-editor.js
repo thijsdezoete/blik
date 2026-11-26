@@ -1040,7 +1040,8 @@
         const rows = group => answerRows(form, group);
         const show = function(row, score) {
             const span = row.querySelector('[data-counts-as]');
-            span.textContent = `${span.dataset.text} ${numbers.format(score)}`;
+            // One translated sentence with the place of the score in it
+            span.textContent = span.dataset.text.replace('%(score)s', numbers.format(score));
         };
 
         form.querySelectorAll('[data-counts-as]').forEach(span => { span.textContent = ''; });

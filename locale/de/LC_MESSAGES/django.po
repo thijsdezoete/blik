@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 10:57+0000\n"
+"POT-Creation-Date: 2026-11-26 11:35+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1088,12 +1088,6 @@ msgstr "Fragebogen „%(name)s“ gelöscht."
 #, python-format
 msgid "Questionnaire \"%(name)s\" restored."
 msgstr "Fragebogen „%(name)s“ wiederhergestellt."
-
-msgid "Question not found"
-msgstr "Frage nicht gefunden"
-
-msgid "Internal server error"
-msgstr "Interner Serverfehler"
 
 msgid "Newest first"
 msgstr "Neueste zuerst"
@@ -2197,6 +2191,9 @@ msgstr "Feedbackgebende haben diese Frage bereits beantwortet, daher bleibt die 
 
 msgid "A question of this type needs answers. Add at least two."
 msgstr "Eine Frage dieses Typs braucht Antworten. Mindestens zwei hinzufügen."
+
+msgid "A score must be a number."
+msgstr "Eine Bewertung muss eine Zahl sein."
 
 #, python-format
 msgid "This text is too long. Use at most %(count)s characters."
@@ -4931,8 +4928,9 @@ msgstr "Diese Maßnahme entfernen"
 msgid "Only for these stages (optional):"
 msgstr "Nur für diese Stufen (optional):"
 
-msgid "counts as"
-msgstr "zählt als"
+#, python-format
+msgid "counts as %(score)s"
+msgstr "zählt als %(score)s"
 
 msgid "Remove this answer"
 msgstr "Diese Antwort entfernen"
@@ -5399,11 +5397,11 @@ msgstr "Thema löschen"
 
 #, python-format
 msgid "You translate into %(language)s. Each row has the original text on the left and your translation on the right. The example on the right of the page shows the form in %(language)s."
-msgstr "Zielsprache: %(language)s. Jede Zeile zeigt links den Originaltext und rechts die Übersetzung. Das Beispiel rechts auf der Seite zeigt das Formular auf %(language)s."
+msgstr "Zielsprache: %(language)s. Jede Zeile zeigt links den Originaltext und rechts die Übersetzung. Das Beispiel rechts auf der Seite zeigt das Formular in der Sprache %(language)s."
 
 #, python-format
 msgid "You change topics, questions, answer types and the report choices in %(source)s, the first tab above. A text without a translation shows in %(source)s to reviewers."
-msgstr "Themen, Fragen, Antworttypen und die Auswahl für den Bericht lassen sich nur in %(source)s ändern, dem ersten Tab oben. Ein Text ohne Übersetzung erscheint für Feedbackgebende auf %(source)s."
+msgstr "Themen, Fragen, Antworttypen und die Auswahl für den Bericht lassen sich in der Originalsprache (%(source)s) ändern, im ersten Tab oben. Ein Text ohne Übersetzung erscheint für Feedbackgebende in der Originalsprache (%(source)s)."
 
 msgid "Show only texts that are missing or outdated"
 msgstr "Nur fehlende oder veraltete Texte zeigen"
@@ -6645,6 +6643,9 @@ msgstr "Alle Änderungen gespeichert"
 
 msgid "Not saved. Trying again."
 msgstr "Nicht gespeichert. Wird erneut versucht."
+
+msgid "You are logged out. Log in again in another tab. This page then saves by itself."
+msgstr "Die Anmeldung ist abgelaufen. In einem anderen Tab neu anmelden. Diese Seite speichert danach von selbst."
 
 msgid "Try the whole questionnaire"
 msgstr "Ganzen Fragebogen ausprobieren"
@@ -9575,8 +9576,8 @@ msgid "Question Format:"
 msgstr "Fragetyp:"
 
 #, python-format
-msgid "1 to %(max)s"
-msgstr "1 bis %(max)s"
+msgid "Rating scale: 1 to %(max)s"
+msgstr "Bewertungsskala: 1 bis %(max)s"
 
 msgid "Likert scale options:"
 msgstr "Optionen der Likert-Skala:"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 10:57+0000\n"
+"POT-Creation-Date: 2026-11-26 11:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1099,12 +1099,6 @@ msgstr "Vragenlijst \"%(name)s\" verwijderd."
 #, python-format
 msgid "Questionnaire \"%(name)s\" restored."
 msgstr "Vragenlijst \"%(name)s\" hersteld."
-
-msgid "Question not found"
-msgstr "Vraag niet gevonden"
-
-msgid "Internal server error"
-msgstr "Interne serverfout"
 
 msgid "Newest first"
 msgstr "Nieuwste eerst"
@@ -2208,6 +2202,9 @@ msgstr "Feedbackgevers hebben deze vraag al beantwoord, dus het aantal opties bl
 
 msgid "A question of this type needs answers. Add at least two."
 msgstr "Een vraag van dit type heeft antwoorden nodig. Voeg er minstens twee toe."
+
+msgid "A score must be a number."
+msgstr "Een score moet een getal zijn."
 
 #, python-format
 msgid "This text is too long. Use at most %(count)s characters."
@@ -4940,8 +4937,9 @@ msgstr "Dit actiepunt verwijderen"
 msgid "Only for these stages (optional):"
 msgstr "Alleen voor deze fasen (optioneel):"
 
-msgid "counts as"
-msgstr "telt als"
+#, python-format
+msgid "counts as %(score)s"
+msgstr "telt als %(score)s"
 
 msgid "Remove this answer"
 msgstr "Dit antwoord verwijderen"
@@ -6654,6 +6652,9 @@ msgstr "Alle wijzigingen opgeslagen"
 
 msgid "Not saved. Trying again."
 msgstr "Niet opgeslagen. Er wordt opnieuw geprobeerd."
+
+msgid "You are logged out. Log in again in another tab. This page then saves by itself."
+msgstr "Je bent uitgelogd. Log opnieuw in op een ander tabblad. Deze pagina slaat daarna vanzelf op."
 
 msgid "Try the whole questionnaire"
 msgstr "Hele vragenlijst uitproberen"
@@ -9581,8 +9582,8 @@ msgid "Question Format:"
 msgstr "Vraagtype:"
 
 #, python-format
-msgid "1 to %(max)s"
-msgstr "1 tot en met %(max)s"
+msgid "Rating scale: 1 to %(max)s"
+msgstr "Beoordelingsschaal: 1 tot en met %(max)s"
 
 msgid "Likert scale options:"
 msgstr "Opties van de Likertschaal:"

@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 14:34+0000\n"
+"POT-Creation-Date: 2026-11-26 23:50+0000\n"
 "Language: de_Informal\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1006,6 +1006,80 @@ msgstr ""
 msgid "Reviewee \"%(name)s\" deactivated."
 msgstr ""
 
+msgid "Self assessment"
+msgstr ""
+
+msgid "The reviewee rates themselves"
+msgstr ""
+
+msgid "Manager review"
+msgstr ""
+
+msgid "Direct manager or supervisor"
+msgstr ""
+
+msgid "Search for a manager…"
+msgstr ""
+
+msgid "Manager"
+msgstr ""
+
+msgid "Peer review"
+msgstr ""
+
+msgid "Colleagues at the same level"
+msgstr ""
+
+msgid "Search for a peer…"
+msgstr ""
+
+msgid "Peers"
+msgstr ""
+
+msgid "Direct report review"
+msgstr ""
+
+msgid "People who report to this reviewee"
+msgstr ""
+
+msgid "Search for a direct report…"
+msgstr ""
+
+msgid "Direct Reports"
+msgstr ""
+
+#, python-format
+msgid "%(count)s change saved in the org chart."
+msgid_plural "%(count)s changes saved in the org chart."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Questionnaire is required."
+msgstr ""
+
+msgid "Reviewers saved."
+msgstr ""
+
+msgid "Select at least one feedback category."
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes."
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails."
+msgstr ""
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\". The reviewee's emails go out within about five minutes."
+msgstr ""
+
+#. Translators: the word between the last two names of a list, as in "Sara Koster, Tom Bakker and Lena Visser".
+msgctxt "joins the last two names of a list"
+msgid "and"
+msgstr ""
+
 msgid "You do not have permission to create reviewees."
 msgstr ""
 
@@ -1018,13 +1092,11 @@ msgstr ""
 msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
 msgstr ""
 
-msgid "Questionnaire is required."
-msgstr ""
-
 msgid "Invalid questionnaire selected."
 msgstr ""
 
-msgid "Select at least one feedback category."
+#, python-format
+msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Took %(count)s reviewer(s) from the saved list. %(queued)s invitation email(s) go out within about five minutes."
 msgstr ""
 
 #, python-format
@@ -1151,18 +1223,6 @@ msgid "Reviewee is required for single cycle creation."
 msgstr ""
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes."
-msgstr ""
-
-#, python-format
-msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails."
-msgstr ""
-
-#, python-format
-msgid "Review cycle created for \"%(name)s\". The reviewee's emails go out within about five minutes."
-msgstr ""
-
-#, python-format
 msgid "Error creating review cycle: %(error)s"
 msgstr ""
 
@@ -1216,6 +1276,12 @@ msgstr ""
 
 #, python-format
 msgid "Successfully assigned %(assigned)s email(s). No invitations sent yet."
+msgstr ""
+
+msgid "The invitations that were not sent yet go out within about five minutes."
+msgstr ""
+
+msgid "Everyone who was invited and has not answered yet gets a reminder within about five minutes."
 msgstr ""
 
 #, python-format
@@ -1478,6 +1544,12 @@ msgstr ""
 
 msgid "You do not have permission to edit the org chart."
 msgstr ""
+
+#, python-format
+msgid "%(count)d person placed in the org chart."
+msgid_plural "%(count)d people placed in the org chart."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Choose a CSV file."
 msgstr ""
@@ -3126,18 +3198,6 @@ msgstr ""
 msgid "links email attempts"
 msgstr ""
 
-msgid "Self assessment"
-msgstr ""
-
-msgid "Peer review"
-msgstr ""
-
-msgid "Manager review"
-msgstr ""
-
-msgid "Direct report review"
-msgstr ""
-
 msgid "self assessment invitation token"
 msgstr ""
 
@@ -3290,9 +3350,6 @@ msgid "Self"
 msgstr ""
 
 msgid "Peer"
-msgstr ""
-
-msgid "Manager"
 msgstr ""
 
 msgid "Direct Report"
@@ -4220,9 +4277,6 @@ msgid "You can also skip for now and send individual invitations later from the 
 msgstr "Du kannst diesen Schritt auch überspringen und Einladungen später einzeln aus der Liste der Feedbackrunden senden."
 
 msgid "Reviewee"
-msgstr ""
-
-msgid "Peers"
 msgstr ""
 
 msgid "Direct reports"
@@ -5716,24 +5770,6 @@ msgstr ""
 msgid "Manager/Supervisor"
 msgstr ""
 
-msgid "Search for a manager…"
-msgstr ""
-
-msgid "Search for a peer…"
-msgstr ""
-
-msgid "Colleagues at the same level"
-msgstr ""
-
-msgid "Direct Reports"
-msgstr ""
-
-msgid "Search for a direct report…"
-msgstr ""
-
-msgid "People who report to this reviewee"
-msgstr ""
-
 #, python-format
 msgid "Organization default (%(language)s)"
 msgstr ""
@@ -5754,6 +5790,9 @@ msgid "Save Without Sending"
 msgstr ""
 
 msgid "Reviewer Response Status"
+msgstr ""
+
+msgid "Reviewers"
 msgstr ""
 
 msgid "Privacy Notice"
@@ -5784,17 +5823,17 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-#, python-format
-msgid "%(counter)s pending invitation"
-msgid_plural "%(counter)s pending invitations"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "Queue the email invitations to reviewers who haven't received one yet. They go out within about five minutes."
 msgstr ""
 
 msgid "Send Pending Invitations"
 msgstr ""
+
+#, python-format
+msgid "%(counter)s pending invitation"
+msgid_plural "%(counter)s pending invitations"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Back to Cycle Details"
 msgstr ""
@@ -6121,6 +6160,35 @@ msgid_plural "%(counter)s managers without an account"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-format
+msgid "%(counter)s person is not in the org chart"
+msgid_plural "%(counter)s people are not in the org chart"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Their reviewer list names a manager. A manager in the org chart can read the reports of the people in their unit."
+msgstr ""
+
+#, python-format
+msgid "Under %(manager)s, in a new unit %(unit)s"
+msgstr ""
+
+#, python-format
+msgid "Under %(manager)s, in the unit %(unit)s"
+msgstr ""
+
+#, python-format
+msgid "%(names)s also manages this unit."
+msgid_plural "%(names)s also manage this unit."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "You can move people in the chart afterwards."
+msgstr ""
+
+msgid "Place all"
+msgstr ""
+
 msgid "Chart"
 msgstr ""
 
@@ -6271,6 +6339,25 @@ msgstr ""
 msgid "Ask an organization administrator to buy credits."
 msgstr ""
 
+msgid "Category"
+msgstr ""
+
+msgid "Expected in the report"
+msgstr ""
+
+#, python-format
+msgid "Not yet: %(counter)s more answer needed"
+msgid_plural "Not yet: %(counter)s more answers needed"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "No: too few people invited, so the report will not show this group"
+msgstr ""
+
+#, python-format
+msgid "The report shows peers and direct reports only when %(threshold)s or more of them answered."
+msgstr ""
+
 #, python-format
 msgid "€%(amount)s"
 msgstr ""
@@ -6393,6 +6480,168 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#. Translators: names is a list of names that is already joined, for example "Dana Visser and Eli Jansen".
+#, python-format
+msgid "%(names)s also manages the unit %(unit)s and can read the reports of %(person)s too."
+msgid_plural "%(names)s also manage the unit %(unit)s and can read the reports of %(person)s too."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: managers is a list of names that is already joined, for example "Sara Koster and Tom Bakker".
+#, python-format
+msgid "The org chart names %(managers)s as the manager of %(person)s."
+msgid_plural "The org chart names %(managers)s as the managers of %(person)s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: managers is a list of names that is already joined, for example "Sara Koster and Tom Bakker".
+#, python-format
+msgid "%(manager)s can then read the reports of %(person)s. %(managers)s can no longer read them."
+msgid_plural "%(manager)s can then read the reports of %(person)s. %(managers)s can no longer read them."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: managers is a list of names that is already joined, for example "Sara Koster and Tom Bakker".
+#, python-format
+msgid "%(manager)s and %(managers)s can both read the reports of %(person)s."
+msgid_plural "%(manager)s, %(managers)s can all read the reports of %(person)s."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Blik makes a new unit %(unit)s and puts %(person)s in it."
+msgstr ""
+
+#, python-format
+msgid "%(person)s goes into the unit %(unit)s."
+msgstr ""
+
+#, python-format
+msgid "%(manager)s becomes the manager of %(person)s in the org chart."
+msgstr ""
+
+#, python-format
+msgid "Also make %(manager)s the manager of %(person)s in the org chart."
+msgstr ""
+
+#, python-format
+msgid "%(manager)s can then read the reports of %(person)s."
+msgstr ""
+
+msgid "Do not change the org chart."
+msgstr ""
+
+#, python-format
+msgid "%(name)s gets an invitation as a manager in this list only."
+msgstr ""
+
+#, python-format
+msgid "%(name)s gets an invitation as a direct report in this list only."
+msgstr ""
+
+#, python-format
+msgid "%(person)s moves to %(manager)s in the org chart."
+msgstr ""
+
+#, python-format
+msgid "Move %(person)s to %(manager)s in the org chart."
+msgstr ""
+
+#, python-format
+msgid "%(manager)s also becomes a manager of %(person)s in the org chart."
+msgstr ""
+
+#, python-format
+msgid "Make %(manager)s a manager of %(person)s too."
+msgstr ""
+
+msgid "Current review"
+msgstr ""
+
+#, python-format
+msgid "Created on %(date)s"
+msgstr ""
+
+msgid "Send Reminder"
+msgstr ""
+
+msgid "Close Cycle & Generate Report"
+msgstr ""
+
+msgid "Latest review in figures"
+msgstr ""
+
+msgid "Overall score (excluding self-assessment)"
+msgstr ""
+
+msgid "of 5"
+msgstr ""
+
+msgid "Self vs others"
+msgstr ""
+
+msgid "Not available yet"
+msgstr ""
+
+msgid "Rates self higher than others"
+msgstr ""
+
+msgid "Rates self lower than others"
+msgstr ""
+
+msgid "Same as others"
+msgstr ""
+
+#, python-format
+msgid "In the review of %(date)s"
+msgstr ""
+
+msgid "Results"
+msgstr ""
+
+msgid "No results yet"
+msgstr ""
+
+msgid "After the first review, the scores show here. After two reviews with the same questionnaire, you see where the scores went up or down."
+msgstr ""
+
+msgctxt "the overall score of a review, as a column head"
+msgid "Score"
+msgstr ""
+
+msgid "Fill from org chart"
+msgstr ""
+
+msgid "Fill from the previous review"
+msgstr ""
+
+msgid "These people get an invitation when you start a review. Nobody can see who gave which answer."
+msgstr ""
+
+msgid "A change in this list applies to the next review. A review in progress keeps its reviewers."
+msgstr ""
+
+msgid "Separate multiple emails with commas or newlines."
+msgstr ""
+
+msgid "From the previous review"
+msgstr ""
+
+msgid "The reviewers could not be loaded. Try again."
+msgstr ""
+
+#, python-format
+msgid "Fewer than %(counter)s person. The report does not show this group."
+msgid_plural "Fewer than %(counter)s people. The report does not show this group."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Use this only for reviewers who aren't yet in Blik and you don't want to create a profile for. Separate multiple emails with commas or newlines."
+msgstr ""
+
+msgid "Save reviewers"
+msgstr ""
+
 msgid "Start a review"
 msgstr ""
 
@@ -6403,6 +6652,9 @@ msgid "The previous questionnaire is archived. An active questionnaire has been 
 msgstr ""
 
 msgid "Feedback Categories"
+msgstr ""
+
+msgid "Reviewers come from the list on the person's page."
 msgstr ""
 
 msgid "Reviewers are copied from the previous cycle. Reviewers with an email address get their invitation within about five minutes."
@@ -6869,9 +7121,6 @@ msgstr ""
 msgid "Performance breakdown by competency area"
 msgstr ""
 
-msgid "Overall score (excluding self-assessment)"
-msgstr ""
-
 msgid "Submit Your Review"
 msgstr ""
 
@@ -6936,10 +7185,6 @@ msgid "Review Cycle: %(name)s"
 msgstr ""
 
 msgid "Questionnaire:"
-msgstr ""
-
-#, python-format
-msgid "Created on %(date)s"
 msgstr ""
 
 msgid "API Identifiers"
@@ -7045,6 +7290,9 @@ msgstr ""
 msgid "Resend the links to the reviewee"
 msgstr ""
 
+msgid "Answers per category"
+msgstr ""
+
 #, python-format
 msgid "%(counter)s reviewer"
 msgid_plural "%(counter)s reviewers"
@@ -7057,7 +7305,16 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-msgid "Send Reminder"
+msgid "Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes."
+msgstr ""
+
+msgid "Send All Pending Invites"
+msgstr ""
+
+msgid "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes."
+msgstr ""
+
+msgid "Remind All Pending Reviewers"
 msgstr ""
 
 #, python-format
@@ -7066,23 +7323,11 @@ msgid_plural "%(counter)s invitations are queued and go out within about five mi
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes."
-msgstr ""
-
-msgid "Send All Pending Invites"
-msgstr ""
-
 #, python-format
 msgid "%(counter)s unfinished review"
 msgid_plural "%(counter)s unfinished reviews"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes."
-msgstr ""
-
-msgid "Remind All Pending Reviewers"
-msgstr ""
 
 msgid "No reviewers invited yet."
 msgstr ""
@@ -7105,9 +7350,6 @@ msgid "Generate Report"
 msgstr ""
 
 msgid "Edit in Django Admin"
-msgstr ""
-
-msgid "Close Cycle & Generate Report"
 msgstr ""
 
 msgid "Additional Actions"
@@ -7178,6 +7420,9 @@ msgstr ""
 msgid "Auto-assign managers, peers, and direct reports based on each reviewee's team memberships. You'll confirm before invitations send."
 msgstr ""
 
+msgid "A person's saved list is used when there is one."
+msgstr ""
+
 msgid "Reuse previous settings per cycle"
 msgstr ""
 
@@ -7202,9 +7447,6 @@ msgstr ""
 
 msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
 msgstr "Du kannst Feedbackrunden nur für dich selbst anlegen. Für andere Teammitglieder legt ein Admin die Feedbackrunden an."
-
-msgid "Reviewers"
-msgstr ""
 
 msgid "Your manager, your peers and your direct reports in the org chart are the reviewers. You confirm before the invitations go out."
 msgstr ""
@@ -7251,12 +7493,6 @@ msgstr ""
 msgid "Who gives feedback in this cycle. Categories you clear are left out of the invitation email and the report."
 msgstr ""
 
-msgid "The reviewee rates themselves"
-msgstr ""
-
-msgid "Direct manager or supervisor"
-msgstr ""
-
 msgid "Select at least one category."
 msgstr ""
 
@@ -7271,9 +7507,6 @@ msgid "This person isn't in the <a href=\"%(org_chart_url)s\">org chart</a> yet,
 msgstr ""
 
 msgid "Auto-filled with the reviewee when you pick one above"
-msgstr ""
-
-msgid "Use this only for reviewers who aren't yet in Blik and you don't want to create a profile for. Separate multiple emails with commas or newlines."
 msgstr ""
 
 msgid "Send invitation emails immediately after creating cycle"
@@ -7403,6 +7636,39 @@ msgstr ""
 msgid "Deactivate Reviewee"
 msgstr ""
 
+msgid "Edit details"
+msgstr ""
+
+msgid "Start review"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Name, email and department are set."
+msgstr ""
+
+msgid "Name and email are set."
+msgstr ""
+
+msgid "Select the people who give feedback."
+msgstr ""
+
+msgid "Blik sends the invitations. You follow the answers here."
+msgstr ""
+
+msgid "Read the combined results when the review is closed."
+msgstr ""
+
+msgid "For the next review"
+msgstr ""
+
+#, python-format
+msgid "%(counter)s reviewer gets an invitation."
+msgid_plural "%(counter)s reviewers get an invitation."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Edit Reviewee"
 msgstr ""
 
@@ -7491,9 +7757,6 @@ msgstr ""
 msgid "Choose the details you want to see."
 msgstr "Wähle die Angaben aus, die du sehen möchtest."
 
-msgid "Self vs others"
-msgstr ""
-
 msgid "Compares self-assessment with the average of other reviewers in the latest completed report."
 msgstr ""
 
@@ -7512,21 +7775,6 @@ msgstr ""
 msgid "Not selected yet"
 msgstr ""
 
-msgid "Not available yet"
-msgstr ""
-
-msgid "Rates self higher than others"
-msgstr ""
-
-msgid "Rates self lower than others"
-msgstr ""
-
-msgid "Same as others"
-msgstr ""
-
-msgid "Start review"
-msgstr ""
-
 msgid "No report available"
 msgstr ""
 
@@ -7534,9 +7782,6 @@ msgid "View latest report"
 msgstr ""
 
 msgid "Start a new review"
-msgstr ""
-
-msgid "Edit details"
 msgstr ""
 
 msgid "No people match these filters."
@@ -7581,9 +7826,6 @@ msgid "Pending Reviews:"
 msgstr ""
 
 msgid "Pending Reviewer Tokens"
-msgstr ""
-
-msgid "Category"
 msgstr ""
 
 msgid "Review Link"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 14:34+0000\n"
+"POT-Creation-Date: 2026-11-26 23:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1017,6 +1017,80 @@ msgstr "Je hebt geen toestemming om feedbackontvangers te verwijderen. Alleen or
 msgid "Reviewee \"%(name)s\" deactivated."
 msgstr "Feedbackontvanger \"%(name)s\" gedeactiveerd."
 
+msgid "Self assessment"
+msgstr "Zelfevaluatie"
+
+msgid "The reviewee rates themselves"
+msgstr "De feedbackontvanger beoordeelt zichzelf"
+
+msgid "Manager review"
+msgstr "Feedback van leidinggevende"
+
+msgid "Direct manager or supervisor"
+msgstr "Directe leidinggevende"
+
+msgid "Search for a manager…"
+msgstr "Zoek een leidinggevende…"
+
+msgid "Manager"
+msgstr "Leidinggevende"
+
+msgid "Peer review"
+msgstr "Feedback van collega"
+
+msgid "Colleagues at the same level"
+msgstr "Collega's op hetzelfde niveau"
+
+msgid "Search for a peer…"
+msgstr "Zoek een collega…"
+
+msgid "Peers"
+msgstr "Collega's"
+
+msgid "Direct report review"
+msgstr "Feedback van medewerker"
+
+msgid "People who report to this reviewee"
+msgstr "Personen die aan deze feedbackontvanger rapporteren"
+
+msgid "Search for a direct report…"
+msgstr "Zoek een medewerker…"
+
+msgid "Direct Reports"
+msgstr "Medewerkers"
+
+#, python-format
+msgid "%(count)s change saved in the org chart."
+msgid_plural "%(count)s changes saved in the org chart."
+msgstr[0] "%(count)s wijziging opgeslagen in het organogram."
+msgstr[1] "%(count)s wijzigingen opgeslagen in het organogram."
+
+msgid "Questionnaire is required."
+msgstr "Een vragenlijst is verplicht."
+
+msgid "Reviewers saved."
+msgstr "Feedbackgevers opgeslagen."
+
+msgid "Select at least one feedback category."
+msgstr "Selecteer minimaal één feedbackcategorie."
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes."
+msgstr "Feedbackronde voor \"%(name)s\" aangemaakt en %(assigned)s feedbackgever(s) uitgenodigd. De uitnodigingen worden binnen enkele minuten per e-mail verzonden."
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails."
+msgstr "Feedbackronde voor \"%(name)s\" aangemaakt en %(assigned)s feedbackgever(s) toegewezen. Ga naar de pagina met uitnodigingen om de e-mails te verzenden."
+
+#, python-format
+msgid "Review cycle created for \"%(name)s\". The reviewee's emails go out within about five minutes."
+msgstr "Feedbackronde voor \"%(name)s\" aangemaakt. De e-mails aan de feedbackontvanger worden binnen enkele minuten verzonden."
+
+#. Translators: the word between the last two names of a list, as in "Sara Koster, Tom Bakker and Lena Visser".
+msgctxt "joins the last two names of a list"
+msgid "and"
+msgstr "en"
+
 msgid "You do not have permission to create reviewees."
 msgstr "Je hebt geen toestemming om feedbackontvangers aan te maken."
 
@@ -1029,14 +1103,12 @@ msgstr "Ongeldig e-mailadres."
 msgid "You do not have permission to create review cycles. Only organization administrators can access this feature."
 msgstr "Je hebt geen toestemming om feedbackrondes aan te maken. Alleen organisatiebeheerders hebben toegang tot deze functie."
 
-msgid "Questionnaire is required."
-msgstr "Een vragenlijst is verplicht."
-
 msgid "Invalid questionnaire selected."
 msgstr "Ongeldige vragenlijst geselecteerd."
 
-msgid "Select at least one feedback category."
-msgstr "Selecteer minimaal één feedbackcategorie."
+#, python-format
+msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Took %(count)s reviewer(s) from the saved list. %(queued)s invitation email(s) go out within about five minutes."
+msgstr "Feedbackronde voor \"%(name)s\" aangemaakt met \"%(questionnaire)s\". %(count)s feedbackgever(s) overgenomen uit de opgeslagen lijst. %(queued)s uitnodiging(en) worden binnen enkele minuten per e-mail verzonden."
 
 #, python-format
 msgid "Review cycle created for \"%(name)s\" using \"%(questionnaire)s\". Copied %(count)s reviewer(s) from previous cycle. %(queued)s invitation email(s) go out within about five minutes."
@@ -1162,18 +1234,6 @@ msgid "Reviewee is required for single cycle creation."
 msgstr "Voor een enkele feedbackronde is een feedbackontvanger verplicht."
 
 #, python-format
-msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes."
-msgstr "Feedbackronde voor \"%(name)s\" aangemaakt en %(assigned)s feedbackgever(s) uitgenodigd. De uitnodigingen worden binnen enkele minuten per e-mail verzonden."
-
-#, python-format
-msgid "Review cycle created for \"%(name)s\" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails."
-msgstr "Feedbackronde voor \"%(name)s\" aangemaakt en %(assigned)s feedbackgever(s) toegewezen. Ga naar de pagina met uitnodigingen om de e-mails te verzenden."
-
-#, python-format
-msgid "Review cycle created for \"%(name)s\". The reviewee's emails go out within about five minutes."
-msgstr "Feedbackronde voor \"%(name)s\" aangemaakt. De e-mails aan de feedbackontvanger worden binnen enkele minuten verzonden."
-
-#, python-format
 msgid "Error creating review cycle: %(error)s"
 msgstr "Fout bij het aanmaken van de feedbackronde: %(error)s"
 
@@ -1228,6 +1288,12 @@ msgstr "%(assigned)s e-mailadres(sen) toegewezen. De uitnodigingen worden apart 
 #, python-format
 msgid "Successfully assigned %(assigned)s email(s). No invitations sent yet."
 msgstr "%(assigned)s e-mailadres(sen) toegewezen. Er zijn nog geen uitnodigingen verzonden."
+
+msgid "The invitations that were not sent yet go out within about five minutes."
+msgstr "De uitnodigingen die nog niet zijn verzonden, worden binnen enkele minuten verzonden."
+
+msgid "Everyone who was invited and has not answered yet gets a reminder within about five minutes."
+msgstr "Iedereen die is uitgenodigd en nog niet heeft geantwoord, krijgt binnen enkele minuten een herinnering."
 
 #, python-format
 msgid "%(count)s invitation email goes out within about five minutes."
@@ -1489,6 +1555,12 @@ msgstr "Fout bij het verwijderen van de webhook: %(error)s"
 
 msgid "You do not have permission to edit the org chart."
 msgstr "Je hebt geen toestemming om het organogram te bewerken."
+
+#, python-format
+msgid "%(count)d person placed in the org chart."
+msgid_plural "%(count)d people placed in the org chart."
+msgstr[0] "%(count)d persoon geplaatst in het organogram."
+msgstr[1] "%(count)d personen geplaatst in het organogram."
 
 msgid "Choose a CSV file."
 msgstr "Kies een CSV-bestand."
@@ -3137,18 +3209,6 @@ msgstr "Mislukte pogingen om de e-mail met de links om te delen te verzenden"
 msgid "links email attempts"
 msgstr "pogingen voor e-mail met links"
 
-msgid "Self assessment"
-msgstr "Zelfevaluatie"
-
-msgid "Peer review"
-msgstr "Feedback van collega"
-
-msgid "Manager review"
-msgstr "Feedback van leidinggevende"
-
-msgid "Direct report review"
-msgstr "Feedback van medewerker"
-
 msgid "self assessment invitation token"
 msgstr "uitnodigingstoken voor zelfevaluatie"
 
@@ -3302,9 +3362,6 @@ msgstr "Zelf"
 
 msgid "Peer"
 msgstr "Collega"
-
-msgid "Manager"
-msgstr "Leidinggevende"
 
 msgid "Direct Report"
 msgstr "Medewerker"
@@ -4231,9 +4288,6 @@ msgstr "Je kunt dit nu ook overslaan en later losse uitnodigingen verzenden vanu
 
 msgid "Reviewee"
 msgstr "Feedbackontvanger"
-
-msgid "Peers"
-msgstr "Collega's"
 
 msgid "Direct reports"
 msgstr "Medewerkers"
@@ -5724,24 +5778,6 @@ msgstr "Meestal de eigen vermelding van de feedbackontvanger"
 msgid "Manager/Supervisor"
 msgstr "Leidinggevende"
 
-msgid "Search for a manager…"
-msgstr "Zoek een leidinggevende…"
-
-msgid "Search for a peer…"
-msgstr "Zoek een collega…"
-
-msgid "Colleagues at the same level"
-msgstr "Collega's op hetzelfde niveau"
-
-msgid "Direct Reports"
-msgstr "Medewerkers"
-
-msgid "Search for a direct report…"
-msgstr "Zoek een medewerker…"
-
-msgid "People who report to this reviewee"
-msgstr "Personen die aan deze feedbackontvanger rapporteren"
-
 #, python-format
 msgid "Organization default (%(language)s)"
 msgstr "Standaard van de organisatie (%(language)s)"
@@ -5763,6 +5799,9 @@ msgstr "Opslaan zonder te verzenden"
 
 msgid "Reviewer Response Status"
 msgstr "Antwoordstatus van feedbackgevers"
+
+msgid "Reviewers"
+msgstr "Feedbackgevers"
 
 msgid "Privacy Notice"
 msgstr "Privacymelding"
@@ -5792,17 +5831,17 @@ msgstr "Bezig"
 msgid "Pending"
 msgstr "In afwachting"
 
-#, python-format
-msgid "%(counter)s pending invitation"
-msgid_plural "%(counter)s pending invitations"
-msgstr[0] "%(counter)s uitnodiging wacht op verzending"
-msgstr[1] "%(counter)s uitnodigingen wachten op verzending"
-
 msgid "Queue the email invitations to reviewers who haven't received one yet. They go out within about five minutes."
 msgstr "Verzend de uitnodiging per e-mail aan feedbackgevers die er nog geen hebben ontvangen. De e-mails worden binnen enkele minuten verzonden."
 
 msgid "Send Pending Invitations"
 msgstr "Wachtende uitnodigingen verzenden"
+
+#, python-format
+msgid "%(counter)s pending invitation"
+msgid_plural "%(counter)s pending invitations"
+msgstr[0] "%(counter)s uitnodiging wacht op verzending"
+msgstr[1] "%(counter)s uitnodigingen wachten op verzending"
 
 msgid "Back to Cycle Details"
 msgstr "Terug naar de feedbackronde"
@@ -6129,6 +6168,35 @@ msgid_plural "%(counter)s managers without an account"
 msgstr[0] "%(counter)s leidinggevende zonder account"
 msgstr[1] "%(counter)s leidinggevenden zonder account"
 
+#, python-format
+msgid "%(counter)s person is not in the org chart"
+msgid_plural "%(counter)s people are not in the org chart"
+msgstr[0] "%(counter)s persoon staat niet in het organogram"
+msgstr[1] "%(counter)s personen staan niet in het organogram"
+
+msgid "Their reviewer list names a manager. A manager in the org chart can read the reports of the people in their unit."
+msgstr "Hun lijst met feedbackgevers noemt een leidinggevende. Een leidinggevende in het organogram kan de rapporten lezen van de mensen in de eigen afdeling."
+
+#, python-format
+msgid "Under %(manager)s, in a new unit %(unit)s"
+msgstr "Onder %(manager)s, in een nieuwe afdeling %(unit)s"
+
+#, python-format
+msgid "Under %(manager)s, in the unit %(unit)s"
+msgstr "Onder %(manager)s, in de afdeling %(unit)s"
+
+#, python-format
+msgid "%(names)s also manages this unit."
+msgid_plural "%(names)s also manage this unit."
+msgstr[0] "%(names)s leidt deze afdeling ook."
+msgstr[1] "%(names)s leiden deze afdeling ook."
+
+msgid "You can move people in the chart afterwards."
+msgstr "Je kunt mensen daarna verplaatsen in het organogram."
+
+msgid "Place all"
+msgstr "Alle plaatsen"
+
 msgid "Chart"
 msgstr "Diagram"
 
@@ -6279,6 +6347,25 @@ msgstr "Naam van je organisatie of team"
 msgid "Ask an organization administrator to buy credits."
 msgstr "Vraag een organisatiebeheerder om credits te kopen."
 
+msgid "Category"
+msgstr "Categorie"
+
+msgid "Expected in the report"
+msgstr "Verwacht in het rapport"
+
+#, python-format
+msgid "Not yet: %(counter)s more answer needed"
+msgid_plural "Not yet: %(counter)s more answers needed"
+msgstr[0] "Nog niet: nog %(counter)s antwoord nodig"
+msgstr[1] "Nog niet: nog %(counter)s antwoorden nodig"
+
+msgid "No: too few people invited, so the report will not show this group"
+msgstr "Nee: te weinig mensen uitgenodigd, dus het rapport toont deze groep niet"
+
+#, python-format
+msgid "The report shows peers and direct reports only when %(threshold)s or more of them answered."
+msgstr "Het rapport toont collega's en medewerkers alleen als %(threshold)s of meer van hen hebben geantwoord."
+
 #, python-format
 msgid "€%(amount)s"
 msgstr "€ %(amount)s"
@@ -6401,6 +6488,168 @@ msgstr "Archiveren"
 msgid "Delete"
 msgstr "Verwijderen"
 
+#. Translators: names is a list of names that is already joined, for example "Dana Visser and Eli Jansen".
+#, python-format
+msgid "%(names)s also manages the unit %(unit)s and can read the reports of %(person)s too."
+msgid_plural "%(names)s also manage the unit %(unit)s and can read the reports of %(person)s too."
+msgstr[0] "%(names)s leidt de afdeling %(unit)s ook en kan ook de rapporten van %(person)s lezen."
+msgstr[1] "%(names)s leiden de afdeling %(unit)s ook en kunnen ook de rapporten van %(person)s lezen."
+
+#. Translators: managers is a list of names that is already joined, for example "Sara Koster and Tom Bakker".
+#, python-format
+msgid "The org chart names %(managers)s as the manager of %(person)s."
+msgid_plural "The org chart names %(managers)s as the managers of %(person)s."
+msgstr[0] "Het organogram noemt %(managers)s als leidinggevende van %(person)s."
+msgstr[1] "Het organogram noemt %(managers)s als leidinggevenden van %(person)s."
+
+#. Translators: managers is a list of names that is already joined, for example "Sara Koster and Tom Bakker".
+#, python-format
+msgid "%(manager)s can then read the reports of %(person)s. %(managers)s can no longer read them."
+msgid_plural "%(manager)s can then read the reports of %(person)s. %(managers)s can no longer read them."
+msgstr[0] "%(manager)s kan dan de rapporten van %(person)s lezen. %(managers)s kan ze niet meer lezen."
+msgstr[1] "%(manager)s kan dan de rapporten van %(person)s lezen. %(managers)s kunnen ze niet meer lezen."
+
+#. Translators: managers is a list of names that is already joined, for example "Sara Koster and Tom Bakker".
+#, python-format
+msgid "%(manager)s and %(managers)s can both read the reports of %(person)s."
+msgid_plural "%(manager)s, %(managers)s can all read the reports of %(person)s."
+msgstr[0] "%(manager)s en %(managers)s kunnen allebei de rapporten van %(person)s lezen."
+msgstr[1] "%(manager)s, %(managers)s kunnen allemaal de rapporten van %(person)s lezen."
+
+#, python-format
+msgid "Blik makes a new unit %(unit)s and puts %(person)s in it."
+msgstr "Blik maakt een nieuwe afdeling %(unit)s aan en plaatst %(person)s daarin."
+
+#, python-format
+msgid "%(person)s goes into the unit %(unit)s."
+msgstr "%(person)s komt in de afdeling %(unit)s."
+
+#, python-format
+msgid "%(manager)s becomes the manager of %(person)s in the org chart."
+msgstr "%(manager)s wordt in het organogram de leidinggevende van %(person)s."
+
+#, python-format
+msgid "Also make %(manager)s the manager of %(person)s in the org chart."
+msgstr "%(manager)s in het organogram ook de leidinggevende van %(person)s maken."
+
+#, python-format
+msgid "%(manager)s can then read the reports of %(person)s."
+msgstr "%(manager)s kan dan de rapporten van %(person)s lezen."
+
+msgid "Do not change the org chart."
+msgstr "Het organogram niet wijzigen."
+
+#, python-format
+msgid "%(name)s gets an invitation as a manager in this list only."
+msgstr "%(name)s krijgt alleen in deze lijst een uitnodiging als leidinggevende."
+
+#, python-format
+msgid "%(name)s gets an invitation as a direct report in this list only."
+msgstr "%(name)s krijgt alleen in deze lijst een uitnodiging als medewerker."
+
+#, python-format
+msgid "%(person)s moves to %(manager)s in the org chart."
+msgstr "%(person)s gaat in het organogram naar %(manager)s."
+
+#, python-format
+msgid "Move %(person)s to %(manager)s in the org chart."
+msgstr "%(person)s in het organogram naar %(manager)s verplaatsen."
+
+#, python-format
+msgid "%(manager)s also becomes a manager of %(person)s in the org chart."
+msgstr "%(manager)s wordt in het organogram ook leidinggevende van %(person)s."
+
+#, python-format
+msgid "Make %(manager)s a manager of %(person)s too."
+msgstr "%(manager)s ook leidinggevende van %(person)s maken."
+
+msgid "Current review"
+msgstr "Huidige feedbackronde"
+
+#, python-format
+msgid "Created on %(date)s"
+msgstr "Aangemaakt op %(date)s"
+
+msgid "Send Reminder"
+msgstr "Herinnering verzenden"
+
+msgid "Close Cycle & Generate Report"
+msgstr "Feedbackronde afsluiten en rapport maken"
+
+msgid "Latest review in figures"
+msgstr "Laatste feedbackronde in cijfers"
+
+msgid "Overall score (excluding self-assessment)"
+msgstr "Totaalscore (zonder zelfevaluatie)"
+
+msgid "of 5"
+msgstr "van 5"
+
+msgid "Self vs others"
+msgstr "Zelf vs. anderen"
+
+msgid "Not available yet"
+msgstr "Nog niet beschikbaar"
+
+msgid "Rates self higher than others"
+msgstr "Geeft zichzelf een hogere score dan anderen"
+
+msgid "Rates self lower than others"
+msgstr "Geeft zichzelf een lagere score dan anderen"
+
+msgid "Same as others"
+msgstr "Gelijk aan anderen"
+
+#, python-format
+msgid "In the review of %(date)s"
+msgstr "In de feedbackronde van %(date)s"
+
+msgid "Results"
+msgstr "Resultaten"
+
+msgid "No results yet"
+msgstr "Nog geen resultaten"
+
+msgid "After the first review, the scores show here. After two reviews with the same questionnaire, you see where the scores went up or down."
+msgstr "Na de eerste feedbackronde staan de scores hier. Na twee feedbackrondes met dezelfde vragenlijst zie je waar de scores zijn gestegen of gedaald."
+
+msgctxt "the overall score of a review, as a column head"
+msgid "Score"
+msgstr "Score"
+
+msgid "Fill from org chart"
+msgstr "Overnemen uit het organogram"
+
+msgid "Fill from the previous review"
+msgstr "Overnemen uit de vorige feedbackronde"
+
+msgid "These people get an invitation when you start a review. Nobody can see who gave which answer."
+msgstr "Deze mensen krijgen een uitnodiging als je een feedbackronde start. Niemand kan zien wie welk antwoord heeft gegeven."
+
+msgid "A change in this list applies to the next review. A review in progress keeps its reviewers."
+msgstr "Een wijziging in deze lijst geldt voor de volgende feedbackronde. Een lopende feedbackronde houdt de feedbackgevers die er al in staan."
+
+msgid "Separate multiple emails with commas or newlines."
+msgstr "Scheid meerdere e-mailadressen met komma's of nieuwe regels."
+
+msgid "From the previous review"
+msgstr "Uit de vorige feedbackronde"
+
+msgid "The reviewers could not be loaded. Try again."
+msgstr "De feedbackgevers konden niet worden geladen. Probeer het opnieuw."
+
+#, python-format
+msgid "Fewer than %(counter)s person. The report does not show this group."
+msgid_plural "Fewer than %(counter)s people. The report does not show this group."
+msgstr[0] "Minder dan %(counter)s persoon. Het rapport toont deze groep niet."
+msgstr[1] "Minder dan %(counter)s personen. Het rapport toont deze groep niet."
+
+msgid "Use this only for reviewers who aren't yet in Blik and you don't want to create a profile for. Separate multiple emails with commas or newlines."
+msgstr "Gebruik dit alleen voor feedbackgevers die nog niet in Blik staan en voor wie je geen profiel wilt aanmaken. Scheid meerdere e-mailadressen met komma's of zet elk adres op een nieuwe regel."
+
+msgid "Save reviewers"
+msgstr "Feedbackgevers opslaan"
+
 msgid "Start a review"
 msgstr "Feedbackronde starten"
 
@@ -6412,6 +6661,9 @@ msgstr "De vorige vragenlijst is gearchiveerd. Er is een actieve vragenlijst gek
 
 msgid "Feedback Categories"
 msgstr "Feedbackcategorieën"
+
+msgid "Reviewers come from the list on the person's page."
+msgstr "De feedbackgevers komen uit de lijst op de pagina van de persoon."
 
 msgid "Reviewers are copied from the previous cycle. Reviewers with an email address get their invitation within about five minutes."
 msgstr "De feedbackgevers worden overgenomen uit de vorige feedbackronde. Feedbackgevers met een e-mailadres krijgen hun uitnodiging binnen enkele minuten."
@@ -6876,9 +7128,6 @@ msgstr "Prestaties per sectie"
 msgid "Performance breakdown by competency area"
 msgstr "Prestaties uitgesplitst per competentiegebied"
 
-msgid "Overall score (excluding self-assessment)"
-msgstr "Totaalscore (zonder zelfevaluatie)"
-
 msgid "Submit Your Review"
 msgstr "Je review versturen"
 
@@ -6944,10 +7193,6 @@ msgstr "Feedbackronde: %(name)s"
 
 msgid "Questionnaire:"
 msgstr "Vragenlijst:"
-
-#, python-format
-msgid "Created on %(date)s"
-msgstr "Aangemaakt op %(date)s"
 
 msgid "API Identifiers"
 msgstr "API-ID's"
@@ -7052,6 +7297,9 @@ msgstr "De e-mail met deze links aan %(email)s wordt binnen enkele minuten verzo
 msgid "Resend the links to the reviewee"
 msgstr "Links opnieuw naar de feedbackontvanger verzenden"
 
+msgid "Answers per category"
+msgstr "Antwoorden per categorie"
+
 #, python-format
 msgid "%(counter)s reviewer"
 msgid_plural "%(counter)s reviewers"
@@ -7064,8 +7312,17 @@ msgstr "Uitnodiging verzenden"
 msgid "Remove"
 msgstr "Verwijderen"
 
-msgid "Send Reminder"
-msgstr "Herinnering verzenden"
+msgid "Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes."
+msgstr "Verzend de uitnodiging aan alle feedbackgevers die zijn toegewezen maar nog niet zijn uitgenodigd. De e-mails worden binnen enkele minuten verzonden."
+
+msgid "Send All Pending Invites"
+msgstr "Alle openstaande uitnodigingen verzenden"
+
+msgid "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes."
+msgstr "Verzend een herinnering aan elke feedbackgever die is uitgenodigd maar de feedback nog niet heeft afgerond. Eén e-mail per feedbackgever, binnen enkele minuten."
+
+msgid "Remind All Pending Reviewers"
+msgstr "Alle feedbackgevers met openstaande feedback herinneren"
 
 #, python-format
 msgid "%(counter)s invitation is queued and goes out within about five minutes."
@@ -7073,23 +7330,11 @@ msgid_plural "%(counter)s invitations are queued and go out within about five mi
 msgstr[0] "%(counter)s uitnodiging wordt binnen enkele minuten verzonden."
 msgstr[1] "%(counter)s uitnodigingen worden binnen enkele minuten verzonden, één e-mail per feedbackgever."
 
-msgid "Queue the invitation emails to all reviewers who have been assigned but not invited yet. They go out within about five minutes."
-msgstr "Verzend de uitnodiging aan alle feedbackgevers die zijn toegewezen maar nog niet zijn uitgenodigd. De e-mails worden binnen enkele minuten verzonden."
-
-msgid "Send All Pending Invites"
-msgstr "Alle openstaande uitnodigingen verzenden"
-
 #, python-format
 msgid "%(counter)s unfinished review"
 msgid_plural "%(counter)s unfinished reviews"
 msgstr[0] "%(counter)s feedbackgever nog niet klaar"
 msgstr[1] "%(counter)s feedbackgevers nog niet klaar"
-
-msgid "Queue a reminder to every reviewer who was invited but has not completed their feedback yet. One email per reviewer, within about five minutes."
-msgstr "Verzend een herinnering aan elke feedbackgever die is uitgenodigd maar de feedback nog niet heeft afgerond. Eén e-mail per feedbackgever, binnen enkele minuten."
-
-msgid "Remind All Pending Reviewers"
-msgstr "Alle feedbackgevers met openstaande feedback herinneren"
 
 msgid "No reviewers invited yet."
 msgstr "Nog geen feedbackgevers uitgenodigd."
@@ -7113,9 +7358,6 @@ msgstr "Rapport maken"
 
 msgid "Edit in Django Admin"
 msgstr "Bewerken in Django Admin"
-
-msgid "Close Cycle & Generate Report"
-msgstr "Feedbackronde afsluiten en rapport maken"
 
 msgid "Additional Actions"
 msgstr "Meer acties"
@@ -7185,6 +7427,9 @@ msgstr "(nog geen afdelingen)"
 msgid "Auto-assign managers, peers, and direct reports based on each reviewee's team memberships. You'll confirm before invitations send."
 msgstr "Wijs leidinggevenden, collega's en medewerkers automatisch toe op basis van de afdelingen van elke feedbackontvanger. Je bevestigt voordat de uitnodigingen worden verzonden."
 
+msgid "A person's saved list is used when there is one."
+msgstr "Heeft iemand een opgeslagen lijst, dan wordt die gebruikt."
+
 msgid "Reuse previous settings per cycle"
 msgstr "Instellingen van de vorige feedbackronde per persoon overnemen"
 
@@ -7209,9 +7454,6 @@ msgstr "Bij het aanmaken van meerdere feedbackrondes worden nog geen e-mails ver
 
 msgid "You can only create review cycles for yourself. Contact an administrator to create cycles for other team members."
 msgstr "Je kunt alleen feedbackrondes voor jezelf aanmaken. Neem contact op met een beheerder om feedbackrondes voor andere teamleden aan te maken."
-
-msgid "Reviewers"
-msgstr "Feedbackgevers"
 
 msgid "Your manager, your peers and your direct reports in the org chart are the reviewers. You confirm before the invitations go out."
 msgstr "Je leidinggevende, je collega's en de medewerkers die volgens het organogram aan je rapporteren, zijn de feedbackgevers. Je bevestigt voordat de uitnodigingen worden verzonden."
@@ -7258,12 +7500,6 @@ msgstr "Voorbeeldrapport bekijken"
 msgid "Who gives feedback in this cycle. Categories you clear are left out of the invitation email and the report."
 msgstr "Wie in deze feedbackronde feedback geeft. Categorieën die je uitvinkt, komen niet in de uitnodigings-e-mail en het rapport."
 
-msgid "The reviewee rates themselves"
-msgstr "De feedbackontvanger beoordeelt zichzelf"
-
-msgid "Direct manager or supervisor"
-msgstr "Directe leidinggevende"
-
 msgid "Select at least one category."
 msgstr "Kies minstens één categorie."
 
@@ -7279,9 +7515,6 @@ msgstr "Deze persoon staat nog niet in het <a href=\"%(org_chart_url)s\">organog
 
 msgid "Auto-filled with the reviewee when you pick one above"
 msgstr "Wordt automatisch ingevuld met de feedbackontvanger die je hierboven kiest"
-
-msgid "Use this only for reviewers who aren't yet in Blik and you don't want to create a profile for. Separate multiple emails with commas or newlines."
-msgstr "Gebruik dit alleen voor feedbackgevers die nog niet in Blik staan en voor wie je geen profiel wilt aanmaken. Scheid meerdere e-mailadressen met komma's of zet elk adres op een nieuwe regel."
 
 msgid "Send invitation emails immediately after creating cycle"
 msgstr "Uitnodigings-e-mails direct na het aanmaken van de feedbackronde verzenden"
@@ -7410,6 +7643,39 @@ msgstr "Afdeling:"
 msgid "Deactivate Reviewee"
 msgstr "Feedbackontvanger deactiveren"
 
+msgid "Edit details"
+msgstr "Gegevens bewerken"
+
+msgid "Start review"
+msgstr "Feedbackronde starten"
+
+msgid "Details"
+msgstr "Gegevens"
+
+msgid "Name, email and department are set."
+msgstr "Naam, e-mail en afdeling zijn ingevuld."
+
+msgid "Name and email are set."
+msgstr "Naam en e-mail zijn ingevuld."
+
+msgid "Select the people who give feedback."
+msgstr "Selecteer de mensen die feedback geven."
+
+msgid "Blik sends the invitations. You follow the answers here."
+msgstr "Blik verzendt de uitnodigingen. Hier volg je de antwoorden."
+
+msgid "Read the combined results when the review is closed."
+msgstr "Lees de gecombineerde resultaten als de feedbackronde is afgesloten."
+
+msgid "For the next review"
+msgstr "Voor de volgende feedbackronde"
+
+#, python-format
+msgid "%(counter)s reviewer gets an invitation."
+msgid_plural "%(counter)s reviewers get an invitation."
+msgstr[0] "%(counter)s feedbackgever krijgt een uitnodiging."
+msgstr[1] "%(counter)s feedbackgevers krijgen een uitnodiging."
+
 msgid "Edit Reviewee"
 msgstr "Feedbackontvanger bewerken"
 
@@ -7497,9 +7763,6 @@ msgstr "Kolommen"
 msgid "Choose the details you want to see."
 msgstr "Kies de gegevens die je wilt zien."
 
-msgid "Self vs others"
-msgstr "Zelf vs. anderen"
-
 msgid "Compares self-assessment with the average of other reviewers in the latest completed report."
 msgstr "Vergelijkt de zelfevaluatie met het gemiddelde van de andere feedbackgevers in het laatste afgeronde rapport."
 
@@ -7518,21 +7781,6 @@ msgstr "Over zelf vs. anderen"
 msgid "Not selected yet"
 msgstr "Nog niet gekozen"
 
-msgid "Not available yet"
-msgstr "Nog niet beschikbaar"
-
-msgid "Rates self higher than others"
-msgstr "Geeft zichzelf een hogere score dan anderen"
-
-msgid "Rates self lower than others"
-msgstr "Geeft zichzelf een lagere score dan anderen"
-
-msgid "Same as others"
-msgstr "Gelijk aan anderen"
-
-msgid "Start review"
-msgstr "Feedbackronde starten"
-
 msgid "No report available"
 msgstr "Geen rapport beschikbaar"
 
@@ -7541,9 +7789,6 @@ msgstr "Laatste rapport bekijken"
 
 msgid "Start a new review"
 msgstr "Nieuwe feedbackronde starten"
-
-msgid "Edit details"
-msgstr "Gegevens bewerken"
 
 msgid "No people match these filters."
 msgstr "Geen personen gevonden met deze filters."
@@ -7588,9 +7833,6 @@ msgstr "Openstaande feedback:"
 
 msgid "Pending Reviewer Tokens"
 msgstr "Openstaande tokens van feedbackgevers"
-
-msgid "Category"
-msgstr "Categorie"
 
 msgid "Review Link"
 msgstr "Feedbacklink"

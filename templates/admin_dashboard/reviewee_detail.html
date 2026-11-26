@@ -35,7 +35,7 @@
 <ol class="dash-steps rv-steps">
     <li class="is-done"><b>{% trans 'Details' %}</b>{% if reviewee.department %}{% trans 'Name, email and department are set.' %}{% else %}{% trans 'Name and email are set.' %}{% endif %}</li>
     <li class="{% if setup.source == 'saved' or has_cycles %}is-done{% else %}is-next{% endif %}"><b>{% trans 'Reviewers' %}</b>{% trans 'Select the people who give feedback.' %}</li>
-    <li class="{% if has_cycles %}is-done{% elif setup.source == 'saved' %}is-next{% endif %}"><b>{% trans 'Start the review' %}</b>{% trans 'Blik sends the invitations. You follow the answers here.' %}</li>
+    <li class="{% if has_cycles %}is-done{% elif setup.source == 'saved' %}is-next{% endif %}"><b>{% trans 'Start review' %}</b>{% trans 'Blik sends the invitations. You follow the answers here.' %}</li>
     <li class="{% if has_cycles %}is-next{% endif %}"><b>{% trans 'Report' %}</b>{% trans 'Read the combined results when the review is closed.' %}</li>
 </ol>
 {% endif %}

@@ -27,6 +27,7 @@ from django.utils.functional import partition
 from django.utils.translation import gettext as _, gettext_lazy, ngettext
 from django.views.decorators.http import require_POST
 
+from accounts.chart_link import append_membership
 from accounts.models import Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
 from accounts.permissions import (
     assign_organization_admin,
@@ -562,13 +563,6 @@ def reviewee_list(request):
         'has_reviewees': has_reviewees,
         'is_filtered': bool(q or department or questionnaire_filter or stage),
     })
-
-
-def append_membership(unit, reviewee, role):
-    """Put `reviewee` in `unit` as manager (row 0) or member (row 1), after the people already there."""
-    row = 0 if role == OrgUnitMembership.MANAGER else 1
-    last = unit.memberships.filter(row=row).aggregate(m=Max('col'))['m']
-    return OrgUnitMembership.objects.create(unit=unit, reviewee=reviewee, row=row, col=0 if last is None else last + 1)
 
 
 def place_in_department(org, reviewee, name, manager=None, leads=False):

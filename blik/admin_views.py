@@ -93,6 +93,7 @@ from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
+from reviews.setup import previous_cycle_reviewers
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     CREDITS_PER_PACK,
@@ -1911,28 +1912,13 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
         email_assignments = None
         cycle_questionnaire, cycle_flags = questionnaire, category_flags
         if bulk_source == 'previous':
-            previous = reviewee.review_cycles.select_related('questionnaire').first()
-            # Archived questionnaires do not come back this way either.
-            if previous is None or not previous.questionnaire.is_active:
+            previous = previous_cycle_reviewers(reviewee)
+            if previous is None:
                 unplaced_count += 1
                 continue
-            cycle_questionnaire = previous.questionnaire
-            cycle_flags = {f'include_{c}': getattr(previous, f'include_{c}') for c in CATEGORY_ORDER}
-            email_assignments = {code: [] for code in previous.active_categories}
-            # A colleague deactivated since then is not invited again.
-            deactivated = Reviewee.objects.filter(
-                organization=reviewee.organization_id, is_active=False, email__iexact=OuterRef('reviewer_email'))
-            for category, email in previous.tokens.filter(
-                reviewer_email__isnull=False, category__in=previous.active_categories,
-            ).exclude(Exists(deactivated)).values_list('category', 'reviewer_email'):
-                email_assignments[category].append(email.lower())
-            # The self-assessment goes to the person's address of today,
-            # not to the one the previous cycle used.
-            if 'self' in email_assignments and reviewee.email:
-                email_assignments['self'] = [reviewee.email.lower()]
-            if not any(emails for code, emails in email_assignments.items() if code != 'self'):
-                unplaced_count += 1
-                continue
+            cycle, email_assignments = previous
+            cycle_questionnaire = cycle.questionnaire
+            cycle_flags = {f'include_{c}': getattr(cycle, f'include_{c}') for c in CATEGORY_ORDER}
         elif bulk_source == 'chart':
             buckets = derive_reviewers(reviewee)
             # Build the email_assignments dict the existing

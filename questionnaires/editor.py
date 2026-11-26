@@ -116,7 +116,8 @@ def posted_option_rows(post, prefix, with_weights=False):
     """The answer options the question editor posted, as [(id or None, label, weight), ...].
 
     Each row posts the id of its option (empty for a new one), its label and, for choice questions, its weight. Rows
-    without a label are dropped. Raises ValueError for a weight that is not a number.
+    without a label are dropped. An empty weight is no weight: the creator may be between two scores. Raises ValueError
+    for a weight that is not a finite number.
     """
 
     ids = post.getlist(f'{prefix}_option_id')
@@ -127,7 +128,12 @@ def posted_option_rows(post, prefix, with_weights=False):
     for posted_id, label, weight in zip(ids, labels, weights):
         if label := label.strip():
             option_id = int(posted_id) if posted_id.isdigit() else None
-            rows.append((option_id, label, float(weight) if with_weights else None))
+            weight = float(weight) if weight.strip() else None
+
+            if weight is not None and not isfinite(weight):
+                raise ValueError(f'{weight} is not a finite number')
+
+            rows.append((option_id, label, weight))
 
     return rows
 
@@ -247,6 +253,7 @@ def question_form_values(questionnaire, question):
         labels = question.labels
 
     choices = options if question_type in ('single_choice', 'multiple_choice') else []
+    scored = bool(question.config.get('scoring_enabled'))
     scale = question.config if question_type == 'scale' else {}
     bounds = score_range({'question_type': question_type, 'question_config': question.config, 'options': options})
 
@@ -263,9 +270,10 @@ def question_form_values(questionnaire, question):
         'likert_options': options if question_type == 'likert' else [
             {'id': '', 'label': f'{label}'} for label in default_likert_scale
         ],
-        # A choice without scores shows the position as the score to start from
+        # A choice without scores shows the position as the score to start from; with scores an answer without one
+        # stays empty, so the next save does not give it a score nobody typed
         'choice_options': [
-            {**option, 'weight': option['weight'] if option['weight'] is not None else position}
+            {**option, 'weight': option['weight'] if option['weight'] is not None or scored else position}
             for position, option in enumerate(choices, 1)
         ] or [{'id': '', 'label': '', 'weight': position} for position in range(1, 4)],
         'scale': {
@@ -565,16 +573,16 @@ def save_question(questionnaire, post, question=None, section=None):
         if post.get('reverse_scored') == 'on':
             config['reverse_scored'] = True
     elif question_type in ('single_choice', 'multiple_choice'):
-        # Weights only count with scoring enabled; a weight that is not a number turns scoring off
+        # Weights only count with scoring enabled
         enable_scoring = post.get('enable_scoring') == 'on'
 
         try:
             option_rows = posted_option_rows(post, 'choice', with_weights=enable_scoring)
         except ValueError:
-            option_rows = posted_option_rows(post, 'choice')
-        else:
-            if enable_scoring:
-                config['scoring_enabled'] = True
+            raise EditorError(_('A score must be a number.'))
+
+        if enable_scoring:
+            config['scoring_enabled'] = True
 
         if question_type == 'single_choice' and post.get('display_list') != 'on':
             config['display'] = 'dropdown'

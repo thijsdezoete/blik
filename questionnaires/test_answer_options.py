@@ -161,21 +161,23 @@ class EditorTest(AnswerOptionTestCase):
         self.assertEqual(self.option_labels(self.likert)[:2], ['Strongly Concur', 'Concur'])
         self.assertEqual(self.likert.options.get(id=answer.answer_data['value']).label, 'Concur')
 
-    def test_an_invalid_weight_disables_scoring(self):
-        self.edit(
-            action='save_question',
-            question_id=self.choice.id,
-            question_type='single_choice',
-            question_text='Choice',
-            enable_scoring='on',
-            choice_option_id=[f'{option.id}' for option in self.choice.options.all()],
-            choice_option_label=['Low', 'High'],
-            choice_option_weight=['1', ''],
-        )
+    def test_an_empty_score_is_no_score_and_a_score_that_is_not_a_number_is_refused(self):
+        fields = {
+            'action': 'save_question', 'question_id': self.choice.id, 'question_type': 'single_choice',
+            'question_text': 'Choice', 'enable_scoring': 'on', 'choice_option_label': ['Low', 'High'],
+            'choice_option_id': [f'{option.id}' for option in self.choice.options.all()],
+        }
+
+        refused = self.edit(**fields, choice_option_weight=['1', 'abc'])
+
+        self.assertEqual(refused.status_code, 400)
+        self.assertEqual(list(self.choice.options.values_list('label', 'weight')), [('Low', 1), ('High', 5)])
+
+        self.edit(**fields, choice_option_weight=['1', ''])
 
         self.choice.refresh_from_db()
-        self.assertNotIn('scoring_enabled', self.choice.config)
-        self.assertEqual(list(self.choice.options.values_list('label', 'weight')), [('Low', None), ('High', None)])
+        self.assertIs(self.choice.config['scoring_enabled'], True)
+        self.assertEqual(list(self.choice.options.values_list('label', 'weight')), [('Low', 1), ('High', None)])
 
     def test_slider_labels_are_stored_without_the_empty_ones(self):
         self.edit(

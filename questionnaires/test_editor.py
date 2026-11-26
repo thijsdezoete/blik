@@ -7,6 +7,7 @@ from questionnaires.editor import (
     clear_model,
     did_not_observe_state,
     example_score,
+    question_form_values,
     rating_labels,
     report_preview,
     save_question,
@@ -302,6 +303,42 @@ class SaveQuestionTests(EditorTestCase):
         self.save(question, **fields)
         self.assertEqual(question.config['display'], 'dropdown')
 
+    def save_scored_pick_one(self, scores):
+        """A scored Pick one with the weights 1, 3 and 5, saved with the posted scores."""
+
+        question = self.add_question('single_choice', config={'scoring_enabled': True})
+        options = self.add_options(question, ['Rarely', 'Often', 'Always'])
+
+        for option, weight in zip(options, (1, 3, 5)):
+            option.weight = weight
+            option.save()
+
+        self.save(question, question_text='Question 0', question_type='single_choice', enable_scoring='on',
+                  choice_option_id=[f'{option.id}' for option in options],
+                  choice_option_label=['Rarely', 'Often', 'Always'], choice_option_weight=scores)
+
+        return question
+
+    def stored_weights(self):
+        return [option.weight for option in AnswerOption.objects.filter(question__section=self.section)]
+
+    def test_an_empty_score_of_a_scored_pick_question_is_no_score(self):
+        question = self.save_scored_pick_one(['1', '', '5'])
+
+        question.refresh_from_db()
+        self.assertEqual(self.stored_weights(), [1, None, 5])
+        self.assertIs(question.config['scoring_enabled'], True)
+
+    def test_a_score_that_is_not_a_number_is_refused(self):
+        for score in ('abc', 'nan', 'inf'):
+            with self.subTest(score=score):
+                with self.assertRaisesMessage(EditorError, 'A score must be a number.'):
+                    self.save_scored_pick_one(['1', score, '5'])
+
+                self.assertEqual(self.stored_weights(), [1, 3, 5])
+                self.assertIs(Question.objects.get(section=self.section).config['scoring_enabled'], True)
+                Question.objects.filter(section=self.section).delete()
+
     def test_did_not_observe_is_stored_for_scores_and_likerts_only(self):
         question = self.add_question()
         fields = {'question_text': 'Question 0', 'question_type': 'rating', 'rating_count': '5'}
@@ -379,6 +416,22 @@ class SaveQuestionTests(EditorTestCase):
         for fields in ({'scale_min': '5', 'scale_max': '5'}, {'scale_step': '0'}):
             with self.subTest(fields=fields), self.assertRaises(EditorError):
                 self.save(question, question_text='Question 0', question_type='scale', **fields)
+
+
+class QuestionFormValuesTests(EditorTestCase):
+    def choice_weights(self, config):
+        question = self.add_question('single_choice', config=config)
+        options = self.add_options(question, ['Rarely', 'Often', 'Always'])
+        options[0].weight = 1
+        options[0].save()
+
+        return [option['weight'] for option in question_form_values(self.questionnaire, question)['choice_options']]
+
+    def test_a_pick_question_without_scores_starts_from_the_positions(self):
+        self.assertEqual(self.choice_weights({}), [1, 2, 3])
+
+    def test_a_scored_pick_question_shows_an_answer_without_score_empty(self):
+        self.assertEqual(self.choice_weights({'scoring_enabled': True}), [1, None, None])
 
 
 class WeightTests(EditorTestCase):

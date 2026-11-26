@@ -1913,7 +1913,8 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
         cycle_questionnaire, cycle_flags = questionnaire, category_flags
         if bulk_source == 'previous':
             previous = previous_cycle_reviewers(reviewee)
-            if previous is None:
+            # Archived questionnaires do not come back this way.
+            if previous is None or not previous[0].questionnaire.is_active:
                 unplaced_count += 1
                 continue
             cycle, email_assignments = previous

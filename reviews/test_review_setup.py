@@ -5,7 +5,7 @@ from accounts.models import ReviewSetup, SetupReviewer
 from core.factories import OrganizationFactory
 from questionnaires.factories import QuestionnaireFactory
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
-from reviews.setup import review_setup, save_review_setup
+from reviews.setup import has_previous_review, review_setup, save_review_setup
 
 ALL_FLAGS = {'include_self': True, 'include_manager': True, 'include_peer': True, 'include_direct_report': True}
 
@@ -63,6 +63,20 @@ class ReviewSetupOrderTests(SetupTestCase):
         self.assertEqual(setup.source, 'previous')
         self.assertEqual(setup.emails['peer'], ['dana@acme.example'])
         self.assertEqual(setup.questionnaire, other)
+
+    def test_previous_review_with_an_archived_questionnaire_keeps_the_reviewers(self):
+        archived = QuestionnaireFactory(organization=self.org, name='Old review', is_active=False)
+        self.previous_cycle(questionnaire=archived)
+        setup = review_setup(self.alex)
+        self.assertEqual(setup.source, 'previous')
+        self.assertEqual(setup.emails['peer'], ['dana@acme.example'])
+        self.assertEqual(setup.questionnaire, self.default)
+
+    def test_has_previous_review_is_true_with_an_archived_questionnaire(self):
+        self.assertFalse(has_previous_review(self.alex))
+        archived = QuestionnaireFactory(organization=self.org, name='Old review', is_active=False)
+        self.previous_cycle(questionnaire=archived)
+        self.assertTrue(has_previous_review(self.alex))
 
     def test_empty_without_any_data(self):
         setup = review_setup(self.alex)

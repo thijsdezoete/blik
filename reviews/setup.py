@@ -37,12 +37,12 @@ class Setup:
 def previous_cycle_reviewers(reviewee):
     """
     The latest cycle of a person as (cycle, email assignments per category), or
-    None when it cannot start a new one: no cycle, an archived questionnaire,
-    or nobody but the person in it. Emails only, never FKs.
+    None when it cannot start a new one: no cycle,
+    or nobody but the person in it. Emails only, never FKs. The questionnaire is
+    for the caller to judge: a bulk run skips an archived one, a list does not.
     """
     previous = reviewee.review_cycles.select_related('questionnaire').first()
-    # Archived questionnaires do not come back this way either.
-    if previous is None or not previous.questionnaire.is_active:
+    if previous is None:
         return None
     email_assignments = {code: [] for code in previous.active_categories}
     # A colleague deactivated since then is not invited again.
@@ -123,7 +123,7 @@ def review_setup(reviewee, source=None):
         cycle, assignments = previous
         setup.source = 'previous'
         setup.flags = {f'include_{c}': getattr(cycle, f'include_{c}') for c in CATEGORY_ORDER}
-        setup.questionnaire = cycle.questionnaire
+        setup.questionnaire = cycle.questionnaire if cycle.questionnaire.is_active else None
         by_email = _active_people_by_email(reviewee)
         for category in LISTED:
             for email in assignments.get(category, []):

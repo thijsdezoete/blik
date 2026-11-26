@@ -27,19 +27,21 @@
             </label>
         </div>
         {% endfor %}
+        {% if question.offers_did_not_observe %}
         <div class="rating-option">
             <input
                 type="radio"
                 name="question_{{ question.id }}"
                 value="did_not_observe"
-				id="q{{ question.id }}_did_not_observe" 
-				{% if existing_responses|get_item:question.id == 'did_not_observe' %}checked{% endif %} 
-				{% if question.required %}required{% endif %}
-			    >
+                id="q{{ question.id }}_did_not_observe"
+                {% if existing_responses|get_item:question.id == 'did_not_observe' %}checked{% endif %}
+                {% if question.required %}required{% endif %}
+            >
             <label for="q{{ question.id }}_did_not_observe" class="rating-label">
                 <span class="rating-description">{% trans "Did not observe" %}</span>
             </label>
         </div>
+        {% endif %}
     </div>
     {% include 'reviews/rating_descriptions.html' %}
 
@@ -60,6 +62,21 @@
             </label>
         </div>
         {% endfor %}
+        {% if question.offers_did_not_observe %}
+        <div class="likert-option">
+            <input
+                type="radio"
+                name="question_{{ question.id }}"
+                value="did_not_observe"
+                id="q{{ question.id }}_did_not_observe"
+                {% if existing_responses|get_item:question.id == 'did_not_observe' %}checked{% endif %}
+                {% if question.required %}required{% endif %}
+            >
+            <label for="q{{ question.id }}_did_not_observe" class="likert-label">
+                {% trans "Did not observe" %}
+            </label>
+        </div>
+        {% endif %}
     </div>
 
     {% elif question.question_type == 'text' %}

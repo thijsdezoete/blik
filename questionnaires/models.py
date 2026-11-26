@@ -216,6 +216,18 @@ class Question(Translatable, TimeStampedModel):
         return Truncator(self.question_text).chars(50)
 
     @property
+    def offers_did_not_observe(self):
+        """Whether the reviewer may answer "Did not observe": only a score or a Likert question offers it.
+
+        Without a setting a score offers it and a Likert does not, as before the setting existed.
+        """
+
+        if self.question_type not in ('rating', 'likert'):
+            return False
+
+        return bool((self.config or {}).get('did_not_observe', self.question_type == 'rating'))
+
+    @property
     def options_data(self):
         """The answer options as plain data, for the editor and the export."""
 

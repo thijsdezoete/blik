@@ -859,6 +859,7 @@ def reviewee_detail(request, reviewee_uuid):
     ).select_related('cycle').order_by('-cycle__created_at', '-pk'))
 
     summary = reviewee_summary(reviewee, access['reader'])
+    latest_review = next((review for review in summary['reviews'] if review['report']), None)
     runs = set(runnable_cycles(request).filter(reviewee=reviewee, status='active').values_list('pk', flat=True))
     labels = {code: label for code, label, *_rest in REVIEWER_CARD_CATEGORIES}
     current_reviews = [{
@@ -894,8 +895,8 @@ def reviewee_detail(request, reviewee_uuid):
         'current_reviews': current_reviews,
         # Newest first: the header's reminder goes to the newest active cycle this user runs
         'reminder_cycle': next((review['cycle'] for review in current_reviews if review['runs']), None),
-        'latest_review': next((review for review in summary['reviews'] if review['report']), None),
-        'results_first': bool(reports) and not current_reviews,
+        'latest_review': latest_review,
+        'results_first': latest_review is not None and not current_reviews,
         'has_cycles': bool(cycles),
         'categories': categories,
         'shows_reviewers': access['setup'] or access['reader'] == 'all',

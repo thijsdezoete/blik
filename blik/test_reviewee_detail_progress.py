@@ -109,15 +109,35 @@ class RevieweeDetailCurrentReviewTests(TestCase):
         self.assertEqual([review['runs'] for review in context['current_reviews']], [True, True])
         self.assertEqual(context['reminder_cycle'], self.newer)
 
-    def test_manager_who_only_reads_gets_no_cycle_links(self):
+    def manager_of_alex(self, may_create_for_others=False):
         manager = UserProfileFactory(organization=self.org, user__email='hank@acme.example').user
-        assign_organization_member(manager)
+        assign_organization_member(manager, can_create_cycles_for_others=may_create_for_others)
         unit = OrgUnitFactory(organization=self.org)
         OrgUnitMembershipFactory(unit=unit, reviewee=Reviewee.objects.get(email='hank@acme.example'), row=0, col=0)
         OrgUnitMembershipFactory(unit=unit, reviewee=self.alex, row=1, col=0)
+        return manager
 
-        context = self.page(manager)
+    def test_manager_who_only_reads_gets_no_cycle_links(self):
+        context = self.page(self.manager_of_alex())
 
         self.assertEqual(context['access']['reader'], 'manager')
         self.assertEqual([review['runs'] for review in context['current_reviews']], [False, False])
         self.assertIsNone(context['reminder_cycle'])
+
+    def test_manager_with_the_create_right_gets_the_cycle_links(self):
+        context = self.page(self.manager_of_alex(may_create_for_others=True))
+
+        self.assertEqual(context['access']['reader'], 'manager')
+        self.assertEqual([review['runs'] for review in context['current_reviews']], [True, True])
+        self.assertEqual(context['reminder_cycle'], self.newer)
+
+    def test_reviewee_gets_the_links_of_their_own_cycle(self):
+        # The app lets a reviewee open their own cycle today; a change of that rule shows here
+        reviewee = UserProfileFactory(organization=self.org, user__email='alex@acme.example').user
+        assign_organization_member(reviewee)
+
+        context = self.page(reviewee)
+
+        self.assertEqual(context['access']['reader'], 'own')
+        self.assertEqual([review['runs'] for review in context['current_reviews']], [True, True])
+        self.assertEqual(context['reminder_cycle'], self.newer)

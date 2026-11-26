@@ -18,7 +18,7 @@
     {% if access.manage or access.setup or reminder_cycle %}
     <div class="rv-actions">
         {% if access.manage %}<a href="{% url 'reviewee_edit' reviewee.uuid %}" class="btn btn-secondary">{% trans 'Edit details' %}</a>{% endif %}
-        {% if reminder_cycle %}<a href="{% url 'send_reminder_form' reminder_cycle.uuid %}" class="btn btn-primary">{% trans 'Send reminder' %}</a>
+        {% if reminder_cycle %}<a href="{% url 'send_reminder_form' reminder_cycle.uuid %}" class="btn btn-primary">{% trans 'Send Reminder' %}</a>
         {% elif access.setup and questionnaires %}<button type="button" class="btn btn-primary" data-reviewee-dialog="start-review-detail" aria-haspopup="dialog">{% trans 'Start review' %}</button>{% endif %}
         {% if access.manage or reminder_cycle and access.setup and questionnaires %}
         <button type="button" class="btn btn-secondary reviewee-more" popovertarget="reviewee-actions" data-reviewee-popover aria-label="{% trans 'Actions' %}: {{ reviewee.name }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>

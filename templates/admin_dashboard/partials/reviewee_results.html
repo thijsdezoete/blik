@@ -1,10 +1,10 @@
 {% load i18n %}
 {# Every number comes from reviewee_summary: the version of the report this reader may open #}
-{% if reports %}
+{% if latest_review %}
 <section class="card" aria-label="{% trans 'Latest review in figures' %}">
     <div class="card-body rv-figures">
         <div>
-            <p class="dash-subhead is-first">{% trans 'Latest score' %}</p>
+            <p class="dash-subhead is-first">{% trans 'Overall score (excluding self-assessment)' %}</p>
             <p class="dash-figure">{% if summary.latest_score is None %}–{% else %}{{ summary.latest_score }} <small>{% trans 'of 5' %}</small>{% endif %}</p>
             {% if summary.change is not None %}
             <p class="help-text">{% if summary.change > 0 %}<span class="rv-up"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 1l4 7H1z" fill="currentColor"></path></svg>+{{ summary.change|floatformat:1 }}</span>{% elif summary.change < 0 %}<span class="rv-down"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 9L1 2h8z" fill="currentColor"></path></svg>{{ summary.change|floatformat:1 }}</span>{% else %}<span class="rv-same">{{ summary.change|floatformat:1 }}</span>{% endif %}
@@ -41,7 +41,7 @@
     <div class="card-header"><h2 class="card-title" id="reviews-title">{% trans 'Reviews' %}</h2></div>
     <div class="table-wrapper">
         <table class="table" aria-labelledby="reviews-title">
-            <thead><tr><th scope="col">{% trans 'Started' %}</th><th scope="col">{% trans 'Questionnaire' %}</th><th scope="col" class="rv-num">{% trans 'Answered' %}</th><th scope="col" class="rv-num">{% trans 'Score' %}</th><th scope="col">{% trans 'Report' %}</th></tr></thead>
+            <thead><tr><th scope="col">{% trans 'Created' %}</th><th scope="col">{% trans 'Questionnaire' %}</th><th scope="col" class="rv-num">{% trans 'Answers' %}</th><th scope="col" class="rv-num">{% trans 'Score' %}</th><th scope="col">{% trans 'Report' %}</th></tr></thead>
             <tbody>
             {% for review in summary.reviews %}
                 <tr>

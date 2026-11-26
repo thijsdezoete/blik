@@ -1,9 +1,9 @@
 {% load i18n %}
 {# One active cycle of the reviewee: counts per category, never who answered #}
-<section class="card rv-current" aria-labelledby="current-{{ review.cycle.uuid }}">
+<section class="card rv-current" aria-labelledby="current-{{ review.cycle.uuid }} current-{{ review.cycle.uuid }}-about">
     <div class="card-header">
         <h2 class="card-title" id="current-{{ review.cycle.uuid }}">{% trans 'Current review' %}</h2>
-        <span class="help-text">{{ review.cycle.questionnaire.name }} · {% blocktrans trimmed with date=review.cycle.created_at|date:'DATE_FORMAT' %}Started on {{ date }}{% endblocktrans %}</span>
+        <span class="help-text" id="current-{{ review.cycle.uuid }}-about">{{ review.cycle.questionnaire.name }} · {% blocktrans trimmed with date=review.cycle.created_at|date:'DATE_FORMAT' %}Created on {{ date }}{% endblocktrans %}</span>
     </div>
     <div class="card-body">
         <p class="rv-answered">{% blocktrans trimmed with answered=review.answered invited=review.invited %}{{ answered }} of {{ invited }} invited reviewers answered{% endblocktrans %}</p>
@@ -11,8 +11,8 @@
         <div class="progress" aria-hidden="true"><div class="progress-bar" style="width: {% widthratio review.answered review.invited 100 %}%"></div></div>
 
         <div class="table-wrapper">
-            <table class="table" aria-labelledby="current-{{ review.cycle.uuid }}">
-                <thead><tr><th scope="col">{% trans 'Category' %}</th><th scope="col" class="rv-num">{% trans 'Invited' %}</th><th scope="col" class="rv-num">{% trans 'Answered' %}</th><th scope="col">{% trans 'Expected in the report' %}</th></tr></thead>
+            <table class="table" aria-labelledby="current-{{ review.cycle.uuid }} current-{{ review.cycle.uuid }}-about">
+                <thead><tr><th scope="col">{% trans 'Category' %}</th><th scope="col" class="rv-num">{% trans 'Invited' %}</th><th scope="col" class="rv-num">{% trans 'Answers' %}</th><th scope="col">{% trans 'Expected in the report' %}</th></tr></thead>
                 <tbody>
                 {% for row in review.progress %}
                     <tr>
@@ -33,8 +33,8 @@
     <div class="card-footer">
         <a href="{% url 'review_cycle_detail' review.cycle.uuid %}" class="rv-link">{% trans 'Open cycle' %}</a>
         <div class="rv-actions">
-            <a href="{% url 'send_reminder_form' review.cycle.uuid %}" class="btn btn-secondary">{% trans 'Send reminder' %}</a>
-            <form method="post" action="{% url 'close_cycle' review.cycle.uuid %}" class="rv-close">{% csrf_token %}<button type="submit" class="btn btn-secondary">{% trans 'Close review and make report' %}</button></form>
+            <a href="{% url 'send_reminder_form' review.cycle.uuid %}" class="btn btn-secondary">{% trans 'Send Reminder' %}</a>
+            <form method="post" action="{% url 'close_cycle' review.cycle.uuid %}" class="rv-close">{% csrf_token %}<button type="submit" class="btn btn-secondary">{% trans 'Close Cycle & Generate Report' %}</button></form>
         </div>
     </div>
     {% endif %}

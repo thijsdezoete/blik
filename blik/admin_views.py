@@ -849,7 +849,8 @@ def quick_cycle_create(request, reviewee_uuid):
             for category in CATEGORY_ORDER
         }
 
-    has_saved_list = ReviewSetup.objects.filter(reviewee=reviewee).exists()
+    setup = review_setup(reviewee)
+    has_saved_list = setup.source == 'saved'
 
     # Create the cycle and its tokens together: a refused token leaves no cycle behind.
     try:
@@ -866,7 +867,7 @@ def quick_cycle_create(request, reviewee_uuid):
 
             if has_saved_list:
                 # The list on the person's page: emails only, and the invitations are queued below.
-                saved_assignments = review_setup(reviewee).email_assignments(
+                saved_assignments = setup.email_assignments(
                     [c for c in cycle.active_categories if c != 'self'])
                 for category, emails in saved_assignments.items():
                     for _email in emails:
@@ -1922,12 +1923,11 @@ def plan_bulk_cycles(reviewees, bulk_source, questionnaire, category_flags):
 
     `bulk_source` controls the reviewers of each cycle:
         'chart' — derive from the org chart for each reviewee
-        both 'chart' and 'previous' take the reviewers of a person from the
-                     person's saved list instead, when there is one
         'previous' — each reviewee's latest cycle: its questionnaire,
                      categories and reviewer email strings (never FKs),
                      without the addresses of deactivated people
         'empty' — no reviewers yet (admins fill them in per cycle later)
+    With 'chart' or 'previous', a person with a saved list gets their reviewers from it instead.
 
     Returns (planned, skipped): planned is a list of (reviewee, questionnaire,
     category flags, email assignments or None); skipped counts the people who

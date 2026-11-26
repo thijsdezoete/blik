@@ -1,7 +1,7 @@
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from accounts.factories import RevieweeFactory, UserProfileFactory
+from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, RevieweeFactory, UserProfileFactory
 from accounts.models import ReviewSetup
 from accounts.permissions import assign_organization_admin
 from core.factories import OrganizationFactory, UserFactory
@@ -27,6 +27,8 @@ class SavedListSourcesTests(TestCase):
         for person in self.org.reviewees.exclude(pk=self.alex.pk):
             person.is_active = False
             person.save()
+        self.blair = RevieweeFactory(organization=self.org, name='Blair Chen', email='blair@acme.example')
+        self.dana = RevieweeFactory(organization=self.org, name='Dana Ruiz', email='dana@acme.example')
 
     def save_list(self, person, peers=(), managers=()):
         return save_review_setup(
@@ -77,10 +79,19 @@ class SavedListSourcesTests(TestCase):
         self.bulk('chart')
         self.assertEqual(self.emails(self.newest_cycle(self.alex), 'peer'), {'casey@acme.example'})
 
+    def put_in_chart_under_blair(self, *people):
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.blair, row=0, col=0)
+        for col, person in enumerate(people):
+            OrgUnitMembershipFactory(unit=unit, reviewee=person, row=1, col=col)
+
     def test_bulk_from_chart_keeps_the_chart_for_a_person_without_a_list(self):
-        # The chart knows nobody for Alex, so without a list Alex gets no cycle.
+        self.put_in_chart_under_blair(self.alex, self.dana)
+        self.save_list(self.alex, peers=['casey@acme.example'])
         self.bulk('chart')
-        self.assertIsNone(self.newest_cycle(self.alex))
+        self.assertEqual(self.emails(self.newest_cycle(self.dana), 'manager'), {'blair@acme.example'})
+        self.assertEqual(self.emails(self.newest_cycle(self.alex), 'peer'), {'casey@acme.example'})
+        self.assertEqual(self.emails(self.newest_cycle(self.alex), 'manager'), set())
 
     def test_bulk_run_limits_the_saved_list_to_its_categories(self):
         self.save_list(self.alex, peers=['casey@acme.example'], managers=['blair@acme.example'])
@@ -95,6 +106,40 @@ class SavedListSourcesTests(TestCase):
         self.assertEqual(self.emails(self.newest_cycle(self.alex), 'peer'), set())
 
     def test_bulk_run_saves_no_list(self):
-        self.previous_cycle(self.alex)
+        self.put_in_chart_under_blair(self.alex, self.dana)
+        self.save_list(self.alex, peers=['casey@acme.example'])
+        rows_before = set(self.alex.review_setup.reviewers.values_list('pk', 'category', 'email'))
+        self.bulk('chart')
+        self.assertTrue(self.emails(self.newest_cycle(self.dana), 'manager'))
+        self.assertFalse(ReviewSetup.objects.filter(reviewee=self.dana).exists())
+        self.assertEqual(set(self.alex.review_setup.reviewers.values_list('pk', 'category', 'email')), rows_before)
+
+    def test_bulk_from_previous_takes_reviewers_from_the_list_and_the_rest_from_the_previous_cycle(self):
+        annual = QuestionnaireFactory(organization=self.org, name='Annual review')
+        previous = ReviewCycleFactory(reviewee=self.alex, questionnaire=annual, include_direct_report=False)
+        ReviewerTokenFactory(cycle=previous, category='peer', reviewer_email='dana@acme.example')
+        self.save_list(self.alex, peers=['casey@acme.example'])
         self.bulk('previous')
-        self.assertFalse(ReviewSetup.objects.filter(reviewee=self.alex).exists())
+        cycle = self.newest_cycle(self.alex)
+        self.assertNotEqual(cycle.pk, previous.pk)
+        self.assertEqual(cycle.questionnaire, annual)
+        self.assertFalse(cycle.include_direct_report)
+        self.assertEqual(self.emails(cycle, 'peer'), {'casey@acme.example'})
+
+    def test_bulk_from_previous_skips_a_person_with_a_list_and_no_previous_cycle(self):
+        self.save_list(self.alex, peers=['casey@acme.example'])
+        self.bulk('previous')
+        self.assertIsNone(self.newest_cycle(self.alex))
+
+    def test_bulk_run_makes_no_cycle_for_an_empty_saved_list(self):
+        self.put_in_chart_under_blair(self.alex)
+        self.save_list(self.alex)
+        self.bulk('chart')
+        self.assertIsNone(self.newest_cycle(self.alex))
+
+    def test_list_dialog_makes_one_self_token(self):
+        self.save_list(self.alex, peers=['casey@acme.example'])
+        self.client.post(reverse('quick_cycle_create', args=[self.alex.uuid]), {
+            'questionnaire_id': str(self.questionnaire.id), 'categories_submitted': '1',
+            'include_self': 'on', 'include_peer': 'on'})
+        self.assertEqual(self.newest_cycle(self.alex).tokens.filter(category='self').count(), 1)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 14:29+0000\n"
+"POT-Creation-Date: 2026-11-26 14:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5239,26 +5239,26 @@ msgid "In the report"
 msgstr "In het rapport"
 
 #, python-format
-msgid "Counts for \"%(topic)s\" on the radar."
-msgstr "Telt mee voor \"%(topic)s\" in het radardiagram."
+msgid "The score is included on the axis \"%(topic)s\"."
+msgstr "De score telt mee op de as \"%(topic)s\"."
 
-msgid "Written answers show as text in the report. They do not count in the radar."
-msgstr "Geschreven antwoorden staan als tekst in het rapport. Ze tellen niet mee in het radardiagram."
+msgid "Written answers show as text in the report. They have no score."
+msgstr "Geschreven antwoorden staan als tekst in het rapport. Ze hebben geen score."
 
-msgid "This question does not count for the radar. It was set that way when the questionnaire was made."
-msgstr "Deze vraag telt niet mee voor het radardiagram. Dat is zo ingesteld toen de vragenlijst werd gemaakt."
+msgid "The score of this question is not included on an axis. It was set that way when the questionnaire was made."
+msgstr "De score van deze vraag telt op geen enkele as mee. Dat is zo ingesteld toen de vragenlijst werd gemaakt."
 
-msgid "A Likert question needs at least two answers to count in the radar."
-msgstr "Een Likert-vraag heeft minstens twee antwoorden nodig om mee te tellen in het radardiagram."
+msgid "A Likert question needs at least two answers to have a score."
+msgstr "Een Likert-vraag heeft minstens twee antwoorden nodig om een score te hebben."
 
-msgid "The report shows how often each answer was picked. Without scores, this question does not count in the radar."
-msgstr "Het rapport laat zien hoe vaak elk antwoord is gekozen. Zonder scores telt deze vraag niet mee in het radardiagram."
+msgid "The report shows how often each answer was picked. Without a score per answer, this question has no score for an axis."
+msgstr "Het rapport laat zien hoe vaak elk antwoord is gekozen. Zonder score per antwoord heeft deze vraag geen score voor een as."
 
 msgid "Give each answer a score"
 msgstr "Elk antwoord een score geven"
 
-msgid "Then this question counts in the radar. You type the scores next to the answers above."
-msgstr "Dan telt deze vraag mee in het radardiagram. Je typt de scores naast de antwoorden hierboven."
+msgid "Then the score of this question is included on the axis of its topic. You type the scores next to the answers above."
+msgstr "Dan telt de score van deze vraag mee op de as van het onderwerp. Je typt de scores naast de antwoorden hierboven."
 
 #, python-format
 msgid "%(low)s counts as 1, %(high)s counts as 5. The report uses one scale of 1 to 5 for all questions."
@@ -5291,14 +5291,11 @@ msgid_plural "%(counter)s answers"
 msgstr[0] "%(counter)s antwoord"
 msgstr[1] "%(counter)s antwoorden"
 
-msgid "counts in the radar"
-msgstr "telt mee in het radardiagram"
+msgid "not on the radar"
+msgstr "niet in het radardiagram"
 
-msgid "shown as text in the report"
-msgstr "als tekst in het rapport"
-
-msgid "shown as counts in the report"
-msgstr "als aantallen in het rapport"
+msgid "no score"
+msgstr "geen score"
 
 msgid "Edit"
 msgstr "Bewerken"
@@ -5373,10 +5370,10 @@ msgid "No question has a score yet, so the report has no chart. Each topic with 
 msgstr "Nog geen vraag heeft een score, dus het rapport heeft geen diagram. Elk onderwerp met een vraag met een score krijgt een eigen as in het radardiagram."
 
 #, python-format
-msgid "%(counting)s of %(counter)s question counts."
-msgid_plural "%(counting)s of %(counter)s questions count."
-msgstr[0] "%(counting)s van %(counter)s vraag telt mee."
-msgstr[1] "%(counting)s van %(counter)s vragen tellen mee."
+msgid "The score of %(counting)s of %(counter)s question is included."
+msgid_plural "The score of %(counting)s of %(counter)s questions is included."
+msgstr[0] "De score van %(counting)s van %(counter)s vraag telt mee."
+msgstr[1] "De scores van %(counting)s van %(counter)s vragen tellen mee."
 
 msgid "No questions yet."
 msgstr "Nog geen vragen."

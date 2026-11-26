@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 14:29+0000\n"
+"POT-Creation-Date: 2026-11-26 14:34+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -5230,26 +5230,26 @@ msgid "In the report"
 msgstr "Im Bericht"
 
 #, python-format
-msgid "Counts for \"%(topic)s\" on the radar."
-msgstr "Zählt für „%(topic)s“ im Netzdiagramm."
+msgid "The score is included on the axis \"%(topic)s\"."
+msgstr "Die Bewertung zählt auf der Achse „%(topic)s“."
 
-msgid "Written answers show as text in the report. They do not count in the radar."
-msgstr "Schriftliche Antworten erscheinen im Bericht als Text. Im Netzdiagramm zählen sie nicht."
+msgid "Written answers show as text in the report. They have no score."
+msgstr "Schriftliche Antworten erscheinen im Bericht als Text. Sie haben keine Bewertung."
 
-msgid "This question does not count for the radar. It was set that way when the questionnaire was made."
-msgstr "Diese Frage zählt nicht für das Netzdiagramm. Das wurde beim Erstellen des Fragebogens so festgelegt."
+msgid "The score of this question is not included on an axis. It was set that way when the questionnaire was made."
+msgstr "Die Bewertung dieser Frage zählt auf keiner Achse. Das wurde beim Erstellen des Fragebogens so festgelegt."
 
-msgid "A Likert question needs at least two answers to count in the radar."
-msgstr "Eine Likert-Frage braucht mindestens zwei Antworten, um im Netzdiagramm zu zählen."
+msgid "A Likert question needs at least two answers to have a score."
+msgstr "Eine Likert-Frage braucht mindestens zwei Antworten, um eine Bewertung zu haben."
 
-msgid "The report shows how often each answer was picked. Without scores, this question does not count in the radar."
-msgstr "Der Bericht zeigt, wie oft jede Antwort gewählt wurde. Ohne Bewertungen zählt diese Frage nicht im Netzdiagramm."
+msgid "The report shows how often each answer was picked. Without a score per answer, this question has no score for an axis."
+msgstr "Der Bericht zeigt, wie oft jede Antwort gewählt wurde. Ohne Bewertung pro Antwort hat diese Frage keine Bewertung für eine Achse."
 
 msgid "Give each answer a score"
 msgstr "Jeder Antwort eine Bewertung geben"
 
-msgid "Then this question counts in the radar. You type the scores next to the answers above."
-msgstr "Dann zählt diese Frage im Netzdiagramm. Die Bewertungen kommen in die Felder neben den Antworten oben."
+msgid "Then the score of this question is included on the axis of its topic. You type the scores next to the answers above."
+msgstr "Dann zählt die Bewertung dieser Frage auf der Achse ihres Themas. Die Bewertungen kommen in die Felder neben den Antworten oben."
 
 #, python-format
 msgid "%(low)s counts as 1, %(high)s counts as 5. The report uses one scale of 1 to 5 for all questions."
@@ -5282,14 +5282,11 @@ msgid_plural "%(counter)s answers"
 msgstr[0] "%(counter)s Antwort"
 msgstr[1] "%(counter)s Antworten"
 
-msgid "counts in the radar"
-msgstr "zählt im Netzdiagramm"
+msgid "not on the radar"
+msgstr "nicht im Netzdiagramm"
 
-msgid "shown as text in the report"
-msgstr "im Bericht als Text"
-
-msgid "shown as counts in the report"
-msgstr "im Bericht als Anzahl"
+msgid "no score"
+msgstr "keine Bewertung"
 
 msgid "Edit"
 msgstr "Bearbeiten"
@@ -5364,10 +5361,10 @@ msgid "No question has a score yet, so the report has no chart. Each topic with 
 msgstr "Noch hat keine Frage eine Bewertung, also hat der Bericht kein Diagramm. Jedes Thema mit einer Frage mit Bewertung bekommt eine eigene Achse im Netzdiagramm."
 
 #, python-format
-msgid "%(counting)s of %(counter)s question counts."
-msgid_plural "%(counting)s of %(counter)s questions count."
-msgstr[0] "%(counting)s von %(counter)s Frage zählt."
-msgstr[1] "%(counting)s von %(counter)s Fragen zählen."
+msgid "The score of %(counting)s of %(counter)s question is included."
+msgid_plural "The score of %(counting)s of %(counter)s questions is included."
+msgstr[0] "Die Bewertung von %(counting)s von %(counter)s Frage zählt."
+msgstr[1] "Die Bewertungen von %(counting)s von %(counter)s Fragen zählen."
 
 msgid "No questions yet."
 msgstr "Noch keine Fragen."

@@ -1436,7 +1436,7 @@
     root.addEventListener('click', function(event) {
         // A language tab loads the page again: the open question is saved and closed first, unless that is refused. In
         // the translate mode its translations are stored first; the link to the original language is such a tab too
-        const language = event.target.closest('[data-slot="langs"] a[href], a[href][data-original]');
+        const language = event.target.closest('[data-slot="langs"] a[href], [data-original] a[href]');
 
         // Only a plain left click: one with a modifier key or the middle button opens a new tab, which the browser does
         const plain = event.button === 0 && !(event.ctrlKey || event.metaKey || event.shiftKey || event.altKey);

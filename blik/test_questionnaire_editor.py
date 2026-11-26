@@ -14,10 +14,10 @@ from core.models import Organization
 from questionnaires.answer_options import save_options
 from questionnaires.editor import example_score, save_question, set_weight, translated_into
 from questionnaires.models import (
-    AnswerOption, AnswerOptionTranslation, Question, QuestionSection, QuestionTranslation, Questionnaire,
-    QuestionnaireTranslation,
+    AnswerOption, AnswerOptionTranslation, Question, QuestionSection, QuestionSectionTranslation, QuestionTranslation,
+    Questionnaire, QuestionnaireTranslation,
 )
-from questionnaires.translations import get_checksum, get_text_translations
+from questionnaires.translations import get_checksum, get_language_states, get_text_translations
 from reviews.models import Response, ReviewCycle, ReviewerToken
 
 
@@ -65,6 +65,20 @@ class EditorTopicTests(TestCase):
         self.post(action='delete_section', section_id=section.id)
 
         self.assertFalse(QuestionSection.objects.filter(id=section.id).exists())
+
+    def test_a_new_topic_title_counts_on_the_language_tab_at_once(self):
+        QuestionSectionTranslation.objects.create(
+            section=self.section, language='de', title='Kommunikation',
+            source_checksums={'title': get_checksum('Communication')},
+        )
+        before = next(state for state in get_language_states(self.q) if state.code == 'de')
+
+        langs = self.post(
+            action='save_section', section_id=self.section.id, title='Speaking clearly', description='',
+        ).json()['slots']['langs']
+
+        count = re.search(r'href="\?lang=de"[^>]*>[^<]*<span>([0-9]+)</span>', langs)[1]
+        self.assertEqual(int(count), before.missing + before.outdated + 1)
 
     def test_a_topic_needs_a_title(self):
         response = self.post(action='save_section', section_id=self.section.id, title='  ', description='')
@@ -629,6 +643,9 @@ class EditorReportCardTests(TestCase):
                 self.assertNotIn('question-\u00b2-report', response.json()['slots'])
 
 
+STORED_CONFIG = {'did_not_observe': True, 'dreyfus_mapping': {'skill': 1}}
+
+
 class EditorTranslateTests(TestCase):
 
     def setUp(self):
@@ -643,7 +660,7 @@ class EditorTranslateTests(TestCase):
         self.section = QuestionSection.objects.create(questionnaire=self.q, title='Communication', order=0)
         self.question = Question.objects.create(
             section=self.section, question_text='Explains decisions', question_type='likert',
-            config={'did_not_observe': True}, order=0,
+            config=dict(STORED_CONFIG), order=0,
         )
         AnswerOption.objects.create(question=self.question, label='Agree', order=0)
 
@@ -681,6 +698,11 @@ class EditorTranslateTests(TestCase):
             {'action': 'delete_question', 'question_id': self.question.id},
             {'action': 'set_weight', 'question_id': self.question.id, 'model': 'skill', 'weight': '1'},
             {'action': 'reorder', 'layout': json.dumps([{'section': self.section.id, 'questions': []}])},
+            {'action': 'save_info', 'name': 'Mine', 'description': 'Mine', 'source_language': 'de', 'is_default': 'on'},
+            {'action': 'save_section', 'section_id': self.section.id, 'title': 'Mine', 'description': 'Mine'},
+            {'action': 'delete_section', 'section_id': self.section.id},
+            {'action': 'clear_model', 'model': 'skill'},
+            {'action': 'set_did_not_observe', 'on': ''},
         ]
 
         for fields in changes:
@@ -690,10 +712,17 @@ class EditorTranslateTests(TestCase):
                 self.assertEqual(response.status_code, 400)
                 self.assertFalse(response.json()['ok'])
                 self.question.refresh_from_db()
+                self.section.refresh_from_db()
+                self.q.refresh_from_db()
                 self.assertEqual(
                     (self.question.question_text, self.question.question_type, self.question.section_id,
                      self.question.config),
-                    ('Explains decisions', 'likert', self.section.id, {'did_not_observe': True}),
+                    ('Explains decisions', 'likert', self.section.id, STORED_CONFIG),
+                )
+                self.assertEqual((self.section.title, self.section.description), ('Communication', ''))
+                self.assertEqual(
+                    (self.q.name, self.q.description, self.q.source_language, self.q.is_default),
+                    ('Team lead 360', '', 'en', False),
                 )
                 self.assertEqual(self.q.sections.count(), 1)
 
@@ -753,9 +782,10 @@ class EditorTranslateTests(TestCase):
         self.assertIn('Nicht beobachtet', slots['reviewer'])
         # A text without a translation shows in the original language
         self.assertIn('Agree', slots['reviewer'])
-        # The creator's own texts stay in the language of the interface, also in the same slot and after it
+        # The creator's own texts stay in the language of the interface, in the same slot and in the report, which
+        # renders after it
         self.assertIn('The page a reviewer gets for the topic', slots['reviewer'])
-        self.assertIn('English (original)', slots['langs'])
+        self.assertIn('The numbers are examples. The shape is real.', slots['report'])
 
     def test_only_a_translation_language_opens_the_translate_mode(self):
         for language, translating in (('de', True), ('en', False), ('xx', False)):

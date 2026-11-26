@@ -1371,16 +1371,17 @@ def _editor_action(request, questionnaire, action):
                 'admin_dashboard/editor/_topic.html', {**context, 'section': card_section}, request=request,
             )
 
-        return editor_response(request, questionnaire, [], section_id=section.id, html=topic_card)
+        # The count on the language tabs: the new topic's title has no translation
+        return editor_response(request, questionnaire, ['langs'], section_id=section.id, html=topic_card)
 
     if action == 'save_section':
         section = _posted_section(questionnaire, post)
         save_section(section, post.get('title'), post.get('description'))
-        return editor_response(request, questionnaire, [f'topic-{section.id}-head'])
+        return editor_response(request, questionnaire, [f'topic-{section.id}-head', 'langs'])
 
     if action == 'delete_section':
         _posted_section(questionnaire, post).delete()
-        return editor_response(request, questionnaire, [])
+        return editor_response(request, questionnaire, ['langs'])
 
     if action == 'save_question':
         question = _posted_question(questionnaire, post) if post.get('question_id') else None

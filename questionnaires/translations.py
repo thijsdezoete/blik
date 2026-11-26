@@ -16,7 +16,7 @@ from operator import attrgetter
 from django.conf import settings
 from django.db import transaction
 from django.db.models import prefetch_related_objects
-from django.utils.translation import get_language, gettext, gettext_lazy as _
+from django.utils.translation import get_language, gettext, gettext_lazy as _, pgettext_lazy
 
 from core.languages import get_base_language, is_language, language_name, translation_languages
 
@@ -30,11 +30,12 @@ MULTILINE_FIELDS = ['description', 'question_text', 'descriptions', 'action_item
 TEXT_LABELS = {
     ('questionnaire', 'name'): _('Name'),
     ('questionnaire', 'description'): _('Description'),
-    ('questionsection', 'title'): _('Section title'),
-    ('questionsection', 'description'): _('Section description'),
+    ('questionsection', 'title'): _('Topic title'),
+    ('questionsection', 'description'): _('Topic description'),
     ('question', 'question_text'): _('Question'),
-    ('question', 'action_items'): _('Action item'),
-    ('answeroption', 'label'): _('Answer option'),
+    # The words of the editor: the same msgids as its templates
+    ('question', 'action_items'): _('Advice'),
+    ('answeroption', 'label'): pgettext_lazy('noun', 'Answer'),
 }
 SCALE_LABELS = {
     'min': _('Label of the lowest value'),

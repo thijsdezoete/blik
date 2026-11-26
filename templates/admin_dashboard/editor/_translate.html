@@ -4,7 +4,7 @@
     <div class="card mb-2">
         <div class="card-body">
             <p style="margin-bottom: 0.5rem;">{% blocktrans trimmed with language=language_name %}You translate into {{ language }}. Each row has the original text on the left and your translation on the right. The example on the right of the page shows the form in {{ language }}.{% endblocktrans %}</p>
-            <span class="help-text" style="margin: 0 0 0.75rem;">{% blocktrans trimmed with source=source_language_name %}You change topics, questions, answer types and the report choices in <a href="{{ original_url }}" data-original style="color: var(--primary);">{{ source }} (original)</a>. A text without a translation shows in {{ source }} to reviewers.{% endblocktrans %}</span>
+            <span class="help-text" style="margin: 0 0 0.75rem;" data-original>{% blocktrans trimmed with source=source_language_name %}You change topics, questions, answer types and the report choices in <a href="{{ original_url }}">{{ source }} (original)</a>. A text without a translation shows in {{ source }} to reviewers.{% endblocktrans %}</span>
             <label class="form-check" style="margin: 0;">
                 <input type="checkbox" class="form-check-input" data-only-open>
                 <span>{% trans 'Show only texts that are missing or outdated' %}</span>

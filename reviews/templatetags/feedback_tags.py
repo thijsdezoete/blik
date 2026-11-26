@@ -2,7 +2,7 @@ from django import template
 from django.utils.translation import gettext_lazy as _
 
 from questionnaires.models import Question
-from questionnaires.placeholders import personalize as personalize_text
+from questionnaires.placeholders import NAME_PLACEHOLDER, personalize as personalize_text
 from reports.report_texts import RATING_RANGES
 from reports.scoring import score_on_five
 from reports.services import RATING_EXCELLENT, RATING_OUTSTANDING, RATING_STRONG, get_rating_key
@@ -238,6 +238,12 @@ def count_value(lst, value):
 def personalize(text, name):
     """The text with the reviewee's first name, see questionnaires/placeholders.py."""
     return personalize_text(text, name)
+
+
+@register.filter
+def name_parts(text):
+    """The text split at the {name} placeholder; the editor shows the placeholder as a chip between the parts."""
+    return text.split(NAME_PLACEHOLDER)
 
 
 @register.filter

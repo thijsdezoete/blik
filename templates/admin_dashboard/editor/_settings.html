@@ -1,0 +1,40 @@
+{% load i18n %}{# Slot "settings": the questionnaire's own settings. Each group of fields saves as one action. #}
+<div class="card mb-2">
+    <div class="card-header"><h2 class="card-title">{% trans 'Settings' %}</h2></div>
+    <div class="card-body">
+        <div data-save-action="save_info" data-save-key="info">
+            <div class="form-group">
+                <label class="form-label" for="editor-name">{% trans 'Name of the questionnaire' %}</label>
+                <input id="editor-name" name="name" class="form-control" type="text" maxlength="255" value="{{ questionnaire.name }}">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editor-description">{% trans 'Description (optional)' %}</label>
+                <textarea id="editor-description" name="description" class="form-control" rows="2">{{ questionnaire.description }}</textarea>
+                <span class="help-text">{% trans 'Reviewers do not see this text.' %}</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editor-source-language">{% trans 'Original language' %}</label>
+                <select id="editor-source-language" name="source_language" class="form-control" style="max-width: 20rem;">
+                    {% for code, name in LANGUAGES %}
+                    <option value="{{ code }}"{% if code == questionnaire.source_language %} selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="help-text">{% trans 'The language you write the questions in. Translations are made from these texts.' %}</span>
+            </div>
+            <label class="form-check">
+                <input type="checkbox" class="form-check-input" name="is_default"{% if questionnaire.is_default %} checked{% endif %}>
+                <span>{% trans 'Default questionnaire' %}
+                    <span class="help-text">{% trans 'It comes first when you choose a questionnaire for a review.' %}</span>
+                </span>
+            </label>
+        </div>
+        {% with state=did_not_observe %}
+        <label class="form-check" style="margin-bottom: 0;" data-save-action="set_did_not_observe" data-save-key="did-not-observe">
+            <input type="checkbox" class="form-check-input" name="on" data-state="{{ state }}"{% if state == 'on' %} checked{% endif %}>
+            <span>{% trans 'Offer "Did not observe" in every question with a score' %}
+                <span class="help-text">{% trans 'Sets all questions at once. You can still change one question afterwards.' %}</span>
+            </span>
+        </label>
+        {% endwith %}
+    </div>
+</div>

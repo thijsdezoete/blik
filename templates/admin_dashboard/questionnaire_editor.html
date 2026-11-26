@@ -1,0 +1,67 @@
+{% extends "admin_dashboard/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ questionnaire.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reports.css' %}">
+{% endblock %}
+
+{% block content %}
+{# Every element with data-slot is filled again from the answers of the server, see static/js/questionnaire-editor.js #}
+<div id="questionnaire-editor" data-url="{% url 'questionnaire_edit' questionnaire.uuid %}">
+    {% csrf_token %}
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+        <div>
+            <h1 data-header="name">{{ questionnaire.name }}</h1>
+            <p data-header="description" style="color: var(--text-secondary);">{{ questionnaire.description }}</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <span data-save-state role="status" style="font-size: 0.875rem; color: var(--success);"
+                  data-saving="{% trans 'Saving...' %}"
+                  data-saved="{% trans 'All changes saved' %}"
+                  data-failed="{% trans 'Not saved. Trying again.' %}">{% trans 'All changes saved' %}</span>
+            <button type="button" class="btn btn-secondary" data-act="settings" aria-expanded="false">{% trans 'Settings' %}</button>
+            <button type="button" class="btn btn-secondary" data-act="open-tab" data-href="{% url 'questionnaire_preview' questionnaire.uuid %}">{% trans 'Try the whole questionnaire' %}</button>
+            <button type="button" class="btn btn-primary" data-act="leave" data-href="{% url 'questionnaire_list' %}">{% trans 'Done' %}</button>
+        </div>
+    </div>
+
+    <div data-slot="settings" hidden>{% include 'admin_dashboard/editor/_settings.html' %}</div>
+
+    <nav class="stage-tabs" data-slot="langs" style="margin-bottom: 1.5rem;" aria-label="{% trans 'Languages' %}">{% include 'admin_dashboard/editor/_langs.html' %}</nav>
+
+    <div class="invite-split">
+        <div>
+            <div data-slot="report-card" data-follow="report">{% include 'admin_dashboard/editor/_report_card.html' %}</div>
+
+            <div id="topics">
+                {% for section in sections %}
+                {% include 'admin_dashboard/editor/_topic.html' %}
+                {% endfor %}
+            </div>
+            <button type="button" class="btn btn-secondary" data-act="add-topic">{% trans 'Add a topic' %}</button>
+        </div>
+
+        <div class="card editor-preview">
+            <div class="card-header" style="padding-top: 0; padding-bottom: 0;">
+                <nav class="stage-tabs" style="border-bottom: 0;">
+                    <button type="button" class="stage-tab" data-tab="reviewer" aria-current="page" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer;">{% trans 'What the reviewer sees' %}</button>
+                    <button type="button" class="stage-tab" data-tab="report" style="background: none; border-top: 0; border-left: 0; border-right: 0; cursor: pointer;">{% trans 'What the report shows' %}</button>
+                </nav>
+            </div>
+            <div class="card-body">
+                <div data-panel="reviewer" data-slot="reviewer">{% include 'admin_dashboard/editor/_reviewer.html' %}</div>
+                <div data-panel="report" data-slot="report" hidden>{% include 'admin_dashboard/editor/_report.html' %}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ chart|json_script:"editor-chart" }}
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script src="{% url 'javascript-catalog' %}?language={{ LANGUAGE_CODE }}"></script>
+<script src="{% static 'js/report-charts.js' %}"></script>
+<script src="{% static 'js/sortable.min.js' %}"></script>
+<script src="{% static 'js/questionnaire-editor.js' %}"></script>
+{% endblock %}

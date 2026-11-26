@@ -124,8 +124,8 @@ class QuestionnaireFlowTests(TestCase):
         """Build a questionnaire with every question type the way the editor does."""
         self.client.post(reverse('questionnaire_create'), {'name': 'Safety Net'})
         self.questionnaire = Questionnaire.objects.get(name='Safety Net', organization=self.organization)
-        self.edit(action='add_section', section_title='Collaboration')
-        section_id = self.questionnaire.sections.get().id
+        section_id = self.edit(action='add_section').json()['section_id']
+        self.edit(action='save_section', section_id=section_id, title='Collaboration', description='')
 
         def add(question_type, text, **fields):
             self.edit(action='add_question', section_id=section_id, question_type=question_type,
@@ -197,9 +197,9 @@ class QuestionnaireFlowTests(TestCase):
         for text in ['Shares knowledge', 'Gives useful feedback', 'Asks for help', 'Seniority',
                      'Strong areas', 'Energy', 'Anything else?']:
             self.assertIn(text, page)
-        self.assertIn('Gives useful feedback * Type: Likert Scale | 5-point scale', page)
-        self.assertIn('Asks for help * Type: Likert Scale | 4-point scale', page)
-        # The list shows the options only in the edit dialog, which the page fills from its markup
+        self.assertIn('Gives useful feedback * Agree / disagree (Likert) · 5 answers · counts in the radar', page)
+        self.assertIn('Asks for help * Agree / disagree (Likert) · 4 answers · counts in the radar', page)
+        # The reviewer tab shows the topic with every option
         for label in ['Sometimes', 'Often', 'Always', 'Novice', 'Advanced', 'Expert', 'Code', 'Docs', 'Talks']:
             self.assertContains(response, label)
 

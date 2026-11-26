@@ -27,6 +27,7 @@ from questionnaires.models import (
 from questionnaires.signals import clone_questionnaire_for_organization
 from questionnaires.translations import (
     get_checksum,
+    get_language_states,
     get_text_translations,
     save_one_translation,
     save_text_translations,
@@ -515,9 +516,11 @@ class TranslationEditorTest(TranslatedQuestionnaireTestCase):
     def test_the_editor_and_the_list_show_how_far_the_translations_are(self):
         editor = self.client.get(reverse('questionnaire_edit', args=[self.questionnaire.uuid]))
         listing = self.client.get(reverse('questionnaire_list'))
+        german = next(state for state in get_language_states(self.questionnaire) if state.code == 'de')
 
-        self.assertContains(editor, self.translate_url())
-        self.assertContains(editor, 'texts missing')
+        # The language tab counts the texts that are missing or outdated
+        self.assertTrue(german.missing)
+        self.assertContains(editor, f'href="?lang=de" class="stage-tab" title="{german.missing + german.outdated} texts')
         self.assertContains(listing, 'Deutsch (Sie):')
 
     def test_the_source_language_can_change_to_a_language_without_translation(self):

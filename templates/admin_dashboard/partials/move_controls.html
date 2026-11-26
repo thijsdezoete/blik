@@ -1,4 +1,4 @@
-{# Drag handle and arrows that move a section or a question; the reordering code in questionnaire_form.html handles them #}
+{# Drag handle and arrows that move a section or a question; static/js/questionnaire-editor.js handles them #}
 {% load i18n %}
 <div class="move-controls">
     <button type="button" class="move-button" data-move="up" {% if kind == 'section' %}aria-label="{% trans 'Move section up' %}" title="{% trans 'Move section up' %}"{% else %}aria-label="{% trans 'Move question up' %}" title="{% trans 'Move question up' %}"{% endif %}>

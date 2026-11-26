@@ -53,7 +53,19 @@ from productreviews.models import ProductReview, anonymous_name
 from questionnaires.action_items import add_action_item_keys
 from questionnaires.answer_options import save_options
 from questionnaires.editor import (
-    get_default_labels, posted_action_items, posted_descriptions, posted_labels, posted_option_rows,
+    MODELS,
+    EditorError,
+    add_section,
+    editor_context,
+    get_default_labels,
+    load_for_editor,
+    posted_action_items,
+    posted_descriptions,
+    posted_labels,
+    posted_option_rows,
+    save_info,
+    save_section,
+    set_did_not_observe,
 )
 from questionnaires.models import Question, QuestionSection, Questionnaire
 from questionnaires.ordering import save_layout
@@ -1096,10 +1108,7 @@ def questionnaire_create(request):
 
         if not name:
             messages.error(request, _('Questionnaire name is required.'))
-            return render(request, 'admin_dashboard/questionnaire_form.html', {
-                'action': 'Create',
-                'source_language': source_language,
-            })
+            return render(request, 'admin_dashboard/questionnaire_form.html', {'source_language': source_language})
 
         try:
             # Get organization from request context
@@ -1118,7 +1127,6 @@ def questionnaire_create(request):
             messages.error(request, _('Error creating questionnaire: %(error)s') % {'error': str(e)})
 
     context = {
-        'action': 'Create',
         # New questionnaires are most likely written in the language their author works in
         'source_language': translation.get_language(),
     }
@@ -1126,10 +1134,119 @@ def questionnaire_create(request):
     return render(request, 'admin_dashboard/questionnaire_form.html', context)
 
 
+# The templates of the parts of the editor page that an answer can send again, by slot name
+EDITOR_SLOTS = {
+    'langs': 'admin_dashboard/editor/_langs.html',
+    'settings': 'admin_dashboard/editor/_settings.html',
+    'report-card': 'admin_dashboard/editor/_report_card.html',
+    'reviewer': 'admin_dashboard/editor/_reviewer.html',
+    'report': 'admin_dashboard/editor/_report.html',
+}
+# The slots of one topic or question: topic-<id>-head, question-<id>-row
+EDITOR_ITEM_SLOT = re.compile(r'^(?:(topic)-(\d+)-head|(question)-(\d+)-row)$')
+
+
+def _render_editor_slot(request, context, name):
+    """The HTML of one slot, or None for a topic or question that no longer exists."""
+
+    if not (match := EDITOR_ITEM_SLOT.match(name)):
+        return render_to_string(EDITOR_SLOTS[name], context, request=request)
+
+    sections = context['sections']
+
+    if match[1]:
+        template, key, items, item_id = 'admin_dashboard/editor/_topic_head.html', 'section', sections, match[2]
+    else:
+        questions = [question for section in sections for question in section.questions.all()]
+        template, key, items, item_id = 'admin_dashboard/editor/_question_row.html', 'question', questions, match[4]
+
+    item = next((item for item in items if f'{item.id}' == item_id), None)
+
+    return None if item is None else render_to_string(template, {**context, key: item}, request=request)
+
+
+def editor_response(request, questionnaire, slots, **extra):
+    """The answer to an action of the editor page: the named slots, the reviewer and the report, and the chart data.
+
+    The questionnaire is loaded anew, so the slots show what is stored now. An extra value that is a function gets the
+    slot context and gives the value to send.
+    """
+
+    shown = [model for model in request.POST.get('shown', '').split(',') if model in MODELS]
+    context = editor_context(load_for_editor(questionnaire), shown, request.POST.get('topic'))
+    rendered = {name: _render_editor_slot(request, context, name) for name in [*slots, 'reviewer', 'report']}
+    extra = {key: value(context) if callable(value) else value for key, value in extra.items()}
+
+    return JsonResponse({
+        'ok': True,
+        'slots': {name: html for name, html in rendered.items() if html is not None},
+        'chart': context['chart'],
+        **extra,
+    })
+
+
+def _posted_section(questionnaire, post):
+    try:
+        return questionnaire.sections.get(id=int(post.get('section_id', '')))
+    except (ValueError, QuestionSection.DoesNotExist):
+        raise EditorError(_('This topic does not exist any more. Reload the page.'))
+
+
+def _editor_action(request, questionnaire, action):
+    """Run one action of the editor page and answer the slots it can change."""
+
+    post = request.POST
+
+    if action == 'save_info':
+        save_info(questionnaire, post)
+        return editor_response(request, questionnaire, ['langs'])
+
+    if action == 'set_did_not_observe':
+        set_did_not_observe(questionnaire, bool(post.get('on')))
+        return editor_response(request, questionnaire, ['settings'])
+
+    if action == 'add_section':
+        section = add_section(questionnaire)
+
+        def topic_card(context):
+            card_section = next(item for item in context['sections'] if item.id == section.id)
+            return render_to_string(
+                'admin_dashboard/editor/_topic.html', {**context, 'section': card_section}, request=request,
+            )
+
+        return editor_response(request, questionnaire, [], section_id=section.id, html=topic_card)
+
+    if action == 'save_section':
+        section = _posted_section(questionnaire, post)
+        save_section(section, post.get('title'), post.get('description'))
+        return editor_response(request, questionnaire, [f'topic-{section.id}-head'])
+
+    if action == 'delete_section':
+        _posted_section(questionnaire, post).delete()
+        return editor_response(request, questionnaire, [])
+
+    if action == 'reorder':
+        try:
+            layout = json.loads(post.get('layout', ''))
+            save_layout(questionnaire, layout)
+        except (ValueError, TypeError, KeyError):
+            raise EditorError(_('The new order could not be saved. Reload the page and try again.'))
+
+        # A question that moved to another topic can change the radar point of both
+        return editor_response(request, questionnaire, [f'topic-{entry["section"]}-head' for entry in layout])
+
+    return editor_response(request, questionnaire, [])
+
+
+EDITOR_ACTIONS = (
+    'refresh', 'save_info', 'set_did_not_observe', 'add_section', 'save_section', 'delete_section', 'reorder',
+)
+
+
 @login_required
 @can_manage_questionnaires_required
 def questionnaire_edit(request, questionnaire_uuid):
-    """Edit an existing questionnaire"""
+    """The editor of a questionnaire: GET gives the page, every POST of the page answers JSON (editor_response)."""
     # Get organization from request context
     org = getattr(request, 'organization', None)
 
@@ -1145,6 +1262,13 @@ def questionnaire_edit(request, questionnaire_uuid):
     if request.method == 'POST':
         action = request.POST.get('action')
 
+        if action in EDITOR_ACTIONS:
+            try:
+                return _editor_action(request, questionnaire, action)
+            except EditorError as error:
+                return JsonResponse({'ok': False, 'message': f'{error}'}, status=400)
+
+        # The full-page actions below go with the old editor dialogs; the new page does not use them
         if action == 'update_info':
             source_language = request.POST.get('source_language')
 
@@ -1170,35 +1294,6 @@ def questionnaire_edit(request, questionnaire_uuid):
                 messages.success(request, _('Questionnaire "%(name)s" updated successfully.') % {'name': questionnaire.name})
             except Exception as e:
                 messages.error(request, _('Error updating questionnaire: %(error)s') % {'error': str(e)})
-
-        elif action == 'reorder':
-            try:
-                save_layout(questionnaire, json.loads(request.POST.get('layout', '')))
-            except (ValueError, TypeError, KeyError):
-                return JsonResponse({
-                    'success': False,
-                    'message': _('The new order could not be saved. Reload the page and try again.'),
-                }, status=400)
-
-            return JsonResponse({'success': True})
-
-        elif action == 'add_section':
-            section_title = request.POST.get('section_title')
-            section_description = request.POST.get('section_description', '')
-
-            if section_title:
-                max_order = questionnaire.sections.aggregate(Max('order'))['order__max']
-                next_order = (max_order + 1) if max_order is not None else 0
-                try:
-                    QuestionSection.objects.create(
-                        questionnaire=questionnaire,
-                        title=section_title,
-                        description=section_description,
-                        order=next_order
-                    )
-                    messages.success(request, _('Section "%(title)s" added.') % {'title': section_title})
-                except Exception as e:
-                    messages.error(request, _('Error adding section: %(error)s') % {'error': str(e)})
 
         elif action == 'edit_section':
             section_id = request.POST.get('section_id')
@@ -1344,16 +1439,6 @@ def questionnaire_edit(request, questionnaire_uuid):
                         }, status=400)
                     messages.error(request, _('Error adding question. Please try again.'))
 
-        elif action == 'delete_section':
-            section_id = request.POST.get('section_id')
-            try:
-                section = QuestionSection.objects.get(id=section_id, questionnaire=questionnaire)
-                section_title = section.title
-                section.delete()
-                messages.success(request, _('Section "%(title)s" deleted.') % {'title': section_title})
-            except Exception as e:
-                messages.error(request, _('Error deleting section: %(error)s') % {'error': str(e)})
-
         elif action == 'delete_question':
             question_id = request.POST.get('question_id')
             try:
@@ -1487,18 +1572,9 @@ def questionnaire_edit(request, questionnaire_uuid):
 
         return redirect('questionnaire_edit', questionnaire_uuid=questionnaire.uuid)
 
-    context = {
-        'action': 'Edit',
-        'questionnaire': questionnaire,
-        'source_language': questionnaire.source_language,
-        'translation_states': get_language_states(questionnaire),
-        # The translation states prefetched the sections, questions and options
-        'sections': questionnaire.sections.all(),
-        'default_likert_scale': default_likert_scale,
-        'default_rating_labels': default_rating_labels,
-    }
+    context = editor_context(load_for_editor(questionnaire), [])
 
-    return render(request, 'admin_dashboard/questionnaire_form.html', context)
+    return render(request, 'admin_dashboard/questionnaire_editor.html', context)
 
 
 @login_required

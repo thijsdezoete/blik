@@ -1,0 +1,30 @@
+{% load i18n %}{# Slot "reviewer": one topic as the feedback form shows it (templates/reviews/feedback_form.html), with an example name #}
+{% with section=reviewer_section %}
+{% if section %}
+<div data-topic="{{ section.id }}">
+    <span class="help-text" style="margin: 0 0 1rem;">{% blocktrans trimmed with title=section.title %}The page a reviewer gets for the topic "{{ title }}". Example name: Alex. You can click the answers.{% endblocktrans %}</span>
+    <div style="background: var(--bg-body); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; zoom: 0.8;">
+        <div class="feedback-container" style="min-height: 0; padding: 0;">
+            <div class="section active" style="margin: 0; animation: none;">
+                <div class="section-header">
+                    <h2 class="section-title">{{ section.title }}</h2>
+                    {% if section.description %}
+                    <p class="section-description">{{ section.description }}</p>
+                    {% endif %}
+                </div>
+                {% for question in section.questions.all %}
+                {# The real form puts its questions next to each other; the wrapper keeps their space #}
+                <div data-question="{{ question.id }}"{% if not forloop.last %} style="margin-bottom: 40px;"{% endif %}>
+                    {% include 'reviews/_question.html' with question=question name='Alex' existing_responses=None %}
+                </div>
+                {% empty %}
+                <p class="section-description" style="text-align: center;">{% trans 'No questions yet.' %}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<span class="help-text">{% trans 'Add a topic to start.' %}</span>
+{% endif %}
+{% endwith %}

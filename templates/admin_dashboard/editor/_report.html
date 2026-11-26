@@ -1,0 +1,35 @@
+{% load i18n %}{# Slot "report": the example report. The script draws the chart into the canvas from the answer's chart data. #}
+<span class="help-text" style="margin: 0 0 1rem;">{% trans 'The numbers are examples. The shape is real.' %}</span>
+{% if preview.case != 'none' %}
+<div style="position: relative;"><canvas id="editorRadar" style="max-height: 360px;"></canvas></div>
+{% endif %}
+<p style="margin: 1rem 0 0.5rem; font-weight: 500;">
+    {% if preview.case == 'radar' %}
+    {% blocktrans trimmed count counter=preview.chart.section_scores|length %}{{ counter }} topic has a question with a score, so the radar has {{ counter }} point.{% plural %}{{ counter }} topics have a question with a score, so the radar has {{ counter }} points.{% endblocktrans %}
+    {% elif preview.case == 'overall' %}
+    {% trans 'Two topics have a question with a score. The radar gets a third point, "Overall". A third topic makes it a full radar.' %}
+    {% elif preview.case == 'bars' %}
+    {% trans 'The report shows bars, not a radar. Three topics with a question with a score give a radar.' %}
+    {% else %}
+    {% trans 'No question has a score yet, so the report has no chart. Each topic with a question with a score becomes one point on the radar.' %}
+    {% endif %}
+</p>
+{% for topic in preview.topics %}
+<div style="display: flex; gap: 0.75rem; align-items: baseline; padding: 0.5rem 0; border-top: 1px solid var(--border);">
+    {% if topic.point %}
+    <span class="badge badge-success" style="white-space: nowrap;">{% trans 'Point' %}</span>
+    {% else %}
+    <span class="badge badge-warning" style="white-space: nowrap;">{% trans 'No point' %}</span>
+    {% endif %}
+    <span><strong>{{ topic.title }}</strong>
+        <span class="help-text">
+            {% if topic.questions %}
+            {% blocktrans trimmed count counter=topic.questions with counting=topic.counting %}{{ counting }} of {{ counter }} question counts.{% plural %}{{ counting }} of {{ counter }} questions count.{% endblocktrans %}
+            {% else %}
+            {% trans 'No questions yet.' %}
+            {% endif %}
+        </span>
+    </span>
+</div>
+{% endfor %}
+<button type="button" class="btn btn-sm btn-secondary" style="margin-top: 1.5rem;" data-act="open-tab" data-href="{% url 'questionnaire_sample_report' questionnaire.uuid %}">{% trans 'See the full sample report' %}</button>

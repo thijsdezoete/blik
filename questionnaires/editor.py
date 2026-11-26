@@ -7,21 +7,24 @@ page shows next to the questions.
 """
 
 import random
+from functools import partial
 from math import isfinite
 
 from django.db import transaction
 from django.db.models import Count, Max
 from django.utils import translation
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, gettext_lazy
 
+from core.languages import is_language, language_name
 from reports.dreyfus_service import _level_to_stage, agency_profile_with_texts, skill_profile_with_texts
 from reports.services import radar_axes
 from reviews.models import Response
 
 from .action_items import add_action_item_keys
 from .answer_options import DEFAULT_LIKERT_SCALE, DEFAULT_RATING_LABELS, save_options
-from .models import Question
+from .models import Question, QuestionSection, Questionnaire
 from .presentation import question_scoring
+from .translations import get_language_states, has_translation
 
 WEIGHTS = (0, 0.5, 1, 1.5, 2)
 MODELS = ('skill', 'agency')
@@ -30,6 +33,16 @@ MODELS = ('skill', 'agency')
 EXAMPLE_GROUP_SHIFTS = {'self': -0.2, 'peer': 0, 'manager': 0.2, 'direct_report': 0.1}
 EXAMPLE_CASES = {0: 'none', 1: 'bars', 2: 'overall'}
 PROFILES = {'skill': skill_profile_with_texts, 'agency': agency_profile_with_texts}
+
+# The names of the answer types on the editor page
+ANSWER_TYPES = {
+    'rating': gettext_lazy('Score'),
+    'likert': gettext_lazy('Agree / disagree (Likert)'),
+    'text': gettext_lazy('Written answer'),
+    'single_choice': gettext_lazy('Pick one'),
+    'multiple_choice': gettext_lazy('Pick several'),
+    'scale': gettext_lazy('Slider'),
+}
 
 RATING_COUNTS = range(2, 8)
 DID_NOT_OBSERVE_TYPES = ('rating', 'likert')
@@ -230,12 +243,6 @@ def clear_model(questionnaire, model):
                 question.save(update_fields=['config', 'updated_at'])
 
 
-def _offers_did_not_observe(question):
-    """Without the key a score offers "Did not observe" and a likert does not."""
-
-    return question.config.get('did_not_observe', question.question_type == 'rating')
-
-
 def set_did_not_observe(questionnaire, on):
     """Offer "Did not observe" on every score and likert of the questionnaire, or on none."""
 
@@ -249,7 +256,7 @@ def did_not_observe_state(questionnaire):
     """'on' or 'off' when all scores and likerts agree, else 'mixed'. Without them 'on', the default of a score."""
 
     states = {
-        bool(_offers_did_not_observe(question))
+        question.offers_did_not_observe
         for question in _questions(questionnaire).filter(question_type__in=DID_NOT_OBSERVE_TYPES)
     }
 
@@ -510,11 +517,119 @@ def report_preview(questionnaire, shown):
                 group: round(min(5, max(1, mean + shift)), 2) for group, shift in EXAMPLE_GROUP_SHIFTS.items()
             }
 
+    axes = radar_axes(section_scores)
+    case = EXAMPLE_CASES.get(len(section_scores), 'radar')
+
+    # Two points without a radar: a topic is titled like the added point, so the report draws bars
+    if axes is None and section_scores:
+        case = 'bars'
+
     # Like the report, the chart is keyed by title, so two topics with one title are one point
     return {
         'topics': topics,
-        'case': EXAMPLE_CASES.get(len(section_scores), 'radar'),
+        'case': case,
         'chart': {'section_scores': section_scores},
-        'radar_axes': radar_axes(section_scores),
+        'radar_axes': axes,
         'levels': [_example_level(model, rows[model]) for model in MODELS if model in on],
+    }
+
+
+def _text(value, field, required_message):
+    """The posted text for a model field, stripped; refused when it is required and empty, or too long."""
+
+    text = (value or '').strip()
+
+    if required_message and not text:
+        raise EditorError(required_message)
+
+    if field.max_length and len(text) > field.max_length:
+        raise EditorError(_('This text is too long. Use at most %(count)s characters.') % {'count': field.max_length})
+
+    return text
+
+
+def save_info(questionnaire, post):
+    """Store the name, description, original language and default flag the settings of the editor posted."""
+
+    source_language = post.get('source_language', '')
+
+    if not is_language(source_language):
+        raise EditorError(_('Choose a language.'))
+
+    # The original language cannot also have a translation
+    if source_language != questionnaire.source_language and has_translation(questionnaire, source_language):
+        raise EditorError(
+            _('This questionnaire is already translated into %(language)s. Empty that translation first to make '
+              '%(language)s its original language.') % {'language': language_name(source_language)}
+        )
+
+    questionnaire.name = _text(post.get('name'), Questionnaire._meta.get_field('name'), _('Write a name.'))
+    questionnaire.description = post.get('description', '').strip()
+    questionnaire.source_language = source_language
+    questionnaire.is_default = bool(post.get('is_default'))
+    questionnaire.save()
+
+
+def add_section(questionnaire):
+    """Add a topic at the end of the questionnaire, titled "New topic" in the questionnaire's original language."""
+
+    order = questionnaire.sections.aggregate(Max('order'))['order__max']
+
+    with translation.override(questionnaire.source_language):
+        title = _('New topic')
+
+    return QuestionSection.objects.create(
+        questionnaire=questionnaire, title=title, order=0 if order is None else order + 1,
+    )
+
+
+def save_section(section, title, description):
+    """Store the title and description of a topic; a topic needs a title."""
+
+    section.title = _text(title, QuestionSection._meta.get_field('title'), _('A topic needs a title.'))
+    section.description = (description or '').strip()
+    section.save(update_fields=['title', 'description', 'updated_at'])
+
+
+def load_for_editor(questionnaire):
+    """The questionnaire loaded anew, with its sections, questions, options and their translations prefetched."""
+
+    return Questionnaire.objects.prefetch_related(*Questionnaire.translation_lookups()).get(pk=questionnaire.pk)
+
+
+def editor_context(questionnaire, shown, topic=None):
+    """The context of the editor page and of each of its slots.
+
+    questionnaire comes from load_for_editor(). shown holds the report models ticked in this visit. topic is the id of
+    the section the reviewer tab shows, by default the first. Each section gets its entry of the report preview's
+    topics and the number of answers to its questions, each question its Scoring. The language states and the state
+    of "Did not observe" are computed only when a slot shows them.
+    """
+
+    preview = report_preview(questionnaire, shown)
+    topics = {entry['id']: entry for entry in preview['topics']}
+    answers = answer_counts(questionnaire)
+    sections = list(questionnaire.sections.all())
+
+    for section in sections:
+        section.editor_topic = topics[section.id]
+        section.answer_count = 0
+
+        for question in section.questions.all():
+            question.scoring = question_scoring(question)
+            section.answer_count += answers.get(question.id, 0)
+
+    reviewer_section = next((section for section in sections if f'{section.id}' == f'{topic}'), None)
+
+    return {
+        'questionnaire': questionnaire,
+        'sections': sections,
+        'preview': preview,
+        'models_on': [level['model'] for level in preview['levels']],
+        'answer_types': ANSWER_TYPES,
+        'reviewer_section': reviewer_section or (sections[0] if sections else None),
+        'source_language_name': language_name(questionnaire.source_language),
+        'language_states': partial(get_language_states, questionnaire),
+        'did_not_observe': partial(did_not_observe_state, questionnaire),
+        'chart': {'data': preview['chart'], 'axes': preview['radar_axes']},
     }

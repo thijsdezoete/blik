@@ -425,6 +425,15 @@ class ReportPreviewTests(EditorTestCase):
         self.assertEqual(preview['case'], 'bars')
         self.assertIsNone(preview['radar_axes'])
 
+    def test_two_points_without_a_radar_give_bars(self):
+        self.section.delete()
+        self.add_topic('Overall')
+        self.add_topic('Delivery')
+
+        preview = self.preview()
+        self.assertIsNone(preview['radar_axes'])
+        self.assertEqual(preview['case'], 'bars')
+
     def test_two_topics_with_one_title_are_one_point(self):
         self.add_question()
         self.add_topic('Communication')
@@ -484,7 +493,7 @@ class ReportPreviewTests(EditorTestCase):
         self.assertEqual([row['question'] for row in level['rows']], [a, b])
         self.assertEqual(level['weight_sum'], 3)
         self.assertEqual(level['level'], round((example_score(a) + 2 * example_score(b)) / 3, 2))
-        self.assertEqual((level['low'], level['high']), (level['stage'] - 0.5, level['stage'] + 0.5))
+        self.assertEqual((level['low'], level['high']), (max(1, level['stage'] - 0.5), min(5, level['stage'] + 0.5)))
         self.assertEqual(level['profile']['skill_level'], level['level'])
         self.assertEqual(level['profile']['stage'], level['stage'])
 

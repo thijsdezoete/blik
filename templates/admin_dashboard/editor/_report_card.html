@@ -1,0 +1,25 @@
+{% load i18n %}{# Slot "report-card": what the report shows. The radar is always on; the two models are switched in a later step. #}
+<div class="card mb-2">
+    <div class="card-header"><h2 class="card-title">{% trans 'The report' %}</h2></div>
+    <div class="card-body">
+        <span class="help-text" style="margin: 0 0 1rem;">{% trans 'Choose what the report shows. The example on the right follows your choices.' %}</span>
+        <label class="form-check">
+            <input type="checkbox" class="form-check-input" checked disabled>
+            <span>{% trans 'Scores per topic (radar)' %}
+                <span class="help-text">{% trans 'Always there. Each topic with a scored question is one point on the radar.' %}</span>
+            </span>
+        </label>
+        <label class="form-check">
+            <input type="checkbox" class="form-check-input" name="skill"{% if 'skill' in models_on %} checked{% endif %}>
+            <span>{% trans 'Skill level (Dreyfus model)' %}
+                <span class="help-text">{% trans 'Shows which of five stages the person is at, from Novice to Expert.' %}</span>
+            </span>
+        </label>
+        <label class="form-check" style="margin-bottom: 0;">
+            <input type="checkbox" class="form-check-input" name="agency"{% if 'agency' in models_on %} checked{% endif %}>
+            <span>{% trans 'Initiative (agency model)' %}
+                <span class="help-text">{% trans 'Shows how much the person acts without being asked, in five levels.' %}</span>
+            </span>
+        </label>
+    </div>
+</div>

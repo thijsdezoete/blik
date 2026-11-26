@@ -247,12 +247,9 @@ def submit_feedback(request, token):
             if not answer_value:
                 continue
 
-            # An explicit non-numeric answer when the behaviour was not observed, for the questions that offer it
-            if answer_value == 'did_not_observe':
-                if not question.offers_did_not_observe:
-                    errors.append(_('Invalid option for question "%(question)s"') % {'question': question.short_text})
-                    continue
-
+            # An explicit non-numeric answer when the behaviour was not observed, for the questions that offer it.
+            # Elsewhere the value falls through: the type branches refuse it, and a written answer keeps it as text.
+            if answer_value == 'did_not_observe' and question.offers_did_not_observe:
                 answer_data = {
                     'value': None,
                     'did_not_observe': True,

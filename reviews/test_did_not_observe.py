@@ -103,6 +103,29 @@ class DidNotObserveTestCase(TestCase):
         self.assertEqual(result.status_code, 400)
         self.assertFalse(Response.objects.filter(question=likert).exists())
 
+    def test_a_written_answer_with_that_text_is_stored_as_text(self):
+        written = Question.objects.create(
+            section=self.section,
+            question_text='What should this person keep doing?',
+            question_type='text',
+            required=True,
+            order=2,
+        )
+
+        result = self.submit({self.rating_question: '3', written: 'did_not_observe'})
+
+        self.assertEqual(result.status_code, 200, result.content)
+        self.assertEqual(Response.objects.get(question=written).answer_data, {'value': 'did_not_observe'})
+
+    def test_a_score_without_the_setting_still_accepts_it(self):
+        self.assertNotIn('did_not_observe', self.rating_question.config)
+
+        result = self.submit({self.rating_question: 'did_not_observe'})
+
+        self.assertEqual(result.status_code, 200, result.content)
+        response = Response.objects.get(question=self.rating_question)
+        self.assertEqual(response.answer_data, {'value': None, 'did_not_observe': True})
+
     def test_a_likert_did_not_observe_does_not_count_in_the_average(self):
         likert = self.create_likert({'did_not_observe': True})
         last = likert.options.last().id

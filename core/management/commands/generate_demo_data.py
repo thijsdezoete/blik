@@ -790,7 +790,8 @@ class Command(BaseCommand):
                 options = list(question.options.all())
                 return {'value': options[min(rating, len(options)) - 1].id if options else ''}
 
-            return {'value': rating}
+            # A Score can have fewer than five options; the ranges above assume five
+            return {'value': min(rating, int((question.config or {}).get('max', 5)))}
 
         elif question.question_type == 'text':
             # Generate contextual text responses

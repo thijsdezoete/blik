@@ -21,6 +21,7 @@ from questionnaires.models import (
     Questionnaire,
 )
 from reports.dreyfus_service import agency_profile_with_texts
+from reports.pdf import _agency
 from reports.report_texts import with_texts
 from reports.services import generate_report
 from reviews.models import Response, ReviewCycle, ReviewerToken
@@ -119,6 +120,20 @@ class DevelopmentCardTest(SimpleTestCase):
         self.assertIn(insights['agency_profile']['agency_stage'], html)
         self.assertIn('data-tab-content="agency"', html)
         self.assertNotIn('data-tab-content="skill"', html)
+        self.assertIn('<div class="tab-content active" data-tab-content="agency">', html)
+        # Without the skill pane nothing would show the agency next steps, so they are visible from the start
+        self.assertIn('<div class="next-steps-section" data-dimension="agency">', html)
+
+    def test_the_pdf_development_page_shows_initiative_alone(self):
+        profile = agency_profile_with_texts({'agency_level': 4.0, 'stage': 4, 'confidence': 1.0})
+        html = render_to_string('reports/pdf/_development.html', {
+            'insights': {'agency_profile': profile},
+            'agency': _agency(profile),
+            'matrix': None,
+        })
+        self.assertIn(profile['agency_stage'], html)
+        self.assertNotIn('group skill', html)
+
 
 class TrendChangeTest(TestCase):
 

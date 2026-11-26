@@ -191,6 +191,27 @@ class GDPRDeletionService:
         return result
 
     @staticmethod
+    def _delete_reviewer_lists(reviewee):
+        """
+        Remove the saved reviewer list of the person and every row in other
+        lists that names the person, by FK or by email. Rows by email are not
+        reached by a cascade, so this also runs on a hard delete.
+        """
+        from django.db.models import Q
+        from accounts.models import ReviewSetup, SetupReviewer
+
+        # A list's own rows go with the list; count them with the rest.
+        _, by_rows = SetupReviewer.objects.filter(
+            Q(person=reviewee) | Q(email__iexact=reviewee.email)
+        ).delete()
+        _, by_lists = ReviewSetup.objects.filter(reviewee=reviewee).delete()
+        return {
+            'saved_reviewer_rows_deleted': by_rows.get('accounts.SetupReviewer', 0)
+            + by_lists.get('accounts.SetupReviewer', 0),
+            'saved_reviewer_lists_deleted': by_lists.get('accounts.ReviewSetup', 0),
+        }
+
+    @staticmethod
     @transaction.atomic
     def delete_reviewee(reviewee_id, hard_delete=False, performed_by=None):
         """
@@ -227,6 +248,9 @@ class GDPRDeletionService:
         # Count related data
         cycle_count = ReviewCycle.objects.filter(reviewee=reviewee).count()
         result['review_cycles_affected'] = cycle_count
+
+        # Before the reviewee goes: the email is needed to find rows by email
+        result.update(GDPRDeletionService._delete_reviewer_lists(reviewee))
 
         if hard_delete:
             # Hard delete: Complete removal

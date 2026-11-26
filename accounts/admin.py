@@ -5,7 +5,10 @@ from django.utils import timezone
 from django.utils.translation import gettext as _, gettext_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
+from .models import (
+    Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership,
+    ReviewSetup, SetupReviewer,
+)
 from core.gdpr import GDPRDeletionService
 
 
@@ -282,3 +285,26 @@ class OrgUnitMembershipAdmin(admin.ModelAdmin):
     list_filter = ['unit', 'role']
     search_fields = ['reviewee__name', 'reviewee__email', 'unit__name']
     list_select_related = ['unit', 'reviewee']
+
+
+class SetupReviewerInline(admin.TabularInline):
+    model = SetupReviewer
+    extra = 0
+    autocomplete_fields = ['person']
+
+
+@admin.register(ReviewSetup)
+class ReviewSetupAdmin(admin.ModelAdmin):
+    list_display = ['reviewee', 'questionnaire', 'created_at']
+    search_fields = ['reviewee__name', 'reviewee__email']
+    list_select_related = ['reviewee', 'questionnaire']
+    autocomplete_fields = ['reviewee']
+    inlines = [SetupReviewerInline]
+
+
+@admin.register(SetupReviewer)
+class SetupReviewerAdmin(admin.ModelAdmin):
+    list_display = ['setup', 'category', 'person', 'email']
+    list_filter = ['category']
+    search_fields = ['email', 'person__name', 'person__email', 'setup__reviewee__name']
+    list_select_related = ['setup__reviewee', 'person']

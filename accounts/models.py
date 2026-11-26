@@ -267,3 +267,83 @@ class OrgUnitMembership(TimeStampedModel):
         # can't drift via direct DB updates.
         self.role = self.MANAGER if self.row == 0 else self.MEMBER
         super().save(*args, **kwargs)
+
+
+class ReviewSetup(TimeStampedModel):
+    """The saved reviewer list of one reviewee, used to start the next cycle."""
+    reviewee = models.OneToOneField(
+        Reviewee,
+        on_delete=models.CASCADE,
+        related_name='review_setup',
+    )
+    questionnaire = models.ForeignKey(
+        'questionnaires.Questionnaire',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+    )
+    include_self = models.BooleanField(default=True)
+    include_manager = models.BooleanField(default=True)
+    include_peer = models.BooleanField(default=True)
+    include_direct_report = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'review_setups'
+
+    def __str__(self):
+        return f'Review setup of {self.reviewee.name}'
+
+
+class SetupReviewer(TimeStampedModel):
+    """One reviewer in a saved list: a person of the organization or a bare email."""
+    CATEGORY_CHOICES = [
+        ('manager', 'Manager'),
+        ('peer', 'Peer'),
+        ('direct_report', 'Direct report'),
+    ]
+
+    setup = models.ForeignKey(
+        ReviewSetup,
+        on_delete=models.CASCADE,
+        related_name='reviewers',
+    )
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    person = models.ForeignKey(
+        Reviewee,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='reviewer_rows',
+    )
+    email = models.EmailField(blank=True)
+
+    class Meta:
+        db_table = 'setup_reviewers'
+        constraints = [
+            models.CheckConstraint(
+                condition=(
+                    models.Q(person__isnull=False, email='')
+                    | models.Q(person__isnull=True) & ~models.Q(email='')
+                ),
+                name='setup_reviewer_person_xor_email',
+            ),
+            models.UniqueConstraint(
+                fields=['setup', 'category', 'person'],
+                condition=models.Q(person__isnull=False),
+                name='setup_reviewer_unique_person',
+            ),
+            models.UniqueConstraint(
+                fields=['setup', 'category', 'email'],
+                condition=~models.Q(email=''),
+                name='setup_reviewer_unique_email',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.category}: {self.person or self.email}'
+
+    def save(self, *args, **kwargs):
+        # bulk_create skips save(); callers that use it lowercase themselves.
+        self.email = self.email.lower()
+        super().save(*args, **kwargs)

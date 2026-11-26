@@ -27,7 +27,7 @@ from django.utils.functional import partition
 from django.utils.translation import gettext as _, gettext_lazy, ngettext
 from django.views.decorators.http import require_POST
 
-from accounts.chart_link import append_membership
+from accounts.chart_link import append_membership, apply_chart_choice, chart_relation, unplaced_with_manager
 from accounts.models import Reviewee, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
 from accounts.permissions import (
     assign_organization_admin,
@@ -3873,12 +3873,48 @@ def org_chart(request):
 
     context = _org_chart_context(org)
     context['can_manage'] = request.user.has_perm('accounts.can_manage_organization')
+    if context['can_manage']:
+        context['placeable'] = []
+        for person, manager, unit_name, new_unit in unplaced_with_manager(org):
+            also = chart_relation(manager, person)['also_managers']
+            context['placeable'].append({
+                'person': person, 'manager': manager, 'unit_name': unit_name, 'new_unit': new_unit,
+                'also_managers': also, 'also_names': ', '.join(m.name for m in also)})
     if request.user.has_perm('accounts.can_invite_members'):
         managers = context['managers_without_account'] = managers_without_account(org)
         context['managers_to_invite'] = sum(not m.invited for m in managers)
         if context['managers_to_invite']:
             context['invite_language_name'] = language_name(default_language(org))
     return render(request, 'admin_dashboard/org_chart/index.html', context)
+
+
+@login_required
+@require_POST
+def org_chart_place(request):
+    """
+    Place people whose reviewer list names one manager in that manager's unit.
+    The server picks the manager from the list; the POST only names the person
+    (`person=<uuid>`) or asks for all of them (`all=1`).
+    """
+    if not request.user.has_perm('accounts.can_manage_organization'):
+        messages.error(request, _('You do not have permission to edit the org chart.'))
+        return redirect('org_chart')
+    org = request.organization
+    pairs = unplaced_with_manager(org)
+    if not request.POST.get('all'):
+        pairs = [pair for pair in pairs if str(pair[0].uuid) == request.POST.get('person')]
+    placed = 0
+    with transaction.atomic():
+        for person, manager, _unit_name, _new_unit in pairs:
+            try:
+                with transaction.atomic():
+                    apply_chart_choice(manager, person, 'place')
+            except ValueError:
+                continue
+            placed += 1
+    messages.success(request, ngettext('%(count)d person placed in the org chart.',
+                                       '%(count)d people placed in the org chart.', placed) % {'count': placed})
+    return redirect('org_chart')
 
 
 @login_required

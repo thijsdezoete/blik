@@ -36,3 +36,12 @@
 .reviewee-start-form .card-body { overflow-y: auto; min-height: 0; }
 .reviewee-dialog .card-footer { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; flex-shrink: 0; }
 .reviewee-start-note { margin-bottom: 1.5rem; padding: 0.75rem; border-left: 3px solid var(--primary); background: var(--bg-light); }
+
+/* Org chart: people who are not placed yet, with the manager their reviewer list names */
+.oc-notice { margin-bottom: 1.5rem; }
+.oc-notice-list { list-style: none; margin: 0; padding: 0; }
+.oc-notice-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.625rem 0; border-top: 1px solid var(--border); font-size: 0.875rem; }
+.oc-notice-list li:first-child { border-top: 0; padding-top: 0; }
+.oc-notice-list .help-text { display: block; }
+.oc-notice-footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.oc-notice-footer .help-text { margin-top: 0; }

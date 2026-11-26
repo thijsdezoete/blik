@@ -299,7 +299,8 @@ def save_question(questionnaire, post, question=None, section=None):
     """Store the posted question: a new one in section when question is None, else the changes to question.
 
     The config is built anew for the posted type, so the answers and settings of another type are dropped. The weights
-    and chart settings stay unless weights are posted.
+    and chart settings stay unless weights are posted. The action items change only when the post has the marker
+    action_items_posted, which the form sends with the advice fields; a form that does not show them keeps them.
     """
 
     question_text = post.get('question_text', '').strip()
@@ -374,10 +375,13 @@ def save_question(questionnaire, post, question=None, section=None):
 
             _apply_weight(config, model, weight)
 
-    try:
-        action_items = posted_action_items(post, question)
-    except ValueError:
-        raise EditorError(_('The threshold and the stages of an advice item must be numbers.'))
+    if post.get('action_items_posted'):
+        try:
+            action_items = posted_action_items(post, question)
+        except ValueError:
+            raise EditorError(_('The threshold and the stages of an advice item must be numbers.'))
+    else:
+        action_items = question.action_items if question else []
 
     with transaction.atomic():
         if question is None:

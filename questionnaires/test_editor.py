@@ -224,6 +224,34 @@ class SaveQuestionTests(EditorTestCase):
         self.save(question, question_text='Question 0', question_type='scale', did_not_observe='on')
         self.assertNotIn('did_not_observe', question.config)
 
+    def test_advice_stays_when_the_form_does_not_show_it(self):
+        stored = [{'key': 'a', 'text': 'Practise', 'threshold': 3.0}]
+        question = self.add_question(action_items=stored)
+        fields = {'question_text': 'Question 0', 'question_type': 'rating', 'rating_count': '5'}
+
+        self.save(question, **fields)
+        question.refresh_from_db()
+        self.assertEqual(question.action_items, stored)
+
+        self.save(question, action_items_posted='1', **fields)
+        question.refresh_from_db()
+        self.assertEqual(question.action_items, [])
+
+        question.action_items = stored
+        question.save()
+        self.save(
+            question,
+            action_items_posted='1',
+            **{
+                'action_items[0][text]': 'Practise more',
+                'action_items[0][key]': 'a',
+                'action_items[0][threshold]': '2.5',
+            },
+            **fields,
+        )
+        question.refresh_from_db()
+        self.assertEqual(question.action_items, [{'key': 'a', 'text': 'Practise more', 'threshold': 2.5}])
+
     def test_a_slider_needs_a_range(self):
         question = self.add_question()
 

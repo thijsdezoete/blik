@@ -8,7 +8,7 @@ from questionnaires.factories import (
     TextQuestionFactory,
 )
 from questionnaires.models import AnswerOption, Questionnaire
-from questionnaires.presentation import questionnaire_report_features
+from questionnaires.presentation import question_scoring, questionnaire_report_features
 
 
 class QuestionnaireReportFeaturesTests(TestCase):
@@ -206,3 +206,28 @@ class QuestionnaireReportFeaturesTests(TestCase):
         for feature in features:
             self.assertTrue(str(feature['label']))
             self.assertTrue(str(feature['description']))
+
+
+class QuestionScoringTests(TestCase):
+    def setUp(self):
+        self.section = QuestionSectionFactory()
+
+    def test_a_rating_has_a_score_in_the_radar_that_can_be_other_than_zero(self):
+        question = QuestionFactory(section=self.section)
+        self.assertEqual(question_scoring(question), (True, True, True))
+
+    def test_a_text_has_no_score(self):
+        question = TextQuestionFactory(section=self.section)
+        self.assertEqual(question_scoring(question), (False, False, False))
+
+    def test_a_rating_excluded_from_charts_is_not_in_the_radar(self):
+        question = QuestionFactory(section=self.section, config={'min': 1, 'max': 5, 'exclude_from_charts': True})
+        self.assertEqual(question_scoring(question), (True, False, True))
+
+    def test_a_scored_pick_one_with_only_zero_weights_scores_only_zero(self):
+        question = QuestionFactory(
+            section=self.section, question_type='single_choice', config={'scoring_enabled': True}
+        )
+        for order in range(2):
+            AnswerOption.objects.create(question=question, order=order, label=f'Option {order}', weight=0)
+        self.assertEqual(question_scoring(question), (True, True, False))

@@ -51,7 +51,10 @@ from core.gdpr import GDPRDeletionService
 from core.models import Organization
 from productreviews.models import ProductReview, anonymous_name
 from questionnaires.action_items import add_action_item_keys
-from questionnaires.answer_options import DEFAULT_LIKERT_SCALE, DEFAULT_RATING_LABELS, save_options
+from questionnaires.answer_options import save_options
+from questionnaires.editor import (
+    get_default_labels, posted_action_items, posted_descriptions, posted_labels, posted_option_rows,
+)
 from questionnaires.models import Question, QuestionSection, Questionnaire
 from questionnaires.ordering import save_layout
 from questionnaires.presentation import questionnaire_report_features
@@ -99,16 +102,6 @@ def limit_error(request, error):
         messages.error(request, format_html('{} <a href="{}">{}</a>', str(error), reverse('billing'), _('Go to Billing')))
     else:
         messages.error(request, str(error))
-
-
-def get_default_labels(questionnaire):
-    """The default likert scale and rating labels of a new question, in the questionnaire's source language."""
-
-    with translation.override(questionnaire.source_language):
-        likert_scale = [f'{label}' for label in DEFAULT_LIKERT_SCALE]
-        rating_labels = {key: f'{label}' for key, label in DEFAULT_RATING_LABELS.items()}
-
-    return likert_scale, rating_labels
 
 
 def get_cycle_or_404(request, cycle_uuid):
@@ -1133,52 +1126,6 @@ def questionnaire_create(request):
     return render(request, 'admin_dashboard/questionnaire_form.html', context)
 
 
-def posted_labels(post, question_type):
-    """The rating or scale labels the question editor posted, without the empty ones."""
-
-    if question_type == 'rating':
-        fields = {key: f'rating_label_{key}' for key in DEFAULT_RATING_LABELS}
-    elif question_type == 'scale':
-        fields = {'min': 'scale_min_label', 'max': 'scale_max_label'}
-    else:
-        return {}
-
-    labels = {key: post.get(field, '').strip() for key, field in fields.items()}
-
-    return {key: label for key, label in labels.items() if label}
-
-
-def posted_descriptions(post, question_type):
-    """The descriptions of the rating values the question editor posted, without the empty ones."""
-
-    if question_type != 'rating' or post.get('rating_descriptions') != 'on':
-        return {}
-
-    descriptions = {key: post.get(f'rating_description_{key}', '').strip() for key in DEFAULT_RATING_LABELS}
-
-    return {key: text for key, text in descriptions.items() if text}
-
-
-def posted_option_rows(post, prefix, with_weights=False):
-    """The answer options the question editor posted, as [(id or None, label, weight), ...].
-
-    Each row posts the id of its option (empty for a new one), its label and, for choice questions, its weight. Rows
-    without a label are dropped. Raises ValueError for a weight that is not a number.
-    """
-
-    ids = post.getlist(f'{prefix}_option_id')
-    labels = post.getlist(f'{prefix}_option_label')
-    weights = post.getlist(f'{prefix}_option_weight') if with_weights else [''] * len(labels)
-    rows = []
-
-    for posted_id, label, weight in zip(ids, labels, weights):
-        if label := label.strip():
-            option_id = int(posted_id) if posted_id.isdigit() else None
-            rows.append((option_id, label, float(weight) if with_weights else None))
-
-    return rows
-
-
 @login_required
 @can_manage_questionnaires_required
 def questionnaire_edit(request, questionnaire_uuid):
@@ -1529,42 +1476,7 @@ def questionnaire_edit(request, questionnaire_uuid):
                     question.config['dreyfus_mapping']['skill'] = float(skill_weight)
                     question.config['dreyfus_mapping']['agency'] = float(agency_weight)
 
-                    # Parse action items from form
-                    action_items = []
-                    action_item_indices = set()
-                    # A posted key may only name an item the question has, so the client cannot set keys of its own
-                    known_keys = {item.get('key') for item in question.action_items if isinstance(item, dict)}
-
-                    # Extract all action item indices from the POST data
-                    for key in request.POST.keys():
-                        if key.startswith('action_items[') and '][text]' in key:
-                            # Extract index from key like "action_items[0][text]"
-                            idx_str = key.split('[')[1].split(']')[0]
-                            action_item_indices.add(idx_str)
-
-                    # Build action items list
-                    for idx in sorted(action_item_indices, key=int):
-                        text = request.POST.get(f'action_items[{idx}][text]', '').strip()
-                        threshold = request.POST.get(f'action_items[{idx}][threshold]', 3.0)
-                        stages_raw = request.POST.getlist(f'action_items[{idx}][stages][]')
-                        key = request.POST.get(f'action_items[{idx}][key]', '').strip()
-
-                        if text:  # Only add if text is not empty
-                            item = {
-                                'text': text,
-                                'threshold': float(threshold)
-                            }
-
-                            if key in known_keys:
-                                item['key'] = key
-
-                            # Add stages if any are selected
-                            if stages_raw:
-                                item['stages'] = [int(s) for s in stages_raw]
-
-                            action_items.append(item)
-
-                    question.action_items = add_action_item_keys(action_items)
+                    question.action_items = posted_action_items(request.POST, question)
                     question.save()
 
                     messages.success(request, _('Dreyfus/Agency configuration updated successfully.'))

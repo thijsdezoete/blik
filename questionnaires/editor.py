@@ -2,9 +2,11 @@
 The save logic of the questionnaire editor.
 
 The editor page posts the fields of one question, or one weight, and shows the result. These functions check what was
-posted and store it. Their EditorError texts are shown to the creator.
+posted and store it. Their EditorError texts are shown to the creator. report_preview computes the example report the
+page shows next to the questions.
 """
 
+import random
 from math import isfinite
 
 from django.db import transaction
@@ -12,14 +14,22 @@ from django.db.models import Count, Max
 from django.utils import translation
 from django.utils.translation import gettext as _
 
+from reports.dreyfus_service import _level_to_stage, agency_profile_with_texts, skill_profile_with_texts
+from reports.services import radar_axes
 from reviews.models import Response
 
 from .action_items import add_action_item_keys
 from .answer_options import DEFAULT_LIKERT_SCALE, DEFAULT_RATING_LABELS, save_options
 from .models import Question
+from .presentation import question_scoring
 
 WEIGHTS = (0, 0.5, 1, 1.5, 2)
 MODELS = ('skill', 'agency')
+
+# The example scores of the reviewer groups in the report preview, as shifts of a topic's example score
+EXAMPLE_GROUP_SHIFTS = {'self': -0.2, 'peer': 0, 'manager': 0.2, 'direct_report': 0.1}
+EXAMPLE_CASES = {0: 'none', 1: 'bars', 2: 'overall'}
+PROFILES = {'skill': skill_profile_with_texts, 'agency': agency_profile_with_texts}
 
 RATING_COUNTS = range(2, 8)
 DID_NOT_OBSERVE_TYPES = ('rating', 'likert')
@@ -419,3 +429,89 @@ def save_question(questionnaire, post, question=None, section=None):
             _drop_translations_above(question, config['max'])
 
     return question
+
+
+def example_score(question):
+    """The example score of a question in the editor's report preview.
+
+    It depends on the question id alone, so the numbers do not change while the creator types.
+    """
+
+    return round(random.Random(question.id).uniform(3.0, 4.6), 1)
+
+
+def _example_level(model, rows):
+    """The level of one model made from rows of {'question', 'score', 'weight'}, as the report shows it."""
+
+    weight_sum = sum(row['weight'] for row in rows)
+    level = stage = low = high = profile = None
+
+    if rows:
+        level = round(sum(row['score'] * row['weight'] for row in rows) / weight_sum, 2)
+        stage = _level_to_stage(level)
+        low, high = max(1, stage - 0.5), min(5, stage + 0.5)
+        # The same profile the sample report builds
+        profile = PROFILES[model]({f'{model}_level': level, 'stage': stage, 'confidence': 0.85})
+
+    return {
+        'model': model,
+        'rows': rows,
+        'weight_sum': weight_sum,
+        'level': level,
+        'stage': stage,
+        'low': low,
+        'high': high,
+        'profile': profile,
+    }
+
+
+def report_preview(questionnaire, shown):
+    """The example report the editor shows next to the questions: the topics that are a point on the radar, the
+    example scores of the chart, and how each level that is on is made from the questions that count.
+
+    A model is on when it is in shown (ticked in this visit) or a question has a weight for it. Uses the prefetched
+    sections, questions and options.
+    """
+
+    on = {model for model, present in zip(MODELS, questionnaire.dreyfus_dimensions) if present or model in shown}
+    rows = {model: [] for model in MODELS}
+    topics = []
+    section_scores = {}
+
+    for section in questionnaire.sections.all():
+        questions = list(section.questions.all())
+        radar_scores = []
+
+        for question in questions:
+            scoring = question_scoring(question)
+
+            if scoring.in_radar:
+                radar_scores.append(example_score(question))
+
+            if scoring.nonzero:
+                for model, weight in _mapping(question.config).items():
+                    rows[model].append({'question': question, 'score': example_score(question), 'weight': weight})
+
+        topics.append({
+            'id': section.id,
+            'title': section.title,
+            'questions': len(questions),
+            'counting': len(radar_scores),
+            'point': bool(radar_scores),
+        })
+
+        if radar_scores:
+            mean = sum(radar_scores) / len(radar_scores)
+            section_scores[section.title] = {
+                group: round(min(5, max(1, mean + shift)), 2) for group, shift in EXAMPLE_GROUP_SHIFTS.items()
+            }
+
+    points = sum(topic['point'] for topic in topics)
+
+    return {
+        'topics': topics,
+        'case': EXAMPLE_CASES.get(points, 'radar'),
+        'chart': {'section_scores': section_scores},
+        'radar_axes': radar_axes(section_scores),
+        'levels': [_example_level(model, rows[model]) for model in MODELS if model in on],
+    }

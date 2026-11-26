@@ -6,7 +6,9 @@ from questionnaires.editor import (
     EditorError,
     clear_model,
     did_not_observe_state,
+    example_score,
     rating_labels,
+    report_preview,
     save_question,
     set_did_not_observe,
     set_weight,
@@ -384,3 +386,110 @@ class DidNotObserveTests(EditorTestCase):
         self.add_question('text', config={})
 
         self.assertEqual(did_not_observe_state(self.questionnaire), 'on')
+
+
+class ReportPreviewTests(EditorTestCase):
+    def add_topic(self, title, question_type='rating', count=1, config=None):
+        section = QuestionSection.objects.create(
+            questionnaire=self.questionnaire, title=title, order=self.questionnaire.sections.count()
+        )
+        for order in range(count):
+            Question.objects.create(
+                section=section,
+                question_text=f'{title} {order}',
+                question_type=question_type,
+                config={'min': 1, 'max': 5} if config is None else config,
+                order=order,
+            )
+
+        return section
+
+    def preview(self, shown=frozenset()):
+        return report_preview(Questionnaire.objects.get(pk=self.questionnaire.pk), set(shown))
+
+    def test_three_scored_topics_make_a_radar_two_get_an_overall_point_one_gives_bars(self):
+        self.section.delete()
+        topics = [self.add_topic(title) for title in ('Delivery', 'Quality', 'Teamwork')]
+
+        preview = self.preview()
+        self.assertEqual(preview['case'], 'radar')
+        self.assertEqual(list(preview['radar_axes']), ['Delivery', 'Quality', 'Teamwork'])
+
+        topics[2].delete()
+        preview = self.preview()
+        self.assertEqual(preview['case'], 'overall')
+        self.assertEqual(list(preview['radar_axes']), ['Delivery', 'Quality', 'Overall'])
+
+        topics[1].delete()
+        preview = self.preview()
+        self.assertEqual(preview['case'], 'bars')
+        self.assertIsNone(preview['radar_axes'])
+
+    def test_a_topic_with_only_written_answers_is_no_point(self):
+        self.section.delete()
+        written = self.add_topic('Comments', 'text', count=2, config={})
+
+        preview = self.preview()
+        self.assertEqual(
+            preview['topics'],
+            [{'id': written.id, 'title': 'Comments', 'questions': 2, 'counting': 0, 'point': False}],
+        )
+        self.assertNotIn('Comments', preview['chart']['section_scores'])
+        self.assertEqual(preview['case'], 'none')
+
+    def test_a_point_shows_the_mean_of_its_example_scores_per_reviewer_group(self):
+        a = self.add_question()
+        b = self.add_question()
+        mean = (example_score(a) + example_score(b)) / 2
+
+        scores = self.preview()['chart']['section_scores']['Communication']
+        self.assertEqual(
+            scores,
+            {
+                'self': round(mean - 0.2, 2),
+                'peer': round(mean, 2),
+                'manager': round(mean + 0.2, 2),
+                'direct_report': round(mean + 0.1, 2),
+            },
+        )
+
+    def test_an_example_score_depends_only_on_the_question_id(self):
+        question = self.add_question()
+        score = example_score(question)
+
+        question.question_text = 'Another text'
+        self.assertEqual(example_score(question), score)
+        self.assertTrue(3.0 <= score <= 4.6)
+
+    def test_a_level_is_the_weighted_average_of_the_questions_that_count(self):
+        a = self.add_question(config={'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 1}})
+        b = self.add_question(config={'min': 1, 'max': 5, 'dreyfus_mapping': {'skill': 2}})
+        self.add_question('text', config={'dreyfus_mapping': {'skill': 2}})
+
+        preview = self.preview()
+        level = preview['levels'][0]
+        self.assertEqual(level['model'], 'skill')
+        self.assertEqual([row['question'] for row in level['rows']], [a, b])
+        self.assertEqual(level['weight_sum'], 3)
+        self.assertEqual(level['level'], round((example_score(a) + 2 * example_score(b)) / 3, 2))
+        self.assertEqual((level['low'], level['high']), (level['stage'] - 0.5, level['stage'] + 0.5))
+        self.assertEqual(level['profile']['skill_level'], level['level'])
+        self.assertEqual(level['profile']['stage'], level['stage'])
+
+    def test_a_model_ticked_in_this_visit_shows_without_questions(self):
+        self.add_question()
+
+        levels = self.preview(shown={'agency'})['levels']
+        self.assertEqual(len(levels), 1)
+        self.assertEqual(levels[0]['model'], 'agency')
+        self.assertEqual(levels[0]['rows'], [])
+        self.assertIsNone(levels[0]['level'])
+        self.assertIsNone(levels[0]['stage'])
+        self.assertIsNone(levels[0]['profile'])
+
+    def test_the_two_models_stand_alone(self):
+        self.add_question(config={'min': 1, 'max': 5, 'dreyfus_mapping': {'agency': 1}})
+
+        levels = self.preview()['levels']
+        self.assertEqual([level['model'] for level in levels], ['agency'])
+        self.assertEqual(levels[0]['profile']['agency_level'], levels[0]['level'])

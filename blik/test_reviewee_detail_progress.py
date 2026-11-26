@@ -47,8 +47,9 @@ class CycleProgressTests(TestCase):
 
         rows = cycle_progress(self.cycle)
 
+        # In the order of the reviewers card
         self.assertEqual([(row['category'], row['invited'], row['answered']) for row in rows],
-                         [('self', 1, 1), ('peer', 3, 2), ('manager', 1, 1)])
+                         [('self', 1, 1), ('manager', 1, 1), ('peer', 3, 2)])
         self.assertEqual(set(rows[0]), {'category', 'invited', 'answered', 'shows', 'needed'})
 
     def test_group_under_the_threshold_does_not_show(self):

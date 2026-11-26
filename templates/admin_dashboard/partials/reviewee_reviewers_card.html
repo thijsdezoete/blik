@@ -13,6 +13,8 @@
     </div>
     <div class="card-body">
         <p>{% trans 'These people get an invitation when you start a review. Nobody can see who gave which answer.' %}</p>
+        {% if active_cycles %}<p class="help-text">{% trans 'A change in this list applies to the next review. A review in progress keeps its reviewers.' %}</p>{% endif %}
+        {% if not access.manage %}<p class="help-text" id="reviewers-email-hint">{% trans 'Separate multiple emails with commas or newlines.' %}</p>{% endif %}
         <p class="rv-note" data-source-line data-chart="{% trans 'From the org chart' %}" data-previous="{% trans 'From the previous review' %}" aria-live="polite"{% if setup.source != 'chart' and setup.source != 'previous' %} hidden{% endif %}>{% if setup.source == 'chart' %}{% trans 'From the org chart' %}{% elif setup.source == 'previous' %}{% trans 'From the previous review' %}{% endif %}</p>
         <p class="help-text rv-fill-error" data-fill-error role="alert" hidden>{% trans 'The reviewers could not be loaded. Try again.' %}</p>
         <div class="rv-cats">
@@ -24,9 +26,9 @@
                     <div class="rv-people"><span class="rv-chip">{{ reviewee.name }}</span></div>
                     {% else %}
                     {% if access.manage %}<div data-reviewee-picker data-field-name="{{ category.code }}_reviewees" data-initial="{{ category.initial }}" data-placeholder="{{ category.placeholder }}"></div>
-                    {% if access.chart and category.code != 'peer' %}<div data-chart-choices aria-live="polite"></div>{% endif %}
-                    {% else %}<label class="sr-only" for="{{ category.code }}-emails">{{ category.email_label }}</label><textarea id="{{ category.code }}-emails" name="{{ category.code }}_emails" class="form-control" rows="2">{{ category.email_text }}</textarea>{% endif %}
+                    {% else %}<label class="sr-only" for="{{ category.code }}-emails">{{ category.email_label }}</label><textarea id="{{ category.code }}-emails" name="{{ category.code }}_emails" class="form-control" rows="2" aria-describedby="reviewers-email-hint">{{ category.email_text }}</textarea>{% endif %}
                     {% if category.code != 'manager' %}<span class="help-text" data-threshold-line{% if not category.under_threshold %} hidden{% endif %}>{% blocktrans trimmed count counter=threshold %}Fewer than {{ counter }} person. The report does not show this group.{% plural %}Fewer than {{ counter }} people. The report does not show this group.{% endblocktrans %}</span>{% endif %}
+                    {% if access.manage and access.chart and category.code != 'peer' %}<div data-chart-choices aria-live="polite"></div>{% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -43,8 +45,6 @@
             </div>
             {% endif %}{% endfor %}
         </details>
-        {% else %}
-        <p class="help-text">{% trans 'Separate multiple emails with commas or newlines.' %}</p>
         {% endif %}
     </div>
     <div class="card-footer">

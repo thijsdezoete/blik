@@ -41,12 +41,13 @@
     <div class="card-header"><h2 class="card-title" id="reviews-title">{% trans 'Reviews' %}</h2></div>
     <div class="table-wrapper">
         <table class="table" aria-labelledby="reviews-title">
-            <thead><tr><th scope="col">{% trans 'Created' %}</th><th scope="col">{% trans 'Questionnaire' %}</th><th scope="col" class="rv-num">{% trans 'Answers' %}</th><th scope="col" class="rv-num">{% trans 'Score' %}</th><th scope="col">{% trans 'Report' %}</th></tr></thead>
+            <thead><tr><th scope="col">{% trans 'Created' %}</th><th scope="col" class="rv-questionnaire">{% trans 'Questionnaire' %}</th><th scope="col" class="rv-num">{% trans 'Answers' %}</th><th scope="col" class="rv-num">{% trans 'Score' context 'the overall score of a review, as a column head' %}</th><th scope="col">{% trans 'Report' %}</th></tr></thead>
             <tbody>
             {% for review in summary.reviews %}
                 <tr>
-                    <td>{{ review.cycle.created_at|date:'DATE_FORMAT' }}</td>
-                    <td>{{ review.cycle.questionnaire.name }}</td>
+                    {# On a phone the questionnaire shows under the date, and its column goes away #}
+                    <td>{{ review.cycle.created_at|date:'DATE_FORMAT' }}<span class="help-text rv-stacked">{{ review.cycle.questionnaire.name }}</span></td>
+                    <td class="rv-questionnaire">{{ review.cycle.questionnaire.name }}</td>
                     <td class="rv-num">{% blocktrans trimmed with count=review.answered max=review.invited %}{{ count }} of {{ max }}{% endblocktrans %}</td>
                     <td class="rv-num">{% if review.score is None %}–{% else %}{{ review.score }}{% endif %}</td>
                     <td>{% if review.report %}<a href="{% url 'reports:view_report' review.cycle.uuid %}" class="rv-link">{% trans 'View Report' %}</a>{% elif review.cycle.status == 'active' %}<span class="badge badge-info">{% trans 'In progress' %}</span>{% endif %}</td>

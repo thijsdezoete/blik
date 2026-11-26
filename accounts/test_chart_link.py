@@ -60,13 +60,13 @@ class ChartLinkTests(TestCase):
         self.assertEqual(chart_relation(self.tom, self.lena)['unit_name'], 'Platform')
         self.assertEqual(apply_chart_choice(self.tom, self.lena, 'place'), first)
 
-    def test_manager_without_unit_gets_a_new_unit(self):
-        self.assertEqual(chart_relation(self.tom, self.maya)['unit_name'], 'Product Engineering')
+    def test_manager_without_unit_gets_a_new_unit_named_after_the_managers_department(self):
+        self.assertEqual(chart_relation(self.tom, self.maya)['unit_name'], 'Engineering')
         self.assertTrue(chart_relation(self.tom, self.maya)['new_unit'])
 
         unit = apply_chart_choice(self.tom, self.maya, 'place')
 
-        self.assertEqual(unit.name, 'Product Engineering')
+        self.assertEqual(unit.name, 'Engineering')
         self.assertEqual(self.roles(unit), {(self.tom, OrgUnitMembership.MANAGER),
                                             (self.maya, OrgUnitMembership.MEMBER)})
         self.assertEqual(self.managers_of(self.maya), [self.tom])
@@ -77,20 +77,39 @@ class ChartLinkTests(TestCase):
         nameless.refresh_from_db()
         self.assertEqual(nameless.department, 'Noor Smit')
 
+    def test_two_people_under_a_manager_without_unit_end_in_the_unit_that_was_named(self):
+        questionnaire = QuestionnaireFactory(organization=self.org)
+        blair = self.person('Blair Chen', 'blair@acme.example', department='Customer Success')
+        ravi = self.person('Ravi Kumar', 'ravi@acme.example', department='Data')
+        for person in (self.maya, ravi):
+            save_review_setup(person, questionnaire, ALL_FLAGS,
+                              {'manager': [blair], 'peer': [], 'direct_report': []},
+                              {'manager': [], 'peer': [], 'direct_report': []})
+        named = {person: chart_relation(blair, person)['unit_name'] for person in (self.maya, ravi)}
+        listed = {person: name for person, _manager, name, _new in unplaced_with_manager(self.org)}
+
+        for person in (ravi, self.maya):
+            apply_chart_choice(blair, person, 'place')
+
+        for person in (self.maya, ravi):
+            placed_in = OrgUnit.objects.get(memberships__reviewee=person, memberships__role=OrgUnitMembership.MEMBER)
+            self.assertEqual(named[person], placed_in.name)
+            self.assertEqual(listed[person], placed_in.name)
+
     def test_taken_unit_name_gets_the_manager_name(self):
-        self.unit('Product Engineering', manager=self.lena)
-        self.unit('Product Engineering (Tom Bakker)')
-        self.assertEqual(chart_relation(self.tom, self.maya)['unit_name'], 'Product Engineering (Tom Bakker) 2')
+        self.unit('Engineering', manager=self.lena)
+        self.unit('Engineering (Tom Bakker)')
+        self.assertEqual(chart_relation(self.tom, self.maya)['unit_name'], 'Engineering (Tom Bakker) 2')
 
         unit = apply_chart_choice(self.tom, self.maya, 'both')
 
-        self.assertEqual(unit.name, 'Product Engineering (Tom Bakker) 2')
+        self.assertEqual(unit.name, 'Engineering (Tom Bakker) 2')
         self.assertEqual(self.roles(unit), {(self.tom, OrgUnitMembership.MANAGER),
                                             (self.maya, OrgUnitMembership.MEMBER)})
 
     def test_existing_unit_never_gets_a_second_manager(self):
-        existing = self.unit('Product Engineering', manager=self.lena)
-        empty = self.unit('Engineering')
+        existing = self.unit('Engineering', manager=self.lena)
+        empty = self.unit('Engineering (Tom Bakker)')
 
         apply_chart_choice(self.tom, self.maya, 'place')
 
@@ -102,7 +121,7 @@ class ChartLinkTests(TestCase):
         self.unit('Sales', manager=self.lena, members=[self.maya])
         self.assertEqual(chart_relation(self.tom, self.maya),
                          {'state': 'conflict', 'managers': [self.lena],
-                          'unit_name': 'Product Engineering', 'new_unit': True, 'also_managers': []})
+                          'unit_name': 'Engineering', 'new_unit': True, 'also_managers': []})
 
     def test_relation_names_the_other_managers_of_the_target_unit(self):
         zoe = self.person('Zoe Lim', 'zoe@acme.example')
@@ -207,6 +226,6 @@ class ChartLinkTests(TestCase):
         gone.save()
 
         self.assertEqual(unplaced_with_manager(self.org), [
-            (self.maya, noor, 'Product Engineering', True),
+            (self.maya, noor, 'Noor Smit', True),
             (sam, self.tom, 'Platform', False),
         ])

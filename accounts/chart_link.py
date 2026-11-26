@@ -29,7 +29,9 @@ def _target(manager, person):
         unit = next((u for u in led if u.name.lower() == department), led[0])
         return unit, unit.name
     # A unit that exists never gets a second manager: that would show the manager all its members.
-    name = person.department or manager.name
+    # Named after the manager, not the person: the next person under this manager joins the same
+    # unit, so the name shown before any write must not depend on who is placed first.
+    name = manager.department or manager.name
     taken = {n.lower() for n in OrgUnit.objects.filter(organization=manager.organization_id)
              .values_list('name', flat=True)}
     if name.lower() in taken:

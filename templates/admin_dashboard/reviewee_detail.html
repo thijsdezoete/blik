@@ -33,7 +33,7 @@
 
 {% if not reports %}
 <ol class="dash-steps rv-steps">
-    <li class="is-done"><b>{% trans 'Details' %}</b>{% trans 'Name, email and department are set.' %}</li>
+    <li class="is-done"><b>{% trans 'Details' %}</b>{% if reviewee.department %}{% trans 'Name, email and department are set.' %}{% else %}{% trans 'Name and email are set.' %}{% endif %}</li>
     <li class="{% if setup.source == 'saved' or has_cycles %}is-done{% else %}is-next{% endif %}"><b>{% trans 'Reviewers' %}</b>{% trans 'Select the people who give feedback.' %}</li>
     <li class="{% if has_cycles %}is-done{% elif setup.source == 'saved' %}is-next{% endif %}"><b>{% trans 'Start the review' %}</b>{% trans 'Blik sends the invitations. You follow the answers here.' %}</li>
     <li class="{% if has_cycles %}is-next{% endif %}"><b>{% trans 'Report' %}</b>{% trans 'Read the combined results when the review is closed.' %}</li>
@@ -62,9 +62,10 @@
         </section>
 
         {% if access.setup %}
-        <section class="card">
-            <div class="card-header"><h2 class="card-title"><label for="reviewers-questionnaire">{% trans 'Questionnaire' %}</label></h2></div>
+        <section class="card" aria-labelledby="questionnaire-title">
+            <div class="card-header"><h2 class="card-title" id="questionnaire-title">{% trans 'Questionnaire' %}</h2></div>
             <div class="card-body">
+                <label class="form-label" for="reviewers-questionnaire">{% trans 'For the next review' %}</label>
                 <select id="reviewers-questionnaire" name="questionnaire" form="reviewers-form" class="form-control" required>
                     {% for questionnaire in questionnaires %}<option value="{{ questionnaire.id }}"{% if setup.questionnaire.id == questionnaire.id %} selected{% endif %}>{{ questionnaire.name }}{% if questionnaire.is_default %} ({% trans 'Default' %}){% endif %}</option>{% endfor %}
                 </select>
@@ -73,7 +74,7 @@
         {% elif setup.questionnaire %}
         <section class="card" aria-labelledby="questionnaire-title">
             <div class="card-header"><h2 class="card-title" id="questionnaire-title">{% trans 'Questionnaire' %}</h2></div>
-            <div class="card-body"><p>{{ setup.questionnaire.name }}</p></div>
+            <div class="card-body"><p class="help-text">{% trans 'For the next review' %}</p><p>{{ setup.questionnaire.name }}</p></div>
         </section>
         {% endif %}
     </aside>

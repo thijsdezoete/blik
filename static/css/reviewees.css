@@ -52,6 +52,17 @@
 .rv-title { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
 .rv-header p { overflow-wrap: anywhere; }
 .rv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.rv-title .badge-secondary { border: 1px solid var(--border); }
+/* The buttons of the header and of the card footers: one height, whether <a> or <button> */
+.rv-header .btn, .rv-main .card-footer .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem; line-height: 1.25; }
+.rv-header .reviewee-more { padding-block: 0; }
+@media (max-width: 767px) {
+    /* All buttons of a row share its width; the menu button keeps its size */
+    .rv-header .rv-actions, .rv-main .card-footer .rv-actions { width: 100%; }
+    .rv-header .rv-actions .btn, .rv-main .card-footer .rv-actions .btn, .rv-close { flex: 1 1 auto; width: auto; }
+    .rv-main .card-footer .rv-close .btn { width: 100%; }
+    .rv-header .rv-actions .reviewee-more { flex: 0 0 auto; }
+}
 .rv-steps { margin-bottom: 1.5rem; }
 .rv-steps li { background: var(--bg-card); }
 .rv-grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.5rem; }
@@ -70,6 +81,7 @@
 .rv-cat-label { display: flex; align-items: flex-start; gap: 0.625rem; font-weight: 500; }
 .rv-cat-label input { width: 1rem; height: 1rem; margin-top: 0.3rem; accent-color: var(--primary); flex-shrink: 0; }
 .rv-cat-label small { display: block; font-size: 0.8125rem; font-weight: 400; color: var(--text-secondary); }
+.rv-cat:has(.rv-cat-label input:not(:checked)) [data-threshold-line] { display: none; }
 .rv-people { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .rv-chip { display: inline-flex; align-items: center; padding: 0.25rem 0.625rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-light); font-size: 0.875rem; overflow-wrap: anywhere; }
 .rv-emails { margin-top: 1.5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light); }
@@ -91,6 +103,9 @@
 .rv-dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.625rem 1rem; margin: 0; font-size: 0.875rem; }
 .rv-dl dt { color: var(--text-secondary); }
 .rv-dl dd { margin: 0; overflow-wrap: anywhere; }
+/* The side rail is narrow: each label above its value, so an email breaks only when it is longer than the rail */
+.rv-side .rv-dl { grid-template-columns: minmax(0, 1fr); row-gap: 0.125rem; }
+.rv-side .rv-dl dd + dt { margin-top: 0.5rem; }
 .rv-send-now { margin-top: 1rem; }
 @media (max-width: 900px) {
     .rv-cat { grid-template-columns: minmax(0, 1fr); }
@@ -107,6 +122,9 @@
 .rv-current .card-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .rv-close { margin: 0; }
 .rv-figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+/* Label, figure and note share rows across the three, so the figures line up when a label wraps */
+.rv-figures > div { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: start; }
+.rv-figures .dash-subhead { align-self: end; }
 .rv-figures p { margin: 0; }
 .rv-figures .dash-subhead { margin-bottom: 0.5rem; }
 .rv-up, .rv-down, .rv-same { display: inline-flex; align-items: center; gap: 0.25rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -114,6 +132,21 @@
 .rv-down { color: var(--danger-700); }
 .rv-same { color: var(--text-secondary); }
 .rv-reviews .table th:first-child, .rv-reviews .table td:first-child { padding-left: 1.5rem; }
+.rv-reviews .table { min-width: 0; }
+.rv-stacked { display: none; }
 @media (max-width: 900px) {
     .rv-figures { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+    .rv-reviews .rv-questionnaire { display: none; }
+    .rv-reviews .rv-stacked { display: block; margin-top: 0.125rem; }
+    .rv-reviews .badge { white-space: nowrap; }
+    /* Each row of the progress table on two lines: the counts, then the full width for the report line.
+       Each row is its own grid, so the count columns have a fixed width to line up with the head. */
+    .rv-current .table thead, .rv-current .table tbody { display: block; }
+    .rv-current .table tr { display: grid; grid-template-columns: minmax(0, 1fr) 4.5rem 4.5rem; column-gap: 0.5rem; border-bottom: 1px solid var(--border); }
+    .rv-current .table thead tr { border-bottom-width: 2px; }
+    .rv-current .table th, .rv-current .table td { border-bottom: 0; }
+    .rv-current .table tr > :last-child { grid-column: 1 / -1; padding-top: 0; text-align: left; }
+    .rv-current .badge { white-space: nowrap; }
 }

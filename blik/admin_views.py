@@ -2663,7 +2663,8 @@ def cycle_progress(cycle):
             invited=Count('id'), answered=Count('id', filter=Q(completed_at__isnull=False)))
     }
     progress = []
-    for category in cycle.active_categories:
+    # The order of the reviewers card, not the report order
+    for category in sorted(cycle.active_categories, key=('self', 'manager', 'peer', 'direct_report').index):
         invited = counts.get(category, {}).get('invited', 0)
         answered = counts.get(category, {}).get('answered', 0)
         needed = 0

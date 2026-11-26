@@ -44,6 +44,12 @@ class RevieweeDetailChartTests(TestCase):
 
         self.assertEqual(derive_reviewers(self.alex)['manager'], [self.blair])
 
+    def test_two_new_managers_are_both_placed(self):
+        self.post(manager_reviewees=[str(self.blair.uuid), str(self.sara.uuid)],
+                  **{f'chart_manager_{self.blair.uuid}': 'place', f'chart_manager_{self.sara.uuid}': 'place'})
+
+        self.assertEqual(set(derive_reviewers(self.alex)['manager']), {self.blair, self.sara})
+
     def test_move_takes_the_direct_report_out_of_the_old_unit(self):
         old = self.unit('Platform', managers=[self.sara], members=[self.blair])
 
@@ -96,8 +102,16 @@ class RevieweeDetailChartTests(TestCase):
 
         response = self.client.get(self.relation_url, {'person': self.blair.uuid, 'category': 'manager'})
 
-        self.assertIn(response.status_code, (403, 404))
+        self.assertEqual(response.status_code, 403)
         self.assertNotIn('state', response.json())
+
+    def test_relation_endpoint_for_a_direct_report_puts_the_reviewee_on_top(self):
+        self.unit('Growth', managers=[self.alex])
+        self.unit('Design', managers=[self.blair])
+
+        data = self.client.get(self.relation_url, {'person': self.blair.uuid, 'category': 'direct_report'}).json()
+
+        self.assertEqual((data['state'], data['unit_name'], data['new_unit']), ('missing', 'Growth', False))
 
     def test_relation_endpoint_names_the_other_managers_of_the_unit(self):
         dana = self.person('Dana Visser', 'dana@acme.example')

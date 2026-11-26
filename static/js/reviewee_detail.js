@@ -28,16 +28,16 @@
     const choiceOf = (category, uuid) => choices(category).querySelector('[data-chart-choice="' + CSS.escape(uuid) + '"]');
 
     const askChart = async (category, uuid) => {
-        let response;
+        let data;
         try {
-            response = await fetch(chartUrl + '?' + new URLSearchParams({person: uuid, category}), {
+            const response = await fetch(chartUrl + '?' + new URLSearchParams({person: uuid, category}), {
                 headers: {'Accept': 'application/json'}, credentials: 'same-origin',
             });
+            if (!response.ok) return;
+            data = await response.json();
         } catch (error) {
-            return;
+            return;  // No answer, no question: the chart stays as it is.
         }
-        if (!response.ok) return;
-        const data = await response.json();
         // The person may be gone, or asked about twice, by the time the answer comes.
         if (!data.html || !selectedUuids(category).includes(uuid) || choiceOf(category, uuid)) return;
         choices(category).insertAdjacentHTML('beforeend', data.html);
@@ -70,32 +70,35 @@
     form.querySelectorAll('[data-fill]').forEach(button => {
         button.addEventListener('click', async () => {
             const error = form.querySelector('[data-fill-error]');
-            let response;
+            let data = null;
             try {
-                response = await fetch(form.dataset.fillUrl + '&source=' + button.dataset.fill, {
+                const response = await fetch(form.dataset.fillUrl + '&source=' + button.dataset.fill, {
                     headers: {'Accept': 'application/json'}, credentials: 'same-origin',
                 });
+                if (response.ok) data = await response.json();
             } catch (failure) {
-                response = null;
+                data = null;
             }
-            error.hidden = Boolean(response?.ok);
-            if (!response?.ok) return;
-            const data = await response.json();
+            error.hidden = Boolean(data);
+            if (!data) return;
             filling = true;
-            listed.forEach(category => {
-                const people = data[category] || [];
-                const emails = data.emails[category] || [];
-                const chips = picker(category);
-                if (chips) {
-                    chips.getSelected().forEach(person => chips.remove(person.uuid));
-                    people.forEach(person => chips.add(person));
-                    field(category).value = emails.join(', ');
-                } else {
-                    // Without the picker, people are edited as their email addresses.
-                    field(category).value = people.map(person => person.email).concat(emails).join(', ');
-                }
-            });
-            filling = false;
+            try {
+                listed.forEach(category => {
+                    const people = data[category] || [];
+                    const emails = data.emails[category] || [];
+                    const chips = picker(category);
+                    if (chips) {
+                        chips.getSelected().forEach(person => chips.remove(person.uuid));
+                        people.forEach(person => chips.add(person));
+                        field(category).value = emails.join(', ');
+                    } else {
+                        // Without the picker, people are edited as their email addresses.
+                        field(category).value = people.map(person => person.email).concat(emails).join(', ');
+                    }
+                });
+            } finally {
+                filling = false;
+            }
             if (chartUrl) {
                 // The people of the previous review count as added; the org chart has its own people already.
                 chartCategories.forEach(category => {

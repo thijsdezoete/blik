@@ -25,7 +25,7 @@ from django.urls import reverse
 from django.utils import timezone, translation
 from django.utils.functional import partition
 from django.utils.text import get_text_list
-from django.utils.translation import gettext as _, gettext_lazy, ngettext
+from django.utils.translation import gettext as _, gettext_lazy, ngettext, pgettext
 from django.views.decorators.http import require_POST
 
 from accounts.chart_link import append_membership, apply_chart_choice, chart_relation, unplaced_with_manager
@@ -756,23 +756,28 @@ def chart_pair(reviewee, picked, category):
 def apply_posted_chart_choices(request, reviewee):
     """
     The org chart choices of the card, for the managers and direct reports of
-    the list as saved now. A choice that no longer fits the chart is skipped.
+    the list as saved now. A choice that does not fit the chart is skipped.
     """
     saved = review_setup(reviewee)
-    changes = 0
+    # Every choice is judged against the chart as the user saw it, before any write: after a first
+    # `place` the person has a manager, and a second ticked `place` would no longer fit.
+    # `place` on a person who has a manager by then adds a membership, as `both` does.
+    fitting = []
     for category in ('manager', 'direct_report'):
         for picked in saved.people[category]:
             action = request.POST.get(f'chart_{category}_{picked.uuid}')
             if action not in ('place', 'move', 'both'):
                 continue
             manager, person = chart_pair(reviewee, picked, category)
-            if action not in CHART_CHOICES_FOR_STATE.get(chart_relation(manager, person)['state'], ()):
-                continue
-            try:
-                apply_chart_choice(manager, person, action)
-            except ValueError:
-                continue
-            changes += 1
+            if action in CHART_CHOICES_FOR_STATE.get(chart_relation(manager, person)['state'], ()):
+                fitting.append((manager, person, action))
+    changes = 0
+    for manager, person, action in fitting:
+        try:
+            apply_chart_choice(manager, person, action)
+        except ValueError:
+            continue
+        changes += 1
     if changes:
         messages.success(request, ngettext(
             '%(count)s change saved in the org chart.', '%(count)s changes saved in the org chart.', changes)
@@ -940,12 +945,14 @@ def reviewee_chart_relation(request, reviewee_uuid):
     relation = chart_relation(manager, person)
     managers = [m.name for m in relation['managers']]
     also = [m.name for m in relation['also_managers']]
+    # Translators: the word between the last two names of a list, as in "Sara Koster, Tom Bakker and Lena Visser".
+    last_join = pgettext('joins the last two names of a list', 'and')
     html = '' if relation['state'] == 'has' else render_to_string(
         'admin_dashboard/partials/reviewee_chart_choice.html', {
             'category': category, 'picked': picked, 'manager': manager, 'person': person,
             'relation': relation, 'field': f'chart_{category}_{picked.uuid}',
-            'managers_names': get_text_list(managers, _('and')), 'managers_count': len(managers),
-            'also_names': get_text_list(also, _('and')), 'also_count': len(also),
+            'managers_names': get_text_list(managers, last_join), 'managers_count': len(managers),
+            'also_names': get_text_list(also, last_join), 'also_count': len(also),
         }, request=request)
     return JsonResponse({'state': relation['state'], 'managers': managers, 'unit_name': relation['unit_name'],
                          'new_unit': relation['new_unit'], 'also_managers': also, 'html': html})

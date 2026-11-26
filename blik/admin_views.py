@@ -42,6 +42,7 @@ from accounts.permissions import (
     direct_report_emails,
     managers_without_account,
     may_create_for_others,
+    reviewee_page_access,
     run_team_emails,
     set_user_permission,
     visible_cycles,
@@ -94,7 +95,7 @@ from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
-from reviews.setup import previous_cycle_reviewers, review_setup, save_review_setup
+from reviews.setup import has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     CREDITS_PER_PACK,
@@ -650,7 +651,7 @@ def reviewee_create(request):
                         place_in_department(organization, reviewee, department, manager,
                                             leads=request.POST.get('department_lead') == '1')
                 messages.success(request, _('Reviewee "%(name)s" created successfully.') % {'name': reviewee.name})
-                return redirect('reviewee_list')
+                return redirect('reviewee_detail', reviewee_uuid=reviewee.uuid)
             except Exception as e:
                 messages.error(request, _('Error creating reviewee: %(error)s') % {'error': str(e)})
         else:
@@ -683,7 +684,7 @@ def reviewee_edit(request, reviewee_uuid):
         try:
             reviewee.save()
             messages.success(request, _('Reviewee "%(name)s" updated successfully.') % {'name': reviewee.name})
-            return redirect('reviewee_list')
+            return redirect('reviewee_detail', reviewee_uuid=reviewee.uuid)
         except Exception as e:
             messages.error(request, _('Error updating reviewee: %(error)s') % {'error': str(e)})
 
@@ -717,6 +718,130 @@ def reviewee_delete(request, reviewee_uuid):
     }
 
     return render(request, 'admin_dashboard/reviewee_confirm_delete.html', context)
+
+
+# The rows of the reviewers card: label, description, picker placeholder and email field label (cycle form texts).
+REVIEWER_CARD_CATEGORIES = (
+    ('self', gettext_lazy('Self assessment'), gettext_lazy('The reviewee rates themselves'), '', ''),
+    ('manager', gettext_lazy('Manager review'), gettext_lazy('Direct manager or supervisor'),
+     gettext_lazy('Search for a manager…'), gettext_lazy('Manager')),
+    ('peer', gettext_lazy('Peer review'), gettext_lazy('Colleagues at the same level'),
+     gettext_lazy('Search for a peer…'), gettext_lazy('Peers')),
+    ('direct_report', gettext_lazy('Direct report review'), gettext_lazy('People who report to this reviewee'),
+     gettext_lazy('Search for a direct report…'), gettext_lazy('Direct Reports')),
+)
+
+
+def save_posted_reviewers(request, reviewee):
+    """The POST of the reviewers card: save the list and, with `start`, create the cycle from it."""
+    org = request.organization
+    try:
+        questionnaire = Questionnaire.objects.get(
+            id=request.POST.get('questionnaire') or None, organization=org, is_active=True)
+    except (Questionnaire.DoesNotExist, ValueError):
+        messages.error(request, _('Questionnaire is required.'))
+        return
+
+    listed = ('manager', 'peer', 'direct_report')
+    flags = selected_category_flags(request)
+    # A category that is switched off keeps its people in the list, for a later review.
+    people, emails, warnings = posted_setup(request, org, listed)
+    for warning in warnings:
+        messages.warning(request, warning)
+    save_review_setup(reviewee, questionnaire, flags,
+                      {c: people[c] for c in listed}, {c: emails[c] for c in listed})
+    if request.POST.get('action') != 'start':
+        messages.success(request, _('Reviewers saved.'))
+        return
+
+    active = [c for c in CATEGORY_ORDER if flags.get(f'include_{c}', True)]
+    if not active:
+        messages.error(request, _('Select at least one feedback category.'))
+        return
+    # The tokens come from the list as saved, so they follow the rules of a list.
+    email_assignments = review_setup(reviewee).email_assignments(active)
+    send_now = request.POST.get('send_invitations_now') == '1'
+    try:
+        cycle = create_single_cycle(request, reviewee, questionnaire, flags, email_assignments, send_now)
+    except NoCycleCredits as e:
+        messages.error(request, str(e))
+        return
+    except ReviewerLimit as e:
+        limit_error(request, e)
+        return
+
+    assigned = cycle.tokens.filter(reviewer_email__isnull=False).count()
+    if assigned and send_now:
+        messages.success(request, _('Review cycle created for "%(name)s" with %(assigned)s reviewer(s) invited. The invitation emails go out within about five minutes.')
+                         % {'name': reviewee.name, 'assigned': assigned})
+    elif assigned:
+        messages.success(request, _('Review cycle created for "%(name)s" with %(assigned)s reviewer(s) assigned. Visit the invitations page to send emails.')
+                         % {'name': reviewee.name, 'assigned': assigned})
+    else:
+        messages.success(request, _('Review cycle created for "%(name)s". The reviewee\'s emails go out within about five minutes.')
+                         % {'name': reviewee.name})
+
+
+@login_required
+def reviewee_detail(request, reviewee_uuid):
+    """The home of one person: details, reviewers and the next step."""
+    org = request.organization
+    reviewee = get_object_or_404(Reviewee.objects.for_organization(org), uuid=reviewee_uuid)
+    access = reviewee_page_access(request.user, org, reviewee)
+    if access is None:
+        raise Http404
+
+    if request.method == 'POST':
+        if not access['setup']:
+            raise Http404
+        save_posted_reviewers(request, reviewee)
+        return redirect('reviewee_detail', reviewee_uuid=reviewee.uuid)
+
+    setup = review_setup(reviewee)
+    cycles = list(reviewee.review_cycles.select_related('questionnaire'))
+    active_cycles = [cycle for cycle in cycles if cycle.status == 'active']
+    status = 'active' if active_cycles else 'completed' if cycles else 'not_started'
+    reports = list(Report.objects.filter(
+        cycle__reviewee=reviewee, cycle__status='completed', available=True,
+    ).select_related('cycle').order_by('-cycle__created_at', '-pk'))
+
+    threshold = org.min_responses_for_anonymity
+    categories = []
+    for code, label, description, placeholder, email_label in REVIEWER_CARD_CATEGORIES:
+        people = [reviewee] if code == 'self' else setup.people[code]
+        emails = [] if code == 'self' else setup.emails[code]
+        categories.append({
+            'code': code, 'label': label, 'description': description,
+            'placeholder': placeholder, 'email_label': email_label,
+            'checked': setup.flags.get(f'include_{code}', True),
+            'people': people, 'emails': emails,
+            'initial': json.dumps([{'uuid': str(p.uuid), 'name': p.name, 'email': p.email} for p in people]),
+            # Without the picker, the people of the list are edited as email addresses.
+            'email_text': ', '.join(emails if access['manage'] else [p.email for p in people] + emails),
+            'under_threshold': code in ('peer', 'direct_report') and len(people) + len(emails) < threshold,
+        })
+
+    return render(request, 'admin_dashboard/reviewee_detail.html', {
+        'reviewee': reviewee,
+        'access': access,
+        'setup': setup,
+        'status': status,
+        'active_cycles': active_cycles,
+        'reports': reports,
+        'has_cycles': bool(cycles),
+        'categories': categories,
+        'shows_reviewers': access['setup'] or access['reader'] == 'all',
+        'has_emails': any(setup.emails.values()),
+        'threshold': threshold,
+        'invited_count': sum(len(c['people']) + len(c['emails']) for c in categories
+                             if c['code'] != 'self' and c['checked']),
+        'has_previous_review': access['setup'] and has_previous_review(reviewee),
+        'questionnaires': Questionnaire.objects.for_organization(org).filter(
+            is_active=True).order_by('-is_default', 'name'),
+        'language_label': language_name(reviewee.language) if reviewee.language else None,
+        'default_language_name': language_name(default_language(org)),
+        **billing_context(org, request.user),
+    })
 
 
 @login_required

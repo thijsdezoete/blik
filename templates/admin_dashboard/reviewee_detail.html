@@ -1,0 +1,100 @@
+{% extends "admin_dashboard/base.html" %}
+{% load i18n static %}
+{% block title %}{{ reviewee.name }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/dashboard.css' %}"><link rel="stylesheet" href="{% static 'css/reviewees.css' %}">{% endblock %}
+{% block content %}
+<a href="{% url 'reviewee_list' %}" class="rv-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>{% trans 'Reviewees' %}</a>
+
+<div class="page-header rv-header">
+    <div>
+        <div class="rv-title">
+            <h1>{{ reviewee.name }}</h1>
+            {% if status == 'active' %}<span class="badge badge-info">{% trans 'In progress' %}</span>
+            {% elif status == 'completed' %}<span class="badge badge-success">{% trans 'Completed' %}</span>
+            {% else %}<span class="badge badge-secondary">{% trans 'Not started' %}</span>{% endif %}
+        </div>
+        <p>{{ reviewee.email }}{% if reviewee.department %} · {{ reviewee.department }}{% endif %}</p>
+    </div>
+    {% if access.manage or access.setup %}
+    <div class="rv-actions">
+        {% if access.manage %}<a href="{% url 'reviewee_edit' reviewee.uuid %}" class="btn btn-secondary">{% trans 'Edit details' %}</a>{% endif %}
+        {% if access.setup and questionnaires %}<button type="button" class="btn btn-primary" data-reviewee-dialog="start-review-detail" aria-haspopup="dialog">{% trans 'Start review' %}</button>{% endif %}
+        {% if access.manage %}
+        <button type="button" class="btn btn-secondary reviewee-more" popovertarget="reviewee-actions" data-reviewee-popover aria-label="{% trans 'Actions' %}: {{ reviewee.name }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
+        <div id="reviewee-actions" class="reviewee-popover reviewee-menu" popover="auto" aria-label="{% trans 'Actions' %}: {{ reviewee.name }}">
+            <a href="{% url 'reviewee_delete' reviewee.uuid %}" class="reviewee-delete">{% trans 'Delete' %}</a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% if not reports %}
+<ol class="dash-steps rv-steps">
+    <li class="is-done"><b>{% trans 'Details' %}</b>{% trans 'Name, email and department are set.' %}</li>
+    <li class="{% if setup.source == 'saved' or has_cycles %}is-done{% else %}is-next{% endif %}"><b>{% trans 'Reviewers' %}</b>{% trans 'Select the people who give feedback.' %}</li>
+    <li class="{% if has_cycles %}is-done{% elif setup.source == 'saved' %}is-next{% endif %}"><b>{% trans 'Start the review' %}</b>{% trans 'Blik sends the invitations. You follow the answers here.' %}</li>
+    <li class="{% if has_cycles %}is-next{% endif %}"><b>{% trans 'Report' %}</b>{% trans 'Read the combined results when the review is closed.' %}</li>
+</ol>
+{% endif %}
+
+<div class="rv-grid">
+    <div class="rv-main">
+        {% if shows_reviewers %}{% include 'admin_dashboard/partials/reviewee_reviewers_card.html' %}{% endif %}
+    </div>
+
+    <aside class="rv-side">
+        <section class="card" aria-labelledby="details-title">
+            <div class="card-header"><h2 class="card-title" id="details-title">{% trans 'Details' %}</h2>{% if access.manage %}<a href="{% url 'reviewee_edit' reviewee.uuid %}" class="rv-link">{% trans 'Edit details' %}</a>{% endif %}</div>
+            <div class="card-body">
+                <dl class="rv-dl">
+                    <dt>{% trans 'Email' %}</dt><dd>{{ reviewee.email }}</dd>
+                    <dt>{% trans 'Department' %}</dt><dd>{{ reviewee.department|default:'—' }}</dd>
+                    <dt>{% trans 'Language' %}</dt><dd>{% if language_label %}{{ language_label }}{% else %}{% blocktrans trimmed with language=default_language_name %}Organization default ({{ language }}){% endblocktrans %}{% endif %}</dd>
+                    <dt>{% trans 'Created' %}</dt><dd>{{ reviewee.created_at|date:'DATE_FORMAT' }}</dd>
+                </dl>
+            </div>
+        </section>
+
+        {% if access.setup %}
+        <section class="card">
+            <div class="card-header"><h2 class="card-title"><label for="reviewers-questionnaire">{% trans 'Questionnaire' %}</label></h2></div>
+            <div class="card-body">
+                <select id="reviewers-questionnaire" name="questionnaire" form="reviewers-form" class="form-control" required>
+                    {% for questionnaire in questionnaires %}<option value="{{ questionnaire.id }}"{% if setup.questionnaire.id == questionnaire.id %} selected{% endif %}>{{ questionnaire.name }}{% if questionnaire.is_default %} ({% trans 'Default' %}){% endif %}</option>{% endfor %}
+                </select>
+            </div>
+        </section>
+        {% elif setup.questionnaire %}
+        <section class="card" aria-labelledby="questionnaire-title">
+            <div class="card-header"><h2 class="card-title" id="questionnaire-title">{% trans 'Questionnaire' %}</h2></div>
+            <div class="card-body"><p>{{ setup.questionnaire.name }}</p></div>
+        </section>
+        {% endif %}
+    </aside>
+</div>
+
+{% if access.setup and questionnaires %}
+<dialog id="start-review-detail" class="modal-content reviewee-dialog" aria-labelledby="start-review-detail-title">
+    <div class="card-header">
+        <div><h2 class="card-title" id="start-review-detail-title">{% trans 'Start a review' %}</h2><p class="help-text">{{ reviewee.name }}</p></div>
+        <form method="dialog"><button class="btn btn-sm btn-secondary" aria-label="{% trans 'Close' %}" autofocus>&times;</button></form>
+    </div>
+    <div class="card-body">
+        {% if active_cycles %}<p class="help-text reviewee-start-note">{% trans 'This person already has an active cycle. This will start another review.' %}</p>{% endif %}
+        <p data-reviewer-count>{% blocktrans trimmed count counter=invited_count %}{{ counter }} reviewer gets an invitation.{% plural %}{{ counter }} reviewers get an invitation.{% endblocktrans %}</p>
+        <p class="help-text">{% trans 'The reviewee is notified by email right away.' %}</p>
+        {% if cycle_credits is not None %}<p class="help-text">{% trans 'A cycle for one reviewee with one questionnaire costs one credit. Reviewers are free.' %} {% blocktrans trimmed count counter=cycle_credits %}{{ counter }} credit left.{% plural %}{{ counter }} credits left.{% endblocktrans %}</p>{% endif %}
+        <label class="form-check rv-send-now"><input type="checkbox" class="form-check-input" name="send_invitations_now" value="1" form="reviewers-form">{% trans 'Send invitation emails immediately after creating cycle' %}</label>
+    </div>
+    <div class="card-footer"><button type="button" class="btn btn-secondary" data-close-reviewee-dialog>{% trans 'Cancel' %}</button>{% if cycle_credits != 0 %}<button type="submit" class="btn btn-primary" form="reviewers-form" name="action" value="start">{% trans 'Start review' %}</button>{% endif %}</div>
+</dialog>
+{% endif %}
+
+<script src="{% static 'js/reviewees.js' %}" defer></script>
+{% if access.setup %}
+<script src="{% url 'javascript-catalog' %}?language={{ LANGUAGE_CODE }}"></script>
+<script src="{% static 'js/reviewee_picker.js' %}"></script>
+<script src="{% static 'js/reviewee_detail.js' %}" defer></script>
+{% endif %}
+{% endblock %}

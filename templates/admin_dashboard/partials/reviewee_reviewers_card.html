@@ -1,0 +1,65 @@
+{% load i18n %}
+<section class="card" aria-labelledby="reviewers-title">
+{% if access.setup %}
+<form method="post" id="reviewers-form" data-reviewers-form data-fill-url="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ reviewee.uuid }}" data-threshold="{{ threshold }}">
+    {% csrf_token %}
+    <input type="hidden" name="categories_submitted" value="1">
+    <div class="card-header">
+        <h2 class="card-title" id="reviewers-title">{% trans 'Reviewers' %}</h2>
+        <div class="rv-actions">
+            <button type="button" class="btn btn-sm btn-secondary" data-fill="chart">{% trans 'Fill from org chart' %}</button>
+            {% if has_previous_review %}<button type="button" class="btn btn-sm btn-secondary" data-fill="previous">{% trans 'Fill from the previous review' %}</button>{% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        <p>{% trans 'These people get an invitation when you start a review. Nobody can see who gave which answer.' %}</p>
+        <p class="rv-note" data-source-line data-chart="{% trans 'From the org chart' %}" data-previous="{% trans 'From the previous review' %}" aria-live="polite"{% if setup.source != 'chart' and setup.source != 'previous' %} hidden{% endif %}>{% if setup.source == 'chart' %}{% trans 'From the org chart' %}{% elif setup.source == 'previous' %}{% trans 'From the previous review' %}{% endif %}</p>
+        <div class="rv-cats">
+            {% for category in categories %}
+            <div class="rv-cat" data-category="{{ category.code }}">
+                <label class="rv-cat-label"><input type="checkbox" name="include_{{ category.code }}"{% if category.checked %} checked{% endif %}><span>{{ category.label }}<small>{{ category.description }}</small></span></label>
+                <div>
+                    {% if category.code == 'self' %}
+                    <div class="rv-people"><span class="rv-chip">{{ reviewee.name }}</span></div>
+                    {% else %}
+                    {% if access.manage %}<div data-reviewee-picker data-field-name="{{ category.code }}_reviewees" data-initial="{{ category.initial }}" data-placeholder="{{ category.placeholder }}"></div>
+                    {% else %}<label class="sr-only" for="{{ category.code }}-emails">{{ category.email_label }}</label><textarea id="{{ category.code }}-emails" name="{{ category.code }}_emails" class="form-control" rows="2">{{ category.email_text }}</textarea>{% endif %}
+                    {% if category.code != 'manager' %}<span class="help-text" data-threshold-line{% if not category.under_threshold %} hidden{% endif %}>{% blocktrans trimmed count counter=threshold %}Fewer than {{ counter }} person. The report does not show this group.{% plural %}Fewer than {{ counter }} people. The report does not show this group.{% endblocktrans %}</span>{% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if access.manage %}
+        <details class="rv-emails"{% if has_emails %} open{% endif %}>
+            <summary>{% trans 'Add by email (advanced)' %}</summary>
+            <p class="help-text">{% trans "Use this only for reviewers who aren't yet in Blik and you don't want to create a profile for. Separate multiple emails with commas or newlines." %}</p>
+            {% for category in categories %}{% if category.code != 'self' %}
+            <div class="form-group">
+                <label class="form-label" for="{{ category.code }}-emails">{{ category.email_label }}</label>
+                <textarea id="{{ category.code }}-emails" name="{{ category.code }}_emails" class="form-control" rows="1">{{ category.email_text }}</textarea>
+            </div>
+            {% endif %}{% endfor %}
+        </details>
+        {% else %}
+        <p class="help-text">{% trans 'Separate multiple emails with commas or newlines.' %}</p>
+        {% endif %}
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-secondary" name="action" value="save">{% trans 'Save reviewers' %}</button>
+    </div>
+</form>
+{% else %}
+    <div class="card-header"><h2 class="card-title" id="reviewers-title">{% trans 'Reviewers' %}</h2></div>
+    <div class="card-body">
+        <div class="rv-cats">
+            {% for category in categories %}{% if category.checked %}
+            <div class="rv-cat">
+                <div class="rv-cat-label"><span>{{ category.label }}</span></div>
+                <div class="rv-people">{% for person in category.people %}<span class="rv-chip">{{ person.name }}</span>{% endfor %}{% for email in category.emails %}<span class="rv-chip">{{ email }}</span>{% endfor %}{% if not category.people and not category.emails %}<span class="help-text">—</span>{% endif %}</div>
+            </div>
+            {% endif %}{% endfor %}
+        </div>
+    </div>
+{% endif %}
+</section>

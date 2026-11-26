@@ -45,3 +45,40 @@
 .oc-notice-list .help-text { display: block; }
 .oc-notice-footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .oc-notice-footer .help-text { margin-top: 0; }
+
+/* The page of one reviewee */
+.rv-back { display: inline-flex; align-items: center; gap: 0.375rem; margin-bottom: 0.75rem; font-size: 0.875rem; color: var(--text-secondary); text-decoration: none; }
+.rv-back:hover { color: var(--primary); }
+.rv-title { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.rv-header p { overflow-wrap: anywhere; }
+.rv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.rv-steps { margin-bottom: 1.5rem; }
+.rv-steps li { background: var(--bg-card); }
+.rv-grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.5rem; }
+.rv-main { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem; }
+.rv-side { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 1.5rem; }
+.rv-main .card, .rv-side .card { margin-bottom: 0; }
+.rv-main .card-header, .rv-side .card-header { flex-wrap: wrap; gap: 0.75rem; }
+.rv-link { color: var(--primary); font-size: 0.875rem; text-decoration: none; }
+.rv-link:hover { text-decoration: underline; }
+.rv-note { margin: 1rem 0 0; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light); font-size: 0.875rem; color: var(--text-secondary); }
+.rv-note[hidden], .rv-cat [hidden] { display: none; }
+/* One feedback category: the switch on the left, its people on the right */
+.rv-cats { margin-top: 1.25rem; }
+.rv-cat { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: 0.75rem 1.5rem; padding: 1.25rem 0; border-top: 1px solid var(--border); }
+.rv-cat:last-child { padding-bottom: 0; }
+.rv-cat-label { display: flex; align-items: flex-start; gap: 0.625rem; font-weight: 500; }
+.rv-cat-label input { width: 1rem; height: 1rem; margin-top: 0.3rem; accent-color: var(--primary); flex-shrink: 0; }
+.rv-cat-label small { display: block; font-size: 0.8125rem; font-weight: 400; color: var(--text-secondary); }
+.rv-people { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.rv-chip { display: inline-flex; align-items: center; padding: 0.25rem 0.625rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-light); font-size: 0.875rem; overflow-wrap: anywhere; }
+.rv-emails { margin-top: 1.5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-light); }
+.rv-emails summary { padding: 0.75rem 1rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); }
+.rv-emails > :not(summary) { margin: 0 1rem 1rem; }
+.rv-dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.625rem 1rem; margin: 0; font-size: 0.875rem; }
+.rv-dl dt { color: var(--text-secondary); }
+.rv-dl dd { margin: 0; overflow-wrap: anywhere; }
+.rv-send-now { margin-top: 1rem; }
+@media (max-width: 900px) {
+    .rv-cat { grid-template-columns: minmax(0, 1fr); }
+}

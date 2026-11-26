@@ -12,6 +12,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 
 from django.conf import settings
+from django.db import transaction
 from django.db.models import prefetch_related_objects
 from django.utils.translation import get_language, gettext, gettext_lazy as _, pgettext_lazy
 
@@ -392,24 +393,37 @@ def save_one_translation(questionnaire, language, field_name, value, still_corre
     nothing if there are any. The other texts of the same part keep their translations and checksums.
     """
 
+    no_text = [gettext('The questionnaire has no text to translate here.')]
     texts = get_text_translations(questionnaire, language)
     text = next((text for text in texts if text.field_name == field_name), None)
 
     if text is None:
-        return [gettext('The questionnaire has no text to translate here.')]
+        return no_text
 
-    # save_part_translation() stores the part's texts from data alone, so data holds the stored ones as well
-    part_texts = [other for other in texts if other.part == text.part]
-    data = {other.field_name: other.text for other in part_texts}
-    data[field_name] = value
-
-    if still_correct:
-        data[f'current-{field_name}'] = 'on'
-
-    if errors := get_length_errors([text], data):
+    if errors := get_length_errors([text], {field_name: value}):
         return errors
 
-    save_part_translation(text.part, language, part_texts, data)
+    with transaction.atomic():
+        # Saves of other texts of the same part run at the same time and rewrite the same row: lock the part, then read
+        # its texts again, so this save keeps what another one stored since the read above
+        if not type(text.part).objects.select_for_update().filter(pk=text.part.pk).exists():
+            return no_text
+
+        texts = get_text_translations(type(questionnaire).objects.get(pk=questionnaire.pk), language)
+        text = next((text for text in texts if text.field_name == field_name), None)
+
+        if text is None:
+            return no_text
+
+        # save_part_translation() stores the part's texts from data alone, so data holds the stored ones as well
+        part_texts = [other for other in texts if other.part == text.part]
+        data = {other.field_name: other.text for other in part_texts}
+        data[field_name] = value
+
+        if still_correct:
+            data[f'current-{field_name}'] = 'on'
+
+        save_part_translation(text.part, language, part_texts, data)
 
     return []
 

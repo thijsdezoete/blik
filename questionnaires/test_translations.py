@@ -346,6 +346,23 @@ class TranslationStateTest(TranslatedQuestionnaireTestCase):
         self.assertEqual(translation.source_checksums['question_text'], checksums['question_text'])
         self.assertEqual(translation.source_checksums['labels.5'], get_checksum('Excellent'))
 
+    def test_a_save_reads_the_texts_of_its_part_again(self):
+        """Saves of two texts of one part run at the same time: the later one keeps what the earlier one stored."""
+
+        early = self.get_questionnaire()
+        get_text_translations(early, 'de')
+        label_1 = self.get_text(self.rating, 'labels.1').field_name
+        label_5 = self.get_text(self.rating, 'labels.5').field_name
+
+        save_one_translation(self.get_questionnaire(), 'de', label_1, 'Mangelhaft')
+        errors = save_one_translation(early, 'de', label_5, 'Hervorragend')
+
+        translation = self.rating.translations.get(language='de')
+        self.assertEqual(errors, [])
+        self.assertEqual(translation.labels, {'1': 'Mangelhaft', '5': 'Hervorragend'})
+        self.assertEqual(translation.source_checksums['labels.1'], get_checksum('Poor'))
+        self.assertEqual(translation.source_checksums['labels.5'], get_checksum('Excellent'))
+
     def test_an_empty_value_removes_that_text_only(self):
         self.confirm_all()
         checksums = self.rating.translations.get(language='de').source_checksums

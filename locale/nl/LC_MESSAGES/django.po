@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 10:10+0000\n"
+"POT-Creation-Date: 2026-11-26 10:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1075,17 +1075,14 @@ msgstr "Dit onderwerp bestaat niet meer. Laad de pagina opnieuw."
 msgid "This question does not exist any more. Reload the page."
 msgstr "Deze vraag bestaat niet meer. Laad de pagina opnieuw."
 
+msgid "This change is not possible. Reload the page."
+msgstr "Deze wijziging is niet mogelijk. Laad de pagina opnieuw."
+
 msgid "The new order could not be saved. Reload the page and try again."
 msgstr "De nieuwe volgorde kon niet worden opgeslagen. Laad de pagina opnieuw en probeer het nog eens."
 
 msgid "This weight is not possible."
 msgstr "Deze weging is niet mogelijk."
-
-msgid "This change is not possible. Reload the page."
-msgstr "Deze wijziging is niet mogelijk. Laad de pagina opnieuw."
-
-msgid "Translation saved."
-msgstr "Vertaling opgeslagen."
 
 #, python-format
 msgid "Questionnaire \"%(name)s\" archived. It is used by %(count)s review cycle(s) and cannot be deleted."
@@ -2158,7 +2155,7 @@ msgid "Initiative"
 msgstr "Initiatief"
 
 msgid "Example: \"Alex starts improvements without being asked\" says something about initiative."
-msgstr "Voorbeeld: \"Alex begint verbeteringen zonder dat iemand erom vraagt\" zegt iets over initiatief."
+msgstr "Voorbeeld: \"Alex zet verbeteringen in gang zonder dat iemand erom vraagt\" zegt iets over initiatief."
 
 msgid "Score"
 msgstr "Beoordelingsschaal"
@@ -2385,17 +2382,18 @@ msgstr "Lees opmerkingen en voorbeelden van feedbackgevers."
 msgid "Description"
 msgstr "Beschrijving"
 
-msgid "Section title"
-msgstr "Titel van de sectie"
+msgid "Topic title"
+msgstr "Titel van het onderwerp"
 
-msgid "Section description"
-msgstr "Beschrijving van de sectie"
+msgid "Topic description"
+msgstr "Beschrijving van het onderwerp"
 
-msgid "Action item"
+msgid "Advice"
 msgstr "Actiepunt"
 
-msgid "Answer option"
-msgstr "Antwoordoptie"
+msgctxt "noun"
+msgid "Answer"
+msgstr "Antwoord"
 
 msgid "Label of the lowest value"
 msgstr "Label van de laagste waarde"
@@ -4933,9 +4931,6 @@ msgstr "Review versturen"
 msgid "Ask a senior colleague to review your next proposal"
 msgstr "Vraag een ervaren collega om je volgende voorstel te bekijken"
 
-msgid "Advice"
-msgstr "Actiepunt"
-
 msgid "when the score is below"
 msgstr "bij een score onder"
 
@@ -4944,10 +4939,6 @@ msgstr "Dit actiepunt verwijderen"
 
 msgid "Only for these stages (optional):"
 msgstr "Alleen voor deze fasen (optioneel):"
-
-msgctxt "noun"
-msgid "Answer"
-msgstr "Antwoord"
 
 msgid "counts as"
 msgstr "telt als"
@@ -4962,7 +4953,7 @@ msgid "Now some questions offer it and others do not."
 msgstr "Nu bieden sommige vragen het aan en andere niet."
 
 msgid "Sets all questions at once. You can still change one question afterwards."
-msgstr "Stelt alle vragen tegelijk in. Je kunt daarna nog één vraag apart wijzigen."
+msgstr "Stelt alle vragen tegelijk in. Daarna kun je elke vraag nog apart wijzigen."
 
 #, python-format
 msgid "%(language)s (original)"
@@ -5128,7 +5119,7 @@ msgstr "Telt mee"
 
 #, python-format
 msgid "Counts in the point \"%(topic)s\" on the radar."
-msgstr "Telt mee in het punt \"%(topic)s\" van het radardiagram."
+msgstr "Telt mee voor het punt \"%(topic)s\" in het radardiagram."
 
 msgid "Written answers show as text in the report. They do not count in the radar."
 msgstr "Geschreven antwoorden staan als tekst in het rapport. Ze tellen niet mee in het radardiagram."
@@ -5414,6 +5405,32 @@ msgstr[1] "Feedbackgevers gaven er %(counter)s antwoorden op. Die antwoorden wor
 
 msgid "Delete the topic"
 msgstr "Onderwerp verwijderen"
+
+#, python-format
+msgid "You translate into %(language)s. Each row has the original text on the left and your translation on the right. The example on the right of the page shows the form in %(language)s."
+msgstr "Je vertaalt naar %(language)s. Elke rij heeft links de originele tekst en rechts je vertaling. Het voorbeeld rechts op de pagina toont het formulier in %(language)s."
+
+#, python-format
+msgid "You change topics, questions, answer types and the report choices in %(source)s, the first tab above. A text without a translation shows in %(source)s to reviewers."
+msgstr "Onderwerpen, vragen, antwoordtypes en de keuzes voor het rapport wijzig je in %(source)s, het eerste tabblad hierboven. Een tekst zonder vertaling zien feedbackgevers in %(source)s."
+
+msgid "Show only texts that are missing or outdated"
+msgstr "Alleen ontbrekende of verouderde teksten tonen"
+
+msgid "Everything is translated."
+msgstr "Alles is vertaald."
+
+msgid "Missing"
+msgstr "Ontbreekt"
+
+msgid "Outdated"
+msgstr "Verouderd"
+
+msgid "The original text changed after this translation."
+msgstr "De originele tekst is na deze vertaling gewijzigd."
+
+msgid "Still correct"
+msgstr "Klopt nog"
 
 msgid "GDPR Data Management"
 msgstr "AVG-gegevensbeheer"
@@ -6738,32 +6755,6 @@ msgstr "Prestaties uitgesplitst per competentiegebied"
 
 msgid "Overall score (excluding self-assessment)"
 msgstr "Totaalscore (zonder zelfevaluatie)"
-
-#, python-format
-msgid "Translate %(name)s into %(language)s"
-msgstr "%(name)s vertalen naar het %(language)s"
-
-#, python-format
-msgid "Translate into %(language)s"
-msgstr "Vertalen naar: %(language)s"
-
-msgid "Preview"
-msgstr "Voorbeeld"
-
-msgid "Back to Editor"
-msgstr "Terug naar de editor"
-
-msgid "Missing"
-msgstr "Ontbreekt"
-
-msgid "Outdated"
-msgstr "Verouderd"
-
-msgid "Still correct"
-msgstr "Klopt nog"
-
-msgid "Save Translation"
-msgstr "Vertaling opslaan"
 
 msgid "Submit Your Review"
 msgstr "Je review versturen"

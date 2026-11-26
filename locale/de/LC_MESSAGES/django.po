@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 10:10+0000\n"
+"POT-Creation-Date: 2026-11-26 10:57+0000\n"
 "Language: de\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -1064,17 +1064,14 @@ msgstr "Dieses Thema gibt es nicht mehr. Bitte die Seite neu laden."
 msgid "This question does not exist any more. Reload the page."
 msgstr "Diese Frage gibt es nicht mehr. Bitte die Seite neu laden."
 
+msgid "This change is not possible. Reload the page."
+msgstr "Diese Änderung ist nicht möglich. Bitte die Seite neu laden."
+
 msgid "The new order could not be saved. Reload the page and try again."
 msgstr "Die neue Reihenfolge konnte nicht gespeichert werden. Bitte die Seite neu laden und erneut versuchen."
 
 msgid "This weight is not possible."
 msgstr "Diese Gewichtung ist nicht möglich."
-
-msgid "This change is not possible. Reload the page."
-msgstr "Diese Änderung ist nicht möglich. Bitte die Seite neu laden."
-
-msgid "Translation saved."
-msgstr "Übersetzung gespeichert."
 
 #, python-format
 msgid "Questionnaire \"%(name)s\" archived. It is used by %(count)s review cycle(s) and cannot be deleted."
@@ -2374,17 +2371,18 @@ msgstr "Lesen Sie Kommentare und Beispiele der Feedbackgebenden."
 msgid "Description"
 msgstr "Beschreibung"
 
-msgid "Section title"
-msgstr "Titel des Abschnitts"
+msgid "Topic title"
+msgstr "Titel des Themas"
 
-msgid "Section description"
-msgstr "Beschreibung des Abschnitts"
+msgid "Topic description"
+msgstr "Beschreibung des Themas"
 
-msgid "Action item"
+msgid "Advice"
 msgstr "Maßnahme"
 
-msgid "Answer option"
-msgstr "Antwortoption"
+msgctxt "noun"
+msgid "Answer"
+msgstr "Antwort"
 
 msgid "Label of the lowest value"
 msgstr "Beschriftung des niedrigsten Werts"
@@ -4924,9 +4922,6 @@ msgstr "Bewertung absenden"
 msgid "Ask a senior colleague to review your next proposal"
 msgstr "Den nächsten Vorschlag von einer erfahrenen Person aus dem Team prüfen lassen"
 
-msgid "Advice"
-msgstr "Maßnahme"
-
 msgid "when the score is below"
 msgstr "bei einer Bewertung unter"
 
@@ -4935,10 +4930,6 @@ msgstr "Diese Maßnahme entfernen"
 
 msgid "Only for these stages (optional):"
 msgstr "Nur für diese Stufen (optional):"
-
-msgctxt "noun"
-msgid "Answer"
-msgstr "Antwort"
 
 msgid "counts as"
 msgstr "zählt als"
@@ -5088,7 +5079,7 @@ msgid "Offer \"Did not observe\""
 msgstr "„Nicht beobachtet“ anbieten"
 
 msgid "For reviewers who cannot judge this. The answer does not count in the score."
-msgstr "Für Feedbackgebende, die das nicht beurteilen können. Die Antwort zählt nicht in der Bewertung."
+msgstr "Für Feedbackgebende, die das nicht beurteilen können. Diese Antwort fließt nicht in die Bewertung ein."
 
 msgid "Describe what each score means"
 msgstr "Beschreiben, was jede Bewertung bedeutet"
@@ -5119,7 +5110,7 @@ msgstr "Zählt"
 
 #, python-format
 msgid "Counts in the point \"%(topic)s\" on the radar."
-msgstr "Zählt im Punkt „%(topic)s“ des Netzdiagramms."
+msgstr "Zählt für den Punkt „%(topic)s“ im Netzdiagramm."
 
 msgid "Written answers show as text in the report. They do not count in the radar."
 msgstr "Schriftliche Antworten erscheinen im Bericht als Text. Im Netzdiagramm zählen sie nicht."
@@ -5198,7 +5189,7 @@ msgid "Add an answer"
 msgstr "Antwort hinzufügen"
 
 msgid "Add or remove answers as you want. \"Counts as\" is the score each answer gets in the report, on its scale of 1 to 5."
-msgstr "Antworten nach Bedarf hinzufügen oder entfernen. „Zählt als“ ist die Bewertung, die jede Antwort im Bericht bekommt, auf seiner Skala von 1 bis 5."
+msgstr "Antworten nach Bedarf hinzufügen oder entfernen. „Zählt als“ ist die Bewertung, die jede Antwort im Bericht bekommt, auf der Skala von 1 bis 5."
 
 msgid "This is a negative statement"
 msgstr "Das ist eine negative Aussage"
@@ -5308,8 +5299,8 @@ msgstr "Immer dabei. Jedes Thema mit einer Frage mit Bewertung ist ein Punkt im 
 #, python-format
 msgid "%(counter)s question counts toward \"%(name)s\" now. If you switch it off, the report no longer shows it and this question no longer counts toward it."
 msgid_plural "%(counter)s questions count toward \"%(name)s\" now. If you switch it off, the report no longer shows it and these questions no longer count toward it."
-msgstr[0] "%(counter)s Frage zählt jetzt für „%(name)s“. Nach dem Ausschalten zeigt der Bericht es nicht mehr, und diese Frage zählt nicht mehr dafür."
-msgstr[1] "%(counter)s Fragen zählen jetzt für „%(name)s“. Nach dem Ausschalten zeigt der Bericht es nicht mehr, und diese Fragen zählen nicht mehr dafür."
+msgstr[0] "%(counter)s Frage zählt jetzt für „%(name)s“. Nach dem Ausschalten zeigt der Bericht diesen Teil nicht mehr, und diese Frage zählt nicht mehr dafür."
+msgstr[1] "%(counter)s Fragen zählen jetzt für „%(name)s“. Nach dem Ausschalten zeigt der Bericht diesen Teil nicht mehr, und diese Fragen zählen nicht mehr dafür."
 
 msgid "Switch it off"
 msgstr "Ausschalten"
@@ -5318,7 +5309,7 @@ msgid "Keep it on"
 msgstr "Eingeschaltet lassen"
 
 msgid "Which questions count, and how much?"
-msgstr "Welche Fragen zählen, und wie viel?"
+msgstr "Welche Fragen zählen und wie stark?"
 
 msgid "A level in the report is the average score of the questions you choose here. A question that \"Counts double\" weighs twice as much in that average."
 msgstr "Ein Niveau im Bericht ist die durchschnittliche Bewertung der hier gewählten Fragen. Eine Frage mit „Zählt doppelt“ wiegt in diesem Durchschnitt doppelt so viel."
@@ -5405,6 +5396,32 @@ msgstr[1] "Feedbackgebende haben %(counter)s Antworten darauf gegeben. Diese Ant
 
 msgid "Delete the topic"
 msgstr "Thema löschen"
+
+#, python-format
+msgid "You translate into %(language)s. Each row has the original text on the left and your translation on the right. The example on the right of the page shows the form in %(language)s."
+msgstr "Zielsprache: %(language)s. Jede Zeile zeigt links den Originaltext und rechts die Übersetzung. Das Beispiel rechts auf der Seite zeigt das Formular auf %(language)s."
+
+#, python-format
+msgid "You change topics, questions, answer types and the report choices in %(source)s, the first tab above. A text without a translation shows in %(source)s to reviewers."
+msgstr "Themen, Fragen, Antworttypen und die Auswahl für den Bericht lassen sich nur in %(source)s ändern, dem ersten Tab oben. Ein Text ohne Übersetzung erscheint für Feedbackgebende auf %(source)s."
+
+msgid "Show only texts that are missing or outdated"
+msgstr "Nur fehlende oder veraltete Texte zeigen"
+
+msgid "Everything is translated."
+msgstr "Alles ist übersetzt."
+
+msgid "Missing"
+msgstr "Fehlt"
+
+msgid "Outdated"
+msgstr "Veraltet"
+
+msgid "The original text changed after this translation."
+msgstr "Der Originaltext hat sich nach dieser Übersetzung geändert."
+
+msgid "Still correct"
+msgstr "Passt noch"
 
 msgid "GDPR Data Management"
 msgstr "DSGVO-Datenverwaltung"
@@ -6730,32 +6747,6 @@ msgstr "Leistung aufgeschlüsselt nach Kompetenzbereichen"
 
 msgid "Overall score (excluding self-assessment)"
 msgstr "Gesamtwert (ohne Selbsteinschätzung)"
-
-#, python-format
-msgid "Translate %(name)s into %(language)s"
-msgstr "%(name)s übersetzen: %(language)s"
-
-#, python-format
-msgid "Translate into %(language)s"
-msgstr "Übersetzung: %(language)s"
-
-msgid "Preview"
-msgstr "Vorschau"
-
-msgid "Back to Editor"
-msgstr "Zurück zum Editor"
-
-msgid "Missing"
-msgstr "Fehlt"
-
-msgid "Outdated"
-msgstr "Veraltet"
-
-msgid "Still correct"
-msgstr "Passt noch"
-
-msgid "Save Translation"
-msgstr "Übersetzung speichern"
 
 msgid "Submit Your Review"
 msgstr "Bewertung abgeben"

@@ -28,6 +28,9 @@
     const typing = new Map();
     // Per key: the message of a refused change, until a change with that key is accepted
     const refusals = new Map();
+    // The keys of groups that are gone for good (a removed new question, the open question of a deleted topic): a
+    // refusal for them could never be cleared by a later save, so it is not kept
+    const gone = new Set();
     // Per slot: the number of the request whose answer filled it last, so an older answer never replaces a newer one
     const applied = {};
     const idleWaiters = [];
@@ -174,7 +177,9 @@
             refusals.delete(key);
             safely(() => applyAnswer(answer, number));
         } else {
-            refusals.set(key, answer.message);
+            if (!gone.has(key)) {
+                refusals.set(key, answer.message);
+            }
         }
 
         // The callers learn which fields were stored: those of the newest request, which took the place of theirs
@@ -224,6 +229,13 @@
         if (isIdle()) {
             idleWaiters.splice(0).forEach(resolve => resolve());
         }
+    }
+
+    // A group that goes away for good: its refusal goes, and a late one is not kept
+    function forget(key) {
+        gone.add(key);
+        refusals.delete(key);
+        showState();
     }
 
     // Resolves when every change is stored: typed texts are sent at once, then the queue is waited for
@@ -603,8 +615,13 @@
             Editor.topic = '';
         }
 
-        // Its open question goes with it
+        // Its open question goes with it; a save of it on its way is refused, as the question is gone
         if (openItem && card.contains(openItem)) {
+            const questionKey = questionForm(openItem).dataset.saveKey;
+
+            clearTimeout(typing.get(questionKey)?.timer);
+            typing.delete(questionKey);
+            forget(questionKey);
             openItem = null;
             Editor.open = '';
         }
@@ -1216,14 +1233,16 @@
             openAsk = null;
         }
 
-        // A new question without a text was never stored
+        // A refusal shown before is dropped: only the saves of this close decide
+        refusals.delete(key);
+        showState();
+
+        // A new question without a stored text, and nothing on its way, was never stored
         if (!field(form, 'question_id').value && !typing.has(key) && !queues.has(key)) {
+            forget(key);
             closeForm(item, form);
             return Promise.resolve(true);
         }
-
-        refusals.delete(key);
-        showState();
 
         closing = Editor.flush().then(function() {
             closing = null;
@@ -1280,7 +1299,7 @@
 
         if (!id.value && !queues.has(key)) {
             item.remove();
-            showState();
+            forget(key);
             notifyIdle();
             return;
         }
@@ -1401,7 +1420,10 @@
         // A language tab loads the page again: the open question is saved and closed first, unless that is refused
         const language = event.target.closest('[data-slot="langs"] a[href]');
 
-        if (language && openItem) {
+        // Only a plain left click: one with a modifier key or the middle button opens a new tab, which the browser does
+        const plain = event.button === 0 && !(event.ctrlKey || event.metaKey || event.shiftKey || event.altKey);
+
+        if (language && openItem && plain) {
             event.preventDefault();
             closeQuestion().then(ok => ok && Editor.flush().then(() => { window.location.href = language.href; }));
             return;

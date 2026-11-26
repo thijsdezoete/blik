@@ -5,23 +5,18 @@
 {% endif %}
 <p style="margin: 1rem 0 0.5rem; font-weight: 500;">
     {% if preview.case == 'radar' %}
-    {% blocktrans trimmed count counter=preview.chart.section_scores|length %}{{ counter }} topic has a question with a score, so the radar has {{ counter }} point.{% plural %}{{ counter }} topics have a question with a score, so the radar has {{ counter }} points.{% endblocktrans %}
+    {% blocktrans trimmed count counter=preview.chart.section_scores|length %}{{ counter }} topic has a question with a score, so the radar has {{ counter }} axis.{% plural %}{{ counter }} topics have a question with a score, so the radar has {{ counter }} axes.{% endblocktrans %}
     {% elif preview.case == 'overall' %}
-    {% trans 'Two topics have a question with a score. The radar gets a third point, "Overall". A third topic makes it a full radar.' %}
+    {% trans 'Two topics have a question with a score. The radar gets a third axis, "Overall". A third topic makes it a full radar.' %}
     {% elif preview.case == 'bars' %}
     {% trans 'The report shows bars, not a radar. Three topics with a question with a score give a radar.' %}
     {% else %}
-    {% trans 'No question has a score yet, so the report has no chart. Each topic with a question with a score becomes one point on the radar.' %}
+    {% trans 'No question has a score yet, so the report has no chart. Each topic with a question with a score gets its own axis on the radar.' %}
     {% endif %}
 </p>
 {% for topic in preview.topics %}
 <div style="display: flex; gap: 0.75rem; align-items: baseline; padding: 0.5rem 0; border-top: 1px solid var(--border);">
-    {% if topic.point %}
-    <span class="badge badge-success" style="white-space: nowrap;">{% trans 'Point' %}</span>
-    {% else %}
-    <span class="badge badge-warning" style="white-space: nowrap;">{% trans 'No point' %}</span>
-    {% endif %}
-    <span><strong>{{ topic.title }}</strong>
+    <span style="flex: 1 1 0;"><strong>{{ topic.title }}</strong>
         <span class="help-text">
             {% if topic.questions %}
             {% blocktrans trimmed count counter=topic.questions with counting=topic.counting %}{{ counting }} of {{ counter }} question counts.{% plural %}{{ counting }} of {{ counter }} questions count.{% endblocktrans %}
@@ -30,6 +25,8 @@
             {% endif %}
         </span>
     </span>
+    {# Plain text, as in the list of topics on the left #}
+    <span class="help-text" style="margin: 0; white-space: nowrap;">{% if topic.point %}{% trans 'On the radar' %}{% else %}{% trans 'Not on the radar' %}{% endif %}</span>
 </div>
 {% endfor %}
 {# Per model that is on: the diagram and the stage as the real report shows them (reports/_dreyfus_profile.html), and how the example level is made from the questions that count #}

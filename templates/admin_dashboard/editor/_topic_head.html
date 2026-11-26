@@ -1,4 +1,4 @@
-{% load i18n %}{# Slot "topic-<id>-head": how a topic shows when it is not edited, its radar point, and the question before it is deleted #}
+{% load i18n %}{# Slot "topic-<id>-head": how a topic shows when it is not edited, whether it is on the radar, and the question before it is deleted #}
 {% include 'admin_dashboard/partials/move_controls.html' with kind='section' %}
 <div data-topic-view style="order: 1; flex: 1 1 12rem;">
     <h3 style="font-size: 1.125rem; font-weight: 600; margin: 0; color: var(--text-primary);">{{ section.title }}</h3>
@@ -6,14 +6,11 @@
     <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.875rem;">{{ section.description }}</p>
     {% endif %}
     {% if section.editor_topic.questions and not section.editor_topic.point %}
-    <span class="help-text">{% trans 'This topic has no question with a score, so it gets no point on the radar. That is fine for written feedback.' %}</span>
+    <span class="help-text">{% trans 'This topic has no question with a score, so it is not on the radar. That is fine for written feedback.' %}</span>
     {% endif %}
 </div>
-{% if section.editor_topic.point %}
-<span class="badge badge-success" style="order: 2; white-space: nowrap;">{% trans 'Point on the radar' %}</span>
-{% else %}
-<span class="badge badge-warning" style="order: 2; white-space: nowrap;">{% trans 'No point on the radar' %}</span>
-{% endif %}
+{# Plain text, not a coloured pill: it tells a fact and nothing can be done with it #}
+<span class="help-text" style="order: 2; margin: 0; white-space: nowrap;">{% if section.editor_topic.point %}{% trans 'On the radar' %}{% else %}{% trans 'Not on the radar' %}{% endif %}</span>
 <button type="button" class="btn btn-sm btn-secondary" data-act="edit-topic" data-topic-view style="order: 3;">{% trans 'Edit' %}</button>
 <template data-ask="delete-topic">
     <p style="margin-bottom: 0.75rem;">

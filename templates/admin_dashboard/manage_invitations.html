@@ -176,7 +176,8 @@
     </div>
 </div>
 
-{% if total_tokens > 0 %}
+{# Closing a cycle deletes the places nobody opened: the people left are those who started #}
+{% if total_tokens > 0 and shows_reviewer_status or total_tokens > 0 and cycle.status == 'active' %}
 <div class="card">
     <div class="card-header">
         <h2 class="card-title">{% trans 'Reviewer Response Status' %}</h2>
@@ -199,7 +200,7 @@
                         <tr style="border-bottom: 2px solid var(--border);">
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Reviewer' %}</th>
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Invitation Status' %}</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Response Status' %}</th>
+                            {% if shows_reviewer_status %}<th style="padding: 0.75rem; text-align: left; font-weight: 600;">{% trans 'Response Status' %}</th>{% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -208,7 +209,8 @@
                             <td style="padding: 0.75rem;" class="reviewer-col">
                                 {% if token.reviewer_email %}
                                 <span style="color: var(--success); font-weight: 500;">✓ {% trans 'Invited by email' %}</span>
-                                {% elif token.claimed_at or token.completed_at %}
+                                {# Without the status, every place of the invite link reads the same, opened or not #}
+                                {% elif not shows_reviewer_status or token.claimed_at or token.completed_at %}
                                 <span style="color: var(--text-secondary);">{% trans 'Via invite link' %}</span>
                                 {% else %}
                                 <span style="color: var(--text-secondary);">{% trans 'Awaiting claim' %}</span>
@@ -217,6 +219,7 @@
                             <td style="padding: 0.75rem;">
                                 {% include 'admin_dashboard/partials/token_invitation_status.html' %}
                             </td>
+                            {% if shows_reviewer_status %}
                             <td style="padding: 0.75rem;">
                                 {% if token.completed_at %}
                                 <span style="color: var(--insight-perception); font-weight: 500;">✓ {% blocktrans trimmed with date=token.completed_at|date:'SHORT_DATE_FORMAT' %}Completed {{ date }}{% endblocktrans %}</span>
@@ -231,6 +234,7 @@
                                 <span style="color: var(--text-secondary);">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -23,12 +23,13 @@
                 <div>{{ cycle.questionnaire.name }}</div>
 
                 <div style="font-weight: 500;">{% trans 'Pending Reviews:' %}</div>
-                <div>{{ pending_tokens.count }}</div>
+                <div>{{ pending_count }}</div>
             </div>
         </div>
     </div>
 
-    {% if pending_tokens %}
+    {% if pending_count %}
+    {% if shows_reviewer_status %}
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
             <h2 class="card-title">{% trans 'Pending Reviewer Tokens' %}</h2>
@@ -66,6 +67,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="card">
         <div class="card-header">
@@ -75,11 +77,12 @@
             <form method="post" action="{% url 'send_reminder' cycle.uuid %}">
                 {% csrf_token %}
 
+                {% if shows_reviewer_status %}
                 <div style="padding: 1rem; background: #dbeafe; border-radius: 6px; margin-bottom: 1.5rem;">
                     <p style="margin: 0 0 0.5rem 0; color: #1e40af; font-weight: 500;">{% trans 'Instructions:' %}</p>
                     <ul style="margin: 0; padding-left: 1.5rem; color: #1e40af;">
                         <li>{% trans 'Enter one email address per line (or comma-separated)' %}</li>
-                        <li>{% blocktrans trimmed with count=pending_tokens.count %}The number of emails must match the number of pending tokens ({{ count }}){% endblocktrans %}</li>
+                        <li>{% blocktrans trimmed with count=pending_count %}The number of emails must match the number of pending tokens ({{ count }}){% endblocktrans %}</li>
                         <li>{% trans 'The reminders go out within about five minutes, one email per reviewer' %}</li>
                         <li>{% trans 'Each email will contain a unique anonymous review link' %}</li>
                     </ul>
@@ -87,7 +90,7 @@
 
                 <div class="form-group">
                     <label for="emails" class="form-label">
-                        {% blocktrans trimmed with count=pending_tokens.count %}Reviewer Email Addresses ({{ count }} required){% endblocktrans %}
+                        {% blocktrans trimmed with count=pending_count %}Reviewer Email Addresses ({{ count }} required){% endblocktrans %}
                     </label>
                     <textarea
                         id="emails"
@@ -99,12 +102,17 @@
                         style="font-family: monospace;"
                     ></textarea>
                     <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.5rem;">
-                        {% blocktrans trimmed with count=pending_tokens.count %}Enter {{ count }} email address(es), one per line{% endblocktrans %}
+                        {% blocktrans trimmed with count=pending_count %}Enter {{ count }} email address(es), one per line{% endblocktrans %}
                     </div>
                 </div>
 
+                {% else %}
+                {# One reminder to everyone who has not answered: a number, no names and no choice of people #}
+                <p style="margin: 0 0 1.5rem;">{% trans 'The reminders go out within about five minutes, one email per reviewer' %}</p>
+                {% endif %}
+
                 <div style="display: flex; gap: 1rem;">
-                    <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=pending_tokens.count %}Send {{ count }} Reminder(s){% endblocktrans %}</button>
+                    <button type="submit" class="btn btn-primary">{% if shows_reviewer_status %}{% blocktrans trimmed with count=pending_count %}Send {{ count }} Reminder(s){% endblocktrans %}{% else %}{% blocktrans trimmed with count=reminder_count %}Send {{ count }} Reminder(s){% endblocktrans %}{% endif %}</button>
                     <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
                 </div>
             </form>

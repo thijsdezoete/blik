@@ -10,24 +10,7 @@
         {# The bar repeats the sentence above, so screen readers skip it #}
         <div class="progress" aria-hidden="true"><div class="progress-bar" style="width: {% widthratio review.answered review.invited 100 %}%"></div></div>
 
-        <div class="table-wrapper">
-            <table class="table" aria-labelledby="current-{{ review.cycle.uuid }} current-{{ review.cycle.uuid }}-about">
-                <thead><tr><th scope="col">{% trans 'Category' %}</th><th scope="col" class="rv-num">{% trans 'Invited' %}</th><th scope="col" class="rv-num">{% trans 'Answers' %}</th><th scope="col">{% trans 'Expected in the report' %}</th></tr></thead>
-                <tbody>
-                {% for row in review.progress %}
-                    <tr>
-                        <th scope="row"><span class="badge badge-{{ row.category }}">{{ row.label }}</span></th>
-                        <td class="rv-num">{{ row.invited }}</td>
-                        <td class="rv-num">{{ row.answered }}</td>
-                        <td>{% if row.shows == 'yes' %}{% trans 'Yes' %}
-                            {% elif row.shows == 'not_yet' %}{% blocktrans trimmed count counter=row.needed %}Not yet: {{ counter }} more answer needed{% plural %}Not yet: {{ counter }} more answers needed{% endblocktrans %}
-                            {% else %}{% trans 'No: too few people invited, so the report will not show this group' %}{% endif %}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <p class="help-text rv-current-note">{% blocktrans trimmed with threshold=threshold %}The report shows peers and direct reports only when {{ threshold }} or more of them answered.{% endblocktrans %} {% trans 'All feedback is anonymous. Nobody can see who gave which answer.' %}</p>
+        {% include 'admin_dashboard/partials/cycle_progress_table.html' with cycle=review.cycle progress=review.progress %}
     </div>
     {% if review.runs %}
     <div class="card-footer">

@@ -388,6 +388,17 @@ def can_view_all_reports(user):
             or user.has_perm('accounts.can_manage_organization'))
 
 
+def sees_reviewer_status(user):
+    """
+    Whether this user sees, per invited reviewer, if they completed, started or not yet.
+
+    Org admins and HR only. The reviewee and a manager who runs the cycle also
+    read the report: knowing which named people answered turns an anonymous
+    group into a known one. They get counts per category instead.
+    """
+    return can_view_all_reports(user)
+
+
 def can_manage_questionnaires(user):
     """
     Check if user can create and edit questionnaires.

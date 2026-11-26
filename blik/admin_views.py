@@ -45,6 +45,7 @@ from accounts.permissions import (
     may_create_for_others,
     reviewee_page_access,
     run_team_emails,
+    sees_reviewer_status,
     set_user_permission,
     visible_cycles,
 )
@@ -94,7 +95,7 @@ from reports.finalize import finalize_cycle
 from reports.services import generate_report, self_vs_others_gap
 from reports.summary import reviewee_summary
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
-from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
+from reviews.outbox import addressed, queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
 from reviews.setup import has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup
@@ -866,10 +867,9 @@ def reviewee_detail(request, reviewee_uuid):
     summary = reviewee_summary(reviewee, access['reader'])
     latest_review = next((review for review in summary['reviews'] if review['report']), None)
     runs = set(runnable_cycles(request).filter(reviewee=reviewee, status='active').values_list('pk', flat=True))
-    labels = {code: label for code, label, *_rest in REVIEWER_CARD_CATEGORIES}
     current_reviews = [{
         **review,
-        'progress': [{**row, 'label': labels[row['category']]} for row in cycle_progress(review['cycle'])],
+        'progress': labelled_progress(review['cycle']),
         'runs': review['cycle'].pk in runs,
     } for review in summary['reviews'] if review['cycle'].status == 'active']
 
@@ -2638,7 +2638,11 @@ def review_cycle_detail(request, cycle_uuid):
         'completion_rate': completion_rate,
         'claimed_completion_rate': claimed_completion_rate,
         'report_exists': report_exists,
+        'shows_reviewer_status': sees_reviewer_status(request.user),
     }
+    if not context['shows_reviewer_status']:
+        context['progress'] = labelled_progress(cycle)
+        context['threshold'] = cycle.organization.min_responses_for_anonymity
 
     return render(request, 'admin_dashboard/review_cycle_detail.html', context)
 
@@ -2679,6 +2683,12 @@ def cycle_progress(cycle):
         progress.append({'category': category, 'invited': invited, 'answered': answered,
                          'shows': shows, 'needed': needed})
     return progress
+
+
+def labelled_progress(cycle):
+    """cycle_progress with the label of each category, for the progress table."""
+    labels = {code: label for code, label, *_rest in REVIEWER_CARD_CATEGORIES}
+    return [{**row, 'label': labels[row['category']]} for row in cycle_progress(cycle)]
 
 
 @login_required
@@ -2773,8 +2783,14 @@ def send_reminder_form(request, cycle_uuid):
 
     context = {
         'cycle': cycle,
-        'pending_tokens': pending_tokens,
+        'pending_count': pending_tokens.count(),
+        'shows_reviewer_status': sees_reviewer_status(request.user),
     }
+    if context['shows_reviewer_status']:
+        context['pending_tokens'] = pending_tokens
+    else:
+        # The people queue_reminders reaches, as a number only
+        context['reminder_count'] = addressed(pending_tokens).filter(invitation_sent_at__isnull=False).count()
 
     return render(request, 'admin_dashboard/send_reminder.html', context)
 
@@ -2808,6 +2824,7 @@ def manage_invitations(request, cycle_uuid):
         'completed_tokens': completed_tokens,
         'default_language_name': language_name(cycle.organization.default_language),
         'self_token': cycle.tokens.filter(category='self', reviewer_email__isnull=False).first(),
+        'shows_reviewer_status': sees_reviewer_status(request.user),
     }
 
     return render(request, 'admin_dashboard/manage_invitations.html', context)
@@ -2957,6 +2974,9 @@ def send_reminder(request, cycle_uuid):
 def send_individual_reminder(request, cycle_uuid, token_id):
     """Queue a reminder email to a specific reviewer"""
     cycle = get_cycle_or_404(request, cycle_uuid)
+    # Whether one person may be reminded tells whether they answered
+    if not sees_reviewer_status(request.user):
+        raise Http404
 
     try:
         # Get the specific token

@@ -51,7 +51,11 @@
                 </button>
             </div>
             <span class="help-text" style="margin: 0 0 0.5rem;">{% trans 'The report gives advice when this question scores low. You can write other advice for each skill stage.' %}</span>
-            <button type="button" class="btn btn-sm btn-secondary" data-act="question-advice" aria-haspopup="dialog">{% trans 'Write advice per stage' %}</button>
+            {# A new question has no id until its first save; the script then enables the button and removes the sentence #}
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
+                <button type="button" class="btn btn-sm btn-secondary" data-act="question-advice" aria-haspopup="dialog"{% if not question.pk %} disabled{% endif %}>{% trans 'Write advice per stage' %}</button>
+                {% if not question.pk %}<span class="help-text" style="margin: 0;" data-advice-after-save>{% trans 'First write the question. Then you can add advice.' %}</span>{% endif %}
+            </div>
         </div>
         {% endif %}
     </div>

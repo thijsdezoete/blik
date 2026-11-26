@@ -857,6 +857,9 @@
 
         field(form, 'question_id').value = id;
         item.dataset.question = id;
+        // With an id the question can have advice
+        form.querySelector('[data-act="question-advice"]')?.removeAttribute('disabled');
+        form.querySelector('[data-advice-after-save]')?.remove();
         form.querySelectorAll('[data-slot^="question-new-"]').forEach(function(slot) {
             slot.dataset.slot = slot.dataset.slot.replace('question-new-', `question-${id}-`);
         });

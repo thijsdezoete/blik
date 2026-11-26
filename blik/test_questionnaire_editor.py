@@ -565,6 +565,14 @@ class EditorAdviceTests(TestCase):
         self.assertNotIn('For a Novice', competent['slots']['advice-try'])
         self.assertEqual(self.stored(), [{'key': 'a', 'text': 'For a Novice', 'threshold': 3.0, 'stages': [1]}])
 
+    def test_a_new_question_offers_advice_only_after_its_first_save(self):
+        new = self.client.get(self.url(), {'new_in': self.section.id}).json()['html']
+        stored = self.client.get(self.url(), {'question': self.question.id}).json()['html']
+
+        self.assertRegex(new, r'<button[^>]*data-act="question-advice"[^>]*disabled>')
+        self.assertTrue('First write the question. Then you can add advice.' in new)
+        self.assertNotRegex(stored, r'<button[^>]*data-act="question-advice"[^>]*disabled>')
+
     def test_the_question_form_has_no_advice_field(self):
         html = self.client.get(self.url(), {'question': self.question.id}).json()['html']
 

@@ -17,17 +17,18 @@
         </div>
         <span class="help-text" style="margin: 0.25rem 0 1rem;">{% trans 'One number for all advice of this question. With 3, the advice shows for a score of 2.9 and not for a score of 3.' %}</span>
 
-        {# The three parts of a row stand next to each other in a wide dialog and under each other in a narrow one (at 900 px and below): a flex-basis of (51.5rem - the row's width) x 999 is 0 or very large. The heads show only when the parts stand next to each other: the bottom padding, a percentage of the width, holds them. #}
+        {# The two parts of a row (the stage, the advice) stand next to each other in a wide dialog and under each other in a narrow one (at 900 px and below): a flex-basis of (51.5rem - the row's width) x 999 is 0 or very large. The heads show only when the parts stand next to each other: the bottom padding, a percentage of the width, holds them. #}
         <div aria-hidden="true" style="display: flex; gap: 1rem; height: 0; overflow: hidden; padding-bottom: clamp(0px, calc((100% - 51.5rem) * 999), 1.75rem);">
-            <span class="help-text" style="margin: 0; flex: 9 1 0; font-weight: 700;">{% trans 'Stage' %}</span>
-            <span class="help-text" style="margin: 0; flex: 10 1 0; font-weight: 700;">{% trans 'Who this is' %}</span>
-            <span class="help-text" style="margin: 0; flex: 30 1 0; font-weight: 700;">{% trans 'Advice the report gives' %}</span>
+            <span class="help-text" style="margin: 0; flex: 12 1 0; font-weight: 700;">{% trans 'Stage' %}</span>
+            <span class="help-text" style="margin: 0; flex: 38 1 0; font-weight: 700;">{% trans 'Advice the report gives' %}</span>
         </div>
         {% for row in rows %}
         <div data-advice-stage="{{ row.stage|default_if_none:'' }}" style="display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0.75rem 0; border-top: 1px solid var(--border);">
-            <div style="flex: 9 1 calc((51.5rem - 100%) * 999); font-weight: 500;">{% if row.stage %}{{ row.stage }} {% endif %}{{ row.name }}</div>
-            <div class="help-text" style="margin: 0; flex: 10 1 calc((51.5rem - 100%) * 999);">{{ row.description }}</div>
-            <div style="flex: 30 1 calc((51.5rem - 100%) * 999); min-width: 0;">
+            <div style="flex: 12 1 calc((51.5rem - 100%) * 999);">
+                <span style="font-weight: 500;">{% if row.stage %}{{ row.stage }} {% endif %}{{ row.name }}</span>
+                {% if row.description %}<span class="help-text" style="margin: 0.125rem 0 0;">{{ row.description }}</span>{% endif %}
+            </div>
+            <div style="flex: 38 1 calc((51.5rem - 100%) * 999); min-width: 0;">
                 <div data-advice-lines>{% for line in row.lines %}{% include 'admin_dashboard/editor/_advice_line.html' %}{% endfor %}</div>
                 <button type="button" class="btn btn-sm btn-secondary" data-act="add-advice-line">{% trans 'Add advice' %}</button>
             </div>

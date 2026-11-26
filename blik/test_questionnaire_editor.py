@@ -14,8 +14,10 @@ from core.models import Organization
 from questionnaires.answer_options import save_options
 from questionnaires.editor import example_score, save_question, set_weight, translated_into
 from questionnaires.models import (
-    AnswerOptionTranslation, Question, QuestionSection, QuestionTranslation, Questionnaire, QuestionnaireTranslation,
+    AnswerOption, AnswerOptionTranslation, Question, QuestionSection, QuestionTranslation, Questionnaire,
+    QuestionnaireTranslation,
 )
+from questionnaires.translations import get_checksum, get_text_translations
 from reviews.models import Response, ReviewCycle, ReviewerToken
 
 
@@ -625,3 +627,139 @@ class EditorReportCardTests(TestCase):
 
                 self.assertEqual(response.status_code, 200)
                 self.assertNotIn('question-\u00b2-report', response.json()['slots'])
+
+
+class EditorTranslateTests(TestCase):
+
+    def setUp(self):
+        ensure_permission_groups()
+        organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        admin = User.objects.create_user('admin', 'admin@acme.example', 'pw')
+        UserProfile.objects.create(user=admin, organization=organization)
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+        self.q = Questionnaire.objects.create(name='Team lead 360', organization=organization, source_language='en')
+        self.section = QuestionSection.objects.create(questionnaire=self.q, title='Communication', order=0)
+        self.question = Question.objects.create(
+            section=self.section, question_text='Explains decisions', question_type='likert',
+            config={'did_not_observe': True}, order=0,
+        )
+        AnswerOption.objects.create(question=self.question, label='Agree', order=0)
+
+    def url(self):
+        return reverse('questionnaire_edit', args=[self.q.uuid])
+
+    def post(self, **fields):
+        return self.client.post(self.url(), fields)
+
+    def text(self, field):
+        # A copy as stored now: the translations it prefetches stay out of self.q
+        questionnaire = Questionnaire.objects.get(pk=self.q.pk)
+
+        return next(text for text in get_text_translations(questionnaire, 'de') if text.field == field)
+
+    def test_a_translated_text_is_saved_per_field(self):
+        text = self.text('question_text')
+
+        answer = self.post(
+            action='save_translation', lang='de', field_name=text.field_name, value='Erkl\u00e4rt Entscheidungen',
+        ).json()
+
+        self.assertTrue(answer['ok'])
+        self.assertIn(f'text-{text.field_name}', answer['slots'])
+        self.assertIn('langs', answer['slots'])
+        self.assertEqual(
+            self.q.translated('de').sections.all()[0].questions.all()[0].question_text, 'Erkl\u00e4rt Entscheidungen',
+        )
+
+    def test_the_structure_cannot_change_in_translate_mode(self):
+        changes = [
+            {'action': 'save_question', 'question_id': self.question.id, 'question_text': 'Mine',
+             'question_type': 'text'},
+            {'action': 'add_section'},
+            {'action': 'delete_question', 'question_id': self.question.id},
+            {'action': 'set_weight', 'question_id': self.question.id, 'model': 'skill', 'weight': '1'},
+            {'action': 'reorder', 'layout': json.dumps([{'section': self.section.id, 'questions': []}])},
+        ]
+
+        for fields in changes:
+            with self.subTest(action=fields['action']):
+                response = self.post(lang='de', **fields)
+
+                self.assertEqual(response.status_code, 400)
+                self.assertFalse(response.json()['ok'])
+                self.question.refresh_from_db()
+                self.assertEqual(
+                    (self.question.question_text, self.question.question_type, self.question.section_id,
+                     self.question.config),
+                    ('Explains decisions', 'likert', self.section.id, {'did_not_observe': True}),
+                )
+                self.assertEqual(self.q.sections.count(), 1)
+
+    def test_the_source_language_has_no_translate_mode(self):
+        text = self.text('question_text')
+
+        for language in ('en', 'xx'):
+            with self.subTest(language=language):
+                response = self.post(action='save_translation', lang=language, field_name=text.field_name, value='X')
+
+                self.assertEqual(response.status_code, 400)
+                self.assertFalse(response.json()['ok'])
+                self.assertFalse(QuestionTranslation.objects.exists())
+
+    def test_a_text_of_another_questionnaire_is_refused(self):
+        other = Questionnaire.objects.create(name='Other 360', organization=self.q.organization)
+
+        response = self.post(
+            action='save_translation', lang='de', field_name=f'questionnaire-{other.id}-name', value='Anderer',
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(QuestionnaireTranslation.objects.exists())
+
+    def test_a_translation_too_long_for_an_answer_is_refused(self):
+        text = self.text('label')
+
+        response = self.post(action='save_translation', lang='de', field_name=text.field_name, value='x' * 256)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('255', response.json()['message'])
+        self.assertFalse(AnswerOptionTranslation.objects.exists())
+
+    def test_still_correct_clears_outdated(self):
+        QuestionTranslation.objects.create(
+            question=self.question, language='de', question_text='Erkl\u00e4rt Entscheidungen',
+            source_checksums={'question_text': get_checksum('An older text')},
+        )
+        text = self.text('question_text')
+        self.assertTrue(text.outdated)
+
+        answer = self.post(
+            action='save_translation', lang='de', field_name=text.field_name, value=text.text, still_correct='on',
+        ).json()
+
+        self.assertFalse(self.text('question_text').outdated)
+        self.assertNotIn('data-state', answer['slots'][f'text-{text.field_name}'])
+
+    def test_the_reviewer_shows_the_form_in_the_language_of_the_tab(self):
+        text = self.text('question_text')
+
+        slots = self.post(
+            action='save_translation', lang='de', field_name=text.field_name, value='Erkl\u00e4rt Entscheidungen',
+        ).json()['slots']
+
+        self.assertIn('Erkl\u00e4rt Entscheidungen', slots['reviewer'])
+        self.assertIn('Nicht beobachtet', slots['reviewer'])
+        # A text without a translation shows in the original language
+        self.assertIn('Agree', slots['reviewer'])
+        # The creator's own texts stay in the language of the interface, also in the same slot and after it
+        self.assertIn('The page a reviewer gets for the topic', slots['reviewer'])
+        self.assertIn('English (original)', slots['langs'])
+
+    def test_only_a_translation_language_opens_the_translate_mode(self):
+        for language, translating in (('de', True), ('en', False), ('xx', False)):
+            with self.subTest(language=language):
+                response = self.client.get(self.url(), {'lang': language})
+
+                self.assertEqual(response.context['language'], language if translating else None)

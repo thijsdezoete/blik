@@ -45,6 +45,8 @@
         shown: [],
         topic: root.querySelector('[data-slot="reviewer"] [data-topic]')?.dataset.topic || '',
         open: '',
+        // The language of the translate mode, empty in the original language
+        lang: root.dataset.lang || '',
     };
 
     window.Editor = Editor;
@@ -64,6 +66,12 @@
         data.append('shown', Editor.shown.join(','));
         data.append('topic', Editor.topic);
         data.append('open', Editor.open);
+
+        // The server refuses every change of the structure in the translate mode
+        if (Editor.lang) {
+            data.append('lang', Editor.lang);
+        }
+
         Object.entries(fields).forEach(([name, value]) => [].concat(value).forEach(item => data.append(name, item)));
 
         return data;
@@ -1226,8 +1234,9 @@
             return closing;
         }
 
+        // The translate mode has no open question, but its translations must be stored
         if (!item) {
-            return Promise.resolve(true);
+            return Editor.lang ? closeTranslations() : Promise.resolve(true);
         }
 
         const form = questionForm(item);
@@ -1383,16 +1392,19 @@
         });
     }
 
-    Sortable.create(topicsList, {
-        handle: '.section-handle',
-        animation: 150,
-        onEnd: function(event) {
-            if (event.oldIndex !== event.newIndex) {
-                saveLayout();
-            }
-        },
-    });
-    topicsList.querySelectorAll('.question-list').forEach(sortQuestions);
+    // The translate mode has no topics to move
+    if (topicsList) {
+        Sortable.create(topicsList, {
+            handle: '.section-handle',
+            animation: 150,
+            onEnd: function(event) {
+                if (event.oldIndex !== event.newIndex) {
+                    saveLayout();
+                }
+            },
+        });
+        topicsList.querySelectorAll('.question-list').forEach(sortQuestions);
+    }
 
     /* ---------- The right column ---------- */
 
@@ -1422,13 +1434,14 @@
     /* ---------- Buttons ---------- */
 
     root.addEventListener('click', function(event) {
-        // A language tab loads the page again: the open question is saved and closed first, unless that is refused
-        const language = event.target.closest('[data-slot="langs"] a[href]');
+        // A language tab loads the page again: the open question is saved and closed first, unless that is refused. In
+        // the translate mode its translations are stored first; the link to the original language is such a tab too
+        const language = event.target.closest('[data-slot="langs"] a[href], a[href][data-original]');
 
         // Only a plain left click: one with a modifier key or the middle button opens a new tab, which the browser does
         const plain = event.button === 0 && !(event.ctrlKey || event.metaKey || event.shiftKey || event.altKey);
 
-        if (language && openItem && plain) {
+        if (language && (openItem || Editor.lang) && plain) {
             event.preventDefault();
             closeQuestion().then(ok => ok && Editor.flush().then(() => { window.location.href = language.href; }));
             return;
@@ -1549,8 +1562,9 @@
 
     const reportCard = root.querySelector('[data-slot="report-card"]');
 
-    // A model that is on when the page opens stays on in this visit, also when its last question stops counting
-    Editor.shown = Array.from(reportCard.querySelectorAll('[data-model]:checked'), box => box.dataset.model);
+    // A model that is on when the page opens stays on in this visit, also when its last question stops counting. The
+    // translate mode has no card: the report shows the models that have weights
+    Editor.shown = Array.from(reportCard?.querySelectorAll('[data-model]:checked') || [], box => box.dataset.model);
 
     // Scroll the right column, not the page, to the block of the model in "What the report shows"
     function showLevel(model) {
@@ -1629,6 +1643,96 @@
             setWeight(select);
         }
     });
+
+    /*
+     * ---------- The translate mode (?lang=): a field per text of the questionnaire ----------
+     *
+     * Each field is a group of its own (data-save-action="save_translation", key text-<field_name>), so it saves like
+     * every other field of the page. Its slot holds only the state of the text, never the field.
+     */
+
+    // Before the page is left: every translation is stored. A refused one keeps the page, with its text in the field
+    // and the message in the save state
+    function closeTranslations() {
+        return Editor.flush().then(function() {
+            const key = Array.from(refusals.keys()).find(name => name.startsWith('text-'));
+
+            if (!key) {
+                return true;
+            }
+
+            findGroup(key)?.querySelector('[name="value"]')?.focus();
+            return false;
+        });
+    }
+
+    // "Still correct" stores the text of the field as it is now, as a translation of the current original text
+    function stillCorrect(button) {
+        // The group and its field are outside the slot, so no answer replaces them
+        const group = button.closest('[data-save-action="save_translation"]');
+        const key = group.dataset.saveKey;
+        const field = group.querySelector('[name="value"]');
+
+        // The typed text goes with this request
+        clearTimeout(typing.get(key)?.timer);
+        typing.delete(key);
+
+        const fields = () => ({...groupFields(group), still_correct: 'on'});
+
+        Editor.send('save_translation', fields, {key}).then(function(answer) {
+            // The button is gone with the answer; the focus goes back to the field
+            if (answer.ok && !root.contains(document.activeElement)) {
+                field.focus();
+            }
+        });
+    }
+
+    // "Show only texts that are missing or outdated" hides the other rows when it is ticked. A row translated after
+    // that stays until the box is ticked again, so it never moves away under the cursor
+    function filterTexts(only) {
+        const rows = Array.from(root.querySelectorAll('[data-text-row]'));
+
+        rows.forEach(row => { row.hidden = only && !row.querySelector('[data-state]'); });
+        root.querySelectorAll('[data-text-card]').forEach(function(card) {
+            card.hidden = only && !card.querySelector('[data-text-row]:not([hidden])');
+        });
+        root.querySelector('[data-all-done]').hidden = !only || rows.some(row => !row.hidden);
+    }
+
+    if (Editor.lang) {
+        root.addEventListener('click', function(event) {
+            const button = event.target.closest('[data-act="still-correct"]');
+
+            if (button) {
+                stillCorrect(button);
+            }
+        });
+
+        root.addEventListener('change', function(event) {
+            if (event.target.matches('[data-only-open]')) {
+                filterTexts(event.target.checked);
+            }
+        });
+
+        // The reviewer tab follows the field with the focus: the topic of its text, with its question outlined. The
+        // name and description of the questionnaire have no topic, so the tab keeps what it shows
+        root.addEventListener('focusin', function(event) {
+            const row = event.target.closest('[data-text-row][data-section]');
+
+            if (!row) {
+                return;
+            }
+
+            Editor.open = row.dataset.question || '';
+
+            if (Editor.topic !== row.dataset.section) {
+                Editor.topic = row.dataset.section;
+                Editor.send('refresh', {}, {key: 'refresh'});
+            }
+
+            outlineOpenQuestion();
+        });
+    }
 
     root.querySelectorAll('[data-state="mixed"]').forEach(checkbox => { checkbox.indeterminate = true; });
 })();

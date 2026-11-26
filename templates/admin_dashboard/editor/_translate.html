@@ -1,0 +1,52 @@
+{% load i18n %}{# The left column of the translate mode (?lang=): every text of the questionnaire, per topic, next to a field for its translation into language. Each field saves by itself (save_translation); a row's state is its slot "text-<field_name>". #}
+{% url 'questionnaire_edit' questionnaire.uuid as original_url %}
+<div data-follow="reviewer">
+    <div class="card mb-2">
+        <div class="card-body">
+            <p style="margin-bottom: 0.5rem;">{% blocktrans trimmed with language=language_name %}You translate into {{ language }}. Each row has the original text on the left and your translation on the right. The example on the right of the page shows the form in {{ language }}.{% endblocktrans %}</p>
+            <span class="help-text" style="margin: 0 0 0.75rem;">{% blocktrans trimmed with source=source_language_name %}You change topics, questions, answer types and the report choices in <a href="{{ original_url }}" data-original style="color: var(--primary);">{{ source }} (original)</a>. A text without a translation shows in {{ source }} to reviewers.{% endblocktrans %}</span>
+            <label class="form-check" style="margin: 0;">
+                <input type="checkbox" class="form-check-input" data-only-open>
+                <span>{% trans 'Show only texts that are missing or outdated' %}</span>
+            </label>
+        </div>
+    </div>
+
+    {% regroup texts by section as groups %}
+    {% for group in groups %}
+    <div class="card mb-2" data-text-card>
+        <div class="card-header">
+            <h2 class="card-title">{% if group.grouper %}{{ group.grouper.title }}{% else %}{% trans 'Questionnaire' %}{% endif %}</h2>
+        </div>
+        <div class="card-body">
+            {% for text in group.list %}
+            {# data-section and data-question tell the reviewer tab which topic and question to show #}
+            <div data-text-row{% if group.grouper %} data-section="{{ group.grouper.id }}"{% endif %}{% if text.question_id %} data-question="{{ text.question_id }}"{% endif %}>
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 1.5rem; padding: 0.5rem 0;{% if text.field == 'question_text' %} border-top: 1px solid var(--border); margin-top: 0.5rem; padding-top: 1rem;{% endif %}">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">{{ text.label }}</div>
+                        <label for="text-{{ text.field_name }}" style="white-space: pre-line; color: var(--text-primary);">{{ text.source }}</label>
+                    </div>
+                    <div data-save-action="save_translation" data-save-key="text-{{ text.field_name }}">
+                        <input type="hidden" name="field_name" value="{{ text.field_name }}">
+                        {% if text.multiline %}
+                        <textarea id="text-{{ text.field_name }}" name="value" class="form-control" rows="2" lang="{{ language }}" placeholder="{{ text.fallback }}"{% if text.max_length %} maxlength="{{ text.max_length }}"{% endif %}>{{ text.text }}</textarea>
+                        {% else %}
+                        <input type="text" id="text-{{ text.field_name }}" name="value" class="form-control" lang="{{ language }}" value="{{ text.text }}" placeholder="{{ text.fallback }}"{% if text.max_length %} maxlength="{{ text.max_length }}"{% endif %}>
+                        {% endif %}
+                        {% if '{name}' in text.source %}
+                        <small class="form-text">{% include 'admin_dashboard/partials/name_placeholder_hint.html' %}</small>
+                        {% endif %}
+                        <div data-slot="text-{{ text.field_name }}">{% include 'admin_dashboard/editor/_translate_row.html' %}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="card" data-all-done hidden>
+        <div class="card-body"><div class="empty-state">{% trans 'Everything is translated.' %}</div></div>
+    </div>
+</div>

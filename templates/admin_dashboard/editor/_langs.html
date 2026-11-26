@@ -1,7 +1,7 @@
-{% load i18n %}{# Slot "langs": the original language, then one tab per other language with its texts that are missing or outdated #}
-<a href="?lang={{ questionnaire.source_language }}" class="stage-tab" aria-current="page">{% blocktrans trimmed with language=source_language_name %}{{ language }} (original){% endblocktrans %}</a>
+{% load i18n %}{# Slot "langs": the original language, then one tab per other language with its texts that are missing or outdated. Each tab is a link: the page loads again in that language's mode #}
+<a href="{% url 'questionnaire_edit' questionnaire.uuid %}" class="stage-tab"{% if not language %} aria-current="page"{% endif %}>{% blocktrans trimmed with language=source_language_name %}{{ language }} (original){% endblocktrans %}</a>
 {% for state in language_states %}
 {% with open=state.missing|add:state.outdated %}
-<a href="?lang={{ state.code }}" class="stage-tab"{% if open %} title="{% blocktrans trimmed count counter=open %}{{ counter }} text is missing or outdated{% plural %}{{ counter }} texts are missing or outdated{% endblocktrans %}"{% endif %}>{{ state.name }}{% if open %}<span>{{ open }}</span>{% endif %}</a>
+<a href="?lang={{ state.code }}" class="stage-tab"{% if open %} title="{% blocktrans trimmed count counter=open %}{{ counter }} text is missing or outdated{% plural %}{{ counter }} texts are missing or outdated{% endblocktrans %}"{% endif %}{% if state.code == language %} aria-current="page"{% endif %}>{{ state.name }}{% if open %}<span>{{ open }}</span>{% endif %}</a>
 {% endwith %}
 {% endfor %}

@@ -1,0 +1,13 @@
+{% load i18n %}{# Slot "text-<field_name>": where the translation of one text stands. Not the field: an answer never replaces what is typed. data-state marks a text that is missing or outdated, for "Show only texts that are missing or outdated". #}
+{% if text.missing or text.outdated %}
+<div data-state="{% if text.missing %}missing{% else %}outdated{% endif %}" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.25rem; font-size: 0.875rem;">
+    {% if text.missing %}<span class="badge badge-warning">{% trans 'Missing' %}</span>{% endif %}
+    {% if text.outdated %}
+    <span class="badge badge-warning">{% trans 'Outdated' %}</span>
+    <span style="color: var(--text-secondary);">{% trans 'The original text changed after this translation.' %}</span>
+    {% if text.text %}
+    <button type="button" class="btn btn-sm btn-secondary" data-act="still-correct">{% trans 'Still correct' %}</button>
+    {% endif %}
+    {% endif %}
+</div>
+{% endif %}

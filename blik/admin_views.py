@@ -68,7 +68,7 @@ from questionnaires.editor import (
     set_weight,
     translated_into,
 )
-from questionnaires.models import Question, QuestionSection, Questionnaire
+from questionnaires.models import AnswerOption, Question, QuestionSection, Questionnaire
 from questionnaires.ordering import save_layout
 from questionnaires.presentation import question_scoring, questionnaire_report_features
 from reports.dreyfus_service import DREYFUS_STAGES
@@ -76,6 +76,7 @@ from questionnaires.translations import (
     LanguageState,
     get_language_states,
     get_text_translations,
+    save_one_translation,
     save_text_translations,
 )
 from notifications.lifecycle import cycle_summary, send_cycle_summary
@@ -1160,8 +1161,52 @@ def _question_context(context, question):
     return {**context, 'question': question, 'values': question_form_values(context['questionnaire'], question)}
 
 
+def _translation_language(questionnaire, params):
+    """The language of the translate mode that lang asks for: a language of the site other than the questionnaire's
+    original language. None for the page in the original language."""
+
+    language = params.get('lang')
+
+    return language if is_language(language) and language != questionnaire.source_language else None
+
+
+def _with_language(context, language):
+    """The context of the editor page in the mode of language: for a translation language its texts, each with the id
+    of the question it belongs to, and the reviewer's topic translated into it."""
+
+    if language is None:
+        return {**context, 'language': None}
+
+    texts = get_text_translations(context['questionnaire'], language)
+
+    for text in texts:
+        if isinstance(text.part, Question):
+            text.question_id = text.part.id
+        elif isinstance(text.part, AnswerOption):
+            text.question_id = text.part.question_id
+
+    topic = context['reviewer_section']
+    sections = context['questionnaire'].translated(language).sections.all()
+
+    return {
+        **context,
+        'language': language,
+        'language_name': language_name(language),
+        'texts': texts,
+        'reviewer_section': next((section for section in sections if topic and section.id == topic.id), None),
+    }
+
+
 def _render_editor_slot(request, context, name):
-    """The HTML of one slot, or None for a topic or question that no longer exists."""
+    """The HTML of one slot, or None for a topic, question or text that no longer exists."""
+
+    # The state of one text in the translate mode
+    if name.startswith('text-'):
+        text = next((text for text in context['texts'] if f'text-{text.field_name}' == name), None)
+
+        return text and render_to_string(
+            'admin_dashboard/editor/_translate_row.html', {**context, 'text': text}, request=request,
+        )
 
     if not (match := EDITOR_ITEM_SLOT.fullmatch(name)):
         return render_to_string(EDITOR_SLOTS[name], context, request=request)
@@ -1190,12 +1235,16 @@ def editor_response(request, questionnaire, slots, **extra):
     """The answer to an action of the editor page: the named slots, the reviewer and the report, and the chart data.
 
     The questionnaire is loaded anew, so the slots show what is stored now. An extra value that is a function gets the
-    slot context and gives the value to send. A GET (the open question) carries shown and topic in its query.
+    slot context and gives the value to send. A GET (the open question) carries shown and topic in its query. A request
+    of the translate mode carries its language in lang.
     """
 
     params = request.POST if request.method == 'POST' else request.GET
     shown = [model for model in params.get('shown', '').split(',') if model in MODELS]
-    context = editor_context(load_for_editor(questionnaire), shown, params.get('topic'))
+    context = _with_language(
+        editor_context(load_for_editor(questionnaire), shown, params.get('topic')),
+        _translation_language(questionnaire, params),
+    )
     rendered = {name: _render_editor_slot(request, context, name) for name in [*slots, 'reviewer', 'report']}
     extra = {key: value(context) if callable(value) else value for key, value in extra.items()}
 
@@ -1272,10 +1321,38 @@ def _open_question(request, questionnaire):
     return editor_response(request, questionnaire, [], html=lambda context: _question_form(request, context, question))
 
 
+def _translate_action(request, questionnaire, action):
+    """Run one action of the translate mode. It saves translations only: an action that changes the structure or the
+    original texts is refused and changes nothing, as is a language that is no translation language."""
+
+    post = request.POST
+
+    if action == 'refresh':
+        return editor_response(request, questionnaire, [])
+
+    language = _translation_language(questionnaire, post)
+
+    if action != 'save_translation' or language is None:
+        raise EditorError(_('This change is not possible. Reload the page.'))
+
+    field_name = post.get('field_name', '')
+    errors = save_one_translation(
+        questionnaire, language, field_name, post.get('value', ''), still_correct=bool(post.get('still_correct')),
+    )
+
+    if errors:
+        raise EditorError(errors[0])
+
+    return editor_response(request, questionnaire, ['langs', f'text-{field_name}'])
+
+
 def _editor_action(request, questionnaire, action):
     """Run one action of the editor page and answer the slots it can change."""
 
     post = request.POST
+
+    if 'lang' in post or action == 'save_translation':
+        return _translate_action(request, questionnaire, action)
 
     if action == 'save_info':
         save_info(questionnaire, post)
@@ -1371,15 +1448,15 @@ def _editor_action(request, questionnaire, action):
 
 EDITOR_ACTIONS = (
     'refresh', 'save_info', 'set_did_not_observe', 'add_section', 'save_section', 'delete_section', 'reorder',
-    'save_question', 'delete_question', 'set_weight', 'clear_model',
+    'save_question', 'delete_question', 'set_weight', 'clear_model', 'save_translation',
 )
 
 
 @login_required
 @can_manage_questionnaires_required
 def questionnaire_edit(request, questionnaire_uuid):
-    """The editor of a questionnaire: GET gives the page, GET ?question= or ?new_in= the open question, and every POST
-    of the page answers JSON (editor_response)."""
+    """The editor of a questionnaire: GET gives the page, GET ?lang= the page in the translate mode, GET ?question= or
+    ?new_in= the open question, and every POST of the page answers JSON (editor_response)."""
     # Get organization from request context
     org = getattr(request, 'organization', None)
 
@@ -1407,7 +1484,10 @@ def questionnaire_edit(request, questionnaire_uuid):
 
         return JsonResponse({'ok': False, 'message': _('This change is not possible. Reload the page.')}, status=400)
 
-    context = editor_context(load_for_editor(questionnaire), [])
+    # An unknown language and the original one give the page in the original language
+    context = _with_language(
+        editor_context(load_for_editor(questionnaire), []), _translation_language(questionnaire, request.GET),
+    )
 
     return render(request, 'admin_dashboard/questionnaire_editor.html', context)
 

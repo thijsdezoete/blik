@@ -9,7 +9,8 @@
 
 {% block content %}
 {# Every element with data-slot is filled again from the answers of the server, see static/js/questionnaire-editor.js #}
-<div id="questionnaire-editor" data-url="{% url 'questionnaire_edit' questionnaire.uuid %}">
+{# With a language (?lang=) the page is in the translate mode: the left column holds the texts and their translations #}
+<div id="questionnaire-editor" data-url="{% url 'questionnaire_edit' questionnaire.uuid %}"{% if language %} data-lang="{{ language }}"{% endif %}>
     {% csrf_token %}
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
         <div>
@@ -21,18 +22,25 @@
                   data-saving="{% trans 'Saving...' %}"
                   data-saved="{% trans 'All changes saved' %}"
                   data-failed="{% trans 'Not saved. Trying again.' %}">{% trans 'All changes saved' %}</span>
+            {% if not language %}
             <button type="button" class="btn btn-secondary" data-act="settings" aria-expanded="false">{% trans 'Settings' %}</button>
-            <button type="button" class="btn btn-secondary" data-act="open-tab" data-href="{% url 'questionnaire_preview' questionnaire.uuid %}">{% trans 'Try the whole questionnaire' %}</button>
+            {% endif %}
+            <button type="button" class="btn btn-secondary" data-act="open-tab" data-href="{% url 'questionnaire_preview' questionnaire.uuid %}{% if language %}?lang={{ language }}{% endif %}">{% trans 'Try the whole questionnaire' %}</button>
             <button type="button" class="btn btn-primary" data-act="leave" data-href="{% url 'questionnaire_list' %}">{% trans 'Done' %}</button>
         </div>
     </div>
 
+    {% if not language %}
     <div data-slot="settings" hidden>{% include 'admin_dashboard/editor/_settings.html' %}</div>
+    {% endif %}
 
     <nav class="stage-tabs" data-slot="langs" style="margin-bottom: 1.5rem;" aria-label="{% trans 'Languages' %}">{% include 'admin_dashboard/editor/_langs.html' %}</nav>
 
     <div class="invite-split">
         <div>
+            {% if language %}
+            {% include 'admin_dashboard/editor/_translate.html' %}
+            {% else %}
             <div data-slot="report-card" data-follow="report">{% include 'admin_dashboard/editor/_report_card.html' %}</div>
 
             <div id="topics">
@@ -41,6 +49,7 @@
                 {% endfor %}
             </div>
             <button type="button" class="btn btn-secondary" data-act="add-topic">{% trans 'Add a topic' %}</button>
+            {% endif %}
         </div>
 
         <div class="card editor-preview">

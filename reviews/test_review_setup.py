@@ -120,15 +120,23 @@ class SavedReviewerCountsTests(SetupTestCase):
         self.casey.is_active = False
         self.casey.save()
 
-        with self.assertNumQueries(2):
-            counts = saved_reviewer_counts([self.alex.id, self.blair.id])
+        saved_lists = list(ReviewSetup.objects.all())
+        with self.assertNumQueries(1):
+            counts = saved_reviewer_counts(saved_lists)
 
         self.assertEqual(counts, {self.alex.id: {'manager': 1, 'peer': 2}})
+
+    def test_an_email_of_a_deactivated_person_is_not_a_reviewer(self):
+        self.save(emails={'peer': ['dana@acme.example', 'Erin@acme.example']})
+        self.person('Erin Park', 'erin@acme.example', is_active=False)
+
+        self.assertEqual(review_setup(self.alex).emails['peer'], ['dana@acme.example'])
+        self.assertEqual(saved_reviewer_counts(ReviewSetup.objects.all())[self.alex.id]['peer'], 1)
 
     def test_an_empty_saved_list_is_in_the_answer(self):
         self.save()
 
-        self.assertEqual(saved_reviewer_counts([self.alex.id]),
+        self.assertEqual(saved_reviewer_counts(ReviewSetup.objects.all()),
                          {self.alex.id: {'manager': 0, 'peer': 0, 'direct_report': 0}})
 
 

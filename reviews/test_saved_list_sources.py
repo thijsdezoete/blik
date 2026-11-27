@@ -82,6 +82,40 @@ class SavedListSourcesTests(TestCase):
                   for cycle in response.context['cycles']}
         self.assertEqual(starts, {self.alex: (True, True), self.blair: (False, True), self.dana: (False, False)})
 
+    def test_start_dialogs_tick_the_categories_of_the_saved_list(self):
+        self.previous_cycle(self.alex)
+        self.previous_cycle(self.blair)
+        save_review_setup(
+            self.alex, self.questionnaire, {**ALL_FLAGS, 'include_direct_report': False, 'include_self': False},
+            {'manager': [], 'peer': [], 'direct_report': []},
+            {'manager': [], 'peer': ['casey@acme.example'], 'direct_report': ['erin@acme.example']})
+
+        people = {item['reviewee']: item['start_categories']
+                  for item in self.client.get(reverse('reviewee_list')).context['reviewees_with_latest']}
+        cycles = {cycle.reviewee: cycle.start['start_categories']
+                  for cycle in self.client.get(reverse('review_cycle_list')).context['cycles']}
+
+        for starts in (people, cycles):
+            self.assertEqual(set(starts[self.alex]), {'manager', 'peer'})
+            # Without a saved list: the categories of the cycle
+            self.assertEqual(set(starts[self.blair]), {'self', 'manager', 'peer', 'direct_report'})
+
+    def test_a_deeper_level_of_the_org_chart_counts_for_the_new_cycle_dialog(self):
+        # Blair leads a unit whose only member is deactivated; that member leads Dana
+        self.previous_cycle(self.blair)
+        gone = RevieweeFactory(organization=self.org, name='Gone Lead', email='gone@acme.example', is_active=False)
+        upper, lower = OrgUnitFactory(organization=self.org), OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=upper, reviewee=self.blair, row=0, col=0)
+        OrgUnitMembershipFactory(unit=upper, reviewee=gone, row=1, col=0)
+        OrgUnitMembershipFactory(unit=lower, reviewee=gone, row=0, col=0)
+        OrgUnitMembershipFactory(unit=lower, reviewee=self.dana, row=1, col=0)
+        self.org.chart_depth, self.org.chart_managers_only = 2, False
+        self.org.save()
+
+        cycles = self.client.get(reverse('review_cycle_list')).context['cycles']
+
+        self.assertEqual([cycle.start['from_chart'] for cycle in cycles], [True])
+
     def test_list_dialog_uses_the_org_chart_before_the_previous_cycle(self):
         self.previous_cycle(self.alex, peer='erin@acme.example')
         self.put_in_chart_under_blair(self.alex, self.dana)

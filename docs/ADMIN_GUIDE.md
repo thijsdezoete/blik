@@ -226,7 +226,7 @@ The list is saved when you click **Save reviewers** or **Start review** on the p
 Blik uses the saved list in these places:
 
 - **Start review** on the page of the reviewee creates the cycle from the list.
-- **Start review** in the reviewee list and **New Cycle** in the cycle list: the cycle gets its reviewers from the saved list. Without a saved list it takes them from the org chart, and without a place in the org chart it copies the previous cycle of the person. The dialog says which of these it uses.
+- **Start review** in the reviewee list and **New Cycle** in the cycle list: the cycle gets its reviewers from the saved list. Without a saved list it takes them from the org chart, and without a place in the org chart it copies the previous cycle of the person. The dialog says which of these it uses. For a person with a saved list, the dialog ticks the categories that the list has switched on.
 - The **Reviewers** column of the reviewee list (for organization admins) shows for each person how many managers, peers and direct reports a review would invite, and below the numbers where they come from: "From the saved list", "From the org chart" or "From the previous review". Move the pointer over the numbers (or move to them with the Tab key) to see the names. A person with "No reviewers yet" needs reviewers before a review can start with invitations.
 - **Single cycle creation**: the reviewer pickers are filled from the list.
 - **Bulk cycle creation** with **Derive from org chart** or **Reuse previous settings per cycle**: a person's saved list is used instead of the chart or the previous cycle. A person whose saved list has no reviewers for the categories of the cycle is skipped.

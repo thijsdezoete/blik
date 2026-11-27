@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from django.db import transaction
 from django.db.models import Count, Exists, F, OuterRef, Q
 
-from accounts.models import OrgUnitMembership, ReviewSetup, Reviewee, SetupReviewer
+from accounts.models import ReviewSetup, Reviewee, SetupReviewer
 from questionnaires.models import Questionnaire
 from reviews.models import CATEGORY_ORDER, ReviewerToken
 from reviews.services import derive_reviewers
@@ -65,6 +65,12 @@ def has_previous_review(reviewee):
     return previous_cycle_reviewers(reviewee) is not None
 
 
+def _email_of_deactivated(organization):
+    """For a query over saved reviewers: the row is an email address of a deactivated person of the organization."""
+    return Exists(Reviewee.objects.filter(
+        organization=OuterRef(organization), is_active=False, email__iexact=OuterRef('email')))
+
+
 def _active_people_by_email(reviewee):
     return {
         p.email.lower(): p
@@ -117,9 +123,9 @@ def review_setup(reviewee, source=None, with_previous=False):
     if source is None and saved is not None:
         setup.source = 'saved'
         by_email = _active_people_by_email(reviewee)
-        for row in saved.reviewers.select_related('person').order_by('person__name', 'pk'):
+        for row in saved.reviewers.exclude(_email_of_deactivated('setup__reviewee__organization')).select_related(
+                'person').order_by('person__name', 'pk'):
             if row.person is None:
-                # Deactivated people are not in by_email, so they drop out here too.
                 _place_email(setup, row.category, row.email, by_email)
             elif row.person.is_active:
                 setup.people[row.category].append(row.person)
@@ -178,27 +184,17 @@ def save_review_setup(reviewee, questionnaire, flags, people, emails):
     return setup
 
 
-def chart_has_reviewers(outer='pk'):
+def saved_reviewer_counts(saved_lists):
     """
-    For a query over people: someone else who is active is in one of the person's units.
-    That is when `derive_reviewers` gives at least one reviewer, so when the org chart is a source.
-    """
-    return Exists(OrgUnitMembership.objects.filter(
-        unit__memberships__reviewee=OuterRef(outer), reviewee__is_active=True).exclude(reviewee=OuterRef(outer)))
-
-
-def saved_reviewer_counts(reviewee_ids):
-    """
-    For the people who have a saved list: how many reviewers each category of the list holds,
+    For saved lists (`ReviewSetup` rows): how many reviewers each category of the list holds,
     as {reviewee id: {category: count}}. Only the categories that the list includes;
-    deactivated people are not counted. Two queries, whatever the number of people.
+    deactivated people are not counted. One query, whatever the number of lists.
     """
-    counts = {
-        saved.reviewee_id: {c: 0 for c in LISTED if getattr(saved, f'include_{c}')}
-        for saved in ReviewSetup.objects.filter(reviewee__in=reviewee_ids)}
+    counts = {saved.reviewee_id: {c: 0 for c in LISTED if getattr(saved, f'include_{c}')} for saved in saved_lists}
     rows = SetupReviewer.objects.filter(setup__reviewee__in=list(counts)).filter(
         Q(person__isnull=True) | Q(person__is_active=True),
-    ).values_list('setup__reviewee_id', 'category').annotate(n=Count('id'))
+    ).exclude(_email_of_deactivated('setup__reviewee__organization')).values_list(
+        'setup__reviewee_id', 'category').annotate(n=Count('id'))
     for reviewee_id, category, n in rows:
         if category in counts[reviewee_id]:
             counts[reviewee_id][category] = n

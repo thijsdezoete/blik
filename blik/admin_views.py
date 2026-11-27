@@ -102,8 +102,8 @@ from blik import dashboard as dashboard_state
 from reviews.services import (
     assign_tokens_to_emails, chart_reviewer_counts, derive_reviewers, free_places, send_links_email)
 from reviews.setup import (
-    chart_has_reviewers, has_previous_review, previous_cycle_reviewers, previous_reviewer_counts, review_setup,
-    save_review_setup, saved_reviewer_counts)
+    has_previous_review, previous_cycle_reviewers, previous_reviewer_counts, review_setup, save_review_setup,
+    saved_reviewer_counts)
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     CREDITS_PER_PACK,
@@ -455,6 +455,15 @@ REVIEWEE_STAGES = {
     'completed': (gettext_lazy('Completed'), Q(cycle_count__gt=0, active_cycle_count=0)),
 }
 
+def start_categories(saved_list, source_cycle):
+    """
+    The categories that the start dialog ticks: those of the saved list, else those of the cycle
+    it copies, else all. So that a start with the dialog as it opens invites who the list says.
+    """
+    source = saved_list or source_cycle
+    return [c for c in CATEGORY_ORDER if source is None or getattr(source, f'include_{c}')]
+
+
 def reviewer_state(person, counts_by_source):
     """
     Where a review of this person would get its reviewers, and how many per category.
@@ -581,11 +590,12 @@ def reviewee_list(request):
     # Where a review of the person would get its reviewers, with the number per category.
     # For users who can start a review from this list. Four queries for the page.
     shows_reviewers = request.user.has_perm('accounts.can_manage_organization')
-    counts_by_source = ()
+    counts_by_source, saved_lists = (), {}
     if shows_reviewers:
         ids = [person.id for person in reviewees]
+        saved_lists = {saved.reviewee_id: saved for saved in ReviewSetup.objects.filter(reviewee__in=ids)}
         counts_by_source = (
-            ('saved', saved_reviewer_counts(ids)),
+            ('saved', saved_reviewer_counts(saved_lists.values())),
             ('chart', chart_reviewer_counts(org, ids)),
             ('previous', previous_reviewer_counts(
                 cycles_by_id[person.latest_cycle_id] for person in reviewees if person.latest_cycle_id)),
@@ -609,6 +619,7 @@ def reviewee_list(request):
             'reviewers': reviewers,
             # For the start dialog, which only these users get
             'from_chart': bool(reviewers) and reviewers['source'] == 'chart',
+            'start_categories': start_categories(saved_lists.get(person.id), latest_cycle),
         })
 
     return render(request, 'admin_dashboard/reviewee_list.html', {
@@ -2154,8 +2165,8 @@ def review_cycle_list(request):
     # Like there, it says when the reviewers come from the saved list or from the org chart
     # (quick_cycle_create uses these before the cycle).
     reviewee_ids = [cycle.reviewee_id for cycle in cycles]
-    with_saved_list = set(ReviewSetup.objects.filter(reviewee__in=reviewee_ids).values_list('reviewee_id', flat=True))
-    in_chart = set(Reviewee.objects.filter(pk__in=reviewee_ids).filter(chart_has_reviewers()).values_list('pk', flat=True))
+    saved_lists = {saved.reviewee_id: saved for saved in ReviewSetup.objects.filter(reviewee__in=reviewee_ids)}
+    in_chart = chart_reviewer_counts(org, reviewee_ids)
     for cycle in cycles:
         cycle.report_only = cycle.reviewee.email.lower() in below - run_team
         cycle.start = {
@@ -2164,8 +2175,9 @@ def review_cycle_list(request):
             'latest_questionnaire': cycle.questionnaire,
             'selected_questionnaire': cycle.questionnaire if cycle.questionnaire.is_active else default_questionnaire,
             'active_cycle': cycle.reviewee_has_active_cycle,
-            'has_saved_list': cycle.reviewee_id in with_saved_list,
+            'has_saved_list': cycle.reviewee_id in saved_lists,
             'from_chart': cycle.reviewee_id in in_chart,
+            'start_categories': start_categories(saved_lists.get(cycle.reviewee_id), cycle),
         }
 
     context = {

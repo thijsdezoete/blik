@@ -306,8 +306,10 @@ class ChartReviewerCountsTests(TestCase):
         self.org = OrganizationFactory()
         people = {name: RevieweeFactory(organization=self.org, name=name) for name in (
             'ceo', 'coo', 'dir_a', 'dir_b', 'lead', 'ann', 'bob', 'cara', 'dan', 'eve', 'yan', 'zed')}
-        people['ann'].is_active = False
-        people['ann'].save()
+        # ann is deactivated and leads nobody; lead is deactivated and has a team below
+        for name in ('ann', 'lead'):
+            people[name].is_active = False
+            people[name].save()
         # managers in row 0, members below; dir_a leads two units, bob is in two, cara leads the ceo (a loop),
         # yan is alone in a unit and zed is in none
         for managers, members in (

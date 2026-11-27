@@ -234,6 +234,7 @@
                             {% with cycle=cycle_data.cycle %}
                             {% if cycle.status == 'completed' and cycle_data.has_report %}
                             <a href="{% url 'reports:reviewee_report' cycle_data.report.access_token %}" class="btn btn-sm btn-primary" target="_blank" rel="noopener">{% trans 'View Report' %}</a>
+                            {% elif request.person_deactivated %}{# their reports only: the other links would lead back here #}
                             {% elif cycle.status == 'completed' %}
                             <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View Cycle' %}</a>
                             <p class="help-text">{% trans 'No report generated yet' %}</p>

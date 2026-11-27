@@ -338,7 +338,7 @@ def profile_view(request):
     # the page only offers the self-assessment link while it is still open
     # (each visit to that link hands out a new token).
     user_cycles = ReviewCycle.objects.filter(
-        reviewee__email=request.user.email,
+        reviewee__email__iexact=request.user.email,
         reviewee__organization=organization
     ).select_related('reviewee', 'questionnaire', 'created_by').annotate(
         token_count=Count('tokens'),

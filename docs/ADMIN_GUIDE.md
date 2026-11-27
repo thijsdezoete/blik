@@ -135,6 +135,8 @@ would see in the dashboard.
 2. Confirm deletion
 3. Reviewees are marked inactive rather than deleted (preserves historical data)
 
+A deactivated person cannot use their account any more: Blik logs them out, and a manager who is deactivated can no longer read the reports of their unit. The reviewer picker does not offer a deactivated person. Blik never shuts out an organization admin because of their own person record.
+
 ---
 
 ## Org Chart
@@ -219,7 +221,7 @@ Every reviewee can have a saved reviewer list: the managers, peers and direct re
 
 ### Where the list comes from and where it is used
 
-The list is saved when you click **Save reviewers** or **Start review** on the page of the reviewee, and when you create a single cycle with reviewers in the cycle form. Before anything is saved, the page fills the list from the org chart, or else from the previous review of the person. The previous review is a source only for organization admins and users with "Can view all reports and cycles": closing a review removes the reviewers who never opened their form, so the reviewers left on it show who answered. Everyone else gets the org chart or an empty list, and no **Fill from the previous review** button.
+The list is saved when you click **Save reviewers** or **Start review** on the page of the reviewee, and when you create a single cycle with reviewers in the cycle form while **Also save these reviewers as the list on the person's page** is ticked (it is ticked at first). Untick it for a review with other reviewers than usual: the saved list then stays as it is. Before anything is saved, the page fills the list from the org chart, or else from the previous review of the person. The previous review is a source only for organization admins and users with "Can view all reports and cycles": closing a review removes the reviewers who never opened their form, so the reviewers left on it show who answered. Everyone else gets the org chart or an empty list, and no **Fill from the previous review** button.
 
 Blik uses the saved list in these places:
 

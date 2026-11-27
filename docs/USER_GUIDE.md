@@ -136,7 +136,7 @@ Click **Start review**. The dialog says how many reviewers get an invitation. Cl
 
 ### The status per reviewer on the cycle page
 
-Only organization admins and users with **Can view all reports and cycles** (for example HR) see on the cycle page which reviewer completed their form, started it or did not start yet. Everyone else who can open the cycle sees **Answers per category**: how many reviewers were invited and how many answered, per category. They can remind everyone who has not answered with **Remind All Pending Reviewers**, but they cannot pick one reviewer.
+Only organization admins and users with **Can view all reports and cycles** (for example HR) see on the cycle page which reviewer completed their form, started it or did not start yet. Everyone else who can open the cycle sees **Answers per category**: how many reviewers were invited and how many answered, per category. They can remind everyone who has not answered with **Remind All Pending Reviewers**, and Blik says how many reminders go out, but they cannot pick one reviewer.
 
 ---
 

@@ -34,7 +34,7 @@ class RevieweeOverviewTests(TestCase):
         self.user = self.profile.user
         self.org = self.profile.organization
         assign_organization_admin(self.user)
-        Reviewee.objects.filter(organization=self.org, email=self.user.email).update(is_active=False)
+        Reviewee.objects.filter(organization=self.org, email=self.user.email).delete()
         self.client.force_login(self.user)
         self.url = reverse('reviewee_list')
         self.questionnaire = QuestionnaireFactory(organization=self.org, is_default=True, name='Current review')

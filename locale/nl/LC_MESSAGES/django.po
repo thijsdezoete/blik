@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-26 23:50+0000\n"
+"POT-Creation-Date: 2026-11-27 00:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1059,11 +1059,19 @@ msgstr "Zoek een medewerker…"
 msgid "Direct Reports"
 msgstr "Medewerkers"
 
+#. Translators: the word between the last two names of a list, as in "Sara Koster, Tom Bakker and Lena Visser".
+msgctxt "joins the last two names of a list"
+msgid "and"
+msgstr "en"
+
 #, python-format
 msgid "%(count)s change saved in the org chart."
 msgid_plural "%(count)s changes saved in the org chart."
 msgstr[0] "%(count)s wijziging opgeslagen in het organogram."
 msgstr[1] "%(count)s wijzigingen opgeslagen in het organogram."
+
+msgid "The org chart changed since the page was loaded. The choices that were not applied are shown again: check them."
+msgstr "Het organogram is gewijzigd sinds de pagina werd geladen. De keuzes die niet zijn toegepast, worden opnieuw getoond: controleer ze."
 
 msgid "Questionnaire is required."
 msgstr "Een vragenlijst is verplicht."
@@ -1085,11 +1093,6 @@ msgstr "Feedbackronde voor \"%(name)s\" aangemaakt en %(assigned)s feedbackgever
 #, python-format
 msgid "Review cycle created for \"%(name)s\". The reviewee's emails go out within about five minutes."
 msgstr "Feedbackronde voor \"%(name)s\" aangemaakt. De e-mails aan de feedbackontvanger worden binnen enkele minuten verzonden."
-
-#. Translators: the word between the last two names of a list, as in "Sara Koster, Tom Bakker and Lena Visser".
-msgctxt "joins the last two names of a list"
-msgid "and"
-msgstr "en"
 
 msgid "You do not have permission to create reviewees."
 msgstr "Je hebt geen toestemming om feedbackontvangers aan te maken."
@@ -1561,6 +1564,9 @@ msgid "%(count)d person placed in the org chart."
 msgid_plural "%(count)d people placed in the org chart."
 msgstr[0] "%(count)d persoon geplaatst in het organogram."
 msgstr[1] "%(count)d personen geplaatst in het organogram."
+
+msgid "Some people were not placed: the org chart or a reviewer list changed since the page was loaded."
+msgstr "Sommige mensen zijn niet geplaatst: het organogram of een lijst met feedbackgevers is gewijzigd sinds de pagina werd geladen."
 
 msgid "Choose a CSV file."
 msgstr "Kies een CSV-bestand."
@@ -6492,8 +6498,8 @@ msgstr "Verwijderen"
 #, python-format
 msgid "%(names)s also manages the unit %(unit)s and can read the reports of %(person)s too."
 msgid_plural "%(names)s also manage the unit %(unit)s and can read the reports of %(person)s too."
-msgstr[0] "%(names)s leidt de afdeling %(unit)s ook en kan ook de rapporten van %(person)s lezen."
-msgstr[1] "%(names)s leiden de afdeling %(unit)s ook en kunnen ook de rapporten van %(person)s lezen."
+msgstr[0] "%(names)s leidt ook de afdeling %(unit)s en kan de rapporten van %(person)s ook lezen."
+msgstr[1] "%(names)s leiden ook de afdeling %(unit)s en kunnen de rapporten van %(person)s ook lezen."
 
 #. Translators: managers is a list of names that is already joined, for example "Sara Koster and Tom Bakker".
 #, python-format

@@ -15,7 +15,7 @@
 </div>
 
 {% if has_reviewees or is_filtered %}
-<div class="card reviewees-overview" data-sort="{{ sort }}">
+<div class="card reviewees-overview" data-sort="{{ sort }}" data-label-manager="{% trans 'Manager' %}" data-label-peer="{% trans 'Peers' %}" data-label-direct-report="{% trans 'Direct Reports' %}">
     <form id="reviewee-filters" method="get" class="list-filters">
         <nav class="stage-tabs" aria-label="{% trans 'Filter by review status' %}">
             <a href="{% querystring stage=None page=None %}" class="stage-tab"{% if not stage %} aria-current="true"{% endif %}>{% trans 'All people' %} <span>{{ total_count }}</span></a>
@@ -89,7 +89,12 @@
                         <td class="reviewee-reviewers" data-reviewee-column="reviewers">
                             {% if item.reviewers.source == 'saved' %}
                             <ul class="reviewee-reviewer-counts">{% for label, count in item.reviewers.counts %}<li{% if not count %} class="help-text"{% endif %}>{{ label }} <strong>{{ count }}</strong></li>{% endfor %}</ul>
-                            {% elif item.reviewers.source == 'chart' %}<span class="help-text">{% trans 'From the org chart' %}</span>
+                            {% elif item.reviewers.source == 'chart' %}
+                            {# Hover or focus shows who the chart gives (reviewees.js loads it once); the link opens the chart. #}
+                            <span class="reviewee-chart-source" data-chart-reviewers="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ item.reviewee.uuid }}&amp;source=chart">
+                                <a href="{% url 'org_chart' %}" class="help-text" aria-describedby="chart-reviewers-{{ item.reviewee.uuid }}">{% trans 'From the org chart' %}</a>
+                                <span id="chart-reviewers-{{ item.reviewee.uuid }}" class="reviewee-popover reviewee-chart-tip" popover="manual" role="tooltip"></span>
+                            </span>
                             {% elif item.reviewers.source == 'previous' %}<span class="help-text">{% trans 'From the previous review' %}</span>
                             {% else %}<span class="badge badge-secondary">{% trans 'No reviewers yet' %}</span>{% endif %}
                         </td>

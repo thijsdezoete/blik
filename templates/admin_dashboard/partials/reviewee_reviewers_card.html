@@ -1,7 +1,7 @@
 {% load i18n %}
 <section class="card" aria-labelledby="reviewers-title">
 {% if access.setup %}
-<form method="post" id="reviewers-form" data-reviewers-form data-fill-url="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ reviewee.uuid }}" data-threshold="{{ threshold }}" data-source="{{ setup.source }}"{% if access.chart %} data-chart-url="{% url 'reviewee_chart_relation' reviewee.uuid %}"{% endif %}>
+<form method="post" id="reviewers-form" data-reviewers-form data-picker-used="{{ reviewee.uuid }}" data-fill-url="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ reviewee.uuid }}" data-threshold="{{ threshold }}" data-source="{{ setup.source }}"{% if access.chart %} data-chart-url="{% url 'reviewee_chart_relation' reviewee.uuid %}"{% endif %}>
     {% csrf_token %}
     <input type="hidden" name="categories_submitted" value="1">
     <div class="card-header">

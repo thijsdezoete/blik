@@ -158,15 +158,30 @@
             if (browsing && !results) { this._closeDropdown(); return; }
             if (q !== this.$input.value.trim()) return;  // the user typed on while we waited
 
-            const filtered = results.filter(r => !this.selected.has(r.uuid));
-            this._renderDropdown(q, filtered);
+            // People already picked in another field of the same form go last (the sort is stable).
+            const used = this._usedElsewhere();
+            const filtered = results.filter(r => !this.selected.has(r.uuid))
+                .sort((a, b) => used.has(a.uuid) - used.has(b.uuid));
+            this._renderDropdown(q, filtered, used);
         }
 
-        _renderDropdown(query, results) {
+        _usedElsewhere() {
+            const form = this.root.closest('form');
+            // data-picker-used: people the page itself already uses (the reviewee on their own page).
+            const used = new Set((form?.dataset.pickerUsed || '').split(' ').filter(Boolean));
+            if (form) form.querySelectorAll('[data-reviewee-picker]').forEach(el => {
+                if (el !== this.root && el._pickerInstance) {
+                    el._pickerInstance.selected.forEach((person, uuid) => used.add(uuid));
+                }
+            });
+            return used;
+        }
+
+        _renderDropdown(query, results, used = new Set()) {
             const frag = document.createElement('div');
             results.slice(0, query ? 10 : BROWSE_MAX).forEach(r => {
                 const opt = document.createElement('div');
-                opt.className = 'rp-option';
+                opt.className = used.has(r.uuid) ? 'rp-option rp-option-used' : 'rp-option';
                 opt.dataset.uuid = r.uuid;
                 opt.innerHTML = `
                     <span class="rp-opt-name">${escapeHtml(r.name)}</span>

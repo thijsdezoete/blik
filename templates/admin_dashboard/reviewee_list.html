@@ -97,20 +97,23 @@
                         </td>
                         <td>
                             <div class="reviewee-actions">
+                                {# The page of the person first; next to it the one step that fits the state. #}
+                                <a href="{% url 'reviewee_detail' item.reviewee.uuid %}" class="btn btn-sm btn-primary" aria-label="{% trans 'View' %}: {{ item.reviewee.name }}">{% trans 'View' %}</a>
                                 {% if item.active_cycle %}
                                 <a href="{% url 'review_cycle_detail' item.active_cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View Cycle' %}</a>
-                                {% elif item.latest_completed_report %}
-                                <a href="{% url 'reports:view_report' item.latest_completed_report.cycle.uuid %}" class="btn btn-sm btn-primary">{% trans 'View Report' %}</a>
                                 {% elif perms.accounts.can_manage_organization and questionnaires %}
-                                <button type="button" class="btn btn-sm btn-primary" data-reviewee-dialog="start-review-{{ item.reviewee.uuid }}" aria-haspopup="dialog">{% trans 'Start review' %}</button>
-                                {% else %}<span class="help-text">{% trans 'No report available' %}</span>{% endif %}
+                                <button type="button" class="btn btn-sm btn-secondary" data-reviewee-dialog="start-review-{{ item.reviewee.uuid }}" aria-haspopup="dialog">{% trans 'Start review' %}</button>
+                                {% elif item.latest_completed_report %}
+                                <a href="{% url 'reports:view_report' item.latest_completed_report.cycle.uuid %}" class="btn btn-sm btn-secondary">{% trans 'View Report' %}</a>
+                                {% endif %}
 
                                 {% if perms.accounts.can_manage_organization or item.active_cycle and item.latest_completed_report %}
                                 <button type="button" class="btn btn-sm btn-secondary reviewee-more" popovertarget="reviewee-actions-{{ item.reviewee.uuid }}" data-reviewee-popover aria-label="{% trans 'Actions' %}: {{ item.reviewee.name }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg></button>
                                 <div id="reviewee-actions-{{ item.reviewee.uuid }}" class="reviewee-popover reviewee-menu" popover="auto" aria-label="{% trans 'Actions' %}: {{ item.reviewee.name }}">
-                                    {% if item.active_cycle and item.latest_completed_report %}<a href="{% url 'reports:view_report' item.latest_completed_report.cycle.uuid %}">{% trans 'View latest report' %}</a>{% endif %}
+                                    {# The report, when the row has no button for it #}
+                                    {% if item.latest_completed_report %}{% if item.active_cycle or perms.accounts.can_manage_organization and questionnaires %}<a href="{% url 'reports:view_report' item.latest_completed_report.cycle.uuid %}">{% trans 'View latest report' %}</a>{% endif %}{% endif %}
                                     {% if perms.accounts.can_manage_organization %}
-                                        {% if questionnaires and item.active_cycle or questionnaires and item.latest_completed_report %}<button type="button" data-reviewee-dialog="start-review-{{ item.reviewee.uuid }}" aria-haspopup="dialog">{% trans 'Start a new review' %}</button>{% endif %}
+                                        {% if questionnaires and item.active_cycle %}<button type="button" data-reviewee-dialog="start-review-{{ item.reviewee.uuid }}" aria-haspopup="dialog">{% trans 'Start a new review' %}</button>{% endif %}
                                         <a href="{% url 'reviewee_edit' item.reviewee.uuid %}">{% trans 'Edit details' %}</a>
                                         <a href="{% url 'reviewee_delete' item.reviewee.uuid %}" class="reviewee-delete">{% trans 'Delete' %}</a>
                                     {% endif %}

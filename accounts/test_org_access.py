@@ -52,6 +52,12 @@ class OrgAccessTests(TestCase):
         self.assertEqual(direct_report_emails(sam, self.org), set())
         self.assertEqual(direct_report_emails(ada, OrganizationFactory()), set())
 
+    def test_a_deactivated_manager_has_no_direct_reports(self):
+        hank = UserFactory(username='hank', email='hank@acme.example')
+        Reviewee.objects.filter(organization=self.org, email='hank@acme.example').update(is_active=False)
+
+        self.assertEqual(direct_report_emails(hank, self.org), set())
+
     def test_a_head_reads_the_reports_of_their_own_staff_only(self):
         self._login('hank@acme.example')
 

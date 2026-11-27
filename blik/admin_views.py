@@ -190,13 +190,13 @@ def posted_setup(request, organization, categories):
                 continue
         by_uuid = {
             str(r.uuid): r
-            for r in Reviewee.objects.for_organization(organization).filter(uuid__in=valid)
+            for r in Reviewee.objects.for_organization(organization).filter(uuid__in=valid, is_active=True)
         }
 
     for code in categories:
         seen = set()
 
-        # Unknown UUIDs (stale page, deleted reviewee, other org) are skipped.
+        # Unknown UUIDs (stale page, deactivated or deleted reviewee, other org) are skipped.
         for u in request.POST.getlist(f'{code}_reviewees'):
             person = by_uuid.get(str(u))
             email = ((person.email if person else '') or '').strip().lower()

@@ -2,13 +2,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 from django.conf import settings
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils import translation
+from django.utils.translation import gettext as _
 from django.urls import reverse
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.models import AnonymousUser
 from .languages import request_language
 from .models import Organization
+from accounts.permissions import person_deactivated
 
 User = get_user_model()
 
@@ -92,6 +95,11 @@ class OrganizationMiddleware:
                     request.organization = Organization.objects.first()
             except Exception as e:
                 logger.exception("Error getting organization for user %s", request.user)
+
+            if person_deactivated(request.user, request.organization):
+                logout(request)
+                messages.error(request, _('This account is deactivated.'))
+                return redirect(settings.LOGIN_URL)
 
         return self.get_response(request)
 

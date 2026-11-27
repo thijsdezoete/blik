@@ -466,9 +466,27 @@ def direct_report_emails(user, organization):
             unit__organization=organization,
             role=OrgUnitMembership.MANAGER,
             reviewee__email__iexact=user.email,
+            reviewee__is_active=True,
         ).values('unit_id'),
     ).values_list('reviewee__email', flat=True)
     return {email.lower() for email in emails} - {user.email.lower()}
+
+
+def person_deactivated(user, organization):
+    """
+    True when the user is a person of the organization and every such record is deactivated:
+    the person has left, and their account must not let them in any more.
+
+    A user who can manage the organization is never shut out by a person record, so that
+    an administrator cannot lock themselves out with their own record or with an import.
+    """
+    from accounts.models import Reviewee
+
+    if not organization or not getattr(user, 'email', ''):
+        return False
+    states = list(Reviewee.objects.filter(
+        organization=organization, email__iexact=user.email).values_list('is_active', flat=True))
+    return bool(states) and not any(states) and not can_manage_organization(user)
 
 
 def may_create_for_others(user):

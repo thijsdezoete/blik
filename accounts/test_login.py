@@ -4,7 +4,8 @@ from django.core.cache import cache
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.models import UserProfile
+from accounts.models import Reviewee, UserProfile
+from accounts.permissions import assign_organization_admin
 from core.models import Organization
 
 
@@ -66,3 +67,40 @@ class LoginTests(TestCase):
         response = self.client.get(reverse('login') + '?next=/dashboard/team/')
 
         self.assertRedirects(response, '/dashboard/team/', fetch_redirect_response=False)
+
+
+class DeactivatedPersonTests(TestCase):
+    """A person who was deactivated has left: their account does not let them in."""
+
+    def setUp(self):
+        self.organization = Organization.objects.create(name='Acme', email='org@acme.example')
+        self.user = User.objects.create_user(username='dana', email='Dana@acme.example', password='secret-pw')
+        UserProfile.objects.create(user=self.user, organization=self.organization)
+        # A new profile gets its person record by signal
+        self.person = Reviewee.objects.get(organization=self.organization)
+        self.person.is_active = False
+        self.person.save()
+        self.client.force_login(self.user)
+
+    def test_a_deactivated_person_is_logged_out(self):
+        response = self.client.get(reverse('reviewee_list'))
+
+        self.assertRedirects(response, '/accounts/login/', fetch_redirect_response=False)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_an_active_person_stays_logged_in(self):
+        self.person.is_active = True
+        self.person.save()
+
+        self.assertEqual(self.client.get(reverse('reviewee_list')).status_code, 200)
+
+    def test_a_deactivated_person_of_another_organization_does_not_count(self):
+        other = Organization.objects.create(name='Other', email='org@other.example')
+        Reviewee.objects.filter(pk=self.person.pk).update(organization=other)
+
+        self.assertEqual(self.client.get(reverse('reviewee_list')).status_code, 200)
+
+    def test_an_administrator_is_not_shut_out_by_their_own_person_record(self):
+        assign_organization_admin(self.user)
+
+        self.assertEqual(self.client.get(reverse('reviewee_list')).status_code, 200)

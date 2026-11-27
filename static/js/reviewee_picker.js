@@ -142,7 +142,7 @@
 
             let results = [];
             try {
-                const resp = await fetch(`${API_SEARCH_URL}?search=${encodeURIComponent(q)}`, {
+                const resp = await fetch(`${API_SEARCH_URL}?is_active=true&search=${encodeURIComponent(q)}`, {
                     headers: { 'Accept': 'application/json' },
                     credentials: 'same-origin',
                 });

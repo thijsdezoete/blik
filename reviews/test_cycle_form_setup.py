@@ -37,6 +37,15 @@ class CycleFormSaveTests(TestCase):
             self.alex, self.questionnaire, flags or ALL_FLAGS,
             {**NO_PEOPLE, **(people or {})}, {**NO_EMAILS, **(emails or {})})
 
+    def test_a_deactivated_person_who_is_posted_is_not_invited(self):
+        self.blair.is_active = False
+        self.blair.save()
+
+        self.post_form(manager_reviewees=[str(self.blair.uuid)])
+
+        cycle = ReviewCycle.objects.get(reviewee=self.alex)
+        self.assertFalse(cycle.tokens.filter(reviewer_email='blair@acme.example').exists())
+
     def test_sending_the_form_with_reviewers_saves_them_for_the_reviewee(self):
         self.post_form(manager_reviewees=[str(self.blair.uuid)], peer_emails='dana@acme.example')
 

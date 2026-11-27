@@ -99,7 +99,7 @@ from reports.summary import reviewee_summary
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
-from reviews.services import assign_tokens_to_emails, derive_reviewers, send_links_email
+from reviews.services import assign_tokens_to_emails, derive_reviewers, free_places, send_links_email
 from reviews.setup import has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup
 from subscriptions.models import Subscription
 from subscriptions.utils import (
@@ -2825,7 +2825,7 @@ def send_reminder_form(request, cycle_uuid):
         'pending_count': pending_tokens.count(),
         'shows_reviewer_status': sees_reviewer_status(request.user),
     }
-    # Without the status: no list and no number, see send_reminder
+    # Without the status: the number, but no list of people
     if context['shows_reviewer_status']:
         context['pending_tokens'] = pending_tokens
 
@@ -2891,11 +2891,7 @@ def assign_invitations(request, cycle_uuid):
                     if not emails:
                         continue
 
-                    # Get existing unassigned tokens for this category (only count tokens without emails)
-                    existing_unassigned = cycle.tokens.filter(
-                        category=category_code,
-                        reviewer_email__isnull=True
-                    ).count()
+                    existing_unassigned = free_places(cycle, category_code).count()
                     needed_count = len(emails)
 
                     # Create additional tokens if needed
@@ -2941,7 +2937,6 @@ def assign_invitations(request, cycle_uuid):
 
 # One text, whatever was queued: for the users who do not see the status per reviewer
 INVITATIONS_GO_OUT = gettext_lazy('The invitations that were not sent yet go out within about five minutes.')
-REMINDERS_GO_OUT = gettext_lazy('Everyone who was invited and has not answered yet gets a reminder within about five minutes.')
 
 
 @login_required
@@ -3007,10 +3002,8 @@ def send_reminder(request, cycle_uuid):
     if request.method == 'POST':
         queued = queue_reminders(cycle.tokens.all())
 
-        if not sees_reviewer_status(request.user):
-            # How many reminders went out, set against the rows invited by email, says who answered
-            messages.success(request, REMINDERS_GO_OUT)
-        elif queued:
+        # The number is for every user who may send the reminder (owner, 2026-11-27): names never are.
+        if queued:
             messages.success(request, ngettext(
                 'A reminder for %(count)s open review goes out within about five minutes.',
                 'Reminders for %(count)s open reviews go out within about five minutes, one email per reviewer.',

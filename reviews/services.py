@@ -214,6 +214,16 @@ def derive_reviewers(reviewee):
     }
 
 
+def free_places(cycle, category):
+    """
+    The places of a category that an email can still get. A place that someone took through
+    an invite link has no email either, but it is that person's: an email on it would get no
+    invitation and would sit on another person's answers.
+    """
+    return cycle.tokens.filter(
+        category=category, reviewer_email__isnull=True, claimed_at__isnull=True, completed_at__isnull=True)
+
+
 def assign_tokens_to_emails(cycle, email_assignments, language=''):
     """
     Assign reviewer tokens to email addresses with smart randomization.
@@ -241,13 +251,7 @@ def assign_tokens_to_emails(cycle, email_assignments, language=''):
         if not emails:
             continue
 
-        # Get unassigned tokens for this category
-        available_tokens = list(
-            cycle.tokens.filter(
-                category=category,
-                reviewer_email__isnull=True
-            )
-        )
+        available_tokens = list(free_places(cycle, category))
 
         if len(emails) > len(available_tokens):
             stats['errors'].append(

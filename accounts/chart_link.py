@@ -48,8 +48,9 @@ def chart_relation(manager, person):
     What the chart says about `manager` above `person`:
     'has' (the chart gives this manager), 'missing' (it gives no manager) or
     'conflict' (it gives other managers, listed in 'managers').
-    'also_managers': the other active managers of the unit `place` would use;
-    they get read access to the person's reports too.
+    'also_managers': the other managers of the unit `place` would use;
+    they get read access to the person's reports too. Deactivated ones count: a
+    login of theirs still reads the reports of the unit (direct_report_emails).
     """
     from reviews.services import derive_reviewers
 
@@ -63,7 +64,7 @@ def chart_relation(manager, person):
         state, managers = 'missing', []
     also = [] if unit is None else list(
         Reviewee.objects.filter(
-            unit_memberships__unit=unit, unit_memberships__role=OrgUnitMembership.MANAGER, is_active=True,
+            unit_memberships__unit=unit, unit_memberships__role=OrgUnitMembership.MANAGER,
         ).exclude(pk=manager.pk).order_by('name', 'pk'))
     return {'state': state, 'managers': managers, 'unit_name': name, 'new_unit': unit is None,
             'unit_id': None if unit is None else unit.pk, 'also_managers': also}

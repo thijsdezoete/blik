@@ -119,9 +119,9 @@ The reviewer list comes from the first source that has it:
 
 1. The list saved for this person.
 2. The org chart: the managers, peers and direct reports of the person.
-3. The previous review of the person.
+3. The previous review of the person. Only for organization admins and users with **Can view all reports and cycles**: the reviewers left on a closed review are the ones who opened their form, so this list shows who answered.
 
-A line under the text of the card says when the list comes from the org chart or from the previous review. Two buttons fill the list again: **Fill from org chart**, and **Fill from the previous review** when the person had a review with reviewers before. Nothing is saved until you click **Save reviewers**. A change in the list applies to the next review. A review in progress keeps its reviewers.
+A line under the text of the card says when the list comes from the org chart or from the previous review. Two buttons fill the list again: **Fill from org chart**, and **Fill from the previous review** when the person had a review with reviewers before (for the same users as in point 3). Nothing is saved until you click **Save reviewers**. A change in the list applies to the next review. A review in progress keeps its reviewers.
 
 The card warns when there are fewer peers or direct reports than the anonymity threshold: the report does not show such a group.
 

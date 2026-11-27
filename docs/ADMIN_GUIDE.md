@@ -219,7 +219,7 @@ Every reviewee can have a saved reviewer list: the managers, peers and direct re
 
 ### Where the list comes from and where it is used
 
-The list is saved when you click **Save reviewers** or **Start review** on the page of the reviewee, and when you create a single cycle with reviewers in the cycle form. Before anything is saved, the page fills the list from the org chart, or else from the previous review of the person.
+The list is saved when you click **Save reviewers** or **Start review** on the page of the reviewee, and when you create a single cycle with reviewers in the cycle form. Before anything is saved, the page fills the list from the org chart, or else from the previous review of the person. The previous review is a source only for organization admins and users with "Can view all reports and cycles": closing a review removes the reviewers who never opened their form, so the reviewers left on it show who answered. Everyone else gets the org chart or an empty list, and no **Fill from the previous review** button.
 
 Blik uses the saved list in these places:
 
@@ -230,7 +230,7 @@ Blik uses the saved list in these places:
 
 ### The org chart question on the reviewers card
 
-A place in the org chart decides who can read whose reports: a manager can read the reports of the members of the units they manage. So when a user with the permission to manage the organization picks a manager or a direct report on the card, Blik checks the org chart and asks before it changes anything:
+A place in the org chart decides who can read whose reports: a manager can read the reports of the members of the units they manage. So when a user with the permission to manage the organization picks a manager or a direct report on the card, Blik checks the org chart and asks before it changes anything. For a direct report the roles turn around: the reviewee becomes the manager, and the direct report the person who is placed.
 
 - **The chart names no manager for the person.** A checkbox, ticked by default: "Also make Lena Visser the manager of Tom Bakker in the org chart." It says where the person goes and that the manager can then read their reports.
 - **The chart names another manager.** Three choices:
@@ -241,22 +241,24 @@ A place in the org chart decides who can read whose reports: a manager can read 
 
 When the unit the person joins has other managers, the card names them: they can read the person's reports too.
 
-The choices take effect when you save the list or start the review, before the cycle is created. The start dialog lists the changes to the org chart. Peers never change the chart.
+The choices take effect when you save the list or start the review, before the cycle is created. The start dialog lists the changes to the org chart. Peers never change the chart. When the org chart changed after the page was loaded, Blik does not apply the choice: the card shows the question again for the chart as it is now.
 
-The person goes into the unit the manager leads. When the manager leads more than one unit, the person goes into the unit with the name of their department, or else the first one. When the manager leads no unit, Blik makes a new unit, named after the manager's department, or after the manager when the department is empty. For example, a manager in "Product Engineering" gets the unit "Product Engineering". When that name is taken, the manager's name is added in brackets. A person with no department gets the name of the unit as their department.
+The person goes into the unit the manager leads:
+
+- When the manager leads more than one unit: the unit with the name of the person's department, or else the first one.
+- When the manager leads no unit: a new unit, named after the manager's department, for example "Product Engineering".
+- When the manager has no department: the new unit is named after the manager.
+- When that name is taken: the manager's name is added in brackets.
+
+A person with no department gets the name of the unit as their department.
 
 ### People who are not in the org chart
 
-The org chart page shows a notice to users who may edit the chart: "N people are not in the org chart". It lists the active people who are a member of no unit and whose reviewer list names exactly one manager. Each row says under which manager and in which unit (an existing one or a new one) the person goes, and which other managers of that unit can read their reports too. Click **Place** to put one person in the chart, or **Place all** for everyone in the notice. You can move people in the chart afterwards.
+The org chart page shows a notice to users who may edit the chart: "N people are not in the org chart". It lists the active people who are a member of no unit and whose reviewer list names exactly one manager. Each row says under which manager and in which unit (an existing one or a new one) the person goes, and which other managers of that unit can read their reports too. Click **Place** to put one person in the chart, or **Place all** for everyone in the notice. When the org chart or a reviewer list changed after the page was loaded, Blik does not place that person and says so. You can move people in the chart afterwards.
 
 ### Who sees what on the page of a reviewee
 
-- **Organization admins** see the page of every reviewee. They edit the details, and on the reviewers card they pick people of the organization and answer the org chart question.
-- **Users with "Can view all reports and cycles"** see the page of every reviewee, with the reviewer list.
-- **A manager** sees the pages of the members of the units they manage. A manager who may create cycles for others also edits their reviewer lists, as email addresses, and starts their reviews.
-- **A reviewee with an account** sees their own page, and can save their own reviewer list and start a review for themselves.
-
-The results on the page are the numbers of the report this user can open. The current review shows counts per category, never who answered. Nobody else can open the page.
+Who sees and changes what on the page is in the [User Guide, "What you see on the page"](USER_GUIDE.md#what-you-see-on-the-page); nobody sees more there than elsewhere in Blik.
 
 ### Deleting a person's data
 

@@ -27,6 +27,16 @@
     const selectedUuids = category => (picker(category)?.getSelected() || []).map(person => person.uuid);
     const choiceOf = (category, uuid) => choices(category).querySelector('[data-chart-choice="' + CSS.escape(uuid) + '"]');
 
+    // Each org chart change the card will make, in the sentence the server put on its choice. Built again
+    // when a question comes or goes, also while the start dialog is open: everything listed there is posted.
+    const listChartChanges = () => {
+        const summary = document.querySelector('[data-chart-summary-list]');
+        if (!summary) return;
+        summary.replaceChildren(...[...form.querySelectorAll('[data-chart-choices] input:checked[data-chart-summary]')]
+            .map(input => Object.assign(document.createElement('li'), {textContent: input.dataset.chartSummary})));
+        summary.hidden = !summary.children.length;
+    };
+
     const askChart = async (category, uuid) => {
         let data;
         try {
@@ -41,6 +51,7 @@
         // The person may be gone, or asked about twice, by the time the answer comes.
         if (!data.html || !selectedUuids(category).includes(uuid) || choiceOf(category, uuid)) return;
         choices(category).insertAdjacentHTML('beforeend', data.html);
+        listChartChanges();
     };
 
     const syncChart = category => {
@@ -48,6 +59,7 @@
         choices(category).querySelectorAll('[data-chart-choice]').forEach(choice => {
             if (!now.includes(choice.dataset.chartChoice)) choice.remove();
         });
+        listChartChanges();
         now.filter(uuid => !known[category].includes(uuid)).forEach(uuid => askChart(category, uuid));
         known[category] = now;
     };
@@ -128,11 +140,6 @@
         document.querySelector('[data-reviewer-count]').textContent = interpolate(ngettext(
             '%(counter)s reviewer gets an invitation.', '%(counter)s reviewers get an invitation.', invited),
             {counter: invited}, true);
-        // Each org chart change the card will make, in the sentence the server put on its choice.
-        const summary = document.querySelector('[data-chart-summary-list]');
-        if (!summary) return;
-        summary.replaceChildren(...[...form.querySelectorAll('[data-chart-choices] input:checked[data-chart-summary]')]
-            .map(input => Object.assign(document.createElement('li'), {textContent: input.dataset.chartSummary})));
-        summary.hidden = !summary.children.length;
+        listChartChanges();
     });
 })();

@@ -131,7 +131,8 @@ class ChartLinkTests(TestCase):
         shared = self.unit('Platform', manager=self.tom)
         for col, co_manager in enumerate([zoe, gone, self.lena], start=1):
             OrgUnitMembershipFactory(unit=shared, reviewee=co_manager, row=0, col=col)
-        self.assertEqual(chart_relation(self.tom, self.maya)['also_managers'], [self.lena, zoe])
+        # A deactivated co-manager is named too: a login of theirs still reads the reports.
+        self.assertEqual(chart_relation(self.tom, self.maya)['also_managers'], [gone, self.lena, zoe])
 
         alone = self.person('Noor Smit', 'noor@acme.example')
         self.unit('Mobile', manager=alone)

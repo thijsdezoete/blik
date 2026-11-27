@@ -37,6 +37,8 @@
 .reviewee-dialog[open] { display: flex; flex-direction: column; }
 .reviewee-dialog::backdrop { background: rgba(0,0,0,.6); backdrop-filter: blur(4px); }
 .reviewee-dialog .card-header { flex-shrink: 0; gap: 1rem; }
+/* The text scrolls between the header and the footer, which stay in view. A dialog with a form does the same through .reviewee-start-form. */
+.reviewee-dialog > .card-body { overflow-y: auto; min-height: 0; }
 .reviewee-dialog form { margin: 0; }
 .reviewee-dialog fieldset { min-width: 0; margin-inline: 0; padding: 0; border: 0; }
 .reviewee-dialog legend { padding: 0; }

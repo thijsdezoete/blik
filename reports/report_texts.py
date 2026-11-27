@@ -94,10 +94,22 @@ def get_texts(parts, part_id, language):
     return part.get_translated_texts(language) if part else {}
 
 
-def rename_sections(by_title, titles):
-    """by_title with its section titles replaced by those in titles."""
+def in_order(stored, order):
+    """
+    stored in the order of the keys in order; a key that order lacks (a part deleted since) comes last.
 
-    return {titles.get(title, title): value for title, value in by_title.items()}
+    PostgreSQL does not keep the order of the keys of a stored object: it gives them back by length and then by bytes.
+    """
+
+    place = {str(key): index for index, key in enumerate(order)}
+
+    return dict(sorted(stored.items(), key=lambda item: place.get(item[0], len(place))))
+
+
+def rename_sections(by_title, titles):
+    """by_title with its section titles replaced by those in titles, in the order of titles."""
+
+    return {titles.get(title, title): value for title, value in in_order(by_title, titles).items()}
 
 
 def translate_questionnaire_texts(data, questionnaire):
@@ -110,10 +122,15 @@ def translate_questionnaire_texts(data, questionnaire):
     options = {option.id: option for question in questions.values() for option in question.options.all()}
     titles = {}
 
+    # The order of the questionnaire as it is now: a report stores no order of its own
+    if 'by_section' in data:
+        data['by_section'] = in_order(data['by_section'], sections)
+
     for section_id, section_data in data.get('by_section', {}).items():
         title = get_texts(sections, int(section_id), language).get('title', section_data['title'])
         titles[section_data['title']] = title
         section_data['title'] = title
+        section_data['questions'] = in_order(section_data['questions'], questions)
 
         for question_id, question_data in section_data['questions'].items():
             texts = get_texts(questions, int(question_id), language)

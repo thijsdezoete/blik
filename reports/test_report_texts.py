@@ -347,3 +347,46 @@ class GeneratedReportTest(TestCase):
 
         section = response.json()['report_data']['by_section'][f'{self.section.id}']
         self.assertEqual(section['title'], 'Wachstum')
+
+
+class StoredOrderTest(TestCase):
+    """PostgreSQL keeps the keys of a stored object by length and then by bytes, not in the order they were stored."""
+
+    def test_a_stored_report_lists_topics_and_questions_in_the_order_of_the_questionnaire(self):
+        questionnaire = Questionnaire.objects.create(name='Skills')
+        # Made in another order than the questionnaire shows them, like after a drag in the editor
+        last = QuestionSection.objects.create(questionnaire=questionnaire, title='B Trust', order=1)
+        first = QuestionSection.objects.create(questionnaire=questionnaire, title='A Communication', order=0)
+        second_question = Question.objects.create(section=first, question_text='Second', question_type='text', order=1)
+        first_question = Question.objects.create(section=first, question_text='First', question_type='text', order=0)
+        gone = {'question_text': 'Deleted since', 'labels': {}, 'options': []}
+        question = {'labels': {}, 'options': []}
+        scores = {'B Trust': {'peer': 3.0}, 'A Communication': {'peer': 4.0}}
+        # As the database gives it back
+        stored = {
+            'schema': 2,
+            'by_section': {
+                str(last.id): {'title': 'B Trust', 'questions': {}},
+                str(first.id): {'title': 'A Communication', 'questions': {
+                    str(second_question.id): {**question, 'question_text': 'Second'},
+                    str(first_question.id): {**question, 'question_text': 'First'},
+                    '999999': gone,
+                }},
+            },
+            'section_summary': dict(scores),
+            'peer_benchmarks': dict(scores),
+            'charts': {'section_scores': dict(scores)},
+            'comparison': {'section_trends': {title: {'direction': 'up', 'change': 0.1} for title in scores}},
+        }
+
+        with translation.override('en'):
+            data = with_texts(stored, questionnaire)
+
+        self.assertEqual(list(data['by_section']), [str(first.id), str(last.id)])
+        questions = data['by_section'][str(first.id)]['questions']
+        # A question deleted since the report was made comes last
+        self.assertEqual([item['question_text'] for item in questions.values()], ['First', 'Second', 'Deleted since'])
+
+        for by_title in (data['section_summary'], data['peer_benchmarks'], data['charts']['section_scores'],
+                         data['comparison']['section_trends']):
+            self.assertEqual(list(by_title), ['A Communication', 'B Trust'])

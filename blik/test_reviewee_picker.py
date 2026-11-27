@@ -6,6 +6,9 @@ Tests for the reviewee picker Phase 1 work:
 - End-to-end equivalence: picker-UUID submission and email-textarea
   submission produce the same ReviewerToken rows.
 """
+from pathlib import Path
+
+from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.test import RequestFactory, TestCase
@@ -267,3 +270,22 @@ class CollectReviewerEmailsCategoriesTests(TestCase):
         assignments, _ = collect_reviewer_emails(req, org, ['manager'])
         self.assertEqual(assignments['peer'], [])
         self.assertEqual(assignments['manager'], ['b@example.com'])
+
+
+class JavaScriptCatalogLoadedTests(TestCase):
+    """A script that calls gettext() fails on a page that has not loaded the catalogue first."""
+
+    SCRIPTS = ('reviewee_picker.js', 'reviewee_detail.js', 'multistep-feedback.js', 'report-charts.js')
+
+    def test_catalogue_comes_before_every_script_that_needs_it(self):
+        failing = []
+        for path in sorted(Path(settings.BASE_DIR, 'templates').rglob('*.html')):
+            text = path.read_text()
+            for script in self.SCRIPTS:
+                loaded = text.find(f"js/{script}'")
+                if loaded == -1:
+                    continue
+                catalogue = text.find("{% url 'javascript-catalog' %}")
+                if catalogue == -1 or catalogue > loaded:
+                    failing.append(f'{path.relative_to(settings.BASE_DIR / "templates")} ({script})')
+        self.assertEqual(failing, [], 'Templates load a script before the JavaScript catalogue')

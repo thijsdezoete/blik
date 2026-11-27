@@ -49,6 +49,27 @@ class CycleFormSaveTests(TestCase):
             sorted(saved.reviewers.values_list('category', 'person', 'email'), key=str),
             sorted([('manager', self.blair.pk, ''), ('peer', None, 'dana@acme.example')], key=str))
 
+    def test_a_switched_off_category_keeps_its_people_in_the_list_and_gets_no_tokens(self):
+        casey = RevieweeFactory(organization=self.org, name='Casey Jones', email='casey@acme.example')
+        self.save_list(people={'manager': [self.blair], 'peer': [casey]}, emails={'peer': ['dana@acme.example']})
+
+        # Peers off; the browser still posts the peer fields it was filled with.
+        self.client.post(reverse('review_cycle_create'), {
+            'creation_mode': 'single', 'questionnaire': self.questionnaire.id, 'reviewee': self.alex.id,
+            'categories_submitted': '1', 'include_self': 'on', 'include_manager': 'on',
+            'manager_reviewees': [str(self.blair.uuid)], 'peer_reviewees': [str(casey.uuid)],
+            'peer_emails': 'dana@acme.example'})
+
+        saved = ReviewSetup.objects.get(reviewee=self.alex)
+        self.assertFalse(saved.include_peer)
+        self.assertEqual(
+            sorted(saved.reviewers.values_list('category', 'person', 'email'), key=str),
+            sorted([('manager', self.blair.pk, ''), ('peer', casey.pk, ''), ('peer', None, 'dana@acme.example')],
+                   key=str))
+        cycle = ReviewCycle.objects.get(reviewee=self.alex)
+        self.assertEqual(sorted(cycle.tokens.values_list('category', 'reviewer_email')),
+                         [('manager', 'blair@acme.example'), ('self', 'alex@acme.example')])
+
     def test_sending_the_form_without_reviewers_saves_nothing(self):
         self.post_form()
 

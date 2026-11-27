@@ -69,6 +69,16 @@ class SavedListSourcesTests(TestCase):
         self.assertEqual(self.emails(cycle, 'manager'), {'blair@acme.example'})
         self.assertTrue(cycle.tokens.filter(invitation_queued_at__isnull=False).exists())
 
+    def test_new_cycle_dialog_of_the_cycle_list_knows_the_saved_list(self):
+        self.previous_cycle(self.alex)
+        self.previous_cycle(self.blair)
+        self.save_list(self.alex, peers=['casey@acme.example'])
+
+        response = self.client.get(reverse('review_cycle_list'))
+
+        starts = {cycle.reviewee: cycle.start['has_saved_list'] for cycle in response.context['cycles']}
+        self.assertEqual(starts, {self.alex: True, self.blair: False})
+
     def test_list_dialog_without_a_saved_list_copies_the_previous_cycle(self):
         self.previous_cycle(self.alex, peer='dana@acme.example')
         self.start_from_list(self.alex)

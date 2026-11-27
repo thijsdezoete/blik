@@ -8,7 +8,7 @@ a user who may edit the chart.
 import json
 
 from django.db import transaction
-from django.db.models import Max
+from django.db.models import Max, Q
 
 from accounts.models import OrgUnit, OrgUnitMembership, Reviewee
 
@@ -138,8 +138,12 @@ def unplaced_with_manager(organization):
     from reviews.setup import review_setup
 
     found = []
+    # Only a saved list or a previous review can name a manager for someone in no unit:
+    # an organization without a chart has everyone unplaced, and most of them have neither.
     people = (Reviewee.objects.for_organization(organization).filter(is_active=True)
-              .exclude(unit_memberships__role=OrgUnitMembership.MEMBER).order_by('name', 'pk'))
+              .exclude(unit_memberships__role=OrgUnitMembership.MEMBER)
+              .filter(Q(review_setup__isnull=False) | Q(review_cycles__isnull=False)).distinct()
+              .order_by('name', 'pk'))
     for person in people:
         # Only users who may edit the chart see this list, and they see the status per reviewer.
         managers = review_setup(person, with_previous=True).people['manager']

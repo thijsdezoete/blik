@@ -2108,6 +2108,9 @@ def review_cycle_list(request):
     default_questionnaire = questionnaires[0] if questionnaires else None
 
     # "New Cycle" opens the start dialog of the reviewee list, set up as a copy of the row's cycle.
+    # Like there, it says when the reviewers come from the saved list (quick_cycle_create uses it first).
+    with_saved_list = set(ReviewSetup.objects.filter(
+        reviewee__in=[cycle.reviewee_id for cycle in cycles]).values_list('reviewee_id', flat=True))
     for cycle in cycles:
         cycle.report_only = cycle.reviewee.email.lower() in below - run_team
         cycle.start = {
@@ -2116,6 +2119,7 @@ def review_cycle_list(request):
             'latest_questionnaire': cycle.questionnaire,
             'selected_questionnaire': cycle.questionnaire if cycle.questionnaire.is_active else default_questionnaire,
             'active_cycle': cycle.reviewee_has_active_cycle,
+            'has_saved_list': cycle.reviewee_id in with_saved_list,
         }
 
     context = {
@@ -2436,8 +2440,12 @@ def review_cycle_create(request):
                 # The form hides categories this cycle skips; a stale or
                 # hand-made POST must not reinstate them.
                 active = [c for c in CATEGORY_ORDER if category_flags.get(f'include_{c}', True)]
-                people, emails, warnings = posted_setup(request, org, active)
-                email_assignments = posted_emails(people, emails)
+                listed = ('manager', 'peer', 'direct_report')
+                # A category that is switched off keeps its people in the saved list, as on the page.
+                people, emails, warnings = posted_setup(request, org, set(active) | set(listed))
+                email_assignments = {
+                    code: assigned if code in active else []
+                    for code, assigned in posted_emails(people, emails).items()}
                 for w in warnings:
                     messages.warning(request, w)
                 send_now = request.POST.get('send_invitations_now') == '1'
@@ -2446,7 +2454,6 @@ def review_cycle_create(request):
                     request, reviewee, questionnaire, category_flags, email_assignments, send_now)
 
                 # The list of the reviewee is what the form sent, once the cycle stands.
-                listed = ('manager', 'peer', 'direct_report')
                 if any(people[c] or emails[c] for c in listed):
                     save_review_setup(
                         reviewee, questionnaire,

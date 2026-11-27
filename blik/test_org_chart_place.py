@@ -1,5 +1,7 @@
 from django.contrib.messages import get_messages
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from accounts.factories import (
@@ -149,6 +151,18 @@ class OrgChartNoticeTests(OrgChartPlaceSetup):
         self.assertEqual(line['also_names'], 'Lena Visser')
         self.assertEqual(line['seen'], chart_shown(chart_relation(self.tom, self.maya)))
         self.assertContains(response, 'Lena Visser also manages this unit.')
+
+    def test_page_does_not_query_per_person_without_a_list_or_a_review(self):
+        def queries():
+            with CaptureQueriesContext(connection) as captured:
+                self.client.get(reverse('org_chart'))
+            return len(captured)
+
+        before = queries()
+        for n in range(10):
+            self.person(f'Person {n:02}', f'p{n}@acme.example', 'Design')
+
+        self.assertEqual(queries(), before)
 
     def test_member_gets_no_notice(self):
         member = UserFactory(username='notice_member')

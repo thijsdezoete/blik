@@ -88,6 +88,12 @@ class DeactivatedPersonTests(TestCase):
         self.assertRedirects(response, '/accounts/login/', fetch_redirect_response=False)
         self.assertNotIn('_auth_user_id', self.client.session)
 
+    def test_a_deactivated_person_cannot_open_their_profile_to_change_the_email(self):
+        response = self.client.get(reverse('profile'))
+
+        self.assertRedirects(response, '/accounts/login/', fetch_redirect_response=False)
+        self.assertNotIn('_auth_user_id', self.client.session)
+
     def test_an_active_person_stays_logged_in(self):
         self.person.is_active = True
         self.person.save()

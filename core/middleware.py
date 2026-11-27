@@ -79,7 +79,6 @@ class OrganizationMiddleware:
             '/static/',
             '/media/',
             '/landing/',
-            '/accounts/',
         ]
 
         if any(request.path.startswith(path) for path in exempt_paths):
@@ -96,6 +95,7 @@ class OrganizationMiddleware:
             except Exception as e:
                 logger.exception("Error getting organization for user %s", request.user)
 
+            # Also under /accounts/: the profile page lets a user change the email this check reads.
             if person_deactivated(request.user, request.organization):
                 logout(request)
                 messages.error(request, _('This account is deactivated.'))

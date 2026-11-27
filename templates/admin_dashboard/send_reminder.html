@@ -21,9 +21,11 @@
 
                 <div style="font-weight: 500;">{% trans 'Questionnaire:' %}</div>
                 <div>{{ cycle.questionnaire.name }}</div>
+                {% if shows_reviewer_status %}
 
                 <div style="font-weight: 500;">{% trans 'Pending Reviews:' %}</div>
                 <div>{{ pending_count }}</div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -112,7 +114,7 @@
                 {% endif %}
 
                 <div style="display: flex; gap: 1rem;">
-                    <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=pending_count %}Send {{ count }} Reminder(s){% endblocktrans %}</button>
+                    <button type="submit" class="btn btn-primary">{% blocktrans trimmed with count=reminder_count %}Send {{ count }} Reminder(s){% endblocktrans %}</button>
                     <a href="{% url 'review_cycle_detail' cycle.uuid %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
                 </div>
             </form>

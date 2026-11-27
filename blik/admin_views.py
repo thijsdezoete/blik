@@ -97,7 +97,7 @@ from reports.finalize import finalize_cycle
 from reports.services import generate_report, self_vs_others_gap
 from reports.summary import reviewee_summary
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
-from reviews.outbox import queue_invitations, queue_reminders, queue_reviewee_notifications
+from reviews.outbox import addressed, queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, free_places, send_links_email
 from reviews.setup import has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup
@@ -2823,9 +2823,11 @@ def send_reminder_form(request, cycle_uuid):
     context = {
         'cycle': cycle,
         'pending_count': pending_tokens.count(),
+        # What queue_reminders will take: invited by email and not completed
+        'reminder_count': addressed(pending_tokens).filter(invitation_sent_at__isnull=False).count(),
         'shows_reviewer_status': sees_reviewer_status(request.user),
     }
-    # Without the status: the number, but no list of people
+    # Without the status: the number of reminders, but no list of people and no number of open places
     if context['shows_reviewer_status']:
         context['pending_tokens'] = pending_tokens
 

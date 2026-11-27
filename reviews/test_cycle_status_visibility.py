@@ -149,7 +149,12 @@ class CycleStatusVisibilityTests(TestCase):
 
         response = self.get(self.reviewee_user(), url)
         html = response.content.decode()
-        self.assertEqual(response.context['pending_count'], self.cycle.tokens.filter(completed_at__isnull=True).count())
+        # Invited by email and not completed: what the click will queue
+        due = self.cycle.tokens.filter(
+            reviewer_email__isnull=False, invitation_sent_at__isnull=False, completed_at__isnull=True).count()
+        self.assertGreater(self.cycle.tokens.filter(completed_at__isnull=True).count(), due)
+        self.assertEqual(response.context['reminder_count'], due)
+        self.assertContains(response, f'Send {due} Reminder(s)')
         self.assertNotIn('pending_tokens', response.context)
         self.assertNotIn(str(self.open.token), html)
         self.assertNotIn('eli@acme.example', html)

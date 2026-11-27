@@ -1,6 +1,10 @@
+import html
+
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
+from accounts.chart_link import chart_relation, chart_shown
 from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, RevieweeFactory, UserProfileFactory
 from accounts.models import OrgUnitMembership
 from accounts.permissions import assign_organization_admin, assign_organization_member
@@ -9,7 +13,7 @@ from reviews.models import ReviewCycle
 from reviews.services import derive_reviewers
 
 
-class RevieweeDetailChartTests(TestCase):
+class RevieweeDetailChartSetup(TestCase):
     def setUp(self):
         profile = UserProfileFactory()
         self.org = profile.organization
@@ -39,14 +43,22 @@ class RevieweeDetailChartTests(TestCase):
             'include_self': 'on', 'include_manager': 'on', 'include_direct_report': 'on', **fields,
         })
 
+    def choice(self, category, picked, action):
+        """The fields of one choice as the card posts them: the action and the text of what it showed."""
+        manager, person = (picked, self.alex) if category == 'manager' else (self.alex, picked)
+        return {f'chart_{category}_{picked.uuid}': action,
+                f'chart_seen_{category}_{picked.uuid}': chart_shown(chart_relation(manager, person))}
+
+
+class RevieweeDetailChartTests(RevieweeDetailChartSetup):
     def test_place_puts_the_reviewee_under_the_posted_manager(self):
-        self.post(manager_reviewees=[str(self.blair.uuid)], **{f'chart_manager_{self.blair.uuid}': 'place'})
+        self.post(manager_reviewees=[str(self.blair.uuid)], **self.choice('manager', self.blair, 'place'))
 
         self.assertEqual(derive_reviewers(self.alex)['manager'], [self.blair])
 
     def test_two_new_managers_are_both_placed(self):
         self.post(manager_reviewees=[str(self.blair.uuid), str(self.sara.uuid)],
-                  **{f'chart_manager_{self.blair.uuid}': 'place', f'chart_manager_{self.sara.uuid}': 'place'})
+                  **self.choice('manager', self.blair, 'place'), **self.choice('manager', self.sara, 'place'))
 
         self.assertEqual(set(derive_reviewers(self.alex)['manager']), {self.blair, self.sara})
 
@@ -54,7 +66,7 @@ class RevieweeDetailChartTests(TestCase):
         old = self.unit('Platform', managers=[self.sara], members=[self.blair])
 
         self.post('start', direct_report_reviewees=[str(self.blair.uuid)],
-                  **{f'chart_direct_report_{self.blair.uuid}': 'move'})
+                  **self.choice('direct_report', self.blair, 'move'))
 
         self.assertEqual(derive_reviewers(self.blair)['manager'], [self.alex])
         self.assertFalse(old.memberships.filter(reviewee=self.blair).exists())
@@ -121,3 +133,35 @@ class RevieweeDetailChartTests(TestCase):
 
         self.assertEqual((data['state'], data['unit_name'], data['also_managers']), ('missing', 'Design', ['Dana Visser']))
         self.assertIn('Dana Visser', data['html'])
+
+    def test_relation_endpoint_puts_the_text_of_what_it_shows_next_to_the_choice(self):
+        data = self.client.get(self.relation_url, {'person': self.blair.uuid, 'category': 'manager'}).json()
+
+        seen = self.choice('manager', self.blair, 'place')[f'chart_seen_manager_{self.blair.uuid}']
+        self.assertIn(f'name="chart_seen_manager_{self.blair.uuid}" value="{html.escape(seen)}"', data['html'])
+
+
+class ChartChoiceShownTests(RevieweeDetailChartSetup):
+    """A choice is applied only when the org chart still is what the card showed."""
+
+    def test_choice_is_refused_when_the_target_unit_got_another_manager_after_the_page_was_loaded(self):
+        shown = self.choice('manager', self.blair, 'place')  # a new unit, nobody else
+        dana = self.person('Dana Visser', 'dana@acme.example')
+        self.unit('Design', managers=[self.blair, dana])
+
+        response = self.post(manager_reviewees=[str(self.blair.uuid)], **shown)
+
+        self.assertFalse(OrgUnitMembership.objects.filter(reviewee=self.alex).exists())
+        self.assertEqual([m.level_tag for m in get_messages(response.wsgi_request)], ['warning', 'success'])
+        manager_row = next(c for c in self.client.get(self.url).context['categories'] if c['code'] == 'manager')
+        self.assertEqual(len(manager_row['chart_questions']), 1)
+        self.assertIn('Dana Visser', manager_row['chart_questions'][0])
+
+    def test_both_and_move_for_one_person_remove_only_the_managers_that_were_shown(self):
+        old = self.person('Olga Smit', 'olga@acme.example')
+        self.unit('Platform', managers=[old], members=[self.alex])
+
+        self.post(manager_reviewees=[str(self.blair.uuid), str(self.sara.uuid)],
+                  **self.choice('manager', self.blair, 'both'), **self.choice('manager', self.sara, 'move'))
+
+        self.assertEqual(set(derive_reviewers(self.alex)['manager']), {self.blair, self.sara})

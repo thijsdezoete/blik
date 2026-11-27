@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from accounts.chart_link import apply_chart_choice, chart_relation, unplaced_with_manager
+from accounts.chart_link import apply_chart_choice, chart_relation, chart_shown, unplaced_with_manager
 from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, RevieweeFactory
 from accounts.models import OrgUnit, OrgUnitMembership
 from core.factories import OrganizationFactory
@@ -39,7 +39,7 @@ class ChartLinkTests(TestCase):
         unit = self.unit('Platform', manager=self.tom, members=[self.lena])
         self.assertEqual(chart_relation(self.tom, self.maya),
                          {'state': 'missing', 'managers': [], 'unit_name': 'Platform', 'new_unit': False,
-                          'also_managers': []})
+                          'unit_id': unit.pk, 'also_managers': []})
 
         self.assertEqual(apply_chart_choice(self.tom, self.maya, 'place'), unit)
 
@@ -86,7 +86,7 @@ class ChartLinkTests(TestCase):
                               {'manager': [blair], 'peer': [], 'direct_report': []},
                               {'manager': [], 'peer': [], 'direct_report': []})
         named = {person: chart_relation(blair, person)['unit_name'] for person in (self.maya, ravi)}
-        listed = {person: name for person, _manager, name, _new in unplaced_with_manager(self.org)}
+        listed = {person: relation['unit_name'] for person, _manager, relation in unplaced_with_manager(self.org)}
 
         for person in (ravi, self.maya):
             apply_chart_choice(blair, person, 'place')
@@ -121,7 +121,7 @@ class ChartLinkTests(TestCase):
         self.unit('Sales', manager=self.lena, members=[self.maya])
         self.assertEqual(chart_relation(self.tom, self.maya),
                          {'state': 'conflict', 'managers': [self.lena],
-                          'unit_name': 'Engineering', 'new_unit': True, 'also_managers': []})
+                          'unit_name': 'Engineering', 'new_unit': True, 'unit_id': None, 'also_managers': []})
 
     def test_relation_names_the_other_managers_of_the_target_unit(self):
         zoe = self.person('Zoe Lim', 'zoe@acme.example')
@@ -160,6 +160,32 @@ class ChartLinkTests(TestCase):
         self.assertTrue(own.memberships.filter(reviewee=self.maya, role=OrgUnitMembership.MANAGER).exists())
         self.assertTrue(unit.memberships.filter(reviewee=self.maya, role=OrgUnitMembership.MEMBER).exists())
         self.assertEqual(self.managers_of(self.maya), [self.tom])
+
+    def test_move_with_the_shown_managers_keeps_a_manager_added_after_them(self):
+        old = self.unit('Sales', manager=self.lena, members=[self.maya])
+        shown = chart_relation(self.tom, self.maya)['managers']
+        zoe = self.person('Zoe Lim', 'zoe@acme.example')
+        apply_chart_choice(zoe, self.maya, 'both')
+
+        apply_chart_choice(self.tom, self.maya, 'move', shown)
+
+        self.assertFalse(old.memberships.filter(reviewee=self.maya).exists())
+        self.assertEqual(set(self.managers_of(self.maya)), {zoe, self.tom})
+
+    def test_shown_text_changes_with_each_thing_a_choice_promises(self):
+        texts = [chart_shown(chart_relation(self.tom, self.maya))]  # missing, a new unit Engineering
+        self.unit('Engineering', manager=self.lena)  # the new unit gets another name
+        texts.append(chart_shown(chart_relation(self.tom, self.maya)))
+        platform = self.unit('Platform', manager=self.tom)  # an existing unit
+        texts.append(chart_shown(chart_relation(self.tom, self.maya)))
+        zoe = self.person('Zoe Lim', 'zoe@acme.example')
+        OrgUnitMembershipFactory(unit=platform, reviewee=zoe, row=0, col=1)  # another manager there
+        texts.append(chart_shown(chart_relation(self.tom, self.maya)))
+        self.unit('Sales', manager=self.lena, members=[self.maya])  # a current manager: conflict
+        texts.append(chart_shown(chart_relation(self.tom, self.maya)))
+
+        self.assertEqual(len(set(texts)), len(texts))
+        self.assertEqual(chart_shown(chart_relation(self.tom, self.maya)), texts[-1])
 
     def test_both_keeps_the_old_manager(self):
         old = self.unit('Sales', manager=self.lena, members=[self.maya])
@@ -226,6 +252,7 @@ class ChartLinkTests(TestCase):
         gone.save()
 
         self.assertEqual(unplaced_with_manager(self.org), [
-            (self.maya, noor, 'Noor Smit', True),
-            (sam, self.tom, 'Platform', False),
+            (self.maya, noor, chart_relation(noor, self.maya)),
+            (sam, self.tom, chart_relation(self.tom, sam)),
         ])
+        self.assertEqual(chart_relation(noor, self.maya)['unit_name'], 'Noor Smit')

@@ -18,6 +18,7 @@
 </div>
 
 {% if can_manage and placeable %}
+{# Each line posts what the page showed: the server places it only when it is still the same. #}
 <section class="card oc-notice" aria-labelledby="ocNoticeTitle">
     <div class="card-header">
         <div>
@@ -34,14 +35,14 @@
                     <span class="help-text">{% if item.new_unit %}{% blocktrans with manager=item.manager.name unit=item.unit_name %}Under {{ manager }}, in a new unit {{ unit }}{% endblocktrans %}{% else %}{% blocktrans with manager=item.manager.name unit=item.unit_name %}Under {{ manager }}, in the unit {{ unit }}{% endblocktrans %}{% endif %}</span>
                     {% if item.also_managers %}<span class="help-text">{% blocktrans trimmed count counter=item.also_managers|length with names=item.also_names %}{{ names }} also manages this unit.{% plural %}{{ names }} also manage this unit.{% endblocktrans %}</span>{% endif %}
                 </span>
-                <form method="post" action="{% url 'org_chart_place' %}">{% csrf_token %}<input type="hidden" name="person" value="{{ item.person.uuid }}"><button type="submit" class="btn btn-sm btn-secondary">{% trans 'Place' %}</button></form>
+                <form method="post" action="{% url 'org_chart_place' %}">{% csrf_token %}<input type="hidden" name="person" value="{{ item.person.uuid }}"><input type="hidden" name="manager" value="{{ item.manager.uuid }}"><input type="hidden" name="seen" value="{{ item.seen }}"><button type="submit" class="btn btn-sm btn-secondary">{% trans 'Place' %}</button></form>
             </li>
             {% endfor %}
         </ul>
     </div>
     <div class="card-footer oc-notice-footer">
         <span class="help-text">{% trans 'You can move people in the chart afterwards.' %}</span>
-        <form method="post" action="{% url 'org_chart_place' %}">{% csrf_token %}<input type="hidden" name="all" value="1"><button type="submit" class="btn btn-primary">{% trans 'Place all' %}</button></form>
+        <form method="post" action="{% url 'org_chart_place' %}">{% csrf_token %}{% for item in placeable %}<input type="hidden" name="person" value="{{ item.person.uuid }}"><input type="hidden" name="manager" value="{{ item.manager.uuid }}"><input type="hidden" name="seen" value="{{ item.seen }}">{% endfor %}<button type="submit" class="btn btn-primary">{% trans 'Place all' %}</button></form>
     </div>
 </section>
 {% endif %}

@@ -5,6 +5,8 @@ A place in the chart lets a manager read the reports of the members of the unit,
 so every rule here is an access rule. Callers write only on an explicit choice of
 a user who may edit the chart.
 """
+import json
+
 from django.db import transaction
 from django.db.models import Max
 
@@ -64,15 +66,29 @@ def chart_relation(manager, person):
             unit_memberships__unit=unit, unit_memberships__role=OrgUnitMembership.MANAGER, is_active=True,
         ).exclude(pk=manager.pk).order_by('name', 'pk'))
     return {'state': state, 'managers': managers, 'unit_name': name, 'new_unit': unit is None,
-            'also_managers': also}
+            'unit_id': None if unit is None else unit.pk, 'also_managers': also}
+
+
+def chart_shown(relation):
+    """
+    Everything a choice promised, as one short text: the state, the target unit (its id, or the
+    name of a new unit), the managers the chart gives now and the other managers of the target unit.
+    The page posts it back with the choice, and a choice is applied only when it is still the same:
+    a page left open must never write something other than what it said. It is no secret.
+    """
+    target = relation['unit_name'] if relation['new_unit'] else relation['unit_id']
+    return json.dumps([relation['state'], relation['new_unit'], target,
+                       sorted(m.pk for m in relation['managers']),
+                       sorted(m.pk for m in relation['also_managers'])])
 
 
 @transaction.atomic
-def apply_chart_choice(manager, person, action):
+def apply_chart_choice(manager, person, action, managers=None):
     """
     Make `manager` a manager of `person` in the chart and return the unit used.
     'place' and 'both' only add; 'move' also takes `person` out of the units of
-    the managers the chart gave before.
+    `managers`: the managers the user was shown (default: those the chart gives now).
+    Never those an earlier choice of the same save added.
     """
     if action not in ACTIONS:
         raise ValueError(f'Unknown action {action!r}')
@@ -94,10 +110,12 @@ def apply_chart_choice(manager, person, action):
         # or is a member of it already (that is state 'has', returned above; kept as a guard).
         return unit
 
-    if action == 'move' and relation['managers']:
+    if managers is None:
+        managers = relation['managers']
+    if action == 'move' and managers:
         OrgUnitMembership.objects.filter(
             reviewee=person, role=OrgUnitMembership.MEMBER,
-            unit__memberships__reviewee__in=relation['managers'],
+            unit__memberships__reviewee__in=managers,
             unit__memberships__role=OrgUnitMembership.MANAGER,
         ).delete()
 
@@ -114,7 +132,7 @@ def apply_chart_choice(manager, person, action):
 
 def unplaced_with_manager(organization):
     """
-    (person, manager, unit name, new unit) for each active person who is a member
+    (person, manager, chart_relation) for each active person who is a member
     of no unit and whose reviewer list names exactly one manager. By person name.
     """
     from reviews.setup import review_setup
@@ -126,6 +144,5 @@ def unplaced_with_manager(organization):
         # Only users who may edit the chart see this list, and they see the status per reviewer.
         managers = review_setup(person, with_previous=True).people['manager']
         if len(managers) == 1:
-            unit, name = _target(managers[0], person)
-            found.append((person, managers[0], name, unit is None))
+            found.append((person, managers[0], chart_relation(managers[0], person)))
     return found

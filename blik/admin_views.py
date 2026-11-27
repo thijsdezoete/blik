@@ -28,7 +28,9 @@ from django.utils.text import get_text_list
 from django.utils.translation import gettext as _, gettext_lazy, ngettext, pgettext
 from django.views.decorators.http import require_POST
 
-from accounts.chart_link import append_membership, apply_chart_choice, chart_relation, unplaced_with_manager
+from accounts.chart_link import (
+    append_membership, apply_chart_choice, chart_relation, chart_shown, unplaced_with_manager,
+)
 from accounts.models import Reviewee, ReviewSetup, UserProfile, OrganizationInvitation, OrgUnit, OrgUnitMembership
 from accounts.permissions import (
     assign_organization_admin,
@@ -754,28 +756,58 @@ def chart_pair(reviewee, picked, category):
     return (picked, reviewee) if category == 'manager' else (reviewee, picked)
 
 
+def chart_choice(request, reviewee, picked, category):
+    """
+    (chart_relation, the question of the card) for `picked` on the reviewee's list as a manager
+    or a direct report. The question is empty when the chart has the relation.
+    """
+    manager, person = chart_pair(reviewee, picked, category)
+    relation = chart_relation(manager, person)
+    if relation['state'] == 'has':
+        return relation, ''
+    managers = [m.name for m in relation['managers']]
+    also = [m.name for m in relation['also_managers']]
+    # Translators: the word between the last two names of a list, as in "Sara Koster, Tom Bakker and Lena Visser".
+    last_join = pgettext('joins the last two names of a list', 'and')
+    return relation, render_to_string(
+        'admin_dashboard/partials/reviewee_chart_choice.html', {
+            'category': category, 'picked': picked, 'manager': manager, 'person': person,
+            'relation': relation, 'field': f'chart_{category}_{picked.uuid}',
+            'seen_field': f'chart_seen_{category}_{picked.uuid}', 'seen': chart_shown(relation),
+            'managers_names': get_text_list(managers, last_join), 'managers_count': len(managers),
+            'also_names': get_text_list(also, last_join), 'also_count': len(also),
+        }, request=request)
+
+
 def apply_posted_chart_choices(request, reviewee):
     """
     The org chart choices of the card, for the managers and direct reports of
-    the list as saved now. A choice that does not fit the chart is skipped.
+    the list as saved now. A choice is applied only when the chart still is what
+    the card showed (its `chart_seen_*` field); a choice that does not fit is skipped.
     """
     saved = review_setup(reviewee)
     # Every choice is judged against the chart as the user saw it, before any write: after a first
     # `place` the person has a manager, and a second ticked `place` would no longer fit.
     # `place` on a person who has a manager by then adds a membership, as `both` does.
     fitting = []
+    refused = {}
     for category in ('manager', 'direct_report'):
         for picked in saved.people[category]:
             action = request.POST.get(f'chart_{category}_{picked.uuid}')
             if action not in ('place', 'move', 'both'):
                 continue
             manager, person = chart_pair(reviewee, picked, category)
-            if action in CHART_CHOICES_FOR_STATE.get(chart_relation(manager, person)['state'], ()):
-                fitting.append((manager, person, action))
+            relation = chart_relation(manager, person)
+            if request.POST.get(f'chart_seen_{category}_{picked.uuid}') != chart_shown(relation):
+                refused.setdefault(category, []).append(str(picked.uuid))
+            elif action in CHART_CHOICES_FOR_STATE.get(relation['state'], ()):
+                # `move` takes the person away from the managers that were shown, not from one an
+                # earlier choice of this save added.
+                fitting.append((manager, person, action, relation['managers']))
     changes = 0
-    for manager, person, action in fitting:
+    for manager, person, action, shown_managers in fitting:
         try:
-            apply_chart_choice(manager, person, action)
+            apply_chart_choice(manager, person, action, shown_managers)
         except ValueError:
             continue
         changes += 1
@@ -783,6 +815,11 @@ def apply_posted_chart_choices(request, reviewee):
         messages.success(request, ngettext(
             '%(count)s change saved in the org chart.', '%(count)s changes saved in the org chart.', changes)
             % {'count': changes})
+    if refused:
+        # The page asks again about these people, with the question of the chart as it is now.
+        request.session[f'chart_ask_{reviewee.uuid}'] = refused
+        messages.warning(request, _('The org chart changed since the page was loaded. The choices that were '
+                                    'not applied are shown again: check them.'))
 
 
 def save_posted_reviewers(request, reviewee, chart=False):
@@ -875,10 +912,14 @@ def reviewee_detail(request, reviewee_uuid):
     } for review in summary['reviews'] if review['cycle'].status == 'active']
 
     threshold = org.min_responses_for_anonymity
+    # Org chart choices of the last save that were refused because the chart had changed.
+    ask_again = request.session.pop(f'chart_ask_{reviewee.uuid}', {}) if access['chart'] else {}
     categories = []
     for code, label, description, placeholder, email_label in REVIEWER_CARD_CATEGORIES:
         people = [reviewee] if code == 'self' else setup.people[code]
         emails = [] if code == 'self' else setup.emails[code]
+        chart_questions = [chart_choice(request, reviewee, person, code)[1] for person in people
+                           if str(person.uuid) in ask_again.get(code, ())]
         categories.append({
             'code': code, 'label': label, 'description': description,
             'placeholder': placeholder, 'email_label': email_label,
@@ -888,6 +929,7 @@ def reviewee_detail(request, reviewee_uuid):
             # Without the picker, the people of the list are edited as email addresses.
             'email_text': ', '.join(emails if access['manage'] else [p.email for p in people] + emails),
             'under_threshold': code in ('peer', 'direct_report') and len(people) + len(emails) < threshold,
+            'chart_questions': [question for question in chart_questions if question],
         })
 
     return render(request, 'admin_dashboard/reviewee_detail.html', {
@@ -942,21 +984,10 @@ def reviewee_chart_relation(request, reviewee_uuid):
     if picked.pk == reviewee.pk:
         return JsonResponse({'error': 'A person cannot be their own manager.'}, status=400)
 
-    manager, person = chart_pair(reviewee, picked, category)
-    relation = chart_relation(manager, person)
-    managers = [m.name for m in relation['managers']]
-    also = [m.name for m in relation['also_managers']]
-    # Translators: the word between the last two names of a list, as in "Sara Koster, Tom Bakker and Lena Visser".
-    last_join = pgettext('joins the last two names of a list', 'and')
-    html = '' if relation['state'] == 'has' else render_to_string(
-        'admin_dashboard/partials/reviewee_chart_choice.html', {
-            'category': category, 'picked': picked, 'manager': manager, 'person': person,
-            'relation': relation, 'field': f'chart_{category}_{picked.uuid}',
-            'managers_names': get_text_list(managers, last_join), 'managers_count': len(managers),
-            'also_names': get_text_list(also, last_join), 'also_count': len(also),
-        }, request=request)
-    return JsonResponse({'state': relation['state'], 'managers': managers, 'unit_name': relation['unit_name'],
-                         'new_unit': relation['new_unit'], 'also_managers': also, 'html': html})
+    relation, html = chart_choice(request, reviewee, picked, category)
+    return JsonResponse({'state': relation['state'], 'managers': [m.name for m in relation['managers']],
+                         'unit_name': relation['unit_name'], 'new_unit': relation['new_unit'],
+                         'also_managers': [m.name for m in relation['also_managers']], 'html': html})
 
 
 @login_required
@@ -4237,10 +4268,11 @@ def org_chart(request):
     context['can_manage'] = request.user.has_perm('accounts.can_manage_organization')
     if context['can_manage']:
         context['placeable'] = []
-        for person, manager, unit_name, new_unit in unplaced_with_manager(org):
-            also = chart_relation(manager, person)['also_managers']
+        for person, manager, relation in unplaced_with_manager(org):
+            also = relation['also_managers']
             context['placeable'].append({
-                'person': person, 'manager': manager, 'unit_name': unit_name, 'new_unit': new_unit,
+                'person': person, 'manager': manager, 'unit_name': relation['unit_name'],
+                'new_unit': relation['new_unit'], 'seen': chart_shown(relation),
                 'also_managers': also, 'also_names': ', '.join(m.name for m in also)})
     if request.user.has_perm('accounts.can_invite_members'):
         managers = context['managers_without_account'] = managers_without_account(org)
@@ -4255,19 +4287,28 @@ def org_chart(request):
 def org_chart_place(request):
     """
     Place people whose reviewer list names one manager in that manager's unit.
-    The server picks the manager from the list; the POST only names the person
-    (`person=<uuid>`) or asks for all of them (`all=1`).
+    Each line the page showed posts `person`, `manager` (uuids) and `seen` (see
+    `chart_shown`); "Place all" posts all lines. A line is placed only when the
+    person is still unplaced under that manager and the text is still the same.
     """
     if not request.user.has_perm('accounts.can_manage_organization'):
         messages.error(request, _('You do not have permission to edit the org chart.'))
         return redirect('org_chart')
     org = request.organization
-    pairs = unplaced_with_manager(org)
-    if not request.POST.get('all'):
-        pairs = [pair for pair in pairs if str(pair[0].uuid) == request.POST.get('person')]
+    present = {str(person.uuid): (person, manager, relation)
+               for person, manager, relation in unplaced_with_manager(org)}
+    # Every line is judged before any write: placing one person can make the unit of the next.
+    accepted, skipped = [], 0
+    for person_uuid, manager_uuid, seen in zip(
+            request.POST.getlist('person'), request.POST.getlist('manager'), request.POST.getlist('seen')):
+        line = present.pop(person_uuid, None)
+        if line and str(line[1].uuid) == manager_uuid and chart_shown(line[2]) == seen:
+            accepted.append(line)
+        else:
+            skipped += 1
     placed = 0
     with transaction.atomic():
-        for person, manager, _unit_name, _new_unit in pairs:
+        for person, manager, _relation in accepted:
             try:
                 with transaction.atomic():
                     apply_chart_choice(manager, person, 'place')
@@ -4276,6 +4317,9 @@ def org_chart_place(request):
             placed += 1
     messages.success(request, ngettext('%(count)d person placed in the org chart.',
                                        '%(count)d people placed in the org chart.', placed) % {'count': placed})
+    if skipped:
+        messages.warning(request, _('Some people were not placed: the org chart or a reviewer list changed '
+                                    'since the page was loaded.'))
     return redirect('org_chart')
 
 

@@ -28,7 +28,7 @@
                     {% if access.manage %}<div data-reviewee-picker data-field-name="{{ category.code }}_reviewees" data-initial="{{ category.initial }}" data-placeholder="{{ category.placeholder }}"></div>
                     {% else %}<label class="sr-only" for="{{ category.code }}-emails">{{ category.email_label }}</label><textarea id="{{ category.code }}-emails" name="{{ category.code }}_emails" class="form-control" rows="2" aria-describedby="reviewers-email-hint">{{ category.email_text }}</textarea>{% endif %}
                     {% if category.code != 'manager' %}<span class="help-text" data-threshold-line{% if not category.under_threshold %} hidden{% endif %}>{% blocktrans trimmed count counter=threshold %}Fewer than {{ counter }} person. The report does not show this group.{% plural %}Fewer than {{ counter }} people. The report does not show this group.{% endblocktrans %}</span>{% endif %}
-                    {% if access.manage and access.chart and category.code != 'peer' %}<div data-chart-choices aria-live="polite"></div>{% endif %}
+                    {% if access.manage and access.chart and category.code != 'peer' %}<div data-chart-choices aria-live="polite">{% for question in category.chart_questions %}{{ question }}{% endfor %}</div>{% endif %}
                     {% endif %}
                 </div>
             </div>

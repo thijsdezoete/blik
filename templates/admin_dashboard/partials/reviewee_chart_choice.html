@@ -2,6 +2,7 @@
 The question before the org chart changes, for one manager or direct report added on the reviewers card.
 A place in the chart lets the managers of a unit read the reports of its members, so every text names who gets to read whose reports.
 data-chart-summary is the sentence the start dialog lists for a choice that changes the chart.
+The hidden field is the text of what this question showed: the server applies the choice only when the chart still gives the same text.
 {% endcomment %}
 {# Translators: names is a list of names that is already joined, for example "Dana Visser and Eli Jansen". #}
 {% if also_count %}{% blocktrans trimmed count counter=also_count with names=also_names person=person.name unit=relation.unit_name asvar also_text %}{{ names }} also manages the unit {{ unit }} and can read the reports of {{ person }} too.{% plural %}{{ names }} also manage the unit {{ unit }} and can read the reports of {{ person }} too.{% endblocktrans %}{% endif %}
@@ -15,6 +16,7 @@ data-chart-summary is the sentence the start dialog lists for a choice that chan
 {% if relation.new_unit %}{% blocktrans trimmed with person=person.name unit=relation.unit_name asvar where_text %}Blik makes a new unit {{ unit }} and puts {{ person }} in it.{% endblocktrans %}{% else %}{% blocktrans trimmed with person=person.name unit=relation.unit_name asvar where_text %}{{ person }} goes into the unit {{ unit }}.{% endblocktrans %}{% endif %}
 {% if relation.state == 'missing' %}
 <label class="rv-chart-check" data-chart-choice="{{ picked.uuid }}">
+    <input type="hidden" name="{{ seen_field }}" value="{{ seen }}">
     <input type="checkbox" name="{{ field }}" value="place" checked data-chart-summary="{% blocktrans trimmed with manager=manager.name person=person.name %}{{ manager }} becomes the manager of {{ person }} in the org chart.{% endblocktrans %}">
     <span>{% blocktrans trimmed with manager=manager.name person=person.name %}Also make {{ manager }} the manager of {{ person }} in the org chart.{% endblocktrans %}
         <small>{{ where_text }}
@@ -25,6 +27,7 @@ data-chart-summary is the sentence the start dialog lists for a choice that chan
 {% elif relation.state == 'conflict' %}
 <fieldset class="rv-chart-choice" data-chart-choice="{{ picked.uuid }}">
     <legend>{{ legend_text }}</legend>
+    <input type="hidden" name="{{ seen_field }}" value="{{ seen }}">
     <label>
         <input type="radio" name="{{ field }}" value="" checked>
         <span>{% trans 'Do not change the org chart.' %}

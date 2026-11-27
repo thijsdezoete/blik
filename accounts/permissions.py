@@ -475,7 +475,7 @@ def direct_report_emails(user, organization):
 def person_deactivated(user, organization):
     """
     True when the user is a person of the organization and every such record is deactivated:
-    the person has left, and their account shows them their own profile page and nothing else
+    the person has left, and their account shows them their own profile page and their own reports, and nothing else
     (OrganizationMiddleware).
 
     A user who can manage the organization is never shut out by a person record, so that

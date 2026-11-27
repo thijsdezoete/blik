@@ -94,7 +94,7 @@
 {% endblock %}
 
 {% block content %}
-{% if request.person_deactivated %}<div class="alert alert-warning" role="status">{% trans 'This account is deactivated. You can only view this page.' %}</div>{% endif %}
+{% if request.person_deactivated %}<div class="alert alert-warning" role="status">{% trans 'This account is deactivated. You can only view this page and your own reports.' %}</div>{% endif %}
 <div class="page-header">
     <div>
         <h1>{% trans 'My Profile' %}</h1>

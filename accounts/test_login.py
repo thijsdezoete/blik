@@ -1,4 +1,6 @@
 """Login through Django's LoginView, with the username or the email address."""
+import uuid
+
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import TestCase
@@ -7,6 +9,8 @@ from django.urls import reverse
 from accounts.models import Reviewee, UserProfile
 from accounts.permissions import assign_organization_admin
 from core.models import Organization
+from reports.models import Report
+from reviews.factories import ReviewCycleFactory
 
 
 class LoginTests(TestCase):
@@ -93,6 +97,16 @@ class DeactivatedPersonTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIs(response.wsgi_request.person_deactivated, True)
+
+    def test_a_deactivated_person_can_open_their_own_report_but_not_the_report_page_of_the_dashboard(self):
+        cycle = ReviewCycleFactory(reviewee=self.person, status='completed')
+        report = Report.objects.create(cycle=cycle, access_token=uuid.uuid4(), report_data={})
+
+        own = self.client.get(reverse('reports:reviewee_report', args=[report.access_token]))
+        dashboard = self.client.get(reverse('reports:view_report', args=[cycle.uuid]))
+
+        self.assertEqual(own.status_code, 200)
+        self.assertRedirects(dashboard, reverse('profile'), fetch_redirect_response=False)
 
     def test_a_deactivated_person_cannot_change_their_email_or_password(self):
         for fields in ({'email': 'dana.new@acme.example', 'first_name': 'Dana', 'last_name': 'New'},

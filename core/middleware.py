@@ -4,7 +4,7 @@ logger = logging.getLogger(__name__)
 from django.conf import settings
 from django.shortcuts import redirect
 from django.utils import translation
-from django.urls import reverse
+from django.urls import Resolver404, resolve, reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from .languages import request_language
@@ -51,6 +51,10 @@ class SetupMiddleware:
         return response
 
 
+DEACTIVATED_MAY_OPEN = {
+    'profile', 'logout', 'javascript-catalog', 'reports:reviewee_report', 'reports:reviewee_report_pdf'}
+
+
 class OrganizationMiddleware:
     """
     Attach organization to request based on user profile
@@ -93,13 +97,16 @@ class OrganizationMiddleware:
             except Exception as e:
                 logger.exception("Error getting organization for user %s", request.user)
 
-            # A deactivated person may look at their own profile page and log out. Nothing else,
-            # and no change: the profile form could change the email that this check reads.
+            # A deactivated person may look at their own profile page and at their own reports
+            # (the token links on that page), and log out. Nothing else, and no change on the
+            # profile: its form could change the email that this check reads.
             if person_deactivated(request.user, request.organization):
                 request.person_deactivated = True
-                view_only = request.method in ('GET', 'HEAD') and request.path in (
-                    reverse('profile'), reverse('javascript-catalog'))
-                if not view_only and request.path != reverse('logout'):
+                try:
+                    view = resolve(request.path_info).view_name
+                except Resolver404:
+                    view = None
+                if view not in DEACTIVATED_MAY_OPEN or (view == 'profile' and request.method not in ('GET', 'HEAD')):
                     return redirect('profile')
 
         return self.get_response(request)

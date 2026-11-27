@@ -100,7 +100,9 @@ from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import addressed, queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
 from reviews.services import assign_tokens_to_emails, derive_reviewers, free_places, send_links_email
-from reviews.setup import has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup
+from reviews.setup import (
+    chart_has_reviewers, has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup,
+    saved_reviewer_counts)
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     CREDITS_PER_PACK,
@@ -452,6 +454,24 @@ REVIEWEE_STAGES = {
     'completed': (gettext_lazy('Completed'), Q(cycle_count__gt=0, active_cycle_count=0)),
 }
 
+def reviewer_state(person, saved_counts):
+    """
+    Where a review of this person would get its reviewers, in the order of `review_setup`:
+    the saved list (with the number per category), the org chart, the previous review, or nothing.
+    A saved list is the answer also when it is empty. `person` carries the annotations of the list.
+    """
+    counts = saved_counts.get(person.id)
+    if counts is not None:
+        labels = {code: label for code, _l, _d, _p, label in REVIEWER_CARD_CATEGORIES}
+        return {'source': 'saved' if any(counts.values()) else 'none',
+                'counts': [(labels[code], n) for code, n in counts.items()]}
+    if person.in_chart:
+        return {'source': 'chart'}
+    if person.has_earlier_reviewers:
+        return {'source': 'previous'}
+    return {'source': 'none'}
+
+
 REVIEWEE_SORTS = {
     'name': gettext_lazy('Name A–Z'),
     'name_desc': gettext_lazy('Name Z–A'),
@@ -480,6 +500,9 @@ def reviewee_list(request):
         active_cycle_id=Subquery(latest_cycles.filter(status='active').values('id')[:1]),
         latest_report_id=Subquery(latest_reports.values('id')[:1]),
         has_saved_list=Exists(ReviewSetup.objects.filter(reviewee=OuterRef('pk'))),
+        in_chart=chart_has_reviewers(),
+        has_earlier_reviewers=Exists(ReviewerToken.objects.filter(
+            cycle__reviewee=OuterRef('pk'), reviewer_email__isnull=False).exclude(category='self')),
     ).order_by('name', 'pk')
 
     # Facets come from this organization's visible people, including archived
@@ -558,6 +581,9 @@ def reviewee_list(request):
     cycles_by_id = {
         cycle.id: cycle for cycle in ReviewCycle.objects.filter(id__in=cycle_ids).select_related('questionnaire')
     }
+    # Where a review of the person would get its reviewers. For users who can start one from this list.
+    shows_reviewers = request.user.has_perm('accounts.can_manage_organization')
+    saved_counts = saved_reviewer_counts([person.id for person in reviewees]) if shows_reviewers else {}
     reviewees_with_latest = []
     for person in reviewees:
         latest_cycle = cycles_by_id.get(person.latest_cycle_id)
@@ -573,10 +599,13 @@ def reviewee_list(request):
             'latest_completed_report': report,
             'gap': gap,
             'has_saved_list': person.has_saved_list,
+            'from_chart': person.in_chart,
+            'reviewers': reviewer_state(person, saved_counts) if shows_reviewers else None,
         })
 
     return render(request, 'admin_dashboard/reviewee_list.html', {
         'reviewees_with_latest': reviewees_with_latest,
+        'shows_reviewers': shows_reviewers,
         'reviewees': reviewees,
         'questionnaires': questionnaires,
         'subscription_status': get_subscription_status(org) if org else None,
@@ -1120,8 +1149,10 @@ def quick_cycle_create(request, reviewee_uuid):
             for category in CATEGORY_ORDER
         }
 
+    # The order of the person's page: the saved list, then the org chart, then the previous cycle.
     setup = review_setup(reviewee)
     has_saved_list = setup.source == 'saved'
+    from_list = setup.source in ('saved', 'chart')
 
     # Create the cycle and its tokens together: a refused token leaves no cycle behind.
     try:
@@ -1136,7 +1167,7 @@ def quick_cycle_create(request, reviewee_uuid):
             total_tokens = 0
             email_invited_count = 0
 
-            if has_saved_list:
+            if from_list:
                 # The list on the person's page: emails only, and the invitations are queued below.
                 saved_assignments = setup.email_assignments(
                     [c for c in cycle.active_categories if c != 'self'])
@@ -1188,7 +1219,7 @@ def quick_cycle_create(request, reviewee_uuid):
         limit_error(request, e)
         return redirect('reviewee_list')
 
-    if has_saved_list or previous_cycle:
+    if from_list or previous_cycle:
         # Queue the invitations of all email-assigned tokens
         if email_invited_count > 0:
             queued = queue_invitations(cycle.tokens.all())
@@ -1199,6 +1230,10 @@ def quick_cycle_create(request, reviewee_uuid):
                    'Took %(count)s reviewer(s) from the saved list. '
                    '%(queued)s invitation email(s) go out within about five minutes.')
                  if has_saved_list else
+                 _('Review cycle created for "%(name)s" using "%(questionnaire)s". '
+                   'Took %(count)s reviewer(s) from the org chart. '
+                   '%(queued)s invitation email(s) go out within about five minutes.')
+                 if from_list else
                  _('Review cycle created for "%(name)s" using "%(questionnaire)s". '
                    'Copied %(count)s reviewer(s) from previous cycle. '
                    '%(queued)s invitation email(s) go out within about five minutes.'))
@@ -2108,9 +2143,11 @@ def review_cycle_list(request):
     default_questionnaire = questionnaires[0] if questionnaires else None
 
     # "New Cycle" opens the start dialog of the reviewee list, set up as a copy of the row's cycle.
-    # Like there, it says when the reviewers come from the saved list (quick_cycle_create uses it first).
-    with_saved_list = set(ReviewSetup.objects.filter(
-        reviewee__in=[cycle.reviewee_id for cycle in cycles]).values_list('reviewee_id', flat=True))
+    # Like there, it says when the reviewers come from the saved list or from the org chart
+    # (quick_cycle_create uses these before the cycle).
+    reviewee_ids = [cycle.reviewee_id for cycle in cycles]
+    with_saved_list = set(ReviewSetup.objects.filter(reviewee__in=reviewee_ids).values_list('reviewee_id', flat=True))
+    in_chart = set(Reviewee.objects.filter(pk__in=reviewee_ids).filter(chart_has_reviewers()).values_list('pk', flat=True))
     for cycle in cycles:
         cycle.report_only = cycle.reviewee.email.lower() in below - run_team
         cycle.start = {
@@ -2120,6 +2157,7 @@ def review_cycle_list(request):
             'selected_questionnaire': cycle.questionnaire if cycle.questionnaire.is_active else default_questionnaire,
             'active_cycle': cycle.reviewee_has_active_cycle,
             'has_saved_list': cycle.reviewee_id in with_saved_list,
+            'from_chart': cycle.reviewee_id in in_chart,
         }
 
     context = {

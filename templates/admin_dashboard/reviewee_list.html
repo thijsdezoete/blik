@@ -47,6 +47,7 @@
     <div id="reviewee-columns" class="reviewee-popover" popover="auto" aria-labelledby="reviewee-columns-title">
         <h2 class="card-title" id="reviewee-columns-title">{% trans 'Columns' %}</h2>
         <p class="help-text">{% trans 'Choose the details you want to see.' %}</p>
+        {% if shows_reviewers %}<label class="reviewee-column-option"><input type="checkbox" data-column-toggle="reviewers" checked> {% trans 'Reviewers' %}</label>{% endif %}
         <label class="reviewee-column-option"><input type="checkbox" data-column-toggle="questionnaire" checked> {% trans 'Latest questionnaire' %}</label>
         <label class="reviewee-column-option"><input type="checkbox" data-column-toggle="department"> {% trans 'Department' %}</label>
         <label class="reviewee-column-option"><input type="checkbox" data-column-toggle="gap"> {% trans 'Self vs others' %}</label>
@@ -65,6 +66,7 @@
                 <thead><tr>
                     <th scope="col">{% trans 'Person' %}</th>
                     <th scope="col">{% trans 'Review status' %}</th>
+                    {% if shows_reviewers %}<th scope="col" data-reviewee-column="reviewers">{% trans 'Reviewers' %}</th>{% endif %}
                     <th scope="col" data-reviewee-column="questionnaire">{% trans 'Latest questionnaire' %}</th>
                     <th scope="col" data-reviewee-column="department" hidden>{% trans 'Department' %}</th>
                     <th scope="col" data-reviewee-column="gap" hidden><div class="reviewee-gap-heading">{% trans 'Self vs others' %}<button type="button" class="reviewee-info" popovertarget="reviewee-gap-help" data-reviewee-popover aria-label="{% trans 'About self vs others' %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7h.01"></path></svg></button></div></th>
@@ -83,6 +85,15 @@
                             {% else %}<span class="badge badge-secondary">{% trans 'Not started' %}</span>{% endif %}
                             {% if item.reviewee.cycle_count %}<p class="help-text">{% blocktrans trimmed count counter=item.reviewee.cycle_count %}{{ counter }} review cycle{% plural %}{{ counter }} review cycles{% endblocktrans %}</p>{% endif %}
                         </td>
+                        {% if shows_reviewers %}
+                        <td class="reviewee-reviewers" data-reviewee-column="reviewers">
+                            {% if item.reviewers.source == 'saved' %}
+                            <ul class="reviewee-reviewer-counts">{% for label, count in item.reviewers.counts %}<li{% if not count %} class="help-text"{% endif %}>{{ label }} <strong>{{ count }}</strong></li>{% endfor %}</ul>
+                            {% elif item.reviewers.source == 'chart' %}<span class="help-text">{% trans 'From the org chart' %}</span>
+                            {% elif item.reviewers.source == 'previous' %}<span class="help-text">{% trans 'From the previous review' %}</span>
+                            {% else %}<span class="badge badge-secondary">{% trans 'No reviewers yet' %}</span>{% endif %}
+                        </td>
+                        {% endif %}
                         <td class="reviewee-questionnaire" data-reviewee-column="questionnaire">
                             {% if item.latest_questionnaire %}{{ item.latest_questionnaire.name }}{% if not item.latest_questionnaire.is_active %}<span class="help-text">{% trans 'Archived' %}</span>{% endif %}
                             {% else %}<span class="help-text">{% trans 'Not selected yet' %}</span>{% endif %}

@@ -69,15 +69,29 @@ class SavedListSourcesTests(TestCase):
         self.assertEqual(self.emails(cycle, 'manager'), {'blair@acme.example'})
         self.assertTrue(cycle.tokens.filter(invitation_queued_at__isnull=False).exists())
 
-    def test_new_cycle_dialog_of_the_cycle_list_knows_the_saved_list(self):
+    def test_new_cycle_dialog_of_the_cycle_list_knows_the_saved_list_and_the_org_chart(self):
         self.previous_cycle(self.alex)
         self.previous_cycle(self.blair)
+        self.previous_cycle(self.dana)
         self.save_list(self.alex, peers=['casey@acme.example'])
+        self.put_in_chart_under_blair(self.alex)
 
         response = self.client.get(reverse('review_cycle_list'))
 
-        starts = {cycle.reviewee: cycle.start['has_saved_list'] for cycle in response.context['cycles']}
-        self.assertEqual(starts, {self.alex: True, self.blair: False})
+        starts = {cycle.reviewee: (cycle.start['has_saved_list'], cycle.start['from_chart'])
+                  for cycle in response.context['cycles']}
+        self.assertEqual(starts, {self.alex: (True, True), self.blair: (False, True), self.dana: (False, False)})
+
+    def test_list_dialog_uses_the_org_chart_before_the_previous_cycle(self):
+        self.previous_cycle(self.alex, peer='erin@acme.example')
+        self.put_in_chart_under_blair(self.alex, self.dana)
+
+        self.start_from_list(self.alex)
+
+        cycle = self.newest_cycle(self.alex)
+        self.assertEqual(self.emails(cycle, 'manager'), {'blair@acme.example'})
+        self.assertEqual(self.emails(cycle, 'peer'), {'dana@acme.example'})
+        self.assertTrue(cycle.tokens.filter(invitation_queued_at__isnull=False).exists())
 
     def test_list_dialog_without_a_saved_list_copies_the_previous_cycle(self):
         self.previous_cycle(self.alex, peer='dana@acme.example')

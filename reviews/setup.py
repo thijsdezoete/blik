@@ -2,9 +2,9 @@
 from dataclasses import dataclass, field
 
 from django.db import transaction
-from django.db.models import Exists, OuterRef
+from django.db.models import Count, Exists, OuterRef, Q
 
-from accounts.models import ReviewSetup, Reviewee, SetupReviewer
+from accounts.models import OrgUnitMembership, ReviewSetup, Reviewee, SetupReviewer
 from questionnaires.models import Questionnaire
 from reviews.models import CATEGORY_ORDER
 from reviews.services import derive_reviewers
@@ -176,3 +176,30 @@ def save_review_setup(reviewee, questionnaire, flags, people, emails):
         row.setup = setup
     SetupReviewer.objects.bulk_create(rows)
     return setup
+
+
+def chart_has_reviewers(outer='pk'):
+    """
+    For a query over people: someone else who is active is in one of the person's units.
+    That is when `derive_reviewers` gives at least one reviewer, so when the org chart is a source.
+    """
+    return Exists(OrgUnitMembership.objects.filter(
+        unit__memberships__reviewee=OuterRef(outer), reviewee__is_active=True).exclude(reviewee=OuterRef(outer)))
+
+
+def saved_reviewer_counts(reviewee_ids):
+    """
+    For the people who have a saved list: how many reviewers each category of the list holds,
+    as {reviewee id: {category: count}}. Only the categories that the list includes;
+    deactivated people are not counted. Two queries, whatever the number of people.
+    """
+    counts = {
+        saved.reviewee_id: {c: 0 for c in LISTED if getattr(saved, f'include_{c}')}
+        for saved in ReviewSetup.objects.filter(reviewee__in=reviewee_ids)}
+    rows = SetupReviewer.objects.filter(setup__reviewee__in=list(counts)).filter(
+        Q(person__isnull=True) | Q(person__is_active=True),
+    ).values_list('setup__reviewee_id', 'category').annotate(n=Count('id'))
+    for reviewee_id, category, n in rows:
+        if category in counts[reviewee_id]:
+            counts[reviewee_id][category] = n
+    return counts

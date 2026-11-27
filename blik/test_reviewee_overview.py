@@ -8,13 +8,15 @@ from django.test import TestCase
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
-from accounts.factories import RevieweeFactory, UserProfileFactory
-from accounts.models import Reviewee
+from accounts.factories import OrgUnitFactory, OrgUnitMembershipFactory, RevieweeFactory, UserProfileFactory
+from accounts.models import OrgUnitMembership, Reviewee
 from accounts.permissions import assign_organization_admin, assign_organization_member
 from core.factories import OrganizationFactory
 from questionnaires.factories import QuestionnaireFactory
 from reports.models import Report
 from reviews.factories import ReviewCycleFactory
+from reviews.models import ReviewerToken
+from reviews.setup import save_review_setup
 
 
 class Links(HTMLParser):
@@ -152,6 +154,54 @@ class RevieweeOverviewTests(TestCase):
         response = self.client.get(self.url)
         for route in ['quick_cycle_create', 'reviewee_edit', 'reviewee_delete']:
             self.assertNotContains(response, reverse(route, args=[self.alex.uuid]))
+
+    def test_reviewers_column_says_where_each_person_gets_reviewers(self):
+        # Alex has an earlier cycle; give it a reviewer by email
+        ReviewerToken.objects.create(cycle=self.active, category='peer', reviewer_email='erin@example.test')
+        save_review_setup(
+            self.blair, self.questionnaire,
+            {'include_self': True, 'include_manager': True, 'include_peer': True, 'include_direct_report': False},
+            {'manager': [self.alex], 'peer': [], 'direct_report': []},
+            {'manager': [], 'peer': ['erin@example.test', 'finn@example.test'], 'direct_report': []})
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.alex, row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.casey, row=1, col=0)
+
+        response = self.client.get(self.url)
+
+        states = {item['reviewee'].name: item['reviewers'] for item in response.context['reviewees_with_latest']}
+        self.assertEqual(states['Blair Chen']['source'], 'saved')
+        self.assertEqual([count for _label, count in states['Blair Chen']['counts']], [1, 2])
+        self.assertEqual(states['Casey Jones'], {'source': 'chart'})
+        self.assertEqual(states['Alex Morgan'], {'source': 'chart'})
+        self.assertEqual(states['Dana Park'], {'source': 'none'})
+        OrgUnitMembership.objects.filter(unit=unit).delete()
+        states = {item['reviewee'].name: item['reviewers']
+                  for item in self.client.get(self.url).context['reviewees_with_latest']}
+        self.assertEqual(states['Alex Morgan'], {'source': 'previous'})
+        self.assertEqual(states['Casey Jones'], {'source': 'none'})
+
+    def test_an_empty_saved_list_counts_as_no_reviewers(self):
+        save_review_setup(
+            self.dana, self.questionnaire,
+            {'include_self': True, 'include_manager': True, 'include_peer': True, 'include_direct_report': True},
+            {'manager': [], 'peer': [], 'direct_report': []}, {'manager': [], 'peer': [], 'direct_report': []})
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.alex, row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.dana, row=1, col=0)
+
+        response = self.client.get(self.url)
+
+        dana = next(item for item in response.context['reviewees_with_latest'] if item['reviewee'] == self.dana)
+        self.assertEqual(dana['reviewers']['source'], 'none')
+
+    def test_members_get_no_reviewers_column(self):
+        assign_organization_member(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertIs(response.context['shows_reviewers'], False)
+        self.assertTrue(all(item['reviewers'] is None for item in response.context['reviewees_with_latest']))
 
     def test_query_count_does_not_grow_per_row(self):
         with CaptureQueriesContext(connection) as small:

@@ -5,7 +5,7 @@ from accounts.models import ReviewSetup, SetupReviewer
 from core.factories import OrganizationFactory
 from questionnaires.factories import QuestionnaireFactory
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
-from reviews.setup import has_previous_review, review_setup, save_review_setup
+from reviews.setup import has_previous_review, review_setup, save_review_setup, saved_reviewer_counts
 
 ALL_FLAGS = {'include_self': True, 'include_manager': True, 'include_peer': True, 'include_direct_report': True}
 
@@ -108,6 +108,27 @@ class ReviewSetupOrderTests(SetupTestCase):
         self.assertEqual(setup.source, 'chart')
         self.assertEqual(setup.people['manager'], [self.blair])
         self.assertEqual(setup.people['peer'], [])
+
+
+class SavedReviewerCountsTests(SetupTestCase):
+    def test_counts_per_included_category_without_deactivated_people(self):
+        other = self.person('Omar Haddad', 'omar@acme.example')
+        self.save(people={'manager': [self.blair], 'peer': [self.casey], 'direct_report': [other]},
+                  emails={'peer': ['dana@acme.example', 'eli@acme.example']},
+                  flags={**ALL_FLAGS, 'include_direct_report': False})
+        self.casey.is_active = False
+        self.casey.save()
+
+        with self.assertNumQueries(2):
+            counts = saved_reviewer_counts([self.alex.id, self.blair.id])
+
+        self.assertEqual(counts, {self.alex.id: {'manager': 1, 'peer': 2}})
+
+    def test_an_empty_saved_list_is_in_the_answer(self):
+        self.save()
+
+        self.assertEqual(saved_reviewer_counts([self.alex.id]),
+                         {self.alex.id: {'manager': 0, 'peer': 0, 'direct_report': 0}})
 
 
 class PreviousReviewRightTests(SetupTestCase):

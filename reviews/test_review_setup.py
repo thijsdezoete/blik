@@ -5,7 +5,8 @@ from accounts.models import ReviewSetup, SetupReviewer
 from core.factories import OrganizationFactory
 from questionnaires.factories import QuestionnaireFactory
 from reviews.factories import ReviewCycleFactory, ReviewerTokenFactory
-from reviews.setup import has_previous_review, review_setup, save_review_setup, saved_reviewer_counts
+from reviews.setup import (
+    has_previous_review, previous_reviewer_counts, review_setup, save_review_setup, saved_reviewer_counts)
 
 ALL_FLAGS = {'include_self': True, 'include_manager': True, 'include_peer': True, 'include_direct_report': True}
 
@@ -129,6 +130,36 @@ class SavedReviewerCountsTests(SetupTestCase):
 
         self.assertEqual(saved_reviewer_counts([self.alex.id]),
                          {self.alex.id: {'manager': 0, 'peer': 0, 'direct_report': 0}})
+
+
+class PreviousReviewerCountsTests(SetupTestCase):
+    def test_the_numbers_are_those_of_the_previous_review_source(self):
+        cycle = self.previous_cycle()                                                       # a peer by email
+        ReviewerTokenFactory(cycle=cycle, category='peer', reviewer_email='blair@acme.example')
+        ReviewerTokenFactory(cycle=cycle, category='peer', reviewer_email='alex@acme.example')    # the person: not a reviewer
+        ReviewerTokenFactory(cycle=cycle, category='peer')                                   # an open place
+        ReviewerTokenFactory(cycle=cycle, category='manager', reviewer_email='casey@acme.example')
+        self.casey.is_active = False
+        self.casey.save()
+        without_reviewers = ReviewCycleFactory(reviewee=self.blair, questionnaire=self.default)
+        ReviewerTokenFactory(cycle=without_reviewers, category='self', reviewer_email='blair@acme.example')
+
+        with self.assertNumQueries(1):
+            counts = previous_reviewer_counts([cycle, without_reviewers])
+
+        setup = review_setup(self.alex, with_previous=True)
+        self.assertEqual(setup.source, 'previous')
+        self.assertEqual(counts, {self.alex.id: {
+            category: len(setup.people[category]) + len(setup.emails[category])
+            for category in ('manager', 'peer', 'direct_report')}})
+        self.assertEqual(counts[self.alex.id]['peer'], 2)
+
+    def test_a_category_that_the_cycle_does_not_have_is_left_out(self):
+        cycle = self.previous_cycle()
+        cycle.include_direct_report = False
+        cycle.save()
+
+        self.assertEqual(previous_reviewer_counts([cycle]), {self.alex.id: {'manager': 0, 'peer': 1}})
 
 
 class PreviousReviewRightTests(SetupTestCase):

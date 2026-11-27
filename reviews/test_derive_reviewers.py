@@ -20,7 +20,8 @@ from accounts.factories import (
     OrgUnitMembershipFactory,
 )
 from core.factories import OrganizationFactory
-from reviews.services import derive_reviewers
+from accounts.models import Reviewee
+from reviews.services import chart_reviewer_counts, derive_reviewers
 
 
 class DeriveReviewersTests(TestCase):
@@ -296,3 +297,47 @@ class ChartSettingsFormTests(TestCase):
 
     def test_a_wrong_number_changes_nothing(self):
         self.assertEqual(self.post(chart_depth='0', chart_who='teams'), (1, True))
+
+
+class ChartReviewerCountsTests(TestCase):
+    """`chart_reviewer_counts` reads the chart a second time, for numbers: it must agree with `derive_reviewers`."""
+
+    def setUp(self):
+        self.org = OrganizationFactory()
+        people = {name: RevieweeFactory(organization=self.org, name=name) for name in (
+            'ceo', 'coo', 'dir_a', 'dir_b', 'lead', 'ann', 'bob', 'cara', 'dan', 'eve', 'yan', 'zed')}
+        people['ann'].is_active = False
+        people['ann'].save()
+        # managers in row 0, members below; dir_a leads two units, bob is in two, cara leads the ceo (a loop),
+        # yan is alone in a unit and zed is in none
+        for managers, members in (
+            (['ceo', 'coo'], ['dir_a', 'dir_b']),
+            (['dir_a'], ['lead', 'ann', 'bob']),
+            (['lead'], ['cara', 'dan']),
+            (['dir_b', 'dir_a'], ['bob', 'eve']),
+            (['cara'], ['ceo']),
+            ([], ['yan']),
+        ):
+            unit = OrgUnitFactory(organization=self.org)
+            for col, name in enumerate(managers):
+                OrgUnitMembershipFactory(unit=unit, reviewee=people[name], row=0, col=col)
+            for col, name in enumerate(members):
+                OrgUnitMembershipFactory(unit=unit, reviewee=people[name], row=1, col=col)
+
+    def test_the_numbers_are_those_of_derive_reviewers_for_every_depth(self):
+        for depth in (1, 2, 3, None):
+            for managers_only in (True, False):
+                self.org.chart_depth, self.org.chart_managers_only = depth, managers_only
+                self.org.save()
+                expected = {}
+                for person in Reviewee.objects.filter(organization=self.org):
+                    buckets = derive_reviewers(person)
+                    numbers = {c: len(buckets[c]) for c in ('manager', 'peer', 'direct_report')}
+                    if any(numbers.values()):
+                        expected[person.id] = numbers
+                everyone = list(Reviewee.objects.filter(organization=self.org).values_list('id', flat=True))
+                with self.subTest(depth=depth, managers_only=managers_only):
+                    with self.assertNumQueries(1):
+                        counts = chart_reviewer_counts(self.org, everyone)
+                    self.assertEqual(counts, expected)
+                    self.assertGreater(len(expected), 8)

@@ -214,6 +214,54 @@ def derive_reviewers(reviewee):
     }
 
 
+def chart_reviewer_counts(organization, reviewee_ids):
+    """
+    How many reviewers `derive_reviewers` gives each of these people, per category, as
+    {reviewee id: {'manager': n, 'peer': n, 'direct_report': n}}. A person the chart gives nobody
+    is left out. For lists: one query for the whole chart, whatever the number of people.
+
+    ponytail: a second reading of the rules of `derive_reviewers`, for numbers only. The test
+    `ChartReviewerCountsTests` holds the two together; change them together.
+    """
+    from collections import defaultdict
+    from accounts.models import OrgUnitMembership
+
+    members, managers = defaultdict(list), defaultdict(list)            # unit -> people
+    member_units, manager_units = defaultdict(list), defaultdict(list)  # person -> units
+    active = {}
+    for unit, person, role, is_active in OrgUnitMembership.objects.filter(
+            unit__organization=organization).values_list('unit_id', 'reviewee_id', 'role', 'reviewee__is_active'):
+        active[person] = is_active
+        if role == OrgUnitMembership.MANAGER:
+            managers[unit].append(person)
+            manager_units[person].append(unit)
+        else:
+            members[unit].append(person)
+            member_units[person].append(unit)
+
+    depth, managers_only = organization.chart_depth, organization.chart_managers_only
+    counts = {}
+    for me in reviewee_ids:
+        above = {p for unit in member_units[me] for p in managers[unit]}
+        beside = ({p for unit in member_units[me] for p in members[unit]}
+                  | {p for unit in manager_units[me] for p in managers[unit]})
+        below = {p for unit in manager_units[me] for p in members[unit]} - {me}
+        # Deeper levels: the members of the units that the level above manages.
+        seen, frontier, level = {me} | below, set(below), 1
+        while frontier and (depth is None or level < depth):
+            frontier = {p for f in frontier for unit in manager_units[f] for p in members[unit]} - seen
+            seen |= frontier
+            level += 1
+            below |= {p for p in frontier if manager_units[p]} if managers_only else frontier
+        # Deactivated people review nobody. Then: self > manager > direct report > peer.
+        above = {p for p in above if active[p]} - {me}
+        below = {p for p in below if active[p]} - above - {me}
+        beside = {p for p in beside if active[p]} - above - below - {me}
+        if above or below or beside:
+            counts[me] = {'manager': len(above), 'peer': len(beside), 'direct_report': len(below)}
+    return counts
+
+
 def free_places(cycle, category):
     """
     The places of a category that an email can still get. A place that someone took through

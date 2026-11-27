@@ -87,15 +87,13 @@
                         </td>
                         {% if shows_reviewers %}
                         <td class="reviewee-reviewers" data-reviewee-column="reviewers">
-                            {% if item.reviewers.source == 'saved' %}
-                            <ul class="reviewee-reviewer-counts">{% for label, count in item.reviewers.counts %}<li{% if not count %} class="help-text"{% endif %}>{{ label }} <strong>{{ count }}</strong></li>{% endfor %}</ul>
-                            {% elif item.reviewers.source == 'chart' %}
-                            {# Hover or focus shows who the chart gives (reviewees.js loads it once); the link opens the chart. #}
-                            <span class="reviewee-chart-source" data-chart-reviewers="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ item.reviewee.uuid }}&amp;source=chart">
-                                <a href="{% url 'org_chart' %}" class="help-text" aria-describedby="chart-reviewers-{{ item.reviewee.uuid }}">{% trans 'From the org chart' %}</a>
-                                <span id="chart-reviewers-{{ item.reviewee.uuid }}" class="reviewee-popover reviewee-chart-tip" popover="manual" role="tooltip"></span>
-                            </span>
-                            {% elif item.reviewers.source == 'previous' %}<span class="help-text">{% trans 'From the previous review' %}</span>
+                            {% if item.reviewers.source != 'none' %}
+                            {# The numbers are in the table; hover or focus shows the names (reviewees.js loads them once). #}
+                            <div class="reviewee-reviewer-source" tabindex="0" aria-describedby="reviewers-of-{{ item.reviewee.uuid }}" data-reviewers-url="{% url 'derive_reviewers_for_cycle' %}?reviewee={{ item.reviewee.uuid }}{% if item.reviewers.source != 'saved' %}&amp;source={{ item.reviewers.source }}{% endif %}">
+                                <ul class="reviewee-reviewer-counts">{% for label, count in item.reviewers.counts %}<li{% if not count %} class="help-text"{% endif %}>{{ label }} <strong>{{ count }}</strong></li>{% endfor %}</ul>
+                                <span class="help-text">{% if item.reviewers.source == 'saved' %}{% trans 'From the saved list' %}{% elif item.reviewers.source == 'chart' %}{% trans 'From the org chart' %}{% else %}{% trans 'From the previous review' %}{% endif %}</span>
+                                <span id="reviewers-of-{{ item.reviewee.uuid }}" class="reviewee-popover reviewee-reviewer-tip" popover="manual" role="tooltip"></span>
+                            </div>
                             {% else %}<span class="badge badge-secondary">{% trans 'No reviewers yet' %}</span>{% endif %}
                         </td>
                         {% endif %}

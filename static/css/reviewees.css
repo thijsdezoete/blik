@@ -12,10 +12,11 @@
 .reviewee-info { display: inline-flex; padding: 0.25rem; border: 0; background: none; color: var(--text-secondary); cursor: pointer; }
 .reviewees-table .reviewee-actions-heading { text-align: right; }
 .reviewee-reviewer-counts { list-style: none; margin: 0; padding: 0; font-size: 0.875rem; line-height: 1.5; }
-.reviewee-chart-source a { text-decoration: underline dotted; text-underline-offset: 3px; }
-.reviewee-chart-tip { width: 20rem; padding: 0.75rem 1rem; font-size: 0.875rem; pointer-events: none; }
-.reviewee-chart-tip p { margin: 0; }
-.reviewee-chart-tip p + p { margin-top: 0.375rem; }
+.reviewee-reviewer-source { display: inline-block; cursor: default; border-radius: 4px; }
+.reviewee-reviewer-source .help-text { display: block; margin-top: 0.125rem; }
+.reviewee-reviewer-tip { width: 20rem; padding: 0.75rem 1rem; font-size: 0.875rem; pointer-events: none; }
+.reviewee-reviewer-tip p { margin: 0; }
+.reviewee-reviewer-tip p + p { margin-top: 0.375rem; }
 .reviewee-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; white-space: nowrap; }
 .reviewee-more { display: inline-flex; align-items: center; justify-content: center; }
 .reviewee-popover { position: fixed; inset: auto; margin: 0; padding: 1rem; width: 17rem; max-width: calc(100vw - 2rem); max-height: calc(100dvh - 2rem); overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-card); color: var(--text-primary); box-shadow: var(--shadow-lg); overflow-wrap: anywhere; }

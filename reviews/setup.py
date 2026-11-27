@@ -2,11 +2,11 @@
 from dataclasses import dataclass, field
 
 from django.db import transaction
-from django.db.models import Count, Exists, OuterRef, Q
+from django.db.models import Count, Exists, F, OuterRef, Q
 
 from accounts.models import OrgUnitMembership, ReviewSetup, Reviewee, SetupReviewer
 from questionnaires.models import Questionnaire
-from reviews.models import CATEGORY_ORDER
+from reviews.models import CATEGORY_ORDER, ReviewerToken
 from reviews.services import derive_reviewers
 
 LISTED = ('manager', 'peer', 'direct_report')
@@ -203,3 +203,26 @@ def saved_reviewer_counts(reviewee_ids):
         if category in counts[reviewee_id]:
             counts[reviewee_id][category] = n
     return counts
+
+
+def previous_reviewer_counts(cycles):
+    """
+    For the latest cycle of each person: how many reviewers the previous-review source gives per
+    category, as {reviewee id: {category: count}}, only for the categories the cycle has. The
+    rules of `previous_cycle_reviewers`: reviewers by email, not the person, no deactivated
+    people. A cycle with no such reviewer is left out. One query, whatever the number of cycles.
+    """
+    cycles = {cycle.id: cycle for cycle in cycles}
+    deactivated = Reviewee.objects.filter(
+        organization=OuterRef('cycle__reviewee__organization'), is_active=False,
+        email__iexact=OuterRef('reviewer_email'))
+    rows = ReviewerToken.objects.filter(cycle__in=list(cycles), reviewer_email__isnull=False).exclude(
+        category='self').exclude(Exists(deactivated)).exclude(
+        reviewer_email__iexact=F('cycle__reviewee__email'),
+    ).values_list('cycle_id', 'category').annotate(n=Count('id'))
+    found = {}
+    for cycle_id, category, n in rows:
+        cycle = cycles[cycle_id]
+        if cycle.collects(category):
+            found.setdefault(cycle.reviewee_id, {c: 0 for c in LISTED if cycle.collects(c)})[category] = n
+    return found

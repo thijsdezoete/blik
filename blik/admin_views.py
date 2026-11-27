@@ -99,10 +99,11 @@ from reports.summary import reviewee_summary
 from reviews.models import CATEGORY_ORDER, ReviewCycle, ReviewerToken
 from reviews.outbox import addressed, queue_invitations, queue_reminders, queue_reviewee_notifications
 from blik import dashboard as dashboard_state
-from reviews.services import assign_tokens_to_emails, derive_reviewers, free_places, send_links_email
+from reviews.services import (
+    assign_tokens_to_emails, chart_reviewer_counts, derive_reviewers, free_places, send_links_email)
 from reviews.setup import (
-    chart_has_reviewers, has_previous_review, previous_cycle_reviewers, review_setup, save_review_setup,
-    saved_reviewer_counts)
+    chart_has_reviewers, has_previous_review, previous_cycle_reviewers, previous_reviewer_counts, review_setup,
+    save_review_setup, saved_reviewer_counts)
 from subscriptions.models import Subscription
 from subscriptions.utils import (
     CREDITS_PER_PACK,
@@ -454,21 +455,20 @@ REVIEWEE_STAGES = {
     'completed': (gettext_lazy('Completed'), Q(cycle_count__gt=0, active_cycle_count=0)),
 }
 
-def reviewer_state(person, saved_counts):
+def reviewer_state(person, counts_by_source):
     """
-    Where a review of this person would get its reviewers, in the order of `review_setup`:
-    the saved list (with the number per category), the org chart, the previous review, or nothing.
-    A saved list is the answer also when it is empty. `person` carries the annotations of the list.
+    Where a review of this person would get its reviewers, and how many per category.
+    `counts_by_source` is in the order of `review_setup`: the saved list, the org chart, the
+    previous review; the first source that knows the person is the answer. A saved list is the
+    answer also when it is empty: then nobody is invited.
     """
-    counts = saved_counts.get(person.id)
-    if counts is not None:
-        labels = {code: label for code, _l, _d, _p, label in REVIEWER_CARD_CATEGORIES}
-        return {'source': 'saved' if any(counts.values()) else 'none',
-                'counts': [(labels[code], n) for code, n in counts.items()]}
-    if person.in_chart:
-        return {'source': 'chart'}
-    if person.has_earlier_reviewers:
-        return {'source': 'previous'}
+    labels = {code: label for code, _l, _d, _p, label in REVIEWER_CARD_CATEGORIES}
+    for source, counts_by_person in counts_by_source:
+        counts = counts_by_person.get(person.id)
+        if counts is not None and any(counts.values()):
+            return {'source': source, 'counts': [(labels[code], n) for code, n in counts.items()]}
+        if counts is not None:
+            break
     return {'source': 'none'}
 
 
@@ -500,9 +500,6 @@ def reviewee_list(request):
         active_cycle_id=Subquery(latest_cycles.filter(status='active').values('id')[:1]),
         latest_report_id=Subquery(latest_reports.values('id')[:1]),
         has_saved_list=Exists(ReviewSetup.objects.filter(reviewee=OuterRef('pk'))),
-        in_chart=chart_has_reviewers(),
-        has_earlier_reviewers=Exists(ReviewerToken.objects.filter(
-            cycle__reviewee=OuterRef('pk'), reviewer_email__isnull=False).exclude(category='self')),
     ).order_by('name', 'pk')
 
     # Facets come from this organization's visible people, including archived
@@ -581,14 +578,24 @@ def reviewee_list(request):
     cycles_by_id = {
         cycle.id: cycle for cycle in ReviewCycle.objects.filter(id__in=cycle_ids).select_related('questionnaire')
     }
-    # Where a review of the person would get its reviewers. For users who can start one from this list.
+    # Where a review of the person would get its reviewers, with the number per category.
+    # For users who can start a review from this list. Four queries for the page.
     shows_reviewers = request.user.has_perm('accounts.can_manage_organization')
-    saved_counts = saved_reviewer_counts([person.id for person in reviewees]) if shows_reviewers else {}
+    counts_by_source = ()
+    if shows_reviewers:
+        ids = [person.id for person in reviewees]
+        counts_by_source = (
+            ('saved', saved_reviewer_counts(ids)),
+            ('chart', chart_reviewer_counts(org, ids)),
+            ('previous', previous_reviewer_counts(
+                cycles_by_id[person.latest_cycle_id] for person in reviewees if person.latest_cycle_id)),
+        )
     reviewees_with_latest = []
     for person in reviewees:
         latest_cycle = cycles_by_id.get(person.latest_cycle_id)
         latest_questionnaire = latest_cycle.questionnaire if latest_cycle else None
         report, gap = reports_by_id.get(person.latest_report_id, (None, None))
+        reviewers = reviewer_state(person, counts_by_source) if shows_reviewers else None
         reviewees_with_latest.append({
             'reviewee': person,
             'source_cycle': latest_cycle,
@@ -599,8 +606,9 @@ def reviewee_list(request):
             'latest_completed_report': report,
             'gap': gap,
             'has_saved_list': person.has_saved_list,
-            'from_chart': person.in_chart,
-            'reviewers': reviewer_state(person, saved_counts) if shows_reviewers else None,
+            'reviewers': reviewers,
+            # For the start dialog, which only these users get
+            'from_chart': bool(reviewers) and reviewers['source'] == 'chart',
         })
 
     return render(request, 'admin_dashboard/reviewee_list.html', {

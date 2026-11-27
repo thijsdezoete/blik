@@ -169,17 +169,23 @@ class RevieweeOverviewTests(TestCase):
 
         response = self.client.get(self.url)
 
-        states = {item['reviewee'].name: item['reviewers'] for item in response.context['reviewees_with_latest']}
-        self.assertEqual(states['Blair Chen']['source'], 'saved')
-        self.assertEqual([count for _label, count in states['Blair Chen']['counts']], [1, 2])
-        self.assertEqual(states['Casey Jones'], {'source': 'chart'})
-        self.assertEqual(states['Alex Morgan'], {'source': 'chart'})
-        self.assertEqual(states['Dana Park'], {'source': 'none'})
+        # Per person: the source, and the numbers for manager, peers and direct reports (as far as the source has them)
+        self.assertEqual(self.reviewer_states(response), {
+            'Blair Chen': ('saved', [1, 2]),
+            'Casey Jones': ('chart', [1, 0, 0]),
+            'Alex Morgan': ('chart', [0, 0, 1]),
+            'Dana Park': ('none', None),
+        })
         OrgUnitMembership.objects.filter(unit=unit).delete()
-        states = {item['reviewee'].name: item['reviewers']
-                  for item in self.client.get(self.url).context['reviewees_with_latest']}
-        self.assertEqual(states['Alex Morgan'], {'source': 'previous'})
-        self.assertEqual(states['Casey Jones'], {'source': 'none'})
+        states = self.reviewer_states(self.client.get(self.url))
+        self.assertEqual(states['Alex Morgan'], ('previous', [0, 1, 0]))
+        self.assertEqual(states['Casey Jones'], ('none', None))
+
+    def reviewer_states(self, response):
+        return {
+            item['reviewee'].name: (item['reviewers']['source'],
+                                    [n for _label, n in item['reviewers']['counts']] if 'counts' in item['reviewers'] else None)
+            for item in response.context['reviewees_with_latest']}
 
     def test_an_empty_saved_list_counts_as_no_reviewers(self):
         save_review_setup(

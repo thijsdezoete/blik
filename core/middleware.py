@@ -2,12 +2,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 from django.conf import settings
-from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils import translation
-from django.utils.translation import gettext as _
 from django.urls import reverse
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from .languages import request_language
 from .models import Organization
@@ -95,11 +93,14 @@ class OrganizationMiddleware:
             except Exception as e:
                 logger.exception("Error getting organization for user %s", request.user)
 
-            # Also under /accounts/: the profile page lets a user change the email this check reads.
+            # A deactivated person may look at their own profile page and log out. Nothing else,
+            # and no change: the profile form could change the email that this check reads.
             if person_deactivated(request.user, request.organization):
-                logout(request)
-                messages.error(request, _('This account is deactivated.'))
-                return redirect(settings.LOGIN_URL)
+                request.person_deactivated = True
+                view_only = request.method in ('GET', 'HEAD') and request.path in (
+                    reverse('profile'), reverse('javascript-catalog'))
+                if not view_only and request.path != reverse('logout'):
+                    return redirect('profile')
 
         return self.get_response(request)
 

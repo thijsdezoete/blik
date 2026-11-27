@@ -135,7 +135,7 @@ would see in the dashboard.
 2. Confirm deletion
 3. Reviewees are marked inactive rather than deleted (preserves historical data)
 
-A deactivated person cannot use their account any more: Blik logs them out, and a manager who is deactivated can no longer read the reports of their unit. The reviewer picker does not offer a deactivated person. Blik never shuts out an organization admin because of their own person record.
+A deactivated person who has an account can still log in, but only to view their own profile page: they cannot open another page or change anything, and a manager who is deactivated can no longer read the reports of their unit. The reviewer picker does not offer a deactivated person. Blik never shuts out an organization admin because of their own person record.
 
 ---
 

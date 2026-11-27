@@ -94,6 +94,7 @@
 {% endblock %}
 
 {% block content %}
+{% if request.person_deactivated %}<div class="alert alert-warning" role="status">{% trans 'This account is deactivated. You can only view this page.' %}</div>{% endif %}
 <div class="page-header">
     <div>
         <h1>{% trans 'My Profile' %}</h1>
@@ -131,7 +132,7 @@
                 </div>
             </div>
             <div class="card-footer profile-save">
-                <button type="submit" class="btn btn-primary">{% trans 'Save Changes' %}</button>
+                <button type="submit" class="btn btn-primary"{% if request.person_deactivated %} disabled{% endif %}>{% trans 'Save Changes' %}</button>
             </div>
         </form>
     </section>
@@ -153,9 +154,10 @@
                     <dt>{% trans 'Password' %}</dt>
                     <dd class="profile-password-row">
                         <span aria-hidden="true">••••••••</span>
-                        <button type="button" class="btn btn-sm btn-secondary" id="profile-password-trigger" aria-haspopup="dialog">{% trans 'Change password' %}</button>
+                        <button type="button" class="btn btn-sm btn-secondary" id="profile-password-trigger" aria-haspopup="dialog"{% if request.person_deactivated %} disabled{% endif %}>{% trans 'Change password' %}</button>
                     </dd>
                 </div>
+                {% if not request.person_deactivated %}
                 <div>
                     <dt>{% trans 'Review cycle access' %}</dt>
                     <dd>
@@ -166,6 +168,7 @@
                         {% endif %}
                     </dd>
                 </div>
+                {% endif %}
             </dl>
         </div>
     </section>

@@ -70,7 +70,7 @@ class LoginTests(TestCase):
 
 
 class DeactivatedPersonTests(TestCase):
-    """A person who was deactivated has left: their account does not let them in."""
+    """A person who was deactivated has left: their account shows their own profile page and nothing else."""
 
     def setUp(self):
         self.organization = Organization.objects.create(name='Acme', email='org@acme.example')
@@ -82,19 +82,36 @@ class DeactivatedPersonTests(TestCase):
         self.person.save()
         self.client.force_login(self.user)
 
-    def test_a_deactivated_person_is_logged_out(self):
-        response = self.client.get(reverse('reviewee_list'))
+    def test_a_deactivated_person_is_sent_to_their_profile_from_every_other_page(self):
+        for url in (reverse('reviewee_list'), reverse('admin_dashboard'), reverse('send_invitation'),
+                    '/api/v1/reviewees/'):
+            with self.subTest(url=url):
+                self.assertRedirects(self.client.get(url), reverse('profile'), fetch_redirect_response=False)
 
-        self.assertRedirects(response, '/accounts/login/', fetch_redirect_response=False)
-        self.assertNotIn('_auth_user_id', self.client.session)
-
-    def test_a_deactivated_person_cannot_open_their_profile_to_change_the_email(self):
+    def test_a_deactivated_person_can_view_their_profile(self):
         response = self.client.get(reverse('profile'))
 
-        self.assertRedirects(response, '/accounts/login/', fetch_redirect_response=False)
+        self.assertEqual(response.status_code, 200)
+        self.assertIs(response.wsgi_request.person_deactivated, True)
+
+    def test_a_deactivated_person_cannot_change_their_email_or_password(self):
+        for fields in ({'email': 'dana.new@acme.example', 'first_name': 'Dana', 'last_name': 'New'},
+                       {'change_password': '1', 'old_password': 'secret-pw',
+                        'new_password1': 'another-pw-91', 'new_password2': 'another-pw-91'}):
+            with self.subTest(fields=fields):
+                response = self.client.post(reverse('profile'), fields)
+
+                self.assertRedirects(response, reverse('profile'), fetch_redirect_response=False)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, 'Dana@acme.example')
+        self.assertTrue(self.user.check_password('secret-pw'))
+
+    def test_a_deactivated_person_can_log_out(self):
+        self.client.post(reverse('logout'))
+
         self.assertNotIn('_auth_user_id', self.client.session)
 
-    def test_an_active_person_stays_logged_in(self):
+    def test_an_active_person_is_not_limited(self):
         self.person.is_active = True
         self.person.save()
 
@@ -106,7 +123,7 @@ class DeactivatedPersonTests(TestCase):
 
         self.assertEqual(self.client.get(reverse('reviewee_list')).status_code, 200)
 
-    def test_an_administrator_is_not_shut_out_by_their_own_person_record(self):
+    def test_an_administrator_is_not_limited_by_their_own_person_record(self):
         assign_organization_admin(self.user)
 
         self.assertEqual(self.client.get(reverse('reviewee_list')).status_code, 200)

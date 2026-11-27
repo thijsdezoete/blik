@@ -105,7 +105,7 @@ def review_setup(reviewee, source=None, with_previous=False):
     """
     if source == 'previous' and not with_previous:
         source = None
-    saved =ReviewSetup.objects.filter(reviewee=reviewee).select_related('questionnaire').first()
+    saved = ReviewSetup.objects.filter(reviewee=reviewee).select_related('questionnaire').first()
     flags = {f'include_{c}': True for c in CATEGORY_ORDER}
     questionnaire = None
     if saved is not None:

@@ -174,3 +174,80 @@ class RevieweeDetailTests(TestCase):
         response = self.client.post(reverse('reviewee_edit', args=[self.alex.uuid]), {
             'name': 'Alex Morgan', 'email': 'alex@acme.example', 'department': 'Product Engineering'})
         self.assertRedirects(response, self.url, fetch_redirect_response=False)
+
+
+class PreviousReviewOnThePageTests(TestCase):
+    """A closed review keeps only the reviewers who opened their form, so its list tells who answered."""
+
+    ANSWERED = ['dana@acme.example', 'eli@acme.example', 'fay@acme.example']
+
+    def setUp(self):
+        self.org = UserProfileFactory().organization
+        self.questionnaire = QuestionnaireFactory(organization=self.org, is_default=True)
+        self.alex = RevieweeFactory(organization=self.org, name='Alex Morgan', email='alex@acme.example')
+        # Five peers were invited; closing the review deleted the two places nobody opened.
+        cycle = ReviewCycle.objects.create(reviewee=self.alex, questionnaire=self.questionnaire, status='completed')
+        for email in self.ANSWERED:
+            ReviewerToken.objects.create(cycle=cycle, category='peer', reviewer_email=email)
+        self.url = reverse('reviewee_detail', args=[self.alex.uuid])
+
+    def login(self, email, runs=False):
+        user = UserProfileFactory(organization=self.org, user__email=email).user
+        assign_organization_member(user, can_create_cycles_for_others=runs)
+        self.client.force_login(user)
+        return user
+
+    def fill(self, **params):
+        return self.client.get(reverse('derive_reviewers_for_cycle'), {'reviewee': self.alex.uuid, **params}).json()
+
+    def test_reviewee_gets_none_of_the_reviewers_of_the_previous_review(self):
+        self.login('alex@acme.example')
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.context['setup'].source, 'empty')
+        self.assertFalse(response.context['has_previous_review'])
+        for email in self.ANSWERED:
+            self.assertNotContains(response, email)
+        for params in ({}, {'source': 'previous'}):
+            with self.subTest(params=params):
+                data = self.fill(**params)
+                self.assertEqual(data['source'], 'empty')
+                self.assertEqual((data['peer'], data['emails']['peer']), ([], []))
+
+    def test_manager_who_runs_the_cycle_gets_the_org_chart_instead(self):
+        manager = self.login('hank@acme.example', runs=True)
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=Reviewee.objects.get(email=manager.email), row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.alex, row=1, col=0)
+
+        for params in ({}, {'source': 'previous'}):
+            with self.subTest(params=params):
+                data = self.fill(**params)
+                self.assertEqual(data['source'], 'chart')
+                self.assertEqual((data['peer'], data['emails']['peer']), ([], []))
+                self.assertEqual([p['email'] for p in data['manager']], ['hank@acme.example'])
+
+    def test_org_admin_still_gets_the_previous_review(self):
+        admin = UserProfileFactory(organization=self.org).user
+        assign_organization_admin(admin)
+        self.client.force_login(admin)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.context['setup'].source, 'previous')
+        self.assertTrue(response.context['has_previous_review'])
+        self.assertEqual(sorted(self.fill()['emails']['peer']), self.ANSWERED)
+
+    def test_hr_who_runs_the_cycle_still_gets_the_previous_review(self):
+        hr = self.login('hank@acme.example', runs=True)
+        set_user_permission(hr, 'can_view_all_reports', True)
+        unit = OrgUnitFactory(organization=self.org)
+        OrgUnitMembershipFactory(unit=unit, reviewee=Reviewee.objects.get(email=hr.email), row=0, col=0)
+        OrgUnitMembershipFactory(unit=unit, reviewee=self.alex, row=1, col=0)
+
+        response = self.client.get(self.url)
+
+        self.assertTrue(response.context['has_previous_review'])
+        data = self.fill(source='previous')
+        self.assertEqual(data['source'], 'previous')
+        self.assertEqual(sorted(data['emails']['peer']), self.ANSWERED)

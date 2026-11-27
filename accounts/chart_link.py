@@ -123,7 +123,8 @@ def unplaced_with_manager(organization):
     people = (Reviewee.objects.for_organization(organization).filter(is_active=True)
               .exclude(unit_memberships__role=OrgUnitMembership.MEMBER).order_by('name', 'pk'))
     for person in people:
-        managers = review_setup(person).people['manager']
+        # Only users who may edit the chart see this list, and they see the status per reviewer.
+        managers = review_setup(person, with_previous=True).people['manager']
         if len(managers) == 1:
             unit, name = _target(managers[0], person)
             found.append((person, managers[0], name, unit is None))

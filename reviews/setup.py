@@ -95,9 +95,17 @@ def _chart(reviewee):
     return buckets if any(buckets[c] for c in LISTED) else None
 
 
-def review_setup(reviewee, source=None):
-    """The reviewer list of a person. `source` 'chart' or 'previous' forces that source (the fill buttons)."""
-    saved = ReviewSetup.objects.filter(reviewee=reviewee).select_related('questionnaire').first()
+def review_setup(reviewee, source=None, with_previous=False):
+    """
+    The reviewer list of a person. `source` 'chart' or 'previous' forces that source (the fill buttons).
+
+    `with_previous`: the viewer may see the status per reviewer (`sees_reviewer_status`). Closing
+    a review deletes the places nobody opened, so the reviewers left on it tell who answered.
+    Without it the previous review is never a source, and forcing it gives the list as without force.
+    """
+    if source == 'previous' and not with_previous:
+        source = None
+    saved =ReviewSetup.objects.filter(reviewee=reviewee).select_related('questionnaire').first()
     flags = {f'include_{c}': True for c in CATEGORY_ORDER}
     questionnaire = None
     if saved is not None:
@@ -119,7 +127,7 @@ def review_setup(reviewee, source=None):
         setup.source = 'chart'
         for category in LISTED:
             setup.people[category] = [p for p in buckets[category] if p.pk != reviewee.pk]
-    elif source in (None, 'previous') and (previous := previous_cycle_reviewers(reviewee)):
+    elif with_previous and source in (None, 'previous') and (previous := previous_cycle_reviewers(reviewee)):
         cycle, assignments = previous
         setup.source = 'previous'
         setup.flags = {f'include_{c}': getattr(cycle, f'include_{c}') for c in CATEGORY_ORDER}

@@ -856,7 +856,8 @@ def reviewee_detail(request, reviewee_uuid):
         save_posted_reviewers(request, reviewee, chart=access['chart'])
         return redirect('reviewee_detail', reviewee_uuid=reviewee.uuid)
 
-    setup = review_setup(reviewee)
+    sees_status = sees_reviewer_status(request.user)
+    setup = review_setup(reviewee, with_previous=sees_status)
     cycles = list(reviewee.review_cycles.select_related('questionnaire'))
     active_cycles = [cycle for cycle in cycles if cycle.status == 'active']
     status = 'active' if active_cycles else 'completed' if cycles else 'not_started'
@@ -909,7 +910,7 @@ def reviewee_detail(request, reviewee_uuid):
         'threshold': threshold,
         'invited_count': sum(len(c['people']) + len(c['emails']) for c in categories
                              if c['code'] != 'self' and c['checked']),
-        'has_previous_review': access['setup'] and has_previous_review(reviewee),
+        'has_previous_review': access['setup'] and sees_status and has_previous_review(reviewee),
         'questionnaires': Questionnaire.objects.for_organization(org).filter(
             is_active=True).order_by('-is_default', 'name'),
         'language_label': language_name(reviewee.language) if reviewee.language else None,
@@ -4669,7 +4670,8 @@ def derive_reviewers_for_cycle(request):
     """
     AJAX endpoint that returns the reviewer list of a reviewee UUID: the saved
     list, else the org chart, else the previous review; `source=chart` or
-    `source=previous` forces one of the last two.
+    `source=previous` forces one of the last two. The previous review only for
+    a user who sees the status per reviewer (see `review_setup`).
 
     Response:
         {
@@ -4703,7 +4705,8 @@ def derive_reviewers_for_cycle(request):
     # The saved list and the previous review hold more than the chart (emails
     # someone typed): only a user who may start a cycle for the person gets them.
     if creatable_reviewees(request.user, org).filter(pk=reviewee.pk).exists():
-        setup = review_setup(reviewee, source=request.GET.get('source'))
+        setup = review_setup(reviewee, source=request.GET.get('source'),
+                             with_previous=sees_reviewer_status(request.user))
         shown, emails, flags, source = setup.people, setup.emails, setup.flags, setup.source
         questionnaire = setup.questionnaire.id if setup.questionnaire else None
     else:

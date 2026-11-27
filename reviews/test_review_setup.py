@@ -44,7 +44,7 @@ class ReviewSetupOrderTests(SetupTestCase):
         self.put_alex_under_blair_in_the_chart()
         self.previous_cycle()
         self.save(people={'peer': [self.casey]})
-        setup = review_setup(self.alex)
+        setup = review_setup(self.alex, with_previous=True)
         self.assertEqual(setup.source, 'saved')
         self.assertEqual(setup.people['peer'], [self.casey])
         self.assertEqual(setup.people['manager'], [])
@@ -52,14 +52,14 @@ class ReviewSetupOrderTests(SetupTestCase):
     def test_org_chart_wins_over_the_previous_review(self):
         self.put_alex_under_blair_in_the_chart()
         self.previous_cycle()
-        setup = review_setup(self.alex)
+        setup = review_setup(self.alex, with_previous=True)
         self.assertEqual(setup.source, 'chart')
         self.assertEqual(setup.people['manager'], [self.blair])
 
     def test_previous_review_when_the_chart_knows_nobody(self):
         other = QuestionnaireFactory(organization=self.org, name='Annual review')
         self.previous_cycle(questionnaire=other)
-        setup = review_setup(self.alex)
+        setup = review_setup(self.alex, with_previous=True)
         self.assertEqual(setup.source, 'previous')
         self.assertEqual(setup.emails['peer'], ['dana@acme.example'])
         self.assertEqual(setup.questionnaire, other)
@@ -67,7 +67,7 @@ class ReviewSetupOrderTests(SetupTestCase):
     def test_previous_review_with_an_archived_questionnaire_keeps_the_reviewers(self):
         archived = QuestionnaireFactory(organization=self.org, name='Old review', is_active=False)
         self.previous_cycle(questionnaire=archived)
-        setup = review_setup(self.alex)
+        setup = review_setup(self.alex, with_previous=True)
         self.assertEqual(setup.source, 'previous')
         self.assertEqual(setup.emails['peer'], ['dana@acme.example'])
         self.assertEqual(setup.questionnaire, self.default)
@@ -97,7 +97,7 @@ class ReviewSetupOrderTests(SetupTestCase):
 
     def test_email_of_a_known_person_shows_as_that_person(self):
         self.previous_cycle(peer_email='Casey@acme.example')
-        setup = review_setup(self.alex)
+        setup = review_setup(self.alex, with_previous=True)
         self.assertEqual(setup.people['peer'], [self.casey])
         self.assertEqual(setup.emails['peer'], [])
 
@@ -108,6 +108,35 @@ class ReviewSetupOrderTests(SetupTestCase):
         self.assertEqual(setup.source, 'chart')
         self.assertEqual(setup.people['manager'], [self.blair])
         self.assertEqual(setup.people['peer'], [])
+
+
+class PreviousReviewRightTests(SetupTestCase):
+    # The reviewers left on a closed review are the ones who opened their form: only those
+    # who see the status per reviewer may get them as a list.
+    def test_without_the_right_the_previous_review_is_never_the_source(self):
+        self.previous_cycle()
+
+        self.assertEqual(review_setup(self.alex).source, 'empty')
+        self.assertEqual(review_setup(self.alex).emails['peer'], [])
+
+    def test_forced_previous_source_without_the_right_gives_the_list_as_without_force(self):
+        self.previous_cycle()
+        self.put_alex_under_blair_in_the_chart()
+
+        setup = review_setup(self.alex, source='previous')
+
+        self.assertEqual(setup.source, 'chart')
+        self.assertEqual(setup.people['manager'], [self.blair])
+        self.assertEqual(setup.emails['peer'], [])
+
+    def test_forced_previous_source_with_the_right_gives_the_previous_review(self):
+        self.previous_cycle()
+        self.put_alex_under_blair_in_the_chart()
+
+        setup = review_setup(self.alex, source='previous', with_previous=True)
+
+        self.assertEqual(setup.source, 'previous')
+        self.assertEqual(setup.emails['peer'], ['dana@acme.example'])
 
 
 class SaveReviewSetupTests(SetupTestCase):

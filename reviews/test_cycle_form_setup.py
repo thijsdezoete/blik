@@ -29,7 +29,7 @@ class CycleFormSaveTests(TestCase):
         return self.client.post(reverse('review_cycle_create'), {
             'creation_mode': 'single', 'questionnaire': self.questionnaire.id, 'reviewee': self.alex.id,
             'categories_submitted': '1', 'include_self': 'on', 'include_manager': 'on', 'include_peer': 'on',
-            **fields,
+            'save_reviewer_list': '1', **fields,
         })
 
     def save_list(self, people=None, emails=None, flags=None):
@@ -45,6 +45,17 @@ class CycleFormSaveTests(TestCase):
 
         cycle = ReviewCycle.objects.get(reviewee=self.alex)
         self.assertFalse(cycle.tokens.filter(reviewer_email='blair@acme.example').exists())
+
+    def test_without_the_save_box_the_cycle_is_made_and_the_saved_list_stays(self):
+        self.save_list(people={'manager': [self.blair]})
+
+        self.post_form(save_reviewer_list='', peer_emails='dana@acme.example')
+
+        cycle = ReviewCycle.objects.get(reviewee=self.alex)
+        self.assertTrue(cycle.tokens.filter(reviewer_email='dana@acme.example').exists())
+        self.assertEqual(
+            list(ReviewSetup.objects.get(reviewee=self.alex).reviewers.values_list('category', 'person__email', 'email')),
+            [('manager', 'blair@acme.example', '')])
 
     def test_sending_the_form_with_reviewers_saves_them_for_the_reviewee(self):
         self.post_form(manager_reviewees=[str(self.blair.uuid)], peer_emails='dana@acme.example')
@@ -67,7 +78,7 @@ class CycleFormSaveTests(TestCase):
             'creation_mode': 'single', 'questionnaire': self.questionnaire.id, 'reviewee': self.alex.id,
             'categories_submitted': '1', 'include_self': 'on', 'include_manager': 'on',
             'manager_reviewees': [str(self.blair.uuid)], 'peer_reviewees': [str(casey.uuid)],
-            'peer_emails': 'dana@acme.example'})
+            'peer_emails': 'dana@acme.example', 'save_reviewer_list': '1'})
 
         saved = ReviewSetup.objects.get(reviewee=self.alex)
         self.assertFalse(saved.include_peer)

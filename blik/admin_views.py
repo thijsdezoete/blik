@@ -2453,8 +2453,8 @@ def review_cycle_create(request):
                 cycle = create_single_cycle(
                     request, reviewee, questionnaire, category_flags, email_assignments, send_now)
 
-                # The list of the reviewee is what the form sent, once the cycle stands.
-                if any(people[c] or emails[c] for c in listed):
+                # The list of the reviewee is what the form sent, once the cycle stands and when the user asked for it.
+                if request.POST.get('save_reviewer_list') == '1' and any(people[c] or emails[c] for c in listed):
                     save_review_setup(
                         reviewee, questionnaire,
                         {f'include_{c}': getattr(cycle, f'include_{c}') for c in CATEGORY_ORDER},

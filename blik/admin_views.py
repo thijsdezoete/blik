@@ -54,7 +54,7 @@ from accounts.permissions import (
 from api.models import APIToken, WebhookEndpoint
 from core.env_config import env_managed_fields
 from core.languages import default_language, is_language, language_name
-from core.gdpr import GDPRDeletionService
+from core.gdpr import GDPRDeletionService, LIST_STATUSES, filter_reviewees, filter_users
 from core.models import Organization
 from productreviews.models import ProductReview, anonymous_name
 from questionnaires.editor import (
@@ -3373,10 +3373,16 @@ def gdpr_management(request):
     except (ValueError, TypeError):
         per_page = 25
 
+    q = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '')
+    if status not in LIST_STATUSES:
+        status = ''
+    filters = {'q': q, 'status': status, 'is_filtered': bool(q or status)}
+
     if active_tab == 'users':
         # List users with data summaries (include GDPR-deleted for audit purposes)
-        users_qs = UserProfile.objects.for_organization(
-            org, include_deleted=True
+        users_qs = filter_users(
+            UserProfile.objects.for_organization(org, include_deleted=True), org, q, status,
         ).select_related('user').order_by('-user__date_joined')
 
         # Paginate
@@ -3398,13 +3404,16 @@ def gdpr_management(request):
 
         context = {
             'active_tab': 'users',
+            **filters,
             'users': users,
             'reviewees': None,
             'per_page': per_page,
         }
     else:
         # List reviewees with data summaries (include GDPR-deleted for audit purposes)
-        reviewees_qs = Reviewee.objects.for_organization(org, include_deleted=True).select_related('organization').order_by('-created_at')
+        reviewees_qs = filter_reviewees(
+            Reviewee.objects.for_organization(org, include_deleted=True), q, status,
+        ).select_related('organization').order_by('-created_at')
 
         # Paginate
         paginator = Paginator(reviewees_qs, per_page)
@@ -3425,6 +3434,7 @@ def gdpr_management(request):
 
         context = {
             'active_tab': 'reviewees',
+            **filters,
             'users': None,
             'reviewees': reviewees,
             'per_page': per_page,

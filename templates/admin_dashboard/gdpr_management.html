@@ -35,18 +35,32 @@
 <!-- Tab Navigation -->
 <div style="border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem;">
     <div style="display: flex; gap: 0; overflow-x: auto;">
-        <a href="?tab=reviewees&per_page={{ per_page }}"
+        <a href="{% querystring tab='reviewees' page=None %}"
            class="tab-link {% if active_tab == 'reviewees' %}active{% endif %}"
            style="padding: 1rem 1.5rem; border-bottom: 2px solid {% if active_tab == 'reviewees' %}var(--primary-color){% else %}transparent{% endif %}; color: {% if active_tab == 'reviewees' %}var(--primary-color){% else %}var(--text-secondary){% endif %}; text-decoration: none; white-space: nowrap; font-weight: 500;">
             {% trans 'Reviewees' %}
         </a>
-        <a href="?tab=users&per_page={{ per_page }}"
+        <a href="{% querystring tab='users' page=None %}"
            class="tab-link {% if active_tab == 'users' %}active{% endif %}"
            style="padding: 1rem 1.5rem; border-bottom: 2px solid {% if active_tab == 'users' %}var(--primary-color){% else %}transparent{% endif %}; color: {% if active_tab == 'users' %}var(--primary-color){% else %}var(--text-secondary){% endif %}; text-decoration: none; white-space: nowrap; font-weight: 500;">
             {% trans 'Users' %}
         </a>
     </div>
 </div>
+
+<form id="gdpr-filters" method="get" class="list-filters" style="padding: 0; margin-bottom: 1rem;">
+    <input type="hidden" name="tab" value="{{ active_tab }}">
+    <div class="list-filter-fields">
+        <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="{% trans 'Search name or email' %}" aria-label="{% trans 'Search name or email' %}">
+        <select name="status" class="form-control" aria-label="{% trans 'Status' %}" onchange="this.form.requestSubmit()">
+            <option value="">{% trans 'All statuses' %}</option>
+            <option value="active" {% if status == 'active' %}selected{% endif %}>{% trans 'Active' %}</option>
+            <option value="deactivated" {% if status == 'deactivated' %}selected{% endif %}>{% trans 'Deactivated' %}</option>
+            <option value="anonymized" {% if status == 'anonymized' %}selected{% endif %}>{% trans 'Anonymized' %}</option>
+        </select>
+        {% if is_filtered %}<a href="{% querystring q=None status=None page=None %}" class="btn btn-sm btn-secondary">{% trans 'Clear filters' %}</a>{% endif %}
+    </div>
+</form>
 
 {% if active_tab == 'reviewees' %}
 <!-- Reviewees Tab -->
@@ -99,10 +113,12 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if reviewee.is_active %}
-                                <span class="badge" style="background: #10b981; color: white;">{% trans 'Active' %}</span>
+                            {% if '@deleted.invalid' in reviewee.email %}
+                                <span class="badge" style="background: #6b7280; color: white;">{% trans 'Anonymized' %}</span>
+                            {% elif not reviewee.is_active %}
+                                <span class="badge" style="background: #b45309; color: white;">{% trans 'Deactivated' %}</span>
                             {% else %}
-                                <span class="badge" style="background: #6b7280; color: white;">{% trans 'Inactive' %}</span>
+                                <span class="badge" style="background: #10b981; color: white;">{% trans 'Active' %}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -124,10 +140,12 @@
                 <div class="mobile-card-header">
                     <div><strong>{{ reviewee.name }}</strong></div>
                     <div>
-                        {% if reviewee.is_active %}
-                            <span class="badge" style="background: #10b981; color: white; font-size: 11px;">{% trans 'Active' %}</span>
+                        {% if '@deleted.invalid' in reviewee.email %}
+                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">{% trans 'Anonymized' %}</span>
+                        {% elif not reviewee.is_active %}
+                            <span class="badge" style="background: #b45309; color: white; font-size: 11px;">{% trans 'Deactivated' %}</span>
                         {% else %}
-                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">{% trans 'Inactive' %}</span>
+                            <span class="badge" style="background: #10b981; color: white; font-size: 11px;">{% trans 'Active' %}</span>
                         {% endif %}
                     </div>
                 </div>
@@ -163,7 +181,7 @@
     <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
             <span style="color: var(--text-secondary); font-size: 0.875rem;">{% trans 'Items per page:' %}</span>
-            <select onchange="window.location.href='?tab=reviewees&per_page=' + this.value" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
+            <select name="per_page" form="gdpr-filters" onchange="this.form.requestSubmit()" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
                 <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
                 <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
                 <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
@@ -171,13 +189,13 @@
         </div>
         <div class="pagination">
             {% if reviewees.has_previous %}
-                <a href="?tab=reviewees&page=1&per_page={{ per_page }}" class="pagination-link">{% trans 'First' %}</a>
-                <a href="?tab=reviewees&page={{ reviewees.previous_page_number }}&per_page={{ per_page }}" class="pagination-link">{% trans 'Previous' %}</a>
+                <a href="{% querystring page=1 %}" class="pagination-link">{% trans 'First' %}</a>
+                <a href="{% querystring page=reviewees.previous_page_number %}" class="pagination-link">{% trans 'Previous' %}</a>
             {% endif %}
             <span class="pagination-info">{% blocktrans trimmed with num=reviewees.number total=reviewees.paginator.num_pages %}Page {{ num }} of {{ total }}{% endblocktrans %}</span>
             {% if reviewees.has_next %}
-                <a href="?tab=reviewees&page={{ reviewees.next_page_number }}&per_page={{ per_page }}" class="pagination-link">{% trans 'Next' %}</a>
-                <a href="?tab=reviewees&page={{ reviewees.paginator.num_pages }}&per_page={{ per_page }}" class="pagination-link">{% trans 'Last' %}</a>
+                <a href="{% querystring page=reviewees.next_page_number %}" class="pagination-link">{% trans 'Next' %}</a>
+                <a href="{% querystring page=reviewees.paginator.num_pages %}" class="pagination-link">{% trans 'Last' %}</a>
             {% endif %}
         </div>
     </div>
@@ -285,10 +303,12 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if user_profile.user.is_active %}
-                                <span class="badge" style="background: #10b981; color: white;">{% trans 'Active' %}</span>
+                            {% if '@deleted.invalid' in user_profile.user.email %}
+                                <span class="badge" style="background: #6b7280; color: white;">{% trans 'Anonymized' %}</span>
+                            {% elif user_profile.person_left %}
+                                <span class="badge" style="background: #b45309; color: white;">{% trans 'Deactivated' %}</span>
                             {% else %}
-                                <span class="badge" style="background: #6b7280; color: white;">{% trans 'Inactive' %}</span>
+                                <span class="badge" style="background: #10b981; color: white;">{% trans 'Active' %}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -320,10 +340,12 @@
                         {% endif %}
                     </div>
                     <div>
-                        {% if user_profile.user.is_active %}
-                            <span class="badge" style="background: #10b981; color: white; font-size: 11px;">{% trans 'Active' %}</span>
+                        {% if '@deleted.invalid' in user_profile.user.email %}
+                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">{% trans 'Anonymized' %}</span>
+                        {% elif user_profile.person_left %}
+                            <span class="badge" style="background: #b45309; color: white; font-size: 11px;">{% trans 'Deactivated' %}</span>
                         {% else %}
-                            <span class="badge" style="background: #6b7280; color: white; font-size: 11px;">{% trans 'Inactive' %}</span>
+                            <span class="badge" style="background: #10b981; color: white; font-size: 11px;">{% trans 'Active' %}</span>
                         {% endif %}
                     </div>
                 </div>
@@ -361,7 +383,7 @@
     <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem;">
             <span style="color: var(--text-secondary); font-size: 0.875rem;">{% trans 'Items per page:' %}</span>
-            <select onchange="window.location.href='?tab=users&per_page=' + this.value" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
+            <select name="per_page" form="gdpr-filters" onchange="this.form.requestSubmit()" style="padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
                 <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
                 <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
                 <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
@@ -369,13 +391,13 @@
         </div>
         <div class="pagination">
             {% if users.has_previous %}
-                <a href="?tab=users&page=1&per_page={{ per_page }}" class="pagination-link">{% trans 'First' %}</a>
-                <a href="?tab=users&page={{ users.previous_page_number }}&per_page={{ per_page }}" class="pagination-link">{% trans 'Previous' %}</a>
+                <a href="{% querystring page=1 %}" class="pagination-link">{% trans 'First' %}</a>
+                <a href="{% querystring page=users.previous_page_number %}" class="pagination-link">{% trans 'Previous' %}</a>
             {% endif %}
             <span class="pagination-info">{% blocktrans trimmed with num=users.number total=users.paginator.num_pages %}Page {{ num }} of {{ total }}{% endblocktrans %}</span>
             {% if users.has_next %}
-                <a href="?tab=users&page={{ users.next_page_number }}&per_page={{ per_page }}" class="pagination-link">{% trans 'Next' %}</a>
-                <a href="?tab=users&page={{ users.paginator.num_pages }}&per_page={{ per_page }}" class="pagination-link">{% trans 'Last' %}</a>
+                <a href="{% querystring page=users.next_page_number %}" class="pagination-link">{% trans 'Next' %}</a>
+                <a href="{% querystring page=users.paginator.num_pages %}" class="pagination-link">{% trans 'Last' %}</a>
             {% endif %}
         </div>
     </div>

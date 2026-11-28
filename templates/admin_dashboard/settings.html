@@ -590,6 +590,15 @@
                     {% trans 'Import Data' %}
                 </button>
             </div>
+
+            <!-- Personal data of people and accounts -->
+            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+                <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px;">{% trans 'GDPR Data Management' %}</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
+                    {% trans 'Manage personal data and handle deletion requests' %}
+                </p>
+                <a href="{% url 'gdpr_management' %}" class="btn btn-secondary btn-sm">{% trans 'Manage' %}</a>
+            </div>
             {% endif %}
 
             <!-- Delete Account -->

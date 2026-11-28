@@ -17,10 +17,59 @@ import uuid
 import logging
 from datetime import datetime
 from django.db import transaction
+from django.db.models import Exists, OuterRef, Q
+from django.db.models.functions import Lower
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
+
+# The email domain of an anonymized (soft-deleted) record.
+DELETED_DOMAIN = '@deleted.invalid'
+LIST_STATUSES = ('active', 'deactivated', 'anonymized')
+
+
+def filter_reviewees(reviewees, q='', status=''):
+    """
+    Narrow the GDPR list of people: a search in name and email, and a status.
+    'deactivated' is a person who left and whose data is still there; an
+    anonymized record is also inactive, but is its own status.
+    """
+    if q:
+        reviewees = reviewees.filter(Q(name__icontains=q) | Q(email__icontains=q))
+    if status == 'active':
+        reviewees = reviewees.filter(is_active=True)
+    elif status == 'deactivated':
+        reviewees = reviewees.filter(is_active=False).exclude(email__icontains=DELETED_DOMAIN)
+    elif status == 'anonymized':
+        reviewees = reviewees.filter(email__icontains=DELETED_DOMAIN)
+    return reviewees
+
+
+def filter_users(profiles, organization, q='', status=''):
+    """
+    Narrow the GDPR list of accounts, with the same search and statuses.
+    Every profile gets person_left: the account's email is that of a
+    deactivated person of the organization, and of no active one. An account
+    has no link to a person but the email. 'deactivated' lists these accounts.
+    """
+    from accounts.models import Reviewee
+
+    people = Reviewee.objects.filter(organization=organization).annotate(email_lower=Lower('email'))
+    profiles = profiles.annotate(email_lower=Lower('user__email')).annotate(person_left=(
+        Exists(people.filter(is_active=False, email_lower=OuterRef('email_lower')))
+        & ~Exists(people.filter(is_active=True, email_lower=OuterRef('email_lower')))
+    ))
+    if q:
+        profiles = profiles.filter(
+            Q(user__first_name__icontains=q) | Q(user__last_name__icontains=q)
+            | Q(user__email__icontains=q) | Q(user__username__icontains=q))
+    if status == 'anonymized':
+        profiles = profiles.filter(user__email__icontains=DELETED_DOMAIN)
+    elif status in ('active', 'deactivated'):
+        profiles = profiles.exclude(user__email__icontains=DELETED_DOMAIN).filter(
+            person_left=(status == 'deactivated'))
+    return profiles
 
 
 class GDPRDeletionService:

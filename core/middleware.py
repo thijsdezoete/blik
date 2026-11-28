@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from django.conf import settings
+from django.middleware import locale
 from django.shortcuts import redirect
 from django.utils import translation
 from django.urls import Resolver404, resolve, reverse
@@ -110,6 +111,18 @@ class OrganizationMiddleware:
                     return redirect('profile')
 
         return self.get_response(request)
+
+
+class LocaleMiddleware(locale.LocaleMiddleware):
+    """
+    Django's LocaleMiddleware activates the browser's language and leaves it active when the request is over.
+    This one restores the language from before the request, so that code which runs next without a request
+    of its own, such as the next test, does not get the language of someone's browser.
+    """
+
+    def __call__(self, request):
+        with translation.override(translation.get_language()):
+            return super().__call__(request)
 
 
 class LanguageMiddleware:

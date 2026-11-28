@@ -89,6 +89,13 @@ class DashboardLanguageTests(TestCase):
 
         self.assertEqual(response['Content-Language'], 'de-informal')
 
+    def test_a_request_leaves_the_language_as_it_was(self):
+        # Code that runs after a request, such as the next test, must not get the browser's language
+        with translation.override('en'):
+            self.client.get(reverse('admin_dashboard'), HTTP_ACCEPT_LANGUAGE='de')
+
+            self.assertEqual(translation.get_language(), 'en')
+
     def test_the_switcher_stores_the_choice_on_the_profile(self):
         self.client.post(reverse('set_language'), {'language': 'de', 'next': '/dashboard/'})
 

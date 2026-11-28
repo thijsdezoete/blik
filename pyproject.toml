@@ -37,6 +37,8 @@ dev = [
     "black>=23.12.0",
     "ruff>=0.1.8",
     "factory-boy>=3.3.0",
+    # Lets `manage.py test --parallel` show the traceback of a failing test
+    "tblib>=3.0",
 ]
 
 [build-system]

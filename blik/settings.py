@@ -2,6 +2,7 @@
 Django settings for blik project.
 """
 
+import sys
 from pathlib import Path
 import environ
 
@@ -90,7 +91,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+    'core.middleware.LocaleMiddleware',
     'axes.middleware.AxesMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -430,6 +431,12 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 
-if env('ENVIRONMENT', default='') == 'test':
-    # Speed up logins in tests with a weak password hasher
+TEST_RUNNER = 'blik.test_runner.Runner'
+
+if env('ENVIRONMENT', default='') == 'test' or sys.argv[1:2] == ['test']:
+    # Speed up logins in tests with a weak password hasher. `manage.py test` counts too, so a local run
+    # without ENVIRONMENT set does not spend most of its time on PBKDF2.
     PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
+    # Each test client builds the middleware anew, and WhiteNoise would list all of STATIC_ROOT every time.
+    # With autorefresh it looks a file up only when that file is asked for.
+    WHITENOISE_AUTOREFRESH = True

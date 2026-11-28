@@ -14,6 +14,28 @@ import uuid
 logger = logging.getLogger(__name__)
 
 
+def copy_of(instance, **values):
+    """An unsaved copy of instance. values replace those of the original, by column name."""
+
+    fields = [field for field in instance._meta.concrete_fields if not field.primary_key]
+
+    return type(instance)(**{field.attname: getattr(instance, field.attname) for field in fields} | values)
+
+
+def clone_translations(originals, clones):
+    """Save copies of the translations of each original for its clone, in one insert."""
+
+    if not clones:
+        return
+
+    relation = clones[0].translations
+    relation.model.objects.bulk_create(
+        copy_of(translation, **{relation.field.attname: clone.pk})
+        for original, clone in zip(originals, clones)
+        for translation in original.translations.all()
+    )
+
+
 def clone_questionnaire_for_organization(questionnaire, organization):
     """
     Clone a template questionnaire with all sections and questions for a specific organization.
@@ -25,8 +47,6 @@ def clone_questionnaire_for_organization(questionnaire, organization):
     Returns:
         The cloned questionnaire instance
     """
-    # Clone the questionnaire by creating a new instance with copied fields
-    original_pk = questionnaire.pk
     cloned_questionnaire = Questionnaire.objects.create(
         organization=organization,
         name=questionnaire.name,
@@ -38,40 +58,30 @@ def clone_questionnaire_for_organization(questionnaire, organization):
     )
     copy_translations(questionnaire.translations.all(), cloned_questionnaire)
 
-    # Clone all sections
-    sections = QuestionSection.objects.filter(questionnaire_id=original_pk).order_by('order')
-    section_mapping = {}  # Map original section PK to cloned section
+    # A new organization gets every template, so a query per question adds up. Read the whole questionnaire first,
+    # then write each level in one insert.
+    sections = list(
+        QuestionSection.objects.filter(questionnaire=questionnaire).order_by('order')
+        .prefetch_related('translations', 'questions__translations', 'questions__options__translations')
+    )
+    questions = [question for section in sections for question in section.questions.all()]
+    options = [option for question in questions for option in question.options.all()]
 
-    for section in sections:
-        original_section_pk = section.pk
-        translations = list(section.translations.all())
-        section.pk = None
-        section.id = None
-        section.uuid = uuid.uuid4()
-        section.questionnaire = cloned_questionnaire
-        section.save()
-        copy_translations(translations, section)
-        section_mapping[original_section_pk] = section
+    cloned_sections = QuestionSection.objects.bulk_create(
+        copy_of(section, questionnaire_id=cloned_questionnaire.pk, uuid=uuid.uuid4()) for section in sections
+    )
+    section_ids = {section.pk: clone.pk for section, clone in zip(sections, cloned_sections)}
+    cloned_questions = Question.objects.bulk_create(
+        copy_of(question, section_id=section_ids[question.section_id], uuid=uuid.uuid4()) for question in questions
+    )
+    question_ids = {question.pk: clone.pk for question, clone in zip(questions, cloned_questions)}
+    cloned_options = AnswerOption.objects.bulk_create(
+        copy_of(option, question_id=question_ids[option.question_id]) for option in options
+    )
 
-    # Clone all questions
-    for original_section_pk, cloned_section in section_mapping.items():
-        questions = Question.objects.filter(section_id=original_section_pk).order_by('order')
-        for question in questions:
-            translations = list(question.translations.all())
-            options = list(question.options.prefetch_related('translations'))
-            question.pk = None
-            question.id = None
-            question.uuid = uuid.uuid4()  # Generate a new UUID
-            question.section = cloned_section
-            question.save()
-            copy_translations(translations, question)
-            cloned_options = AnswerOption.objects.bulk_create([
-                AnswerOption(question=question, order=option.order, label=option.label, weight=option.weight)
-                for option in options
-            ])
-
-            for option, cloned_option in zip(options, cloned_options):
-                copy_translations(option.translations.all(), cloned_option)
+    clone_translations(sections, cloned_sections)
+    clone_translations(questions, cloned_questions)
+    clone_translations(options, cloned_options)
 
     return cloned_questionnaire
 

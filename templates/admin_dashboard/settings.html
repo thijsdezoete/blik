@@ -560,13 +560,42 @@
     }
 </style>
 
+<style>
+    /* The blocks of a row are equally wide and their buttons are on one line. */
+    .data-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem 2rem;
+    }
+    .data-options > div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .data-options p {
+        flex: 1;
+    }
+    .data-options .btn {
+        display: inline-flex;
+        align-items: center;
+        box-sizing: border-box;
+        height: 2.25rem;
+        padding-block: 0;
+    }
+    .data-options-delete {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+</style>
+
 <!-- Account Management Section -->
 <div class="card" style="margin-top: 2rem;">
     <div class="card-header">
         <h2 class="card-title">{% trans 'Account & Data Management' %}</h2>
     </div>
     <div class="card-body">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="data-options">
 
             <!-- Export Data -->
             <div>
@@ -581,7 +610,7 @@
 
             <!-- Import Data -->
             {% if is_org_admin %}
-            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+            <div>
                 <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px;">{% trans 'Import Organization Data' %}</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
                     {% trans 'Upload a previously exported JSON file to import data.' %}
@@ -592,7 +621,7 @@
             </div>
 
             <!-- Personal data of people and accounts -->
-            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+            <div>
                 <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px;">{% trans 'GDPR Data Management' %}</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
                     {% trans 'Manage personal data and handle deletion requests' %}
@@ -600,9 +629,11 @@
                 <a href="{% url 'gdpr_management' %}" class="btn btn-secondary btn-sm">{% trans 'Manage' %}</a>
             </div>
             {% endif %}
+        </div>
 
+        <div class="data-options data-options-delete">
             <!-- Delete Account -->
-            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+            <div>
                 <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px; color: #dc2626;">{% trans 'Delete Account' %}</h3>
                 {% if is_last_admin %}
                     <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
@@ -619,7 +650,7 @@
 
             {% if is_org_admin %}
             <!-- Delete Organization -->
-            <div style="padding-left: 1.5rem; border-left: 1px solid var(--border-color);">
+            <div>
                 <h3 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 6px; color: #dc2626;">{% trans 'Delete Organization' %}</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.8125rem;">
                     {% blocktrans trimmed with name=organization.name %}Permanently delete {{ name }} and all data. Cannot be undone.{% endblocktrans %}
